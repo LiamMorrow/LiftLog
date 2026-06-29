@@ -15,13 +15,7 @@ import { savePlan } from '@/store/program';
 import { Session } from '@/models/session-models';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 
-export function PlanMessage({
-  message,
-  isUser,
-}: {
-  message: AiChatPlanResponseV2 & ChatMessage;
-  isUser: boolean;
-}) {
+export function PlanMessage({ message, isUser }: { message: AiChatPlanResponseV2 & ChatMessage; isUser: boolean }) {
   const dispatch = useDispatch();
   const { push } = useRouter();
   const preferredWeightUnit = usePreferredWeightUnit();
@@ -38,24 +32,14 @@ export function PlanMessage({
   };
   return (
     <View style={{ gap: spacing[2] }}>
-      <SurfaceText
-        font="text-2xl"
-        weight={'bold'}
-        color={isUser ? 'onPrimary' : 'onSurface'}
-      >
+      <SurfaceText font="text-2xl" weight={'bold'} color={isUser ? 'onPrimary' : 'onSurface'}>
         {message.plan.name}
       </SurfaceText>
-      <SurfaceText color={isUser ? 'onPrimary' : 'onSurface'}>
-        {message.plan.description}
-      </SurfaceText>
+      <SurfaceText color={isUser ? 'onPrimary' : 'onSurface'}>{message.plan.description}</SurfaceText>
       {blueprint.sessions.map((s, i) => (
         <Fragment key={i}>
-          <SessionSummaryTitle
-            session={Session.getEmptySession(s, preferredWeightUnit)}
-          />
-          <SessionSummary
-            session={Session.getEmptySession(s, preferredWeightUnit)}
-          />
+          <SessionSummaryTitle session={Session.getEmptySession(s, preferredWeightUnit)} />
+          <SessionSummary session={Session.getEmptySession(s, preferredWeightUnit)} />
         </Fragment>
       ))}
       {!message.isLoading && (

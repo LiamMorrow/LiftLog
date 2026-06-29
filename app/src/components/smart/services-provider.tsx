@@ -3,14 +3,7 @@ import { resolveStore } from '@/store';
 import { TolgeeProvider } from '@tolgee/react';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { openDatabaseAsync, SQLiteDatabase } from 'expo-sqlite';
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { Provider } from 'react-redux';
 
 // Create context for services
@@ -21,14 +14,8 @@ export default function ServicesProvider(props: { children: ReactNode }) {
     void openDatabaseAsync('db.db').then(setOpDb);
   }, [setOpDb]);
   const db = useMemo(() => expoDb && drizzle(expoDb), [expoDb]);
-  const store = useMemo(
-    () => db && expoDb && resolveStore(db, expoDb),
-    [db, expoDb],
-  );
-  const services = useMemo(
-    () => store && db && expoDb && resolveServices(store, db, expoDb),
-    [store, db, expoDb],
-  );
+  const store = useMemo(() => db && expoDb && resolveStore(db, expoDb), [db, expoDb]);
+  const services = useMemo(() => store && db && expoDb && resolveServices(store, db, expoDb), [store, db, expoDb]);
   if (!store || !services) {
     return <></>;
   }
@@ -36,9 +23,7 @@ export default function ServicesProvider(props: { children: ReactNode }) {
   return (
     <Provider store={store}>
       <ServicesContext.Provider value={services}>
-        <TolgeeProvider tolgee={services.tolgee}>
-          {props.children}
-        </TolgeeProvider>
+        <TolgeeProvider tolgee={services.tolgee}>{props.children}</TolgeeProvider>
       </ServicesContext.Provider>
     </Provider>
   );

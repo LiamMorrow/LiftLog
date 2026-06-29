@@ -1,9 +1,4 @@
-import {
-  createAction,
-  createSlice,
-  PayloadAction,
-  UnknownAction,
-} from '@reduxjs/toolkit';
+import { createAction, createSlice, PayloadAction, UnknownAction } from '@reduxjs/toolkit';
 
 const initialState: AppState = {
   isHydrated: false,
@@ -23,10 +18,7 @@ const appSlice = createSlice({
       state.isHydrated = action.payload;
     },
 
-    setCurrentSnackbar(
-      state,
-      action: PayloadAction<SnackbarDescriptor | undefined>,
-    ) {
+    setCurrentSnackbar(state, action: PayloadAction<SnackbarDescriptor | undefined>) {
       state.currentSnackbar = action.payload;
     },
   },
@@ -34,9 +26,7 @@ const appSlice = createSlice({
 
 export const initializeAppStateSlice = createAction('initializeAppStateSlice');
 
-export const shareString = createAction<{ title: string; value: string }>(
-  'shareString',
-);
+export const shareString = createAction<{ title: string; value: string }>('shareString');
 export const copyLogs = createAction('copyLogs');
 
 export type SnackbarDescriptor =
@@ -50,9 +40,7 @@ export type SnackbarDescriptor =
       action: string;
       dispatchAction: UnknownAction | UnknownAction[];
     };
-export const showSnackbar = createAction<
-  SnackbarDescriptor & { duration?: number }
->('snackBarWithAction');
+export const showSnackbar = createAction<SnackbarDescriptor & { duration?: number }>('snackBarWithAction');
 
 export const { setIsHydrated, setCurrentSnackbar } = appSlice.actions;
 

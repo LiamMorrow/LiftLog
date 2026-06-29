@@ -21,8 +21,7 @@ setNotificationHandler({
 if (Platform.OS === 'android') {
   void setNotificationChannelAsync('workout_channel', {
     name: 'Workout',
-    description:
-      'A persistent notification showing your time throughout the workout',
+    description: 'A persistent notification showing your time throughout the workout',
     importance: AndroidImportance.HIGH,
     enableVibrate: true,
     showBadge: true,
@@ -49,7 +48,7 @@ export class NotificationService {
     readonly dispatch: Dispatch,
   ) {}
 
-  async scheduleNextSetNotification(time: OffsetDateTime) {}
+  async scheduleNextSetNotification(_time: OffsetDateTime) {}
 
   async clearSetTimerNotification() {}
 }

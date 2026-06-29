@@ -11,12 +11,7 @@ import { WeightLineChart } from '@/components/presentation/stats/weight-line-cha
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Weight } from '@/models/weight';
 import { useAppSelector } from '@/store';
-import {
-  fetchOverallStats,
-  GranularStatisticView,
-  selectOverallView,
-  setOverallViewTime,
-} from '@/store/stats';
+import { fetchOverallStats, GranularStatisticView, selectOverallView, setOverallViewTime } from '@/store/stats';
 import { formatDuration } from '@/utils/format-date';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect } from 'expo-router';
@@ -42,15 +37,9 @@ export default function StatsPage() {
         }}
       />
       <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-        <TimePeriodSelector
-          timePeriod={timePeriod}
-          setTimePeriod={(value) => dispatch(setOverallViewTime(value))}
-        />
+        <TimePeriodSelector timePeriod={timePeriod} setTimePeriod={(value) => dispatch(setOverallViewTime(value))} />
       </View>
-      <Remote
-        value={stats}
-        success={(stats) => <LoadedStats stats={stats} />}
-      />
+      <Remote value={stats} success={(stats) => <LoadedStats stats={stats} />} />
     </FullHeightScrollView>
   );
 }
@@ -69,8 +58,7 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
   const { colors } = useAppTheme();
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
   const [showBodyweightGraph, setShowBodyweightGraph] = useState(false);
-  const canShowBodyweightGraph =
-    showBodyweight && stats.bodyweightStats.statistics.length > 0;
+  const canShowBodyweightGraph = showBodyweight && stats.bodyweightStats.statistics.length > 0;
   return (
     <TitledSection title={t('stats.overview.title')}>
       <SingleValueStatisticsGrid>
@@ -98,20 +86,14 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
           title={t('stats.bodyweight_change.label')}
           icon={'monitorWeight'}
           value={<BodyweightStatValue stats={stats} />}
-          onPress={
-            canShowBodyweightGraph
-              ? () => setShowBodyweightGraph((x) => !x)
-              : undefined
-          }
+          onPress={canShowBodyweightGraph ? () => setShowBodyweightGraph((x) => !x) : undefined}
         />
         <SingleValueStatisticCard
           title={t('stats.heaviest_lift.label')}
           icon={'fitnessCenter'}
           value={
             stats.heaviestLift
-              ? stats.heaviestLift.exerciseName +
-                ' - ' +
-                stats.heaviestLift.weight.shortLocaleFormat(0)
+              ? stats.heaviestLift.exerciseName + ' - ' + stats.heaviestLift.weight.shortLocaleFormat(0)
               : '-'
           }
         />
@@ -137,18 +119,11 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
 }
 
 function formatWeeklyRate(value: number) {
-  const rounded =
-    Math.abs(value - Math.round(value)) < 0.05
-      ? Math.round(value).toString()
-      : value.toFixed(1);
+  const rounded = Math.abs(value - Math.round(value)) < 0.05 ? Math.round(value).toString() : value.toFixed(1);
   return rounded;
 }
 
-function BodyweightStatValue({
-  stats: { bodyweightStats },
-}: {
-  stats: GranularStatisticView;
-}) {
+function BodyweightStatValue({ stats: { bodyweightStats } }: { stats: GranularStatisticView }) {
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
   if (!showBodyweight) {
     return <Text>-</Text>;

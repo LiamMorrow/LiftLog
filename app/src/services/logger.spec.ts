@@ -30,9 +30,7 @@ describe('Logger', () => {
       logger.log('test');
       const after = new Date();
       const [entry] = logger.getLogs();
-      expect(entry!.timestamp.getTime()).toBeGreaterThanOrEqual(
-        before.getTime(),
-      );
+      expect(entry!.timestamp.getTime()).toBeGreaterThanOrEqual(before.getTime());
       expect(entry!.timestamp.getTime()).toBeLessThanOrEqual(after.getTime());
     });
 

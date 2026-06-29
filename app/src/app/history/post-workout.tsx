@@ -4,10 +4,7 @@ import { SessionComparisonTable } from '@/components/presentation/workout/sessio
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelectorWithArg } from '@/store';
 import { selectCurrentSession } from '@/store/current-session';
-import {
-  selectPreviousComparableSession,
-  selectSession,
-} from '@/store/stored-sessions';
+import { selectPreviousComparableSession, selectSession } from '@/store/stored-sessions';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect } from 'react';
@@ -20,22 +17,12 @@ export default function PostWorkoutPage() {
     source?: 'finished' | 'live' | 'history';
   }>();
   const storedSession = useAppSelectorWithArg(selectSession, sessionId ?? '');
-  const currentWorkoutSession = useAppSelectorWithArg(
-    selectCurrentSession,
-    'workoutSession',
-  );
-  const session =
-    storedSession ??
-    (currentWorkoutSession?.id === sessionId
-      ? currentWorkoutSession
-      : undefined);
+  const currentWorkoutSession = useAppSelectorWithArg(selectCurrentSession, 'workoutSession');
+  const session = storedSession ?? (currentWorkoutSession?.id === sessionId ? currentWorkoutSession : undefined);
   const openedAfterFinishingWorkout = source === 'finished';
   const showFinishButton = openedAfterFinishingWorkout;
   const showBackButton = !openedAfterFinishingWorkout;
-  const previousComparableSession = useAppSelectorWithArg(
-    selectPreviousComparableSession,
-    session,
-  );
+  const previousComparableSession = useAppSelectorWithArg(selectPreviousComparableSession, session);
   const { dismissTo } = useRouter();
   const { t } = useTranslate();
 
@@ -51,13 +38,7 @@ export default function PostWorkoutPage() {
 
   const floatingBottomContainer = showFinishButton ? (
     <FloatingBottomContainer
-      fab={
-        <FAB
-          onPress={() => dismissTo('/(session)')}
-          icon={'check'}
-          label={t('generic.finish.button')}
-        />
-      }
+      fab={<FAB onPress={() => dismissTo('/(session)')} icon={'check'} label={t('generic.finish.button')} />}
     />
   ) : undefined;
 
@@ -76,11 +57,7 @@ export default function PostWorkoutPage() {
         }}
       />
       <View style={{ marginVertical: spacing[4] }}>
-        <SessionComparisonTable
-          mode="full"
-          previousSession={previousComparableSession}
-          session={session}
-        />
+        <SessionComparisonTable mode="full" previousSession={previousComparableSession} session={session} />
       </View>
     </FullHeightScrollView>
   );

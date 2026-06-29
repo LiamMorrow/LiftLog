@@ -9,10 +9,7 @@ const docsSchemasPath = join(__dirname, '../../docs/schemas/');
 // Create schemas for storage
 
 // Create schema for workout-worker — one file per definition
-createSplitSchemas(
-  join(modelsDir, 'workout-worker-messages.ts'),
-  join(docsSchemasPath, 'workout-worker'),
-);
+createSplitSchemas(join(modelsDir, 'workout-worker-messages.ts'), join(docsSchemasPath, 'workout-worker'));
 
 // Create schema for the AI plan generator — a single self-contained file
 // rooted at AiPlan, with referenced types under `definitions`.

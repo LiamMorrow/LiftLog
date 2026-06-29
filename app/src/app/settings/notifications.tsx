@@ -2,15 +2,8 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
 import { toDurationJSON } from '@/models/storage/versions/latest';
 import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
-import {
-  broadcastWorkoutEvent,
-  selectCurrentSession,
-} from '@/store/current-session';
-import {
-  getCardioTimerInfo,
-  getCurrentExerciseDetails,
-  getTimerInfo,
-} from '@/store/current-session/helpers';
+import { broadcastWorkoutEvent, selectCurrentSession } from '@/store/current-session';
+import { getCardioTimerInfo, getCurrentExerciseDetails, getTimerInfo } from '@/store/current-session/helpers';
 import { setRestNotifications } from '@/store/settings';
 import { Duration } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
@@ -21,10 +14,7 @@ import { useDispatch } from 'react-redux';
 export default function AppConfiguration() {
   const { t } = useTranslate();
   const settings = useAppSelector((state: RootState) => state.settings);
-  const currentWorkout = useAppSelectorWithArg(
-    selectCurrentSession,
-    'workoutSession',
-  );
+  const currentWorkout = useAppSelectorWithArg(selectCurrentSession, 'workoutSession');
   const dispatch = useDispatch();
 
   return (
@@ -49,12 +39,9 @@ export default function AppConfiguration() {
                   workout: currentWorkout.toJSON(),
                   restTimerInfo: getTimerInfo(currentWorkout),
                   cardioTimerInfo: getCardioTimerInfo(currentWorkout),
-                  currentExerciseDetails:
-                    getCurrentExerciseDetails(currentWorkout),
+                  currentExerciseDetails: getCurrentExerciseDetails(currentWorkout),
                   totalWeightLifted: currentWorkout.totalWeightLifted.toJSON(),
-                  workoutDuration: toDurationJSON(
-                    currentWorkout.duration ?? Duration.ZERO,
-                  ),
+                  workoutDuration: toDurationJSON(currentWorkout.duration ?? Duration.ZERO),
                 }),
               );
             }

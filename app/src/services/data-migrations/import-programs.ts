@@ -8,27 +8,17 @@ import { programBlueprintMigrations } from '@/models/storage/versions/migrations
 export const importProgramsDataMigration = 'IMPORT_PROGRAMS';
 
 const storageKey = 'SavedPrograms';
-export async function importPrograms(
-  db: ExpoSQLiteDatabase,
-  keyValueStore: KeyValueStore,
-) {
+export async function importPrograms(db: ExpoSQLiteDatabase, keyValueStore: KeyValueStore) {
   const programBytes = await keyValueStore.getItemBytes(storageKey);
   if (!programBytes) {
     return;
   }
-  const decoded =
-    LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.decode(
-      programBytes,
-    );
-  const converted: (typeof programsSchema.$inferInsert)[] = Object.entries(
-    decoded.programBlueprints,
-  ).map(
+  const decoded = LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.decode(programBytes);
+  const converted: (typeof programsSchema.$inferInsert)[] = Object.entries(decoded.programBlueprints).map(
     ([id, pojo]) =>
       ({
         id,
-        payload: programBlueprintMigrations.migrate(
-          ProtobufToJsonV1Migrator.migrateProgramBlueprint(pojo),
-        ),
+        payload: programBlueprintMigrations.migrate(ProtobufToJsonV1Migrator.migrateProgramBlueprint(pojo)),
         active: id === decoded.activeProgramId?.value,
       }) satisfies typeof programsSchema.$inferInsert,
   );
@@ -37,8 +27,6 @@ export async function importPrograms(
     if (converted.length) {
       await tx.insert(programsSchema).values(converted);
     }
-    await tx
-      .insert(dataMigrationsSchema)
-      .values({ id: importProgramsDataMigration });
+    await tx.insert(dataMigrationsSchema).values({ id: importProgramsDataMigration });
   });
 }

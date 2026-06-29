@@ -11,24 +11,16 @@ interface SessionSummaryTitleProps {
   isFilled?: boolean;
   color?: ColorChoice;
 }
-export default function SessionSummaryTitle({
-  session,
-  isFilled,
-  color = 'onSurface',
-}: SessionSummaryTitleProps) {
+export default function SessionSummaryTitle({ session, isFilled, color = 'onSurface' }: SessionSummaryTitleProps) {
   const formatDate = useFormatDate();
   const formattedDate = formatDate(session.date, {
-    year:
-      session.date.year() !== LocalDate.now().year() ? 'numeric' : undefined,
+    year: session.date.year() !== LocalDate.now().year() ? 'numeric' : undefined,
     day: 'numeric',
     weekday: 'long',
     month: 'long',
   });
   return (
-    <View
-      style={{ flexShrink: 1, alignItems: 'flex-start', overflow: 'hidden' }}
-      testID="session-summary-title"
-    >
+    <View style={{ flexShrink: 1, alignItems: 'flex-start', overflow: 'hidden' }} testID="session-summary-title">
       <ItemTitle title={session.blueprint.name} color={color} />
       {isFilled ? (
         <SurfaceText font="text-sm" color={color}>

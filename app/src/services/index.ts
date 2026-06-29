@@ -29,11 +29,7 @@ export type Services = Awaited<ReturnType<typeof resolveServicesInternal>>;
 
 let resolvedServices: Services | undefined;
 
-function resolveServicesInternal(
-  store: Store<RootState>,
-  db: ExpoSQLiteDatabase,
-  expoDb: SQLiteDatabase,
-) {
+function resolveServicesInternal(store: Store<RootState>, db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
   if (!store) {
     throw new Error('Tried to resolve services without store');
   }
@@ -41,38 +37,19 @@ function resolveServicesInternal(
   const keyValueStore = new KeyValueStore();
   const progressRepository = new ProgressRepository(store.getState);
   const sessionService = new SessionService(progressRepository, store.getState);
-  const notificationService = new NotificationService(
-    store.getState,
-    store.dispatch,
-  );
+  const notificationService = new NotificationService(store.getState, store.dispatch);
   const encryptionService = new EncryptionService();
   const feedApiService = new FeedApiService();
-  const feedIdentityService = new FeedIdentityService(
-    feedApiService,
-    encryptionService,
-  );
-  const feedInboxDecryptionService = new FeedInboxDecryptionService(
-    encryptionService,
-    feedApiService,
-  );
-  const feedFollowService = new FeedFollowService(
-    feedApiService,
-    encryptionService,
-  );
+  const feedIdentityService = new FeedIdentityService(feedApiService, encryptionService);
+  const feedInboxDecryptionService = new FeedInboxDecryptionService(encryptionService, feedApiService);
+  const feedFollowService = new FeedFollowService(feedApiService, encryptionService);
   const stringSharer = new StringSharer();
   const fileExportService = new FileExportService();
   const filePickerService = new FilePickerService();
   const preferenceService = new PreferenceService(keyValueStore);
-  const aiChatService = new AiChatServiceV2(
-    new HubConnectionFactory(),
-    store.getState,
-  );
+  const aiChatService = new AiChatServiceV2(new HubConnectionFactory(), store.getState);
   const tolgee = getTolgee(preferenceService);
-  const workoutWorkerService = new WorkoutWorker(
-    store.dispatch,
-    store.getState,
-    tolgee,
-  );
+  const workoutWorkerService = new WorkoutWorker(store.dispatch, store.getState, tolgee);
   const healthExportService: HES = new HealthExportService();
   const databaseMigrationService = new DatabaseMigrationService(
     db,
@@ -105,11 +82,7 @@ function resolveServicesInternal(
   };
 }
 
-function resolveServices(
-  store: Store<RootState>,
-  db: ExpoSQLiteDatabase,
-  expoDb: SQLiteDatabase,
-) {
+function resolveServices(store: Store<RootState>, db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
   return (resolvedServices ??= resolveServicesInternal(store, db, expoDb));
 }
 

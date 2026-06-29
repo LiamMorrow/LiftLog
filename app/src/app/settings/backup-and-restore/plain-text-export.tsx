@@ -26,32 +26,20 @@ export default function PlainTextExportPage() {
   return (
     <FullHeightScrollView>
       <Stack.Screen options={{ title: t('backup.plaintext_export.title') }} />
-      <Card
-        mode="contained"
-        style={{ marginHorizontal: spacing[6], marginBottom: spacing[4] }}
-      >
+      <Card mode="contained" style={{ marginHorizontal: spacing[6], marginBottom: spacing[4] }}>
         <Card.Content>
           <View>
             <SurfaceText style={{ textAlign: 'center' }}>
               <T keyName="backup.plaintext_export.explanation" />
             </SurfaceText>
           </View>
-          <Button
-            onPress={() =>
-              openUrl(
-                'https://github.com/LiamMorrow/LiftLog/blob/main/docs/PlaintextExport.md',
-              )
-            }
-          >
+          <Button onPress={() => openUrl('https://github.com/LiamMorrow/LiftLog/blob/main/docs/PlaintextExport.md')}>
             <T keyName="generic.read_documentation.button" />
           </Button>
         </Card.Content>
       </Card>
       <Form>
-        <LabelledFormRow
-          label={t('backup.plaintext_export.format.label')}
-          icon={'descriptionFill'}
-        >
+        <LabelledFormRow label={t('backup.plaintext_export.format.label')} icon={'descriptionFill'}>
           <Dropdown
             options={[
               { label: 'CSV', value: 'CSV' },

@@ -1,15 +1,9 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
-import SelectButton, {
-  SelectButtonOption,
-} from '@/components/presentation/foundation/select-button';
+import SelectButton, { SelectButtonOption } from '@/components/presentation/foundation/select-button';
 import { supportedLanguages } from '@/services/tolgee';
 import { RootState, useAppSelector } from '@/store';
-import {
-  setFirstDayOfWeek,
-  setPreferredLanguage,
-  setUseImperialUnits,
-} from '@/store/settings';
+import { setFirstDayOfWeek, setPreferredLanguage, setUseImperialUnits } from '@/store/settings';
 import { getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';

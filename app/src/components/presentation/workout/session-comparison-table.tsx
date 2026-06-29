@@ -19,22 +19,13 @@ interface SessionComparisonTableProps {
 export function SessionComparisonTable(props: SessionComparisonTableProps) {
   const { colors } = useAppTheme();
   const { t } = useTranslate();
-  const weightedExerciseComparisons = getWeightedExerciseComparisons(
-    props.session,
-    props.previousSession,
-  );
+  const weightedExerciseComparisons = getWeightedExerciseComparisons(props.session, props.previousSession);
   const showCurrentTotalTime =
-    !!props.session.duration &&
-    (props.mode === 'compact' || props.session.duration.toMinutes() >= 5);
+    !!props.session.duration && (props.mode === 'compact' || props.session.duration.toMinutes() >= 5);
   const showPreviousTotalTime =
-    !!props.previousSession?.duration &&
-    (props.mode === 'compact' ||
-      props.previousSession.duration.toMinutes() >= 5);
+    !!props.previousSession?.duration && (props.mode === 'compact' || props.previousSession.duration.toMinutes() >= 5);
   const totalLiftedBadge = (
-    <ComparisonBadge
-      current={props.session.totalWeightLifted}
-      previous={props.previousSession?.totalWeightLifted}
-    />
+    <ComparisonBadge current={props.session.totalWeightLifted} previous={props.previousSession?.totalWeightLifted} />
   );
   const content = (
     <View>
@@ -55,8 +46,7 @@ export function SessionComparisonTable(props: SessionComparisonTableProps) {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            borderBottomWidth:
-              showCurrentTotalTime || showPreviousTotalTime ? 1 : 0,
+            borderBottomWidth: showCurrentTotalTime || showPreviousTotalTime ? 1 : 0,
             borderBottomColor: colors.outlineVariant,
           }}
         >
@@ -289,8 +279,7 @@ export function SessionComparisonTable(props: SessionComparisonTableProps) {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                borderBottomWidth:
-                  index === weightedExerciseComparisons.length - 1 ? 0 : 1,
+                borderBottomWidth: index === weightedExerciseComparisons.length - 1 ? 0 : 1,
                 borderBottomColor: colors.outlineVariant,
               }}
             >
@@ -313,12 +302,7 @@ export function SessionComparisonTable(props: SessionComparisonTableProps) {
                 }}
               >
                 {comparison.previous ? (
-                  <WeightFormat
-                    decimalPlaces={0}
-                    fontWeight="normal"
-                    color="primary"
-                    weight={comparison.previous}
-                  />
+                  <WeightFormat decimalPlaces={0} fontWeight="normal" color="primary" weight={comparison.previous} />
                 ) : (
                   <Text variant="bodyMedium">-</Text>
                 )}
@@ -331,12 +315,7 @@ export function SessionComparisonTable(props: SessionComparisonTableProps) {
                   paddingVertical: spacing[2],
                 }}
               >
-                <WeightFormat
-                  decimalPlaces={0}
-                  fontWeight="bold"
-                  color="primary"
-                  weight={comparison.current}
-                />
+                <WeightFormat decimalPlaces={0} fontWeight="bold" color="primary" weight={comparison.current} />
               </View>
               <View
                 style={{
@@ -346,10 +325,7 @@ export function SessionComparisonTable(props: SessionComparisonTableProps) {
                   paddingVertical: spacing[2],
                 }}
               >
-                <ComparisonBadge
-                  current={comparison.current}
-                  previous={comparison.previous}
-                />
+                <ComparisonBadge current={comparison.current} previous={comparison.previous} />
               </View>
             </View>
           ))}
@@ -361,10 +337,7 @@ export function SessionComparisonTable(props: SessionComparisonTableProps) {
   return content;
 }
 
-function getWeightedExerciseComparisons(
-  session: Session,
-  previousSession: Session | undefined,
-) {
+function getWeightedExerciseComparisons(session: Session, previousSession: Session | undefined) {
   const currentExerciseTotals = getWeightedExerciseTotals(session);
   const previousExerciseTotals = previousSession
     ? getWeightedExerciseTotals(previousSession)
@@ -386,9 +359,7 @@ function getWeightedExerciseTotals(session: Session) {
       continue;
     }
 
-    const key = NormalizedName.fromExerciseBlueprint(
-      exercise.blueprint,
-    ).toString();
+    const key = NormalizedName.fromExerciseBlueprint(exercise.blueprint).toString();
     const existing = totals.get(key);
     totals.set(key, {
       name: existing?.name ?? exercise.blueprint.name,
@@ -399,29 +370,17 @@ function getWeightedExerciseTotals(session: Session) {
   return totals;
 }
 
-function getIncreasePercentage(
-  current: Weight,
-  previous: Weight | undefined,
-): BigNumber | undefined {
+function getIncreasePercentage(current: Weight, previous: Weight | undefined): BigNumber | undefined {
   if (!previous || previous.value.lte(0) || !current.isGreaterThan(previous)) {
     return undefined;
   }
 
-  return current
-    .minus(previous)
-    .value.multipliedBy(100)
-    .dividedBy(previous.value);
+  return current.minus(previous).value.multipliedBy(100).dividedBy(previous.value);
 }
 
-function ComparisonBadge(props: {
-  current: Weight;
-  previous: Weight | undefined;
-}) {
+function ComparisonBadge(props: { current: Weight; previous: Weight | undefined }) {
   const { colors } = useAppTheme();
-  const increasePercentage = getIncreasePercentage(
-    props.current,
-    props.previous,
-  );
+  const increasePercentage = getIncreasePercentage(props.current, props.previous);
 
   return increasePercentage ? (
     <View

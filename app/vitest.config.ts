@@ -22,11 +22,7 @@ const expoSqliteShim: Plugin = {
     if (id === 'drizzle-orm/expo-sqlite/migrator') {
       return resolve(__dirname, 'test/shims/migrator.ts');
     }
-    if (
-      id === 'expo-sqlite' ||
-      id.startsWith('expo-sqlite/') ||
-      id.includes('expo-sqlite')
-    ) {
+    if (id === 'expo-sqlite' || id.startsWith('expo-sqlite/') || id.includes('expo-sqlite')) {
       return resolve(__dirname, 'test/shims/expo-sqlite.ts');
     }
   },

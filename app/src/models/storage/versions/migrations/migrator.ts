@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
- 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+// oxlint-disable typescript/no-unsafe-return typescript/no-unsafe-assignment
 import { TupleIndices } from '@/utils/tuple';
 
 /**
@@ -42,18 +39,16 @@ type Assignable<A, B> = [A] extends [B] ? true : false;
  * `true` only when `A` and `B` are mutually assignable. Used by {@link MigrationsBuilder.build}
  * to assert that a chain's accumulated output matches the hand-declared latest type.
  */
-type MutuallyAssignable<A, B> =
-  Assignable<A, B> extends true ? Assignable<B, A> : false;
+type MutuallyAssignable<A, B> = Assignable<A, B> extends true ? Assignable<B, A> : false;
 
 /**
  * The latest version number a migration tuple produces — its highest 1-based
  * index. Index 0 is the phantom `v0 -> v1` identity step, so the latest version
  * is `length - 1`, computed here by dropping the leading element.
  */
-type LatestVersion<TMigrations extends readonly unknown[]> =
-  TMigrations extends readonly [unknown, ...infer TRest]
-    ? TRest['length']
-    : never;
+type LatestVersion<TMigrations extends readonly unknown[]> = TMigrations extends readonly [unknown, ...infer TRest]
+  ? TRest['length']
+  : never;
 
 /**
  * Fluent builder returned by {@link createMigrations} and each subsequent `.add()` call.
@@ -65,13 +60,7 @@ type LatestVersion<TMigrations extends readonly unknown[]> =
  * @typeParam TPrevOutput   - The output shape produced by the most-recently-added migration
  * @typeParam TAccumulated  - The readonly tuple of all migrations added so far
  */
-type MigrationsBuilder<
-  TPrevOutput,
-  TAccumulated extends readonly [
-    ...AnyMigration[],
-    Migration<any, TPrevOutput>,
-  ],
-> = {
+type MigrationsBuilder<TPrevOutput, TAccumulated extends readonly [...AnyMigration[], Migration<any, TPrevOutput>]> = {
   /**
    * Appends a migration that transforms the previous output shape into `TNext`.
    *
@@ -93,10 +82,7 @@ type MigrationsBuilder<
    */
   add<TNext>(
     up: (state: TPrevOutput) => TNext & { version: TAccumulated['length'] },
-  ): MigrationsBuilder<
-    TNext,
-    readonly [...TAccumulated, Migration<TPrevOutput, TNext>]
-  >;
+  ): MigrationsBuilder<TNext, readonly [...TAccumulated, Migration<TPrevOutput, TNext>]>;
 
   /**
    * Finalises the builder and returns a {@link Migrator} over the accumulated migrations.
@@ -135,18 +121,12 @@ class MigrationBuilderImpl<
 
   add<TNext>(
     up: (state: TPrevOutput) => TNext & { version: TAccumulated['length'] },
-  ): MigrationsBuilder<
-    TNext,
-    readonly [...TAccumulated, Migration<TPrevOutput, TNext>]
-  > {
+  ): MigrationsBuilder<TNext, readonly [...TAccumulated, Migration<TPrevOutput, TNext>]> {
     const lastMigration = this.previousValues.at(-1);
     if (!lastMigration) {
       throw new Error('Bad migration');
     }
-    return new MigrationBuilderImpl<
-      TNext,
-      readonly [...TAccumulated, Migration<TPrevOutput, TNext>]
-    >([
+    return new MigrationBuilderImpl<TNext, readonly [...TAccumulated, Migration<TPrevOutput, TNext>]>([
       ...this.previousValues,
       {
         $type: undefined!,
@@ -165,23 +145,20 @@ class MigrationBuilderImpl<
         ]
   ): Migrator<TFinal, TAccumulated> {
     void check;
-    return new MigratorImpl(
-      this.previousValues as any,
-    ) as unknown as Migrator<TFinal, TAccumulated>;
+    return new MigratorImpl(this.previousValues as any) as unknown as Migrator<TFinal, TAccumulated>;
   }
 }
 
-class MigratorImpl<
+class MigratorImpl<TFinal, TMigrations extends readonly [...AnyMigration[], AnyMigration]> implements Migrator<
   TFinal,
-  TMigrations extends readonly [...AnyMigration[], AnyMigration],
-> implements Migrator<TFinal, TMigrations> {
+  TMigrations
+> {
   $finalType: TFinal = undefined!;
   $anyType: TMigrations[number]['$type'] = undefined!;
   readonly latestVersion: LatestVersion<TMigrations>;
 
   constructor(private migrations: TMigrations) {
-    this.latestVersion = this.migrations
-      .length as LatestVersion<TMigrations>;
+    this.latestVersion = this.migrations.length as LatestVersion<TMigrations>;
   }
   migrate(value: TMigrations[number]['$type']): TFinal {
     return this.migrateUntil(value, this.migrations.length as any);
@@ -230,10 +207,7 @@ class MigratorImpl<
  * // Extract the final type without running anything:
  * type Latest = typeof migrator.$type; // V3
  */
-interface Migrator<
-  TFinal,
-  TMigrations extends readonly [...AnyMigration[], AnyMigration],
-> {
+interface Migrator<TFinal, TMigrations extends readonly [...AnyMigration[], AnyMigration]> {
   /**
    * Phantom field — never set at runtime.
    * Carries `TFinal` so callers can write `typeof migrator.$type` to obtain the

@@ -3,11 +3,7 @@ import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
 import { FeedUser } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
-import {
-  fetchInboxItems,
-  selectFeedFollowing,
-  unfollowFeedUser,
-} from '@/store/feed';
+import { fetchInboxItems, selectFeedFollowing, unfollowFeedUser } from '@/store/feed';
 import { T, useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
 import { List, Menu } from 'react-native-paper';
@@ -37,9 +33,7 @@ export function FeedFollowing() {
       onScroll={handleScroll}
       data={following}
       keyExtractor={(x) => x.userId}
-      renderItem={({ item }) => (
-        <FeedFollowingItem user={item.user} userId={item.userId} />
-      )}
+      renderItem={({ item }) => <FeedFollowingItem user={item.user} userId={item.userId} />}
       contentContainerStyle={{
         paddingBottom: insets.bottom,
       }}
@@ -57,22 +51,12 @@ function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
   return (
     <List.Item
       title={props.user.name || 'Anonymous user'}
-      description={
-        props.user.type === 'FollowedFeedUser'
-          ? undefined
-          : t('generic.awaiting_response.label')
-      }
+      description={props.user.type === 'FollowedFeedUser' ? undefined : t('generic.awaiting_response.label')}
       right={() => (
         <Menu
           visible={menuVisible}
           onDismiss={() => setMenuVisible(false)}
-          anchor={
-            <IconButton
-              testID="following-more-btn"
-              onPress={() => setMenuVisible(true)}
-              icon={'moreHoriz'}
-            />
-          }
+          anchor={<IconButton testID="following-more-btn" onPress={() => setMenuVisible(true)} icon={'moreHoriz'} />}
         >
           <Menu.Item
             onPress={() => {

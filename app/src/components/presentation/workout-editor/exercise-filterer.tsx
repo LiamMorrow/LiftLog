@@ -9,9 +9,7 @@ import { useDebouncedCallback } from 'use-debounce';
 
 export default function ExerciseFilterer(props: {
   onFilteredExerciseIdsChange: (ids: string[]) => void;
-  onSuggestedNewExercise: (
-    exerciseDescriptor: ExerciseDescriptor | 'NONE',
-  ) => void;
+  onSuggestedNewExercise: (exerciseDescriptor: ExerciseDescriptor | 'NONE') => void;
 }) {
   const exercises = useAppSelector(selectExercises);
   const { onFilteredExerciseIdsChange, onSuggestedNewExercise } = props;
@@ -26,26 +24,18 @@ export default function ExerciseFilterer(props: {
     const newFilteredExercises = Enumerable.from(Object.entries(exercises))
       .select((x) => ({
         entry: { id: x[0], exercise: x[1] },
-        score: trimmedSearchText
-          ? fuzzyMatchScore(trimmedSearchText, x[1].name)
-          : 0,
+        score: trimmedSearchText ? fuzzyMatchScore(trimmedSearchText, x[1].name) : 0,
       }))
       .where(
         (x) =>
           (!muscleFilters.length ||
-            x.entry.exercise.muscles.some((exerciseMuscle) =>
-              muscleFilters.includes(exerciseMuscle),
-            )) &&
+            x.entry.exercise.muscles.some((exerciseMuscle) => muscleFilters.includes(exerciseMuscle))) &&
           (!trimmedSearchText || x.score !== null),
       )
       .orderByDescending((x) => x.score ?? 0)
       .thenBy((x) => x.entry.exercise.name)
       .doAction((x) => {
-        if (
-          !hasExactMatch &&
-          trimmedSearchText &&
-          fullMatchRegex.test(x.entry.exercise.name)
-        ) {
+        if (!hasExactMatch && trimmedSearchText && fullMatchRegex.test(x.entry.exercise.name)) {
           hasExactMatch = true;
         }
       })

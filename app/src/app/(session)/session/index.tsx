@@ -2,10 +2,7 @@ import ConfirmationDialog from '@/components/presentation/foundation/confirmatio
 import SessionComponent from '@/components/smart/session-component';
 import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import {
-  finishCurrentWorkout,
-  selectCurrentSession,
-} from '@/store/current-session';
+import { finishCurrentWorkout, selectCurrentSession } from '@/store/current-session';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
@@ -15,18 +12,12 @@ import { useDispatch } from 'react-redux';
 export default function Index() {
   const dispatch = useDispatch();
   const session = useAppSelectorWithArg(selectCurrentSession, 'workoutSession');
-  const showPostWorkoutSummary = useAppSelector(
-    (x) => x.settings.showPostWorkoutSummary,
-  );
-  const keepAwake = useAppSelector(
-    (x) => x.settings.keepScreenAwakeDuringWorkout,
-  );
+  const showPostWorkoutSummary = useAppSelector((x) => x.settings.showPostWorkoutSummary);
+  const keepAwake = useAppSelector((x) => x.settings.keepScreenAwakeDuringWorkout);
   const { dismissTo, push } = useRouter();
   const { t } = useTranslate();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [postWorkoutSessionId, setPostWorkoutSessionId] = useState<
-    string | undefined
-  >(undefined);
+  const [postWorkoutSessionId, setPostWorkoutSessionId] = useState<string | undefined>(undefined);
 
   const save = (force = false) => {
     const finishedSessionId = session?.id;
@@ -40,9 +31,7 @@ export default function Index() {
     if (showPostWorkoutSummary) {
       setPostWorkoutSessionId(finishedSessionId);
       if (finishedSessionId) {
-        push(
-          `/session/post-workout?sessionId=${encodeURIComponent(finishedSessionId)}&source=finished`,
-        );
+        push(`/session/post-workout?sessionId=${encodeURIComponent(finishedSessionId)}&source=finished`);
         return;
       }
     } else {
@@ -73,9 +62,7 @@ export default function Index() {
           if (!session?.id) {
             return;
           }
-          push(
-            `/session/post-workout?sessionId=${encodeURIComponent(session.id)}&source=live`,
-          );
+          push(`/session/post-workout?sessionId=${encodeURIComponent(session.id)}&source=live`);
         }}
       />
       <ConfirmationDialog

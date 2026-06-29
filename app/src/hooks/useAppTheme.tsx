@@ -1,23 +1,11 @@
 import { useAppSelector } from '@/store';
-import {
-  Material3Scheme,
-  useMaterial3Theme,
-} from '@pchmn/expo-material3-theme';
+import { Material3Scheme, useMaterial3Theme } from '@pchmn/expo-material3-theme';
 import React, { createContext, ReactNode, useContext, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
-import {
-  DarkTheme,
-  ThemeProvider as NavigationThemeProvider,
-  DefaultTheme,
-} from 'expo-router';
+import { DarkTheme, ThemeProvider as NavigationThemeProvider, DefaultTheme } from 'expo-router';
 import { MsIconSrc } from '@/components/presentation/foundation/ms-icon-source';
-import {
-  argbFromHex,
-  Blend,
-  Hct,
-  hexFromArgb,
-} from '@material/material-color-utilities';
+import { argbFromHex, Blend, Hct, hexFromArgb } from '@material/material-color-utilities';
 
 export const rounding = {
   roundedRectangleRadius: 10,
@@ -131,9 +119,7 @@ export type AppThemeColors = Material3Scheme & {
 };
 
 export type ColorChoice = keyof {
-  [K in keyof AppThemeColors as AppThemeColors[K] extends string
-    ? K
-    : never]: AppThemeColors[K];
+  [K in keyof AppThemeColors as AppThemeColors[K] extends string ? K : never]: AppThemeColors[K];
 };
 
 export interface AppTheme {
@@ -155,15 +141,9 @@ interface AppThemeProviderProps {
   children: ReactNode;
 }
 
-export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
-  children,
-}) => {
-  const colorSchemeSeed = useAppSelector(
-    (state) => state.settings.colorSchemeSeed,
-  );
-  const trueBlack = useAppSelector(
-    (state) => state.settings.trueBlackDarkTheme,
-  );
+export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) => {
+  const colorSchemeSeed = useAppSelector((state) => state.settings.colorSchemeSeed);
+  const trueBlack = useAppSelector((state) => state.settings.trueBlackDarkTheme);
 
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -190,9 +170,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   }, [colorSchemeSeed]);
   const schemedTheme = colorScheme === 'dark' ? newTheme.dark : newTheme.light;
 
-  const paperTheme = isDark
-    ? { ...MD3DarkTheme, colors: newTheme.dark }
-    : { ...MD3LightTheme, colors: newTheme.light };
+  const paperTheme = isDark ? { ...MD3DarkTheme, colors: newTheme.dark } : { ...MD3LightTheme, colors: newTheme.light };
   const appTheme = {
     colors: {
       ...schemedTheme,
@@ -231,28 +209,16 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
       <PaperProvider
         theme={paperTheme}
         settings={{
-          icon: (props) => (
-            <MsIconSrc
-              {...props}
-              color={props.color ?? appTheme.colors.onSurface}
-            />
-          ),
+          icon: (props) => <MsIconSrc {...props} color={props.color ?? appTheme.colors.onSurface} />,
         }}
       >
-        <NavigationThemeProvider value={navigationTheme}>
-          {children}
-        </NavigationThemeProvider>
+        <NavigationThemeProvider value={navigationTheme}>{children}</NavigationThemeProvider>
       </PaperProvider>
     </AppThemeContext.Provider>
   );
 };
 
-function colorPair<T extends string>(
-  name: T,
-  hex: string,
-  primary: string,
-  isDark: boolean,
-): ColorPair<T> {
+function colorPair<T extends string>(name: T, hex: string, primary: string, isDark: boolean): ColorPair<T> {
   // Step 1: Harmonize the input with the seed
   const harmonized = Blend.harmonize(argbFromHex(hex), argbFromHex(primary));
   const baseHct = Hct.fromInt(harmonized);

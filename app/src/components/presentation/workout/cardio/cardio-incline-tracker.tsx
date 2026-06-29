@@ -22,11 +22,7 @@ export function CardioInclineTracker({
       onSave={() => updateIncline(dialogValue)}
       onHold={() => updateIncline(undefined)}
     >
-      <DecimalEditor
-        style={{ flex: 1 }}
-        value={dialogValue}
-        onChange={(value) => setDialogValue(value)}
-      />
+      <DecimalEditor style={{ flex: 1 }} value={dialogValue} onChange={(value) => setDialogValue(value)} />
     </CardioValueSelector>
   );
 }

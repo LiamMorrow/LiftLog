@@ -5,15 +5,9 @@ import { spacing } from '@/hooks/useAppTheme';
 import { ExerciseBlueprint } from '@/models/blueprint-models';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import {
-  selectExerciseById,
-  selectExerciseIds,
-  updateExercise,
-} from '@/store/stored-sessions';
+import { selectExerciseById, selectExerciseIds, updateExercise } from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
-import BottomSheet, {
-  useBottomSheetScrollableCreator,
-} from '@gorhom/bottom-sheet';
+import BottomSheet, { useBottomSheetScrollableCreator } from '@gorhom/bottom-sheet';
 import { LegendList } from '@legendapp/list';
 import { useMemo, useRef, useState } from 'react';
 import { Keyboard, View } from 'react-native';
@@ -25,18 +19,13 @@ interface ExerciseSearcherProps {
   onSelectExercise: (e: ExerciseDescriptor) => void;
 }
 
-export function ExerciseSearcher({
-  currentExercise,
-  onSelectExercise,
-}: ExerciseSearcherProps) {
+export function ExerciseSearcher({ currentExercise, onSelectExercise }: ExerciseSearcherProps) {
   const [open, setOpen] = useState(false);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const BottomSheetScrollView = useBottomSheetScrollableCreator();
   const exerciseIds = useAppSelector(selectExerciseIds);
   const [filteredExerciseIds, setFilteredExerciseIds] = useState(exerciseIds);
-  const [suggestedNewExercise, setSuggestedNewExercise] = useState<
-    ExerciseDescriptor | 'NONE'
-  >('NONE');
+  const [suggestedNewExercise, setSuggestedNewExercise] = useState<ExerciseDescriptor | 'NONE'>('NONE');
 
   const exerciseListItems = useMemo(
     () => ['filter', suggestedNewExercise, ...filteredExerciseIds] as const,
@@ -63,26 +52,13 @@ export function ExerciseSearcher({
       >
         {currentExercise.name}
       </Button>
-      <AppBottomSheet
-        index={-1}
-        sheetRef={bottomSheetRef}
-        enablePanDownToClose
-        enableDynamicSizing={false}
-      >
+      <AppBottomSheet index={-1} sheetRef={bottomSheetRef} enablePanDownToClose enableDynamicSizing={false}>
         {open && (
           <LegendList
             data={exerciseListItems}
             renderScrollComponent={BottomSheetScrollView}
-            getItemType={(_, index) =>
-              index === 0 ? 'filters' : index === 1 ? 'suggest' : 'exercise'
-            }
-            keyExtractor={(item, index) =>
-              index === 0
-                ? 'filters'
-                : index === 1
-                  ? 'suggest'
-                  : (item as string)
-            }
+            getItemType={(_, index) => (index === 0 ? 'filters' : index === 1 ? 'suggest' : 'exercise')}
+            keyExtractor={(item, index) => (index === 0 ? 'filters' : index === 1 ? 'suggest' : (item as string))}
             renderItem={(i) => {
               if (i.index === 0) {
                 return (
@@ -94,18 +70,10 @@ export function ExerciseSearcher({
               }
               if (i.index === 1) {
                 return i.item !== 'NONE' ? (
-                  <SuggestedExerciseSearchListItem
-                    exercise={i.item as ExerciseDescriptor}
-                    onPress={onSelect}
-                  />
+                  <SuggestedExerciseSearchListItem exercise={i.item as ExerciseDescriptor} onPress={onSelect} />
                 ) : undefined;
               }
-              return (
-                <ExerciseIdSearchListItem
-                  exerciseId={i.item as string}
-                  onPress={onSelect}
-                />
-              );
+              return <ExerciseIdSearchListItem exerciseId={i.item as string} onPress={onSelect} />;
             }}
           />
         )}
@@ -113,17 +81,12 @@ export function ExerciseSearcher({
     </>
   );
 }
-function ExerciseIdSearchListItem(props: {
-  exerciseId: string;
-  onPress: (exercise: ExerciseDescriptor) => void;
-}) {
+function ExerciseIdSearchListItem(props: { exerciseId: string; onPress: (exercise: ExerciseDescriptor) => void }) {
   const exercise = useAppSelectorWithArg(selectExerciseById, props.exerciseId);
   if (!exercise) {
     return <List.Item title={'Unknown'} />;
   }
-  return (
-    <List.Item title={exercise.name} onPress={() => props.onPress(exercise)} />
-  );
+  return <List.Item title={exercise.name} onPress={() => props.onPress(exercise)} />;
 }
 
 function SuggestedExerciseSearchListItem(props: {

@@ -1,6 +1,4 @@
-import SelectButton, {
-  SelectButtonOption,
-} from '@/components/presentation/foundation/select-button';
+import SelectButton, { SelectButtonOption } from '@/components/presentation/foundation/select-button';
 import {
   IncreaseAllEvenlyProgressiveOverload,
   IncreaseLowestSetProgressiveOverload,
@@ -16,11 +14,7 @@ import { Dialog, Divider, Text } from 'react-native-paper';
 import { spacing } from '@/hooks/useAppTheme';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useState } from 'react';
-import {
-  PotentialSet,
-  RecordedSet,
-  RecordedWeightedExercise,
-} from '@/models/session-models';
+import { PotentialSet, RecordedSet, RecordedWeightedExercise } from '@/models/session-models';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import PotentialSetCounter from '@/components/presentation/workout/weighted/potential-set-counter';
 import BigNumber from 'bignumber.js';
@@ -83,15 +77,11 @@ export function ProgressiveOverloadValuesEditor(props: Props) {
   );
 }
 
-function IncreaseAllEvenlyValues(
-  props: Props & { value: IncreaseAllEvenlyProgressiveOverload },
-) {
+function IncreaseAllEvenlyValues(props: Props & { value: IncreaseAllEvenlyProgressiveOverload }) {
   const { t } = useTranslate();
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text>
-        {t('exercise.progressive_overload.increase_all_evenly.amount.label')}
-      </Text>
+      <Text>{t('exercise.progressive_overload.increase_all_evenly.amount.label')}</Text>
       <DecimalEditor
         underlineColor="transparent"
         style={{ flex: 1, textAlign: 'right' }}
@@ -102,42 +92,30 @@ function IncreaseAllEvenlyValues(
   );
 }
 
-function IncreaseLowestSetValues(
-  props: Props & { value: IncreaseLowestSetProgressiveOverload },
-) {
+function IncreaseLowestSetValues(props: Props & { value: IncreaseLowestSetProgressiveOverload }) {
   const { t } = useTranslate();
   const increaseStrategyOptions: SelectButtonOption<IncreaseStrategy>[] = [
     {
-      label: t(
-        'exercise.progressive_overload.increase_lowest_set.increase_strategy.all.label',
-      ),
+      label: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.all.label'),
       value: 'all',
     },
     {
-      label: t(
-        'exercise.progressive_overload.increase_lowest_set.increase_strategy.first.label',
-      ),
+      label: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.first.label'),
       value: 'first',
     },
     {
-      label: t(
-        'exercise.progressive_overload.increase_lowest_set.increase_strategy.middle.label',
-      ),
+      label: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.middle.label'),
       value: 'middle',
     },
     {
-      label: t(
-        'exercise.progressive_overload.increase_lowest_set.increase_strategy.last.label',
-      ),
+      label: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.last.label'),
       value: 'last',
     },
   ];
   return (
     <View style={{ gap: spacing[1] }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text>
-          {t('exercise.progressive_overload.increase_lowest_set.amount.label')}
-        </Text>
+        <Text>{t('exercise.progressive_overload.increase_lowest_set.amount.label')}</Text>
         <DecimalEditor
           underlineColor="transparent"
           style={{ flex: 1, textAlign: 'right' }}
@@ -152,16 +130,10 @@ function IncreaseLowestSetValues(
           justifyContent: 'space-between',
         }}
       >
-        <Text>
-          {t(
-            'exercise.progressive_overload.increase_lowest_set.increase_strategy.label',
-          )}
-        </Text>
+        <Text>{t('exercise.progressive_overload.increase_lowest_set.increase_strategy.label')}</Text>
         <SelectButton
           value={props.value.increaseStrategy}
-          onChange={(increaseStrategy) =>
-            props.onChange(props.value.with({ increaseStrategy }))
-          }
+          onChange={(increaseStrategy) => props.onChange(props.value.with({ increaseStrategy }))}
           options={increaseStrategyOptions}
         />
       </View>
@@ -180,40 +152,25 @@ function ProgressiveOverloadExample(props: { value: ProgressiveOverload }) {
     .withAllSets((s) =>
       s.with({
         set: new RecordedSet(8, OffsetDateTime.MIN),
-        weight: new Weight(
-          BigNumber(10).plus(props.value.weightIncrement),
-          unit,
-        ),
+        weight: new Weight(BigNumber(10).plus(props.value.weightIncrement), unit),
       }),
     )
     .withSet(0, (s) => s.with({ weight: new Weight(10, unit) }))
     .withSet(1, (s) => s.with({ weight: new Weight(10, unit) }));
-  const appliedProgressiveOverload1 =
-    props.value.applyProgressiveOverload(exampleExercise);
-  const appliedProgressiveOverload2 = props.value.applyProgressiveOverload(
-    appliedProgressiveOverload1,
-  );
-  const appliedProgressiveOverload3 = props.value.applyProgressiveOverload(
-    appliedProgressiveOverload2,
-  );
+  const appliedProgressiveOverload1 = props.value.applyProgressiveOverload(exampleExercise);
+  const appliedProgressiveOverload2 = props.value.applyProgressiveOverload(appliedProgressiveOverload1);
+  const appliedProgressiveOverload3 = props.value.applyProgressiveOverload(appliedProgressiveOverload2);
   if (props.value.type === 'NoProgressiveOverload') {
     return undefined;
   }
   return (
     <>
-      <Button onPress={() => setExampleOpen(true)}>
-        {t('exercise.progressive_overload.example.label')}
-      </Button>
+      <Button onPress={() => setExampleOpen(true)}>{t('exercise.progressive_overload.example.label')}</Button>
       <Portal>
         <Dialog visible={exampleOpen} onDismiss={() => setExampleOpen(false)}>
-          <Dialog.Title>
-            {t('exercise.progressive_overload.example.label')}
-          </Dialog.Title>
+          <Dialog.Title>{t('exercise.progressive_overload.example.label')}</Dialog.Title>
           <Dialog.Content style={{ height: 400 }}>
-            <ScrollView
-              contentContainerStyle={{ gap: spacing[4], alignItems: 'center' }}
-              style={{ flex: 1 }}
-            >
+            <ScrollView contentContainerStyle={{ gap: spacing[4], alignItems: 'center' }} style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', gap: spacing[2] }}>
                 {exampleExercise.potentialSets.map((x, i) => (
                   <DummySet key={i} set={x} maxReps={8} />
@@ -240,9 +197,7 @@ function ProgressiveOverloadExample(props: { value: ProgressiveOverload }) {
             </ScrollView>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={() => setExampleOpen(false)}>
-              {t('generic.ok.button')}
-            </Button>
+            <Button onPress={() => setExampleOpen(false)}>{t('generic.ok.button')}</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>

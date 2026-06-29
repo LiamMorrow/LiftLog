@@ -5,10 +5,7 @@ import { TitledSection } from '@/components/presentation/stats/titled-section';
 import { WeightedExerciseListSearcher } from '@/components/presentation/stats/weighted-exercise-list-searcher';
 import { WeightedExerciseStatSummary } from '@/components/presentation/stats/weighted-exercise-stat-summary';
 import { useAppTheme } from '@/hooks/useAppTheme';
-import {
-  GranularStatisticView,
-  WeightedExerciseStatistics,
-} from '@/store/stats';
+import { GranularStatisticView, WeightedExerciseStatistics } from '@/store/stats';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
@@ -20,16 +17,10 @@ export function ExerciseListSummary(props: { stats: GranularStatisticView }) {
   const { colors } = useAppTheme();
   const { t } = useTranslate();
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const topWeightedExercises = Enumerable.from(
-    props.stats.weightedExerciseStats,
-  )
-    .take(5)
-    .toArray();
+  const topWeightedExercises = Enumerable.from(props.stats.weightedExerciseStats).take(5).toArray();
   const onItemPress = (item: WeightedExerciseStatistics) => {
     bottomSheetRef.current?.close();
-    push(
-      `/stats/expanded-weighted-exercise?exerciseName=${encodeURIComponent(item.exerciseName)}`,
-    );
+    push(`/stats/expanded-weighted-exercise?exerciseName=${encodeURIComponent(item.exerciseName)}`);
   };
   return (
     <TitledSection
@@ -48,12 +39,7 @@ export function ExerciseListSummary(props: { stats: GranularStatisticView }) {
     >
       <SegmentedList
         items={topWeightedExercises}
-        renderItem={(item) => (
-          <WeightedExerciseStatSummary
-            onPress={onItemPress}
-            exerciseStats={item}
-          />
-        )}
+        renderItem={(item) => <WeightedExerciseStatSummary onPress={onItemPress} exerciseStats={item} />}
       />
       <AppBottomSheet
         backgroundStyle={{ backgroundColor: colors.surfaceContainerHighest }}
@@ -65,10 +51,7 @@ export function ExerciseListSummary(props: { stats: GranularStatisticView }) {
         style={{ flex: 1 }}
         enableDynamicSizing={false}
       >
-        <WeightedExerciseListSearcher
-          stats={props.stats}
-          onItemPress={onItemPress}
-        />
+        <WeightedExerciseListSearcher stats={props.stats} onItemPress={onItemPress} />
       </AppBottomSheet>
     </TitledSection>
   );

@@ -1,6 +1,4 @@
-import FocusRing, {
-  ANIMATION_DURATION,
-} from '@/components/presentation/foundation/focus-ring';
+import FocusRing, { ANIMATION_DURATION } from '@/components/presentation/foundation/focus-ring';
 import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { ColorSchemeSeed } from '@/store/settings';
@@ -69,23 +67,10 @@ export default function ThemeChooser(props: ThemeChooserProps) {
     props.onUpdateTheme(seed);
   };
 
-  const colorSeeds = [
-    '#550000',
-    '#005500',
-    '#000055',
-    '#AA00AA',
-    '#00AAAA',
-    '#AAAA00',
-    '#FFC0CB',
-    '#7f3f00',
-  ] as const;
+  const colorSeeds = ['#550000', '#005500', '#000055', '#AA00AA', '#00AAAA', '#AAAA00', '#FFC0CB', '#7f3f00'] as const;
 
   const renderColorBall = ({ item }: { item: `#${string}` }) => (
-    <ColorBall
-      selectedSeed={selectedSeed}
-      seed={item}
-      onUpdateTheme={updateSeed}
-    />
+    <ColorBall selectedSeed={selectedSeed} seed={item} onUpdateTheme={updateSeed} />
   );
 
   return (
@@ -103,10 +88,7 @@ export default function ThemeChooser(props: ThemeChooserProps) {
         }}
       >
         <FocusRing isSelected={selectedSeed === 'default'}>
-          <Button
-            style={{ position: 'relative' }}
-            onPress={() => void updateSeed('default')}
-          >
+          <Button style={{ position: 'relative' }} onPress={() => void updateSeed('default')}>
             <T keyName="generic.default.label" />
           </Button>
         </FocusRing>

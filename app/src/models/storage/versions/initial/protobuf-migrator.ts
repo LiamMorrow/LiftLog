@@ -14,14 +14,7 @@ import { google } from '@/gen/proto';
 import { uuidStringify } from '@/utils/uuid';
 import Long from 'long';
 import { UuidConversionError } from './uuid-conversion-error';
-import {
-  Duration,
-  Instant,
-  LocalDate,
-  LocalTime,
-  OffsetDateTime,
-  ZoneOffset,
-} from '@js-joda/core';
+import { Duration, Instant, LocalDate, LocalTime, OffsetDateTime, ZoneOffset } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import {
   toBase64Uint8ArrayJSON,
@@ -60,9 +53,7 @@ export class ProtobufToJsonV1Migrator {
     return fromProgramBlueprint(value);
   }
 
-  static migrateSession(
-    value: LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2,
-  ): SessionJSON {
+  static migrateSession(value: LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2): SessionJSON {
     return fromSessionDao(value);
   }
 
@@ -72,23 +63,17 @@ export class ProtobufToJsonV1Migrator {
     return fromSessionBlueprintDao(value);
   }
 
-  static migrateFeedIdentity(
-    dao: LiftLog.Ui.Models.IFeedIdentityDaoV1,
-  ): FeedIdentityJSON {
+  static migrateFeedIdentity(dao: LiftLog.Ui.Models.IFeedIdentityDaoV1): FeedIdentityJSON {
     return {
       id: fromUuidDao(dao.id),
       lookup: dao.lookup?.value ?? '',
       aesKey: { value: toBase64Uint8ArrayJSON(Uint8Array.from(dao.aesKey!)) },
       rsaKeyPair: {
         publicKey: {
-          spkiPublicKeyBytes: toBase64Uint8ArrayJSON(
-            Uint8Array.from(dao.publicKey!),
-          ),
+          spkiPublicKeyBytes: toBase64Uint8ArrayJSON(Uint8Array.from(dao.publicKey!)),
         },
         privateKey: {
-          pkcs8PrivateKeyBytes: toBase64Uint8ArrayJSON(
-            Uint8Array.from(dao.privateKey!),
-          ),
+          pkcs8PrivateKeyBytes: toBase64Uint8ArrayJSON(Uint8Array.from(dao.privateKey!)),
         },
       },
       password: dao.password!,
@@ -99,13 +84,9 @@ export class ProtobufToJsonV1Migrator {
     };
   }
 
-  static migrateFollowedUser(
-    dao: LiftLog.Ui.Models.IFeedUserDaoV1,
-  ): FollowedFeedUserJSON | PendingFeedUserJSON {
+  static migrateFollowedUser(dao: LiftLog.Ui.Models.IFeedUserDaoV1): FollowedFeedUserJSON | PendingFeedUserJSON {
     const publicKey = {
-      spkiPublicKeyBytes: toBase64Uint8ArrayJSON(
-        Uint8Array.from(dao.publicKey!),
-      ),
+      spkiPublicKeyBytes: toBase64Uint8ArrayJSON(Uint8Array.from(dao.publicKey!)),
     };
     if (!dao.aesKey || !dao.followSecret) {
       return {
@@ -156,39 +137,29 @@ export class ProtobufToJsonV1Migrator {
     }
   }
 
-  static migrateFollowerUser(
-    dao: LiftLog.Ui.Models.IFeedUserDaoV1,
-  ): FollowerFeedUserJSON {
+  static migrateFollowerUser(dao: LiftLog.Ui.Models.IFeedUserDaoV1): FollowerFeedUserJSON {
     return {
       id: fromUuidDao(dao.id),
       publicKey: {
-        spkiPublicKeyBytes: toBase64Uint8ArrayJSON(
-          Uint8Array.from(dao.publicKey!),
-        ),
+        spkiPublicKeyBytes: toBase64Uint8ArrayJSON(Uint8Array.from(dao.publicKey!)),
       },
       name: dao.name?.value ?? undefined,
       followSecret: dao.followSecret?.value ?? '',
       type: 'FollowerFeedUser',
     };
   }
-  static migratePendingFeedUser(
-    dao: LiftLog.Ui.Models.IFeedUserDaoV1,
-  ): PendingFeedUserJSON {
+  static migratePendingFeedUser(dao: LiftLog.Ui.Models.IFeedUserDaoV1): PendingFeedUserJSON {
     return {
       id: fromUuidDao(dao.id),
       publicKey: {
-        spkiPublicKeyBytes: toBase64Uint8ArrayJSON(
-          Uint8Array.from(dao.publicKey!),
-        ),
+        spkiPublicKeyBytes: toBase64Uint8ArrayJSON(Uint8Array.from(dao.publicKey!)),
       },
       name: dao.name?.value ?? undefined,
       type: 'PendingFeedUser',
     };
   }
 
-  static migrateFollowRequest(
-    dao: LiftLog.Ui.Models.IInboxMessageDao,
-  ): FollowRequestInboxMessageJSON {
+  static migrateFollowRequest(dao: LiftLog.Ui.Models.IInboxMessageDao): FollowRequestInboxMessageJSON {
     return {
       type: 'FollowRequest',
       payloadJson: toJsonString<FollowRequestJSON>({
@@ -199,9 +170,7 @@ export class ProtobufToJsonV1Migrator {
     };
   }
 
-  static migrateSessionUserEvent(
-    dao: LiftLog.Ui.Models.IFeedItemDaoV1,
-  ): SessionUserEventJSON {
+  static migrateSessionUserEvent(dao: LiftLog.Ui.Models.IFeedItemDaoV1): SessionUserEventJSON {
     return {
       type: 'SessionUserEvent',
       eventId: fromUuidDao(dao.eventId),
@@ -213,9 +182,7 @@ export class ProtobufToJsonV1Migrator {
   }
 }
 
-function fromUuidDao(
-  dao: LiftLog.Ui.Models.IUuidDao | null | undefined,
-): string {
+function fromUuidDao(dao: LiftLog.Ui.Models.IUuidDao | null | undefined): string {
   if (!dao?.value) {
     throw new Error('UUID dao cannot be null');
   }
@@ -245,23 +212,15 @@ const nanoFactor = BigNumber('1000000000');
 
 // Converts a DecimalValue DAO to a BigNumber
 function fromDecimalDao(dao: LiftLog.Ui.Models.IDecimalValue): BigNumber;
-function fromDecimalDao(
-  dao: LiftLog.Ui.Models.IDecimalValue | null | undefined,
-): BigNumber | undefined;
-function fromDecimalDao(
-  dao: LiftLog.Ui.Models.IDecimalValue | null | undefined,
-): BigNumber | undefined {
+function fromDecimalDao(dao: LiftLog.Ui.Models.IDecimalValue | null | undefined): BigNumber | undefined;
+function fromDecimalDao(dao: LiftLog.Ui.Models.IDecimalValue | null | undefined): BigNumber | undefined {
   if (dao?.nanos == null || dao?.units == null) {
     return undefined;
   }
-  return BigNumber(dao.units.toString()).plus(
-    BigNumber(dao.nanos).div(nanoFactor),
-  );
+  return BigNumber(dao.units.toString()).plus(BigNumber(dao.nanos).div(nanoFactor));
 }
 
-function fromTimeOnlyDao(
-  dao: LiftLog.Ui.Models.ITimeOnlyDao | null | undefined,
-): LocalTime {
+function fromTimeOnlyDao(dao: LiftLog.Ui.Models.ITimeOnlyDao | null | undefined): LocalTime {
   if (!dao) {
     throw new Error('TimeOnlyDao cannot be null');
   }
@@ -271,24 +230,18 @@ function fromTimeOnlyDao(
   return LocalTime.of(dao.hour!, dao.minute!, dao.second!, nano);
 }
 
-function fromDateOnlyDao(
-  dao: LiftLog.Ui.Models.IDateOnlyDao | null | undefined,
-): LocalDate {
+function fromDateOnlyDao(dao: LiftLog.Ui.Models.IDateOnlyDao | null | undefined): LocalDate {
   if (!dao) {
     throw new Error('DateOnlyDao cannot be null');
   }
   return LocalDate.of(dao.year!, dao.month!, dao.day!);
 }
 
-function fromDateTimeDao(
-  dao: LiftLog.Ui.Models.IDateTimeDao | null | undefined,
-): OffsetDateTime | undefined {
+function fromDateTimeDao(dao: LiftLog.Ui.Models.IDateTimeDao | null | undefined): OffsetDateTime | undefined {
   if (!dao) {
     return undefined;
   }
-  const localDateTime = fromDateOnlyDao(dao.date).atTime(
-    fromTimeOnlyDao(dao.time),
-  );
+  const localDateTime = fromDateOnlyDao(dao.date).atTime(fromTimeOnlyDao(dao.time));
   return localDateTime.atOffset(
     dao.offset
       ? ZoneOffset.ofTotalSeconds(dao.offset.totalSeconds!)
@@ -296,26 +249,20 @@ function fromDateTimeDao(
   );
 }
 
-function fromDurationDao(
-  duration: google.protobuf.IDuration | null | undefined,
-) {
+function fromDurationDao(duration: google.protobuf.IDuration | null | undefined) {
   if (!duration) {
     return undefined;
   }
-  return Duration.ofSeconds(
-    Long.fromValue(duration.seconds!).toNumber(),
-  ).plusNanos(Long.fromValue(duration.nanos!).toNumber());
+  return Duration.ofSeconds(Long.fromValue(duration.seconds!).toNumber()).plusNanos(
+    Long.fromValue(duration.nanos!).toNumber(),
+  );
 }
 
-function fromProgramBlueprint(
-  dao: LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1,
-): ProgramBlueprintJSON {
+function fromProgramBlueprint(dao: LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1): ProgramBlueprintJSON {
   return {
     name: dao.name ?? '',
     sessions: dao.sessions!.map((x) => fromSessionBlueprintDao(x)),
-    lastEdited: toLocalDateJSON(
-      dao.lastEdited ? fromDateOnlyDao(dao.lastEdited) : LocalDate.now(),
-    ),
+    lastEdited: toLocalDateJSON(dao.lastEdited ? fromDateOnlyDao(dao.lastEdited) : LocalDate.now()),
   };
 }
 
@@ -324,18 +271,13 @@ function fromSessionBlueprintDao(
 ): SessionBlueprintJSON {
   return {
     name: dao.name ?? '',
-    exercises: (dao.exerciseBlueprints ?? []).map((x) =>
-      fromExerciseBlueprintDao(x),
-    ),
+    exercises: (dao.exerciseBlueprints ?? []).map((x) => fromExerciseBlueprintDao(x)),
     notes: dao.notes ?? '',
   };
 }
 
 function fromExerciseBlueprintDao(
-  dao:
-    | LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2
-    | null
-    | undefined,
+  dao: LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2 | null | undefined,
 ): ExerciseBlueprintJSON {
   if (!dao) {
     throw new Error('ExerciseBlueprint dao should not be null');
@@ -353,10 +295,7 @@ function fromCardioExerciseBlueprintDao(
   return {
     type: 'CardioExerciseBlueprint',
     name: dao.name!,
-    sets:
-      sets.length === 0
-        ? [getCardioBlueprintSetFromDeprecatedFields(dao)]
-        : sets,
+    sets: sets.length === 0 ? [getCardioBlueprintSetFromDeprecatedFields(dao)] : sets,
     notes: dao.notes ?? '',
     link: dao.link ?? '',
   };
@@ -401,9 +340,7 @@ function fromCardioTargetDao(
     .with('distance', () => ({
       type: 'distance',
       value: {
-        value: toBigNumberJSON(
-          fromDecimalDao(dao.distanceValue) ?? BigNumber(0),
-        ),
+        value: toBigNumberJSON(fromDecimalDao(dao.distanceValue) ?? BigNumber(0)),
         unit: (dao.distanceUnit as DistanceUnitJSON) ?? 'metre',
       },
     }))
@@ -422,9 +359,7 @@ function fromWeightedExerciseBlueprintDao(
     name: dao.name!,
     sets: dao.sets!,
     repsPerSet: dao.repsPerSet!,
-    weightIncreaseOnSuccess: toBigNumberJSON(
-      fromDecimalDao(dao.weightIncreaseOnSuccess) ?? BigNumber('0'),
-    ),
+    weightIncreaseOnSuccess: toBigNumberJSON(fromDecimalDao(dao.weightIncreaseOnSuccess) ?? BigNumber('0')),
     restBetweenSets: fromRestDao(dao.restBetweenSets),
     supersetWithNext: dao.supersetWithNext ?? false,
     notes: dao.notes ?? '',
@@ -432,27 +367,19 @@ function fromWeightedExerciseBlueprintDao(
   };
 }
 
-function fromRestDao(
-  dao: LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2 | null | undefined,
-): RestJSON {
+function fromRestDao(dao: LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2 | null | undefined): RestJSON {
   return {
     minRest: toDurationJSON(fromDurationDao(dao?.minRest) ?? Duration.ZERO),
     maxRest: toDurationJSON(fromDurationDao(dao?.maxRest) ?? Duration.ZERO),
-    failureRest: toDurationJSON(
-      fromDurationDao(dao?.failureRest) ?? Duration.ZERO,
-    ),
+    failureRest: toDurationJSON(fromDurationDao(dao?.failureRest) ?? Duration.ZERO),
   };
 }
 
-function fromSessionDao(
-  dao: LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2 | null | undefined,
-): SessionJSON {
+function fromSessionDao(dao: LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2 | null | undefined): SessionJSON {
   if (!dao) {
     throw new Error('Session dao cannot be null');
   }
-  const recordedExercises =
-    dao.recordedExercises?.map((x) => fromRecordedExerciseDao(dao.date!, x)) ??
-    [];
+  const recordedExercises = dao.recordedExercises?.map((x) => fromRecordedExerciseDao(dao.date!, x)) ?? [];
   return {
     id: fromUuidDao(dao.id),
     blueprint: {
@@ -473,10 +400,7 @@ function fromSessionDao(
 
 function fromRecordedExerciseDao(
   sessionDate: LiftLog.Ui.Models.IDateOnlyDao,
-  dao:
-    | LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2
-    | null
-    | undefined,
+  dao: LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2 | null | undefined,
 ): RecordedExerciseJSON {
   if (!dao) {
     throw new Error('Recorded exercise DAO cannot be null');
@@ -499,18 +423,12 @@ function fromRecordedCardioExerciseSetDao(
             unit: dao.distanceUnit.value as DistanceUnitJSON,
           }
         : undefined,
-    duration: dao.duration
-      ? toDurationJSON(fromDurationDao(dao.duration)!)
-      : undefined,
+    duration: dao.duration ? toDurationJSON(fromDurationDao(dao.duration)!) : undefined,
     completionDateTime: dao.completionDateTime
       ? toOffsetDateTimeJSON(fromDateTimeDao(dao.completionDateTime)!)
       : undefined,
-    incline: dao.incline
-      ? toBigNumberJSON(fromDecimalDao(dao.incline))
-      : undefined,
-    resistance: dao.resistance
-      ? toBigNumberJSON(fromDecimalDao(dao.resistance))
-      : undefined,
+    incline: dao.incline ? toBigNumberJSON(fromDecimalDao(dao.incline)) : undefined,
+    resistance: dao.resistance ? toBigNumberJSON(fromDecimalDao(dao.resistance)) : undefined,
     weight: dao.weight ? fromWeightDao(dao.weight) : undefined,
     steps: dao.steps?.value ?? undefined,
   };
@@ -524,10 +442,7 @@ function fromRecordedCardioExerciseDao(
     type: 'RecordedCardioExercise',
     notes: dao.notes?.value ?? undefined,
     blueprint: fromCardioExerciseBlueprintDao(dao.exerciseBlueprint!),
-    sets:
-      sets.length === 0
-        ? [getRecordedCardioSetFromDeprecatedFields(dao)]
-        : sets,
+    sets: sets.length === 0 ? [getRecordedCardioSetFromDeprecatedFields(dao)] : sets,
   };
 }
 
@@ -539,9 +454,7 @@ function fromRecordedWeightedExerciseDao(
     type: 'RecordedWeightedExercise',
     notes: dao.notes?.value ?? undefined,
     blueprint: fromWeightedExerciseBlueprintDao(dao.exerciseBlueprint!),
-    potentialSets: dao.potentialSets!.map((x) =>
-      fromPotentialSetDao(sessionDate, x),
-    ),
+    potentialSets: dao.potentialSets!.map((x) => fromPotentialSetDao(sessionDate, x)),
   };
 }
 
@@ -550,18 +463,12 @@ function fromRecordedSetDao(
   recordedSetDao: LiftLog.Ui.Models.SessionHistoryDao.IRecordedSetDaoV2,
 ): RecordedSetJSON {
   const dateCompleted = recordedSetDao.completionDate ?? sessionDate;
-  const completionLocalDateTime = fromDateOnlyDao(dateCompleted).atTime(
-    fromTimeOnlyDao(recordedSetDao.completionTime),
-  );
+  const completionLocalDateTime = fromDateOnlyDao(dateCompleted).atTime(fromTimeOnlyDao(recordedSetDao.completionTime));
   const completionDateTime = toOffsetDateTimeJSON(
     completionLocalDateTime.atOffset(
       recordedSetDao.completionOffset
-        ? ZoneOffset.ofTotalSeconds(
-            recordedSetDao.completionOffset.totalSeconds!,
-          )
-        : ZoneOffset.systemDefault()
-            .rules()
-            .offsetOfLocalDateTime(completionLocalDateTime),
+        ? ZoneOffset.ofTotalSeconds(recordedSetDao.completionOffset.totalSeconds!)
+        : ZoneOffset.systemDefault().rules().offsetOfLocalDateTime(completionLocalDateTime),
     ),
   );
 
@@ -572,18 +479,13 @@ function fromRecordedSetDao(
 }
 function fromPotentialSetDao(
   sessionDate: LiftLog.Ui.Models.IDateOnlyDao,
-  dao:
-    | LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2
-    | null
-    | undefined,
+  dao: LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2 | null | undefined,
 ): PotentialSetJSON {
   if (!dao) {
     throw new Error('PotentialSetDao cannot be null');
   }
   return {
-    set: dao.recordedSet
-      ? fromRecordedSetDao(sessionDate, dao.recordedSet)
-      : undefined,
+    set: dao.recordedSet ? fromRecordedSetDao(sessionDate, dao.recordedSet) : undefined,
     weight: {
       value: toBigNumberJSON(fromDecimalDao(dao.weightValue) ?? BigNumber(0)),
       unit: fromWeightUnitDao(dao.weightUnit),
@@ -594,9 +496,7 @@ function getRecordedCardioSetFromDeprecatedFields(
   dao: LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2,
 ): RecordedCardioExerciseSetJSON {
   return {
-    blueprint: getCardioBlueprintSetFromDeprecatedFields(
-      dao.exerciseBlueprint!,
-    ),
+    blueprint: getCardioBlueprintSetFromDeprecatedFields(dao.exerciseBlueprint!),
     distance:
       dao.deprecatedDistanceValue && dao.deprecatedDistanceUnit
         ? {
@@ -604,34 +504,23 @@ function getRecordedCardioSetFromDeprecatedFields(
             unit: dao.deprecatedDistanceUnit.value as DistanceUnitJSON,
           }
         : undefined,
-    duration: dao.deprecatedDuration
-      ? toDurationJSON(fromDurationDao(dao.deprecatedDuration)!)
-      : undefined,
+    duration: dao.deprecatedDuration ? toDurationJSON(fromDurationDao(dao.deprecatedDuration)!) : undefined,
     completionDateTime: dao.deprecatedCompletionDateTime
       ? toOffsetDateTimeJSON(fromDateTimeDao(dao.deprecatedCompletionDateTime)!)
       : undefined,
-    incline: dao.deprecatedIncline
-      ? toBigNumberJSON(fromDecimalDao(dao.deprecatedIncline))
-      : undefined,
-    resistance: dao.deprecatedResistance
-      ? toBigNumberJSON(fromDecimalDao(dao.deprecatedResistance))
-      : undefined,
+    incline: dao.deprecatedIncline ? toBigNumberJSON(fromDecimalDao(dao.deprecatedIncline)) : undefined,
+    resistance: dao.deprecatedResistance ? toBigNumberJSON(fromDecimalDao(dao.deprecatedResistance)) : undefined,
     weight: undefined,
     steps: undefined,
   };
 }
 
-function fromWeightUnitDao(
-  daoUnit: LiftLog.Ui.Models.WeightUnit | null | undefined,
-): WeightUnitJSON {
+function fromWeightUnitDao(daoUnit: LiftLog.Ui.Models.WeightUnit | null | undefined): WeightUnitJSON {
   return match(daoUnit)
     .returnType<WeightUnitJSON>()
     .with(P.nullish, () => 'nil')
     .with(LiftLog.Ui.Models.WeightUnit.NIL satisfies 0 as 0, () => 'nil')
-    .with(
-      LiftLog.Ui.Models.WeightUnit.KILOGRAMS satisfies 1 as 1,
-      () => 'kilograms',
-    )
+    .with(LiftLog.Ui.Models.WeightUnit.KILOGRAMS satisfies 1 as 1, () => 'kilograms')
     .with(LiftLog.Ui.Models.WeightUnit.POUNDS satisfies 2 as 2, () => 'pounds')
     .exhaustive();
 }
@@ -642,9 +531,7 @@ function fromWeightDao(value: LiftLog.Ui.Models.IWeight): WeightJSON {
   };
 }
 
-function fromTimestampDao(
-  dao: google.protobuf.ITimestamp | null | undefined,
-): Instant {
+function fromTimestampDao(dao: google.protobuf.ITimestamp | null | undefined): Instant {
   // TODO - we just drop the nanos for now
   const sec = dao?.seconds;
   if (typeof sec === 'number') {

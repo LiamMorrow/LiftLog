@@ -9,12 +9,7 @@ interface SessionSummaryProps {
   showWeight?: boolean;
   color?: ColorChoice;
 }
-export default function SessionSummary({
-  session,
-  isFilled,
-  showWeight,
-  color = 'onSurface',
-}: SessionSummaryProps) {
+export default function SessionSummary({ session, isFilled, showWeight, color = 'onSurface' }: SessionSummaryProps) {
   return (
     <View style={{ gap: spacing[2], flex: 1 }} testID="session-summary">
       {session.recordedExercises

@@ -11,12 +11,7 @@ import { RsaPublicKey } from '@/models/encryption-models';
 import { FeedInboxDecryptionService } from './feed-inbox-decryption-service';
 import { uuid } from '@/utils/uuid';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
-import {
-  InboxMessageJSON,
-  toAesKeyJSON,
-  toBase64Uint8ArrayJSON,
-  toJsonString,
-} from '@/models/storage/versions/latest';
+import { InboxMessageJSON, toAesKeyJSON, toBase64Uint8ArrayJSON, toJsonString } from '@/models/storage/versions/latest';
 
 export class FeedFollowService {
   constructor(
@@ -36,10 +31,7 @@ export class FeedFollowService {
       senderUserId: identity.id,
     };
 
-    const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(
-      unsignedInboxMessage,
-      recipientUser.id,
-    );
+    const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(unsignedInboxMessage, recipientUser.id);
     const signature = await this.encryptionService.signRsaPssSha256Async(
       signaturePayload,
       identity.rsaKeyPair.privateKey,
@@ -49,11 +41,10 @@ export class FeedFollowService {
       signature: toBase64Uint8ArrayJSON(signature),
     };
     const messageBytes = toJsonBytes(inboxMessage);
-    const encryptedMessage =
-      await this.encryptionService.encryptRsaOaepSha256Async(
-        messageBytes,
-        recipientUser.publicKey,
-      );
+    const encryptedMessage = await this.encryptionService.encryptRsaOaepSha256Async(
+      messageBytes,
+      recipientUser.publicKey,
+    );
 
     const response = await this.feedApiService.putInboxMessageAsync({
       toUserId: recipientUser.id,
@@ -63,10 +54,7 @@ export class FeedFollowService {
     return response;
   }
 
-  async requestToFollowAUserAsync(
-    identity: FeedIdentity,
-    toFollow: FeedUser,
-  ): Promise<ApiResult<void>> {
+  async requestToFollowAUserAsync(identity: FeedIdentity, toFollow: FeedUser): Promise<ApiResult<void>> {
     return this.sendMessage(
       'FollowRequest',
       identity,
@@ -77,10 +65,7 @@ export class FeedFollowService {
     );
   }
 
-  async unfollowUserAsync(
-    identity: FeedIdentity,
-    userToUnfollow: FollowedFeedUser,
-  ): Promise<ApiResult<void>> {
+  async unfollowUserAsync(identity: FeedIdentity, userToUnfollow: FollowedFeedUser): Promise<ApiResult<void>> {
     return this.sendMessage(
       'UnfollowNotification',
       identity,
@@ -95,12 +80,11 @@ export class FeedFollowService {
     userPublicKey: RsaPublicKey,
   ): Promise<ApiResult<string>> {
     const followSecret = uuid();
-    const putFollowSecretResponse =
-      await this.feedApiService.putUserFollowSecretAsync({
-        userId: identity.id,
-        password: identity.password,
-        followSecret: followSecret,
-      });
+    const putFollowSecretResponse = await this.feedApiService.putUserFollowSecretAsync({
+      userId: identity.id,
+      password: identity.password,
+      followSecret: followSecret,
+    });
 
     if (!putFollowSecretResponse.isSuccess()) {
       return ApiResult.fromFailure(putFollowSecretResponse);
@@ -153,10 +137,7 @@ export class FeedFollowService {
     }
   }
 
-  async revokeFollowSecretAsync(
-    identity: FeedIdentity,
-    followSecret: string,
-  ): Promise<ApiResult<void>> {
+  async revokeFollowSecretAsync(identity: FeedIdentity, followSecret: string): Promise<ApiResult<void>> {
     const putResponse = await this.feedApiService.deleteUserFollowSecretAsync({
       userId: identity.id,
       password: identity.password,

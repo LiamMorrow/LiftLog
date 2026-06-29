@@ -5,14 +5,8 @@ import {
   RecordedWeightedExercise,
   WeightAppliesTo,
 } from '@/models/session-models/recorded-weighted-exercise';
-import {
-  RecordedCardioExercise,
-  RecordedCardioExerciseSet,
-} from '@/models/session-models/recorded-cardio-exercise';
-import {
-  fromRecordedExerciseJSON,
-  RecordedExercise,
-} from '@/models/session-models/recorded-exercise';
+import { RecordedCardioExercise, RecordedCardioExerciseSet } from '@/models/session-models/recorded-cardio-exercise';
+import { fromRecordedExerciseJSON, RecordedExercise } from '@/models/session-models/recorded-exercise';
 
 export {
   RecordedWeightedExercise,

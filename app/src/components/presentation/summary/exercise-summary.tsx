@@ -5,10 +5,7 @@ import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { Weight } from '@/models/weight';
-import {
-  RecordedExercise,
-  RecordedWeightedExercise,
-} from '@/models/session-models';
+import { RecordedExercise, RecordedWeightedExercise } from '@/models/session-models';
 import { formatDistance } from '@/utils/distance';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { isNotNullOrUndefined } from '@/utils/null';
@@ -71,10 +68,7 @@ function ChipScroller(props: { children: ReactNode }) {
   );
 }
 
-function FilledChips(props: {
-  exercise: RecordedExercise;
-  showWeight: boolean;
-}) {
+function FilledChips(props: { exercise: RecordedExercise; showWeight: boolean }) {
   if (props.exercise instanceof RecordedWeightedExercise) {
     return getWeightAndRepsChips(props.exercise).map((chip, index) => (
       <Chip key={index}>
@@ -119,10 +113,7 @@ function FilledChips(props: {
     .filter(isNotNullOrUndefined);
 }
 
-function PlannedChips(props: {
-  exercise: RecordedExercise;
-  showWeight: boolean;
-}) {
+function PlannedChips(props: { exercise: RecordedExercise; showWeight: boolean }) {
   if (props.exercise instanceof RecordedWeightedExercise) {
     return getPlannedChipData(props.exercise).map((chip, index) => (
       <Chip key={index}>
@@ -204,9 +195,7 @@ interface PotentialSetChipData {
   weight: Weight;
 }
 
-function getWeightAndRepsChips(
-  exercise: RecordedWeightedExercise,
-): WeightAndRepsChipData[] {
+function getWeightAndRepsChips(exercise: RecordedWeightedExercise): WeightAndRepsChipData[] {
   return exercise.potentialSets.map((set) => ({
     repsCompleted: set.set?.repsCompleted,
     repTarget: exercise.blueprint.repsPerSet,
@@ -214,9 +203,7 @@ function getWeightAndRepsChips(
   }));
 }
 
-function getPlannedChipData(
-  exercise: RecordedWeightedExercise,
-): PotentialSetChipData[] {
+function getPlannedChipData(exercise: RecordedWeightedExercise): PotentialSetChipData[] {
   return Enumerable.from(exercise.potentialSets)
     .groupBy((x) => x.weight.shortLocaleFormat())
     .select((x) => ({

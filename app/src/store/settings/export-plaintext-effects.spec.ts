@@ -30,11 +30,7 @@ import { SessionJSON } from '@/models/storage/versions/latest';
 
 const t = OffsetDateTime.of(2024, 1, 15, 10, 0, 0, 0, ZoneOffset.UTC);
 
-function makeWeightedBlueprint(
-  name = 'Bench Press',
-  sets = 3,
-  repsPerSet = 10,
-) {
+function makeWeightedBlueprint(name = 'Bench Press', sets = 3, repsPerSet = 10) {
   return new WeightedExerciseBlueprint(
     name,
     sets,
@@ -47,40 +43,22 @@ function makeWeightedBlueprint(
   );
 }
 
-function makeWeightedExercise(
-  name = 'Bench Press',
-  sets = 3,
-  weightKg = 100,
-  reps = 10,
-): RecordedWeightedExercise {
+function makeWeightedExercise(name = 'Bench Press', sets = 3, weightKg = 100, reps = 10): RecordedWeightedExercise {
   const bp = makeWeightedBlueprint(name, sets, reps);
   const weight = new Weight(weightKg, 'kilograms');
   return new RecordedWeightedExercise(
     bp,
-    Array.from(
-      { length: sets },
-      (_, i) =>
-        new PotentialSet(new RecordedSet(reps, t.plusSeconds(i * 60)), weight),
-    ),
+    Array.from({ length: sets }, (_, i) => new PotentialSet(new RecordedSet(reps, t.plusSeconds(i * 60)), weight)),
     undefined,
   );
 }
 
 function makeCardioExercise(name = 'Treadmill') {
-  const bp = new CardioExerciseBlueprint(
-    name,
-    [CardioExerciseSetBlueprint.empty()],
-    '',
-    '',
-  );
+  const bp = new CardioExerciseBlueprint(name, [CardioExerciseSetBlueprint.empty()], '', '');
   return RecordedCardioExercise.empty(bp);
 }
 
-function makeSession(
-  exercises:
-    | RecordedWeightedExercise[]
-    | ReturnType<typeof makeCardioExercise>[],
-): Session {
+function makeSession(exercises: RecordedWeightedExercise[] | ReturnType<typeof makeCardioExercise>[]): Session {
   const blueprintExercises = exercises.map((e) => e.blueprint);
   return new Session(
     uuid(),
@@ -111,9 +89,7 @@ describe('export-plaintext-effects', () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([
-            makeSession([makeWeightedExercise()]),
-          ]),
+          progressRepository: makeProgressRepository([makeSession([makeWeightedExercise()])]),
           fileExportService,
         },
       });
@@ -122,8 +98,7 @@ describe('export-plaintext-effects', () => {
       await testBed.dispatchHandled(exportPlainText({ format: 'CSV' }));
 
       expect(fileExportService.exportBytes).toHaveBeenCalledOnce();
-      const [fileName, , contentType] =
-        fileExportService.exportBytes.mock.calls[0]!;
+      const [fileName, , contentType] = fileExportService.exportBytes.mock.calls[0]!;
       expect(fileName).toMatch(/^liftlog-export\.\d{8}_\d{6}\.csv$/);
       expect(contentType).toBe('text/csv');
     });
@@ -155,9 +130,7 @@ describe('export-plaintext-effects', () => {
 
     it('CSV rows contain the correct exercise name, weight, and reps', async () => {
       const fileExportService = makeFileExportService();
-      const session = makeSession([
-        makeWeightedExercise('Deadlift', 1, 180, 5),
-      ]);
+      const session = makeSession([makeWeightedExercise('Deadlift', 1, 180, 5)]);
       const testBed = createAddEffectTestBed({
         services: {
           progressRepository: makeProgressRepository([session]),
@@ -280,9 +253,7 @@ describe('export-plaintext-effects', () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([
-            makeSession([makeWeightedExercise()]),
-          ]),
+          progressRepository: makeProgressRepository([makeSession([makeWeightedExercise()])]),
           fileExportService,
         },
       });
@@ -291,8 +262,7 @@ describe('export-plaintext-effects', () => {
       await testBed.dispatchHandled(exportPlainText({ format: 'JSON' }));
 
       expect(fileExportService.exportBytes).toHaveBeenCalledOnce();
-      const [fileName, , contentType] =
-        fileExportService.exportBytes.mock.calls[0]!;
+      const [fileName, , contentType] = fileExportService.exportBytes.mock.calls[0]!;
       expect(fileName).toMatch(/^liftlog-export\.\d{8}_\d{6}\.json$/);
       expect(contentType).toBe('application/json');
     });
@@ -301,9 +271,7 @@ describe('export-plaintext-effects', () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([
-            makeSession([makeWeightedExercise()]),
-          ]),
+          progressRepository: makeProgressRepository([makeSession([makeWeightedExercise()])]),
           fileExportService,
         },
       });
@@ -343,9 +311,7 @@ describe('export-plaintext-effects', () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([
-            makeSession([makeWeightedExercise()]),
-          ]),
+          progressRepository: makeProgressRepository([makeSession([makeWeightedExercise()])]),
           fileExportService,
         },
       });
@@ -355,16 +321,12 @@ describe('export-plaintext-effects', () => {
 
       const [, bytes] = fileExportService.exportBytes.mock.calls[0]!;
       const [session] = fromJsonBytes<SessionJSON[]>(bytes);
-      expect(
-        (session!.blueprint as unknown as { exercises: [] }).exercises,
-      ).toBeUndefined();
+      expect((session!.blueprint as unknown as { exercises: [] }).exercises).toBeUndefined();
     });
 
     it('JSON output includes session id and recorded exercises', async () => {
       const fileExportService = makeFileExportService();
-      const session = makeSession([
-        makeWeightedExercise('Deadlift', 2, 180, 5),
-      ]);
+      const session = makeSession([makeWeightedExercise('Deadlift', 2, 180, 5)]);
       const testBed = createAddEffectTestBed({
         services: {
           progressRepository: makeProgressRepository([session]),
@@ -389,9 +351,7 @@ describe('export-plaintext-effects', () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([
-            makeSession([makeWeightedExercise()]),
-          ]),
+          progressRepository: makeProgressRepository([makeSession([makeWeightedExercise()])]),
           fileExportService,
         },
       });
@@ -412,12 +372,8 @@ describe('export-plaintext-effects', () => {
       });
       addExportPlaintextEffects(testBed.addEffect);
 
-      await expect(
-        testBed.dispatchHandled(exportPlainText({ format: 'CSV' })),
-      ).resolves.not.toThrow();
-      await expect(
-        testBed.dispatchHandled(exportPlainText({ format: 'JSON' })),
-      ).resolves.not.toThrow();
+      await expect(testBed.dispatchHandled(exportPlainText({ format: 'CSV' }))).resolves.not.toThrow();
+      await expect(testBed.dispatchHandled(exportPlainText({ format: 'JSON' }))).resolves.not.toThrow();
     });
   });
 });

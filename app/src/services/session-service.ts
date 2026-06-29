@@ -40,26 +40,16 @@ export class SessionService {
     await yieldToEventLoop();
 
     let latestSession =
-      currentSession ??
-      this.progressRepository
-        .getOrderedSessions()
-        .firstOrDefault((x) => !x.isFreeform);
+      currentSession ?? this.progressRepository.getOrderedSessions().firstOrDefault((x) => !x.isFreeform);
 
     await yieldToEventLoop();
     if (!latestSession) {
-      latestSession = this.createNewSession(
-        firstSessionBlueprint,
-        latestExercises,
-      );
+      latestSession = this.createNewSession(firstSessionBlueprint, latestExercises);
       yield latestSession;
     }
 
     while (true) {
-      latestSession = this.getNextSession(
-        latestSession,
-        sessionBlueprints,
-        latestExercises,
-      );
+      latestSession = this.getNextSession(latestSession, sessionBlueprints, latestExercises);
       yield latestSession;
     }
   }
@@ -80,11 +70,8 @@ export class SessionService {
     >,
   ): Session {
     const lastBlueprint = previousSession.blueprint;
-    const lastBlueprintIndex = sessionBlueprints.findIndex(
-      (x) => x.name === lastBlueprint.name,
-    );
-    const nextBlueprint =
-      sessionBlueprints[(lastBlueprintIndex + 1) % sessionBlueprints.length];
+    const lastBlueprintIndex = sessionBlueprints.findIndex((x) => x.name === lastBlueprint.name);
+    const nextBlueprint = sessionBlueprints[(lastBlueprintIndex + 1) % sessionBlueprints.length];
     if (!nextBlueprint) {
       return EmptySession.with({ id: uuid() });
     }
@@ -104,15 +91,9 @@ export class SessionService {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const $this = this;
     function getNextExercise(e: ExerciseBlueprint): RecordedExercise {
-      const lastExercise =
-        latestRecordedExercises[
-          KeyedExerciseBlueprint.fromExerciseBlueprint(e).toString()
-        ];
+      const lastExercise = latestRecordedExercises[KeyedExerciseBlueprint.fromExerciseBlueprint(e).toString()];
       if (e instanceof CardioExerciseBlueprint) {
-        const cardioLastExercise =
-          lastExercise instanceof RecordedCardioExercise
-            ? lastExercise
-            : undefined;
+        const cardioLastExercise = lastExercise instanceof RecordedCardioExercise ? lastExercise : undefined;
         return RecordedCardioExercise.empty(e).with({
           sets: e.sets.map((s, i) =>
             RecordedCardioExerciseSet.empty(s).with({
@@ -122,35 +103,19 @@ export class SessionService {
           ),
         });
       }
-      const weightedLastExercise =
-        lastExercise instanceof RecordedWeightedExercise
-          ? lastExercise
-          : undefined;
+      const weightedLastExercise = lastExercise instanceof RecordedWeightedExercise ? lastExercise : undefined;
       const potentialSets: PotentialSet[] = match(weightedLastExercise)
         .returnType<PotentialSet[]>()
         .with(undefined, () =>
           Array.from(
             { length: e.sets },
-            () =>
-              new PotentialSet(
-                undefined,
-                new Weight(0, $this.getDefaultWeightUnit()),
-              ),
+            () => new PotentialSet(undefined, new Weight(0, $this.getDefaultWeightUnit())),
           ),
         )
-        .otherwise((x) =>
-          x.potentialSets.map((x) => new PotentialSet(undefined, x.weight)),
-        );
-      let newExercise = new RecordedWeightedExercise(
-        e,
-        potentialSets,
-        undefined,
-      );
+        .otherwise((x) => x.potentialSets.map((x) => new PotentialSet(undefined, x.weight)));
+      let newExercise = new RecordedWeightedExercise(e, potentialSets, undefined);
       if (weightedLastExercise?.isSuccessForProgressiveOverload) {
-        newExercise =
-          newExercise.blueprint.progressiveOverload.applyProgressiveOverload(
-            newExercise,
-          );
+        newExercise = newExercise.blueprint.progressiveOverload.applyProgressiveOverload(newExercise);
       }
 
       return newExercise;

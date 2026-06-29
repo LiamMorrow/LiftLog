@@ -17,9 +17,7 @@ function makeFileExportService(): MockedObject<FileExportService> {
 describe('addExportBackupEffects', () => {
   let expoDb: SQLiteDatabase;
   beforeAll(async () => {
-    const bytes = await readFile(
-      resolve(__dirname, '../../utils/__test__/export.liftlogbackup.sqlite.gz'),
-    );
+    const bytes = await readFile(resolve(__dirname, '../../utils/__test__/export.liftlogbackup.sqlite.gz'));
 
     expoDb = await deserializeDatabaseAsync(gunzipSync(bytes));
   });
@@ -33,11 +31,8 @@ describe('addExportBackupEffects', () => {
     await testBed.dispatchHandled(exportData({ includeFeed: true }));
 
     expect(fileExportService.exportBytes).toHaveBeenCalledOnce();
-    const [fileName, , contentType] =
-      fileExportService.exportBytes.mock.calls[0]!;
-    expect(fileName).toMatch(
-      /^export\.liftlogbackup\.\d{8}_\d{6}\.sqlite\.gz$/,
-    );
+    const [fileName, , contentType] = fileExportService.exportBytes.mock.calls[0]!;
+    expect(fileName).toMatch(/^export\.liftlogbackup\.\d{8}_\d{6}\.sqlite\.gz$/);
     expect(contentType).toBe('application/octet-stream');
   });
 

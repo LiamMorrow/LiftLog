@@ -12,9 +12,7 @@ import { EmptySession } from '@/models/session-models';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function makeKeyValueStore(
-  overrides?: Partial<ReturnType<typeof defaultKvStore>>,
-) {
+function makeKeyValueStore(overrides?: Partial<ReturnType<typeof defaultKvStore>>) {
   return { ...defaultKvStore(), ...overrides };
 }
 
@@ -63,8 +61,7 @@ describe('current-session effects', () => {
     it('dispatches setIsHydrated(true) when version key is missing (defaults to v2 path with empty bytes)', async () => {
       const kvStore = makeKeyValueStore({
         getItem: vi.fn().mockImplementation((key: string) => {
-          if (key === 'CurrentSessionStateV1-Version')
-            return Promise.resolve(null);
+          if (key === 'CurrentSessionStateV1-Version') return Promise.resolve(null);
           return Promise.resolve(null);
         }),
         getItemBytes: vi.fn().mockResolvedValue(new Uint8Array()),
@@ -84,8 +81,7 @@ describe('current-session effects', () => {
     it('dispatches setIsHydrated(true) on v3 path with null stored value', async () => {
       const kvStore = makeKeyValueStore({
         getItem: vi.fn().mockImplementation((key: string) => {
-          if (key === 'CurrentSessionStateV1-Version')
-            return Promise.resolve('3');
+          if (key === 'CurrentSessionStateV1-Version') return Promise.resolve('3');
           if (key === 'CurrentSessionStateV1') return Promise.resolve(null);
           return Promise.resolve(null);
         }),
@@ -149,14 +145,9 @@ describe('current-session effects', () => {
         },
       });
 
-      await testBed.dispatchHandled(
-        setCurrentSession({ target: 'workoutSession', session: undefined }),
-      );
+      await testBed.dispatchHandled(setCurrentSession({ target: 'workoutSession', session: undefined }));
 
-      expect(kvStore.setItem).toHaveBeenCalledWith(
-        'CurrentSessionStateV1-Version',
-        '3',
-      );
+      expect(kvStore.setItem).toHaveBeenCalledWith('CurrentSessionStateV1-Version', '3');
       expect(kvStore.removeItem).toHaveBeenCalledWith('CurrentSessionStateV1');
     });
 
@@ -174,9 +165,7 @@ describe('current-session effects', () => {
       });
       applyCurrentSessionEffects(testBed.addEffect);
 
-      await testBed.dispatchHandled(
-        setCurrentSession({ target: 'workoutSession', session: undefined }),
-      );
+      await testBed.dispatchHandled(setCurrentSession({ target: 'workoutSession', session: undefined }));
 
       expect(kvStore.setItem).not.toHaveBeenCalled();
     });
@@ -204,9 +193,7 @@ describe('current-session effects', () => {
         },
       });
 
-      await testBed.dispatchHandled(
-        setCurrentSession({ target: 'workoutSession', session: after }),
-      );
+      await testBed.dispatchHandled(setCurrentSession({ target: 'workoutSession', session: after }));
 
       const action = testBed.getDispatchedAction(currentWorkoutSessionUpdated);
       expect(action.payload.before).toBe(before);
@@ -228,9 +215,7 @@ describe('current-session effects', () => {
       applyCurrentSessionEffects(testBed.addEffect);
 
       // stateAfterReduce same as original — no change
-      await testBed.dispatchHandled(
-        setCurrentSession({ target: 'workoutSession', session }),
-      );
+      await testBed.dispatchHandled(setCurrentSession({ target: 'workoutSession', session }));
 
       testBed.expectNotDispatched(currentWorkoutSessionUpdated);
     });
@@ -260,9 +245,7 @@ describe('current-session effects', () => {
       });
 
       await expect(
-        testBed.dispatchHandled(
-          setCurrentSession({ target: 'workoutSession', session: undefined }),
-        ),
+        testBed.dispatchHandled(setCurrentSession({ target: 'workoutSession', session: undefined })),
       ).resolves.not.toThrow();
 
       expect(testBed.mockServices.logger.error).toHaveBeenCalledWith(

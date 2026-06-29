@@ -58,10 +58,7 @@ export default function CardList<T>(props: CardListProps<T>) {
         return (
           <Card
             key={keySelector?.(item) ?? i}
-            style={[
-              cardStyle,
-              shouldHighlight?.(item, i) ? highlightStyle : undefined,
-            ]}
+            style={[cardStyle, shouldHighlight?.(item, i) ? highlightStyle : undefined]}
             mode={cardType}
             onLongPress={onLongPress ? () => onLongPress(item, i) : undefined}
             onPress={onPress ? () => onPress(item, i) : undefined}

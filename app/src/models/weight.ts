@@ -1,11 +1,7 @@
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import BigNumber from 'bignumber.js';
 import { match, P } from 'ts-pattern';
-import {
-  fromBigNumberJSON,
-  toBigNumberJSON,
-  WeightJSON,
-} from './storage/versions/latest';
+import { fromBigNumberJSON, toBigNumberJSON, WeightJSON } from './storage/versions/latest';
 
 // nil is special in that it basically tries to coalesce into whatever else is given
 export type WeightUnit = 'kilograms' | 'pounds' | 'nil';
@@ -110,24 +106,15 @@ export class Weight {
       .with([P._, 'nil'], () => this)
       .with(['kilograms', 'kilograms'], () => this)
       .with(['pounds', 'pounds'], () => this)
-      .with(
-        ['kilograms', 'pounds'],
-        () => new Weight(this.value.multipliedBy(2.20462), 'pounds'),
-      )
-      .with(
-        ['pounds', 'kilograms'],
-        () => new Weight(this.value.dividedBy(2.20462), 'kilograms'),
-      )
+      .with(['kilograms', 'pounds'], () => new Weight(this.value.multipliedBy(2.20462), 'pounds'))
+      .with(['pounds', 'kilograms'], () => new Weight(this.value.dividedBy(2.20462), 'kilograms'))
       .with(['nil', 'kilograms'], () => new Weight(this.value, 'kilograms'))
       .with(['nil', 'pounds'], () => new Weight(this.value, 'pounds'))
       .exhaustive();
   }
 
   shortLocaleFormat(decimalPlaces?: number) {
-    return (
-      localeFormatBigNumber(this.value, decimalPlaces) +
-      shortFormatWeightUnit(this.unit)
-    );
+    return localeFormatBigNumber(this.value, decimalPlaces) + shortFormatWeightUnit(this.unit);
   }
 }
 

@@ -42,18 +42,13 @@ export function createAddEffectTestBed(options?: {
     if (logs.length === 0) return;
     console.log('=== Effect logs ===');
     for (const { level, args } of logs) {
-      console[level as 'error' | 'warn' | 'info' | 'debug'](
-        `[${level}]`,
-        ...args,
-      );
+      console[level as 'error' | 'warn' | 'info' | 'debug'](`[${level}]`, ...args);
     }
   });
   // Mirrors the real addEffect signature
   const addEffect: AddEffectFn = (actionPredicate: any, effect: any) => {
     effects.push({
-      predicate: (action) =>
-        !actionPredicate ||
-        [actionPredicate].flat().some((x: any) => x.type === action.type),
+      predicate: (action) => !actionPredicate || [actionPredicate].flat().some((x: any) => x.type === action.type),
       effect,
     });
   };
@@ -97,15 +92,11 @@ export function createAddEffectTestBed(options?: {
     dispatch,
     dispatchHandled,
     dispatchedActions,
-    expectNotDispatched: <T, TK extends string>(
-      act: ActionCreatorWithPayload<T, TK>,
-    ) => {
+    expectNotDispatched: <T, TK extends string>(act: ActionCreatorWithPayload<T, TK>) => {
       const action = dispatchedActions.find((x) => x.type === act.type);
       expect(action).toBeUndefined();
     },
-    getDispatchedAction: <T, TK extends string>(
-      act: ActionCreatorWithPayload<T, TK>,
-    ) => {
+    getDispatchedAction: <T, TK extends string>(act: ActionCreatorWithPayload<T, TK>) => {
       const action = dispatchedActions.find((x) => x.type === act.type);
 
       expect(action).toBeDefined();

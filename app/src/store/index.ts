@@ -37,22 +37,14 @@ export function resolveStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
 
 export const useAppSelector = untypedUseSelector.withTypes<RootState>();
 
-export function useAppSelectorWithArg<TArg, TRes>(
-  selector: (s: RootState, arg: TArg) => TRes,
-  arg: TArg,
-) {
-  const memod = useMemo(
-    () => (s: RootState) => selector(s, arg),
-    [selector, arg],
-  );
+export function useAppSelectorWithArg<TArg, TRes>(selector: (s: RootState, arg: TArg) => TRes, arg: TArg) {
+  const memod = useMemo(() => (s: RootState) => selector(s, arg), [selector, arg]);
   return useAppSelector((s) => memod(s));
 }
 /**
  * Some components are pretty expensive (for some reason) to render, and when offscreen in a deeper stack or different tab should not cause renders
  */
-function useAppSelectorWhenFocused<TRes>(
-  selector: (s: RootState) => TRes,
-): TRes {
+function useAppSelectorWhenFocused<TRes>(selector: (s: RootState) => TRes): TRes {
   const isFocused = useIsFocused();
   const currentValue = useAppSelector(selector);
   const [focusedValue, setFocusedValue] = useState<TRes>(() => currentValue);
@@ -69,9 +61,6 @@ export function useAppSelectorWhenFocusedWithArg<TArg, TRes>(
   selector: (s: RootState, arg: TArg) => TRes,
   arg: TArg,
 ): TRes {
-  const memod = useMemo(
-    () => (s: RootState) => selector(s, arg),
-    [selector, arg],
-  );
+  const memod = useMemo(() => (s: RootState) => selector(s, arg), [selector, arg]);
   return useAppSelectorWhenFocused(memod);
 }

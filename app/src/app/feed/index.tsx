@@ -1,11 +1,7 @@
 import Feed from '@/components/smart/feed';
 import { FeedFollowers } from '@/components/smart/feed-followers';
 import { FeedFollowing } from '@/components/smart/feed-following';
-import {
-  ScrollProvider,
-  useScroll,
-  useScrollHeaderColor,
-} from '@/hooks/useScrollListener';
+import { ScrollProvider, useScroll, useScrollHeaderColor } from '@/hooks/useScrollListener';
 import { useAppSelector } from '@/store';
 import { selectFollowRequestCount } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
@@ -17,8 +13,7 @@ import { Tabs, TabScreen, TabsProvider } from 'react-native-paper-tabs';
 
 export default function FeedIndexPage() {
   const { t } = useTranslate();
-  const followRequestBadgeCount =
-    useAppSelector(selectFollowRequestCount) || undefined;
+  const followRequestBadgeCount = useAppSelector(selectFollowRequestCount) || undefined;
 
   const { setScrolled } = useScroll();
   const headerColor = useScrollHeaderColor();
@@ -51,29 +46,17 @@ export default function FeedIndexPage() {
           }}
         >
           <TabScreen label={t('feed.feed.title')}>
-            <ScrollProvider
-              isScrolled={!!tabScrolls[activeTabIndex]}
-              setScrolled={(s) => setTabScrolled(s, 0)}
-            >
+            <ScrollProvider isScrolled={!!tabScrolls[activeTabIndex]} setScrolled={(s) => setTabScrolled(s, 0)}>
               <Feed />
             </ScrollProvider>
           </TabScreen>
           <TabScreen label={t('feed.following.title')}>
-            <ScrollProvider
-              isScrolled={!!tabScrolls[activeTabIndex]}
-              setScrolled={(s) => setTabScrolled(s, 1)}
-            >
+            <ScrollProvider isScrolled={!!tabScrolls[activeTabIndex]} setScrolled={(s) => setTabScrolled(s, 1)}>
               <FeedFollowing />
             </ScrollProvider>
           </TabScreen>
-          <TabScreen
-            label={t('feed.followers.title')}
-            badge={followRequestBadgeCount}
-          >
-            <ScrollProvider
-              isScrolled={!!tabScrolls[activeTabIndex]}
-              setScrolled={(s) => setTabScrolled(s, 2)}
-            >
+          <TabScreen label={t('feed.followers.title')} badge={followRequestBadgeCount}>
+            <ScrollProvider isScrolled={!!tabScrolls[activeTabIndex]} setScrolled={(s) => setTabScrolled(s, 2)}>
               <FeedFollowers />
             </ScrollProvider>
           </TabScreen>

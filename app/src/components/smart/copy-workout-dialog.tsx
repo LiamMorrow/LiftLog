@@ -34,9 +34,7 @@ export default function CopyWorkoutDialog({
 
   const handleCopy = () => {
     if (selectedProgramId) {
-      const targetProgram = allPrograms.find(
-        ({ id }) => id === selectedProgramId,
-      );
+      const targetProgram = allPrograms.find(({ id }) => id === selectedProgramId);
 
       dispatch(
         addProgramSession({
@@ -58,11 +56,7 @@ export default function CopyWorkoutDialog({
     }
   };
 
-  const renderProgramItem = ({
-    item,
-  }: {
-    item: { id: string; program: ProgramBlueprint };
-  }) => (
+  const renderProgramItem = ({ item }: { item: { id: string; program: ProgramBlueprint } }) => (
     <List.Item
       title={item.program.name}
       left={() => (
@@ -85,10 +79,7 @@ export default function CopyWorkoutDialog({
         <Dialog.Content>
           <View style={{ gap: spacing[2] }}>
             <Text variant="bodyMedium">
-              <T
-                keyName="workout.copy_to_plan.select_plan.label"
-                params={{ workoutName: sessionBlueprint.name }}
-              />
+              <T keyName="workout.copy_to_plan.select_plan.label" params={{ workoutName: sessionBlueprint.name }} />
             </Text>
             {otherPrograms.length === 0 ? (
               <Text variant="bodyMedium" style={{ fontStyle: 'italic' }}>
@@ -96,11 +87,7 @@ export default function CopyWorkoutDialog({
               </Text>
             ) : (
               <View style={{ maxHeight: 200 }}>
-                <FlatList
-                  data={otherPrograms}
-                  keyExtractor={(item) => item.id}
-                  renderItem={renderProgramItem}
-                />
+                <FlatList data={otherPrograms} keyExtractor={(item) => item.id} renderItem={renderProgramItem} />
               </View>
             )}
           </View>
@@ -109,10 +96,7 @@ export default function CopyWorkoutDialog({
           <Button onPress={onDismiss}>
             <T keyName="generic.cancel.button" />
           </Button>
-          <Button
-            onPress={handleCopy}
-            disabled={!selectedProgramId || otherPrograms.length === 0}
-          >
+          <Button onPress={handleCopy} disabled={!selectedProgramId || otherPrograms.length === 0}>
             <T keyName="generic.copy.button" />
           </Button>
         </Dialog.Actions>

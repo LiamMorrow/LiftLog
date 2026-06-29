@@ -20,8 +20,7 @@ export default function ExerciseSearchAndFilters({
 }) {
   const { t } = useTranslate();
   const [filtersExpanded, setFiltersExpanded] = useState(false);
-  const selectedFiltersSubtitle =
-    muscleFilters.join(', ') || 'No filters applied';
+  const selectedFiltersSubtitle = muscleFilters.join(', ') || 'No filters applied';
 
   return (
     <View style={{ gap: spacing[2] }}>
@@ -35,10 +34,7 @@ export default function ExerciseSearchAndFilters({
         testID="exercise-search-input"
       />
 
-      <Card
-        mode="contained"
-        style={{ marginHorizontal: spacing.pageHorizontalMargin }}
-      >
+      <Card mode="contained" style={{ marginHorizontal: spacing.pageHorizontalMargin }}>
         <Card.Title
           title={t('generic.filters.title')}
           subtitle={selectedFiltersSubtitle}
@@ -56,10 +52,7 @@ export default function ExerciseSearchAndFilters({
         />
         <Card.Content>
           <AccordionItem isExpanded={filtersExpanded}>
-            <ExerciseMuscleSelector
-              muscles={muscleFilters}
-              onChange={setMuscleFilters}
-            />
+            <ExerciseMuscleSelector muscles={muscleFilters} onChange={setMuscleFilters} />
           </AccordionItem>
         </Card.Content>
       </Card>

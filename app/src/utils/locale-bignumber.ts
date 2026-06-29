@@ -12,10 +12,7 @@ export function localeParseBigNumber(numStr: string): BigNumber {
   return new BigNumber(numStr);
 }
 
-export function localeFormatBigNumber(
-  num: BigNumber | undefined,
-  decimalPlaces?: number,
-): string {
+export function localeFormatBigNumber(num: BigNumber | undefined, decimalPlaces?: number): string {
   if (!num) {
     return '';
   }
@@ -25,11 +22,7 @@ export function localeFormatBigNumber(
     decimalSeparator: localeUsesComma() ? ',' : '.',
   };
   if (localeUsesComma()) {
-    return decimalPlaces !== undefined
-      ? num.toFormat(decimalPlaces, format)
-      : num.toFormat(format);
+    return decimalPlaces !== undefined ? num.toFormat(decimalPlaces, format) : num.toFormat(format);
   }
-  return decimalPlaces !== undefined
-    ? num.toFormat(decimalPlaces, format)
-    : num.toFormat(format);
+  return decimalPlaces !== undefined ? num.toFormat(decimalPlaces, format) : num.toFormat(format);
 }

@@ -30,27 +30,16 @@ export default function HistoryCalendarCard({
   onSessionSelect,
   onDeleteSession,
 }: HistoryCalendarCardProps) {
-  const firstDayOfMonth = LocalDate.of(
-    currentYearMonth.year(),
-    currentYearMonth.month(),
-    1,
-  );
+  const firstDayOfMonth = LocalDate.of(currentYearMonth.year(), currentYearMonth.month(), 1);
   const formatDate = useFormatDate();
   const dayOfFirstDayOfTheMonth = firstDayOfMonth.dayOfWeek().value();
   const firstDayOfWeek = useAppSelector((x) => x.settings.firstDayOfWeek);
-  const numberOfDaysToShowFromPreviousMonth =
-    (dayOfFirstDayOfTheMonth - firstDayOfWeek.value() + 7) % 7;
+  const numberOfDaysToShowFromPreviousMonth = (dayOfFirstDayOfTheMonth - firstDayOfWeek.value() + 7) % 7;
   const numberOfDaysToShowFromNextMonth =
-    (7 -
-      ((numberOfDaysToShowFromPreviousMonth +
-        currentYearMonth.lengthOfMonth()) %
-        7)) %
-    7;
+    (7 - ((numberOfDaysToShowFromPreviousMonth + currentYearMonth.lengthOfMonth()) % 7)) % 7;
   const disableNextMonth = currentYearMonth.equals(YearMonth.now());
 
-  const sessionsByDate = Enumerable.from(sessions).toLookup((x) =>
-    x.date.toString(),
-  );
+  const sessionsByDate = Enumerable.from(sessions).toLookup((x) => x.date.toString());
 
   const previousMonth = () => onMonthChange(currentYearMonth.minusMonths(1));
   const nextMonth = () => onMonthChange(currentYearMonth.plusMonths(1));
@@ -74,11 +63,7 @@ export default function HistoryCalendarCard({
   const navButtons = (
     <ForceLTRRow>
       <View style={{ flex: 1 }}>
-        <IconButton
-          testID="calendar-nav-previous-month"
-          icon="chevronLeft"
-          onPress={previousMonth}
-        />
+        <IconButton testID="calendar-nav-previous-month" icon="chevronLeft" onPress={previousMonth} />
       </View>
       <View
         style={{
@@ -90,10 +75,7 @@ export default function HistoryCalendarCard({
         <SurfaceText testID="calendar-month">
           {formatDate(firstDayOfMonth, {
             month: 'long',
-            year:
-              currentYearMonth.year() === Year.now().value()
-                ? undefined
-                : 'numeric',
+            year: currentYearMonth.year() === Year.now().value() ? undefined : 'numeric',
           })}
         </SurfaceText>
       </View>
@@ -114,10 +96,7 @@ export default function HistoryCalendarCard({
         const dayOfWeek = (offset + firstDayOfWeek.ordinal()) % 7;
         return (
           <View style={{ flex: 1 }} key={dayOfWeek}>
-            <SurfaceText
-              key={dayOfWeek}
-              style={{ marginBottom: spacing[2], textAlign: 'center' }}
-            >
+            <SurfaceText key={dayOfWeek} style={{ marginBottom: spacing[2], textAlign: 'center' }}>
               {formatDate(getDateOnDay(DayOfWeek.of(dayOfWeek + 1)), {
                 weekday: 'short',
               })}
@@ -130,76 +109,63 @@ export default function HistoryCalendarCard({
 
   let dateEnterDelay = 0;
 
-  const daysFromPreviousMonth = Array.from(
-    { length: numberOfDaysToShowFromPreviousMonth },
-    (_, offset) => {
-      offset = offset - numberOfDaysToShowFromPreviousMonth;
-      const date = firstDayOfMonth.plusDays(offset);
-      return (
-        <HistoryCalendarDay
-          key={date.toString() + dateEnterDelay}
-          sessions={sessionsByDate.get(date.toString())}
-          delayEntranceAnimMs={(dateEnterDelay += 5)}
-          day={date}
-          onPress={() => handleDayPress(date)}
-          onLongPress={() => handleDayLongPress(date)}
-        />
-      );
-    },
-  );
-
-  const daysInMonth = Array.from(
-    { length: firstDayOfMonth.lengthOfMonth() },
-    (_, i) => {
-      const date = firstDayOfMonth.withDayOfMonth(i + 1);
-      return (
-        <HistoryCalendarDay
-          key={date.toString() + dateEnterDelay}
-          sessions={sessionsByDate.get(date.toString())}
-          delayEntranceAnimMs={(dateEnterDelay += 5)}
-          day={date}
-          onPress={() => handleDayPress(date)}
-          onLongPress={() => handleDayLongPress(date)}
-        />
-      );
-    },
-  );
-
-  const daysFromNextMonth = Array.from(
-    { length: numberOfDaysToShowFromNextMonth },
-    (_, i) => {
-      const date = firstDayOfMonth.plusMonths(1).withDayOfMonth(i + 1);
-      return (
-        <HistoryCalendarDay
-          key={date.toString() + dateEnterDelay}
-          sessions={sessionsByDate.get(date.toString())}
-          // eslint-disable-next-line react-compiler/react-compiler, react-hooks/immutability
-          delayEntranceAnimMs={(dateEnterDelay += 5)}
-          day={date}
-          onPress={() => handleDayPress(date)}
-          onLongPress={() => handleDayLongPress(date)}
-        />
-      );
-    },
-  );
-
-  const daysInSections = [daysFromPreviousMonth, daysInMonth, daysFromNextMonth]
-    .flat()
-    .reduce(
-      (acc, cur) => {
-        if (acc[acc.length - 1]!.length === 7) acc.push([]);
-        acc[acc.length - 1]!.push(cur);
-        return acc;
-      },
-      [[]] as ReactNode[][],
+  const daysFromPreviousMonth = Array.from({ length: numberOfDaysToShowFromPreviousMonth }, (_, offset) => {
+    offset = offset - numberOfDaysToShowFromPreviousMonth;
+    const date = firstDayOfMonth.plusDays(offset);
+    return (
+      <HistoryCalendarDay
+        key={date.toString() + dateEnterDelay}
+        sessions={sessionsByDate.get(date.toString())}
+        delayEntranceAnimMs={(dateEnterDelay += 5)}
+        day={date}
+        onPress={() => handleDayPress(date)}
+        onLongPress={() => handleDayLongPress(date)}
+      />
     );
+  });
+
+  const daysInMonth = Array.from({ length: firstDayOfMonth.lengthOfMonth() }, (_, i) => {
+    const date = firstDayOfMonth.withDayOfMonth(i + 1);
+    return (
+      <HistoryCalendarDay
+        key={date.toString() + dateEnterDelay}
+        sessions={sessionsByDate.get(date.toString())}
+        delayEntranceAnimMs={(dateEnterDelay += 5)}
+        day={date}
+        onPress={() => handleDayPress(date)}
+        onLongPress={() => handleDayLongPress(date)}
+      />
+    );
+  });
+
+  const daysFromNextMonth = Array.from({ length: numberOfDaysToShowFromNextMonth }, (_, i) => {
+    const date = firstDayOfMonth.plusMonths(1).withDayOfMonth(i + 1);
+    return (
+      <HistoryCalendarDay
+        key={date.toString() + dateEnterDelay}
+        sessions={sessionsByDate.get(date.toString())}
+        // eslint-disable-next-line react-compiler/react-compiler, react-hooks/immutability
+        delayEntranceAnimMs={(dateEnterDelay += 5)}
+        day={date}
+        onPress={() => handleDayPress(date)}
+        onLongPress={() => handleDayLongPress(date)}
+      />
+    );
+  });
+
+  const daysInSections = [daysFromPreviousMonth, daysInMonth, daysFromNextMonth].flat().reduce(
+    (acc, cur) => {
+      if (acc[acc.length - 1]!.length === 7) acc.push([]);
+      acc[acc.length - 1]!.push(cur);
+      return acc;
+    },
+    [[]] as ReactNode[][],
+  );
 
   return (
     <Card mode="contained">
       <Card.Content>
-        <View
-          style={{ justifyContent: 'center', alignItems: 'stretch', flex: 3 }}
-        >
+        <View style={{ justifyContent: 'center', alignItems: 'stretch', flex: 3 }}>
           {navButtons}
           {dayHeaders}
           {daysInSections.map((days, i) => (
@@ -220,8 +186,7 @@ function HistoryCalendarDay(props: {
 }) {
   const isFuture = props.day.isAfter(LocalDate.now());
   const hasSessions = props.sessions.any();
-  const isTodayWithNoSessions =
-    props.day.equals(LocalDate.now()) && !hasSessions;
+  const isTodayWithNoSessions = props.day.equals(LocalDate.now()) && !hasSessions;
   const { colors } = useAppTheme();
   const formatDate = useFormatDate();
 
@@ -263,15 +228,10 @@ function HistoryCalendarDay(props: {
             borderRadius: 1000,
             borderColor: isTodayWithNoSessions ? colors.primary : 'transparent',
             borderWidth: 1,
-            backgroundColor: props.sessions.any()
-              ? colors.primary
-              : 'transparent',
+            backgroundColor: props.sessions.any() ? colors.primary : 'transparent',
           }}
         >
-          <SurfaceText
-            style={{ textAlign: 'center' }}
-            color={hasSessions ? 'onPrimary' : 'onSurface'}
-          >
+          <SurfaceText style={{ textAlign: 'center' }} color={hasSessions ? 'onPrimary' : 'onSurface'}>
             {formatDate(props.day, { day: 'numeric' })}
           </SurfaceText>
         </View>
@@ -282,9 +242,5 @@ function HistoryCalendarDay(props: {
 
 function ForceLTRRow(props: { children: ReactNode }) {
   const rtl = I18nManager.isRTL;
-  return (
-    <View style={{ flexDirection: rtl ? 'row-reverse' : 'row' }}>
-      {props.children}
-    </View>
-  );
+  return <View style={{ flexDirection: rtl ? 'row-reverse' : 'row' }}>{props.children}</View>;
 }

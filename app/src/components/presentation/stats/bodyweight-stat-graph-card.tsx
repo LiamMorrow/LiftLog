@@ -9,9 +9,7 @@ import { useTranslate } from '@tolgee/react';
 import { useAppSelector } from '@/store';
 import { lineGraphProps } from '@/components/presentation/stats/line-graph-props';
 
-export default function BodyweightStatGraphCard(props: {
-  bodyweightStats: WeightedStatisticOverTime;
-}) {
+export default function BodyweightStatGraphCard(props: { bodyweightStats: WeightedStatisticOverTime }) {
   const weightUnit = usePreferredWeightUnit();
   const { t } = useTranslate();
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
@@ -41,11 +39,7 @@ export default function BodyweightStatGraphCard(props: {
         color={colors.primary}
         data={points}
         strokeDashArray={[1]}
-        yAxisOffset={
-          props.bodyweightStats.minValue
-            .convertTo(weightUnit)
-            .value.toNumber() * 0.9
-        }
+        yAxisOffset={props.bodyweightStats.minValue.convertTo(weightUnit).value.toNumber() * 0.9}
         {...lineGraphProps(colors, width, points.length)}
       />
     </View>

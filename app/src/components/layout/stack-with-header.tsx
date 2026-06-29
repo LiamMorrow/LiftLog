@@ -12,10 +12,7 @@ export default function StackWithHeader() {
           headerBackButtonDisplayMode: 'minimal',
           headerLargeTitleEnabled: Platform.OS === 'android',
           headerTitleAlign: 'center',
-          headerBackground:
-            Platform.OS === 'ios'
-              ? undefined
-              : () => <MaterialScrollHeaderBackground />,
+          headerBackground: Platform.OS === 'ios' ? undefined : () => <MaterialScrollHeaderBackground />,
           gestureEnabled: true,
           headerTransparent: Platform.OS === 'ios',
         }}

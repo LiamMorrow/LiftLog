@@ -3,10 +3,7 @@ import { FeedInboxDecryptionService } from './feed-inbox-decryption-service';
 import { EncryptionService, toJsonBytes } from './encryption-service';
 import { type FeedApiService } from './feed-api';
 import { FeedUser, FeedIdentity, FollowedFeedUser } from '@/models/feed-models';
-import {
-  GetInboxMessageResponse,
-  GetUserResponse,
-} from '@/models/feed-api-models';
+import { GetInboxMessageResponse, GetUserResponse } from '@/models/feed-api-models';
 import { RsaPrivateKey } from '@/models/encryption-models';
 import { ApiResult } from '@/services/api-error';
 import {
@@ -45,17 +42,15 @@ describe('FeedInboxDecryptionService', () => {
       thirdPartyUser = await createFeedUser(encryptionService);
 
       // Mock feed API service responses
-      vi.mocked(feedApiService.getUserAsync).mockImplementation(
-        async (userId: string) => {
-          if (userId === thirdPartyUser.user.id) {
-            return ApiResult.success(toGetUserResponse(thirdPartyUser));
-          }
-          if (userId === maliciousUser.user.id) {
-            return ApiResult.success(toGetUserResponse(maliciousUser));
-          }
-          throw new Error(`Unexpected user ID: ${userId}`);
-        },
-      );
+      vi.mocked(feedApiService.getUserAsync).mockImplementation(async (userId: string) => {
+        if (userId === thirdPartyUser.user.id) {
+          return ApiResult.success(toGetUserResponse(thirdPartyUser));
+        }
+        if (userId === maliciousUser.user.id) {
+          return ApiResult.success(toGetUserResponse(maliciousUser));
+        }
+        throw new Error(`Unexpected user ID: ${userId}`);
+      });
     });
 
     it('should not allow a malicious user to send a follow request to a victim user to try follow the third party user', async () => {
@@ -70,24 +65,16 @@ describe('FeedInboxDecryptionService', () => {
       };
 
       // Sign with malicious user's private key (this is the attack - wrong signer)
-      const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(
-        maliciousMessage,
-        victimUser.user.id,
-      );
-      const signature = await encryptionService.signRsaPssSha256Async(
-        signaturePayload,
-        maliciousUser.privateKey,
-      );
-      (maliciousMessage as InboxMessageJSON).signature =
-        toBase64Uint8ArrayJSON(signature);
+      const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(maliciousMessage, victimUser.user.id);
+      const signature = await encryptionService.signRsaPssSha256Async(signaturePayload, maliciousUser.privateKey);
+      (maliciousMessage as InboxMessageJSON).signature = toBase64Uint8ArrayJSON(signature);
 
       // Encrypt for victim user
       const messageBytes = toJsonBytes(maliciousMessage);
-      const encryptedMaliciousMessage =
-        await encryptionService.encryptRsaOaepSha256Async(
-          messageBytes,
-          victimUser.user.publicKey,
-        );
+      const encryptedMaliciousMessage = await encryptionService.encryptRsaOaepSha256Async(
+        messageBytes,
+        victimUser.user.publicKey,
+      );
 
       const inboxMessageResponse: GetInboxMessageResponse = {
         id: '00000000-0000-0000-0000-000000000000',
@@ -95,10 +82,7 @@ describe('FeedInboxDecryptionService', () => {
       };
 
       // Attempt to decrypt - should fail because signature doesn't match claimed sender
-      const decryptedMaliciousMessage = await sut.decryptIfValid(
-        victimUser.identity,
-        inboxMessageResponse,
-      );
+      const decryptedMaliciousMessage = await sut.decryptIfValid(victimUser.identity, inboxMessageResponse);
 
       expect(decryptedMaliciousMessage).toBeNull();
     });
@@ -114,24 +98,16 @@ describe('FeedInboxDecryptionService', () => {
       };
 
       // Sign with the correct user's private key
-      const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(
-        validMessage,
-        victimUser.user.id,
-      );
-      const signature = await encryptionService.signRsaPssSha256Async(
-        signaturePayload,
-        thirdPartyUser.privateKey,
-      );
-      (validMessage as InboxMessageJSON).signature =
-        toBase64Uint8ArrayJSON(signature);
+      const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(validMessage, victimUser.user.id);
+      const signature = await encryptionService.signRsaPssSha256Async(signaturePayload, thirdPartyUser.privateKey);
+      (validMessage as InboxMessageJSON).signature = toBase64Uint8ArrayJSON(signature);
 
       // Encrypt for victim user
       const messageBytes = toJsonBytes(validMessage);
-      const encryptedValidMessage =
-        await encryptionService.encryptRsaOaepSha256Async(
-          messageBytes,
-          victimUser.user.publicKey,
-        );
+      const encryptedValidMessage = await encryptionService.encryptRsaOaepSha256Async(
+        messageBytes,
+        victimUser.user.publicKey,
+      );
 
       const inboxMessageResponse: GetInboxMessageResponse = {
         id: '00000000-0000-0000-0000-000000000000',
@@ -139,10 +115,7 @@ describe('FeedInboxDecryptionService', () => {
       };
 
       // Decrypt - should succeed because signature matches claimed sender
-      const decryptedValidMessage = await sut.decryptIfValid(
-        victimUser.identity,
-        inboxMessageResponse,
-      );
+      const decryptedValidMessage = await sut.decryptIfValid(victimUser.identity, inboxMessageResponse);
 
       expect(decryptedValidMessage).not.toBeNull();
       expect((decryptedValidMessage?.payload as FollowRequestJSON)?.name)?.toBe(
@@ -152,9 +125,7 @@ describe('FeedInboxDecryptionService', () => {
   });
 });
 
-async function createFeedUser(
-  encryptionService: EncryptionService,
-): Promise<UserAndPrivateKey> {
+async function createFeedUser(encryptionService: EncryptionService): Promise<UserAndPrivateKey> {
   const rsaKeyPair = await encryptionService.generateRsaKeys();
   const aesKey = await encryptionService.generateAesKey();
   const userId = crypto.randomUUID();
@@ -189,9 +160,7 @@ async function createFeedUser(
   };
 }
 
-function toGetUserResponse(
-  userAndPrivateKey: UserAndPrivateKey,
-): GetUserResponse {
+function toGetUserResponse(userAndPrivateKey: UserAndPrivateKey): GetUserResponse {
   return {
     id: userAndPrivateKey.user.id,
     lookup: userAndPrivateKey.user.id,

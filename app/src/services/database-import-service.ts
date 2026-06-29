@@ -1,28 +1,16 @@
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { dataMigrationsSchema } from '@/db/schema';
-import {
-  importSessions,
-  importSessionsDataMigration,
-} from './data-migrations/import-sessions';
+import { importSessions, importSessionsDataMigration } from './data-migrations/import-sessions';
 import { KeyValueStore } from './key-value-store';
 import { PreferenceService } from './preference-service';
 
-import {
-  importPrograms,
-  importProgramsDataMigration,
-} from './data-migrations/import-programs';
-import {
-  importExercises,
-  importExercisesDataMigration,
-} from './data-migrations/import-exercises';
+import { importPrograms, importProgramsDataMigration } from './data-migrations/import-programs';
+import { importExercises, importExercisesDataMigration } from './data-migrations/import-exercises';
 import {
   importExercisesFromWorkouts,
   importExercisesFromWorkoutsDataMigration,
 } from '@/services/data-migrations/import-exercises-from-workouts';
-import {
-  importFeed,
-  importFeedDataMigration,
-} from '@/services/data-migrations/import-feed';
+import { importFeed, importFeedDataMigration } from '@/services/data-migrations/import-feed';
 
 export interface DatabaseImporter {
   importOldData(): Promise<void>;
@@ -38,9 +26,7 @@ export class DatabaseImportService implements DatabaseImporter {
 
   async importOldData(): Promise<void> {
     const now = performance.now();
-    const dataMigrationsRun = (
-      await this.db.select().from(dataMigrationsSchema)
-    ).map((x) => x.id);
+    const dataMigrationsRun = (await this.db.select().from(dataMigrationsSchema)).map((x) => x.id);
 
     if (!dataMigrationsRun.includes(importSessionsDataMigration)) {
       await importSessions(this.db, this.keyValueStore, this.preferenceService);
@@ -58,8 +44,6 @@ export class DatabaseImportService implements DatabaseImporter {
       await importFeed(this.db, this.keyValueStore);
     }
 
-    console.info(
-      'Imported old data to DB in ' + (performance.now() - now) + 'ms',
-    );
+    console.info('Imported old data to DB in ' + (performance.now() - now) + 'ms');
   }
 }

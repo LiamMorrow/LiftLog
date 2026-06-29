@@ -24,9 +24,7 @@ export function Remote<T>(props: RemoteProps<T>) {
     <View style={{ alignItems: 'center', gap: spacing[4] }}>
       <Icon source={'error'} size={30} />
       <View style={{ justifyContent: 'center' }}>
-        <SurfaceText style={{ textAlign: 'center' }}>
-          {typeof value === 'string' ? value : 'Unknown error'}
-        </SurfaceText>
+        <SurfaceText style={{ textAlign: 'center' }}>{typeof value === 'string' ? value : 'Unknown error'}</SurfaceText>
         {retry ? <Button onPress={retry}>Retry</Button> : undefined}
       </View>
     </View>

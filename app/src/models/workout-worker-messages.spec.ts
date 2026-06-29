@@ -4,12 +4,7 @@ import Ajv from 'ajv';
 import { readdirSync, readFileSync } from 'fs';
 import path from 'path';
 import { describe, it, expect, beforeAll } from 'vitest';
-import {
-  RecordedWeightedExercise,
-  RecordedCardioExercise,
-  Session,
-  EmptySession,
-} from '@/models/session-models';
+import { RecordedWeightedExercise, RecordedCardioExercise, Session, EmptySession } from '@/models/session-models';
 import {
   WeightedExerciseBlueprint,
   CardioExerciseBlueprint,
@@ -27,10 +22,7 @@ import type {
   Translations,
   AppConfiguration,
 } from './workout-worker-messages';
-import {
-  toDurationJSON,
-  toInstantJson,
-} from '@/models/storage/versions/latest';
+import { toDurationJSON, toInstantJson } from '@/models/storage/versions/latest';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -92,10 +84,7 @@ function makeWeightedExercise(): RecordedWeightedExercise {
 function makeWeightedExerciseWithSets(): RecordedWeightedExercise {
   const exercise = makeWeightedExercise();
   // Complete all sets
-  return exercise.potentialSets.reduce(
-    (ex, _set, index) => ex.withRepCount(index, 10, NOW),
-    exercise,
-  );
+  return exercise.potentialSets.reduce((ex, _set, index) => ex.withRepCount(index, 10, NOW), exercise);
 }
 
 function makeCardioExercise(): RecordedCardioExercise {
@@ -331,26 +320,17 @@ describe('WorkoutMessage JSON schema validation', () => {
 
   describe('RecordedWeightedExercise', () => {
     it('validates an empty (no sets completed) exercise', () => {
-      expect(
-        validate('RecordedWeightedExercise', makeWeightedExercise().toJSON()),
-      ).toBe(true);
+      expect(validate('RecordedWeightedExercise', makeWeightedExercise().toJSON())).toBe(true);
     });
 
     it('validates a fully completed exercise', () => {
-      expect(
-        validate(
-          'RecordedWeightedExercise',
-          makeWeightedExerciseWithSets().toJSON(),
-        ),
-      ).toBe(true);
+      expect(validate('RecordedWeightedExercise', makeWeightedExerciseWithSets().toJSON())).toBe(true);
     });
   });
 
   describe('RecordedCardioExercise', () => {
     it('validates an empty cardio exercise', () => {
-      expect(
-        validate('RecordedCardioExercise', makeCardioExercise().toJSON()),
-      ).toBe(true);
+      expect(validate('RecordedCardioExercise', makeCardioExercise().toJSON())).toBe(true);
     });
 
     it('validates a cardio exercise with a completed set', () => {
@@ -372,15 +352,11 @@ describe('WorkoutMessage JSON schema validation', () => {
 
   describe('AppConfiguration', () => {
     it('validates AppConfiguration with notifications enabled', () => {
-      expect(validate('AppConfiguration', { notificationsEnabled: true })).toBe(
-        true,
-      );
+      expect(validate('AppConfiguration', { notificationsEnabled: true })).toBe(true);
     });
 
     it('validates AppConfiguration with notifications disabled', () => {
-      expect(
-        validate('AppConfiguration', { notificationsEnabled: false }),
-      ).toBe(true);
+      expect(validate('AppConfiguration', { notificationsEnabled: false })).toBe(true);
     });
   });
   // -------------------------------------------------------------------------
@@ -390,9 +366,7 @@ describe('WorkoutMessage JSON schema validation', () => {
   describe('Invalid payloads (should fail validation)', () => {
     describe('WorkoutStartedEvent', () => {
       it('rejects a payload with the wrong type discriminator', () => {
-        expect(
-          validate('WorkoutStartedEvent', { type: 'WorkoutEndedEvent' }),
-        ).toBe(false);
+        expect(validate('WorkoutStartedEvent', { type: 'WorkoutEndedEvent' })).toBe(false);
       });
 
       it('rejects a payload missing the type field', () => {
@@ -402,9 +376,7 @@ describe('WorkoutMessage JSON schema validation', () => {
 
     describe('WorkoutUpdatedEvent', () => {
       it('rejects a payload missing required fields', () => {
-        expect(
-          validate('WorkoutUpdatedEvent', { type: 'WorkoutUpdatedEvent' }),
-        ).toBe(false);
+        expect(validate('WorkoutUpdatedEvent', { type: 'WorkoutUpdatedEvent' })).toBe(false);
       });
 
       it('rejects a payload where totalWeightLifted has an unknown unit', () => {
@@ -496,16 +468,13 @@ describe('WorkoutMessage JSON schema validation', () => {
       });
 
       it('rejects an AppConfiguration where notificationsEnabled is not a boolean', () => {
-        expect(
-          validate('AppConfiguration', { notificationsEnabled: 'yes' }),
-        ).toBe(false);
+        expect(validate('AppConfiguration', { notificationsEnabled: 'yes' })).toBe(false);
       });
     });
 
     describe('Translations', () => {
       it('rejects a translations object missing a required key', () => {
-        const { workoutPersistentNotificationRestBreakMessage: _, ...partial } =
-          TRANSLATIONS;
+        const { workoutPersistentNotificationRestBreakMessage: _, ...partial } = TRANSLATIONS;
         expect(validate('Translations', partial)).toBe(false);
       });
 
@@ -521,15 +490,10 @@ describe('WorkoutMessage JSON schema validation', () => {
 
     describe('RecordedWeightedExercise', () => {
       it('rejects an exercise missing its blueprint name', () => {
-        const json = makeWeightedExercise().toJSON() as unknown as Record<
-          string,
-          unknown
-        >;
+        const json = makeWeightedExercise().toJSON() as unknown as Record<string, unknown>;
         const blueprint = { ...(json.blueprint as Record<string, unknown>) };
         delete blueprint.name;
-        expect(
-          validate('RecordedWeightedExercise', { ...json, blueprint }),
-        ).toBe(false);
+        expect(validate('RecordedWeightedExercise', { ...json, blueprint })).toBe(false);
       });
     });
   });

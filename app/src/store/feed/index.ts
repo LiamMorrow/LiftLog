@@ -11,12 +11,7 @@ import {
 } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
 import { ApiError } from '@/services/api-error';
-import {
-  createAction,
-  createSelector,
-  createSlice,
-  PayloadAction,
-} from '@reduxjs/toolkit';
+import { createAction, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type FeedState = {
   isHydrated: boolean;
@@ -70,16 +65,10 @@ const feedSlice = createSlice({
     removeFollowedUser(state, action: PayloadAction<string>) {
       delete state.followedUsers[action.payload];
     },
-    setSharedFeedUser(
-      state,
-      action: PayloadAction<RemoteData<PendingFeedUser>>,
-    ) {
+    setSharedFeedUser(state, action: PayloadAction<RemoteData<PendingFeedUser>>) {
       state.sharedFeedUser = action.payload;
     },
-    setFollowRequests(
-      state,
-      action: PayloadAction<FollowRequestInboxMessage[]>,
-    ) {
+    setFollowRequests(state, action: PayloadAction<FollowRequestInboxMessage[]>) {
       state.followRequests = action.payload;
     },
     setSharedItem(state, action: PayloadAction<RemoteData<SharedItem>>) {
@@ -94,22 +83,15 @@ const feedSlice = createSlice({
     removeFollower(state, action: PayloadAction<string>) {
       delete state.followers[action.payload];
     },
-    removeFollowRequest(
-      state,
-      action: PayloadAction<FollowRequestInboxMessage>,
-    ) {
-      state.followRequests = state.followRequests.filter(
-        (req) => req.senderUserId !== action.payload.senderUserId,
-      );
+    removeFollowRequest(state, action: PayloadAction<FollowRequestInboxMessage>) {
+      state.followRequests = state.followRequests.filter((req) => req.senderUserId !== action.payload.senderUserId);
     },
     putFollowedUser(state, action: PayloadAction<FeedUser>) {
       state.followedUsers[action.payload.id] = action.payload;
     },
     upsertFeedItems(state, action: PayloadAction<SessionUserEvent[]>) {
       const ids = action.payload.map((x) => x.id);
-      state.feed = state.feed
-        .filter((x) => !ids.includes(x.id))
-        .concat(action.payload);
+      state.feed = state.feed.filter((x) => !ids.includes(x.id)).concat(action.payload);
     },
     removeFeedItems(state, action: PayloadAction<string[]>) {
       state.feed = state.feed.filter((x) => !action.payload.includes(x.id));
@@ -118,9 +100,7 @@ const feedSlice = createSlice({
       state.revokedFollowSecrets.push(actions.payload);
     },
     removeRevokableFollowSecret(state, actions: PayloadAction<string>) {
-      state.revokedFollowSecrets = state.revokedFollowSecrets.filter(
-        (x) => x !== actions.payload,
-      );
+      state.revokedFollowSecrets = state.revokedFollowSecrets.filter((x) => x !== actions.payload);
     },
   },
   selectors: {
@@ -179,9 +159,7 @@ export const {
   selectFeedIdentityRemote,
 } = feedSlice.selectors;
 
-export const initializeFeedStateSlice = createAction(
-  'initializeFeedStateSlice',
-);
+export const initializeFeedStateSlice = createAction('initializeFeedStateSlice');
 
 type FeedAction = {
   fromUserAction: boolean;
@@ -205,9 +183,7 @@ export const encryptAndShare = createAction<{
   title: string;
 }>('encryptAndShare');
 
-export const fetchSharedItem = createAction<{ id: string; key: AesKey }>(
-  'fetchSharedItem',
-);
+export const fetchSharedItem = createAction<{ id: string; key: AesKey }>('fetchSharedItem');
 
 export const feedApiError = createAction<{
   message: string;
@@ -215,9 +191,9 @@ export const feedApiError = createAction<{
   action: PayloadAction<FeedAction>;
 }>('feedApiError');
 
-export const fetchAndSetSharedFeedUser = createAction<
-  { idOrLookup: string; name?: string } & FeedAction
->('fetchAndSetSharedFeedUser');
+export const fetchAndSetSharedFeedUser = createAction<{ idOrLookup: string; name?: string } & FeedAction>(
+  'fetchAndSetSharedFeedUser',
+);
 
 export const requestFollowUser = createAction<FeedAction>('requestFollowUser');
 
@@ -225,43 +201,27 @@ export const processFollowResponses = createAction<{
   responses: FollowResponseInboxMessage[];
 }>('processFollowResponses');
 
-export const unfollowFeedUser = createAction<{ feedUser: FeedUser }>(
-  'unfollowFeedUser',
+export const unfollowFeedUser = createAction<{ feedUser: FeedUser }>('unfollowFeedUser');
+
+export const addUnpublishedSessionId = createAction<string>('addUnpublishedSessionId');
+export const removeUnpublishedSessionId = createAction<string>('removeUnpublishedSessionId');
+
+export const acceptFollowRequest = createAction<{ request: FollowRequestInboxMessage } & FeedAction>(
+  'acceptFollowRequest',
 );
 
-export const addUnpublishedSessionId = createAction<string>(
-  'addUnpublishedSessionId',
-);
-export const removeUnpublishedSessionId = createAction<string>(
-  'removeUnpublishedSessionId',
-);
+export const denyFollowRequest = createAction<{ request: FollowRequestInboxMessage } & FeedAction>('denyFollowRequest');
 
-export const acceptFollowRequest = createAction<
-  { request: FollowRequestInboxMessage } & FeedAction
->('acceptFollowRequest');
+export const revokeFollowSecretAndRemoveFollower = createAction<{ userId: string } & FeedAction>('startRemoveFollower');
 
-export const denyFollowRequest = createAction<
-  { request: FollowRequestInboxMessage } & FeedAction
->('denyFollowRequest');
+export const revokeFollowSecrets = createAction<FeedAction>('revokeFollowSecrets');
 
-export const revokeFollowSecretAndRemoveFollower = createAction<
-  { userId: string } & FeedAction
->('startRemoveFollower');
+export const publishUnpublishedSessions = createAction('publishUnpublishedSessions');
 
-export const revokeFollowSecrets = createAction<FeedAction>(
-  'revokeFollowSecrets',
+export const resetFeedAccount = createAction<FeedAction & { newIdentity?: FeedIdentity; createNewIdentity?: false }>(
+  'resetFeedAccount',
 );
 
-export const publishUnpublishedSessions = createAction(
-  'publishUnpublishedSessions',
-);
-
-export const resetFeedAccount = createAction<
-  FeedAction & { newIdentity?: FeedIdentity; createNewIdentity?: false }
->('resetFeedAccount');
-
-export const updateFeedIdentity = createAction<
-  { updates: Partial<FeedIdentity> } & FeedAction
->('updateFeedIdentity');
+export const updateFeedIdentity = createAction<{ updates: Partial<FeedIdentity> } & FeedAction>('updateFeedIdentity');
 
 export default feedSlice.reducer;

@@ -12,18 +12,12 @@ interface ExerciseNotesDisplayProps {
   previousExercise: RecordedExercise | undefined;
 }
 export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
-  const expandByDefault = useAppSelector(
-    (x) => x.settings.notesExpandedByDefault,
-  );
+  const expandByDefault = useAppSelector((x) => x.settings.notesExpandedByDefault);
   const notes = props.exercise.notes ?? '';
   const blueprintNotes = props.exercise.blueprint.notes ?? '';
-  const previousNotes = props.previousExercise?.notes
-    ? 'Last time: ' + props.previousExercise.notes
-    : '';
+  const previousNotes = props.previousExercise?.notes ? 'Last time: ' + props.previousExercise.notes : '';
   const [expanded, setExpanded] = useState(expandByDefault);
-  const [maxNumberOfLines, setMaxNumberOfLines] = useState(
-    expandByDefault ? undefined : 1,
-  );
+  const [maxNumberOfLines, setMaxNumberOfLines] = useState(expandByDefault ? undefined : 1);
   const iconButtonHeight = 40;
   const hasNotes = !(!notes && !blueprintNotes && !previousNotes);
   const handleAccordionToggle = (accordionExpanded: boolean) => {
@@ -41,12 +35,9 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
 
   const renderText = (maxNumberOfLines: number | undefined) => {
     const renderNotes = notes;
-    const renderBlueprintNotes =
-      (maxNumberOfLines === undefined && blueprintNotes) ||
-      (!renderNotes && blueprintNotes);
+    const renderBlueprintNotes = (maxNumberOfLines === undefined && blueprintNotes) || (!renderNotes && blueprintNotes);
     const renderPreviousNotes =
-      (maxNumberOfLines === undefined && previousNotes) ||
-      (!renderBlueprintNotes && !renderNotes && previousNotes);
+      (maxNumberOfLines === undefined && previousNotes) || (!renderBlueprintNotes && !renderNotes && previousNotes);
     return (
       <>
         {renderNotes && (
@@ -54,23 +45,15 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
             {notes}
           </Text>
         )}
-        {renderNotes && (renderPreviousNotes || renderBlueprintNotes) && (
-          <Divider />
-        )}
+        {renderNotes && (renderPreviousNotes || renderBlueprintNotes) && <Divider />}
         {renderBlueprintNotes && (
-          <Text
-            testID="exercise-blueprint-notes"
-            numberOfLines={maxNumberOfLines}
-          >
+          <Text testID="exercise-blueprint-notes" numberOfLines={maxNumberOfLines}>
             {blueprintNotes}
           </Text>
         )}
         {renderPreviousNotes && renderBlueprintNotes && <Divider />}
         {renderPreviousNotes && (
-          <Text
-            testID="exercise-previous-notes"
-            numberOfLines={maxNumberOfLines}
-          >
+          <Text testID="exercise-previous-notes" numberOfLines={maxNumberOfLines}>
             {previousNotes}
           </Text>
         )}
@@ -109,15 +92,9 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
               }}
             >
               <View style={{ flex: 1, paddingRight: spacing[2] }}>
-                <View style={{ position: 'absolute', gap: spacing[2] }}>
-                  {renderText(maxNumberOfLines)}
-                </View>
+                <View style={{ position: 'absolute', gap: spacing[2] }}>{renderText(maxNumberOfLines)}</View>
                 {/* Render this so it doesn't jump around when expanding - need to always reserve the full text space */}
-                <View
-                  style={{ visibility: 'hidden', opacity: 0, gap: spacing[2] }}
-                >
-                  {renderText(undefined)}
-                </View>
+                <View style={{ visibility: 'hidden', opacity: 0, gap: spacing[2] }}>{renderText(undefined)}</View>
               </View>
             </View>
           </AccordionItem>

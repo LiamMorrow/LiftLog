@@ -8,12 +8,7 @@ interface ItemTitleProps {
   color?: ColorChoice;
 }
 
-export default function ItemTitle({
-  title,
-  style,
-  testID,
-  color = 'onSurface',
-}: ItemTitleProps) {
+export default function ItemTitle({ title, style, testID, color = 'onSurface' }: ItemTitleProps) {
   const { colors } = useAppTheme();
 
   return (

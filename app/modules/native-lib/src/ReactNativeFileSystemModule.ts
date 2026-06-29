@@ -8,9 +8,7 @@ declare class ReactNativeFileSystemModule extends NativeModule {
 export function getLibraryDirectory(): string {
   if (Platform.OS === 'ios') {
     // This call loads the native module object from the JSI.
-    const module = requireNativeModule<ReactNativeFileSystemModule>(
-      'ReactNativeFileSystem',
-    );
+    const module = requireNativeModule<ReactNativeFileSystemModule>('ReactNativeFileSystem');
 
     return module.getLibraryDirectory();
   }

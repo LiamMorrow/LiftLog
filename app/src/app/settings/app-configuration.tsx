@@ -27,9 +27,7 @@ export default function AppConfiguration() {
 
   return (
     <FullHeightScrollView>
-      <Stack.Screen
-        options={{ title: t('settings.app_configuration.title') }}
-      />
+      <Stack.Screen options={{ title: t('settings.app_configuration.title') }} />
       <List.Section>
         <ListSwitch
           testID="setShowBodyweight"
@@ -46,18 +44,14 @@ export default function AppConfiguration() {
         />
         <ListSwitch
           headline={<T keyName="workout.show_post_workout_summary.label" />}
-          supportingText={
-            <T keyName="workout.show_post_workout_summary.subtitle" />
-          }
+          supportingText={<T keyName="workout.show_post_workout_summary.subtitle" />}
           value={settings.showPostWorkoutSummary}
           onValueChange={(value) => dispatch(setShowPostWorkoutSummary(value))}
         />
 
         <ListSwitch
           headline={<T keyName="workout.notes_expanded_by_default.label" />}
-          supportingText={
-            <T keyName="workout.notes_expanded_by_default.subtitle" />
-          }
+          supportingText={<T keyName="workout.notes_expanded_by_default.subtitle" />}
           value={settings.notesExpandedByDefault}
           onValueChange={(value) => dispatch(setNotesExpandedByDefault(value))}
         />
@@ -65,9 +59,7 @@ export default function AppConfiguration() {
           headline={<T keyName="workout.keep_screen_awake.label" />}
           supportingText={<T keyName="workout.keep_screen_awake.subtitle" />}
           value={settings.keepScreenAwakeDuringWorkout}
-          onValueChange={(value) =>
-            dispatch(setKeepScreenAwakeDuringWorkout(value))
-          }
+          onValueChange={(value) => dispatch(setKeepScreenAwakeDuringWorkout(value))}
         />
         <ListSwitch
           headline={<T keyName="settings.show_tips.label" />}

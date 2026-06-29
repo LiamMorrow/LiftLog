@@ -1,14 +1,7 @@
 import { streamToUint8Array } from '@/utils/stream';
-import {
-  backupDatabaseAsync,
-  openDatabaseAsync,
-  SQLiteDatabase,
-} from 'expo-sqlite';
+import { backupDatabaseAsync, openDatabaseAsync, SQLiteDatabase } from 'expo-sqlite';
 
-export async function getBackupBytes(options: {
-  includeFeed: boolean;
-  expoDb: SQLiteDatabase;
-}) {
+export async function getBackupBytes(options: { includeFeed: boolean; expoDb: SQLiteDatabase }) {
   const { expoDb, includeFeed } = options;
   const backupDatabase = await openDatabaseAsync(':memory:');
   await backupDatabaseAsync({

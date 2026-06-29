@@ -10,15 +10,11 @@ export interface ExerciseDescriptor {
   instructions: string;
   category: string;
 }
-export function fromExerciseDescriptorJSON(
-  json: ExerciseDescriptorJSON,
-): ExerciseDescriptor {
+export function fromExerciseDescriptorJSON(json: ExerciseDescriptorJSON): ExerciseDescriptor {
   return { ...json };
 }
 
-export function toExerciseDescriptorJSON(
-  value: ExerciseDescriptor,
-): ExerciseDescriptorJSON {
+export function toExerciseDescriptorJSON(value: ExerciseDescriptor): ExerciseDescriptorJSON {
   return {
     ...value,
   };

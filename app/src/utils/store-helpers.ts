@@ -1,11 +1,5 @@
 import { Weight } from '@/models/weight';
-import {
-  LocalDate,
-  LocalDateTime,
-  LocalTime,
-  Duration,
-  OffsetDateTime,
-} from '@js-joda/core';
+import { LocalDate, LocalDateTime, LocalTime, Duration, OffsetDateTime } from '@js-joda/core';
 import { Draft } from '@reduxjs/toolkit';
 import BigNumber from 'bignumber.js';
 

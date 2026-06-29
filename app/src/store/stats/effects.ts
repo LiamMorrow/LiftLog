@@ -13,11 +13,7 @@ export function applyStatsEffects(addEffect: AddEffectFn) {
   addEffect(fetchOverallStats, async (_, { getState, dispatch }) => {
     const state = getState();
 
-    if (
-      state.stats.overallView.isLoading() ||
-      !state.stats.isDirty ||
-      !state.storedSessions.isHydrated
-    ) {
+    if (state.stats.overallView.isLoading() || !state.stats.isDirty || !state.storedSessions.isHydrated) {
       return;
     }
 

@@ -1,9 +1,4 @@
-import {
-  createAction,
-  createSelector,
-  createSlice,
-  PayloadAction,
-} from '@reduxjs/toolkit';
+import { createAction, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Duration, LocalDate, OffsetDateTime } from '@js-joda/core';
 import { Weight } from '@/models/weight';
 import { LocalDateRange } from '@/models/time-models';
@@ -89,19 +84,13 @@ const statsSlice = createSlice({
   name: 'stats',
   initialState,
   reducers: {
-    setOverallStats(
-      state,
-      action: PayloadAction<RemoteData<GranularStatisticView>>,
-    ) {
+    setOverallStats(state, action: PayloadAction<RemoteData<GranularStatisticView>>) {
       state.overallView = action.payload;
     },
     setStatsIsDirty(state, action: PayloadAction<boolean>) {
       state.isDirty = action.payload;
     },
-    setOverallViewTime(
-      state,
-      action: PayloadAction<LocalDateRange | 'all-time'>,
-    ) {
+    setOverallViewTime(state, action: PayloadAction<LocalDateRange | 'all-time'>) {
       state.overallViewTime = action.payload;
     },
     setOverallViewSession(state, action: PayloadAction<string | undefined>) {
@@ -113,8 +102,7 @@ const statsSlice = createSlice({
   },
 });
 
-export const { setOverallStats, setStatsIsDirty, setOverallViewTime } =
-  statsSlice.actions;
+export const { setOverallStats, setStatsIsDirty, setOverallViewTime } = statsSlice.actions;
 
 export const { selectOverallView } = statsSlice.selectors;
 export const selectExerciseView = createSelector(
@@ -123,9 +111,7 @@ export const selectExerciseView = createSelector(
   (state: RemoteData<GranularStatisticView>, exerciseName: string) =>
     state.map((x) =>
       x.weightedExerciseStats.find((ex) =>
-        new NormalizedName(ex.exerciseName).equals(
-          new NormalizedName(exerciseName),
-        ),
+        new NormalizedName(ex.exerciseName).equals(new NormalizedName(exerciseName)),
       ),
     ),
 );

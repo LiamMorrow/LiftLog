@@ -7,16 +7,10 @@ import { addMessage } from '@/store/ai-planner';
 import { uuid } from '@/utils/uuid';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 
-export function ShareProgramButton({
-  disabled,
-}: {
-  disabled: boolean;
-}) {
+export function ShareProgramButton({ disabled }: { disabled: boolean }) {
   const { t } = useTranslate();
   const dispatch = useDispatch();
-  const activeProgram = useAppSelector(
-    (x) => x.program.savedPrograms[x.program.activePlanId],
-  );
+  const activeProgram = useAppSelector((x) => x.program.savedPrograms[x.program.activePlanId]);
 
   const share = () => {
     if (!activeProgram) {
@@ -35,13 +29,7 @@ export function ShareProgramButton({
 
   return (
     <Tooltip title={t('ai.share_program.button')}>
-      <IconButton
-        mode="outlined"
-        icon={'assignment'}
-        size={35}
-        disabled={disabled || !activeProgram}
-        onPress={share}
-      />
+      <IconButton mode="outlined" icon={'assignment'} size={35} disabled={disabled || !activeProgram} onPress={share} />
     </Tooltip>
   );
 }

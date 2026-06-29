@@ -30,32 +30,22 @@ describe('conversions', () => {
     ({ initialValueGenerator, type, assertEquals }) => {
       it('with json', () => {
         fc.assert(
-          fc.property(
-            initialValueGenerator as fc.Arbitrary<unknown>,
-            (initialValue) => {
-              const converted = (initialValue as ToJSON).toJSON();
-              const encoded = toJsonString(converted);
-              const convertedBack = (type as FromJSON).fromJSON(
-                fromJsonString(encoded),
-              );
+          fc.property(initialValueGenerator as fc.Arbitrary<unknown>, (initialValue) => {
+            const converted = (initialValue as ToJSON).toJSON();
+            const encoded = toJsonString(converted);
+            const convertedBack = (type as FromJSON).fromJSON(fromJsonString(encoded));
 
-              assertEquals(initialValue, convertedBack);
-            },
-          ),
+            assertEquals(initialValue, convertedBack);
+          }),
         );
       });
     },
   );
 
   it('should be able to decode a backup from original liftlog', () => {
-    const compressedData = readFileSync(
-      __dirname + '/' + 'export.liftlogbackup.gz',
-    );
+    const compressedData = readFileSync(__dirname + '/' + 'export.liftlogbackup.gz');
     const decompressed = gunzipSync(compressedData);
-    const decoded =
-      LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.decode(
-        decompressed,
-      );
+    const decoded = LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.decode(decompressed);
     const sessions = fromSessionHistoryDao(decoded);
     const totalWeightLifted = sessions
       .values()
@@ -89,8 +79,6 @@ function fromSessionHistoryDao(
   sessionHistoryModel: LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2,
 ): Session[] {
   return sessionHistoryModel.completedSessions.map((item) =>
-    Session.fromJSON(
-      sessionMigrations.migrate(ProtobufToJsonV1Migrator.migrateSession(item)),
-    ),
+    Session.fromJSON(sessionMigrations.migrate(ProtobufToJsonV1Migrator.migrateSession(item))),
   );
 }

@@ -187,11 +187,11 @@ describe('migrator', () => {
     it('can define a migration with implicit typing', () => {
       type InitialType = { foo: 'foo' };
       const migrations = createMigrations<InitialType>()
-        .add((x) => ({
+        .add(() => ({
           version: 2,
           bar: 'bar',
         }))
-        .add((x) => ({ version: 3, baz: 'baz' }))
+        .add(() => ({ version: 3, baz: 'baz' }))
         .build();
 
       // Allows all these types

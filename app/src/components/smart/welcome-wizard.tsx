@@ -1,8 +1,6 @@
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
-import SelectButton, {
-  SelectButtonOption,
-} from '@/components/presentation/foundation/select-button';
+import SelectButton, { SelectButtonOption } from '@/components/presentation/foundation/select-button';
 import ThemeChooser from '@/components/presentation/foundation/editors/theme-chooser';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { supportedLanguages } from '@/services/tolgee';
@@ -30,9 +28,7 @@ import { requestPermissionsAsync } from 'expo-notifications';
 import { HealthExportSwitch } from './health-export-switch';
 
 export function WelcomeWizard() {
-  const notificationsEnabled = useAppSelector(
-    (x) => x.settings.restNotifications,
-  );
+  const notificationsEnabled = useAppSelector((x) => x.settings.restNotifications);
   const formatDate = useFormatDate();
   const daysOfWeekOptions: SelectButtonOption<DayOfWeek>[] = [
     {
@@ -123,9 +119,7 @@ export function WelcomeWizard() {
         <Text variant="bodyMedium" style={styles.sectionDescription}>
           {t('onboarding.open_source.body')}
         </Text>
-        <Button
-          onPress={() => openUrl('https://github.com/LiamMorrow/LiftLog')}
-        >
+        <Button onPress={() => openUrl('https://github.com/LiamMorrow/LiftLog')}>
           {t('onboarding.open_source.button')}
         </Button>
         <Button onPress={() => openUrl('https://liftlog.online/privacy.html')}>
@@ -207,10 +201,7 @@ export function WelcomeWizard() {
           onValueChange={(value) => dispatch(setRestNotifications(value))}
         />
 
-        <Text
-          variant="titleMedium"
-          style={[styles.sectionTitle, styles.topSpacing]}
-        >
+        <Text variant="titleMedium" style={[styles.sectionTitle, styles.topSpacing]}>
           {t('feed.feed.title')}
         </Text>
         <ListSwitch
@@ -246,23 +237,12 @@ export function WelcomeWizard() {
             <View style={styles.footer}>
               <View style={styles.pageIndicator}>
                 {Array.from({ length: totalPages }).map((_, index) => (
-                  <View
-                    key={index}
-                    style={[
-                      styles.dot,
-                      currentPage === index && styles.activeDot,
-                    ]}
-                  />
+                  <View key={index} style={[styles.dot, currentPage === index && styles.activeDot]} />
                 ))}
               </View>
 
               <View style={styles.buttonRow}>
-                <Button
-                  mode="text"
-                  onPress={handlePrevious}
-                  disabled={currentPage === 0}
-                  style={styles.button}
-                >
+                <Button mode="text" onPress={handlePrevious} disabled={currentPage === 0} style={styles.button}>
                   {t('generic.previous.button')}
                 </Button>
                 <Button
@@ -271,9 +251,7 @@ export function WelcomeWizard() {
                   onPress={() => void handleNext()}
                   style={styles.button}
                 >
-                  {currentPage === totalPages - 1
-                    ? t('onboarding.get_started.button')
-                    : t('generic.next.button')}
+                  {currentPage === totalPages - 1 ? t('onboarding.get_started.button') : t('generic.next.button')}
                 </Button>
               </View>
             </View>

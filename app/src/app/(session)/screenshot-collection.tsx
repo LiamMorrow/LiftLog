@@ -4,25 +4,12 @@ import {
   SessionBlueprint,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
-import {
-  Session,
-  RecordedWeightedExercise,
-  RecordedSet,
-} from '@/models/session-models';
+import { Session, RecordedWeightedExercise, RecordedSet } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { setCurrentSession } from '@/store/current-session';
 import { useAppSelector } from '@/store';
-import {
-  setEditingExerciseIndex,
-  setEditingSession,
-} from '@/store/session-editor';
-import {
-  Duration,
-  LocalDate,
-  LocalTime,
-  OffsetDateTime,
-  ZoneOffset,
-} from '@js-joda/core';
+import { setEditingExerciseIndex, setEditingSession } from '@/store/session-editor';
+import { Duration, LocalDate, LocalTime, OffsetDateTime, ZoneOffset } from '@js-joda/core';
 import { Redirect, useLocalSearchParams } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import BigNumber from 'bignumber.js';
@@ -31,15 +18,8 @@ import { AiPlan } from '@/models/ai-models';
 import { setStatsIsDirty, fetchOverallStats } from '@/store/stats';
 import { setSavedPlans } from '@/store/program';
 import { ProgramBlueprint } from '@/models/blueprint-models';
-import {
-  upsertStoredSessions,
-  setStoredSessions,
-} from '@/store/stored-sessions';
-import {
-  setColorSchemeSeed,
-  setRestNotifications,
-  setWelcomeWizardCompleted,
-} from '@/store/settings';
+import { upsertStoredSessions, setStoredSessions } from '@/store/stored-sessions';
+import { setColorSchemeSeed, setRestNotifications, setWelcomeWizardCompleted } from '@/store/settings';
 
 export default function ScreenshotCollectionPage() {
   const { type } = useLocalSearchParams<{ type: string }>();
@@ -83,11 +63,8 @@ function PrepareExerciseEditorPage() {
               name: 'Bench Press',
               sets: 4,
               repsPerSet: 8,
-              notes:
-                'Keep shoulder blades retracted and drive feet into the floor',
-              progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(
-                BigNumber(2.5),
-              ),
+              notes: 'Keep shoulder blades retracted and drive feet into the floor',
+              progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
             }),
             WeightedExerciseBlueprint.empty().with({
               name: 'Incline Dumbbell Press',
@@ -107,11 +84,7 @@ function PrepareExerciseEditorPage() {
     dispatch(setEditingExerciseIndex(0));
   });
 
-  return (
-    <Redirect
-      href={`/settings/manage-workouts/${activePlanId}/manage-session/0/exercise`}
-    />
-  );
+  return <Redirect href={`/settings/manage-workouts/${activePlanId}/manage-session/0/exercise`} />;
 }
 
 function PrepareAiPlannerPage() {
@@ -148,20 +121,12 @@ function PrepareAiPlannerPage() {
               [
                 new SessionBlueprint(
                   'Upper Power',
-                  [
-                    ex('Bench Press', 4, 5),
-                    ex('Barbell Row', 4, 5),
-                    ex('Overhead Press', 3, 5),
-                  ],
+                  [ex('Bench Press', 4, 5), ex('Barbell Row', 4, 5), ex('Overhead Press', 3, 5)],
                   '',
                 ),
                 new SessionBlueprint(
                   'Lower Power',
-                  [
-                    ex('Squat', 4, 5),
-                    ex('Romanian Deadlift', 3, 8),
-                    ex('Leg Press', 3, 8),
-                  ],
+                  [ex('Squat', 4, 5), ex('Romanian Deadlift', 3, 8), ex('Leg Press', 3, 8)],
                   '',
                 ),
               ],
@@ -192,9 +157,7 @@ function buildStatsSessionData(dispatch: ReturnType<typeof useDispatch>) {
   const makeTime = (daysAgo: number, minuteOffset: number) =>
     OffsetDateTime.of(
       LocalDate.now().minusDays(daysAgo),
-      LocalTime.of(7 + (daysAgo % 3), (daysAgo * 17) % 30).plusMinutes(
-        minuteOffset,
-      ),
+      LocalTime.of(7 + (daysAgo % 3), (daysAgo * 17) % 30).plusMinutes(minuteOffset),
       ZoneOffset.UTC,
     );
 
@@ -211,10 +174,7 @@ function buildStatsSessionData(dispatch: ReturnType<typeof useDispatch>) {
     let updated = recorded;
     for (let i = 0; i < sets; i++) {
       const failRoll = (daysAgo * 31 + exIdx * 7 + i * 3) % 9;
-      const reps =
-        i >= sets - 2 && failRoll < 3
-          ? Math.max(repsPerSet - 1 - (failRoll % 2), 1)
-          : repsPerSet;
+      const reps = i >= sets - 2 && failRoll < 3 ? Math.max(repsPerSet - 1 - (failRoll % 2), 1) : repsPerSet;
       updated = updated.withSet(i, (ps) =>
         ps.with({
           weight: new Weight(weightKg, 'kilograms'),
@@ -226,8 +186,7 @@ function buildStatsSessionData(dispatch: ReturnType<typeof useDispatch>) {
   };
 
   // Weight increases by `step` every 3 sessions (~1 week of progressive overload)
-  const prog = (idx: number, base: number, step: number) =>
-    base + Math.floor(idx / 3) * step;
+  const prog = (idx: number, base: number, step: number) => base + Math.floor(idx / 3) * step;
 
   // Exercises at ~0, 20, 40 min → session runs ~46-55 min
   const push = (daysAgo: number, idx: number) => {
@@ -268,8 +227,8 @@ function buildStatsSessionData(dispatch: ReturnType<typeof useDispatch>) {
 
   // 39 sessions over 90 days (~3/week), push/pull/legs rotating
   const daysAgoList = [
-    89, 87, 84, 82, 80, 77, 75, 73, 70, 68, 65, 63, 61, 58, 56, 54, 51, 49, 47,
-    44, 42, 40, 37, 35, 33, 30, 28, 26, 23, 21, 19, 16, 14, 12, 9, 7, 5, 3, 1,
+    89, 87, 84, 82, 80, 77, 75, 73, 70, 68, 65, 63, 61, 58, 56, 54, 51, 49, 47, 44, 42, 40, 37, 35, 33, 30, 28, 26, 23,
+    21, 19, 16, 14, 12, 9, 7, 5, 3, 1,
   ];
   const sessions = daysAgoList.map((daysAgo, i) => {
     if (i % 3 === 0) return push(daysAgo, i);
@@ -298,20 +257,14 @@ function PrepareStatsPage() {
 function PrepareExerciseStatsPage() {
   const dispatch = useDispatch();
   useMountEffect(() => buildStatsSessionData(dispatch));
-  return (
-    <Redirect
-      href={'/stats/expanded-weighted-exercise?exerciseName=Bench%20Press'}
-    />
-  );
+  return <Redirect href={'/stats/expanded-weighted-exercise?exerciseName=Bench%20Press'} />;
 }
 
 function PrepareHomePage() {
   const activePlanId = useAppSelector((s) => s.program.activePlanId);
   const dispatch = useDispatch();
   useMountEffect(() => {
-    dispatch(
-      setCurrentSession({ target: 'workoutSession', session: undefined }),
-    );
+    dispatch(setCurrentSession({ target: 'workoutSession', session: undefined }));
     dispatch(
       setSavedPlans({
         [activePlanId]: new ProgramBlueprint(
@@ -411,25 +364,15 @@ function PrepareHomePage() {
   return <Redirect href={'/(session)'} />;
 }
 
-function setExerciseWeight(
-  s: Session,
-  exIdx: number,
-  weightKg: number,
-): Session {
+function setExerciseWeight(s: Session, exIdx: number, weightKg: number): Session {
   const recorded = s.recordedExercises[exIdx] as RecordedWeightedExercise;
-  return s.withExercise(
-    exIdx,
-    recorded.withWeight(0, new Weight(weightKg, 'kilograms'), 'allSets'),
-  );
+  return s.withExercise(exIdx, recorded.withWeight(0, new Weight(weightKg, 'kilograms'), 'allSets'));
 }
 
 function PrepareWorkoutPage() {
   const dispatch = useDispatch();
   useMountEffect(() => {
-    let session = Session.freeformSession(
-      LocalDate.now(),
-      new Weight(80, 'kilograms'),
-    ).withAddedExercise(
+    let session = Session.freeformSession(LocalDate.now(), new Weight(80, 'kilograms')).withAddedExercise(
       WeightedExerciseBlueprint.empty().with({
         name: 'Squats',
         repsPerSet: 10,

@@ -1,11 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import {
-  View,
-  LayoutChangeEvent,
-  StyleSheet,
-  Animated,
-  Easing,
-} from 'react-native';
+import { View, LayoutChangeEvent, StyleSheet, Animated, Easing } from 'react-native';
 
 type AccordionItemProps = {
   isExpanded: boolean;
@@ -30,9 +24,7 @@ export function AccordionItem({
   const measuredHeightRef = useRef(unexpandedHeight);
 
   const animate = useCallback(() => {
-    const targetHeight = isExpanded
-      ? measuredHeightRef.current
-      : unexpandedHeight;
+    const targetHeight = isExpanded ? measuredHeightRef.current : unexpandedHeight;
     Animated.timing(animatedHeight, {
       toValue: targetHeight,
       duration,
@@ -57,9 +49,7 @@ export function AccordionItem({
   };
 
   return (
-    <Animated.View
-      style={[{ height: animatedHeight, overflow: 'hidden' }, style]}
-    >
+    <Animated.View style={[{ height: animatedHeight, overflow: 'hidden' }, style]}>
       <View style={styles.content} onLayout={onLayoutContent}>
         {children}
       </View>

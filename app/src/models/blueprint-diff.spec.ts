@@ -9,19 +9,11 @@ import {
   SessionBlueprint,
   WeightedExerciseBlueprint,
 } from './blueprint-models';
-import {
-  applySessionBlueprintDiff,
-  diffSessionBlueprints,
-  getChangeDescription,
-} from './blueprint-diff';
+import { applySessionBlueprintDiff, diffSessionBlueprints, getChangeDescription } from './blueprint-diff';
 import { UseTranslateResult } from '@tolgee/react';
 
 describe('diffSessionBlueprints', () => {
-  const createWeightedExercise = (
-    name: string,
-    sets = 3,
-    reps = 10,
-  ): WeightedExerciseBlueprint =>
+  const createWeightedExercise = (name: string, sets = 3, reps = 10): WeightedExerciseBlueprint =>
     new WeightedExerciseBlueprint(
       name,
       sets,
@@ -103,17 +95,10 @@ describe('diffSessionBlueprints', () => {
 
   describe('exercise additions and removals', () => {
     it('should detect added exercise', () => {
-      const original = new SessionBlueprint(
-        'Workout',
-        [createWeightedExercise('Squat')],
-        '',
-      );
+      const original = new SessionBlueprint('Workout', [createWeightedExercise('Squat')], '');
       const modified = new SessionBlueprint(
         'Workout',
-        [
-          createWeightedExercise('Squat'),
-          createWeightedExercise('Bench Press'),
-        ],
+        [createWeightedExercise('Squat'), createWeightedExercise('Bench Press')],
         '',
       );
 
@@ -132,17 +117,10 @@ describe('diffSessionBlueprints', () => {
     it('should detect removed exercise', () => {
       const original = new SessionBlueprint(
         'Workout',
-        [
-          createWeightedExercise('Squat'),
-          createWeightedExercise('Bench Press'),
-        ],
+        [createWeightedExercise('Squat'), createWeightedExercise('Bench Press')],
         '',
       );
-      const modified = new SessionBlueprint(
-        'Workout',
-        [createWeightedExercise('Squat')],
-        '',
-      );
+      const modified = new SessionBlueprint('Workout', [createWeightedExercise('Squat')], '');
 
       const diff = diffSessionBlueprints(original, modified);
 
@@ -161,20 +139,12 @@ describe('diffSessionBlueprints', () => {
     it('should detect reordered exercises', () => {
       const original = new SessionBlueprint(
         'Workout',
-        [
-          createWeightedExercise('Squat'),
-          createWeightedExercise('Bench Press'),
-          createWeightedExercise('Deadlift'),
-        ],
+        [createWeightedExercise('Squat'), createWeightedExercise('Bench Press'), createWeightedExercise('Deadlift')],
         '',
       );
       const modified = new SessionBlueprint(
         'Workout',
-        [
-          createWeightedExercise('Bench Press'),
-          createWeightedExercise('Squat'),
-          createWeightedExercise('Deadlift'),
-        ],
+        [createWeightedExercise('Bench Press'), createWeightedExercise('Squat'), createWeightedExercise('Deadlift')],
         '',
       );
 
@@ -183,18 +153,14 @@ describe('diffSessionBlueprints', () => {
       expect(diff.hasChanges).toBe(true);
       expect(diff.reorderedExercises).toHaveLength(2);
 
-      const squatReorder = diff.reorderedExercises.find(
-        (r) => r.exerciseName === 'Squat',
-      );
+      const squatReorder = diff.reorderedExercises.find((r) => r.exerciseName === 'Squat');
       expect(squatReorder).toMatchObject({
         type: 'reordered',
         oldIndex: 0,
         newIndex: 1,
       });
 
-      const benchReorder = diff.reorderedExercises.find(
-        (r) => r.exerciseName === 'Bench Press',
-      );
+      const benchReorder = diff.reorderedExercises.find((r) => r.exerciseName === 'Bench Press');
       expect(benchReorder).toMatchObject({
         type: 'reordered',
         oldIndex: 1,
@@ -205,16 +171,8 @@ describe('diffSessionBlueprints', () => {
 
   describe('exercise field changes', () => {
     it('should detect sets change', () => {
-      const original = new SessionBlueprint(
-        'Workout',
-        [createWeightedExercise('Squat', 3, 10)],
-        '',
-      );
-      const modified = new SessionBlueprint(
-        'Workout',
-        [createWeightedExercise('Squat', 5, 10)],
-        '',
-      );
+      const original = new SessionBlueprint('Workout', [createWeightedExercise('Squat', 3, 10)], '');
+      const modified = new SessionBlueprint('Workout', [createWeightedExercise('Squat', 5, 10)], '');
 
       const diff = diffSessionBlueprints(original, modified);
 
@@ -230,16 +188,8 @@ describe('diffSessionBlueprints', () => {
     });
 
     it('should detect reps change', () => {
-      const original = new SessionBlueprint(
-        'Workout',
-        [createWeightedExercise('Squat', 3, 10)],
-        '',
-      );
-      const modified = new SessionBlueprint(
-        'Workout',
-        [createWeightedExercise('Squat', 3, 8)],
-        '',
-      );
+      const original = new SessionBlueprint('Workout', [createWeightedExercise('Squat', 3, 10)], '');
+      const modified = new SessionBlueprint('Workout', [createWeightedExercise('Squat', 3, 8)], '');
 
       const diff = diffSessionBlueprints(original, modified);
 
@@ -296,16 +246,8 @@ describe('diffSessionBlueprints', () => {
     });
 
     it('should detect multiple field changes on same exercise', () => {
-      const original = new SessionBlueprint(
-        'Workout',
-        [createWeightedExercise('Squat', 3, 10)],
-        '',
-      );
-      const modified = new SessionBlueprint(
-        'Workout',
-        [createWeightedExercise('Squat', 5, 8)],
-        '',
-      );
+      const original = new SessionBlueprint('Workout', [createWeightedExercise('Squat', 3, 10)], '');
+      const modified = new SessionBlueprint('Workout', [createWeightedExercise('Squat', 5, 8)], '');
 
       const diff = diffSessionBlueprints(original, modified);
 
@@ -318,16 +260,8 @@ describe('diffSessionBlueprints', () => {
 
   describe('exercise type changes', () => {
     it('should detect weighted to cardio change', () => {
-      const original = new SessionBlueprint(
-        'Workout',
-        [createWeightedExercise('Exercise')],
-        '',
-      );
-      const modified = new SessionBlueprint(
-        'Workout',
-        [createCardioExercise('Exercise')],
-        '',
-      );
+      const original = new SessionBlueprint('Workout', [createWeightedExercise('Exercise')], '');
+      const modified = new SessionBlueprint('Workout', [createCardioExercise('Exercise')], '');
 
       const diff = diffSessionBlueprints(original, modified);
 
@@ -342,10 +276,7 @@ describe('diffSessionBlueprints', () => {
     it('should match duplicates by position within name group', () => {
       const original = new SessionBlueprint(
         'Workout',
-        [
-          createWeightedExercise('Squat', 3, 10),
-          createWeightedExercise('Squat', 4, 8),
-        ],
+        [createWeightedExercise('Squat', 3, 10), createWeightedExercise('Squat', 4, 8)],
         '',
       );
       const modified = new SessionBlueprint(
@@ -361,22 +292,14 @@ describe('diffSessionBlueprints', () => {
 
       expect(diff.modifiedExercises).toHaveLength(2);
       // First Squat: reps 10 -> 12
-      const firstSquatChanges = diff.modifiedExercises.find(
-        (m) => m.exerciseIndex === 0,
-      )?.changes;
-      expect(
-        firstSquatChanges?.find((c) => c.kind === 'exerciseReps'),
-      ).toMatchObject({
+      const firstSquatChanges = diff.modifiedExercises.find((m) => m.exerciseIndex === 0)?.changes;
+      expect(firstSquatChanges?.find((c) => c.kind === 'exerciseReps')).toMatchObject({
         oldValue: 10,
         newValue: 12,
       });
       // Second Squat: sets 4 -> 5
-      const secondSquatChanges = diff.modifiedExercises.find(
-        (m) => m.exerciseIndex === 1,
-      )?.changes;
-      expect(
-        secondSquatChanges?.find((c) => c.kind === 'exerciseSets'),
-      ).toMatchObject({
+      const secondSquatChanges = diff.modifiedExercises.find((m) => m.exerciseIndex === 1)?.changes;
+      expect(secondSquatChanges?.find((c) => c.kind === 'exerciseSets')).toMatchObject({
         oldValue: 4,
         newValue: 5,
       });
@@ -385,19 +308,10 @@ describe('diffSessionBlueprints', () => {
 
   describe('cardio multi-set changes', () => {
     it('should detect added cardio set', () => {
-      const original = new SessionBlueprint(
-        'Workout',
-        [createCardioExercise('Running', [createCardioSet(30)])],
-        '',
-      );
+      const original = new SessionBlueprint('Workout', [createCardioExercise('Running', [createCardioSet(30)])], '');
       const modified = new SessionBlueprint(
         'Workout',
-        [
-          createCardioExercise('Running', [
-            createCardioSet(30),
-            createCardioSet(20),
-          ]),
-        ],
+        [createCardioExercise('Running', [createCardioSet(30), createCardioSet(20)])],
         '',
       );
 
@@ -418,19 +332,10 @@ describe('diffSessionBlueprints', () => {
     it('should detect removed cardio set', () => {
       const original = new SessionBlueprint(
         'Workout',
-        [
-          createCardioExercise('Running', [
-            createCardioSet(30),
-            createCardioSet(20),
-          ]),
-        ],
+        [createCardioExercise('Running', [createCardioSet(30), createCardioSet(20)])],
         '',
       );
-      const modified = new SessionBlueprint(
-        'Workout',
-        [createCardioExercise('Running', [createCardioSet(30)])],
-        '',
-      );
+      const modified = new SessionBlueprint('Workout', [createCardioExercise('Running', [createCardioSet(30)])], '');
 
       const diff = diffSessionBlueprints(original, modified);
 
@@ -445,23 +350,13 @@ describe('diffSessionBlueprints', () => {
     });
 
     it('should detect target change in a cardio set', () => {
-      const original = new SessionBlueprint(
-        'Workout',
-        [createCardioExercise('Running', [createCardioSet(30)])],
-        '',
-      );
-      const modified = new SessionBlueprint(
-        'Workout',
-        [createCardioExercise('Running', [createCardioSet(45)])],
-        '',
-      );
+      const original = new SessionBlueprint('Workout', [createCardioExercise('Running', [createCardioSet(30)])], '');
+      const modified = new SessionBlueprint('Workout', [createCardioExercise('Running', [createCardioSet(45)])], '');
 
       const diff = diffSessionBlueprints(original, modified);
 
       expect(diff.hasChanges).toBe(true);
-      const targetChange = diff.modifiedExercises[0]!.changes.find(
-        (c) => c.kind === 'exerciseTarget',
-      );
+      const targetChange = diff.modifiedExercises[0]!.changes.find((c) => c.kind === 'exerciseTarget');
       expect(targetChange).toMatchObject({
         kind: 'exerciseTarget',
         setIndex: 0,
@@ -471,29 +366,19 @@ describe('diffSessionBlueprints', () => {
     it('should detect tracking field change in a cardio set', () => {
       const original = new SessionBlueprint(
         'Workout',
-        [
-          createCardioExercise('Running', [
-            createCardioSet(30, true, false, false, false),
-          ]),
-        ],
+        [createCardioExercise('Running', [createCardioSet(30, true, false, false, false)])],
         '',
       );
       const modified = new SessionBlueprint(
         'Workout',
-        [
-          createCardioExercise('Running', [
-            createCardioSet(30, true, true, false, false),
-          ]),
-        ],
+        [createCardioExercise('Running', [createCardioSet(30, true, true, false, false)])],
         '',
       );
 
       const diff = diffSessionBlueprints(original, modified);
 
       expect(diff.hasChanges).toBe(true);
-      const trackingChange = diff.modifiedExercises[0]!.changes.find(
-        (c) => c.kind === 'exerciseTracking',
-      );
+      const trackingChange = diff.modifiedExercises[0]!.changes.find((c) => c.kind === 'exerciseTracking');
       expect(trackingChange).toMatchObject({
         kind: 'exerciseTracking',
         field: 'trackDistance',
@@ -506,12 +391,7 @@ describe('diffSessionBlueprints', () => {
     it('should detect changes in multiple cardio sets', () => {
       const original = new SessionBlueprint(
         'Workout',
-        [
-          createCardioExercise('Running', [
-            createCardioSet(30),
-            createCardioSet(20),
-          ]),
-        ],
+        [createCardioExercise('Running', [createCardioSet(30), createCardioSet(20)])],
         '',
       );
       const modified = new SessionBlueprint(
@@ -528,9 +408,7 @@ describe('diffSessionBlueprints', () => {
       const diff = diffSessionBlueprints(original, modified);
 
       expect(diff.hasChanges).toBe(true);
-      const targetChanges = diff.modifiedExercises[0]!.changes.filter(
-        (c) => c.kind === 'exerciseTarget',
-      );
+      const targetChanges = diff.modifiedExercises[0]!.changes.filter((c) => c.kind === 'exerciseTarget');
       expect(targetChanges).toHaveLength(2);
       expect(targetChanges[0]).toMatchObject({ setIndex: 0 });
       expect(targetChanges[1]).toMatchObject({ setIndex: 1 });
@@ -538,19 +416,10 @@ describe('diffSessionBlueprints', () => {
 
     it('should detect no changes for identical cardio exercises', () => {
       const sets = [createCardioSet(30), createCardioSet(20)];
-      const original = new SessionBlueprint(
-        'Workout',
-        [createCardioExercise('Running', sets)],
-        '',
-      );
+      const original = new SessionBlueprint('Workout', [createCardioExercise('Running', sets)], '');
       const modified = new SessionBlueprint(
         'Workout',
-        [
-          createCardioExercise('Running', [
-            createCardioSet(30),
-            createCardioSet(20),
-          ]),
-        ],
+        [createCardioExercise('Running', [createCardioSet(30), createCardioSet(20)])],
         '',
       );
 
@@ -562,11 +431,7 @@ describe('diffSessionBlueprints', () => {
 });
 
 describe('applySessionBlueprintDiff', () => {
-  const createWeightedExercise = (
-    name: string,
-    sets = 3,
-    reps = 10,
-  ): WeightedExerciseBlueprint =>
+  const createWeightedExercise = (name: string, sets = 3, reps = 10): WeightedExerciseBlueprint =>
     new WeightedExerciseBlueprint(
       name,
       sets,
@@ -590,11 +455,7 @@ describe('applySessionBlueprintDiff', () => {
   });
 
   it('should apply selected exercise addition', () => {
-    const original = new SessionBlueprint(
-      'Workout',
-      [createWeightedExercise('Squat')],
-      '',
-    );
+    const original = new SessionBlueprint('Workout', [createWeightedExercise('Squat')], '');
     const modified = new SessionBlueprint(
       'Workout',
       [createWeightedExercise('Squat'), createWeightedExercise('Bench Press')],
@@ -615,11 +476,7 @@ describe('applySessionBlueprintDiff', () => {
       [createWeightedExercise('Squat'), createWeightedExercise('Bench Press')],
       '',
     );
-    const modified = new SessionBlueprint(
-      'Workout',
-      [createWeightedExercise('Squat')],
-      '',
-    );
+    const modified = new SessionBlueprint('Workout', [createWeightedExercise('Squat')], '');
 
     const diff = diffSessionBlueprints(original, modified);
 
@@ -630,16 +487,8 @@ describe('applySessionBlueprintDiff', () => {
   });
 
   it('should apply selected field change', () => {
-    const original = new SessionBlueprint(
-      'Workout',
-      [createWeightedExercise('Squat', 3, 10)],
-      '',
-    );
-    const modified = new SessionBlueprint(
-      'Workout',
-      [createWeightedExercise('Squat', 5, 8)],
-      '',
-    );
+    const original = new SessionBlueprint('Workout', [createWeightedExercise('Squat', 3, 10)], '');
+    const modified = new SessionBlueprint('Workout', [createWeightedExercise('Squat', 5, 8)], '');
 
     const diff = diffSessionBlueprints(original, modified);
 
@@ -650,16 +499,8 @@ describe('applySessionBlueprintDiff', () => {
   });
 
   it('should apply all selected changes correctly', () => {
-    const original = new SessionBlueprint(
-      'Workout',
-      [createWeightedExercise('Squat', 3, 10)],
-      '',
-    );
-    const modified = new SessionBlueprint(
-      'Workout',
-      [createWeightedExercise('Squat', 5, 8)],
-      '',
-    );
+    const original = new SessionBlueprint('Workout', [createWeightedExercise('Squat', 3, 10)], '');
+    const modified = new SessionBlueprint('Workout', [createWeightedExercise('Squat', 5, 8)], '');
 
     const diff = diffSessionBlueprints(original, modified);
 
@@ -691,19 +532,10 @@ describe('applySessionBlueprintDiff', () => {
   ): CardioExerciseBlueprint => new CardioExerciseBlueprint(name, sets, '', '');
 
   it('should apply cardio set addition', () => {
-    const original = new SessionBlueprint(
-      'Workout',
-      [createCardioExercise('Running', [createCardioSet(30)])],
-      '',
-    );
+    const original = new SessionBlueprint('Workout', [createCardioExercise('Running', [createCardioSet(30)])], '');
     const modified = new SessionBlueprint(
       'Workout',
-      [
-        createCardioExercise('Running', [
-          createCardioSet(30),
-          createCardioSet(20),
-        ]),
-      ],
+      [createCardioExercise('Running', [createCardioSet(30), createCardioSet(20)])],
       '',
     );
 
@@ -715,16 +547,8 @@ describe('applySessionBlueprintDiff', () => {
   });
 
   it('should apply cardio set target change', () => {
-    const original = new SessionBlueprint(
-      'Workout',
-      [createCardioExercise('Running', [createCardioSet(30)])],
-      '',
-    );
-    const modified = new SessionBlueprint(
-      'Workout',
-      [createCardioExercise('Running', [createCardioSet(45)])],
-      '',
-    );
+    const original = new SessionBlueprint('Workout', [createCardioExercise('Running', [createCardioSet(30)])], '');
+    const modified = new SessionBlueprint('Workout', [createCardioExercise('Running', [createCardioSet(45)])], '');
 
     const diff = diffSessionBlueprints(original, modified);
     const result = applySessionBlueprintDiff(original, diff);
@@ -774,12 +598,8 @@ describe('getChangeDescription', () => {
     const modified = new SessionBlueprint('Workout B', [], '');
 
     const diff = diffSessionBlueprints(original, modified);
-    const t: UseTranslateResult['t'] = (key, params?) =>
-      ({ key, params }) as unknown as string;
-    const translatable = getChangeDescription(
-      t,
-      diff.sessionChanges[0]!,
-    ) as unknown as {
+    const t: UseTranslateResult['t'] = (key, params?) => ({ key, params }) as unknown as string;
+    const translatable = getChangeDescription(t, diff.sessionChanges[0]!) as unknown as {
       key: string;
       params: unknown;
     };
@@ -793,19 +613,11 @@ describe('getChangeDescription', () => {
 
   it('should return translation key for added exercise', () => {
     const original = new SessionBlueprint('Workout', [], '');
-    const modified = new SessionBlueprint(
-      'Workout',
-      [createWeightedExercise('Squat')],
-      '',
-    );
+    const modified = new SessionBlueprint('Workout', [createWeightedExercise('Squat')], '');
 
     const diff = diffSessionBlueprints(original, modified);
-    const t: UseTranslateResult['t'] = (key, params?) =>
-      ({ key, params }) as unknown as string;
-    const translatable = getChangeDescription(
-      t,
-      diff.addedExercises[0]!,
-    ) as unknown as {
+    const t: UseTranslateResult['t'] = (key, params?) => ({ key, params }) as unknown as string;
+    const translatable = getChangeDescription(t, diff.addedExercises[0]!) as unknown as {
       key: string;
       params: unknown;
     };
@@ -815,11 +627,7 @@ describe('getChangeDescription', () => {
   });
 
   it('should return translation key for sets change', () => {
-    const original = new SessionBlueprint(
-      'Workout',
-      [createWeightedExercise('Squat')],
-      '',
-    );
+    const original = new SessionBlueprint('Workout', [createWeightedExercise('Squat')], '');
     const modified = new SessionBlueprint(
       'Workout',
       [
@@ -838,12 +646,9 @@ describe('getChangeDescription', () => {
     );
 
     const diff = diffSessionBlueprints(original, modified);
-    const setsChange = diff.modifiedExercises[0]!.changes.find(
-      (c) => c.kind === 'exerciseSets',
-    );
+    const setsChange = diff.modifiedExercises[0]!.changes.find((c) => c.kind === 'exerciseSets');
 
-    const t: UseTranslateResult['t'] = (key, params?) =>
-      ({ key, params }) as unknown as string;
+    const t: UseTranslateResult['t'] = (key, params?) => ({ key, params }) as unknown as string;
     const translatable = getChangeDescription(t, setsChange!) as unknown as {
       key: string;
       params: unknown;

@@ -47,10 +47,7 @@ export interface FollowedFeedUserJSON {
   followSecret: string;
 }
 
-export type FeedUserJSON =
-  | PendingFeedUserJSON
-  | FollowedFeedUserJSON
-  | FollowerFeedUserJSON;
+export type FeedUserJSON = PendingFeedUserJSON | FollowedFeedUserJSON | FollowerFeedUserJSON;
 
 interface UserEventBaseJSON {
   userId: string;
@@ -105,14 +102,8 @@ export interface UnfollowNotificationJSON {
   followSecret: string;
 }
 
-export type FollowRequestInboxMessageJSON = InboxMessageBaseJSON<
-  'FollowRequest',
-  FollowRequestJSON
->;
-export type FollowResponseInboxMessageJSON = InboxMessageBaseJSON<
-  'FollowResponse',
-  FollowResponseJSON
->;
+export type FollowRequestInboxMessageJSON = InboxMessageBaseJSON<'FollowRequest', FollowRequestJSON>;
+export type FollowResponseInboxMessageJSON = InboxMessageBaseJSON<'FollowResponse', FollowResponseJSON>;
 export type UnfollowNotificationInboxMessageJSON = InboxMessageBaseJSON<
   'UnfollowNotification',
   UnfollowNotificationJSON

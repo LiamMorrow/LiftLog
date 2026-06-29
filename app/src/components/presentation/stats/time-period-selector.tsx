@@ -1,6 +1,4 @@
-import SelectButton, {
-  SelectButtonOption,
-} from '@/components/presentation/foundation/select-button';
+import SelectButton, { SelectButtonOption } from '@/components/presentation/foundation/select-button';
 import { isLocalDateRangeEqual, LocalDateRange } from '@/models/time-models';
 import { convert, LocalDate, nativeJs, Period } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
@@ -12,16 +10,11 @@ type TimePeriodSelectorProps = {
   setTimePeriod: (value: LocalDateRange | 'all-time') => void;
 };
 
-export function TimePeriodSelector({
-  timePeriod,
-  setTimePeriod,
-}: TimePeriodSelectorProps) {
+export function TimePeriodSelector({ timePeriod, setTimePeriod }: TimePeriodSelectorProps) {
   const today = LocalDate.now();
   const [timeRangeSelectorOpen, setTimeRangeSelectorOpen] = useState(false);
   const { t } = useTranslate();
-  const timeOptions: SelectButtonOption<
-    LocalDateRange | 'all-time' | 'custom'
-  >[] = [
+  const timeOptions: SelectButtonOption<LocalDateRange | 'all-time' | 'custom'>[] = [
     {
       label: t('time_period_select.num_days.label', { count: '7' }),
       value: getPeriod(Period.ofDays(7), today),
@@ -55,16 +48,11 @@ export function TimePeriodSelector({
       value: 'custom',
     },
   ];
-  const nonCustomValues: SelectButtonOption<LocalDateRange>[] =
-    timeOptions.filter(
-      (x): x is SelectButtonOption<LocalDateRange> =>
-        x.value !== 'custom' && x.value !== 'all-time',
-    );
+  const nonCustomValues: SelectButtonOption<LocalDateRange>[] = timeOptions.filter(
+    (x): x is SelectButtonOption<LocalDateRange> => x.value !== 'custom' && x.value !== 'all-time',
+  );
 
-  function handleCustomRangePicked(params: {
-    startDate: Date | undefined;
-    endDate: Date | undefined;
-  }) {
+  function handleCustomRangePicked(params: { startDate: Date | undefined; endDate: Date | undefined }) {
     setTimeRangeSelectorOpen(false);
     if (!params.startDate || !params.endDate) {
       return;
@@ -86,9 +74,7 @@ export function TimePeriodSelector({
           if (timePeriod === 'all-time') {
             return t('time_period_select.all_time.label');
           }
-          const selectedOption = nonCustomValues.find((x) =>
-            isLocalDateRangeEqual(x.value, timePeriod),
-          );
+          const selectedOption = nonCustomValues.find((x) => isLocalDateRangeEqual(x.value, timePeriod));
 
           if (!selectedOption) {
             return `${timePeriod.from.toString()} - ${timePeriod.to.toString()}`;

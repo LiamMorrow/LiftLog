@@ -4,7 +4,7 @@ Thank you for your interest in contributing to LiftLog! We welcome all contribut
 
 ## Code Style & Guidelines
 
-- Use [Prettier](https://prettier.io/) and [ESLint](https://eslint.org/) for formatting and linting TypeScript.
+- Use [oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) and [oxlint](https://oxc.rs/docs/guide/usage/linter.html) for formatting and linting TypeScript.
 - For C# code, use [CSharpier](https://csharpier.com/) for automatic code formatting. Run `dotnet csharpier .` in backend folders before committing.
 - Write clear, descriptive commit messages.
 - Follow the existing code structure and naming conventions.

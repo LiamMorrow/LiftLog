@@ -27,9 +27,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 type FeedFollowItem = FollowRequestInboxMessage | FeedUser;
 
 export function FeedFollowers() {
-  const followRequests = useAppSelector(
-    selectFeedFollowRequests,
-  ) as FeedFollowItem[];
+  const followRequests = useAppSelector(selectFeedFollowRequests) as FeedFollowItem[];
   const followers = useAppSelector(selectFeedFollowers);
   const items = followRequests.concat(followers);
   const { handleScroll } = useScroll();
@@ -52,10 +50,7 @@ export function FeedFollowers() {
       data={items}
       keyExtractor={(x) =>
         match(x)
-          .with(
-            P.instanceOf(FollowRequestInboxMessage),
-            (req) => `request-${req.senderUserId}`,
-          )
+          .with(P.instanceOf(FollowRequestInboxMessage), (req) => `request-${req.senderUserId}`)
           .otherwise((req) => req.id)
       }
       renderItem={({ item }) => <FeedFollowItem item={item} />}
@@ -110,17 +105,8 @@ function FeedFollowRequest(props: { request: FollowRequestInboxMessage }) {
       right={() => {
         return (
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <IconButton
-              icon={'close'}
-              iconColor={colors.error}
-              onPress={handleDeny}
-            />
-            <Button
-              testID="feed-accept-follow-request"
-              mode="contained"
-              icon={'check'}
-              onPress={handleAccept}
-            >
+            <IconButton icon={'close'} iconColor={colors.error} onPress={handleDeny} />
+            <Button testID="feed-accept-follow-request" mode="contained" icon={'check'} onPress={handleAccept}>
               {t('generic.accept.button')}
             </Button>
           </View>

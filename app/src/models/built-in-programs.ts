@@ -1,11 +1,7 @@
 import { ProgramBlueprint, Rest } from '@/models/blueprint-models';
 import BigNumber from 'bignumber.js';
 import { Duration, LocalDate } from '@js-joda/core';
-import {
-  toBigNumberJSON,
-  toDurationJSON,
-  toLocalDateJSON,
-} from '@/models/storage/versions/latest';
+import { toBigNumberJSON, toDurationJSON, toLocalDateJSON } from '@/models/storage/versions/latest';
 import { programBlueprintMigrations } from '@/models/storage/versions/migrations';
 
 export const BuiltInPrograms: Record<string, ProgramBlueprint> = {

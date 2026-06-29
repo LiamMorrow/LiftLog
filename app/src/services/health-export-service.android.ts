@@ -1,11 +1,6 @@
 import { Platform } from 'react-native';
 import { HealthExportService as HES } from './health-export-service-shared';
-import {
-  RecordedCardioExercise,
-  RecordedExercise,
-  RecordedWeightedExercise,
-  Session,
-} from '@/models/session-models';
+import { RecordedCardioExercise, RecordedExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
 import {
   initialize,
   requestPermission,
@@ -49,9 +44,7 @@ export class HealthExportService implements HES {
 
     const grantedPermissions = await this.requestPermissionInternal();
 
-    const exerciseSegments = workout.recordedExercises
-      .filter((x) => x.isStarted)
-      .map(toExerciseSegment);
+    const exerciseSegments = workout.recordedExercises.filter((x) => x.isStarted).map(toExerciseSegment);
     const exerciseSessionRecord: ExerciseSessionRecord = {
       metadata: {
         clientRecordId: workout.id,
@@ -108,30 +101,20 @@ function toExerciseSegment(exercise: RecordedExercise): ExerciseSegment {
     .exhaustive();
 }
 
-function toWeightedExerciseSegment(
-  exercise: RecordedWeightedExercise,
-): ExerciseSegment {
+function toWeightedExerciseSegment(exercise: RecordedWeightedExercise): ExerciseSegment {
   return {
     segmentType: ExerciseSegmentType.WEIGHTLIFTING,
     startTime: exercise.earliestTime!.toString(),
     endTime: exercise.latestTime!.toString(),
-    repetitions: exercise.potentialSets.reduce(
-      (a, b) => a + (b.set?.repsCompleted ?? 0),
-      0,
-    ),
+    repetitions: exercise.potentialSets.reduce((a, b) => a + (b.set?.repsCompleted ?? 0), 0),
   };
 }
 
-function toCardioExerciseSegment(
-  exercise: RecordedCardioExercise,
-): ExerciseSegment {
+function toCardioExerciseSegment(exercise: RecordedCardioExercise): ExerciseSegment {
   return {
     segmentType: ExerciseSegmentType.OTHER_WORKOUT,
     startTime: exercise.earliestTime!.toString(),
     endTime: exercise.latestTime!.toString(),
-    repetitions: exercise.sets.reduce(
-      (a, b) => a + (b.completionDateTime ? 1 : 0),
-      0,
-    ),
+    repetitions: exercise.sets.reduce((a, b) => a + (b.completionDateTime ? 1 : 0), 0),
   };
 }

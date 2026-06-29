@@ -1,7 +1,4 @@
-import {
-  localeFormatBigNumber,
-  localeParseBigNumber,
-} from '@/utils/locale-bignumber';
+import { localeFormatBigNumber, localeParseBigNumber } from '@/utils/locale-bignumber';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';

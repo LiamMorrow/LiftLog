@@ -1,8 +1,4 @@
-import {
-  selectCurrentSession,
-  SessionTarget,
-  setCurrentSession,
-} from '@/store/current-session';
+import { selectCurrentSession, SessionTarget, setCurrentSession } from '@/store/current-session';
 import { Card, Icon, Text } from 'react-native-paper';
 import { useDispatch, useStore } from 'react-redux';
 import { View } from 'react-native';
@@ -10,12 +6,7 @@ import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/foundation/item-list';
-import {
-  RecordedCardioExercise,
-  RecordedExercise,
-  RecordedWeightedExercise,
-  Session,
-} from '@/models/session-models';
+import { RecordedCardioExercise, RecordedExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
 import WeightedExercise from '@/components/presentation/workout/weighted/weighted-exercise';
 import WeightDisplay from '@/components/presentation/foundation/editors/weight-display';
 import BigNumber from 'bignumber.js';
@@ -47,10 +38,7 @@ export default function SessionComponent(props: {
   const { getState } = useStore();
   const session = useAppSelectorWithArg(selectCurrentSession, props.target);
   const dispatch = useDispatch();
-  const recentlyCompletedExercises = useAppSelectorWithArg(
-    selectRecentlyCompletedExercises,
-    10,
-  );
+  const recentlyCompletedExercises = useAppSelectorWithArg(selectRecentlyCompletedExercises, 10);
   const resetTimer = (time: OffsetDateTime | undefined) => {
     updateSession((s) => s.with({ restTimerStartTime: time }));
   };
@@ -73,32 +61,19 @@ export default function SessionComponent(props: {
     });
   };
 
-  const isReadonly =
-    props.target === 'feedSession' || props.target === 'sharedSession';
+  const isReadonly = props.target === 'feedSession' || props.target === 'sharedSession';
 
-  const [exerciseToEditIndex, setExerciseToEditIndex] = useState<
-    number | undefined
-  >(undefined);
-  const [editingExerciseBlueprint, setEditingExerciseBlueprint] = useState<
-    ExerciseBlueprint | undefined
-  >(undefined);
+  const [exerciseToEditIndex, setExerciseToEditIndex] = useState<number | undefined>(undefined);
+  const [editingExerciseBlueprint, setEditingExerciseBlueprint] = useState<ExerciseBlueprint | undefined>(undefined);
   const [exerciseEditorOpen, setExerciseEditorOpen] = useState(false);
 
   const handleEditExercise = () => {
     if (editingExerciseBlueprint !== undefined) {
       if (exerciseToEditIndex !== undefined) {
-        updateSession((s) =>
-          s.withEditedExercise(
-            exerciseToEditIndex,
-            editingExerciseBlueprint,
-            useImperialUnits,
-          ),
-        );
+        updateSession((s) => s.withEditedExercise(exerciseToEditIndex, editingExerciseBlueprint, useImperialUnits));
         setExerciseToEditIndex(undefined);
       } else {
-        updateSession((s) =>
-          s.withAddedExercise(editingExerciseBlueprint, useImperialUnits),
-        );
+        updateSession((s) => s.withAddedExercise(editingExerciseBlueprint, useImperialUnits));
       }
       setExerciseEditorOpen(false);
     }
@@ -149,51 +124,30 @@ export default function SessionComponent(props: {
             props.target === 'workoutSession'
               ? OffsetDateTime.now()
               : (session.lastExercise?.latestTime ??
-                session.date
-                  .atTime(LocalTime.now())
-                  .atZone(ZoneId.systemDefault())
-                  .toOffsetDateTime())
+                session.date.atTime(LocalTime.now()).atZone(ZoneId.systemDefault()).toOffsetDateTime())
           }
-          resetSetTimer={() =>
-            withLatestSession((s) => resetTimer(s.lastExercise?.latestTime))
-          }
+          resetSetTimer={() => withLatestSession((s) => resetTimer(s.lastExercise?.latestTime))}
           recordedExercise={item}
           toStartNext={session.nextExercise === item}
           updateExercise={(update) =>
-            updateSession((s) =>
-              s.withExercise(
-                index,
-                update(s.recordedExercises[index] as RecordedWeightedExercise),
-              ),
-            )
+            updateSession((s) => s.withExercise(index, update(s.recordedExercises[index] as RecordedWeightedExercise)))
           }
           onEditExercise={() => {
             setEditingExerciseBlueprint(item.blueprint);
             setExerciseToEditIndex(index);
             setExerciseEditorOpen(true);
           }}
-          onRemoveExercise={() =>
-            updateSession((s) => s.withRemovedExercise(index))
-          }
+          onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
           isReadonly={isReadonly}
           showPreviousButton={props.target === 'workoutSession'}
-          previousRecordedExercises={
-            recentlyCompletedExercises(
-              item.blueprint,
-            ) as RecordedWeightedExercise[]
-          }
+          previousRecordedExercises={recentlyCompletedExercises(item.blueprint) as RecordedWeightedExercise[]}
         />
       ))
       .with(P.instanceOf(RecordedCardioExercise), (item) => (
         <CardioExercise
           recordedExercise={item}
           updateExercise={(ex) =>
-            updateSession((s) =>
-              s.withExercise(
-                index,
-                ex(s.recordedExercises[index] as RecordedCardioExercise),
-              ),
-            )
+            updateSession((s) => s.withExercise(index, ex(s.recordedExercises[index] as RecordedCardioExercise)))
           }
           toStartNext={session.nextExercise === item}
           onEditExercise={() => {
@@ -201,27 +155,17 @@ export default function SessionComponent(props: {
             setExerciseToEditIndex(index);
             setExerciseEditorOpen(true);
           }}
-          onRemoveExercise={() =>
-            updateSession((s) => s.withRemovedExercise(index))
-          }
+          onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
           isReadonly={isReadonly}
           showPreviousButton={props.target === 'workoutSession'}
-          previousRecordedExercises={
-            recentlyCompletedExercises(
-              item.blueprint,
-            ) as RecordedCardioExercise[]
-          }
+          previousRecordedExercises={recentlyCompletedExercises(item.blueprint) as RecordedCardioExercise[]}
         />
       ))
       .exhaustive();
   };
 
   const bodyweight = props.showBodyweight ? (
-    <Card
-      style={{ marginHorizontal: spacing.pageHorizontalMargin }}
-      mode="contained"
-      testID="bodyweight-card"
-    >
+    <Card style={{ marginHorizontal: spacing.pageHorizontalMargin }} mode="contained" testID="bodyweight-card">
       <Card.Content
         style={{
           flexDirection: 'row',
@@ -241,9 +185,7 @@ export default function SessionComponent(props: {
         <WeightDisplay
           allowNull={true}
           weight={session.bodyweight}
-          updateWeight={(bodyweight) =>
-            updateSession((s) => s.with({ bodyweight }))
-          }
+          updateWeight={(bodyweight) => updateSession((s) => s.with({ bodyweight }))}
           increment={new BigNumber('0.1')}
           label={t('exercise.bodyweight.label')}
         />
@@ -252,10 +194,7 @@ export default function SessionComponent(props: {
   ) : null;
 
   const lastExercise = session.lastExercise;
-  const lastRecordedSet =
-    lastExercise instanceof RecordedWeightedExercise
-      ? lastExercise?.lastRecordedSet
-      : undefined;
+  const lastRecordedSet = lastExercise instanceof RecordedWeightedExercise ? lastExercise?.lastRecordedSet : undefined;
   const nextExercise = session.nextExercise;
   // We only want to show the rest timer - which is primarily for weights
   // When we are currently working out, and the exercises we are on (or were just on) are weighted - rests for cardio aren't implemented
@@ -299,11 +238,7 @@ export default function SessionComponent(props: {
   const workoutSummary = (
     <Card
       mode="contained"
-      onPress={
-        props.target === 'workoutSession'
-          ? props.openPostWorkoutSummary
-          : undefined
-      }
+      onPress={props.target === 'workoutSession' ? props.openPostWorkoutSummary : undefined}
       style={{ margin: spacing.pageHorizontalMargin }}
     >
       <Card.Content>
@@ -317,11 +252,7 @@ export default function SessionComponent(props: {
           <Text variant="bodyMedium">
             <T keyName="workout.total_weight_lifted.label" />
           </Text>
-          <WeightFormat
-            fontWeight="bold"
-            color="primary"
-            weight={session.totalWeightLifted}
-          />
+          <WeightFormat fontWeight="bold" color="primary" weight={session.totalWeightLifted} />
         </View>
         <View
           style={{
@@ -333,13 +264,8 @@ export default function SessionComponent(props: {
           <Text variant="bodyMedium">
             <T keyName="workout.total_time.label" />
           </Text>
-          <Text
-            variant="bodyMedium"
-            style={{ color: colors.primary, fontWeight: 'bold' }}
-          >
-            {(session.duration &&
-              formatDuration(session.duration, 'hours-mins')) ||
-              '-'}
+          <Text variant="bodyMedium" style={{ color: colors.primary, fontWeight: 'bold' }}>
+            {(session.duration && formatDuration(session.duration, 'hours-mins')) || '-'}
           </Text>
         </View>
       </Card.Content>
@@ -356,16 +282,8 @@ export default function SessionComponent(props: {
       {workoutSummary}
       <FullScreenDialog
         avoidKeyboard
-        title={
-          exerciseToEditIndex === undefined
-            ? t('exercise.add.title')
-            : t('exercise.edit.title')
-        }
-        action={
-          exerciseToEditIndex === undefined
-            ? t('generic.add.button')
-            : t('generic.update.button')
-        }
+        title={exerciseToEditIndex === undefined ? t('exercise.add.title') : t('exercise.edit.title')}
+        action={exerciseToEditIndex === undefined ? t('generic.add.button') : t('generic.update.button')}
         open={exerciseEditorOpen}
         onAction={handleEditExercise}
         onClose={() => setExerciseEditorOpen(false)}

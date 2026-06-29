@@ -2,10 +2,7 @@
 import { GesturePressableProps } from '@/components/presentation/foundation/gesture-wrappers/pressable-props';
 import { isNotNullOrUndefined } from '@/utils/null';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import {
-  TouchableRippleProps,
-  TouchableRipple as NativeTouchableRipple,
-} from 'react-native-paper';
+import { TouchableRippleProps, TouchableRipple as NativeTouchableRipple } from 'react-native-paper';
 
 export default function TouchableRipple({
   onPress,
@@ -21,9 +18,7 @@ export default function TouchableRipple({
         .runOnJS(true)
         .onStart(() => !disabled && onLongPress())
     : undefined;
-  const gesture = Gesture.Race(
-    ...[tap, longPress].filter(isNotNullOrUndefined),
-  );
+  const gesture = Gesture.Race(...[tap, longPress].filter(isNotNullOrUndefined));
   return (
     <GestureDetector gesture={gesture}>
       <NativeTouchableRipple

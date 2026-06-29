@@ -61,14 +61,8 @@ export function createStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
     },
   ) => void | Promise<void>;
 
-  function addEffect(
-    allActions: undefined,
-    effect: EffectFn<UnknownAction>,
-  ): void;
-  function addEffect<TAction extends { type: string }>(
-    action: TAction[],
-    effect: EffectFn<UnknownAction>,
-  ): void;
+  function addEffect(allActions: undefined, effect: EffectFn<UnknownAction>): void;
+  function addEffect<TAction extends { type: string }>(action: TAction[], effect: EffectFn<UnknownAction>): void;
   function addEffect<TAction extends { type: string }>(
     action: TAction,
     effect: EffectFn<TAction extends ActionCreator<infer U> ? U : TAction>,
@@ -78,9 +72,7 @@ export function createStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
     effect: EffectFn<UnknownAction>,
   ) {
     startAppListening({
-      predicate: (action) =>
-        !actionPredicate ||
-        [actionPredicate].flat().some((x) => x.type === action.type),
+      predicate: (action) => !actionPredicate || [actionPredicate].flat().some((x) => x.type === action.type),
       effect: async (action, listenerApi) => {
         const failureHandlers: (() => void)[] = [];
         const stateBeforeReduce = listenerApi.getOriginalState() as RootState;
@@ -103,10 +95,7 @@ export function createStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
             try {
               handler();
             } catch (err) {
-              services.logger.error(
-                `Error during failure handler for effect [${action.type}]:`,
-                err,
-              );
+              services.logger.error(`Error during failure handler for effect [${action.type}]:`, err);
             }
           }
           return;

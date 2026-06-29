@@ -13,11 +13,7 @@ interface ParsedSegment {
   insertBreakBefore: boolean;
 }
 
-export default function LimitedHtml({
-  value,
-  emStyles,
-  ...rest
-}: LimitedHtmlProps & TextProps) {
+export default function LimitedHtml({ value, emStyles, ...rest }: LimitedHtmlProps & TextProps) {
   const { colors } = useAppTheme();
 
   const parseLimitedHtml = (): ParsedSegment[] => {
@@ -34,9 +30,7 @@ export default function LimitedHtml({
       if (index === -1) {
         // No more tags found, process remaining text
         const remainingText = value.substring(currentIndex);
-        const textToProcess = !closed
-          ? HIGHLIGHT_TAG + remainingText
-          : remainingText;
+        const textToProcess = !closed ? HIGHLIGHT_TAG + remainingText : remainingText;
 
         // Split on <br> and return each part
         const parts = textToProcess.split('<br>');
@@ -84,14 +78,7 @@ export default function LimitedHtml({
       {segments.map((segment, index) => (
         <Fragment key={index}>
           {segment.insertBreakBefore && '\n'}
-          <Text
-            style={[
-              segment.isHighlighted
-                ? emStyles || defaultHighlightedStyle
-                : undefined,
-              rest.style,
-            ]}
-          >
+          <Text style={[segment.isHighlighted ? emStyles || defaultHighlightedStyle : undefined, rest.style]}>
             {segment.text}
           </Text>
         </Fragment>

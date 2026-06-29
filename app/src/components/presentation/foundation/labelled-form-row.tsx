@@ -21,12 +21,7 @@ export default function LabelledFormRow(props: {
     : {};
   return (
     <FormRow noGap={props.noGap} undoFormPadding={props.undoFormPadding}>
-      <View
-        style={[
-          { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
-          labelPadding,
-        ]}
-      >
+      <View style={[{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }, labelPadding]}>
         <Icon source={props.icon} size={20} color={colors.primary} />
         <SurfaceText font="text-xl">{props.label}</SurfaceText>
       </View>

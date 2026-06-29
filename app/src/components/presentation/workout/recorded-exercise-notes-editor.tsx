@@ -30,10 +30,7 @@ export default function RecordedExerciseNotesEditor(props: {
         >
           <Dialog visible={open} onDismiss={onDismiss}>
             <Dialog.Title>
-              <T
-                keyName="workout.notes_for.title"
-                params={{ name: exerciseName }}
-              />
+              <T keyName="workout.notes_for.title" params={{ name: exerciseName }} />
             </Dialog.Title>
             <Dialog.Content>
               <TextInput

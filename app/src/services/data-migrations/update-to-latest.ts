@@ -79,9 +79,7 @@ export async function updateExercisesToLatestVersion(db: ExpoSQLiteDatabase) {
     }
   });
 }
-export async function updateFeedIdentityToLatestVersion(
-  db: ExpoSQLiteDatabase,
-) {
+export async function updateFeedIdentityToLatestVersion(db: ExpoSQLiteDatabase) {
   await db.transaction(async (tx) => {
     const recordsRequiringMigration = await tx
       .select()
@@ -101,9 +99,7 @@ export async function updateFeedIdentityToLatestVersion(
   });
 }
 
-export async function updateFeedFollowedUsersToLatestVersion(
-  db: ExpoSQLiteDatabase,
-) {
+export async function updateFeedFollowedUsersToLatestVersion(db: ExpoSQLiteDatabase) {
   await db.transaction(async (tx) => {
     const recordsRequiringMigration = await tx
       .select()
@@ -143,9 +139,7 @@ export async function updateFeedItemsToLatestVersion(db: ExpoSQLiteDatabase) {
   });
 }
 
-export async function updateFeedFollowerUsersToLatestVersion(
-  db: ExpoSQLiteDatabase,
-) {
+export async function updateFeedFollowerUsersToLatestVersion(db: ExpoSQLiteDatabase) {
   await db.transaction(async (tx) => {
     const recordsRequiringMigration = await tx
       .select()
@@ -165,9 +159,7 @@ export async function updateFeedFollowerUsersToLatestVersion(
   });
 }
 
-export async function updateFeedPendingUsersToLatestVersion(
-  db: ExpoSQLiteDatabase,
-) {
+export async function updateFeedPendingUsersToLatestVersion(db: ExpoSQLiteDatabase) {
   await db.transaction(async (tx) => {
     const recordsRequiringMigration = await tx
       .select()
@@ -187,9 +179,7 @@ export async function updateFeedPendingUsersToLatestVersion(
   });
 }
 
-export async function updateFeedFollowRequestsToLatestVersion(
-  db: ExpoSQLiteDatabase,
-) {
+export async function updateFeedFollowRequestsToLatestVersion(db: ExpoSQLiteDatabase) {
   await db.transaction(async (tx) => {
     const recordsRequiringMigration = await tx
       .select()

@@ -1,11 +1,7 @@
 const diacriticRegex = /[\u0300-\u036f]/g;
 
 function normalizeFuzzyText(value: string) {
-  return value
-    .normalize('NFD')
-    .replace(diacriticRegex, '')
-    .toLowerCase()
-    .trim();
+  return value.normalize('NFD').replace(diacriticRegex, '').toLowerCase().trim();
 }
 
 export function fuzzyMatchScore(query: string, candidate: string) {
@@ -23,8 +19,7 @@ export function fuzzyMatchScore(query: string, candidate: string) {
 
   for (
     let candidateIndex = 0;
-    candidateIndex < normalizedCandidate.length &&
-    queryIndex < normalizedQuery.length;
+    candidateIndex < normalizedCandidate.length && queryIndex < normalizedQuery.length;
     candidateIndex++
   ) {
     if (normalizedCandidate[candidateIndex] !== normalizedQuery[queryIndex]) {
@@ -53,4 +48,3 @@ export function fuzzyMatchScore(query: string, candidate: string) {
 
   return exactBonus + prefixBonus + compactness * 5 + coverage * 2 - gapCount * 0.1;
 }
-

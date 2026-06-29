@@ -2,11 +2,7 @@ import { Duration, LocalDate } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { AnyVersionAiPlanJSON } from '@/models/storage/versions/any';
 import { aiPlanMigrations } from '@/models/storage/versions/migrations';
-import {
-  CardioExerciseBlueprint,
-  ProgramBlueprint,
-  WeightedExerciseBlueprint,
-} from '@/models/blueprint-models';
+import { CardioExerciseBlueprint, ProgramBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { DeepPartial } from '@/utils/types';
 import {
   BigNumberJSON,
@@ -38,10 +34,7 @@ export interface AiChatPurchaseProResponse {
   type: 'purchasePro';
 }
 
-export type AiChatResponse =
-  | AiChatMessageResponse
-  | AiChatPlanResponse
-  | AiChatPurchaseProResponse;
+export type AiChatResponse = AiChatMessageResponse | AiChatPlanResponse | AiChatPurchaseProResponse;
 
 export interface AiPlan {
   name: string;
@@ -68,10 +61,7 @@ export interface AiChatSharedProgramMessage {
  * Builds the user-message text sent to the AI when sharing an existing program,
  * embedding it in the same JSON shape the create_workout_plan tool produces.
  */
-export function describeSharedProgramForAi(
-  programName: string,
-  blueprint: ProgramBlueprint,
-): string {
+export function describeSharedProgramForAi(programName: string, blueprint: ProgramBlueprint): string {
   return (
     `Here is my current workout program, named "${programName}". ` +
     `It uses the same JSON structure as the "blueprint" field of your create_workout_plan tool. ` +
@@ -121,9 +111,7 @@ function fillRest(partial: DeepPartial<RestJSON> = {}): RestJSON {
   };
 }
 
-function fillProgressiveOverload(
-  partial: DeepPartial<ProgressiveOverloadJSON> = {},
-): ProgressiveOverloadJSON {
+function fillProgressiveOverload(partial: DeepPartial<ProgressiveOverloadJSON> = {}): ProgressiveOverloadJSON {
   switch (partial.type) {
     case 'IncreaseAllEvenlyProgressiveOverload':
       return {
@@ -141,26 +129,21 @@ function fillProgressiveOverload(
   }
 }
 
-function fillWeightedExercise(
-  partial: DeepPartial<WeightedExerciseBlueprintJSON> = {},
-): WeightedExerciseBlueprintJSON {
+function fillWeightedExercise(partial: DeepPartial<WeightedExerciseBlueprintJSON> = {}): WeightedExerciseBlueprintJSON {
   return {
     type: 'WeightedExerciseBlueprint',
     name: partial.name ?? emptyWeightedExercise.name,
     sets: partial.sets ?? emptyWeightedExercise.sets,
     repsPerSet: partial.repsPerSet ?? emptyWeightedExercise.repsPerSet,
     restBetweenSets: fillRest(partial.restBetweenSets),
-    supersetWithNext:
-      partial.supersetWithNext ?? emptyWeightedExercise.supersetWithNext,
+    supersetWithNext: partial.supersetWithNext ?? emptyWeightedExercise.supersetWithNext,
     notes: partial.notes ?? emptyWeightedExercise.notes,
     link: partial.link ?? emptyWeightedExercise.link,
     progressiveOverload: fillProgressiveOverload(partial.progressiveOverload),
   };
 }
 
-function fillCardioTarget(
-  partial: DeepPartial<CardioTargetJSON> = {},
-): CardioTargetJSON {
+function fillCardioTarget(partial: DeepPartial<CardioTargetJSON> = {}): CardioTargetJSON {
   switch (partial.type) {
     case 'distance':
       return {
@@ -180,9 +163,7 @@ function fillCardioTarget(
   }
 }
 
-function fillCardioSet(
-  partial: DeepPartial<CardioExerciseSetBlueprintJSON> = {},
-): CardioExerciseSetBlueprintJSON {
+function fillCardioSet(partial: DeepPartial<CardioExerciseSetBlueprintJSON> = {}): CardioExerciseSetBlueprintJSON {
   return {
     target: fillCardioTarget(partial.target),
     trackDuration: partial.trackDuration ?? emptyCardioSet.trackDuration,
@@ -194,9 +175,7 @@ function fillCardioSet(
   };
 }
 
-function fillCardioExercise(
-  partial: DeepPartial<CardioExerciseBlueprintJSON> = {},
-): CardioExerciseBlueprintJSON {
+function fillCardioExercise(partial: DeepPartial<CardioExerciseBlueprintJSON> = {}): CardioExerciseBlueprintJSON {
   const sets = (partial.sets ?? []).map(fillCardioSet);
   return {
     type: 'CardioExerciseBlueprint',
@@ -207,20 +186,14 @@ function fillCardioExercise(
   };
 }
 
-function fillExercise(
-  partial: DeepPartial<ExerciseBlueprintJSON> = {},
-): ExerciseBlueprintJSON {
+function fillExercise(partial: DeepPartial<ExerciseBlueprintJSON> = {}): ExerciseBlueprintJSON {
   if (partial.type === 'CardioExerciseBlueprint') {
     return fillCardioExercise(partial);
   }
-  return fillWeightedExercise(
-    partial as DeepPartial<WeightedExerciseBlueprintJSON>,
-  );
+  return fillWeightedExercise(partial as DeepPartial<WeightedExerciseBlueprintJSON>);
 }
 
-function fillSession(
-  partial: DeepPartial<SessionBlueprintJSON> = {},
-): SessionBlueprintJSON {
+function fillSession(partial: DeepPartial<SessionBlueprintJSON> = {}): SessionBlueprintJSON {
   return {
     version: 2,
     name: partial.name ?? emptySessionBlueprint.name,
@@ -229,9 +202,7 @@ function fillSession(
   };
 }
 
-function fillBlueprint(
-  partial: DeepPartial<ProgramBlueprintJSON> = {},
-): ProgramBlueprintJSON {
+function fillBlueprint(partial: DeepPartial<ProgramBlueprintJSON> = {}): ProgramBlueprintJSON {
   return {
     version: 2,
     name: partial.name ?? '',
@@ -246,9 +217,7 @@ function fillBlueprint(
  * filling any absent fields with empty defaults, then maps it into the domain
  * {@link ProgramBlueprint}.
  */
-export function aiPlanFromJSON(
-  partialJson: DeepPartial<AnyVersionAiPlanJSON>,
-): AiPlan {
+export function aiPlanFromJSON(partialJson: DeepPartial<AnyVersionAiPlanJSON>): AiPlan {
   if (!('version' in partialJson)) {
     throw new Error('Cannot parse partial json');
   }

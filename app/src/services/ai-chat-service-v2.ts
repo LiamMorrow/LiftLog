@@ -1,8 +1,4 @@
-import {
-  AiChatResponseV2,
-  AiChatResponseV2Json,
-  aiPlanFromJSON,
-} from '@/models/ai-models';
+import { AiChatResponseV2, AiChatResponseV2Json, aiPlanFromJSON } from '@/models/ai-models';
 import { aiPlanMigrations } from '@/models/storage/versions/migrations';
 
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
@@ -54,9 +50,7 @@ export class AiChatServiceV2 {
       return;
     }
     const subject = await this.setupResponseListening(proToken);
-    void this.connection
-      ?.invoke('SendMessage', message, aiPlanMigrations.latestVersion)
-      .finally(() => subject.end());
+    void this.connection?.invoke('SendMessage', message, aiPlanMigrations.latestVersion).finally(() => subject.end());
     yield* subject;
     this.connection?.off('ReceiveMessage');
   }
@@ -66,10 +60,7 @@ export class AiChatServiceV2 {
   }
 
   async restartChat() {
-    if (
-      this.connection &&
-      this.connection.state !== HubConnectionState.Connected
-    ) {
+    if (this.connection && this.connection.state !== HubConnectionState.Connected) {
       await this.connection.stop().catch(console.error);
       this.connection = undefined;
     }
@@ -81,10 +72,7 @@ export class AiChatServiceV2 {
   private async setupResponseListening(proToken: string) {
     const subject = new AsyncIterableSubject<AiChatResponseV2>();
     if (!this.connection) {
-      this.connection = this.hubConnectionFactory.create(
-        proToken,
-        '/ai-chat-v2',
-      );
+      this.connection = this.hubConnectionFactory.create(proToken, '/ai-chat-v2');
 
       this.connection.onclose((e) => {
         this.connection = undefined;
@@ -104,8 +92,7 @@ export class AiChatServiceV2 {
     if (!this.connection) {
       subject.pushValue({
         type: 'messageResponse',
-        message:
-          'Failed to connect to server. Please refresh and try again with a strong internet connection',
+        message: 'Failed to connect to server. Please refresh and try again with a strong internet connection',
       });
       subject.end();
       return subject;
@@ -117,11 +104,7 @@ export class AiChatServiceV2 {
             .returnType<AiChatResponseV2>()
             .with(
               {
-                type: P.union(
-                  'messageResponse',
-                  'purchasePro',
-                  'updateRequired',
-                ),
+                type: P.union('messageResponse', 'purchasePro', 'updateRequired'),
               },
               (chatMessage) => chatMessage,
             )

@@ -29,10 +29,7 @@ import { Divider, List, SegmentedButtons, TextInput } from 'react-native-paper';
 import { match, P } from 'ts-pattern';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import { FormRow } from '@/components/presentation/foundation/form-row';
-import {
-  SegmentedList,
-  SegmentListFormElement,
-} from '@/components/presentation/foundation/segmented-list';
+import { SegmentedList, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
 import RestFormat from '@/components/presentation/foundation/rest-format';
 import { KeysOfType } from '@/utils/types';
@@ -54,8 +51,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
   const selectExerciseFromSearch = (ex: ExerciseDescriptor) => {
     updateExercise({ name: ex.name });
   };
-  const { exercise: propsExercise, updateExercise: updatePropsExercise } =
-    props;
+  const { exercise: propsExercise, updateExercise: updatePropsExercise } = props;
   const [exercise, setExercise] = useState(propsExercise);
   const exerciseRef = useRef(exercise);
   exerciseRef.current = exercise;
@@ -69,30 +65,23 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
     setExercise(next);
     updatePropsExercise(next);
   };
-  const updateExercise = (
-    ex: Partial<WeightedExerciseBlueprint | CardioExerciseBlueprint>,
-  ) => {
-    commit(
-      exerciseRef.current.with(
-        ex as unknown as Partial<
-          WeightedExerciseBlueprint & CardioExerciseBlueprint
-        >,
-      ),
-    );
+  const updateExercise = (ex: Partial<WeightedExerciseBlueprint | CardioExerciseBlueprint>) => {
+    commit(exerciseRef.current.with(ex as unknown as Partial<WeightedExerciseBlueprint & CardioExerciseBlueprint>));
   };
 
   const handleTypeChange = (type: string) => {
     const current = exerciseRef.current;
-    let newExercise: CardioExerciseBlueprint | WeightedExerciseBlueprint =
-      current;
+    let newExercise: CardioExerciseBlueprint | WeightedExerciseBlueprint = current;
     if (type === 'weighted') {
       newExercise = WeightedExerciseBlueprint.empty().with({
+        // oxlint-disable-next-line typescript/no-misused-spread
         ...current,
         type: 'WeightedExerciseBlueprint',
         sets: undefined!, // Will not overwrite empty
       });
     } else {
       newExercise = CardioExerciseBlueprint.empty().with({
+        // oxlint-disable-next-line typescript/no-misused-spread
         ...current,
         type: 'CardioExerciseBlueprint',
         sets: undefined!, // Will not overwrite empty
@@ -114,18 +103,11 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
     <View style={{ paddingVertical: spacing.pageHorizontalMargin }}>
       <Form>
         <FormRow>
-          <ExerciseSearcher
-            currentExercise={exercise}
-            onSelectExercise={selectExerciseFromSearch}
-          />
+          <ExerciseSearcher currentExercise={exercise} onSelectExercise={selectExerciseFromSearch} />
         </FormRow>
         <FormRow>
           <SegmentedButtons
-            value={
-              exercise instanceof WeightedExerciseBlueprint
-                ? 'weighted'
-                : 'cardio'
-            }
+            value={exercise instanceof WeightedExerciseBlueprint ? 'weighted' : 'cardio'}
             buttons={[
               {
                 value: 'weighted',
@@ -154,9 +136,7 @@ function CardioExerciseEditor({
   updateExercise,
 }: {
   exercise: CardioExerciseBlueprint;
-  updateExercise: (
-    ex: Partial<CardioExerciseBlueprint | WeightedExerciseBlueprint>,
-  ) => void;
+  updateExercise: (ex: Partial<CardioExerciseBlueprint | WeightedExerciseBlueprint>) => void;
 }) {
   const { colors } = useAppTheme();
   return (
@@ -168,9 +148,7 @@ function CardioExerciseEditor({
           key={setIndex}
           updateSet={(newSet) =>
             updateExercise({
-              sets: exercise.sets.map((oldSet, i) =>
-                setIndex === i ? newSet : oldSet,
-              ),
+              sets: exercise.sets.map((oldSet, i) => (setIndex === i ? newSet : oldSet)),
             })
           }
         />
@@ -184,9 +162,7 @@ function CardioExerciseEditor({
             textColor={colors.error}
             onPress={() =>
               updateExercise({
-                sets: exercise.sets.filter(
-                  (_, i) => i !== exercise.sets.length - 1,
-                ),
+                sets: exercise.sets.filter((_, i) => i !== exercise.sets.length - 1),
               })
             }
           >
@@ -196,11 +172,7 @@ function CardioExerciseEditor({
             icon={'addCircle'}
             onPress={() =>
               updateExercise({
-                sets: [
-                  ...exercise.sets,
-                  exercise.sets[exercise.sets.length - 1] ??
-                    CardioExerciseSetBlueprint.empty(),
-                ],
+                sets: [...exercise.sets, exercise.sets[exercise.sets.length - 1] ?? CardioExerciseSetBlueprint.empty()],
               })
             }
           >
@@ -218,20 +190,17 @@ function CardioSetEditor(props: {
 }) {
   const { t } = useTranslate();
   const { set, updateSet } = props;
-  const toggleSetItem =
-    (item: KeysOfType<CardioExerciseSetBlueprint, boolean>) => () =>
-      updateSet(set.with({ [item]: !set[item] }));
+  const toggleSetItem = (item: KeysOfType<CardioExerciseSetBlueprint, boolean>) => () =>
+    updateSet(set.with({ [item]: !set[item] }));
   return (
     <>
-      <CardioTargetEditor
-        target={set.target}
-        onValueChange={(target) => updateSet(set.with({ target }))}
-      />
+      <CardioTargetEditor target={set.target} onValueChange={(target) => updateSet(set.with({ target }))} />
       <SegmentedList
         renderItem={(i) => i}
         items={
           [
             <SegmentedListSwitch
+              key={0}
               value={set.trackDuration || set.target.type === 'time'}
               testID="track-time-switch"
               icon={'timer'}
@@ -240,6 +209,7 @@ function CardioSetEditor(props: {
               disabled={set.target.type === 'time'}
             />,
             <SegmentedListSwitch
+              key={1}
               value={set.trackDistance || set.target.type === 'distance'}
               icon={'trailLength'}
               testID="track-distance-switch"
@@ -248,24 +218,28 @@ function CardioSetEditor(props: {
               disabled={set.target.type === 'distance'}
             />,
             <SegmentedListSwitch
+              key={2}
               icon={'speed'}
               value={set.trackResistance}
               onValueChange={toggleSetItem('trackResistance')}
               label={t('exercise.track_resistance.label')}
             />,
             <SegmentedListSwitch
+              key={3}
               value={set.trackIncline}
               icon={'elevation'}
               onValueChange={toggleSetItem('trackIncline')}
               label={t('exercise.track_incline.label')}
             />,
             <SegmentedListSwitch
+              key={4}
               value={set.trackWeight}
               icon={'weight'}
               onValueChange={toggleSetItem('trackWeight')}
               label={t('exercise.track_weight.label')}
             />,
             <SegmentedListSwitch
+              key={5}
               value={set.trackSteps}
               icon={'steps'}
               onValueChange={toggleSetItem('trackSteps')}
@@ -285,9 +259,7 @@ function SharedFieldsEditor({
   updateExercise,
 }: {
   exercise: ExerciseBlueprint;
-  updateExercise: (
-    ex: Partial<CardioExerciseBlueprint | WeightedExerciseBlueprint>,
-  ) => void;
+  updateExercise: (ex: Partial<CardioExerciseBlueprint | WeightedExerciseBlueprint>) => void;
 }) {
   const { t } = useTranslate();
   return (
@@ -318,10 +290,7 @@ function SharedFieldsEditor({
   );
 }
 
-function CardioTargetEditor(props: {
-  target: CardioTarget;
-  onValueChange: (t: CardioTarget) => void;
-}) {
+function CardioTargetEditor(props: { target: CardioTarget; onValueChange: (t: CardioTarget) => void }) {
   const useImperialUnits = useAppSelector((x) => x.settings.useImperialUnits);
   const { target, onValueChange } = props;
   const { t } = useTranslate();
@@ -374,12 +343,8 @@ function CardioTargetEditor(props: {
       </FormRow>
 
       {matchCardioTarget(target, {
-        distance: (t) => (
-          <DistanceTargetEditor target={t} onValueChange={onValueChange} />
-        ),
-        time: (t) => (
-          <TimeTargetEditor target={t} onValueChange={onValueChange} />
-        ),
+        distance: (t) => <DistanceTargetEditor target={t} onValueChange={onValueChange} />,
+        time: (t) => <TimeTargetEditor target={t} onValueChange={onValueChange} />,
       })}
     </>
   );
@@ -399,9 +364,7 @@ function DistanceTargetEditor(props: {
     >
       <View style={{ flex: 1 }}>
         <EditableIncrementer
-          onChange={(value) =>
-            onValueChange({ ...target, value: { ...target.value, value } })
-          }
+          onChange={(value) => onValueChange({ ...target, value: { ...target.value, value } })}
           disallowNegative
           value={props.target.value.value}
         />
@@ -411,25 +374,18 @@ function DistanceTargetEditor(props: {
         testID="setDistanceUnit"
         value={target.value.unit}
         options={distanceUnitOptions}
-        onChange={(unit) =>
-          onValueChange({ ...target, value: { ...target.value, unit } })
-        }
+        onChange={(unit) => onValueChange({ ...target, value: { ...target.value, unit } })}
       />
     </View>
   );
 }
 
-function TimeTargetEditor(props: {
-  target: TimeCardioTarget;
-  onValueChange: (t: TimeCardioTarget) => void;
-}) {
+function TimeTargetEditor(props: { target: TimeCardioTarget; onValueChange: (t: TimeCardioTarget) => void }) {
   return (
     <DurationEditor
       duration={props.target.value}
       showHours
-      onDurationUpdated={(value) =>
-        props.onValueChange({ type: 'time', value })
-      }
+      onDurationUpdated={(value) => props.onValueChange({ type: 'time', value })}
     />
   );
 }
@@ -445,11 +401,9 @@ function WeightedExerciseEditor({
   const { colors } = useAppTheme();
   const [restDialogOpen, setRestDialogOpen] = useState(false);
 
-  const setSets = (value: number) =>
-    updateExercise({ sets: Math.max(value, 1) });
+  const setSets = (value: number) => updateExercise({ sets: Math.max(value, 1) });
 
-  const setReps = (value: number) =>
-    updateExercise({ repsPerSet: Math.max(value, 1) });
+  const setReps = (value: number) => updateExercise({ repsPerSet: Math.max(value, 1) });
 
   return (
     <View style={{ gap: spacing[2] }}>
@@ -492,43 +446,35 @@ function WeightedExerciseEditor({
         <SegmentedList
           items={[
             <SegmentListFormElement
+              key={1}
               label={t('rest.rest.label')}
               icon={'airlineSeatReclineExtraFill'}
               onPress={() => setRestDialogOpen(true)}
-              right={
-                <RestFormat
-                  style={{ color: colors.onSurface }}
-                  rest={exercise.restBetweenSets}
-                />
-              }
+              right={<RestFormat style={{ color: colors.onSurface }} rest={exercise.restBetweenSets} />}
             />,
 
             <SegmentedListSwitch
+              key={2}
               label={t('workout.superset_next_exercise.button')}
               icon={'link'}
               value={exercise.supersetWithNext}
               testID="exercise-superset"
-              onValueChange={(supersetWithNext) =>
-                updateExercise({ supersetWithNext })
-              }
+              onValueChange={(supersetWithNext) => updateExercise({ supersetWithNext })}
             />,
             <SegmentListFormElement
+              key={3}
               label={t('exercise.progressive_overload.label')}
               icon={'trendingUp'}
               right={
                 <ProgressiveOverloadSelect
                   value={exercise.progressiveOverload}
-                  onChange={(progressiveOverload) =>
-                    updateExercise({ progressiveOverload })
-                  }
+                  onChange={(progressiveOverload) => updateExercise({ progressiveOverload })}
                 />
               }
               line2={
                 <ProgressiveOverloadValuesEditor
                   value={exercise.progressiveOverload}
-                  onChange={(progressiveOverload) =>
-                    updateExercise({ progressiveOverload })
-                  }
+                  onChange={(progressiveOverload) => updateExercise({ progressiveOverload })}
                 />
               }
             />,

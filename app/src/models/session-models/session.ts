@@ -5,11 +5,7 @@ import {
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
-import {
-  SessionJSON,
-  fromLocalDateJSON,
-  toLocalDateJSON,
-} from '@/models/storage/versions/latest';
+import { SessionJSON, fromLocalDateJSON, toLocalDateJSON } from '@/models/storage/versions/latest';
 import { Weight, WeightUnit } from '@/models/weight';
 import { indexed } from '@/utils/enumerable';
 import { Duration, LocalDate, OffsetDateTime } from '@js-joda/core';
@@ -18,19 +14,13 @@ import Enumerable from 'linq';
 import { P } from 'ts-pattern';
 import { uuid } from '@/utils/uuid';
 import { equal } from '@/models/session-models/helpers';
-import {
-  RecordedCardioExercise,
-  RecordedCardioExerciseSet,
-} from '@/models/session-models/recorded-cardio-exercise';
+import { RecordedCardioExercise, RecordedCardioExerciseSet } from '@/models/session-models/recorded-cardio-exercise';
 import {
   RecordedExercise,
   createEmptyRecordedExercise,
   fromRecordedExerciseJSON,
 } from '@/models/session-models/recorded-exercise';
-import {
-  PotentialSet,
-  RecordedWeightedExercise,
-} from '@/models/session-models/recorded-weighted-exercise';
+import { PotentialSet, RecordedWeightedExercise } from '@/models/session-models/recorded-weighted-exercise';
 import { IndexOutOfBoundsError } from '@/utils/index-out-of-bounds';
 
 export class Session {
@@ -44,10 +34,7 @@ export class Session {
   ) {}
   get duration(): Duration | undefined {
     return this.lastExercise?.latestTime && this.firstExercise?.earliestTime
-      ? Duration.between(
-          this.firstExercise.earliestTime,
-          this.lastExercise.latestTime,
-        )
+      ? Duration.between(this.firstExercise.earliestTime, this.lastExercise.latestTime)
       : undefined;
   }
 
@@ -66,10 +53,7 @@ export class Session {
     );
   }
 
-  static getEmptySession(
-    blueprint: SessionBlueprint,
-    defaultWeightUnit: WeightUnit,
-  ): Session {
+  static getEmptySession(blueprint: SessionBlueprint, defaultWeightUnit: WeightUnit): Session {
     function getNextExercise(e: ExerciseBlueprint) {
       return match(e)
         .with(
@@ -77,16 +61,11 @@ export class Session {
           (we) =>
             new RecordedWeightedExercise(
               we,
-              Array.from({ length: we.sets }).map(
-                () =>
-                  new PotentialSet(undefined, new Weight(0, defaultWeightUnit)),
-              ),
+              Array.from({ length: we.sets }).map(() => new PotentialSet(undefined, new Weight(0, defaultWeightUnit))),
               undefined,
             ),
         )
-        .with(P.instanceOf(CardioExerciseBlueprint), (ce) =>
-          RecordedCardioExercise.empty(ce),
-        )
+        .with(P.instanceOf(CardioExerciseBlueprint), (ce) => RecordedCardioExercise.empty(ce))
         .exhaustive();
     }
     return new Session(
@@ -107,10 +86,7 @@ export class Session {
               potentialSets: re.potentialSets.map((ps) =>
                 ps.with({
                   weight: ps.weight.with({
-                    unit:
-                      ps.weight.unit === 'nil'
-                        ? fallbackWeightUnit
-                        : ps.weight.unit,
+                    unit: ps.weight.unit === 'nil' ? fallbackWeightUnit : ps.weight.unit,
                   }),
                 }),
               ),
@@ -131,35 +107,23 @@ export class Session {
       equal(this.bodyweight, other.bodyweight) &&
       this.blueprint.equals(other.blueprint) &&
       this.recordedExercises.length === other.recordedExercises.length &&
-      this.recordedExercises.every((exercise, index) =>
-        exercise.equals(other.recordedExercises[index]),
-      )
+      this.recordedExercises.every((exercise, index) => exercise.equals(other.recordedExercises[index]))
     );
   }
 
   with(other: Partial<Session>) {
     return new Session(
       'id' in other ? (other.id ?? this.id) : this.id,
-      'blueprint' in other
-        ? (other.blueprint ?? this.blueprint)
-        : this.blueprint,
-      'recordedExercises' in other
-        ? (other.recordedExercises ?? this.recordedExercises)
-        : this.recordedExercises,
+      'blueprint' in other ? (other.blueprint ?? this.blueprint) : this.blueprint,
+      'recordedExercises' in other ? (other.recordedExercises ?? this.recordedExercises) : this.recordedExercises,
       'date' in other ? (other.date ?? this.date) : this.date,
       'bodyweight' in other ? other.bodyweight : this.bodyweight,
-      'restTimerStartTime' in other
-        ? other.restTimerStartTime
-        : this.restTimerStartTime,
+      'restTimerStartTime' in other ? other.restTimerStartTime : this.restTimerStartTime,
     );
   }
 
-  withEditedExercise(
-    exerciseIndex: number,
-    newBlueprint: ExerciseBlueprint,
-    useImperialUnits: boolean,
-  ): Session {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+  withEditedExercise(exerciseIndex: number, newBlueprint: ExerciseBlueprint, useImperialUnits: boolean): Session {
+    // oxlint-disable-next-line typescript/no-this-alias
     let session: Session = this;
     const existingExercise = session.recordedExercises[exerciseIndex];
     if (!existingExercise) {
@@ -168,24 +132,17 @@ export class Session {
 
     session = session.with({
       blueprint: session.blueprint.with({
-        exercises: session.blueprint.exercises.with(
-          exerciseIndex,
-          newBlueprint,
-        ),
+        exercises: session.blueprint.exercises.with(exerciseIndex, newBlueprint),
       }),
     });
     if (existingExercise.blueprint.type !== newBlueprint.type) {
       session = session.withExercise(
         exerciseIndex,
-        createEmptyRecordedExercise(
-          newBlueprint,
-          useImperialUnits ? 'pounds' : 'kilograms',
-        ),
+        createEmptyRecordedExercise(newBlueprint, useImperialUnits ? 'pounds' : 'kilograms'),
       );
     } else {
       const weightedExistingExercise =
-        session.recordedExercises[exerciseIndex]!.type ===
-        'RecordedWeightedExercise'
+        session.recordedExercises[exerciseIndex]!.type === 'RecordedWeightedExercise'
           ? session.recordedExercises[exerciseIndex]
           : undefined;
       if (weightedExistingExercise) {
@@ -193,17 +150,11 @@ export class Session {
           exerciseIndex,
           weightedExistingExercise.with({
             blueprint: newBlueprint as WeightedExerciseBlueprint,
-            potentialSets: Enumerable.range(
-              0,
-              (newBlueprint as WeightedExerciseBlueprint).sets,
-            )
+            potentialSets: Enumerable.range(0, (newBlueprint as WeightedExerciseBlueprint).sets)
               .select(
                 (index) =>
                   weightedExistingExercise.potentialSets.at(index) ??
-                  new PotentialSet(
-                    undefined,
-                    weightedExistingExercise.maxWeight,
-                  ),
+                  new PotentialSet(undefined, weightedExistingExercise.maxWeight),
               )
               .toArray(),
           }),
@@ -211,8 +162,7 @@ export class Session {
       }
 
       const cardioExistingExercise =
-        session.recordedExercises[exerciseIndex]!.type ===
-        'RecordedCardioExercise'
+        session.recordedExercises[exerciseIndex]!.type === 'RecordedCardioExercise'
           ? session.recordedExercises[exerciseIndex]
           : undefined;
 
@@ -224,6 +174,7 @@ export class Session {
             sets: (newBlueprint as CardioExerciseBlueprint).sets.map((set, i) =>
               RecordedCardioExerciseSet.empty(set).with({
                 // Basically allows us to use values from set, even if there are more sets now and it would be undefined
+                // oxlint-disable-next-line typescript/no-misused-spread
                 ...cardioExistingExercise.sets[i],
                 blueprint: set,
               }),
@@ -235,19 +186,13 @@ export class Session {
     return session;
   }
 
-  withAddedExercise(
-    exercise: ExerciseBlueprint,
-    useImperialUnits: boolean,
-  ): Session {
+  withAddedExercise(exercise: ExerciseBlueprint, useImperialUnits: boolean): Session {
     return this.with({
       blueprint: this.blueprint.with({
         exercises: this.blueprint.exercises.concat(exercise),
       }),
       recordedExercises: this.recordedExercises.concat(
-        createEmptyRecordedExercise(
-          exercise,
-          useImperialUnits ? 'pounds' : 'kilograms',
-        ),
+        createEmptyRecordedExercise(exercise, useImperialUnits ? 'pounds' : 'kilograms'),
       ),
     });
   }
@@ -260,17 +205,14 @@ export class Session {
     const allCompletionDates = this.recordedExercises
       .flatMap((re) =>
         re.type === 'RecordedWeightedExercise'
-          ? re.potentialSets.map((ps) =>
-              ps.set?.completionDateTime?.toLocalDate(),
-            )
+          ? re.potentialSets.map((ps) => ps.set?.completionDateTime?.toLocalDate())
           : re.sets.map((s) => s.completionDateTime?.toLocalDate()),
       )
       .filter((d): d is LocalDate => d !== undefined);
 
     // If all sets have the same completion date, use absolute date
     const useAbsoluteDate =
-      allCompletionDates.length > 0 &&
-      new Set(allCompletionDates.map((d) => d.toString())).size === 1;
+      allCompletionDates.length > 0 && new Set(allCompletionDates.map((d) => d.toString())).size === 1;
 
     function getAdjustedDate(setDate: LocalDate): LocalDate {
       if (useAbsoluteDate) {
@@ -322,18 +264,12 @@ export class Session {
 
   withNothingCompleted(): Session {
     return this.with({
-      recordedExercises: this.recordedExercises.map((re) =>
-        re.withNothingCompleted(),
-      ),
+      recordedExercises: this.recordedExercises.map((re) => re.withNothingCompleted()),
     });
   }
 
   // TODO we should update the rest timer time when we call this
-  withCycledExerciseReps(
-    exerciseIndex: number,
-    setIndex: number,
-    time: OffsetDateTime,
-  ): Session {
+  withCycledExerciseReps(exerciseIndex: number, setIndex: number, time: OffsetDateTime): Session {
     const weightedRecorded = this.recordedExercises[exerciseIndex];
     if (!weightedRecorded) {
       throw new IndexOutOfBoundsError(exerciseIndex, this.recordedExercises);
@@ -358,10 +294,7 @@ export class Session {
     return this.with({
       recordedExercises: this.recordedExercises.with(exerciseIndex, exercise),
       blueprint: this.blueprint.with({
-        exercises: this.blueprint.exercises.with(
-          exerciseIndex,
-          exercise.blueprint,
-        ),
+        exercises: this.blueprint.exercises.with(exerciseIndex, exercise.blueprint),
       }),
     });
   }
@@ -386,10 +319,7 @@ export class Session {
     };
   }
 
-  static freeformSession(
-    date: LocalDate,
-    bodyweight: Weight | undefined,
-  ): Session {
+  static freeformSession(date: LocalDate, bodyweight: Weight | undefined): Session {
     return EmptySession.with({
       id: uuid(),
       date: date,
@@ -408,8 +338,7 @@ export class Session {
         b.plus(
           ex instanceof RecordedWeightedExercise
             ? ex.potentialSets.reduce(
-                (c, set) =>
-                  c.plus(set.weight.multipliedBy(set.set?.repsCompleted ?? 0)),
+                (c, set) => c.plus(set.weight.multipliedBy(set.set?.repsCompleted ?? 0)),
                 Weight.NIL,
               )
             : Weight.NIL,
@@ -429,9 +358,7 @@ export class Session {
   get nextExercise(): RecordedExercise | undefined {
     const recordedExercises = this.recordedExercises;
     const cardioExerciseWithRunningTimer = recordedExercises.find(
-      (x) =>
-        x instanceof RecordedCardioExercise &&
-        x.sets.some((s) => s.currentBlockStartTime),
+      (x) => x instanceof RecordedCardioExercise && x.sets.some((s) => s.currentBlockStartTime),
     );
     if (cardioExerciseWithRunningTimer) {
       return cardioExerciseWithRunningTimer;
@@ -448,8 +375,7 @@ export class Session {
       .with(recordedExercises.length - 1, () => false) // can never superset with next if its the last exercise
       .otherwise(
         (i) =>
-          recordedExercises[i] instanceof RecordedWeightedExercise &&
-          recordedExercises[i].blueprint.supersetWithNext,
+          recordedExercises[i] instanceof RecordedWeightedExercise && recordedExercises[i].blueprint.supersetWithNext,
       );
 
     const latestExerciseSupersetsWithPrevious = match(latestExerciseIndex)
@@ -462,10 +388,7 @@ export class Session {
         );
       });
 
-    if (
-      latestExerciseSupersetsWithNext &&
-      !recordedExercises[latestExerciseIndex + 1]?.isComplete
-    ) {
+    if (latestExerciseSupersetsWithNext && !recordedExercises[latestExerciseIndex + 1]?.isComplete) {
       return recordedExercises[latestExerciseIndex + 1];
     }
 
@@ -474,12 +397,8 @@ export class Session {
       let indexToJumpBackTo = latestExerciseIndex - 1;
       while (
         indexToJumpBackTo >= 0 &&
-        recordedExercises[indexToJumpBackTo] instanceof
-          RecordedWeightedExercise &&
-        (
-          recordedExercises[indexToJumpBackTo]!
-            .blueprint as WeightedExerciseBlueprint
-        ).supersetWithNext
+        recordedExercises[indexToJumpBackTo] instanceof RecordedWeightedExercise &&
+        (recordedExercises[indexToJumpBackTo]!.blueprint as WeightedExerciseBlueprint).supersetWithNext
       ) {
         indexToJumpBackTo--;
       }
@@ -487,10 +406,7 @@ export class Session {
       // so jump forward to the next exercise
       indexToJumpBackTo++;
       // Now jump to the first exercise which has remaining sets in the chain
-      while (
-        indexToJumpBackTo < recordedExercises.length &&
-        recordedExercises[indexToJumpBackTo]!.isComplete
-      ) {
+      while (indexToJumpBackTo < recordedExercises.length && recordedExercises[indexToJumpBackTo]!.isComplete) {
         indexToJumpBackTo++;
       }
 
@@ -521,24 +437,13 @@ export class Session {
       return undefined;
     }
     const exercise = this.lastExercise;
-    if (
-      this.nextExercise &&
-      exercise &&
-      exercise.latestTime &&
-      exercise instanceof RecordedWeightedExercise
-    ) {
+    if (this.nextExercise && exercise && exercise.latestTime && exercise instanceof RecordedWeightedExercise) {
       const repsPerSet = exercise.blueprint.repsPerSet;
       const { minRest, failureRest } = exercise.blueprint.restBetweenSets;
 
       const rest = match(exercise.lastRecordedSet)
-        .with(
-          { set: { repsCompleted: P.when((x) => x >= repsPerSet) } },
-          () => minRest,
-        )
-        .with(
-          { set: { repsCompleted: P.when((x) => x < repsPerSet) } },
-          () => failureRest,
-        )
+        .with({ set: { repsCompleted: P.when((x) => x >= repsPerSet) } }, () => minRest)
+        .with({ set: { repsCompleted: P.when((x) => x < repsPerSet) } }, () => failureRest)
         .otherwise(() => Duration.ZERO);
 
       if (rest.equals(Duration.ZERO)) {

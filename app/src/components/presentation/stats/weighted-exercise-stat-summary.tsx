@@ -31,16 +31,10 @@ export function WeightedExerciseStatSummary({
             }}
           >
             <Text variant="bodySmall">
-              Total lifted:{' '}
-              {exerciseStats.totalVolumeStatistics.totalValue.shortLocaleFormat(
-                0,
-              )}
+              Total lifted: {exerciseStats.totalVolumeStatistics.totalValue.shortLocaleFormat(0)}
             </Text>
             <Text variant="bodySmall">
-              1RM:{' '}
-              {exerciseStats.max1RMPerSessionStatistics.currentValue.shortLocaleFormat(
-                0,
-              )}
+              1RM: {exerciseStats.max1RMPerSessionStatistics.currentValue.shortLocaleFormat(0)}
             </Text>
           </View>
         </View>

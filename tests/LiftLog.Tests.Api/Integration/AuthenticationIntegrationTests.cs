@@ -136,7 +136,7 @@ public class AuthenticationIntegrationTests
         var exception = await Assert.ThrowsAsync<HttpRequestException>(async () =>
             await hubConnection.StartAsync()
         );
-        await Assert.That(exception.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
+        await Assert.That(exception!.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
     }
 
     [Test]

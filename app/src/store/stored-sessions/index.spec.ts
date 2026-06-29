@@ -1,67 +1,25 @@
 import { describe, expect, it } from 'vitest';
-import {
-  LocalDate,
-  OffsetDateTime,
-  ZoneOffset,
-  YearMonth,
-} from '@js-joda/core';
+import { LocalDate, OffsetDateTime, ZoneOffset, YearMonth } from '@js-joda/core';
 import { v4 as uuid } from 'uuid';
 import { selectSessionsInMonth } from '@/store/stored-sessions';
-import {
-  NoProgressiveOverload,
-  Rest,
-  SessionBlueprint,
-  WeightedExerciseBlueprint,
-} from '@/models/blueprint-models';
-import {
-  PotentialSet,
-  RecordedSet,
-  RecordedWeightedExercise,
-  Session,
-} from '@/models/session-models';
+import { NoProgressiveOverload, Rest, SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
+import { PotentialSet, RecordedSet, RecordedWeightedExercise, Session } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 
-function createSessionWithCompletionTime(
-  sessionDate: LocalDate,
-  completionTime: OffsetDateTime,
-  name: string,
-) {
+function createSessionWithCompletionTime(sessionDate: LocalDate, completionTime: OffsetDateTime, name: string) {
   const blueprint = new SessionBlueprint(
     name,
-    [
-      new WeightedExerciseBlueprint(
-        `${name} Exercise`,
-        1,
-        5,
-        new NoProgressiveOverload(),
-        Rest.medium,
-        false,
-        '',
-        '',
-      ),
-    ],
+    [new WeightedExerciseBlueprint(`${name} Exercise`, 1, 5, new NoProgressiveOverload(), Rest.medium, false, '', '')],
     '',
   );
   const exerciseBlueprint = blueprint.exercises[0] as WeightedExerciseBlueprint;
   const recordedExercise = new RecordedWeightedExercise(
     exerciseBlueprint,
-    [
-      new PotentialSet(
-        new RecordedSet(exerciseBlueprint.repsPerSet, completionTime),
-        new Weight(100, 'kilograms'),
-      ),
-    ],
+    [new PotentialSet(new RecordedSet(exerciseBlueprint.repsPerSet, completionTime), new Weight(100, 'kilograms'))],
     undefined,
   );
 
-  return new Session(
-    uuid(),
-    blueprint,
-    [recordedExercise],
-    sessionDate,
-    undefined,
-    undefined,
-  );
+  return new Session(uuid(), blueprint, [recordedExercise], sessionDate, undefined, undefined);
 }
 
 describe('stored sessions sorting', () => {
@@ -89,9 +47,6 @@ describe('stored sessions sorting', () => {
 
     const ordered = selectSessionsInMonth(state, YearMonth.of(2026, 4));
 
-    expect(ordered.map((session) => session.blueprint.name)).toEqual([
-      'Evening',
-      'Morning',
-    ]);
+    expect(ordered.map((session) => session.blueprint.name)).toEqual(['Evening', 'Morning']);
   });
 });

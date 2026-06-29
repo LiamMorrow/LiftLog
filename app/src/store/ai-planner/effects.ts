@@ -1,7 +1,4 @@
-import {
-  AiChatResponseV2,
-  describeSharedProgramForAi,
-} from '@/models/ai-models';
+import { AiChatResponseV2, describeSharedProgramForAi } from '@/models/ai-models';
 import {
   addMessage,
   ChatMessage,
@@ -21,59 +18,48 @@ export function applyAiPlannerEffects(addEffect: AddEffectFn) {
     dispatch(setIsHydrated(true));
   });
 
-  addEffect(
-    addMessage,
-    async (
-      { payload: message },
-      { getState, dispatch, extra: { aiChatService } },
-    ) => {
-      if (message.from === 'Agent') {
-        return;
-      }
-      let wireMessage: string;
-      if (message.type === 'messageResponse') {
-        wireMessage = message.message;
-      } else if (message.type === 'sharedProgram') {
-        wireMessage = describeSharedProgramForAi(
-          message.programName,
-          message.blueprint,
-        );
-      } else {
-        return;
-      }
-      const originalMessage: ChatMessage = {
-        from: 'Agent',
-        id: uuid(),
-        message: '',
-        type: 'messageResponse',
-        isLoading: true,
-      };
-      dispatch(addMessage(originalMessage));
-      let latestMessage: AiChatResponseV2 | undefined = undefined;
-      for await (const chatResponse of aiChatService.sendMessage(
-        wireMessage,
-      )) {
-        latestMessage = chatResponse;
-        dispatch(
-          updateMessage({
-            id: originalMessage.id,
-            from: 'Agent',
-            isLoading: true,
-            ...chatResponse,
-          }),
-        );
-      }
-
+  addEffect(addMessage, async ({ payload: message }, { dispatch, extra: { aiChatService } }) => {
+    if (message.from === 'Agent') {
+      return;
+    }
+    let wireMessage: string;
+    if (message.type === 'messageResponse') {
+      wireMessage = message.message;
+    } else if (message.type === 'sharedProgram') {
+      wireMessage = describeSharedProgramForAi(message.programName, message.blueprint);
+    } else {
+      return;
+    }
+    const originalMessage: ChatMessage = {
+      from: 'Agent',
+      id: uuid(),
+      message: '',
+      type: 'messageResponse',
+      isLoading: true,
+    };
+    dispatch(addMessage(originalMessage));
+    let latestMessage: AiChatResponseV2 | undefined = undefined;
+    for await (const chatResponse of aiChatService.sendMessage(wireMessage)) {
+      latestMessage = chatResponse;
       dispatch(
         updateMessage({
           id: originalMessage.id,
           from: 'Agent',
-          ...(latestMessage ?? originalMessage),
-          isLoading: false,
+          isLoading: true,
+          ...chatResponse,
         }),
       );
-    },
-  );
+    }
+
+    dispatch(
+      updateMessage({
+        id: originalMessage.id,
+        from: 'Agent',
+        ...(latestMessage ?? originalMessage),
+        isLoading: false,
+      }),
+    );
+  });
   addEffect(stopAiGenerator, async (_, { extra: { aiChatService } }) => {
     await aiChatService.stopInProgress();
   });

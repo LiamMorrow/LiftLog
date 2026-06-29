@@ -8,10 +8,7 @@ import Button from '@/components/presentation/foundation/gesture-wrappers/button
 import { restartChat } from '@/store/ai-planner';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
-import Purchases, {
-  PRODUCT_CATEGORY,
-  PurchasesStoreProduct,
-} from 'react-native-purchases';
+import Purchases, { PRODUCT_CATEGORY, PurchasesStoreProduct } from 'react-native-purchases';
 import { setProToken } from '@/store/settings';
 import { IndeterminateProgress } from '@/components/presentation/foundation/indeterminate-progress';
 
@@ -41,11 +38,7 @@ export function ProPrompt() {
         <LimitedHtml value={t('ai.upgrade_to_pro.explanation')} />
       </SurfaceText>
       <ProPrice />
-      <Button
-        style={{ alignSelf: 'flex-end' }}
-        mode="contained"
-        onPress={upgrade}
-      >
+      <Button style={{ alignSelf: 'flex-end' }} mode="contained" onPress={upgrade}>
         {t('generic.upgrade.button')}
       </Button>
     </View>

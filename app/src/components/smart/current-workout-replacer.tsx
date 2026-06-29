@@ -1,10 +1,7 @@
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import { Session } from '@/models/session-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import {
-  selectCurrentSession,
-  setCurrentSession,
-} from '@/store/current-session';
+import { selectCurrentSession, setCurrentSession } from '@/store/current-session';
 import { T, useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
@@ -19,14 +16,9 @@ export function CurrentWorkoutReplacer({
   clearSession: () => void;
 }) {
   const { t } = useTranslate();
-  const hasActiveSession = useAppSelector(
-    (x) => !!x.currentSession.workoutSession,
-  );
+  const hasActiveSession = useAppSelector((x) => !!x.currentSession.workoutSession);
   const { push } = useRouter();
-  const currentSession = useAppSelectorWithArg(
-    selectCurrentSession,
-    'workoutSession',
-  );
+  const currentSession = useAppSelectorWithArg(selectCurrentSession, 'workoutSession');
   const hasCurrentSession = !!currentSession;
   const activeSessionSameAsSelected = session?.equals(currentSession);
   const dispatch = useDispatch();

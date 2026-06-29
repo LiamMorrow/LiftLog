@@ -15,13 +15,7 @@ export type HoldableProps = {
   style?: ViewStyle;
 };
 
-export default function Holdable({
-  children,
-  onLongPress,
-  duration = 500,
-  style,
-  disabled,
-}: HoldableProps) {
+export default function Holdable({ children, onLongPress, duration = 500, style, disabled }: HoldableProps) {
   const holdingScale = useRef(new Animated.Value(1)).current;
 
   const handleLongPress = () => {
@@ -59,9 +53,7 @@ export default function Holdable({
 
   return (
     <GestureDetector gesture={gesture}>
-      <Animated.View style={[style, { transform: [{ scale: holdingScale }] }]}>
-        {children}
-      </Animated.View>
+      <Animated.View style={[style, { transform: [{ scale: holdingScale }] }]}>{children}</Animated.View>
     </GestureDetector>
   );
 }

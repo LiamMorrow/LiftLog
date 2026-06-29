@@ -19,10 +19,7 @@ export default function ItemList<T>(
   return (
     <View
       {...rest}
-      style={[
-        { paddingVertical: (verticalPadding ?? true) ? spacing[2] : 0 },
-        rest.style,
-      ]}
+      style={[{ paddingVertical: (verticalPadding ?? true) ? spacing[2] : 0 }, rest.style]}
       testID="item-list"
     >
       {items.map((item, index) => (

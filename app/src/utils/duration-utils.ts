@@ -20,21 +20,14 @@ export function getDurationComponents(duration: Duration): {
  * Creates a Duration from hours, minutes, and seconds components.
  * Supports overflow (e.g., 90 minutes becomes 1 hour 30 minutes).
  */
-export function createDurationFromComponents(
-  hours: number,
-  minutes: number,
-  seconds: number,
-): Duration {
+export function createDurationFromComponents(hours: number, minutes: number, seconds: number): Duration {
   return Duration.ofSeconds(hours * 3600 + minutes * 60 + seconds);
 }
 
 /**
  * Updates the hours component of a duration, preserving minutes and seconds.
  */
-export function updateDurationHours(
-  duration: Duration,
-  newHours: number,
-): Duration {
+export function updateDurationHours(duration: Duration, newHours: number): Duration {
   const { minutes, seconds } = getDurationComponents(duration);
   return createDurationFromComponents(newHours, minutes, seconds);
 }
@@ -43,10 +36,7 @@ export function updateDurationHours(
  * Updates the minutes component of a duration, preserving hours and seconds.
  * If minutes overflow (e.g., 90), the extra is added to hours.
  */
-export function updateDurationMinutes(
-  duration: Duration,
-  newMinutes: number,
-): Duration {
+export function updateDurationMinutes(duration: Duration, newMinutes: number): Duration {
   const { hours, seconds } = getDurationComponents(duration);
   return createDurationFromComponents(hours, newMinutes, seconds);
 }
@@ -55,10 +45,7 @@ export function updateDurationMinutes(
  * Updates the seconds component of a duration, preserving hours and minutes.
  * If seconds overflow (e.g., 90), the extra is added to minutes (and potentially hours).
  */
-export function updateDurationSeconds(
-  duration: Duration,
-  newSeconds: number,
-): Duration {
+export function updateDurationSeconds(duration: Duration, newSeconds: number): Duration {
   const { hours, minutes } = getDurationComponents(duration);
   return createDurationFromComponents(hours, minutes, newSeconds);
 }

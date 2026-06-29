@@ -1,8 +1,4 @@
-import {
-  RecordedCardioExercise,
-  RecordedExercise,
-  Session,
-} from '@/models/session-models';
+import { RecordedCardioExercise, RecordedExercise, Session } from '@/models/session-models';
 import { AddEffectFn } from '@/store/store';
 import { exportPlainText } from '@/store/settings';
 import Enumerable from 'linq';
@@ -13,67 +9,42 @@ import { shortFormatWeightUnit } from '@/models/weight';
 import { DateTimeFormatter, LocalDateTime } from '@js-joda/core';
 
 export function addExportPlaintextEffects(addEffect: AddEffectFn) {
-  addEffect(
-    exportPlainText,
-    async (
-      { payload: { format } },
-      { extra: { progressRepository, fileExportService } },
-    ) => {
-      const sessions = progressRepository.getOrderedSessions();
-      const now = LocalDateTime.now()
-        .withNano(0)
-        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-        .replaceAll(':', '')
-        .replaceAll('T', '_')
-        .replaceAll('-', '');
-      const [fileName, bytes, contentType] = await match(format)
-        .with(
-          'CSV',
-          async () =>
-            [
-              `liftlog-export.${now}.csv`,
-              await exportToCsv(sessions),
-              'text/csv',
-            ] as const,
-        )
-        .with(
-          'JSON',
-          async () =>
-            [
-              `liftlog-export.${now}.json`,
-              await exportToJson(sessions),
-              'application/json',
-            ] as const,
-        )
-        .exhaustive();
+  addEffect(exportPlainText, async ({ payload: { format } }, { extra: { progressRepository, fileExportService } }) => {
+    const sessions = progressRepository.getOrderedSessions();
+    const now = LocalDateTime.now()
+      .withNano(0)
+      .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+      .replaceAll(':', '')
+      .replaceAll('T', '_')
+      .replaceAll('-', '');
+    const [fileName, bytes, contentType] = await match(format)
+      .with('CSV', async () => [`liftlog-export.${now}.csv`, await exportToCsv(sessions), 'text/csv'] as const)
+      .with(
+        'JSON',
+        async () => [`liftlog-export.${now}.json`, await exportToJson(sessions), 'application/json'] as const,
+      )
+      .exhaustive();
 
-      await fileExportService.exportBytes(fileName, bytes, contentType);
-    },
-  );
+    await fileExportService.exportBytes(fileName, bytes, contentType);
+  });
 }
 
-async function exportToJson(
-  sessions: Enumerable.IEnumerable<Session>,
-): Promise<Uint8Array> {
+async function exportToJson(sessions: Enumerable.IEnumerable<Session>): Promise<Uint8Array> {
   const exportedSets = sessions
     .select((x) => ({
+      // oxlint-disable-next-line typescript/no-misused-spread
       ...x,
+      // oxlint-disable-next-line typescript/no-misused-spread
       blueprint: { ...x.blueprint, exercises: undefined },
     }))
     .toArray();
   return new TextEncoder().encode(JSON.stringify(exportedSets));
 }
 
-async function exportToCsv(
-  sessions: Enumerable.IEnumerable<Session>,
-): Promise<Uint8Array> {
+async function exportToCsv(sessions: Enumerable.IEnumerable<Session>): Promise<Uint8Array> {
   const exportedSets = sessions
-    .selectMany((session) =>
-      session.recordedExercises.map((exercise) => ({ session, exercise })),
-    )
-    .selectMany(({ session, exercise }) =>
-      ExportedSetCsvRow.fromModel(session, exercise),
-    );
+    .selectMany((session) => session.recordedExercises.map((exercise) => ({ session, exercise })))
+    .selectMany(({ session, exercise }) => ExportedSetCsvRow.fromModel(session, exercise));
   const csvString = jsonToCSV(exportedSets.toArray());
   return new TextEncoder().encode(csvString);
 }
@@ -89,10 +60,7 @@ class ExportedSetCsvRow {
     public TargetReps: number,
     public Notes: string,
   ) {}
-  static fromModel(
-    session: Session,
-    exercise: RecordedExercise,
-  ): ExportedSetCsvRow[] {
+  static fromModel(session: Session, exercise: RecordedExercise): ExportedSetCsvRow[] {
     // TODO: What do we do about cardio?
     if (exercise instanceof RecordedCardioExercise) {
       return [];

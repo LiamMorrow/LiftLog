@@ -1,3 +1,4 @@
+// oxlint-disable typescript/no-misused-spread
 import { File, Paths } from 'expo-file-system';
 import { uuid } from '@/utils/uuid';
 
@@ -33,12 +34,7 @@ export class Logger {
     return value;
   }
 
-  private serializeEntry(entry: {
-    level: string;
-    message: string;
-    options?: unknown;
-    timestamp: Date;
-  }): string {
+  private serializeEntry(entry: { level: string; message: string; options?: unknown; timestamp: Date }): string {
     const replacer = (_key: string, value: unknown): unknown => {
       if (value instanceof Error) {
         return {
@@ -80,9 +76,7 @@ export class Logger {
 
     // Trim to maxFileLines so the file doesn't grow unbounded
     if (existingLines.length > this.maxFileLines) {
-      existingLines = existingLines.slice(
-        existingLines.length - this.maxFileLines,
-      );
+      existingLines = existingLines.slice(existingLines.length - this.maxFileLines);
     }
 
     const content = existingLines.join('\n') + '\n';
@@ -195,17 +189,10 @@ export class Logger {
     const start = performance.now();
     const result = action();
     if (typeof result === 'undefined') {
-      this.info(
-        type + ' completed in ' + (performance.now() - start).toFixed(2) + 'ms',
-      );
+      this.info(type + ' completed in ' + (performance.now() - start).toFixed(2) + 'ms');
     } else {
       return result.then((x) => {
-        this.info(
-          type +
-            ' completed in ' +
-            (performance.now() - start).toFixed(2) +
-            'ms',
-        );
+        this.info(type + ' completed in ' + (performance.now() - start).toFixed(2) + 'ms');
         return x;
       });
     }

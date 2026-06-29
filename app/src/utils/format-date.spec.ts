@@ -164,11 +164,7 @@ describe('parseDuration', () => {
     const input = '1.02:30:45:123';
     const result = parseDuration(input);
 
-    const expected = Duration.ofDays(1)
-      .plusHours(2)
-      .plusMinutes(30)
-      .plusSeconds(45)
-      .plusMillis(123);
+    const expected = Duration.ofDays(1).plusHours(2).plusMinutes(30).plusSeconds(45).plusMillis(123);
 
     expect(result.equals(expected)).toBe(true);
   });
@@ -185,11 +181,7 @@ describe('parseDuration', () => {
     const input = '5.23:59:59:999';
     const result = parseDuration(input);
 
-    const expected = Duration.ofDays(5)
-      .plusHours(23)
-      .plusMinutes(59)
-      .plusSeconds(59)
-      .plusMillis(999);
+    const expected = Duration.ofDays(5).plusHours(23).plusMinutes(59).plusSeconds(59).plusMillis(999);
 
     expect(result.equals(expected)).toBe(true);
   });
@@ -198,11 +190,7 @@ describe('parseDuration', () => {
     const input = '365.12:30:45:500';
     const result = parseDuration(input);
 
-    const expected = Duration.ofDays(365)
-      .plusHours(12)
-      .plusMinutes(30)
-      .plusSeconds(45)
-      .plusMillis(500);
+    const expected = Duration.ofDays(365).plusHours(12).plusMinutes(30).plusSeconds(45).plusMillis(500);
 
     expect(result.equals(expected)).toBe(true);
   });
@@ -211,11 +199,7 @@ describe('parseDuration', () => {
     const input = '7.01:05:09:007';
     const result = parseDuration(input);
 
-    const expected = Duration.ofDays(7)
-      .plusHours(1)
-      .plusMinutes(5)
-      .plusSeconds(9)
-      .plusMillis(7);
+    const expected = Duration.ofDays(7).plusHours(1).plusMinutes(5).plusSeconds(9).plusMillis(7);
 
     expect(result.equals(expected)).toBe(true);
   });
@@ -224,10 +208,7 @@ describe('parseDuration', () => {
     const input = '02:30:45:123';
     const result = parseDuration(input);
 
-    const expected = Duration.ofHours(2)
-      .plusMinutes(30)
-      .plusSeconds(45)
-      .plusMillis(123);
+    const expected = Duration.ofHours(2).plusMinutes(30).plusSeconds(45).plusMillis(123);
 
     expect(result.equals(expected)).toBe(true);
   });
@@ -236,10 +217,7 @@ describe('parseDuration', () => {
     const input = '1.02:30:45';
     const result = parseDuration(input);
 
-    const expected = Duration.ofDays(1)
-      .plusHours(2)
-      .plusMinutes(30)
-      .plusSeconds(45);
+    const expected = Duration.ofDays(1).plusHours(2).plusMinutes(30).plusSeconds(45);
 
     expect(result.equals(expected)).toBe(true);
   });
@@ -264,37 +242,27 @@ describe('parseDuration', () => {
   describe('error cases', () => {
     it('should throw error for invalid format - missing required parts', () => {
       const input = '02:30'; // Missing seconds
-      expect(() => parseDuration(input)).toThrow(
-        'Invalid duration format: 02:30',
-      );
+      expect(() => parseDuration(input)).toThrow('Invalid duration format: 02:30');
     });
 
     it('should throw error for invalid format - wrong separators', () => {
       const input = '1-02-30-45-123';
-      expect(() => parseDuration(input)).toThrow(
-        'Invalid duration format: 1-02-30-45-123',
-      );
+      expect(() => parseDuration(input)).toThrow('Invalid duration format: 1-02-30-45-123');
     });
 
     it('should throw error for invalid format - non-numeric values', () => {
       const input = 'a.bb:cc:dd:eee';
-      expect(() => parseDuration(input)).toThrow(
-        'Invalid duration format: a.bb:cc:dd:eee',
-      );
+      expect(() => parseDuration(input)).toThrow('Invalid duration format: a.bb:cc:dd:eee');
     });
 
     it('should throw error for invalid format - wrong number of digits', () => {
       const input = '1.2:30:45:123'; // Hours should be 2 digits
-      expect(() => parseDuration(input)).toThrow(
-        'Invalid duration format: 1.2:30:45:123',
-      );
+      expect(() => parseDuration(input)).toThrow('Invalid duration format: 1.2:30:45:123');
     });
 
     it('should throw error for invalid format - milliseconds not 3 digits', () => {
       const input = '1.02:30:45:12'; // Milliseconds should be 3 digits
-      expect(() => parseDuration(input)).toThrow(
-        'Invalid duration format: 1.02:30:45:12',
-      );
+      expect(() => parseDuration(input)).toThrow('Invalid duration format: 1.02:30:45:12');
     });
 
     it('should throw error for empty string', () => {
@@ -304,44 +272,32 @@ describe('parseDuration', () => {
 
     it('should throw error for completely wrong format', () => {
       const input = 'not a duration';
-      expect(() => parseDuration(input)).toThrow(
-        'Invalid duration format: not a duration',
-      );
+      expect(() => parseDuration(input)).toThrow('Invalid duration format: not a duration');
     });
 
     it('should throw error for negative values', () => {
       const input = '-1.02:30:45:123';
-      expect(() => parseDuration(input)).toThrow(
-        'Invalid duration format: -1.02:30:45:123',
-      );
+      expect(() => parseDuration(input)).toThrow('Invalid duration format: -1.02:30:45:123');
     });
 
     it('should throw error for single digit hours', () => {
       const input = '2:30:45'; // Hours should be 2 digits
-      expect(() => parseDuration(input)).toThrow(
-        'Invalid duration format: 2:30:45',
-      );
+      expect(() => parseDuration(input)).toThrow('Invalid duration format: 2:30:45');
     });
 
     it('should throw error for single digit minutes', () => {
       const input = '02:3:45'; // Minutes should be 2 digits
-      expect(() => parseDuration(input)).toThrow(
-        'Invalid duration format: 02:3:45',
-      );
+      expect(() => parseDuration(input)).toThrow('Invalid duration format: 02:3:45');
     });
 
     it('should throw error for single digit seconds', () => {
       const input = '02:30:5'; // Seconds should be 2 digits
-      expect(() => parseDuration(input)).toThrow(
-        'Invalid duration format: 02:30:5',
-      );
+      expect(() => parseDuration(input)).toThrow('Invalid duration format: 02:30:5');
     });
 
     it('should throw error for milliseconds with wrong digit count', () => {
       const input = '02:30:45:12'; // Milliseconds should be 3 digits if present
-      expect(() => parseDuration(input)).toThrow(
-        'Invalid duration format: 02:30:45:12',
-      );
+      expect(() => parseDuration(input)).toThrow('Invalid duration format: 02:30:45:12');
     });
   });
 });

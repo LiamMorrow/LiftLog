@@ -6,13 +6,7 @@ import {
   KeyedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { LocalDate, OffsetDateTime, YearMonth, ZoneId } from '@js-joda/core';
-import {
-  createAction,
-  createSelector,
-  createSlice,
-  PayloadAction,
-  WritableDraft,
-} from '@reduxjs/toolkit';
+import { createAction, createSelector, createSlice, PayloadAction, WritableDraft } from '@reduxjs/toolkit';
 import Enumerable from 'linq';
 import { WeightUnit } from '@/models/weight';
 import { TemporalComparer } from '@/models/comparers';
@@ -79,9 +73,7 @@ const storedSessionsSlice = createSlice({
       // Collect the exercise keys that were in the deleted session
       const affectedKeys = new Set(
         deletedSession.recordedExercises.map((e) =>
-          KeyedExerciseBlueprint.fromExerciseBlueprint(
-            e.blueprint as ExerciseBlueprint,
-          ).toString(),
+          KeyedExerciseBlueprint.fromExerciseBlueprint(e.blueprint as ExerciseBlueprint).toString(),
         ),
       );
 
@@ -94,65 +86,40 @@ const storedSessionsSlice = createSlice({
         updateDerivatives(state, session as Session);
       });
     },
-    updateExercise(
-      state,
-      action: PayloadAction<{ id: string; exercise: ExerciseDescriptor }>,
-    ) {
+    updateExercise(state, action: PayloadAction<{ id: string; exercise: ExerciseDescriptor }>) {
       state.savedExercises[action.payload.id] = action.payload.exercise;
     },
     deleteExercise(state, action: PayloadAction<string>) {
       delete state.savedExercises[action.payload];
     },
-    setExercises(
-      state,
-      action: PayloadAction<Record<string, ExerciseDescriptor>>,
-    ) {
+    setExercises(state, action: PayloadAction<Record<string, ExerciseDescriptor>>) {
       state.savedExercises = action.payload;
     },
     setFilteredExerciseIds(state, action: PayloadAction<string[]>) {
       state.filteredExerciseIds = action.payload;
     },
-    setExercisesRequiringWeightMigration(
-      state,
-      action: PayloadAction<WeightMigrateableExercise[]>,
-    ) {
+    setExercisesRequiringWeightMigration(state, action: PayloadAction<WeightMigrateableExercise[]>) {
       state.exercisesRequiringWeightMigration = action.payload;
     },
-    updateExerciseRequiringWeightMigration(
-      state,
-      action: PayloadAction<WeightMigrateableExercise>,
-    ) {
-      const val = state.exercisesRequiringWeightMigration.find(
-        (x) => x.name === action.payload.name,
-      );
+    updateExerciseRequiringWeightMigration(state, action: PayloadAction<WeightMigrateableExercise>) {
+      const val = state.exercisesRequiringWeightMigration.find((x) => x.name === action.payload.name);
       if (val) val.unit = action.payload.unit;
     },
   },
 
   selectors: {
-    selectLatestExercises: createSelector(
-      [(state: StoredSessionState) => state.latestExercises],
-      (exercises) =>
-        Object.fromEntries(
-          Object.entries(exercises).map(([key, exercise]) => [
-            key,
-            exercise ? exercise : undefined,
-          ]),
-        ),
+    selectLatestExercises: createSelector([(state: StoredSessionState) => state.latestExercises], (exercises) =>
+      Object.fromEntries(Object.entries(exercises).map(([key, exercise]) => [key, exercise ? exercise : undefined])),
     ),
-    selectSessions: createSelector(
-      [(state: StoredSessionState) => state.sessions],
-      (sessions) => Object.values(sessions),
+    selectSessions: createSelector([(state: StoredSessionState) => state.sessions], (sessions) =>
+      Object.values(sessions),
     ),
     selectSession: createSelector(
       [(state: StoredSessionState) => state.sessions, (_, id: string) => id],
       (sessions, id) => sessions[id],
     ),
     selectCompletedDistinctSessionNames: createSelector(
-      [
-        (state: StoredSessionState) => state.sessions,
-        (_, since: LocalDate) => since,
-      ],
+      [(state: StoredSessionState) => state.sessions, (_, since: LocalDate) => since],
       (sessions, since) =>
         Enumerable.from(Object.values(sessions))
           .where((x) => x.date.isAfter(since) || x.date.isEqual(since))
@@ -163,39 +130,22 @@ const storedSessionsSlice = createSlice({
 
     selectExercises: (state: StoredSessionState) => state.savedExercises,
     selectExerciseById: createSelector(
-      [
-        (state: StoredSessionState) => state.savedExercises,
-        (_, id: string) => id,
-      ],
+      [(state: StoredSessionState) => state.savedExercises, (_, id: string) => id],
       (exercises, id) => exercises[id],
     ),
 
-    selectExerciseIds: (state: StoredSessionState) =>
-      Object.keys(state.savedExercises),
+    selectExerciseIds: (state: StoredSessionState) => Object.keys(state.savedExercises),
   },
 });
 
-function updateDerivatives(
-  state: WritableDraft<StoredSessionState>,
-  session: Session,
-) {
-  if (
-    !state.earliestSession ||
-    state.earliestSession.date.isAfter(session.date)
-  ) {
+function updateDerivatives(state: WritableDraft<StoredSessionState>, session: Session) {
+  if (!state.earliestSession || state.earliestSession.date.isAfter(session.date)) {
     state.earliestSession = session;
   }
   session.recordedExercises.forEach((exercise) => {
-    const key = KeyedExerciseBlueprint.fromExerciseBlueprint(
-      exercise.blueprint,
-    ).toString();
+    const key = KeyedExerciseBlueprint.fromExerciseBlueprint(exercise.blueprint).toString();
     const latestExercise = state.latestExercises[key];
-    if (
-      !latestExercise ||
-      latestExercise.latestTime?.isBefore(
-        exercise.latestTime ?? OffsetDateTime.MIN,
-      )
-    ) {
+    if (!latestExercise || latestExercise.latestTime?.isBefore(exercise.latestTime ?? OffsetDateTime.MIN)) {
       state.latestExercises[key] = exercise;
     }
   });
@@ -210,19 +160,14 @@ export const selectSessionsBy = createSelector(
   (sessions, minDate, maxDate) =>
     Object.values(sessions).filter(
       (x) =>
-        (x.date.isAfter(minDate) || x.date.isEqual(minDate)) &&
-        (x.date.isBefore(maxDate) || x.date.isEqual(maxDate)),
+        (x.date.isAfter(minDate) || x.date.isEqual(minDate)) && (x.date.isBefore(maxDate) || x.date.isEqual(maxDate)),
     ),
 );
 
-export const initializeStoredSessionsStateSlice = createAction(
-  'initializeStoredSessionsStateSlice',
-);
+export const initializeStoredSessionsStateSlice = createAction('initializeStoredSessionsStateSlice');
 
 export const migrateExerciseWeights = createAction('migrateExerciseWeights');
-export const checkIfWeightMigrationRequired = createAction(
-  'checkIfWeightMigrationRequired',
-);
+export const checkIfWeightMigrationRequired = createAction('checkIfWeightMigrationRequired');
 
 export const {
   setIsHydrated,
@@ -238,28 +183,15 @@ export const {
   updateExerciseRequiringWeightMigration,
 } = storedSessionsSlice.actions;
 
-export const {
-  selectSessions,
-  selectSession,
-  selectExercises,
-  selectLatestExercises,
-  selectExerciseById,
-} = storedSessionsSlice.selectors;
+export const { selectSessions, selectSession, selectExercises, selectLatestExercises, selectExerciseById } =
+  storedSessionsSlice.selectors;
 
 const selectLatestOrderedRecordedExercises = createSelector(
-  [
-    storedSessionsSlice.selectors.selectSessions,
-    (_, maxRecordsPerExercise: number) => maxRecordsPerExercise,
-  ],
-  (
-    sessions,
-    maxRecordsPerExercise,
-  ): Record<NormalizedNameKey, RecordedExercise[]> => {
+  [storedSessionsSlice.selectors.selectSessions, (_, maxRecordsPerExercise: number) => maxRecordsPerExercise],
+  (sessions, maxRecordsPerExercise): Record<NormalizedNameKey, RecordedExercise[]> => {
     return Enumerable.from(sessions)
       .selectMany((x) => x.recordedExercises.filter((x) => x.isStarted))
-      .groupBy((x) =>
-        NormalizedName.fromExerciseBlueprint(x.blueprint).toString(),
-      )
+      .groupBy((x) => NormalizedName.fromExerciseBlueprint(x.blueprint).toString())
       .toObject(
         (x) => x.key(),
         (x) =>
@@ -275,9 +207,7 @@ export const selectRecentlyCompletedExercises = createSelector(
   selectLatestOrderedRecordedExercises,
   (recentlyCompletedExercises) =>
     (blueprint: ExerciseBlueprint): RecordedExercise[] =>
-      recentlyCompletedExercises[
-        NormalizedName.fromExerciseBlueprint(blueprint).toString()
-      ] ?? [],
+      recentlyCompletedExercises[NormalizedName.fromExerciseBlueprint(blueprint).toString()] ?? [],
 );
 
 export const selectPreviousComparableSession = createSelector(
@@ -292,30 +222,19 @@ export const selectPreviousComparableSession = createSelector(
       .where((storedSession) => storedSession.id !== session.id)
       .where(
         (storedSession) =>
-          getSessionReferenceTime(storedSession).toEpochSecond() <
-          sessionReferenceTime.toEpochSecond(),
+          getSessionReferenceTime(storedSession).toEpochSecond() < sessionReferenceTime.toEpochSecond(),
       )
-      .orderByDescending(
-        (storedSession) => getSessionReferenceTime(storedSession),
-        TemporalComparer,
-      );
+      .orderByDescending((storedSession) => getSessionReferenceTime(storedSession), TemporalComparer);
 
-    return previousSessions.firstOrDefault(
-      (storedSession) =>
-        storedSession.blueprint.name === session.blueprint.name,
-    );
+    return previousSessions.firstOrDefault((storedSession) => storedSession.blueprint.name === session.blueprint.name);
   },
 );
 
-export const selectSessionsInMonth = createSelector(
-  [selectSessions, (_, ym: YearMonth) => ym],
-  (sessions, ym) =>
-    Enumerable.from(sessions)
-      .where(
-        (x) => x.date.year() === ym.year() && x.date.month().equals(ym.month()),
-      )
-      .orderByDescending((x) => getSessionReferenceTime(x), TemporalComparer)
-      .toArray(),
+export const selectSessionsInMonth = createSelector([selectSessions, (_, ym: YearMonth) => ym], (sessions, ym) =>
+  Enumerable.from(sessions)
+    .where((x) => x.date.year() === ym.year() && x.date.month().equals(ym.month()))
+    .orderByDescending((x) => getSessionReferenceTime(x), TemporalComparer)
+    .toArray(),
 );
 
 export const selectMuscles = createSelector([selectExercises], (exercises) =>
@@ -326,19 +245,12 @@ export const selectMuscles = createSelector([selectExercises], (exercises) =>
     .toArray(),
 );
 
-export const selectExerciseIds = createSelector(
-  [selectExercises],
-  (exercises) => Object.keys(exercises),
-);
+export const selectExerciseIds = createSelector([selectExercises], (exercises) => Object.keys(exercises));
 
 export const storedSessionsReducer = storedSessionsSlice.reducer;
 
 export function getSessionReferenceTime(session: Session): OffsetDateTime {
   return (
-    session.lastExercise?.latestTime ??
-    session.date
-      .atStartOfDay()
-      .atZone(ZoneId.systemDefault())
-      .toOffsetDateTime()
+    session.lastExercise?.latestTime ?? session.date.atStartOfDay().atZone(ZoneId.systemDefault()).toOffsetDateTime()
   );
 }

@@ -12,13 +12,7 @@ export function SingleValueStatisticsGrid(props: { children: ReactNode[] }) {
       spacing={gridSpacing}
       maxItemsPerRow={2}
       style={{ marginHorizontal: -gridSpacing }}
-      renderItem={({ item }) => (
-        <View
-          style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start' }}
-        >
-          {item}
-        </View>
-      )}
+      renderItem={({ item }) => <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start' }}>{item}</View>}
     />
   );
 }

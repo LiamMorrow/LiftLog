@@ -7,30 +7,19 @@ import { View } from 'react-native';
 import { BarChart, barDataItem } from 'react-native-gifted-charts';
 import { Text } from 'react-native-paper';
 
-export function RepsBarChart({
-  statistics: { breakdown },
-}: {
-  statistics: RepsBreakdownStatistics;
-}) {
+export function RepsBarChart({ statistics: { breakdown } }: { statistics: RepsBreakdownStatistics }) {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
   const charWidth = 7;
   const items: barDataItem[] = Object.entries(breakdown)
     .map(([numberOfReps, { numberOfSets }]) => {
-      const topLabelText = t(
-        'stats.exercise.reps_breakdown_sets_bar_top.label',
-        { sets: numberOfSets },
-      );
+      const topLabelText = t('stats.exercise.reps_breakdown_sets_bar_top.label', { sets: numberOfSets });
       return {
         value: numberOfSets,
         label: numberOfReps,
         barWidth: charWidth * topLabelText.length,
         topLabelComponent: () => (
-          <Text
-            style={{ width: 200, textAlign: 'center', pointerEvents: 'none' }}
-          >
-            {topLabelText}
-          </Text>
+          <Text style={{ width: 200, textAlign: 'center', pointerEvents: 'none' }}>{topLabelText}</Text>
         ),
       } satisfies barDataItem;
     })

@@ -5,12 +5,7 @@ import { AnyVersionSharedItemJSON } from '@/models/storage/versions/any';
 import { sharedItemMigrations } from '@/models/storage/versions/migrations';
 import { ApiErrorType } from '@/services/api-error';
 import { fromJsonBytes, toJsonBytes } from '@/services/encryption-service';
-import {
-  encryptAndShare,
-  feedApiError,
-  fetchSharedItem,
-  setSharedItem,
-} from '@/store/feed';
+import { encryptAndShare, feedApiError, fetchSharedItem, setSharedItem } from '@/store/feed';
 import { AddEffectFn } from '@/store/store';
 import { toUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
 
@@ -19,12 +14,7 @@ export function addSharedItemEffects(addEffect: AddEffectFn) {
     encryptAndShare,
     async (
       action,
-      {
-        cancelActiveListeners,
-        getState,
-        dispatch,
-        extra: { encryptionService, feedApiService, stringSharer, logger },
-      },
+      { cancelActiveListeners, getState, dispatch, extra: { encryptionService, feedApiService, stringSharer, logger } },
     ) => {
       cancelActiveListeners();
       const identity = getState().feed.identity;
@@ -51,12 +41,11 @@ export function addSharedItemEffects(addEffect: AddEffectFn) {
       const payload = action.payload.item.toJSON();
       const payloadBytes = toJsonBytes(payload);
 
-      const encrypted =
-        await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
-          payloadBytes,
-          aesKey,
-          identity.data.rsaKeyPair.privateKey,
-        );
+      const encrypted = await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
+        payloadBytes,
+        aesKey,
+        identity.data.rsaKeyPair.privateKey,
+      );
 
       const result = await feedApiService.postSharedItemAsync({
         userId: identity.data.id,
@@ -79,52 +68,33 @@ export function addSharedItemEffects(addEffect: AddEffectFn) {
         return;
       }
 
-      await stringSharer.share(
-        getShareUrl(result.data.id, aesKey),
-        action.payload.title,
-      );
+      await stringSharer.share(getShareUrl(result.data.id, aesKey), action.payload.title);
     },
   );
 
-  addEffect(
-    fetchSharedItem,
-    async (
-      a,
-      { dispatch, extra: { feedApiService, encryptionService }, onFail },
-    ) => {
-      onFail(() => {
-        dispatch(
-          setSharedItem(
-            RemoteData.error(
-              'Could not read shared item. Please update LiftLog.',
-            ),
-          ),
-        );
-      });
-      dispatch(setSharedItem(RemoteData.loading()));
-      const shared = await feedApiService.getSharedItemAsync(a.payload.id);
-      if (!shared.isSuccess()) {
-        dispatch(setSharedItem(RemoteData.error(shared.error)));
-        return;
-      }
-      const { encryptedPayload, rsaPublicKey } = shared.data;
-      const { key: aesKey } = a.payload;
+  addEffect(fetchSharedItem, async (a, { dispatch, extra: { feedApiService, encryptionService }, onFail }) => {
+    onFail(() => {
+      dispatch(setSharedItem(RemoteData.error('Could not read shared item. Please update LiftLog.')));
+    });
+    dispatch(setSharedItem(RemoteData.loading()));
+    const shared = await feedApiService.getSharedItemAsync(a.payload.id);
+    if (!shared.isSuccess()) {
+      dispatch(setSharedItem(RemoteData.error(shared.error)));
+      return;
+    }
+    const { encryptedPayload, rsaPublicKey } = shared.data;
+    const { key: aesKey } = a.payload;
 
-      const decryptedBytes =
-        await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
-          encryptedPayload,
-          aesKey,
-          rsaPublicKey,
-        );
-      const sharedItemDao =
-        fromJsonBytes<AnyVersionSharedItemJSON>(decryptedBytes);
-      const sharedItem = fromSharedItemJSON(
-        sharedItemMigrations.migrate(sharedItemDao),
-      );
+    const decryptedBytes = await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
+      encryptedPayload,
+      aesKey,
+      rsaPublicKey,
+    );
+    const sharedItemDao = fromJsonBytes<AnyVersionSharedItemJSON>(decryptedBytes);
+    const sharedItem = fromSharedItemJSON(sharedItemMigrations.migrate(sharedItemDao));
 
-      dispatch(setSharedItem(RemoteData.success(sharedItem)));
-    },
-  );
+    dispatch(setSharedItem(RemoteData.success(sharedItem)));
+  });
 }
 
 function getShareUrl(sharedItemId: string, aesKey: AesKey) {

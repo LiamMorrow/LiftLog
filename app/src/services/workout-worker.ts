@@ -1,8 +1,4 @@
-import {
-  AppConfiguration,
-  Translations,
-  WorkoutMessage,
-} from '@/models/workout-worker-messages';
+import { AppConfiguration, Translations, WorkoutMessage } from '@/models/workout-worker-messages';
 import WorkoutWorkerModule from '~/modules/workout-worker/src/WorkoutWorkerModule';
 import { RootState } from '@/store';
 import { finishCurrentWorkout } from '@/store/current-session';
@@ -10,10 +6,7 @@ import { Dispatch } from '@reduxjs/toolkit';
 import { TolgeeInstance, TranslationKey } from '@tolgee/react';
 
 export class WorkoutWorker {
-  private readonly listeners = new Map<
-    WorkoutMessage['payload']['type'],
-    ((e: WorkoutMessage['payload']) => void)[]
-  >();
+  private readonly listeners = new Map<WorkoutMessage['payload']['type'], ((e: WorkoutMessage['payload']) => void)[]>();
 
   constructor(
     private dispatch: Dispatch,
@@ -49,10 +42,7 @@ export class WorkoutWorker {
     this.dispatch(finishCurrentWorkout('workoutSession'));
   }
 
-  private on<T extends WorkoutMessage['payload']>(
-    type: T['type'],
-    eventHandler: (e: T) => void,
-  ) {
+  private on<T extends WorkoutMessage['payload']>(type: T['type'], eventHandler: (e: T) => void) {
     const listener = this.listeners.get(type) ?? [];
 
     listener.push(eventHandler as (e: WorkoutMessage['payload']) => void);

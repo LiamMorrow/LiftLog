@@ -33,9 +33,7 @@ export function ChatBubble(props: {
     >
       <View
         style={{
-          backgroundColor: isUser
-            ? colors.primary
-            : colors.surfaceContainerHighest,
+          backgroundColor: isUser ? colors.primary : colors.surfaceContainerHighest,
           borderTopLeftRadius: isUser ? normalRadius : topDynamicRadius,
           borderTopRightRadius: isUser ? topDynamicRadius : normalRadius,
           borderBottomLeftRadius: isUser ? normalRadius : bottomDynamicRadius,
@@ -45,15 +43,9 @@ export function ChatBubble(props: {
         }}
       >
         {match(message)
-          .with({ type: 'messageResponse' }, (message) => (
-            <GeneralMessage isUser={isUser} message={message} />
-          ))
-          .with({ type: 'chatPlan' }, (message) => (
-            <PlanMessage isUser={isUser} message={message} />
-          ))
-          .with({ type: 'sharedProgram' }, (message) => (
-            <SharedProgramMessage isUser={isUser} message={message} />
-          ))
+          .with({ type: 'messageResponse' }, (message) => <GeneralMessage isUser={isUser} message={message} />)
+          .with({ type: 'chatPlan' }, (message) => <PlanMessage isUser={isUser} message={message} />)
+          .with({ type: 'sharedProgram' }, (message) => <SharedProgramMessage isUser={isUser} message={message} />)
           .with({ type: 'purchasePro' }, () => <ProPrompt />)
           .with({ type: 'updateRequired' }, () => <UpdatePrompt />)
           .exhaustive()}

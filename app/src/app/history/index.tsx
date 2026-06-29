@@ -12,16 +12,9 @@ import SplitCardControl from '@/components/presentation/foundation/split-card-co
 import { spacing } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import {
-  selectCurrentSession,
-  setCurrentSession,
-} from '@/store/current-session';
+import { selectCurrentSession, setCurrentSession } from '@/store/current-session';
 import { addUnpublishedSessionId, encryptAndShare } from '@/store/feed';
-import {
-  deleteStoredSession,
-  selectSessions,
-  selectSessionsInMonth,
-} from '@/store/stored-sessions';
+import { deleteStoredSession, selectSessions, selectSessionsInMonth } from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
 import { LocalDate, YearMonth } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
@@ -39,20 +32,12 @@ export default function History() {
   const formatDate = useFormatDate();
   const [currentYearMonth, setCurrentYearMonth] = useState(YearMonth.now());
   const latesBodyweight = useAppSelector((x) =>
-    x.program.upcomingSessions
-      .map((x) => x.at(0)?.bodyweight)
-      .unwrapOr(undefined),
+    x.program.upcomingSessions.map((x) => x.at(0)?.bodyweight).unwrapOr(undefined),
   );
   const sessions = useAppSelector(selectSessions);
-  const sessionsInMonth = useAppSelectorWithArg(
-    selectSessionsInMonth,
-    currentYearMonth,
-  );
+  const sessionsInMonth = useAppSelectorWithArg(selectSessionsInMonth, currentYearMonth);
   const { push } = useRouter();
-  const currentWorkoutSession = useAppSelectorWithArg(
-    selectCurrentSession,
-    'workoutSession',
-  );
+  const currentWorkoutSession = useAppSelectorWithArg(selectCurrentSession, 'workoutSession');
   const onSelectSession = (session: Session) => {
     dispatch(setCurrentSession({ target: 'historySession', session }));
     push('/history/edit');
@@ -61,14 +46,8 @@ export default function History() {
     const newSession = Session.freeformSession(date, latesBodyweight);
     onSelectSession(newSession);
   };
-  const [
-    replaceCurrentSessionConfirmOpen,
-    setReplaceCurrentSessionConfirmOpen,
-  ] = useState(false);
-  const [
-    deleteSelectedWorkoutConfirmOpen,
-    setDeleteSelectedWorkoutConfirmOpen,
-  ] = useState(false);
+  const [replaceCurrentSessionConfirmOpen, setReplaceCurrentSessionConfirmOpen] = useState(false);
+  const [deleteSelectedWorkoutConfirmOpen, setDeleteSelectedWorkoutConfirmOpen] = useState(false);
   const [selectedWorkout, setSelectedWorkout] = useState<Session>();
   const deleteWorkout = (session: Session, force = false) => {
     if (!force) {
@@ -90,9 +69,7 @@ export default function History() {
       dispatch(
         setCurrentSession({
           target: 'workoutSession',
-          session: session
-            .withNothingCompleted()
-            .with({ date: LocalDate.now(), id: uuid() }),
+          session: session.withNothingCompleted().with({ date: LocalDate.now(), id: uuid() }),
         }),
       );
       setReplaceCurrentSessionConfirmOpen(false);
@@ -139,37 +116,21 @@ export default function History() {
           renderItemContent={(session) => (
             <Card.Content>
               <SplitCardControl
-                titleContent={
-                  <SessionSummaryTitle isFilled session={session} />
-                }
-                mainContent={
-                  <SessionSummary isFilled showWeight session={session} />
-                }
+                titleContent={<SessionSummaryTitle isFilled session={session} />}
+                mainContent={<SessionSummary isFilled showWeight session={session} />}
               />
             </Card.Content>
           )}
           renderItemActions={(session) => (
             <CardActions style={{ marginTop: spacing[2] }}>
               <Tooltip title={t('workout.share_workout.button')}>
-                <IconButton
-                  icon={'share'}
-                  mode="contained"
-                  onPress={() => handleSharePress(session)}
-                />
+                <IconButton icon={'share'} mode="contained" onPress={() => handleSharePress(session)} />
               </Tooltip>
               <Tooltip title={t('workout.start_this.button')}>
-                <IconButton
-                  mode="contained"
-                  icon={'playCircle'}
-                  onPress={() => startWorkout(session)}
-                />
+                <IconButton mode="contained" icon={'playCircle'} onPress={() => startWorkout(session)} />
               </Tooltip>
               <Tooltip title={t('generic.delete.button')}>
-                <IconButton
-                  mode="contained"
-                  icon={'delete'}
-                  onPress={() => deleteWorkout(session)}
-                />
+                <IconButton mode="contained" icon={'delete'} onPress={() => deleteWorkout(session)} />
               </Tooltip>
               <Button
                 onPress={() => onSelectSession(session)}

@@ -1,10 +1,7 @@
 import { SegmentedList } from '@/components/presentation/foundation/segmented-list';
 import { WeightedExerciseStatSummary } from '@/components/presentation/stats/weighted-exercise-stat-summary';
 import { spacing } from '@/hooks/useAppTheme';
-import {
-  GranularStatisticView,
-  WeightedExerciseStatistics,
-} from '@/store/stats';
+import { GranularStatisticView, WeightedExerciseStatistics } from '@/store/stats';
 import { useTranslate, T } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -19,15 +16,11 @@ export function WeightedExerciseListSearcher({
 }) {
   const [searchText, setSearchText] = useState('');
   const { t } = useTranslate();
-  const [filteredExercises, setFilteredExercises] = useState(
-    weightedExerciseStats,
-  );
+  const [filteredExercises, setFilteredExercises] = useState(weightedExerciseStats);
   const handleChangeText = (value: string) => {
     setSearchText(value);
     setFilteredExercises(
-      weightedExerciseStats.filter((x) =>
-        x.exerciseName.toLocaleLowerCase().includes(value.toLocaleLowerCase()),
-      ),
+      weightedExerciseStats.filter((x) => x.exerciseName.toLocaleLowerCase().includes(value.toLocaleLowerCase())),
     );
   };
   return (
@@ -51,12 +44,7 @@ export function WeightedExerciseListSearcher({
       <SegmentedList
         scrollable
         items={filteredExercises}
-        renderItem={(item) => (
-          <WeightedExerciseStatSummary
-            onPress={onItemPress}
-            exerciseStats={item}
-          />
-        )}
+        renderItem={(item) => <WeightedExerciseStatSummary onPress={onItemPress} exerciseStats={item} />}
       />
     </View>
   );

@@ -16,9 +16,6 @@ export function isLocalDateRange(val: unknown): val is LocalDateRange {
   );
 }
 
-export function isLocalDateRangeEqual(
-  a: LocalDateRange,
-  b: LocalDateRange,
-): boolean {
+export function isLocalDateRangeEqual(a: LocalDateRange, b: LocalDateRange): boolean {
   return a.from.equals(b.from) && a.to.equals(b.to);
 }

@@ -12,11 +12,7 @@ import {
 import { EmptySession } from '@/models/session-models';
 import { useAppSelector } from '@/store';
 import { setCurrentPlanDiff } from '@/store/current-session';
-import {
-  applyDiffToPlan,
-  fetchUpcomingSessions,
-  selectNewWorkoutName,
-} from '@/store/program';
+import { applyDiffToPlan, fetchUpcomingSessions, selectNewWorkoutName } from '@/store/program';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -27,13 +23,8 @@ import { useDispatch } from 'react-redux';
  * Creates a diff for updating an existing workout in the plan.
  * Compares the original session blueprint against the modified session.
  */
-function createUpdateExistingWorkoutDiff(
-  currentPlanDiff: PlanDiff,
-): SessionBlueprintDiff {
-  return diffSessionBlueprints(
-    currentPlanDiff.diff.originalSession,
-    currentPlanDiff.diff.newSession,
-  );
+function createUpdateExistingWorkoutDiff(currentPlanDiff: PlanDiff): SessionBlueprintDiff {
+  return diffSessionBlueprints(currentPlanDiff.diff.originalSession, currentPlanDiff.diff.newSession);
 }
 
 /**
@@ -41,10 +32,7 @@ function createUpdateExistingWorkoutDiff(
  * Compares against an empty session so all exercises appear as "added".
  * Preserves the original session references for potential undo/comparison.
  */
-function createAddNewWorkoutDiff(
-  currentPlanDiff: PlanDiff,
-  newWorkoutName: string,
-): SessionBlueprintDiff {
+function createAddNewWorkoutDiff(currentPlanDiff: PlanDiff, newWorkoutName: string): SessionBlueprintDiff {
   const newSessionWithName = currentPlanDiff.diff.newSession.with({
     name: newWorkoutName,
   });
@@ -61,9 +49,7 @@ function createAddNewWorkoutDiff(
 export function SessionDiffSaveDialog() {
   const dispatch = useDispatch();
   const { t } = useTranslate();
-  const currentPlanDiff = useAppSelector(
-    (x) => x.currentSession.currentPlanDiff,
-  );
+  const currentPlanDiff = useAppSelector((x) => x.currentSession.currentPlanDiff);
   const [selectedDiff, setSelectedDiff] = useState<SessionBlueprintDiff>();
   const newWorkoutName = useAppSelector(selectNewWorkoutName);
 
@@ -116,9 +102,7 @@ export function SessionDiffSaveDialog() {
         if (selectedDiff) {
           dispatch(
             applyDiffToPlan(
-              saveAsNewWorkout
-                ? { type: 'add', diff: selectedDiff }
-                : { ...currentPlanDiff, diff: selectedDiff },
+              saveAsNewWorkout ? { type: 'add', diff: selectedDiff } : { ...currentPlanDiff, diff: selectedDiff },
             ),
           );
         }

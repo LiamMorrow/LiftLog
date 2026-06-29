@@ -12,9 +12,7 @@ describe('RecordedCardioExercise.withNothingCompleted', () => {
     );
     const result = withData.withNothingCompleted();
 
-    expect(result.sets.every((s) => s.completionDateTime === undefined)).toBe(
-      true,
-    );
+    expect(result.sets.every((s) => s.completionDateTime === undefined)).toBe(true);
     expect(result.notes).toBeUndefined();
   });
 });

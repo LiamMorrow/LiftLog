@@ -1,10 +1,4 @@
-import {
-  beginFeedImport,
-  importBackupData,
-  importData,
-  importDataProto,
-  importDataSql,
-} from '@/store/settings';
+import { beginFeedImport, importBackupData, importData, importDataProto, importDataSql } from '@/store/settings';
 import { addImportBackupEffects } from '@/store/settings/import-backup-effects';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { describe, expect, it, vi } from 'vitest';
@@ -15,18 +9,13 @@ import { FeedIdentity } from '@/models/feed-models';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { EmptySession, Session } from '@/models/session-models';
 import { uuid } from '@/utils/uuid';
-import {
-  checkIfWeightMigrationRequired,
-  upsertStoredSessions,
-} from '@/store/stored-sessions';
+import { checkIfWeightMigrationRequired, upsertStoredSessions } from '@/store/stored-sessions';
 import { upsertSavedPlans } from '@/store/program';
 import { showSnackbar } from '@/store/app';
 
 describe('import-backup-effects', () => {
   it('dispatches a valid import when the sqlite db is there', async () => {
-    const realBytes = await readFile(
-      resolve(__dirname, '../../utils/__test__/export.liftlogbackup.sqlite.gz'),
-    );
+    const realBytes = await readFile(resolve(__dirname, '../../utils/__test__/export.liftlogbackup.sqlite.gz'));
     const testBed = createAddEffectTestBed({
       services: {
         filePickerService: {
@@ -49,12 +38,7 @@ describe('import-backup-effects', () => {
   });
 
   it('dispatches a valid import when it is a proto', async () => {
-    const realBytes = await readFile(
-      resolve(
-        __dirname,
-        '../../utils/__test__/export.liftlogbackup.protobuf.gz',
-      ),
-    );
+    const realBytes = await readFile(resolve(__dirname, '../../utils/__test__/export.liftlogbackup.protobuf.gz'));
     const testBed = createAddEffectTestBed({
       services: {
         filePickerService: {
@@ -83,10 +67,7 @@ describe('import-backup-effects', () => {
     });
     addImportBackupEffects(testBed.addEffect);
 
-    const mockWorkouts = [
-      EmptySession,
-      EmptySession.with({ id: uuid() }),
-    ] as Session[];
+    const mockWorkouts = [EmptySession, EmptySession.with({ id: uuid() })] as Session[];
     const mockPrograms = {} as Record<string, ProgramBlueprint>;
     const mockFeed: FeedBackupData = {
       identity: {} as FeedIdentity,
@@ -104,18 +85,10 @@ describe('import-backup-effects', () => {
       }),
     );
 
-    expect(testBed.getDispatchedAction(upsertStoredSessions).payload).toBe(
-      mockWorkouts,
-    );
-    expect(testBed.getDispatchedAction(upsertSavedPlans).payload).toBe(
-      mockPrograms,
-    );
-    expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe(
-      'Restore complete!',
-    );
-    expect(
-      testBed.getDispatchedAction(checkIfWeightMigrationRequired),
-    ).toBeDefined();
+    expect(testBed.getDispatchedAction(upsertStoredSessions).payload).toBe(mockWorkouts);
+    expect(testBed.getDispatchedAction(upsertSavedPlans).payload).toBe(mockPrograms);
+    expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe('Restore complete!');
+    expect(testBed.getDispatchedAction(checkIfWeightMigrationRequired)).toBeDefined();
     expect(testBed.getDispatchedAction(beginFeedImport).payload).toBe(mockFeed);
   });
 

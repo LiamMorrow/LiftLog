@@ -31,4 +31,3 @@ export const triggerClickHaptic = () => {
 export const cancelHaptic = () => {
   module.cancelHaptic();
 };
-

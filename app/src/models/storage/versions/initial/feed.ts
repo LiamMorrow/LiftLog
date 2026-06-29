@@ -1,13 +1,6 @@
 import { ProgramBlueprintJSON } from './blueprint';
 import { SessionJSON } from './session';
-import {
-  AesKeyJSON,
-  Base64Uint8ArrayJSON,
-  InstantJSON,
-  JsonString,
-  RsaKeyPairJSON,
-  RsaPublicKeyJSON,
-} from '../libs';
+import { AesKeyJSON, Base64Uint8ArrayJSON, InstantJSON, JsonString, RsaKeyPairJSON, RsaPublicKeyJSON } from '../libs';
 
 export interface PendingFeedUserJSON {
   type: 'PendingFeedUser';
@@ -33,10 +26,7 @@ export interface FollowedFeedUserJSON {
   followSecret: string;
 }
 
-export type FeedUserJSON =
-  | FollowedFeedUserJSON
-  | PendingFeedUserJSON
-  | FollowerFeedUserJSON;
+export type FeedUserJSON = FollowedFeedUserJSON | PendingFeedUserJSON | FollowerFeedUserJSON;
 
 interface UserEventBaseJSON {
   userId: string;
@@ -79,14 +69,8 @@ interface InboxMessageBaseJSON<TType extends string, T> {
   signature: Base64Uint8ArrayJSON;
 }
 
-export type FollowRequestInboxMessageJSON = InboxMessageBaseJSON<
-  'FollowRequest',
-  FollowRequestJSON
->;
-export type FollowResponseInboxMessageJSON = InboxMessageBaseJSON<
-  'FollowResponse',
-  FollowResponseJSON
->;
+export type FollowRequestInboxMessageJSON = InboxMessageBaseJSON<'FollowRequest', FollowRequestJSON>;
+export type FollowResponseInboxMessageJSON = InboxMessageBaseJSON<'FollowResponse', FollowResponseJSON>;
 export type UnfollowNotificationInboxMessageJSON = InboxMessageBaseJSON<
   'UnfollowNotification',
   UnfollowNotificationJSON

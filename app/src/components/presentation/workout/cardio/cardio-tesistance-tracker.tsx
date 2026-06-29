@@ -22,11 +22,7 @@ export function CardioResistanceTracker({
       onSave={() => updateResistance(dialogValue)}
       onHold={() => updateResistance(undefined)}
     >
-      <DecimalEditor
-        style={{ flex: 1 }}
-        value={dialogValue}
-        onChange={(value) => setDialogValue(value)}
-      />
+      <DecimalEditor style={{ flex: 1 }} value={dialogValue} onChange={(value) => setDialogValue(value)} />
     </CardioValueSelector>
   );
 }

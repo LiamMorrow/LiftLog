@@ -42,14 +42,8 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const [applyTo, setApplyTo] = useState<WeightAppliesTo>('uncompletedSets');
 
   return (
-    <Holdable
-      disabled={props.isReadonly}
-      onLongPress={() => setIsRepsDialogOpen(true)}
-    >
-      <FocusRing
-        isSelected={props.toStartNext}
-        radius={rounding.roundedRectangleFocusRingRadius}
-      >
+    <Holdable disabled={props.isReadonly} onLongPress={() => setIsRepsDialogOpen(true)}>
+      <FocusRing isSelected={props.toStartNext} radius={rounding.roundedRectangleFocusRingRadius}>
         <View
           style={[
             {
@@ -74,10 +68,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
                 height: spacing[15],
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor:
-                  repCountValue !== undefined
-                    ? colors.primary
-                    : colors.secondaryContainer,
+                backgroundColor: repCountValue !== undefined ? colors.primary : colors.secondaryContainer,
               }}
               onPress={props.isReadonly ? undefined : props.onTap}
               disabled={props.isReadonly}
@@ -86,16 +77,11 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
               <View style={{ alignItems: 'center' }}>
                 <Text
                   style={{
-                    color:
-                      repCountValue !== undefined
-                        ? colors.onPrimary
-                        : colors.onSecondaryContainer,
+                    color: repCountValue !== undefined ? colors.onPrimary : colors.onSecondaryContainer,
                     ...font['text-xl'],
                   }}
                 >
-                  <Text style={{ fontWeight: 'bold' }}>
-                    {repCountValue ?? '-'}
-                  </Text>
+                  <Text style={{ fontWeight: 'bold' }}>{repCountValue ?? '-'}</Text>
                   <Text
                     style={{
                       ...font['text-sm'],
@@ -105,29 +91,24 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
                     /{props.maxReps}
                   </Text>
                 </Text>
-                {repCountValue === undefined &&
-                  placeholderRepCount !== undefined && (
-                    <View
+                {repCountValue === undefined && placeholderRepCount !== undefined && (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: spacing[0.5],
+                    }}
+                  >
+                    <Icon source={'history'} size={12} color={colors.onSecondaryContainer + '99'} />
+                    <Text
                       style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: spacing[0.5],
+                        color: colors.onSecondaryContainer + '99',
                       }}
                     >
-                      <Icon
-                        source={'history'}
-                        size={12}
-                        color={colors.onSecondaryContainer + '99'}
-                      />
-                      <Text
-                        style={{
-                          color: colors.onSecondaryContainer + '99',
-                        }}
-                      >
-                        {placeholderRepCount}
-                      </Text>
-                    </View>
-                  )}
+                      {placeholderRepCount}
+                    </Text>
+                  </View>
+                )}
               </View>
             </TouchableRipple>
           </View>

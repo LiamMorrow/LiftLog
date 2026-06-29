@@ -22,11 +22,7 @@ export default function SharedItemPage() {
     if (parsedKey) {
       dispatch(fetchSharedItem({ id, key: { value: parsedKey } }));
     } else {
-      dispatch(
-        setSharedItem(
-          RemoteData.error('Could not load shared item. Bad key provided.'),
-        ),
-      );
+      dispatch(setSharedItem(RemoteData.error('Could not load shared item. Bad key provided.')));
     }
   }, [k, dispatch, id]);
   useEffect(() => {
@@ -39,11 +35,7 @@ export default function SharedItemPage() {
           title: t('feed.shared_item.title'),
         }}
       />
-      <Remote
-        success={(x) => <SharedItem sharedItem={x} />}
-        value={sharedRemote}
-        retry={fetch}
-      />
+      <Remote success={(x) => <SharedItem sharedItem={x} />} value={sharedRemote} retry={fetch} />
     </>
   );
 }

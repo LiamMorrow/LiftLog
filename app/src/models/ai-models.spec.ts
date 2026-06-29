@@ -14,11 +14,7 @@ import {
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { AnyVersionAiPlanJSON } from '@/models/storage/versions/any';
-import {
-  toBigNumberJSON,
-  toDurationJSON,
-  toLocalDateJSON,
-} from '@/models/storage/versions/libs';
+import { toBigNumberJSON, toDurationJSON, toLocalDateJSON } from '@/models/storage/versions/libs';
 import { DeepPartial } from '@/utils/types';
 
 function parse(json: DeepPartial<AnyVersionAiPlanJSON>) {
@@ -137,10 +133,7 @@ describe('aiPlanFromJSON', () => {
         blueprint: { sessions: [{ name: 'Day 1' }, { name: 'Day 2' }] },
       });
 
-      expect(plan.blueprint.sessions.map((s) => s.name)).toEqual([
-        'Day 1',
-        'Day 2',
-      ]);
+      expect(plan.blueprint.sessions.map((s) => s.name)).toEqual(['Day 1', 'Day 2']);
     });
   });
 
@@ -170,9 +163,7 @@ describe('aiPlanFromJSON', () => {
       expect(exercise.notes).toBe('');
       expect(exercise.link).toBe('');
       expect(exercise.progressiveOverload).toBeInstanceOf(NoProgressiveOverload);
-      expect(exercise.restBetweenSets.minRest.equals(Rest.medium.minRest)).toBe(
-        true,
-      );
+      expect(exercise.restBetweenSets.minRest.equals(Rest.medium.minRest)).toBe(true);
     });
 
     it('fills only the missing parts of rest', () => {
@@ -195,15 +186,9 @@ describe('aiPlanFromJSON', () => {
         },
       }) as WeightedExerciseBlueprint;
 
-      expect(exercise.restBetweenSets.minRest.equals(Duration.ofSeconds(45))).toBe(
-        true,
-      );
-      expect(
-        exercise.restBetweenSets.maxRest.equals(Rest.medium.maxRest),
-      ).toBe(true);
-      expect(
-        exercise.restBetweenSets.failureRest.equals(Rest.medium.failureRest),
-      ).toBe(true);
+      expect(exercise.restBetweenSets.minRest.equals(Duration.ofSeconds(45))).toBe(true);
+      expect(exercise.restBetweenSets.maxRest.equals(Rest.medium.maxRest)).toBe(true);
+      expect(exercise.restBetweenSets.failureRest.equals(Rest.medium.failureRest)).toBe(true);
     });
 
     it('keeps every field of a fully specified weighted exercise', () => {
@@ -244,14 +229,8 @@ describe('aiPlanFromJSON', () => {
       expect(exercise.supersetWithNext).toBe(true);
       expect(exercise.notes).toBe('Go deep');
       expect(exercise.link).toBe('https://example.com');
-      expect(exercise.progressiveOverload).toBeInstanceOf(
-        IncreaseAllEvenlyProgressiveOverload,
-      );
-      expect(
-        (
-          exercise.progressiveOverload as IncreaseAllEvenlyProgressiveOverload
-        ).amount.toNumber(),
-      ).toBe(5);
+      expect(exercise.progressiveOverload).toBeInstanceOf(IncreaseAllEvenlyProgressiveOverload);
+      expect((exercise.progressiveOverload as IncreaseAllEvenlyProgressiveOverload).amount.toNumber()).toBe(5);
     });
   });
 
@@ -276,8 +255,7 @@ describe('aiPlanFromJSON', () => {
         },
       }) as WeightedExerciseBlueprint;
 
-      const po =
-        exercise.progressiveOverload as IncreaseAllEvenlyProgressiveOverload;
+      const po = exercise.progressiveOverload as IncreaseAllEvenlyProgressiveOverload;
       expect(po).toBeInstanceOf(IncreaseAllEvenlyProgressiveOverload);
       expect(po.amount.toNumber()).toBe(2.5);
     });
@@ -302,8 +280,7 @@ describe('aiPlanFromJSON', () => {
         },
       }) as WeightedExerciseBlueprint;
 
-      const po =
-        exercise.progressiveOverload as IncreaseLowestSetProgressiveOverload;
+      const po = exercise.progressiveOverload as IncreaseLowestSetProgressiveOverload;
       expect(po).toBeInstanceOf(IncreaseLowestSetProgressiveOverload);
       expect(po.amount.toNumber()).toBe(2.5);
       expect(po.increaseStrategy).toBe('all');

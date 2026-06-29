@@ -24,10 +24,7 @@ export default function Settings() {
     dispatch(copyLogs());
   };
 
-  const appVersion =
-    Application.nativeApplicationVersion ??
-    Application.nativeBuildVersion ??
-    'Unknown';
+  const appVersion = Application.nativeApplicationVersion ?? Application.nativeBuildVersion ?? 'Unknown';
 
   const bugReportUrl = `https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=bug&projects=&template=bug_report.yaml&app-version=${encodeURIComponent(appVersion)}&platform=${Platform.OS}&os-version=${Platform.Version}`;
 
@@ -73,9 +70,7 @@ export default function Settings() {
           onPress={() => push('/settings/backup-and-restore')}
           title={t('backup.export_backup_restore.title')}
           description={t('backup.export_backup_restore.subtitle')}
-          left={(props) => (
-            <List.Icon icon={'settingsBackupRestore'} {...props} />
-          )}
+          left={(props) => <List.Icon icon={'settingsBackupRestore'} {...props} />}
         ></List.Item>
       </List.Section>
 
@@ -90,9 +85,7 @@ export default function Settings() {
 
       <List.Section title={t('settings.support.title')}>
         <List.Item
-          onPress={() =>
-            openUrl('https://github.com/LiamMorrow/LiftLog/discussions')
-          }
+          onPress={() => openUrl('https://github.com/LiamMorrow/LiftLog/discussions')}
           title={t('settings.feature_request.title')}
           description={t('settings.feature_request.subtitle')}
           left={(props) => <List.Icon icon={'star'} {...props} />}
@@ -133,12 +126,9 @@ export default function Settings() {
           </Dialog.Title>
           <Dialog.Content>
             <Text>
-              LiftLog is an entirely open source app, licensed under the
-              AGPL-3.0 license. You can find the source code on{' '}
-              <Link
-                style={{ color: colors.primary, fontWeight: 'bold' }}
-                href="https://github.com/LiamMorrow/LiftLog"
-              >
+              LiftLog is an entirely open source app, licensed under the AGPL-3.0 license. You can find the source code
+              on{' '}
+              <Link style={{ color: colors.primary, fontWeight: 'bold' }} href="https://github.com/LiamMorrow/LiftLog">
                 <Icon size={16} source={'share'} color={colors.primary} />
                 GitHub
               </Link>

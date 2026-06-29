@@ -39,9 +39,7 @@ export class FeedApiService {
     this.baseUrl = apiBaseUrl;
   }
 
-  async getUserEventsAsync(
-    request: GetEventsRequest,
-  ): Promise<ApiResult<GetEventsResponse>> {
+  async getUserEventsAsync(request: GetEventsRequest): Promise<ApiResult<GetEventsResponse>> {
     return this.getApiResultAsync(async () => {
       const response = await fetch(`${this.baseUrl}/events`, {
         method: 'POST',
@@ -49,16 +47,13 @@ export class FeedApiService {
         body: stringify(request),
       });
       this.ensureSuccessStatusCode(response);
-      const base64Response =
-        (await response.json()) as Base64Response<GetEventsResponse>;
+      const base64Response = (await response.json()) as Base64Response<GetEventsResponse>;
       return {
         events: base64Response.events.map((event) => ({
           userId: event.userId,
           eventId: event.eventId,
           timestamp: event.timestamp,
-          encryptedEventPayload: base64ToUint8Array(
-            event.encryptedEventPayload,
-          ),
+          encryptedEventPayload: base64ToUint8Array(event.encryptedEventPayload),
           encryptedEventIV: base64ToUint8Array(event.encryptedEventIV),
           expiry: event.expiry,
         })),
@@ -83,26 +78,21 @@ export class FeedApiService {
     return this.getApiResultAsync(async () => {
       const response = await fetch(`${this.baseUrl}/user/${idOrLookup}`);
       this.ensureSuccessStatusCode(response);
-      const base64Response =
-        (await response.json()) as Base64Response<GetUserResponse>;
+      const base64Response = (await response.json()) as Base64Response<GetUserResponse>;
       return {
         id: base64Response.id,
         lookup: base64Response.lookup,
         encryptedCurrentPlan: base64Response.encryptedCurrentPlan
           ? base64ToUint8Array(base64Response.encryptedCurrentPlan)
           : undefined,
-        encryptedName: base64Response.encryptedName
-          ? base64ToUint8Array(base64Response.encryptedName)
-          : undefined,
+        encryptedName: base64Response.encryptedName ? base64ToUint8Array(base64Response.encryptedName) : undefined,
         encryptionIV: base64ToUint8Array(base64Response.encryptionIV),
         rsaPublicKey: base64ToUint8Array(base64Response.rsaPublicKey),
       };
     });
   }
 
-  async putUserDataAsync(
-    request: PutUserDataRequest,
-  ): Promise<ApiResult<void>> {
+  async putUserDataAsync(request: PutUserDataRequest): Promise<ApiResult<void>> {
     return this.getApiResultAsync(async () => {
       const response = await fetch(`${this.baseUrl}/user`, {
         method: 'PUT',
@@ -113,9 +103,7 @@ export class FeedApiService {
     });
   }
 
-  async putUserEventAsync(
-    request: PutUserEventRequest,
-  ): Promise<ApiResult<void>> {
+  async putUserEventAsync(request: PutUserEventRequest): Promise<ApiResult<void>> {
     return this.getApiResultAsync(async () => {
       const response = await fetch(`${this.baseUrl}/event`, {
         method: 'PUT',
@@ -126,9 +114,7 @@ export class FeedApiService {
     });
   }
 
-  async getUsersAsync(
-    request: GetUsersRequest,
-  ): Promise<ApiResult<GetUsersResponse>> {
+  async getUsersAsync(request: GetUsersRequest): Promise<ApiResult<GetUsersResponse>> {
     return this.getApiResultAsync(async () => {
       const response = await fetch(`${this.baseUrl}/users`, {
         method: 'POST',
@@ -136,8 +122,7 @@ export class FeedApiService {
         body: stringify(request),
       });
       this.ensureSuccessStatusCode(response);
-      const base64Response =
-        (await response.json()) as Base64Response<GetUsersResponse>;
+      const base64Response = (await response.json()) as Base64Response<GetUsersResponse>;
       return {
         users: Object.fromEntries(
           Object.entries(base64Response.users).map(([key, user]) => [
@@ -148,9 +133,7 @@ export class FeedApiService {
               encryptedCurrentPlan: user.encryptedCurrentPlan
                 ? base64ToUint8Array(user.encryptedCurrentPlan)
                 : undefined,
-              encryptedName: user.encryptedName
-                ? base64ToUint8Array(user.encryptedName)
-                : undefined,
+              encryptedName: user.encryptedName ? base64ToUint8Array(user.encryptedName) : undefined,
               encryptionIV: base64ToUint8Array(user.encryptionIV),
               rsaPublicKey: base64ToUint8Array(user.rsaPublicKey),
             },
@@ -171,9 +154,7 @@ export class FeedApiService {
     });
   }
 
-  async putInboxMessageAsync(
-    request: PutInboxMessageRequest,
-  ): Promise<ApiResult<void>> {
+  async putInboxMessageAsync(request: PutInboxMessageRequest): Promise<ApiResult<void>> {
     return this.getApiResultAsync(async () => {
       const response = await fetch(`${this.baseUrl}/inbox`, {
         method: 'PUT',
@@ -184,9 +165,7 @@ export class FeedApiService {
     });
   }
 
-  async getInboxMessagesAsync(
-    request: GetInboxMessagesRequest,
-  ): Promise<ApiResult<GetInboxMessagesResponse>> {
+  async getInboxMessagesAsync(request: GetInboxMessagesRequest): Promise<ApiResult<GetInboxMessagesResponse>> {
     return this.getApiResultAsync(async () => {
       const response = await fetch(`${this.baseUrl}/inbox`, {
         method: 'POST',
@@ -194,22 +173,17 @@ export class FeedApiService {
         body: stringify(request),
       });
       this.ensureSuccessStatusCode(response);
-      const base64Response =
-        (await response.json()) as Base64Response<GetInboxMessagesResponse>;
+      const base64Response = (await response.json()) as Base64Response<GetInboxMessagesResponse>;
       return {
         inboxMessages: base64Response.inboxMessages.map((message) => ({
           id: message.id,
-          encryptedMessage: message.encryptedMessage.map((chunk) =>
-            base64ToUint8Array(chunk),
-          ),
+          encryptedMessage: message.encryptedMessage.map((chunk) => base64ToUint8Array(chunk)),
         })),
       };
     });
   }
 
-  async putUserFollowSecretAsync(
-    request: PutUserFollowSecretRequest,
-  ): Promise<ApiResult<void>> {
+  async putUserFollowSecretAsync(request: PutUserFollowSecretRequest): Promise<ApiResult<void>> {
     return this.getApiResultAsync(async () => {
       const response = await fetch(`${this.baseUrl}/follow-secret`, {
         method: 'PUT',
@@ -220,9 +194,7 @@ export class FeedApiService {
     });
   }
 
-  async deleteUserFollowSecretAsync(
-    request: DeleteUserFollowSecretRequest,
-  ): Promise<ApiResult<void>> {
+  async deleteUserFollowSecretAsync(request: DeleteUserFollowSecretRequest): Promise<ApiResult<void>> {
     return this.getApiResultAsync(async () => {
       const response = await fetch(`${this.baseUrl}/follow-secret/delete`, {
         method: 'POST',
@@ -233,9 +205,7 @@ export class FeedApiService {
     });
   }
 
-  async postSharedItemAsync(
-    request: CreateSharedItemRequest,
-  ): Promise<ApiResult<CreateSharedItemResponse>> {
+  async postSharedItemAsync(request: CreateSharedItemRequest): Promise<ApiResult<CreateSharedItemResponse>> {
     return this.getApiResultAsync(async () => {
       const response = await fetch(`${this.baseUrl}/shareditem`, {
         method: 'POST',
@@ -247,37 +217,26 @@ export class FeedApiService {
     });
   }
 
-  async getSharedItemAsync(
-    sharedItemId: string,
-  ): Promise<ApiResult<GetSharedItemResponse>> {
+  async getSharedItemAsync(sharedItemId: string): Promise<ApiResult<GetSharedItemResponse>> {
     return this.getApiResultAsync(async () => {
-      const response = await fetch(
-        `${this.baseUrl}/shareditem/${sharedItemId}`,
-      );
+      const response = await fetch(`${this.baseUrl}/shareditem/${sharedItemId}`);
       this.ensureSuccessStatusCode(response);
-      const base4Response =
-        (await response.json()) as Base64Response<GetSharedItemResponse>;
+      const base4Response = (await response.json()) as Base64Response<GetSharedItemResponse>;
       return {
         encryptedPayload: {
           iv: {
             value: base64ToUint8Array(base4Response.encryptedPayload.iv.value),
           },
-          encryptedPayload: base64ToUint8Array(
-            base4Response.encryptedPayload.encryptedPayload,
-          ),
+          encryptedPayload: base64ToUint8Array(base4Response.encryptedPayload.encryptedPayload),
         },
         rsaPublicKey: {
-          spkiPublicKeyBytes: base64ToUint8Array(
-            base4Response.rsaPublicKey.spkiPublicKeyBytes,
-          ),
+          spkiPublicKeyBytes: base64ToUint8Array(base4Response.rsaPublicKey.spkiPublicKeyBytes),
         },
       };
     });
   }
 
-  private async getApiResultAsync<T>(
-    action: () => Promise<T>,
-  ): Promise<ApiResult<T>> {
+  private async getApiResultAsync<T>(action: () => Promise<T>): Promise<ApiResult<T>> {
     try {
       const data = await action();
       return new ApiResult<T>(data);
@@ -310,9 +269,7 @@ export class FeedApiService {
 
       return ApiResult.fromError({
         type: ApiErrorType.Unknown,
-        message:
-          (error as { message: string })?.message ||
-          'An unknown error occurred',
+        message: (error as { message: string })?.message || 'An unknown error occurred',
         exception: error,
       });
     }

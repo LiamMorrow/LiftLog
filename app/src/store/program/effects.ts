@@ -29,22 +29,14 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
     initializeProgramStateSlice,
     async (
       _,
-      {
-        getState,
-        cancelActiveListeners,
-        dispatch,
-        extra: { keyValueStore, logger, db },
-        throwIfCancelled,
-      },
+      { getState, cancelActiveListeners, dispatch, extra: { keyValueStore, logger, db }, throwIfCancelled },
     ) => {
       const start = performance.now();
       cancelActiveListeners();
 
       let activePlanId: string | undefined;
       const dbPrograms = await db.select().from(programsSchema);
-      const programs = (
-        dbPrograms.length ? dbPrograms : [getEmptyInitialProgram()]
-      ).reduce(
+      const programs = (dbPrograms.length ? dbPrograms : [getEmptyInitialProgram()]).reduce(
         toRecord(
           (x) => x.id,
           (row) => {
@@ -76,9 +68,7 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
 
       dispatch(setIsHydrated(true));
       const end = performance.now();
-      logger.info(
-        `initializeProgramStateSlice effect took ${(end - start).toFixed(2)} ms`,
-      );
+      logger.info(`initializeProgramStateSlice effect took ${(end - start).toFixed(2)} ms`);
     },
   );
 
@@ -87,44 +77,25 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
     undefined,
     async (
       _,
-      {
-        stateBeforeReduce,
-        stateAfterReduce,
-        extra: { db, logger },
-        throwIfCancelled,
-        cancelActiveListeners,
-      },
+      { stateBeforeReduce, stateAfterReduce, extra: { db, logger }, throwIfCancelled, cancelActiveListeners },
     ) => {
       cancelActiveListeners();
       const start = performance.now();
       const shouldPersist =
         stateAfterReduce.program.isHydrated &&
-        (stateAfterReduce.program.activePlanId !==
-          stateBeforeReduce.program.activePlanId ||
-          stateAfterReduce.program.savedPrograms !==
-            stateBeforeReduce.program.savedPrograms);
+        (stateAfterReduce.program.activePlanId !== stateBeforeReduce.program.activePlanId ||
+          stateAfterReduce.program.savedPrograms !== stateBeforeReduce.program.savedPrograms);
       if (shouldPersist) {
         await persistPrograms(stateAfterReduce, db, logger, throwIfCancelled);
         const end = performance.now();
-        logger.info(
-          `Persist program state effect took ${(end - start).toFixed(2)} ms`,
-        );
+        logger.info(`Persist program state effect took ${(end - start).toFixed(2)} ms`);
       }
     },
   );
 
   addEffect(
     fetchUpcomingSessions,
-    async (
-      _,
-      {
-        signal,
-        cancelActiveListeners,
-        dispatch,
-        getState,
-        extra: { sessionService, logger },
-      },
-    ) => {
+    async (_, { signal, cancelActiveListeners, dispatch, getState, extra: { sessionService, logger } }) => {
       const start = performance.now();
       cancelActiveListeners();
       await yieldToEventLoop();
@@ -139,19 +110,14 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
       await yieldToEventLoop();
 
       const sessions = await AsyncStream.from(
-        sessionService.getUpcomingSessions(
-          sessionBlueprints,
-          selectLatestExercises(state),
-        ),
+        sessionService.getUpcomingSessions(sessionBlueprints, selectLatestExercises(state)),
       )
         .takeWhile(() => !signal.aborted)
         .take(numberOfUpcomingSessions)
         .toArray();
       dispatch(setUpcomingSessions(RemoteData.success(sessions)));
       const end = performance.now();
-      logger.info(
-        `fetchUpcomingSessions effect took ${(end - start).toFixed(2)} ms`,
-      );
+      logger.info(`fetchUpcomingSessions effect took ${(end - start).toFixed(2)} ms`);
     },
   );
 }
@@ -169,13 +135,11 @@ async function persistPrograms(
       throwIfCancelled();
       await tx.delete(programsSchema);
       await tx.insert(programsSchema).values(
-        Object.entries(stateAfterReduce.program.savedPrograms).map(
-          ([key, program]) => ({
-            id: key,
-            active: key === stateAfterReduce.program.activePlanId,
-            payload: ProgramBlueprint.fromPOJO(program).toJSON(),
-          }),
-        ),
+        Object.entries(stateAfterReduce.program.savedPrograms).map(([key, program]) => ({
+          id: key,
+          active: key === stateAfterReduce.program.activePlanId,
+          payload: ProgramBlueprint.fromPOJO(program).toJSON(),
+        })),
       );
       throwIfCancelled();
     });

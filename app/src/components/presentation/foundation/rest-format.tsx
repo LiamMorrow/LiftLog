@@ -15,8 +15,7 @@ export default function RestFormat({ rest }: RestFormatProps & TextProps) {
         ? formatTimeSpan(rest.minRest)
         : `${formatTimeSpan(rest.minRest)} - ${formatTimeSpan(rest.maxRest)}`}
 
-      {rest.failureRest.compareTo(rest.maxRest) >= 0 &&
-        `, ${formatTimeSpan(rest.failureRest)}`}
+      {rest.failureRest.compareTo(rest.maxRest) >= 0 && `, ${formatTimeSpan(rest.failureRest)}`}
     </Text>
   );
 }

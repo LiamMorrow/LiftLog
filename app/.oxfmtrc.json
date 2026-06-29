@@ -1,0 +1,9 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": true,
+  "trailingComma": "all",
+  "semi": true,
+  "printWidth": 120,
+  "sortPackageJson": false,
+  "ignorePatterns": ["src/gen", "src/drizzle", "src/types/dom.slim.d.ts", "android", "ios", "dist", ".expo"]
+}

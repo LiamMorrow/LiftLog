@@ -64,12 +64,7 @@ export default function ExerciseBlueprintSummary({
             <Menu
               visible={menuOpen}
               onDismiss={() => setMenuOpen(false)}
-              anchor={
-                <IconButton
-                  onPress={() => setMenuOpen(true)}
-                  icon={'moreHoriz'}
-                />
-              }
+              anchor={<IconButton onPress={() => setMenuOpen(true)} icon={'moreHoriz'} />}
             >
               <Menu.Item
                 title={t('exercise.copy_to.button')}
@@ -83,23 +78,15 @@ export default function ExerciseBlueprintSummary({
           </View>
         </View>
         {match(blueprint)
-          .with(P.instanceOf(WeightedExerciseBlueprint), (b) => (
-            <WeightedExerciseBlueprintSummary blueprint={b} />
-          ))
-          .with(P.instanceOf(CardioExerciseBlueprint), (b) => (
-            <CardioExerciseBlueprintSummary blueprint={b} />
-          ))
+          .with(P.instanceOf(WeightedExerciseBlueprint), (b) => <WeightedExerciseBlueprintSummary blueprint={b} />)
+          .with(P.instanceOf(CardioExerciseBlueprint), (b) => <CardioExerciseBlueprintSummary blueprint={b} />)
           .exhaustive()}
       </View>
     </TouchableRipple>
   );
 }
 
-function CardioExerciseBlueprintSummary({
-  blueprint,
-}: {
-  blueprint: CardioExerciseBlueprint;
-}) {
+function CardioExerciseBlueprintSummary({ blueprint }: { blueprint: CardioExerciseBlueprint }) {
   const { t } = useTranslate();
 
   return (
@@ -128,18 +115,12 @@ export function formatCardioTarget(target: CardioTarget): string {
   });
 }
 
-function WeightedExerciseBlueprintSummary({
-  blueprint,
-}: {
-  blueprint: WeightedExerciseBlueprint;
-}) {
+function WeightedExerciseBlueprintSummary({ blueprint }: { blueprint: WeightedExerciseBlueprint }) {
   return (
     <View style={{ gap: spacing[1], alignItems: 'flex-start' }}>
       <SurfaceText>
-        <SurfaceText color="primary">{blueprint.sets}</SurfaceText>{' '}
-        {pluralize(blueprint.sets, 'set')} of{' '}
-        <SurfaceText color="primary">{blueprint.repsPerSet}</SurfaceText>{' '}
-        {pluralize(blueprint.repsPerSet, 'rep')}
+        <SurfaceText color="primary">{blueprint.sets}</SurfaceText> {pluralize(blueprint.sets, 'set')} of{' '}
+        <SurfaceText color="primary">{blueprint.repsPerSet}</SurfaceText> {pluralize(blueprint.repsPerSet, 'rep')}
       </SurfaceText>
     </View>
   );

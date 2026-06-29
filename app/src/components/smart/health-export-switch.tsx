@@ -12,9 +12,7 @@ export function HealthExportSwitch() {
   const dispatch = useDispatch();
   const { healthExportService } = useServices();
   const canExport = healthExportService.canExport();
-  const exportToHealthAggregator = useAppSelector(
-    (x) => x.settings.exportToHealthAggregator,
-  );
+  const exportToHealthAggregator = useAppSelector((x) => x.settings.exportToHealthAggregator);
   if (!canExport) {
     return undefined;
   }

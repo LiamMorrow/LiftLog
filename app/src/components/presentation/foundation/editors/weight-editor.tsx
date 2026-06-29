@@ -1,8 +1,5 @@
 import { spacing } from '@/hooks/useAppTheme';
-import {
-  localeFormatBigNumber,
-  localeParseBigNumber,
-} from '@/utils/locale-bignumber';
+import { localeFormatBigNumber, localeParseBigNumber } from '@/utils/locale-bignumber';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
@@ -35,12 +32,8 @@ export function WeightEditor(props: WeightEditorProps) {
   const { t } = useTranslate();
   const preferredWeightUnit = usePreferredWeightUnit();
   const [text, setText] = useState(localeFormatBigNumber(props.weight?.value));
-  const [editorWeightValue, setEditorWeightValue] = useState<
-    BigNumber | undefined
-  >(props.weight?.value);
-  const [editorWeightUnit, setEditorWeightUnit] = useState<WeightUnit>(
-    props.weight?.unit ?? preferredWeightUnit,
-  );
+  const [editorWeightValue, setEditorWeightValue] = useState<BigNumber | undefined>(props.weight?.value);
+  const [editorWeightUnit, setEditorWeightUnit] = useState<WeightUnit>(props.weight?.unit ?? preferredWeightUnit);
 
   useEffect(() => {
     setText(localeFormatBigNumber(props.weight?.value));
@@ -48,9 +41,7 @@ export function WeightEditor(props: WeightEditorProps) {
     setEditorWeightUnit(props.weight?.unit ?? preferredWeightUnit);
   }, [preferredWeightUnit, props.weight]);
 
-  const nonZeroIncrement = props.increment.isZero()
-    ? new BigNumber('2.5')
-    : props.increment;
+  const nonZeroIncrement = props.increment.isZero() ? new BigNumber('2.5') : props.increment;
 
   const incrementWeight = () => {
     if (editorWeightValue === undefined) {
@@ -58,27 +49,18 @@ export function WeightEditor(props: WeightEditorProps) {
     }
     setEditorWeightValue(editorWeightValue.plus(nonZeroIncrement));
     setText(localeFormatBigNumber(editorWeightValue.plus(nonZeroIncrement)));
-    emitCurrentValues(
-      editorWeightValue.plus(nonZeroIncrement),
-      editorWeightUnit,
-    );
+    emitCurrentValues(editorWeightValue.plus(nonZeroIncrement), editorWeightUnit);
   };
   const decrementWeight = () => {
     if (editorWeightValue === undefined) {
       return;
     }
-    if (
-      !props.allowNegative &&
-      editorWeightValue.isLessThan(nonZeroIncrement)
-    ) {
+    if (!props.allowNegative && editorWeightValue.isLessThan(nonZeroIncrement)) {
       return;
     }
     setEditorWeightValue(editorWeightValue.minus(nonZeroIncrement));
     setText(localeFormatBigNumber(editorWeightValue.minus(nonZeroIncrement)));
-    emitCurrentValues(
-      editorWeightValue.minus(nonZeroIncrement),
-      editorWeightUnit,
-    );
+    emitCurrentValues(editorWeightValue.minus(nonZeroIncrement), editorWeightUnit);
   };
 
   const handleTextChange = (text: string) => {
@@ -96,10 +78,7 @@ export function WeightEditor(props: WeightEditorProps) {
     }
   };
 
-  const emitCurrentValues = (
-    editorWeightValue: BigNumber | undefined,
-    editorWeightUnit: WeightUnit,
-  ) => {
+  const emitCurrentValues = (editorWeightValue: BigNumber | undefined, editorWeightUnit: WeightUnit) => {
     if (editorWeightValue === undefined && !props.allowNull) {
       return;
     }
@@ -166,29 +145,14 @@ export function WeightEditor(props: WeightEditorProps) {
               icon={'plusMinus'}
               onPress={() => {
                 setEditorWeightValue(editorWeightValue?.multipliedBy(-1));
-                setText(
-                  localeFormatBigNumber(editorWeightValue?.multipliedBy(-1)),
-                );
-                emitCurrentValues(
-                  editorWeightValue?.multipliedBy(-1),
-                  editorWeightUnit,
-                );
+                setText(localeFormatBigNumber(editorWeightValue?.multipliedBy(-1)));
+                emitCurrentValues(editorWeightValue?.multipliedBy(-1), editorWeightUnit);
               }}
             />
           </Tooltip>
         )}
-        <IconButton
-          icon={'minus'}
-          mode="outlined"
-          testID="decrement-weight"
-          onPress={decrementWeight}
-        />
-        <IconButton
-          icon={'plus'}
-          mode="outlined"
-          testID="increment-weight"
-          onPress={incrementWeight}
-        />
+        <IconButton icon={'minus'} mode="outlined" testID="decrement-weight" onPress={decrementWeight} />
+        <IconButton icon={'plus'} mode="outlined" testID="increment-weight" onPress={incrementWeight} />
       </View>
     </View>
   );

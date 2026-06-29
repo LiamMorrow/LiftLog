@@ -5,12 +5,7 @@ import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { RemoteData } from '@/models/remote';
 import { useAppSelector } from '@/store';
-import {
-  fetchAndSetSharedFeedUser,
-  requestFollowUser,
-  selectSharedFeedUser,
-  setSharedFeedUser,
-} from '@/store/feed';
+import { fetchAndSetSharedFeedUser, requestFollowUser, selectSharedFeedUser, setSharedFeedUser } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect } from 'react';
@@ -76,10 +71,7 @@ export default function FeedSharePage() {
                   />
                 </SurfaceText>
 
-                <SurfaceText
-                  style={{ textAlign: 'center' }}
-                  color="onSurfaceVariant"
-                >
+                <SurfaceText style={{ textAlign: 'center' }} color="onSurfaceVariant">
                   {t('feed.accept_to_follow.explanation')}
                 </SurfaceText>
               </Card.Content>
@@ -90,19 +82,10 @@ export default function FeedSharePage() {
                   padding: spacing[4],
                 }}
               >
-                <Button
-                  mode="outlined"
-                  onPress={() => back()}
-                  style={{ marginRight: spacing[2] }}
-                >
+                <Button mode="outlined" onPress={() => back()} style={{ marginRight: spacing[2] }}>
                   {t('generic.cancel.button')}
                 </Button>
-                <Button
-                  testID="feed-share-accept-button"
-                  mode="contained"
-                  onPress={handleAcceptRequest}
-                  icon="check"
-                >
+                <Button testID="feed-share-accept-button" mode="contained" onPress={handleAcceptRequest} icon="check">
                   {t('generic.accept.button')}
                 </Button>
               </Card.Actions>

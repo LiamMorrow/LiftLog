@@ -1,17 +1,8 @@
 import { AppThemeColors } from '@/hooks/useAppTheme';
-import {
-  BarChartPropsType,
-  CurveType,
-  LineChartPropsType,
-} from 'react-native-gifted-charts';
+import { BarChartPropsType, CurveType, LineChartPropsType } from 'react-native-gifted-charts';
 
-export const lineGraphProps = (
-  colors: AppThemeColors,
-  width: number,
-  numberOfPoints: number,
-): LineChartPropsType => {
-  const calculatedSpacing =
-    numberOfPoints > 1 ? width / (numberOfPoints - 1) - 50 / numberOfPoints : 1;
+export const lineGraphProps = (colors: AppThemeColors, width: number, numberOfPoints: number): LineChartPropsType => {
+  const calculatedSpacing = numberOfPoints > 1 ? width / (numberOfPoints - 1) - 50 / numberOfPoints : 1;
   const spacing = Math.max(calculatedSpacing, 50);
   return {
     focusEnabled: true,
@@ -47,10 +38,7 @@ export const lineGraphProps = (
   };
 };
 
-export const verticalBarChartProps = (
-  colors: AppThemeColors,
-  width: number,
-): BarChartPropsType => {
+export const verticalBarChartProps = (colors: AppThemeColors, width: number): BarChartPropsType => {
   return {
     barBorderRadius: 2,
     xAxisColor: 'transparent',

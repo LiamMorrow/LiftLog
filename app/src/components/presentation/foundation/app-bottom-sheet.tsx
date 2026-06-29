@@ -30,14 +30,8 @@ export default function AppBottomSheet({
           rest.onChange?.(index, position, type);
         }}
         snapPoints={snapPoints ?? ['80%']}
-        backgroundStyle={[
-          { backgroundColor: colors.surfaceContainerHighest },
-          backgroundStyle,
-        ]}
-        handleIndicatorStyle={[
-          { backgroundColor: colors.outline },
-          handleIndicatorStyle,
-        ]}
+        backgroundStyle={[{ backgroundColor: colors.surfaceContainerHighest }, backgroundStyle]}
+        handleIndicatorStyle={[{ backgroundColor: colors.outline }, handleIndicatorStyle]}
         {...rest}
       >
         {children}

@@ -23,11 +23,7 @@ export function WeightBarChart({
       value: stat.value.convertTo(weightUnit).value.toNumber(),
       barWidth: charWidth * (topLabelText.length + 3),
       topLabelComponent: () => (
-        <Text
-          style={{ width: 200, textAlign: 'center', pointerEvents: 'none' }}
-        >
-          {topLabelText}
-        </Text>
+        <Text style={{ width: 200, textAlign: 'center', pointerEvents: 'none' }}>{topLabelText}</Text>
       ),
 
       label: formatDate(stat.dateTime.toLocalDate(), {
@@ -41,11 +37,7 @@ export function WeightBarChart({
     <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
       <BarChart
         {...verticalBarChartProps(colors, width)}
-        negativeStepValue={
-          minValue.value.lt(0)
-            ? -0.2 * minValue.convertTo(weightUnit).value.toNumber()
-            : undefined!
-        }
+        negativeStepValue={minValue.value.lt(0) ? -0.2 * minValue.convertTo(weightUnit).value.toNumber() : undefined!}
         overflowTop={30}
         frontColor={colors.primary + 'CC'}
         data={points}

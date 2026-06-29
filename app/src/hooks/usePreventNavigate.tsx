@@ -1,11 +1,5 @@
 import { useNavigation } from 'expo-router';
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-} from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef } from 'react';
 
 type Entry = { prevent: boolean; onPrevent?: () => void };
 
@@ -15,18 +9,12 @@ const PreventNavigateContext = createContext<{
   getActive: () => Entry | null;
 } | null>(null);
 
-export function PreventNavigateProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function PreventNavigateProvider({ children }: { children: React.ReactNode }) {
   // Stack ordered by registration time — last registered = deepest
   const stackRef = useRef<{ id: symbol; entry: Entry }[]>([]);
 
   const register = useCallback((id: symbol, entry: Entry) => {
-    stackRef.current = stackRef.current
-      .filter((e) => e.id !== id)
-      .concat({ id, entry });
+    stackRef.current = stackRef.current.filter((e) => e.id !== id).concat({ id, entry });
   }, []);
 
   const unregister = useCallback((id: symbol) => {
@@ -43,9 +31,7 @@ export function PreventNavigateProvider({
   }, []);
 
   return (
-    <PreventNavigateContext.Provider
-      value={{ register, unregister, getActive }}
-    >
+    <PreventNavigateContext.Provider value={{ register, unregister, getActive }}>
       {children}
     </PreventNavigateContext.Provider>
   );
@@ -53,17 +39,11 @@ export function PreventNavigateProvider({
 
 function usePreventNavigateContext() {
   const ctx = useContext(PreventNavigateContext);
-  if (!ctx)
-    throw new Error(
-      'usePreventNavigateContext must be used within PreventNavigateProvider',
-    );
+  if (!ctx) throw new Error('usePreventNavigateContext must be used within PreventNavigateProvider');
   return ctx;
 }
 
-export function usePreventNavigate(
-  prevent: boolean,
-  onPrevent?: () => void,
-): void {
+export function usePreventNavigate(prevent: boolean, onPrevent?: () => void): void {
   const { addListener } = useNavigation();
   const { register, unregister, getActive } = usePreventNavigateContext();
 

@@ -1,8 +1,5 @@
 import { WeightedStatisticOverTime } from '@/store/stats';
-import {
-  usePreferredWeightSuffix,
-  usePreferredWeightUnit,
-} from '@/hooks/usePreferredWeightUnit';
+import { usePreferredWeightSuffix, usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 import { View } from 'react-native';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
@@ -28,9 +25,7 @@ export function WeightLineChart({
     return {
       value,
       label,
-      focusedDataPointLabelComponent: () => (
-        <FocusedDatapointLabelComponent value={value} label={label} />
-      ),
+      focusedDataPointLabelComponent: () => <FocusedDatapointLabelComponent value={value} label={label} />,
     };
   });
   const [width, setWidth] = useState(0);
@@ -43,11 +38,7 @@ export function WeightLineChart({
     <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
       <LineChart
         {...lineGraphProps(colors, width, points.length)}
-        negativeStepValue={
-          minValue.value.lt(0)
-            ? -0.2 * minValue.convertTo(weightUnit).value.toNumber()
-            : undefined!
-        }
+        negativeStepValue={minValue.value.lt(0) ? -0.2 * minValue.convertTo(weightUnit).value.toNumber() : undefined!}
         showFractionalValues={false}
         dataPointLabelWidth={70}
         showReferenceLine1
@@ -70,24 +61,15 @@ export function WeightLineChart({
         showDataPointLabelOnFocus
         noOfSections={4}
         height={100}
-        mostNegativeValue={
-          minValue.value.lt(0)
-            ? minValue.convertTo(weightUnit).value.toNumber()
-            : undefined!
-        }
-        yAxisOffset={
-          Math.floor(minValue.convertTo(weightUnit).value.toNumber()) - 10
-        }
+        mostNegativeValue={minValue.value.lt(0) ? minValue.convertTo(weightUnit).value.toNumber() : undefined!}
+        yAxisOffset={Math.floor(minValue.convertTo(weightUnit).value.toNumber()) - 10}
         noOfSectionsBelowXAxis={minValue.value.lt(0) ? 5 : 0}
       />
     </View>
   );
 }
 
-function FocusedDatapointLabelComponent(props: {
-  value: number;
-  label: string;
-}) {
+function FocusedDatapointLabelComponent(props: { value: number; label: string }) {
   const { colors } = useAppTheme();
   const weightSuffix = usePreferredWeightSuffix();
   return (

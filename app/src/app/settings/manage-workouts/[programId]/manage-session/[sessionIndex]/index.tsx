@@ -30,13 +30,7 @@ import {
 } from '@/store/session-editor';
 import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
-import {
-  Redirect,
-  Stack,
-  useFocusEffect,
-  useLocalSearchParams,
-  useRouter,
-} from 'expo-router';
+import { Redirect, Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Card, FAB, TextInput } from 'react-native-paper';
 import { useDispatch, useStore } from 'react-redux';
@@ -51,13 +45,7 @@ export default function ManageWorkouts() {
   if (!session) {
     return <Redirect href={'/'} />;
   }
-  return (
-    <SessionEditor
-      session={session}
-      sessionIndex={sessionIndex}
-      programId={programId}
-    />
-  );
+  return <SessionEditor session={session} sessionIndex={sessionIndex} programId={programId} />;
 }
 
 function SessionEditor({
@@ -71,20 +59,14 @@ function SessionEditor({
 }) {
   const dispatch = useDispatch();
   const { getState } = useStore<RootState>();
-  const [selectedExercise, setSelectedExercise] = useState<
-    ExerciseBlueprint | undefined
-  >(undefined);
+  const [selectedExercise, setSelectedExercise] = useState<ExerciseBlueprint | undefined>(undefined);
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
-  const exerciseCount = useAppSelector(
-    (x) => x.sessionEditor.sessionBlueprint?.exercises?.length ?? 0,
-  );
+  const exerciseCount = useAppSelector((x) => x.sessionEditor.sessionBlueprint?.exercises?.length ?? 0);
   const { push } = useRouter();
   const openExerciseEditor = (exerciseIndex: number | undefined) => {
     dispatch(setEditingExerciseIndex(exerciseIndex));
 
-    push(
-      `/settings/manage-workouts/${programId}/manage-session/${sessionIndex}/exercise`,
-    );
+    push(`/settings/manage-workouts/${programId}/manage-session/${sessionIndex}/exercise`);
   };
   const { t } = useTranslate();
   const saveSession = () => {
@@ -109,10 +91,7 @@ function SessionEditor({
           name: `Exercise ${session.exercises.length + 1}`,
           repsPerSet: 10,
           sets: 3,
-          progressiveOverload: new IncreaseLowestSetProgressiveOverload(
-            BigNumber('2.5'),
-            'all',
-          ),
+          progressiveOverload: new IncreaseLowestSetProgressiveOverload(BigNumber('2.5'), 'all'),
           link: '',
           notes: '',
           restBetweenSets: Rest.medium,
@@ -134,13 +113,7 @@ function SessionEditor({
   const floatingBottomContainer = (
     <FloatingBottomContainer
       fab={
-        <FAB
-          variant="surface"
-          size="small"
-          icon={'add'}
-          label={t('exercise.add.title')}
-          onPress={beginAddExercise}
-        />
+        <FAB variant="surface" size="small" icon={'add'} label={t('exercise.add.title')} onPress={beginAddExercise} />
       }
     />
   );
@@ -148,31 +121,13 @@ function SessionEditor({
     <FullHeightScrollView floatingChildren={floatingBottomContainer}>
       <Stack.Screen options={{ title: session.name }} />
       <Form>
-        <LabelledFormRow
-          label={t('workout.name.label')}
-          icon={'assignmentFill'}
-        >
-          <TextInput
-            mode="flat"
-            value={session.name}
-            onChangeText={setName}
-            selectTextOnFocus
-          />
+        <LabelledFormRow label={t('workout.name.label')} icon={'assignmentFill'}>
+          <TextInput mode="flat" value={session.name} onChangeText={setName} selectTextOnFocus />
         </LabelledFormRow>
         <LabelledFormRow label={t('workout.notes.label')} icon={'notesFill'}>
-          <TextInput
-            mode="flat"
-            value={session.notes}
-            onChangeText={setNotes}
-            multiline
-          />
+          <TextInput mode="flat" value={session.notes} onChangeText={setNotes} multiline />
         </LabelledFormRow>
-        <LabelledFormRow
-          label={t('exercise.exercises.title')}
-          icon={'fitnessCenterFill'}
-          undoFormPadding
-          noGap
-        >
+        <LabelledFormRow label={t('exercise.exercises.title')} icon={'fitnessCenterFill'} undoFormPadding noGap>
           <ItemList
             items={session.exercises}
             verticalPadding={false}

@@ -1,10 +1,4 @@
-import {
-  Duration,
-  Instant,
-  LocalDate,
-  OffsetDateTime,
-  ZoneOffset,
-} from '@js-joda/core';
+import { Duration, Instant, LocalDate, OffsetDateTime, ZoneOffset } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { describe, expect, it } from 'vitest';
 import {
@@ -72,9 +66,7 @@ describe('libs', () => {
   describe('OffsetDateTimeJSON', () => {
     it('round-trips a datetime', () => {
       const dt = OffsetDateTime.of(2024, 3, 15, 10, 30, 0, 0, ZoneOffset.UTC);
-      expect(fromOffsetDateTimeJSON(toOffsetDateTimeJSON(dt)).isEqual(dt)).toBe(
-        true,
-      );
+      expect(fromOffsetDateTimeJSON(toOffsetDateTimeJSON(dt)).isEqual(dt)).toBe(true);
     });
 
     it('serializes to ISO offset format', () => {
@@ -83,9 +75,7 @@ describe('libs', () => {
     });
 
     it('parses a known ISO offset string', () => {
-      const result = fromOffsetDateTimeJSON(
-        '2024-03-15T10:30:00+10:00' as OffsetDateTimeJSON,
-      );
+      const result = fromOffsetDateTimeJSON('2024-03-15T10:30:00+10:00' as OffsetDateTimeJSON);
       expect(result.offset().equals(ZoneOffset.ofHours(10))).toBe(true);
     });
   });
@@ -93,15 +83,11 @@ describe('libs', () => {
   describe('InstantJSON', () => {
     it('round-trips an instant', () => {
       const instant = Instant.parse('2024-03-15T10:30:00Z');
-      expect(fromInstantJson(toInstantJson(instant)).equals(instant)).toBe(
-        true,
-      );
+      expect(fromInstantJson(toInstantJson(instant)).equals(instant)).toBe(true);
     });
 
     it('serializes to ISO string', () => {
-      expect(toInstantJson(Instant.parse('2024-03-15T10:30:00Z'))).toBe(
-        '2024-03-15T10:30:00Z',
-      );
+      expect(toInstantJson(Instant.parse('2024-03-15T10:30:00Z'))).toBe('2024-03-15T10:30:00Z');
     });
 
     it('parses a known ISO string', () => {
@@ -118,9 +104,7 @@ describe('libs', () => {
   describe('DurationJSON', () => {
     it('round-trips a duration', () => {
       const duration = Duration.ofSeconds(3661); // 1h 1m 1s
-      expect(fromDurationJSON(toDurationJSON(duration)).equals(duration)).toBe(
-        true,
-      );
+      expect(fromDurationJSON(toDurationJSON(duration)).equals(duration)).toBe(true);
     });
 
     it('serializes to ISO duration format', () => {
@@ -170,54 +154,40 @@ describe('libs', () => {
     });
 
     it('parses a known decimal string', () => {
-      expect(
-        fromBigNumberJSON('1.23' as BigNumberJSON).isEqualTo(
-          new BigNumber('1.23'),
-        ),
-      ).toBe(true);
+      expect(fromBigNumberJSON('1.23' as BigNumberJSON).isEqualTo(new BigNumber('1.23'))).toBe(true);
     });
   });
 
   describe('Base64Uint8Array', () => {
     it('round-trips a byte array', () => {
       const input = new Uint8Array([1, 2, 3, 255, 0, 128]);
-      expect(fromBase64Uint8ArrayJSON(toBase64Uint8ArrayJSON(input))).toEqual(
-        input,
-      );
+      expect(fromBase64Uint8ArrayJSON(toBase64Uint8ArrayJSON(input))).toEqual(input);
     });
 
     it('handles an empty array', () => {
       const input = new Uint8Array([]);
-      expect(fromBase64Uint8ArrayJSON(toBase64Uint8ArrayJSON(input))).toEqual(
-        input,
-      );
+      expect(fromBase64Uint8ArrayJSON(toBase64Uint8ArrayJSON(input))).toEqual(input);
     });
 
     it('handles all-zero bytes', () => {
       const input = new Uint8Array(8);
-      expect(fromBase64Uint8ArrayJSON(toBase64Uint8ArrayJSON(input))).toEqual(
-        input,
-      );
+      expect(fromBase64Uint8ArrayJSON(toBase64Uint8ArrayJSON(input))).toEqual(input);
     });
 
     it('handles all 256 byte values', () => {
       const input = new Uint8Array(Array.from({ length: 256 }, (_, i) => i));
-      expect(fromBase64Uint8ArrayJSON(toBase64Uint8ArrayJSON(input))).toEqual(
-        input,
-      );
+      expect(fromBase64Uint8ArrayJSON(toBase64Uint8ArrayJSON(input))).toEqual(input);
     });
 
     it('serializes to a valid base64 string', () => {
       // [72, 101, 108, 108, 111] = "Hello"
-      expect(
-        toBase64Uint8ArrayJSON(new Uint8Array([72, 101, 108, 108, 111])),
-      ).toBe('SGVsbG8=');
+      expect(toBase64Uint8ArrayJSON(new Uint8Array([72, 101, 108, 108, 111]))).toBe('SGVsbG8=');
     });
 
     it('deserializes a known base64 string', () => {
-      expect(
-        fromBase64Uint8ArrayJSON('SGVsbG8=' as Base64Uint8ArrayJSON),
-      ).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
+      expect(fromBase64Uint8ArrayJSON('SGVsbG8=' as Base64Uint8ArrayJSON)).toEqual(
+        new Uint8Array([72, 101, 108, 108, 111]),
+      );
     });
   });
   describe('RsaPublicKey', () => {
@@ -288,11 +258,7 @@ describe('libs', () => {
     };
 
     it('round-trips', () => {
-      expect(
-        fromAesEncryptedAndRsaSignedDataJSON(
-          toAesEncryptedAndRsaSignedDataJSON(sample),
-        ),
-      ).toEqual(sample);
+      expect(fromAesEncryptedAndRsaSignedDataJSON(toAesEncryptedAndRsaSignedDataJSON(sample))).toEqual(sample);
     });
 
     it('deserializes encryptedPayload and iv', () => {
@@ -317,20 +283,14 @@ describe('libs', () => {
     };
 
     it('round-trips', () => {
-      expect(fromRsaEncryptedDataJSON(toRsaEncryptedDataJSON(sample))).toEqual(
-        sample,
-      );
+      expect(fromRsaEncryptedDataJSON(toRsaEncryptedDataJSON(sample))).toEqual(sample);
     });
 
     it('deserializes each chunk from base64', () => {
       const result = fromRsaEncryptedDataJSON({
         dataChunks: [b64([1, 2]), b64([3, 4]), b64([5, 6])],
       });
-      expect(result.dataChunks).toEqual([
-        bytes([1, 2]),
-        bytes([3, 4]),
-        bytes([5, 6]),
-      ]);
+      expect(result.dataChunks).toEqual([bytes([1, 2]), bytes([3, 4]), bytes([5, 6])]);
     });
 
     it('handles empty dataChunks', () => {
@@ -341,9 +301,7 @@ describe('libs', () => {
 
     it('handles a single chunk', () => {
       const single: RsaEncryptedData = { dataChunks: [bytes([255])] };
-      expect(fromRsaEncryptedDataJSON(toRsaEncryptedDataJSON(single))).toEqual(
-        single,
-      );
+      expect(fromRsaEncryptedDataJSON(toRsaEncryptedDataJSON(single))).toEqual(single);
     });
   });
 

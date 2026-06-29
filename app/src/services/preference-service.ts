@@ -13,10 +13,7 @@ function toBooleanString(val: boolean | undefined) {
   return val ? 'True' : 'False';
 }
 
-function fromBooleanString(
-  val: string | undefined,
-  defaultValue: boolean,
-): boolean {
+function fromBooleanString(val: string | undefined, defaultValue: boolean): boolean {
   if (val === undefined || val === null) return defaultValue;
   return val === 'True';
 }
@@ -42,10 +39,7 @@ export class PreferenceService {
   }
 
   async setUseImperialUnits(useImperialUnits: boolean): Promise<void> {
-    await this.keyValueStore.setItem(
-      'useImperialUnits',
-      toBooleanString(useImperialUnits),
-    );
+    await this.keyValueStore.setItem('useImperialUnits', toBooleanString(useImperialUnits));
   }
 
   async getRestNotifications(): Promise<boolean> {
@@ -54,10 +48,7 @@ export class PreferenceService {
   }
 
   async setRestNotifications(restNotifications: boolean): Promise<void> {
-    await this.keyValueStore.setItem(
-      'restNotifications',
-      toBooleanString(restNotifications),
-    );
+    await this.keyValueStore.setItem('restNotifications', toBooleanString(restNotifications));
   }
 
   async getCrashReportsEnabled(): Promise<boolean> {
@@ -66,10 +57,7 @@ export class PreferenceService {
   }
 
   async setCrashReportsEnabled(crashReportsEnabled: boolean): Promise<void> {
-    await this.keyValueStore.setItem(
-      'crashReportsEnabled',
-      toBooleanString(crashReportsEnabled),
-    );
+    await this.keyValueStore.setItem('crashReportsEnabled', toBooleanString(crashReportsEnabled));
   }
 
   async getWelcomeWizardCompleted(): Promise<boolean> {
@@ -77,20 +65,12 @@ export class PreferenceService {
     return fromBooleanString(value, false);
   }
 
-  async setWelcomeWizardCompleted(
-    welcomeWizardCompleted: boolean,
-  ): Promise<void> {
-    await this.keyValueStore.setItem(
-      'welcomeWizardCompleted',
-      toBooleanString(welcomeWizardCompleted),
-    );
+  async setWelcomeWizardCompleted(welcomeWizardCompleted: boolean): Promise<void> {
+    await this.keyValueStore.setItem('welcomeWizardCompleted', toBooleanString(welcomeWizardCompleted));
   }
 
   async setShowBodyweight(showBodyweight: boolean): Promise<void> {
-    await this.keyValueStore.setItem(
-      'showBodyweight',
-      toBooleanString(showBodyweight),
-    );
+    await this.keyValueStore.setItem('showBodyweight', toBooleanString(showBodyweight));
   }
 
   async getShowBodyweight(): Promise<boolean> {
@@ -140,14 +120,8 @@ export class PreferenceService {
   }
 
   async setRemoteBackupSettings(settings: RemoteBackupSettings): Promise<void> {
-    await this.keyValueStore.setItem(
-      'remoteBackupSettings.Endpoint',
-      settings.endpoint,
-    );
-    await this.keyValueStore.setItem(
-      'remoteBackupSettings.ApiKey',
-      settings.apiKey,
-    );
+    await this.keyValueStore.setItem('remoteBackupSettings.Endpoint', settings.endpoint);
+    await this.keyValueStore.setItem('remoteBackupSettings.ApiKey', settings.apiKey);
     await this.keyValueStore.setItem(
       'remoteBackupSettings.IncludeFeedAccount',
       toBooleanString(settings.includeFeedAccount),
@@ -159,10 +133,7 @@ export class PreferenceService {
   }
 
   async getLastSuccessfulRemoteBackupHash(): Promise<string | undefined> {
-    return (
-      (await this.keyValueStore.getItem('lastSuccessfulRemoteBackupHash')) ??
-      undefined
-    );
+    return (await this.keyValueStore.getItem('lastSuccessfulRemoteBackupHash')) ?? undefined;
   }
 
   async setLastBackupTime(time: Instant): Promise<void> {
@@ -183,10 +154,7 @@ export class PreferenceService {
   }
 
   async setBackupReminder(showReminder: boolean): Promise<void> {
-    await this.keyValueStore.setItem(
-      'backupReminder',
-      toBooleanString(showReminder),
-    );
+    await this.keyValueStore.setItem('backupReminder', toBooleanString(showReminder));
   }
 
   async getBackupReminder(): Promise<boolean> {
@@ -200,24 +168,16 @@ export class PreferenceService {
   }
 
   async setNotesExpandedByDefault(value: boolean): Promise<void> {
-    await this.keyValueStore.setItem(
-      'notesExpandedByDefault',
-      toBooleanString(value),
-    );
+    await this.keyValueStore.setItem('notesExpandedByDefault', toBooleanString(value));
   }
 
   async getKeepScreenAwakeDuringWorkout(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem(
-      'keepScreenAwakeDuringWorkout',
-    );
+    const value = await this.keyValueStore.getItem('keepScreenAwakeDuringWorkout');
     return fromBooleanString(value, true);
   }
 
   async setKeepScreenAwakeDuringWorkout(value: boolean): Promise<void> {
-    await this.keyValueStore.setItem(
-      'keepScreenAwakeDuringWorkout',
-      toBooleanString(value),
-    );
+    await this.keyValueStore.setItem('keepScreenAwakeDuringWorkout', toBooleanString(value));
   }
 
   async getExportToHealthAggregator(): Promise<boolean> {
@@ -226,10 +186,7 @@ export class PreferenceService {
   }
 
   async setExportToHealthAggregator(value: boolean): Promise<void> {
-    await this.keyValueStore.setItem(
-      'exportToHealthAggregator',
-      toBooleanString(value),
-    );
+    await this.keyValueStore.setItem('exportToHealthAggregator', toBooleanString(value));
   }
 
   async getShowPostWorkoutSummary(): Promise<boolean> {
@@ -238,10 +195,7 @@ export class PreferenceService {
   }
 
   async setShowPostWorkoutSummary(value: boolean): Promise<void> {
-    await this.keyValueStore.setItem(
-      'showPostWorkoutSummary',
-      toBooleanString(value),
-    );
+    await this.keyValueStore.setItem('showPostWorkoutSummary', toBooleanString(value));
   }
   async getTrueBlackDarkTheme(): Promise<boolean> {
     const value = await this.keyValueStore.getItem('trueBlackDarkTheme');
@@ -249,10 +203,7 @@ export class PreferenceService {
   }
 
   async setTrueBlackDarkTheme(value: boolean): Promise<void> {
-    await this.keyValueStore.setItem(
-      'trueBlackDarkTheme',
-      toBooleanString(value),
-    );
+    await this.keyValueStore.setItem('trueBlackDarkTheme', toBooleanString(value));
   }
 
   async setColorSchemeSeed(payload: ColorSchemeSeed): Promise<void> {

@@ -1,18 +1,6 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
-import {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from 'react';
-import {
-  Animated,
-  ColorValue,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  useAnimatedValue,
-} from 'react-native';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { Animated, ColorValue, NativeScrollEvent, NativeSyntheticEvent, useAnimatedValue } from 'react-native';
 
 type ScrollContextValues = {
   isScrolled: boolean;
@@ -24,7 +12,7 @@ type ScrollContextValues = {
 const ScrollContext = createContext<ScrollContextValues>({
   isScrolled: false,
   setScrolled: (_: boolean) => {},
-  handleScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => {},
+  handleScroll: (_event: NativeSyntheticEvent<NativeScrollEvent>) => {},
 });
 
 type ScrollProviderCallbackProps =
@@ -65,9 +53,7 @@ export const ScrollProvider = ({
 // Create a hook to use the ScrollContext
 export const useScroll = (invertedScroll?: boolean): ScrollContextValues => {
   const ctx = useContext(ScrollContext);
-  const [scrollHandlerLastFired, setScrollHandlerLastFired] = useState<
-    boolean | undefined
-  >(undefined);
+  const [scrollHandlerLastFired, setScrollHandlerLastFired] = useState<boolean | undefined>(undefined);
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetY = event.nativeEvent.contentOffset.y;
     const contentHeight = event.nativeEvent.contentSize.height;

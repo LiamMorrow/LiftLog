@@ -9,22 +9,12 @@ import {
   revokeFollowSecretAndRemoveFollower,
   selectFeedFollowers,
 } from '@/store/feed';
-import {
-  FollowRequestInboxMessage,
-  FollowResponseInboxMessage,
-} from '@/models/feed-models';
+import { FollowRequestInboxMessage, FollowResponseInboxMessage } from '@/models/feed-models';
 
 export function addInboxEffects(addEffect: AddEffectFn) {
   addEffect(
     fetchInboxItems,
-    async (
-      action,
-      {
-        dispatch,
-        getState,
-        extra: { feedApiService, feedInboxDecryptionService },
-      },
-    ) => {
+    async (action, { dispatch, getState, extra: { feedApiService, feedInboxDecryptionService } }) => {
       const state = getState();
       const identityRemote = selectFeedIdentityRemote(state);
 
@@ -54,32 +44,21 @@ export function addInboxEffects(addEffect: AddEffectFn) {
 
       // Decrypt all inbox messages
       const inboxItems = (
-        await Promise.all(
-          encryptedInboxItems.map((x) =>
-            feedInboxDecryptionService.decryptIfValid(identity, x),
-          ),
-        )
+        await Promise.all(encryptedInboxItems.map((x) => feedInboxDecryptionService.decryptIfValid(identity, x)))
       ).filter((x) => x !== null);
 
       // Process follow requests
-      const newFollowRequests = inboxItems.filter(
-        (x): x is FollowRequestInboxMessage => x.type === 'FollowRequest',
-      );
+      const newFollowRequests = inboxItems.filter((x): x is FollowRequestInboxMessage => x.type === 'FollowRequest');
 
       if (newFollowRequests.length > 0) {
         const currentFollowRequests = selectFeedFollowRequests(getState());
-        const updatedFollowRequests = [
-          ...currentFollowRequests,
-          ...newFollowRequests,
-        ];
+        const updatedFollowRequests = [...currentFollowRequests, ...newFollowRequests];
         dispatch(setFollowRequests(updatedFollowRequests));
 
         // If someone is requesting to follow again, they have lost their follow secret and we should purge them
         const currentFollowers = selectFeedFollowers(getState());
         for (const newRequest of updatedFollowRequests) {
-          const existingFollower = currentFollowers.find(
-            (follower) => follower.id === newRequest.senderUserId,
-          );
+          const existingFollower = currentFollowers.find((follower) => follower.id === newRequest.senderUserId);
           if (existingFollower) {
             dispatch(
               revokeFollowSecretAndRemoveFollower({
@@ -92,9 +71,7 @@ export function addInboxEffects(addEffect: AddEffectFn) {
       }
 
       // Process follow responses
-      const newFollowResponses = inboxItems.filter(
-        (x): x is FollowResponseInboxMessage => x.type === 'FollowResponse',
-      );
+      const newFollowResponses = inboxItems.filter((x): x is FollowResponseInboxMessage => x.type === 'FollowResponse');
 
       dispatch(processFollowResponses({ responses: newFollowResponses }));
 

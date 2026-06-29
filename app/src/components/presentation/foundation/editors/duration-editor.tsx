@@ -17,9 +17,7 @@ export default function DurationEditor(props: DurationEditorProps) {
   const { duration, onDurationUpdated, readonly } = props;
 
   const [hours, setHours] = useState(duration.toHours().toString());
-  const [minutes, setMinutes] = useState(
-    (duration.toMinutes() % 60).toString(),
-  );
+  const [minutes, setMinutes] = useState((duration.toMinutes() % 60).toString());
   const [seconds, setSeconds] = useState((duration.seconds() % 60).toString());
 
   const updateHours = (text: string) => {
@@ -28,9 +26,7 @@ export default function DurationEditor(props: DurationEditorProps) {
     if (!isNaN(hours)) {
       const seconds = duration.seconds() % 60;
       const mins = duration.toMinutes() % 60;
-      onDurationUpdated(
-        Duration.ofSeconds(seconds + mins * 60 + hours * 60 * 60),
-      );
+      onDurationUpdated(Duration.ofSeconds(seconds + mins * 60 + hours * 60 * 60));
     }
   };
   const updateMinutes = (text: string) => {

@@ -1,7 +1,4 @@
-import {
-  localeFormatBigNumber,
-  localeParseBigNumber,
-} from '@/utils/locale-bignumber';
+import { localeFormatBigNumber, localeParseBigNumber } from '@/utils/locale-bignumber';
 import React, { useState, useEffect } from 'react';
 import { TextStyle } from 'react-native';
 import { TextInput, TextInputProps } from 'react-native-paper';
@@ -15,10 +12,7 @@ interface DecimalEditorProps {
   testID?: string;
 }
 
-export function DecimalEditor(
-  props: DecimalEditorProps &
-    Partial<Omit<TextInputProps, keyof DecimalEditorProps>>,
-) {
+export function DecimalEditor(props: DecimalEditorProps & Partial<Omit<TextInputProps, keyof DecimalEditorProps>>) {
   const { value, onChange, testID, label, style, ...rest } = props;
   const [text, setText] = useState(localeFormatBigNumber(props.value) || '-');
   const [editorValue, setEditorValue] = useState(value);

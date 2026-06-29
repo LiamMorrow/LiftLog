@@ -55,10 +55,7 @@ export default function AiPlanner() {
   const reset = () => dispatch(restartChat());
 
   return (
-    <KeyboardAvoidingView
-      behavior={'translate-with-padding'}
-      style={{ flex: 1, insetBlockEnd: bottomInsetHeight }}
-    >
+    <KeyboardAvoidingView behavior={'translate-with-padding'} style={{ flex: 1, insetBlockEnd: bottomInsetHeight }}>
       <Stack.Screen
         options={{
           scrollEdgeEffects: { top: 'hidden' },
@@ -126,12 +123,7 @@ export default function AiPlanner() {
         />
 
         {isLoadingResponse && (
-          <IconButton
-            mode="outlined"
-            icon={'stop'}
-            size={35}
-            onPress={() => dispatch(stopAiGenerator())}
-          />
+          <IconButton mode="outlined" icon={'stop'} size={35} onPress={() => dispatch(stopAiGenerator())} />
         )}
 
         <IconButton

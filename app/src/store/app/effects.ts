@@ -17,10 +17,7 @@ import { setStringAsync } from 'expo-clipboard';
 export function applyAppEffects(addEffect: AddEffectFn) {
   addEffect(
     initializeAppStateSlice,
-    async (
-      _,
-      { cancelActiveListeners, dispatch, extra: { databaseMigrationService } },
-    ) => {
+    async (_, { cancelActiveListeners, dispatch, extra: { databaseMigrationService } }) => {
       cancelActiveListeners();
       await databaseMigrationService.migrate();
       dispatch(initializeSettingsStateSlice());

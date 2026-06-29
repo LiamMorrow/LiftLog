@@ -18,12 +18,8 @@ export default function ExercisePage() {
   const exercise = useAppSelector(selectEditingExercise);
   const dispatch = useDispatch();
   const { dismiss } = useRouter();
-  const exerciseIndex = useAppSelector(
-    (x) => x.sessionEditor.editingExerciseIndex,
-  );
-  const exerciseCount = useAppSelector(
-    (x) => x.sessionEditor.sessionBlueprint?.exercises?.length ?? 0,
-  );
+  const exerciseIndex = useAppSelector((x) => x.sessionEditor.editingExerciseIndex);
+  const exerciseCount = useAppSelector((x) => x.sessionEditor.sessionBlueprint?.exercises?.length ?? 0);
   const saveExercise = (exerciseToSave: ExerciseBlueprint) => {
     if (!exerciseToSave) {
       return;

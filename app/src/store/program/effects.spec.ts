@@ -68,9 +68,7 @@ function makeProgram(name = 'Test Plan', sessions: SessionBlueprint[] = []) {
 function makeKvStore(overrides?: Record<string, string | null>) {
   const store: Record<string, string | null> = overrides ?? {};
   return {
-    getItem: vi
-      .fn()
-      .mockImplementation((key: string) => Promise.resolve(store[key] ?? null)),
+    getItem: vi.fn().mockImplementation((key: string) => Promise.resolve(store[key] ?? null)),
     setItem: vi.fn().mockImplementation((key: string, val: string) => {
       store[key] = val;
       return Promise.resolve();
@@ -90,18 +88,12 @@ function makeSessionService(sessions: unknown[] = []) {
   };
 }
 
-function makeProgramState(
-  savedPrograms: Record<string, ProgramBlueprint> = {},
-  activePlanId = '',
-  isHydrated = true,
-) {
+function makeProgramState(savedPrograms: Record<string, ProgramBlueprint> = {}, activePlanId = '', isHydrated = true) {
   return {
     program: {
       isHydrated,
       activePlanId,
-      savedPrograms: Object.fromEntries(
-        Object.entries(savedPrograms).map(([id, p]) => [id, p.toPOJO()]),
-      ),
+      savedPrograms: Object.fromEntries(Object.entries(savedPrograms).map(([id, p]) => [id, p.toPOJO()])),
       upcomingSessions: RemoteData.notAsked(),
     },
     storedSessions: { latestExercises: {} },
@@ -224,9 +216,7 @@ describe('program effects', () => {
       await testBed.dispatchHandled(initializeProgramStateSlice());
 
       expect(kvStore.setItem).toHaveBeenCalledWith('hasSavedDefaultPlans2', 'true');
-      const savePlanActions = testBed.dispatchedActions.filter(
-        (a) => a.type === savePlan.type,
-      );
+      const savePlanActions = testBed.dispatchedActions.filter((a) => a.type === savePlan.type);
       expect(savePlanActions.length).toBeGreaterThan(0);
     });
 
@@ -239,9 +229,7 @@ describe('program effects', () => {
 
       await testBed.dispatchHandled(initializeProgramStateSlice());
 
-      const savePlanActions = testBed.dispatchedActions.filter(
-        (a) => a.type === savePlan.type,
-      );
+      const savePlanActions = testBed.dispatchedActions.filter((a) => a.type === savePlan.type);
       expect(savePlanActions).toHaveLength(0);
     });
   });
@@ -456,10 +444,12 @@ describe('program reducer', () => {
     it('appends a session blueprint to the program', () => {
       const store = createProgramStore();
       store.dispatch(savePlan({ programId: 'pid', programBlueprint: makeProgram() }));
-      store.dispatch(addProgramSession({
-        programId: 'pid',
-        sessionBlueprint: new SessionBlueprint('Day 1', [], ''),
-      }));
+      store.dispatch(
+        addProgramSession({
+          programId: 'pid',
+          sessionBlueprint: new SessionBlueprint('Day 1', [], ''),
+        }),
+      );
       expect(getProgram(store, 'pid')!.sessions).toHaveLength(1);
     });
   });
@@ -480,11 +470,13 @@ describe('program reducer', () => {
       const store = createProgramStore();
       store.dispatch(savePlan({ programId: 'pid', programBlueprint: makeProgram('Plan', [s1]) }));
       const before = getProgram(store, 'pid')!.sessions;
-      store.dispatch(setProgramSession({
-        programId: 'pid',
-        sessionIndex: 5,
-        sessionBlueprint: new SessionBlueprint('New', [], ''),
-      }));
+      store.dispatch(
+        setProgramSession({
+          programId: 'pid',
+          sessionIndex: 5,
+          sessionBlueprint: new SessionBlueprint('New', [], ''),
+        }),
+      );
       expect(getProgram(store, 'pid')!.sessions).toEqual(before);
     });
   });
@@ -492,14 +484,18 @@ describe('program reducer', () => {
   describe('setProgramSessions', () => {
     it('replaces all sessions for a program', () => {
       const store = createProgramStore();
-      store.dispatch(savePlan({
-        programId: 'pid',
-        programBlueprint: makeProgram('Plan', [new SessionBlueprint('Old', [], '')]),
-      }));
-      store.dispatch(setProgramSessions({
-        programId: 'pid',
-        sessionBlueprints: [new SessionBlueprint('A', [], ''), new SessionBlueprint('B', [], '')],
-      }));
+      store.dispatch(
+        savePlan({
+          programId: 'pid',
+          programBlueprint: makeProgram('Plan', [new SessionBlueprint('Old', [], '')]),
+        }),
+      );
+      store.dispatch(
+        setProgramSessions({
+          programId: 'pid',
+          sessionBlueprints: [new SessionBlueprint('A', [], ''), new SessionBlueprint('B', [], '')],
+        }),
+      );
       expect(getProgram(store, 'pid')!.sessions).toHaveLength(2);
       expect(getProgram(store, 'pid')!.sessions[0]!.name).toBe('A');
     });
@@ -565,10 +561,12 @@ describe('program reducer', () => {
       const store = createProgramStore();
       store.dispatch(savePlan({ programId: activeId, programBlueprint: makeProgram('Plan', []) }));
       store.dispatch(setActivePlan({ activePlanId: activeId }));
-      store.dispatch(applyDiffToPlan({
-        type: 'add',
-        diff: EmptySessionBlueprintDiff,
-      }));
+      store.dispatch(
+        applyDiffToPlan({
+          type: 'add',
+          diff: EmptySessionBlueprintDiff,
+        }),
+      );
       expect(getProgram(store, activeId)!.sessions).toHaveLength(1);
     });
   });

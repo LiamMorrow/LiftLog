@@ -20,9 +20,7 @@ export function MigrateToWeightUnitsWizard() {
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
-  const exercisesRequiringWeightMigration = useAppSelector(
-    (x) => x.storedSessions.exercisesRequiringWeightMigration,
-  );
+  const exercisesRequiringWeightMigration = useAppSelector((x) => x.storedSessions.exercisesRequiringWeightMigration);
   useEffect(() => {
     setOpen(!!exercisesRequiringWeightMigration.length);
   }, [exercisesRequiringWeightMigration]);

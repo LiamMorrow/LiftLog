@@ -3,10 +3,7 @@ import { spacing } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';
 import { Card } from 'react-native-paper';
 
-export function CardioTrackerCard(props: {
-  onHold: () => void;
-  children: ReactNode;
-}) {
+export function CardioTrackerCard(props: { onHold: () => void; children: ReactNode }) {
   return (
     <Holdable onLongPress={props.onHold} style={{ alignSelf: 'stretch' }}>
       <Card

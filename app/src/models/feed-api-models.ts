@@ -1,7 +1,4 @@
-import {
-  AesEncryptedAndRsaSignedData,
-  RsaPublicKey,
-} from '@/models/encryption-models';
+import { AesEncryptedAndRsaSignedData, RsaPublicKey } from '@/models/encryption-models';
 
 export type GetUsersRequest = {
   ids: string[]; // Guid is represented as string in TypeScript

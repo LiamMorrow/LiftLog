@@ -1,0 +1,84 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "import", "unicorn"],
+  "categories": {
+    "correctness": "error"
+  },
+  "options": {
+    "typeAware": true
+  },
+  "ignorePatterns": [
+    "gen",
+    "**/gen",
+    "dist",
+    "plugins",
+    "scripts",
+    ".expo",
+    "expo-env.d.ts",
+    "metro.config.js",
+    "babel.config.js",
+    "vitest.config.ts",
+    "src/drizzle/migrations.js",
+    "src/types/dom.slim.d.ts",
+    "types/dom.slim.d.ts"
+  ],
+  "rules": {
+    "no-redeclare": "off",
+    "no-empty-pattern": "off",
+
+    "no-unused-vars": "error",
+
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+
+    "typescript/await-thenable": "error",
+    "typescript/no-base-to-string": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-for-in-array": "error",
+    "typescript/no-misused-promises": "error",
+    "typescript/no-redundant-type-constituents": "error",
+    "typescript/no-unnecessary-type-assertion": "error",
+    "typescript/no-unsafe-argument": "error",
+    "typescript/no-unsafe-assignment": "error",
+    "typescript/no-unsafe-call": "error",
+    "typescript/no-unsafe-enum-comparison": "error",
+    "typescript/no-unsafe-member-access": "error",
+    "typescript/no-unsafe-return": "error",
+    "typescript/no-unsafe-unary-minus": "error",
+    "typescript/restrict-plus-operands": "error",
+    "typescript/restrict-template-expressions": "error",
+
+    "typescript/require-await": "off",
+    "typescript/unbound-method": "off",
+
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "react-redux",
+            "importNames": ["useSelector"],
+            "message": "Use useAppSelector from @/store"
+          },
+          {
+            "name": "@material-symbols-react-native/outlined-400",
+            "message": "This import does not work on android -- too big. We need to use the individual imports"
+          },
+          {
+            "name": "react-native-paper",
+            "importNames": ["IconButton", "TouchableRipple", "Button"],
+            "message": "Use our wrappers in @/components/presentation/gesture-wrappers/ - they are more reliable as they use GestureHandler"
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/components/**/*.{ts,tsx}"],
+      "rules": {
+        "unicorn/filename-case": ["error", { "case": "kebabCase" }]
+      }
+    }
+  ]
+}

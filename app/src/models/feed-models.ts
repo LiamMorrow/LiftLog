@@ -56,12 +56,7 @@ export class FollowerFeedUser {
   ) {}
 
   static fromJSON(json: FollowerFeedUserJSON): FollowerFeedUser {
-    return new FollowerFeedUser(
-      json.id,
-      fromRsaPublicKeyJSON(json.publicKey),
-      json.name,
-      json.followSecret,
-    );
+    return new FollowerFeedUser(json.id, fromRsaPublicKeyJSON(json.publicKey), json.name, json.followSecret);
   }
 
   toJSON(): FollowerFeedUserJSON {
@@ -78,11 +73,7 @@ export class FollowerFeedUser {
     if (!other) return false;
     if (other === this) return true;
     if (other.type !== this.type) return false;
-    return (
-      this.id === other.id &&
-      this.name === other.name &&
-      this.followSecret === other.followSecret
-    );
+    return this.id === other.id && this.name === other.name && this.followSecret === other.followSecret;
   }
 
   with(other: Partial<FollowerFeedUser>): FollowerFeedUser {
@@ -104,11 +95,7 @@ export class PendingFeedUser {
   ) {}
 
   static fromJSON(json: PendingFeedUserJSON): PendingFeedUser {
-    return new PendingFeedUser(
-      json.id,
-      fromRsaPublicKeyJSON(json.publicKey),
-      json.name,
-    );
+    return new PendingFeedUser(json.id, fromRsaPublicKeyJSON(json.publicKey), json.name);
   }
 
   toJSON(): PendingFeedUserJSON {
@@ -251,11 +238,7 @@ export class SessionUserEvent {
     if (!other) return false;
     if (other === this) return true;
     if (other.type !== this.type) return false;
-    return (
-      this.userId === other.userId &&
-      this.eventId === other.eventId &&
-      this.session.equals(other.session)
-    );
+    return this.userId === other.userId && this.eventId === other.eventId && this.session.equals(other.session);
   }
 
   with(other: Partial<SessionUserEvent>): SessionUserEvent {
@@ -309,11 +292,7 @@ export class RemovedSessionUserEvent {
     if (!other) return false;
     if (other === this) return true;
     if (other.type !== this.type) return false;
-    return (
-      this.userId === other.userId &&
-      this.eventId === other.eventId &&
-      this.sessionId === other.sessionId
-    );
+    return this.userId === other.userId && this.eventId === other.eventId && this.sessionId === other.sessionId;
   }
 
   with(other: Partial<RemovedSessionUserEvent>): RemovedSessionUserEvent {
@@ -420,9 +399,7 @@ export class SharedProgramBlueprint {
   constructor(readonly programBlueprint: ProgramBlueprint) {}
 
   static fromJSON(json: SharedProgramBlueprintJSON): SharedProgramBlueprint {
-    return new SharedProgramBlueprint(
-      ProgramBlueprint.fromJSON(json.programBlueprint),
-    );
+    return new SharedProgramBlueprint(ProgramBlueprint.fromJSON(json.programBlueprint));
   }
 
   toJSON(): SharedProgramBlueprintJSON {
@@ -441,9 +418,7 @@ export class SharedProgramBlueprint {
   }
 
   with(other: Partial<SharedProgramBlueprint>): SharedProgramBlueprint {
-    return new SharedProgramBlueprint(
-      other.programBlueprint ?? this.programBlueprint,
-    );
+    return new SharedProgramBlueprint(other.programBlueprint ?? this.programBlueprint);
   }
 }
 
@@ -522,10 +497,7 @@ export class AcceptedFollowResponse {
   ) {}
 
   static fromJSON(json: AcceptedFollowResponseJSON): AcceptedFollowResponse {
-    return new AcceptedFollowResponse(
-      fromAesKeyJSON(json.aesKey),
-      json.followSecret,
-    );
+    return new AcceptedFollowResponse(fromAesKeyJSON(json.aesKey), json.followSecret);
   }
 
   toJSON(): AcceptedFollowResponseJSON {
@@ -544,10 +516,7 @@ export class AcceptedFollowResponse {
   }
 
   with(other: Partial<AcceptedFollowResponse>): AcceptedFollowResponse {
-    return new AcceptedFollowResponse(
-      other.aesKey ?? this.aesKey,
-      other.followSecret ?? this.followSecret,
-    );
+    return new AcceptedFollowResponse(other.aesKey ?? this.aesKey, other.followSecret ?? this.followSecret);
   }
 }
 
@@ -572,9 +541,7 @@ export class RejectedFollowResponse {
   }
 }
 
-export type FollowResponsePayload =
-  | AcceptedFollowResponse
-  | RejectedFollowResponse;
+export type FollowResponsePayload = AcceptedFollowResponse | RejectedFollowResponse;
 
 function fromFollowResponsePayloadJSON(
   json: AcceptedFollowResponseJSON | RejectedFollowResponseJSON,
@@ -635,10 +602,7 @@ export class UnfollowNotification {
   }
 }
 
-export type InboxMessagePayload =
-  | FollowRequest
-  | FollowResponse
-  | UnfollowNotification;
+export type InboxMessagePayload = FollowRequest | FollowResponse | UnfollowNotification;
 
 // ---------------------------------------------------------------------------
 // InboxMessage
@@ -653,9 +617,7 @@ export class FollowRequestInboxMessage {
     readonly payload: FollowRequest,
   ) {}
 
-  static fromJSON(
-    json: FollowRequestInboxMessageJSON,
-  ): FollowRequestInboxMessage {
+  static fromJSON(json: FollowRequestInboxMessageJSON): FollowRequestInboxMessage {
     return new FollowRequestInboxMessage(
       json.senderUserId,
       fromBase64Uint8ArrayJSON(json.signature),
@@ -676,10 +638,7 @@ export class FollowRequestInboxMessage {
     if (!other) return false;
     if (other === this) return true;
     if (other.type !== this.type) return false;
-    return (
-      this.senderUserId === other.senderUserId &&
-      this.payload.equals(other.payload)
-    );
+    return this.senderUserId === other.senderUserId && this.payload.equals(other.payload);
   }
 
   with(other: Partial<FollowRequestInboxMessage>): FollowRequestInboxMessage {
@@ -700,9 +659,7 @@ export class FollowResponseInboxMessage {
     readonly payload: FollowResponse,
   ) {}
 
-  static fromJSON(
-    json: FollowResponseInboxMessageJSON,
-  ): FollowResponseInboxMessage {
+  static fromJSON(json: FollowResponseInboxMessageJSON): FollowResponseInboxMessage {
     return new FollowResponseInboxMessage(
       json.senderUserId,
       fromBase64Uint8ArrayJSON(json.signature),
@@ -723,10 +680,7 @@ export class FollowResponseInboxMessage {
     if (!other) return false;
     if (other === this) return true;
     if (other.type !== this.type) return false;
-    return (
-      this.senderUserId === other.senderUserId &&
-      this.payload.equals(other.payload)
-    );
+    return this.senderUserId === other.senderUserId && this.payload.equals(other.payload);
   }
 
   with(other: Partial<FollowResponseInboxMessage>): FollowResponseInboxMessage {
@@ -747,9 +701,7 @@ export class UnfollowNotificationInboxMessage {
     readonly payload: UnfollowNotification,
   ) {}
 
-  static fromJSON(
-    json: UnfollowNotificationInboxMessageJSON,
-  ): UnfollowNotificationInboxMessage {
+  static fromJSON(json: UnfollowNotificationInboxMessageJSON): UnfollowNotificationInboxMessage {
     return new UnfollowNotificationInboxMessage(
       json.senderUserId,
       fromBase64Uint8ArrayJSON(json.signature),
@@ -770,15 +722,10 @@ export class UnfollowNotificationInboxMessage {
     if (!other) return false;
     if (other === this) return true;
     if (other.type !== this.type) return false;
-    return (
-      this.senderUserId === other.senderUserId &&
-      this.payload.equals(other.payload)
-    );
+    return this.senderUserId === other.senderUserId && this.payload.equals(other.payload);
   }
 
-  with(
-    other: Partial<UnfollowNotificationInboxMessage>,
-  ): UnfollowNotificationInboxMessage {
+  with(other: Partial<UnfollowNotificationInboxMessage>): UnfollowNotificationInboxMessage {
     return new UnfollowNotificationInboxMessage(
       other.senderUserId ?? this.senderUserId,
       other.signature ?? this.signature,
@@ -787,18 +734,12 @@ export class UnfollowNotificationInboxMessage {
   }
 }
 
-export type InboxMessage =
-  | FollowRequestInboxMessage
-  | FollowResponseInboxMessage
-  | UnfollowNotificationInboxMessage;
+export type InboxMessage = FollowRequestInboxMessage | FollowResponseInboxMessage | UnfollowNotificationInboxMessage;
 
 export function fromInboxMessageJSON(json: InboxMessageJSON): InboxMessage {
   return match(json)
     .with({ type: 'FollowRequest' }, FollowRequestInboxMessage.fromJSON)
     .with({ type: 'FollowResponse' }, FollowResponseInboxMessage.fromJSON)
-    .with(
-      { type: 'UnfollowNotification' },
-      UnfollowNotificationInboxMessage.fromJSON,
-    )
+    .with({ type: 'UnfollowNotification' }, UnfollowNotificationInboxMessage.fromJSON)
     .exhaustive();
 }

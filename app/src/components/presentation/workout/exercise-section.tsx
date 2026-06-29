@@ -1,9 +1,6 @@
 import ItemTitle from '@/components/presentation/foundation/item-title';
 import { spacing } from '@/hooks/useAppTheme';
-import {
-  RecordedExercise,
-  RecordedWeightedExercise,
-} from '@/models/session-models';
+import { RecordedExercise, RecordedWeightedExercise } from '@/models/session-models';
 import { ReactNode, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { Menu, Tooltip } from 'react-native-paper';
@@ -30,9 +27,7 @@ interface ExerciseSectionProps<T extends RecordedExercise> {
   onRemoveExercise: () => void;
 }
 
-export default function ExerciseSection<T extends RecordedExercise>(
-  props: ExerciseSectionProps<T>,
-) {
+export default function ExerciseSection<T extends RecordedExercise>(props: ExerciseSectionProps<T>) {
   const { updateExercise, onRemoveExercise } = props;
   const openUrl = (url: string) => {
     void Linking.canOpenURL(url).then(() => Linking.openURL(url));
@@ -43,8 +38,7 @@ export default function ExerciseSection<T extends RecordedExercise>(
   const [menuVisible, setMenuVisible] = useState(false);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [previousDialogOpen, setPreviousDialogOpen] = useState(false);
-  const [removeExerciseDialogOpen, setRemoveExerciseDialogOpen] =
-    useState(false);
+  const [removeExerciseDialogOpen, setRemoveExerciseDialogOpen] = useState(false);
   const showStats = recordedExercise instanceof RecordedWeightedExercise;
   const showPrevious = () => {
     setPreviousDialogOpen(true);
@@ -61,33 +55,19 @@ export default function ExerciseSection<T extends RecordedExercise>(
     >
       {props.showPreviousButton ? (
         <Tooltip title={t('workout.previously_completed.label')}>
-          <IconButton
-            testID="prev-exercise-btn"
-            icon={'history'}
-            onPress={showPrevious}
-          />
+          <IconButton testID="prev-exercise-btn" icon={'history'} onPress={showPrevious} />
         </Tooltip>
       ) : null}
       {!props.isReadonly ? (
         <Tooltip title={t('generic.notes.label')}>
-          <IconButton
-            testID="exercise-notes-btn"
-            icon={'notes'}
-            onPress={() => setNotesDialogOpen(true)}
-          />
+          <IconButton testID="exercise-notes-btn" icon={'notes'} onPress={() => setNotesDialogOpen(true)} />
         </Tooltip>
       ) : null}
 
       <Menu
         visible={menuVisible}
         onDismiss={() => setMenuVisible(false)}
-        anchor={
-          <IconButton
-            testID="more-exercise-btn"
-            onPress={() => setMenuVisible(true)}
-            icon={'moreHoriz'}
-          />
-        }
+        anchor={<IconButton testID="more-exercise-btn" onPress={() => setMenuVisible(true)} icon={'moreHoriz'} />}
       >
         <Menu.Item
           onPress={() => {
@@ -180,9 +160,7 @@ export default function ExerciseSection<T extends RecordedExercise>(
         onDismiss={() => setNotesDialogOpen(false)}
         open={notesDialogOpen}
         notes={recordedExercise.notes}
-        onUpdateNotes={(notes) =>
-          updateExercise((ex) => ex.with({ notes }) as T)
-        }
+        onUpdateNotes={(notes) => updateExercise((ex) => ex.with({ notes }) as T)}
       />
       <ConfirmationDialog
         headline={t('exercise.remove.confirm.title')}

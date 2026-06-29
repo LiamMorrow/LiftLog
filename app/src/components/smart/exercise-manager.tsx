@@ -1,12 +1,7 @@
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  Platform,
-  View,
-} from 'react-native';
+import { NativeScrollEvent, NativeSyntheticEvent, Platform, View } from 'react-native';
 import { AnimatedFAB, Icon, List, TextInput } from 'react-native-paper';
 import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
 import { AccordionItem } from '@/components/presentation/foundation/accordion-item';
@@ -55,13 +50,7 @@ function ExerciseListItem({
 
   return (
     // @ts-expect-error -- Swipe row seems to have trouble with typescript, it works
-    <SwipeRow
-      disableRightSwipe
-      ref={rowRef}
-      rightActivationValue={-70}
-      rightActionValue={-70}
-      rightOpenValue={-70}
-    >
+    <SwipeRow disableRightSwipe ref={rowRef} rightActivationValue={-70} rightActionValue={-70} rightOpenValue={-70}>
       <View
         style={{
           alignItems: 'flex-end',
@@ -126,9 +115,7 @@ export default function ExerciseManager() {
   const { t } = useTranslate();
   const { getState } = useStore<RootState>();
   const exercises = useAppSelector(selectExercises);
-  const filteredExerciseIds = useAppSelector(
-    (s) => s.storedSessions.filteredExerciseIds,
-  );
+  const filteredExerciseIds = useAppSelector((s) => s.storedSessions.filteredExerciseIds);
   const setFilteredExerciseIds = (ids: string[]) => {
     dispatch(setFilteredExerciseIdsAction(ids));
   };
@@ -173,26 +160,18 @@ export default function ExerciseManager() {
       showSnackbar({
         text: t('deletion.item_deleted.message', { name: exercise.name }),
         action: t('generic.undo.button'),
-        dispatchAction: [
-          updateExercise({ id, exercise }),
-          setFilteredExerciseIdsAction(filteredExerciseIds),
-        ],
+        dispatchAction: [updateExercise({ id, exercise }), setFilteredExerciseIdsAction(filteredExerciseIds)],
       }),
     );
   };
 
-  const flatListItems = useMemo(
-    () => ['filter', ...filteredExerciseIds],
-    [filteredExerciseIds],
-  );
+  const flatListItems = useMemo(() => ['filter', ...filteredExerciseIds], [filteredExerciseIds]);
   const { handleScroll } = useScroll();
   const [fabExtended, setFabExtended] = useState(true);
   const [lastScrollPosition, setLastScrollPosition] = useState(0);
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     handleScroll(e);
-    setFabExtended(
-      e.nativeEvent.contentOffset.y <= Math.max(lastScrollPosition, 0),
-    );
+    setFabExtended(e.nativeEvent.contentOffset.y <= Math.max(lastScrollPosition, 0));
     setLastScrollPosition(e.nativeEvent.contentOffset.y);
   };
   return (
@@ -241,19 +220,11 @@ export default function ExerciseManager() {
   );
 }
 
-function ExerciseEditSheet({
-  exercise,
-  exerciseId,
-}: {
-  exercise: ExerciseDescriptor;
-  exerciseId: string;
-}) {
+function ExerciseEditSheet({ exercise, exerciseId }: { exercise: ExerciseDescriptor; exerciseId: string }) {
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const update = (ex: Partial<ExerciseDescriptor>) => {
-    dispatch(
-      updateExercise({ exercise: { ...exercise, ...ex }, id: exerciseId }),
-    );
+    dispatch(updateExercise({ exercise: { ...exercise, ...ex }, id: exerciseId }));
   };
   return (
     <View
@@ -276,10 +247,7 @@ function ExerciseEditSheet({
         multiline
         testID="exercise-instructions-input"
       />
-      <ExerciseMuscleSelector
-        muscles={exercise.muscles}
-        onChange={(muscles) => update({ muscles })}
-      />
+      <ExerciseMuscleSelector muscles={exercise.muscles} onChange={(muscles) => update({ muscles })} />
     </View>
   );
 }

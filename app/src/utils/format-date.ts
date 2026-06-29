@@ -4,26 +4,16 @@ import { match } from 'ts-pattern';
 export function getDateOnDay(dayOfWeek: DayOfWeek) {
   // Super gross and hacky, but then we get i18n formatting for free
   const constantSundayDay = LocalDate.of(2025, 5, 4);
-  const dateWithSpecifiedDayOfWeek = constantSundayDay.plusDays(
-    dayOfWeek.value(),
-  );
+  const dateWithSpecifiedDayOfWeek = constantSundayDay.plusDays(dayOfWeek.value());
   return dateWithSpecifiedDayOfWeek;
 }
 
-export function formatDuration(
-  duration: Duration,
-  truncateTo: 'mins' | 'none' | 'hours-mins' = 'none',
-) {
+export function formatDuration(duration: Duration, truncateTo: 'mins' | 'none' | 'hours-mins' = 'none') {
   const str = match({ duration, truncateTo })
-    .with(
-      { truncateTo: 'mins' },
-      () => `${Math.floor(duration.toMinutes())} mins`,
-    )
+    .with({ truncateTo: 'mins' }, () => `${Math.floor(duration.toMinutes())} mins`)
     .when(
-      ({ duration, truncateTo }) =>
-        duration.toHours() >= 1 && truncateTo === 'hours-mins',
-      () =>
-        `${duration.toHours()} hrs ${Math.floor(duration.toMinutes() - 60 * duration.toHours())} mins`,
+      ({ duration, truncateTo }) => duration.toHours() >= 1 && truncateTo === 'hours-mins',
+      () => `${duration.toHours()} hrs ${Math.floor(duration.toMinutes() - 60 * duration.toHours())} mins`,
     )
     .when(
       ({ duration }) => duration.toHours() >= 1,
@@ -60,9 +50,5 @@ export function parseDuration(val: string): Duration {
   const seconds = Number(secondsStr);
   const millis = millisStr ? Number(millisStr) : 0;
 
-  return Duration.ofDays(days)
-    .plusHours(hours)
-    .plusMinutes(minutes)
-    .plusSeconds(seconds)
-    .plusMillis(millis);
+  return Duration.ofDays(days).plusHours(hours).plusMinutes(minutes).plusSeconds(seconds).plusMillis(millis);
 }

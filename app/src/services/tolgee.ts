@@ -1,7 +1,4 @@
-import {
-  DetectLanguage,
-  detectLanguageOrPreferred,
-} from '@/utils/language-detector';
+import { DetectLanguage, detectLanguageOrPreferred } from '@/utils/language-detector';
 
 import ar from '../i18n/ar.json';
 import cs from '../i18n/cs.json';
@@ -60,8 +57,5 @@ export const getTolgee = (preferenceService: PreferenceService) =>
         supportedLanguages.map((x) => x.code),
       ),
 
-      staticData: supportedLanguages.reduce(
-        (acc, next) => ({ ...acc, [next.code]: next.translationJson }),
-        {},
-      ),
+      staticData: supportedLanguages.reduce((acc, next) => ({ ...acc, [next.code]: next.translationJson }), {}),
     });

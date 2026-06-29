@@ -24,12 +24,8 @@ export default function TimerEditor(props: DurationEditorProps) {
   const initialComponents = getDurationComponents(duration);
 
   const [hours, setHours] = useState(formatComponent(initialComponents.hours));
-  const [minutes, setMinutes] = useState(
-    formatComponent(initialComponents.minutes),
-  );
-  const [seconds, setSeconds] = useState(
-    formatComponent(initialComponents.seconds),
-  );
+  const [minutes, setMinutes] = useState(formatComponent(initialComponents.minutes));
+  const [seconds, setSeconds] = useState(formatComponent(initialComponents.seconds));
 
   const updateHours = (text: string) => {
     setHours(text);

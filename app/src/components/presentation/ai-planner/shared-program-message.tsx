@@ -8,13 +8,7 @@ import { AiChatSharedProgramMessage } from '@/models/ai-models';
 import { Session } from '@/models/session-models';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 
-export function SharedProgramMessage({
-  message,
-  isUser,
-}: {
-  message: AiChatSharedProgramMessage;
-  isUser: boolean;
-}) {
+export function SharedProgramMessage({ message, isUser }: { message: AiChatSharedProgramMessage; isUser: boolean }) {
   const preferredWeightUnit = usePreferredWeightUnit();
   const color = isUser ? 'onPrimary' : 'onSurface';
   return (
@@ -24,14 +18,8 @@ export function SharedProgramMessage({
       </SurfaceText>
       {message.blueprint.sessions.map((s, i) => (
         <Fragment key={i}>
-          <SessionSummaryTitle
-            session={Session.getEmptySession(s, preferredWeightUnit)}
-            color={color}
-          />
-          <SessionSummary
-            session={Session.getEmptySession(s, preferredWeightUnit)}
-            color={color}
-          />
+          <SessionSummaryTitle session={Session.getEmptySession(s, preferredWeightUnit)} color={color} />
+          <SessionSummary session={Session.getEmptySession(s, preferredWeightUnit)} color={color} />
         </Fragment>
       ))}
     </View>

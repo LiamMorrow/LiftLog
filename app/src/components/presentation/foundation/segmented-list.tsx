@@ -9,10 +9,7 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Card, Text } from 'react-native-paper';
 import { match } from 'ts-pattern';
-type TupleKeysNum<T extends readonly unknown[]> = Exclude<
-  Partial<T>['length'],
-  T['length']
->;
+type TupleKeysNum<T extends readonly unknown[]> = Exclude<Partial<T>['length'], T['length']>;
 export function SegmentedList<TItems extends readonly unknown[]>(props: {
   renderItem: (item: TItems[number], index: TupleKeysNum<TItems>) => ReactNode;
   itemKey?: (item: TItems[number], index: TupleKeysNum<TItems>) => string;
@@ -42,13 +39,9 @@ export function SegmentedList<TItems extends readonly unknown[]>(props: {
   return (
     <LegendList
       contentContainerStyle={[props.style]}
-      ItemSeparatorComponent={() => (
-        <View style={{ height: spacing[0.5] }}></View>
-      )}
+      ItemSeparatorComponent={() => <View style={{ height: spacing[0.5] }}></View>}
       data={props.items}
-      renderScrollComponent={
-        props.isInBottomSheet ? BottomSheetScrollable : undefined!
-      }
+      renderScrollComponent={props.isInBottomSheet ? BottomSheetScrollable : undefined!}
       keyExtractor={(i, index) => itemKey(i, index as TupleKeysNum<TItems>)}
       renderItem={({ item, index }) => (
         <SegmentedListItem
@@ -91,11 +84,7 @@ export function SegmentListFormElement(props: {
             <Icon size={20} source={props.icon} />
             <Text variant="labelLarge">{props.label}</Text>
           </View>
-          {typeof props.right === 'string' ? (
-            <Text variant="labelLarge">{props.right}</Text>
-          ) : (
-            props.right
-          )}
+          {typeof props.right === 'string' ? <Text variant="labelLarge">{props.right}</Text> : props.right}
         </View>
         {props.line2}
       </View>
@@ -103,11 +92,7 @@ export function SegmentListFormElement(props: {
   );
 }
 
-function SegmentedListItem(props: {
-  isFirst: boolean;
-  isLast: boolean;
-  children: ReactNode;
-}) {
+function SegmentedListItem(props: { isFirst: boolean; isLast: boolean; children: ReactNode }) {
   const style = match(props)
     .with(
       {

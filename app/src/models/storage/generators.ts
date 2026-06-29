@@ -19,13 +19,7 @@ import {
   RecordedCardioExercise,
   RecordedCardioExerciseSet,
 } from '@/models/session-models';
-import {
-  Duration,
-  LocalDate,
-  OffsetDateTime,
-  LocalTime,
-  ZoneOffset,
-} from '@js-joda/core';
+import { Duration, LocalDate, OffsetDateTime, LocalTime, ZoneOffset } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import fc from 'fast-check';
 
@@ -37,9 +31,7 @@ const BigNumberGenerator = fc
   .tuple(fc.integer(), fc.nat({ max: 1_000_000_000 }))
   .map(([whole, fractional]) => new BigNumber(`${whole}.${fractional}`));
 
-const WeightUnitGenerator = fc
-  .boolean()
-  .map((x) => (x ? 'kilograms' : 'pounds'));
+const WeightUnitGenerator = fc.boolean().map((x) => (x ? 'kilograms' : 'pounds'));
 
 export const WeightGenerator = fc
   .tuple(WeightUnitGenerator, BigNumberGenerator)
@@ -58,11 +50,7 @@ const DurationGenerator = fc
   .map(([second, nano]) => Duration.ofSeconds(second).plusNanos(nano));
 
 const LocalTimeGenerator = fc
-  .tuple(
-    fc.integer({ min: 0, max: 23 }),
-    fc.integer({ min: 0, max: 59 }),
-    fc.integer({ min: 0, max: 59 }),
-  )
+  .tuple(fc.integer({ min: 0, max: 23 }), fc.integer({ min: 0, max: 59 }), fc.integer({ min: 0, max: 59 }))
   .map(([hour, minute, second]) => LocalTime.of(hour, minute, second));
 
 const ZoneOffsetGenerator = fc.oneof(
@@ -131,13 +119,9 @@ const CardioExerciseBlueprintGenerator = fc
 export const SessionBlueprintGenerator = fc
   .record({
     name: fc.string(),
-    exercises: fc.array(
-      fc.oneof(
-        WeightedExerciseBlueprintGenerator,
-        CardioExerciseBlueprintGenerator,
-      ),
-      { maxLength: 10 },
-    ),
+    exercises: fc.array(fc.oneof(WeightedExerciseBlueprintGenerator, CardioExerciseBlueprintGenerator), {
+      maxLength: 10,
+    }),
     notes: fc.string(),
   })
   .map((x) => new SessionBlueprint(x.name, x.exercises, x.notes));
@@ -215,9 +199,7 @@ const RecordedWeightedExerciseGenerator = fc
     potentialSets: fc.array(PotentialSetGenerator, { maxLength: 10 }),
     notes: optional(fc.string()),
   })
-  .map(
-    (x) => new RecordedWeightedExercise(x.blueprint, x.potentialSets, x.notes),
-  );
+  .map((x) => new RecordedWeightedExercise(x.blueprint, x.potentialSets, x.notes));
 
 export const SessionGenerator = fc
   .tuple(
@@ -229,13 +211,7 @@ export const SessionGenerator = fc
       bodyweight: fc.option(WeightGenerator, { nil: undefined }),
       restTimerStartTime: fc.constant(undefined),
     }),
-    fc.array(
-      fc.oneof(
-        RecordedWeightedExerciseGenerator,
-        RecordedCardioExerciseGenerator,
-      ),
-      { maxLength: 10 },
-    ),
+    fc.array(fc.oneof(RecordedWeightedExerciseGenerator, RecordedCardioExerciseGenerator), { maxLength: 10 }),
   )
   .map(
     ([session, exercises]) =>

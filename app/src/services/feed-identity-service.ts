@@ -51,12 +51,11 @@ export class FeedIdentityService {
     currentPlan: ProgramBlueprint | undefined,
   ): Promise<ApiResult<FeedIdentity>> {
     const privateKey = rsaKeyPair.privateKey;
-    const { iv } =
-      await this.encryptionService.signRsa256PssAndEncryptAesCbcAsync(
-        new Uint8Array([1]),
-        aesKey,
-        privateKey,
-      );
+    const { iv } = await this.encryptionService.signRsa256PssAndEncryptAesCbcAsync(
+      new Uint8Array([1]),
+      aesKey,
+      privateKey,
+    );
 
     const encryptedName = name
       ? (
@@ -95,23 +94,11 @@ export class FeedIdentityService {
     }
 
     return ApiResult.success(
-      new FeedIdentity(
-        id,
-        lookup,
-        aesKey,
-        rsaKeyPair,
-        password,
-        name,
-        publishBodyweight,
-        publishPlan,
-        publishWorkouts,
-      ),
+      new FeedIdentity(id, lookup, aesKey, rsaKeyPair, password, name, publishBodyweight, publishPlan, publishWorkouts),
     );
   }
 
-  async deleteFeedIdentityAsync(
-    identity: FeedIdentity,
-  ): Promise<ApiResult<void>> {
+  async deleteFeedIdentityAsync(identity: FeedIdentity): Promise<ApiResult<void>> {
     const response = await this.feedApiService.deleteUserAsync({
       id: identity.id,
       password: identity.password,

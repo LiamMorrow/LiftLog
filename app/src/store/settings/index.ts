@@ -115,19 +115,13 @@ const settingsSlice = createSlice({
     setTrueBlackDarkTheme(state, action: PayloadAction<boolean>) {
       state.trueBlackDarkTheme = action.payload;
     },
-    setRemoteBackupSettings(
-      state,
-      action: PayloadAction<RemoteBackupSettings>,
-    ) {
+    setRemoteBackupSettings(state, action: PayloadAction<RemoteBackupSettings>) {
       state.remoteBackupSettings = action.payload;
     },
     setProToken(state, action: PayloadAction<string | undefined>) {
       state.proToken = action.payload;
     },
-    setLastBackup(
-      state,
-      action: PayloadAction<RemoteData<LastBackup, string>>,
-    ) {
+    setLastBackup(state, action: PayloadAction<RemoteData<LastBackup, string>>) {
       state.lastBackup = action.payload;
     },
     setBackupReminder(state, action: PayloadAction<boolean>) {
@@ -147,19 +141,14 @@ const settingsSlice = createSlice({
     },
   },
   selectors: {
-    selectPreferredWeightUnit: (state): WeightUnit =>
-      state.useImperialUnits ? 'pounds' : 'kilograms',
+    selectPreferredWeightUnit: (state): WeightUnit => (state.useImperialUnits ? 'pounds' : 'kilograms'),
   },
 });
-export const initializeSettingsStateSlice = createAction(
-  'initializeSettingsStateSlice',
-);
+export const initializeSettingsStateSlice = createAction('initializeSettingsStateSlice');
 export type PlaintextExportFormat = 'CSV' | 'JSON';
 
 export const importData = createAction('importData');
-export const importDataSql = createAction<{ db: SQLiteDatabase }>(
-  'importDataSql',
-);
+export const importDataSql = createAction<{ db: SQLiteDatabase }>('importDataSql');
 export const importDataProto = createAction<{
   dao: LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2;
 }>('importDataProto');
@@ -167,9 +156,7 @@ export const importBackupData = createAction<BackupData>('importBackupData');
 export const beginFeedImport = createAction<FeedBackupData>('beginFeedImport');
 export const exportData = createAction<{ includeFeed: boolean }>('exportData');
 
-export const exportPlainText = createAction<{ format: PlaintextExportFormat }>(
-  'exportPlainText',
-);
+export const exportPlainText = createAction<{ format: PlaintextExportFormat }>('exportPlainText');
 
 export const executeRemoteBackup = createAction<{
   settings?: RemoteBackupSettings;

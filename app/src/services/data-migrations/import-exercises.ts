@@ -7,16 +7,12 @@ import { exerciseDescriptorMigrations } from '@/models/storage/versions/migratio
 export const importExercisesDataMigration = 'IMPORT_EXERCISES';
 
 const storageKey = 'ExerciseList';
-export async function importExercises(
-  db: ExpoSQLiteDatabase,
-  keyValueStore: KeyValueStore,
-) {
-  const savedExercises = JSON.parse(
-    (await keyValueStore.getItem(storageKey)) ?? '{}',
-  ) as Record<string, ExerciseDescriptor>;
-  const converted: (typeof exercisesSchema.$inferInsert)[] = Object.entries(
-    savedExercises,
-  ).map(
+export async function importExercises(db: ExpoSQLiteDatabase, keyValueStore: KeyValueStore) {
+  const savedExercises = JSON.parse((await keyValueStore.getItem(storageKey)) ?? '{}') as Record<
+    string,
+    ExerciseDescriptor
+  >;
+  const converted: (typeof exercisesSchema.$inferInsert)[] = Object.entries(savedExercises).map(
     ([id, pojo]) =>
       ({
         id,
@@ -28,8 +24,6 @@ export async function importExercises(
     if (converted.length) {
       await tx.insert(exercisesSchema).values(converted);
     }
-    await tx
-      .insert(dataMigrationsSchema)
-      .values({ id: importExercisesDataMigration });
+    await tx.insert(dataMigrationsSchema).values({ id: importExercisesDataMigration });
   });
 }

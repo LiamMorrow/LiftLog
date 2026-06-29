@@ -5,11 +5,7 @@ import {
   RecordedSet,
   RecordedWeightedExercise,
 } from '@/models/session-models/recorded-weighted-exercise';
-import {
-  filledPotentialSet,
-  makeWeightedBlueprint,
-  tick,
-} from '@/models/session-models/__test__/helpers';
+import { filledPotentialSet, makeWeightedBlueprint, tick } from '@/models/session-models/__test__/helpers';
 
 describe('RecordedWeightedExercise.withWeight', () => {
   let exercise: RecordedWeightedExercise;
@@ -31,9 +27,7 @@ describe('RecordedWeightedExercise.withWeight', () => {
 
   it('thisSet only changes the targeted set', () => {
     const result = exercise.withWeight(1, heavy, 'thisSet');
-    expect(result.potentialSets[0]!.weight).toEqual(
-      exercise.potentialSets[0]!.weight,
-    );
+    expect(result.potentialSets[0]!.weight).toEqual(exercise.potentialSets[0]!.weight);
     expect(result.potentialSets[1]!.weight).toEqual(heavy);
     expect(result.potentialSets[2]!.weight).toEqual(light);
   });
@@ -48,9 +42,7 @@ describe('RecordedWeightedExercise.withWeight', () => {
 
   it('allSets updates every set including completed ones', () => {
     const result = exercise.withWeight(0, heavy, 'allSets');
-    expect(result.potentialSets.every((s) => s.weight.equals(heavy))).toBe(
-      true,
-    );
+    expect(result.potentialSets.every((s) => s.weight.equals(heavy))).toBe(true);
   });
 });
 
@@ -76,11 +68,7 @@ describe('RecordedWeightedExercise.withNothingCompleted', () => {
     const bp = makeWeightedBlueprint();
     const t = tick();
     const weight = new Weight(80, 'kilograms');
-    const exercise = new RecordedWeightedExercise(
-      bp,
-      [new PotentialSet(new RecordedSet(10, t), weight)],
-      undefined,
-    );
+    const exercise = new RecordedWeightedExercise(bp, [new PotentialSet(new RecordedSet(10, t), weight)], undefined);
 
     const result = exercise.withNothingCompleted();
     expect(result.potentialSets[0]!.weight).toEqual(weight);

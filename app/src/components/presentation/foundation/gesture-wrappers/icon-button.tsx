@@ -4,10 +4,7 @@ import { AppIconSource } from '@/components/presentation/foundation/ms-icon-sour
 import { isNotNullOrUndefined } from '@/utils/null';
 import { I18nManager } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import {
-  IconButton as NativeIconButton,
-  IconButtonProps,
-} from 'react-native-paper';
+import { IconButton as NativeIconButton, IconButtonProps } from 'react-native-paper';
 
 type ICProps = {
   icon: AppIconSource;
@@ -29,23 +26,14 @@ export default function IconButton({
         .runOnJS(true)
         .onStart(() => !disabled && onLongPress())
     : undefined;
-  const gesture = Gesture.Race(
-    ...[tap, longPress].filter(isNotNullOrUndefined),
-  );
+  const gesture = Gesture.Race(...[tap, longPress].filter(isNotNullOrUndefined));
   return (
     <GestureDetector gesture={gesture}>
       <NativeIconButton
         disabled={disabled}
         onPress={onPress ? () => {} : undefined!}
         onLongPress={onLongPress || onPress ? () => {} : undefined!}
-        style={[
-          style,
-          mirrored
-            ? I18nManager.isRTL
-              ? { transform: [{ scaleX: -1 }] }
-              : {}
-            : {},
-        ]}
+        style={[style, mirrored ? (I18nManager.isRTL ? { transform: [{ scaleX: -1 }] } : {}) : {}]}
         {...rest}
       />
     </GestureDetector>

@@ -21,8 +21,7 @@ import {
 import type * as Latest from '@/models/storage/versions/latest/feed';
 import { match } from 'ts-pattern';
 
-export const feedIdentityMigrations =
-  createMigrations<FeedIdentityJSON>().build<Latest.FeedIdentityJSON>();
+export const feedIdentityMigrations = createMigrations<FeedIdentityJSON>().build<Latest.FeedIdentityJSON>();
 
 export const followRequestInboxMessageMigrations =
   createMigrations<FollowRequestInboxMessageJSON>().build<Latest.FollowRequestInboxMessageJSON>();
@@ -31,20 +30,17 @@ export const followResponseInboxMessageMigrations =
 export const unfollowNotificationInboxMessageMigrations =
   createMigrations<UnfollowNotificationInboxMessageJSON>().build<Latest.UnfollowNotificationInboxMessageJSON>();
 
-export const followerFeedUserMigrations =
-  createMigrations<FollowerFeedUserJSON>().build<Latest.FollowerFeedUserJSON>();
+export const followerFeedUserMigrations = createMigrations<FollowerFeedUserJSON>().build<Latest.FollowerFeedUserJSON>();
 
-export const pendingFeedUserMigrations =
-  createMigrations<PendingFeedUserJSON>().build<Latest.PendingFeedUserJSON>();
+export const pendingFeedUserMigrations = createMigrations<PendingFeedUserJSON>().build<Latest.PendingFeedUserJSON>();
 
-export const sessionUserEventMigrations =
-  createMigrations<SessionUserEventJSON>()
-    .add((x) => ({
-      ...x,
-      version: 2,
-      session: sessionMigrations.migrateUntil(x.session, 2),
-    }))
-    .build<Latest.SessionUserEventJSON>();
+export const sessionUserEventMigrations = createMigrations<SessionUserEventJSON>()
+  .add((x) => ({
+    ...x,
+    version: 2,
+    session: sessionMigrations.migrateUntil(x.session, 2),
+  }))
+  .build<Latest.SessionUserEventJSON>();
 
 export const removedSessionUserEventMigrations =
   createMigrations<RemovedSessionUserEventJSON>().build<Latest.RemovedSessionUserEventJSON>();
@@ -56,33 +52,21 @@ export const userEventMigrations = {
   $finalType: undefined! as
     | typeof sessionUserEventMigrations.$finalType
     | typeof removedSessionUserEventMigrations.$finalType,
-  migrate: (
-    value:
-      | typeof sessionUserEventMigrations.$anyType
-      | typeof removedSessionUserEventMigrations.$anyType,
-  ) => {
+  migrate: (value: typeof sessionUserEventMigrations.$anyType | typeof removedSessionUserEventMigrations.$anyType) => {
     return match(value)
-      .with({ type: 'SessionUserEvent' }, (x) =>
-        sessionUserEventMigrations.migrate(x),
-      )
-      .with({ type: 'RemovedSessionUserEvent' }, (x) =>
-        removedSessionUserEventMigrations.migrate(x),
-      )
+      .with({ type: 'SessionUserEvent' }, (x) => sessionUserEventMigrations.migrate(x))
+      .with({ type: 'RemovedSessionUserEvent' }, (x) => removedSessionUserEventMigrations.migrate(x))
       .exhaustive();
   },
 };
 
-export const sharedProgramBlueprintMigrations =
-  createMigrations<SharedProgramBlueprintJSON>()
-    .add((x) => ({
-      ...x,
-      version: 2,
-      programBlueprint: programBlueprintMigrations.migrateUntil(
-        x.programBlueprint,
-        2,
-      ),
-    }))
-    .build<Latest.SharedProgramBlueprintJSON>();
+export const sharedProgramBlueprintMigrations = createMigrations<SharedProgramBlueprintJSON>()
+  .add((x) => ({
+    ...x,
+    version: 2,
+    programBlueprint: programBlueprintMigrations.migrateUntil(x.programBlueprint, 2),
+  }))
+  .build<Latest.SharedProgramBlueprintJSON>();
 
 export const sharedSessionMigrations = createMigrations<SharedSessionJSON>()
   .add((x) => ({
@@ -92,16 +76,13 @@ export const sharedSessionMigrations = createMigrations<SharedSessionJSON>()
   }))
   .build<Latest.SharedSessionJSON>();
 
-export const followedFeedUserMigrations =
-  createMigrations<FollowedFeedUserJSON>()
-    .add((x) => ({
-      ...x,
-      version: 2,
-      currentPlan:
-        x.currentPlan &&
-        programBlueprintMigrations.migrateUntil(x.currentPlan, 2),
-    }))
-    .build<Latest.FollowedFeedUserJSON>();
+export const followedFeedUserMigrations = createMigrations<FollowedFeedUserJSON>()
+  .add((x) => ({
+    ...x,
+    version: 2,
+    currentPlan: x.currentPlan && programBlueprintMigrations.migrateUntil(x.currentPlan, 2),
+  }))
+  .build<Latest.FollowedFeedUserJSON>();
 
 export const unfollowNotificationMigrations =
   createMigrations<UnfollowNotificationJSON>().build<Latest.UnfollowNotificationJSON>();
@@ -111,8 +92,7 @@ export const acceptedFollowResponseMigrations =
 export const rejectedFollowResponseMigrations =
   createMigrations<RejectedFollowResponseJSON>().build<Latest.RejectedFollowResponseJSON>();
 
-export const followResponseMigrations =
-  createMigrations<FollowResponseJSON>().build<Latest.FollowResponseJSON>();
+export const followResponseMigrations = createMigrations<FollowResponseJSON>().build<Latest.FollowResponseJSON>();
 
 export const inboxMessageMigrations = {
   $anyType: undefined! as
@@ -130,38 +110,22 @@ export const inboxMessageMigrations = {
       | typeof followResponseInboxMessageMigrations.$anyType,
   ) => {
     return match(value)
-      .with({ type: 'FollowRequest' }, (x) =>
-        followRequestInboxMessageMigrations.migrate(x),
-      )
-      .with({ type: 'FollowResponse' }, (x) =>
-        followResponseInboxMessageMigrations.migrate(x),
-      )
-      .with({ type: 'UnfollowNotification' }, (x) =>
-        unfollowNotificationInboxMessageMigrations.migrate(x),
-      )
+      .with({ type: 'FollowRequest' }, (x) => followRequestInboxMessageMigrations.migrate(x))
+      .with({ type: 'FollowResponse' }, (x) => followResponseInboxMessageMigrations.migrate(x))
+      .with({ type: 'UnfollowNotification' }, (x) => unfollowNotificationInboxMessageMigrations.migrate(x))
       .exhaustive();
   },
 };
 
 export const sharedItemMigrations = {
-  $anyType: undefined! as
-    | typeof sharedSessionMigrations.$anyType
-    | typeof sharedProgramBlueprintMigrations.$anyType,
+  $anyType: undefined! as typeof sharedSessionMigrations.$anyType | typeof sharedProgramBlueprintMigrations.$anyType,
   $finalType: undefined! as
     | typeof sharedSessionMigrations.$finalType
     | typeof sharedProgramBlueprintMigrations.$finalType,
-  migrate: (
-    value:
-      | typeof sharedSessionMigrations.$anyType
-      | typeof sharedProgramBlueprintMigrations.$anyType,
-  ) => {
+  migrate: (value: typeof sharedSessionMigrations.$anyType | typeof sharedProgramBlueprintMigrations.$anyType) => {
     return match(value)
-      .with({ type: 'SharedProgramBlueprint' }, (x) =>
-        sharedProgramBlueprintMigrations.migrate(x),
-      )
-      .with({ type: 'SharedSession' }, (x) =>
-        sharedSessionMigrations.migrate(x),
-      )
+      .with({ type: 'SharedProgramBlueprint' }, (x) => sharedProgramBlueprintMigrations.migrate(x))
+      .with({ type: 'SharedSession' }, (x) => sharedSessionMigrations.migrate(x))
       .exhaustive();
   },
 };

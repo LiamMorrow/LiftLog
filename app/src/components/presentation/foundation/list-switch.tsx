@@ -27,13 +27,7 @@ export default function ListSwitch(props: ListSwitchProps) {
       onPress={() => props.onValueChange(!props.value)}
       disabled={props.disabled}
       left={props.left}
-      right={() => (
-        <Switch
-          value={props.value}
-          disabled={props.disabled}
-          onValueChange={props.onValueChange}
-        />
-      )}
+      right={() => <Switch value={props.value} disabled={props.disabled} onValueChange={props.onValueChange} />}
     />
   );
 }

@@ -1,9 +1,4 @@
-import type {
-  BigNumberJSON,
-  DurationJSON,
-  LocalDateJSON,
-  OffsetDateTimeJSON,
-} from '@/models/storage/versions/libs';
+import type { BigNumberJSON, DurationJSON, LocalDateJSON, OffsetDateTimeJSON } from '@/models/storage/versions/libs';
 import type {
   WeightedExerciseBlueprintJSON,
   CardioExerciseBlueprintJSON,
@@ -24,9 +19,7 @@ export interface SessionJSON {
 /**
  * @discriminator type
  */
-export type RecordedExerciseJSON =
-  | RecordedCardioExerciseJSON
-  | RecordedWeightedExerciseJSON;
+export type RecordedExerciseJSON = RecordedCardioExerciseJSON | RecordedWeightedExerciseJSON;
 
 export interface RecordedCardioExerciseSetJSON {
   blueprint: CardioExerciseSetBlueprintJSON;

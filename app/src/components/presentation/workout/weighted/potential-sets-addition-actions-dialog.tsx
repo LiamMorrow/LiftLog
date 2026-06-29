@@ -26,12 +26,9 @@ export default function PotentialSetAdditionalActionsDialog({
   const { colors } = useAppTheme();
   const originalReps = set?.set?.repsCompleted;
 
-  const [repCountText, setRepCountText] = useState<string>(
-    originalReps?.toString() ?? '',
-  );
+  const [repCountText, setRepCountText] = useState<string>(originalReps?.toString() ?? '');
   const parsedRepCount = Number(repCountText);
-  const isValid =
-    !repCountText || (Number.isInteger(parsedRepCount) && parsedRepCount >= 0);
+  const isValid = !repCountText || (Number.isInteger(parsedRepCount) && parsedRepCount >= 0);
   useEffect(() => {
     setRepCountText(originalReps?.toString() ?? '');
   }, [originalReps]);
@@ -47,10 +44,7 @@ export default function PotentialSetAdditionalActionsDialog({
   return (
     open && (
       <Portal>
-        <KeyboardAvoidingView
-          behavior={'height'}
-          style={{ flex: 1, pointerEvents: open ? 'box-none' : 'none' }}
-        >
+        <KeyboardAvoidingView behavior={'height'} style={{ flex: 1, pointerEvents: open ? 'box-none' : 'none' }}>
           <Dialog visible={open} onDismiss={close}>
             <Dialog.Title>
               <T keyName="exercise.select_reps.title" />
@@ -93,9 +87,7 @@ export default function PotentialSetAdditionalActionsDialog({
               </View>
             </Dialog.Content>
             <Dialog.Actions>
-              <Button onPress={close}>
-                {<T keyName="generic.cancel.button" />}
-              </Button>
+              <Button onPress={close}>{<T keyName="generic.cancel.button" />}</Button>
               <Button disabled={!isValid} onPress={save}>
                 {<T keyName="generic.save.button" />}
               </Button>

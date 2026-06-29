@@ -1,11 +1,6 @@
 import { SessionBlueprint } from '@/models/blueprint-models';
 import { Session } from '@/models/session-models';
-import {
-  createAction,
-  createSelector,
-  createSlice,
-  PayloadAction,
-} from '@reduxjs/toolkit';
+import { createAction, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PlanDiff } from '@/models/blueprint-diff';
 import { WorkoutMessage } from '@/models/workout-worker-messages';
 
@@ -18,11 +13,7 @@ interface CurrentSessionState {
   currentPlanDiff: PlanDiff | undefined;
 }
 
-export type SessionTarget =
-  | 'workoutSession'
-  | 'historySession'
-  | 'feedSession'
-  | 'sharedSession';
+export type SessionTarget = 'workoutSession' | 'historySession' | 'feedSession' | 'sharedSession';
 
 const initialState: CurrentSessionState = {
   isHydrated: false,
@@ -33,9 +24,7 @@ const initialState: CurrentSessionState = {
   currentPlanDiff: undefined,
 };
 
-export const initializeCurrentSessionStateSlice = createAction(
-  'initializeCurrentSessionStateSlice',
-);
+export const initializeCurrentSessionStateSlice = createAction('initializeCurrentSessionStateSlice');
 
 const currentSessionSlice = createSlice({
   name: 'currentSession',
@@ -56,8 +45,7 @@ const currentSessionSlice = createSlice({
         session: Session | undefined;
       }>,
     ) => {
-      state[action.payload.target] = action.payload
-        .session;
+      state[action.payload.target] = action.payload.session;
     },
   },
   selectors: {
@@ -66,16 +54,11 @@ const currentSessionSlice = createSlice({
 });
 
 export const selectCurrentSession = createSelector(
-  [
-    currentSessionSlice.selectors.selectState,
-    (_, target: SessionTarget) => target,
-  ],
+  [currentSessionSlice.selectors.selectState, (_, target: SessionTarget) => target],
   (state, target) => state[target],
 );
 
-export const clearSetTimerNotification = createAction(
-  'clearSetTimerNotification',
-);
+export const clearSetTimerNotification = createAction('clearSetTimerNotification');
 
 export const notifySetTimer = createAction('notifySetTimer');
 
@@ -84,24 +67,17 @@ export const setCurrentSessionFromBlueprint = createAction<{
   blueprint: SessionBlueprint;
 }>('setCurrentSessionFromBlueprint');
 
-export const persistCurrentSession = createAction<SessionTarget>(
-  'persistCurrentSession',
-);
+export const persistCurrentSession = createAction<SessionTarget>('persistCurrentSession');
 
-export const broadcastWorkoutEvent = createAction<WorkoutMessage['payload']>(
-  'broadcastWorkoutEvent',
-);
+export const broadcastWorkoutEvent = createAction<WorkoutMessage['payload']>('broadcastWorkoutEvent');
 
-export const finishCurrentWorkout = createAction<SessionTarget>(
-  'finishCurrentWorkout',
-);
+export const finishCurrentWorkout = createAction<SessionTarget>('finishCurrentWorkout');
 
 export const currentWorkoutSessionUpdated = createAction<{
   before: Session | undefined;
   after: Session | undefined;
 }>('currentWorkoutSessionUpdated');
 
-export const { setIsHydrated, setCurrentSession, setCurrentPlanDiff } =
-  currentSessionSlice.actions;
+export const { setIsHydrated, setCurrentSession, setCurrentPlanDiff } = currentSessionSlice.actions;
 
 export const currentSessionReducer = currentSessionSlice.reducer;

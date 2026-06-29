@@ -31,9 +31,7 @@ export function CardioValueSelector(props: {
       >
         {buttonText}
       </Button>
-      <Text style={[styles.bigText, { color: colors.onSecondaryContainer }]}>
-        {label}
-      </Text>
+      <Text style={[styles.bigText, { color: colors.onSecondaryContainer }]}>{label}</Text>
       {dialogOpen && (
         <Portal>
           <KeyboardAvoidingView
@@ -42,12 +40,7 @@ export function CardioValueSelector(props: {
           >
             <Dialog visible={dialogOpen} onDismiss={() => setDialogOpen(false)}>
               <Dialog.Title>{label}</Dialog.Title>
-              <Dialog.Content
-                style={[
-                  { flexDirection: 'row', alignItems: 'center' },
-                  props.style,
-                ]}
-              >
+              <Dialog.Content style={[{ flexDirection: 'row', alignItems: 'center' }, props.style]}>
                 {children}
               </Dialog.Content>
               <Dialog.Actions>

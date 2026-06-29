@@ -39,8 +39,7 @@ export function RestEditorDialog(props: RestEditorDialogProps) {
     }
   };
 
-  const updateRest = (type: keyof Rest) => (duration: Duration) =>
-    onRestUpdated({ ...rest, [type]: duration });
+  const updateRest = (type: keyof Rest) => (duration: Duration) => onRestUpdated({ ...rest, [type]: duration });
 
   const customView = (
     <View
@@ -50,16 +49,8 @@ export function RestEditorDialog(props: RestEditorDialogProps) {
         gap: spacing[2],
       }}
     >
-      <DurationEditor
-        label={t('rest.min.label')}
-        duration={rest.minRest}
-        onDurationUpdated={updateRest('minRest')}
-      />
-      <DurationEditor
-        label={t('rest.max.label')}
-        duration={rest.maxRest}
-        onDurationUpdated={updateRest('maxRest')}
-      />
+      <DurationEditor label={t('rest.min.label')} duration={rest.minRest} onDurationUpdated={updateRest('minRest')} />
+      <DurationEditor label={t('rest.max.label')} duration={rest.maxRest} onDurationUpdated={updateRest('maxRest')} />
       <DurationEditor
         label={t('rest.failure.label')}
         duration={rest.failureRest}
@@ -77,10 +68,7 @@ export function RestEditorDialog(props: RestEditorDialogProps) {
             pointerEvents: props.dialogOpen ? 'box-none' : 'none',
           }}
         >
-          <Dialog
-            visible={props.dialogOpen}
-            onDismiss={() => props.setDialogOpen(false)}
-          >
+          <Dialog visible={props.dialogOpen} onDismiss={() => props.setDialogOpen(false)}>
             <Dialog.Content>
               <View style={{ width: '100%' }}>
                 <SegmentedButtons
@@ -110,9 +98,7 @@ export function RestEditorDialog(props: RestEditorDialogProps) {
               {customView}
             </Dialog.Content>
             <Dialog.Actions>
-              <Button onPress={() => props.setDialogOpen(false)}>
-                {t('generic.close.button')}
-              </Button>
+              <Button onPress={() => props.setDialogOpen(false)}>{t('generic.close.button')}</Button>
             </Dialog.Actions>
           </Dialog>
         </KeyboardAvoidingView>

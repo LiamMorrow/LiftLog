@@ -23,12 +23,7 @@ export function CardioWeightTracker({
       onHold={() => updateWeight(undefined)}
       style={{ flexDirection: 'column', alignItems: 'stretch' }}
     >
-      <WeightEditor
-        increment={BigNumber(2.5)}
-        updateWeight={setDialogValue}
-        weight={weight}
-        allowNegative
-      />
+      <WeightEditor increment={BigNumber(2.5)} updateWeight={setDialogValue} weight={weight} allowNegative />
     </CardioValueSelector>
   );
 }

@@ -19,10 +19,7 @@ interface SessionDiffViewProps {
   onSelectedDiffChange: (selectedDiff: SessionBlueprintDiff) => void;
 }
 
-export default function SessionDiffView({
-  diff: fullDiff,
-  onSelectedDiffChange,
-}: SessionDiffViewProps) {
+export default function SessionDiffView({ diff: fullDiff, onSelectedDiffChange }: SessionDiffViewProps) {
   const { t } = useTranslate();
 
   // Track selected change IDs internally - default to all selected
@@ -58,9 +55,7 @@ export default function SessionDiffView({
   if (!fullDiff.hasChanges) {
     return (
       <View style={{ padding: spacing[4] }}>
-        <SurfaceText style={{ textAlign: 'center' }}>
-          {t('plan.diff.no_changes.body')}
-        </SurfaceText>
+        <SurfaceText style={{ textAlign: 'center' }}>{t('plan.diff.no_changes.body')}</SurfaceText>
       </View>
     );
   }
@@ -171,13 +166,7 @@ interface DiffChangeRowProps {
   variant?: 'added' | 'removed' | 'modified';
 }
 
-function DiffChangeRow({
-  change,
-  selected,
-  onToggle,
-  disabled,
-  variant,
-}: DiffChangeRowProps) {
+function DiffChangeRow({ change, selected, onToggle, disabled, variant }: DiffChangeRowProps) {
   const { t } = useTranslate();
   const theme = useAppTheme();
 
@@ -196,12 +185,7 @@ function DiffChangeRow({
       title={t(label.key, label.params)}
       titleStyle={variantColor ? { color: variantColor } : undefined}
       description={description}
-      left={() => (
-        <Checkbox
-          disabled={disabled}
-          status={selected ? 'checked' : 'unchecked'}
-        />
-      )}
+      left={() => <Checkbox disabled={disabled} status={selected ? 'checked' : 'unchecked'} />}
     />
   );
 }
@@ -219,9 +203,7 @@ function ExerciseModificationGroup({
 }: ExerciseModificationGroupProps) {
   return (
     <List.Section>
-      <List.Subheader style={{ paddingInlineStart: spacing[2] }}>
-        {modification.exerciseName}
-      </List.Subheader>
+      <List.Subheader style={{ paddingInlineStart: spacing[2] }}>{modification.exerciseName}</List.Subheader>
       {modification.changes.map((change) => (
         <DiffChangeRow
           key={change.id}

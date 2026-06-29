@@ -37,9 +37,7 @@ export class RecordedCardioExerciseSet {
      */
     readonly currentBlockStartTime: OffsetDateTime | undefined,
   ) {}
-  static empty(
-    blueprint: CardioExerciseSetBlueprint,
-  ): RecordedCardioExerciseSet {
+  static empty(blueprint: CardioExerciseSetBlueprint): RecordedCardioExerciseSet {
     return new RecordedCardioExerciseSet(
       blueprint,
       undefined,
@@ -53,19 +51,13 @@ export class RecordedCardioExerciseSet {
     );
   }
 
-  static fromJSON(
-    json: RecordedCardioExerciseSetJSON,
-  ): RecordedCardioExerciseSet {
+  static fromJSON(json: RecordedCardioExerciseSetJSON): RecordedCardioExerciseSet {
     return new RecordedCardioExerciseSet(
       CardioExerciseSetBlueprint.fromJSON(json.blueprint),
-      json.completionDateTime
-        ? fromOffsetDateTimeJSON(json.completionDateTime)
-        : undefined,
+      json.completionDateTime ? fromOffsetDateTimeJSON(json.completionDateTime) : undefined,
       json.duration ? fromDurationJSON(json.duration) : undefined,
       json.distance ? fromDistanceJSON(json.distance) : undefined,
-      json.resistance !== undefined
-        ? fromBigNumberJSON(json.resistance)
-        : undefined,
+      json.resistance !== undefined ? fromBigNumberJSON(json.resistance) : undefined,
       json.incline !== undefined ? fromBigNumberJSON(json.incline) : undefined,
       json.weight ? Weight.fromJSON(json.weight) : undefined,
       json.steps,
@@ -78,9 +70,7 @@ export class RecordedCardioExerciseSet {
       (this.blueprint.trackDuration || this.blueprint.target.type === 'time'
         ? !!this.duration && !this.duration.equals(Duration.ZERO)
         : true) &&
-      (this.blueprint.trackDistance || this.blueprint.target.type === 'distance'
-        ? !!this.distance
-        : true) &&
+      (this.blueprint.trackDistance || this.blueprint.target.type === 'distance' ? !!this.distance : true) &&
       (this.blueprint.trackSteps ? this.steps !== undefined : true) &&
       (this.blueprint.trackResistance ? !!this.resistance : true) &&
       (this.blueprint.trackWeight ? !!this.weight : true) &&
@@ -92,18 +82,11 @@ export class RecordedCardioExerciseSet {
   toJSON(): RecordedCardioExerciseSetJSON {
     return {
       blueprint: this.blueprint.toJSON(),
-      completionDateTime: this.completionDateTime
-        ? toOffsetDateTimeJSON(this.completionDateTime)
-        : undefined,
+      completionDateTime: this.completionDateTime ? toOffsetDateTimeJSON(this.completionDateTime) : undefined,
       duration: this.duration ? toDurationJSON(this.duration) : undefined,
-      distance:
-        this.distance !== undefined ? toDistanceJSON(this.distance) : undefined,
-      resistance:
-        this.resistance !== undefined
-          ? toBigNumberJSON(this.resistance)
-          : undefined,
-      incline:
-        this.incline !== undefined ? toBigNumberJSON(this.incline) : undefined,
+      distance: this.distance !== undefined ? toDistanceJSON(this.distance) : undefined,
+      resistance: this.resistance !== undefined ? toBigNumberJSON(this.resistance) : undefined,
+      incline: this.incline !== undefined ? toBigNumberJSON(this.incline) : undefined,
       weight: this.weight?.toJSON(),
       steps: this.steps,
     };
@@ -111,36 +94,21 @@ export class RecordedCardioExerciseSet {
 
   with(other: Partial<RecordedCardioExerciseSet>): RecordedCardioExerciseSet {
     return new RecordedCardioExerciseSet(
-      'blueprint' in other
-        ? (other.blueprint ?? this.blueprint)
-        : this.blueprint,
-      'completionDateTime' in other
-        ? other.completionDateTime
-        : this.completionDateTime,
+      'blueprint' in other ? (other.blueprint ?? this.blueprint) : this.blueprint,
+      'completionDateTime' in other ? other.completionDateTime : this.completionDateTime,
       'duration' in other ? other.duration : this.duration,
       'distance' in other ? other.distance : this.distance,
       'resistance' in other ? other.resistance : this.resistance,
       'incline' in other ? other.incline : this.incline,
       'weight' in other ? other.weight : this.weight,
       'steps' in other ? other.steps : this.steps,
-      'currentBlockStartTime' in other
-        ? other.currentBlockStartTime
-        : this.currentBlockStartTime,
+      'currentBlockStartTime' in other ? other.currentBlockStartTime : this.currentBlockStartTime,
     );
   }
 
-  withCompletionTimeIfCompleted(
-    time: OffsetDateTime,
-  ): RecordedCardioExerciseSet {
-    const hasData = !!(
-      this.distance ||
-      (this.duration && !this.duration.isZero()) ||
-      this.incline ||
-      this.resistance
-    );
-    const newCompletionDateTime = hasData
-      ? (this.completionDateTime ?? time)
-      : undefined;
+  withCompletionTimeIfCompleted(time: OffsetDateTime): RecordedCardioExerciseSet {
+    const hasData = !!(this.distance || (this.duration && !this.duration.isZero()) || this.incline || this.resistance);
+    const newCompletionDateTime = hasData ? (this.completionDateTime ?? time) : undefined;
 
     return this.with({ completionDateTime: newCompletionDateTime });
   }
@@ -153,19 +121,11 @@ export class RecordedCardioExerciseSet {
         other.completionDateTime &&
         this.completionDateTime.equals(other.completionDateTime)) ||
         this.completionDateTime === other.completionDateTime) &&
-      ((this.duration &&
-        other.duration &&
-        this.duration.equals(other.duration)) ||
-        this.duration === other.duration) &&
+      ((this.duration && other.duration && this.duration.equals(other.duration)) || this.duration === other.duration) &&
       distanceEqual(this.distance, other.distance) &&
-      ((this.resistance &&
-        other.resistance &&
-        this.resistance.isEqualTo(other.resistance)) ||
+      ((this.resistance && other.resistance && this.resistance.isEqualTo(other.resistance)) ||
         this.resistance === other.resistance) &&
-      ((this.incline &&
-        other.incline &&
-        this.incline.isEqualTo(other.incline)) ||
-        this.incline === other.incline) &&
+      ((this.incline && other.incline && this.incline.isEqualTo(other.incline)) || this.incline === other.incline) &&
       equal(this.weight, other.weight) &&
       this.steps === other.steps
     );
@@ -204,10 +164,7 @@ export class RecordedCardioExercise {
   }
 
   get duration(): Duration | undefined {
-    return this.sets.reduce(
-      (accum, set) => accum.plus(set.duration ?? Duration.ZERO),
-      Duration.ZERO,
-    );
+    return this.sets.reduce((accum, set) => accum.plus(set.duration ?? Duration.ZERO), Duration.ZERO);
   }
 
   get isComplete(): boolean {
@@ -241,10 +198,7 @@ export class RecordedCardioExercise {
     });
   }
 
-  withSet(
-    setIndex: number,
-    reducer: (s: RecordedCardioExerciseSet) => RecordedCardioExerciseSet,
-  ) {
+  withSet(setIndex: number, reducer: (s: RecordedCardioExerciseSet) => RecordedCardioExerciseSet) {
     const existingSet = this.sets[setIndex];
     if (!existingSet) {
       throw new Error('Index out of bounds');
@@ -253,9 +207,7 @@ export class RecordedCardioExercise {
       sets: this.sets.with(setIndex, reducer(existingSet)),
     });
   }
-  withAllSets(
-    reducer: (s: RecordedCardioExerciseSet) => RecordedCardioExerciseSet,
-  ) {
+  withAllSets(reducer: (s: RecordedCardioExerciseSet) => RecordedCardioExerciseSet) {
     return this.with({
       sets: this.sets.map(reducer),
     });

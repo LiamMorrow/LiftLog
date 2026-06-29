@@ -7,9 +7,7 @@ export function FormRow(props: {
   undoFormPadding?: boolean | undefined;
   noGap?: boolean | undefined;
 }) {
-  const margin = props.undoFormPadding
-    ? { marginHorizontal: -spacing.pageHorizontalMargin }
-    : {};
+  const margin = props.undoFormPadding ? { marginHorizontal: -spacing.pageHorizontalMargin } : {};
   const gap = props.noGap ? {} : { gap: spacing[3] };
   return <View style={[margin, gap]}>{props.children}</View>;
 }

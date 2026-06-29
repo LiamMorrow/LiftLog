@@ -1,13 +1,7 @@
 // These types are the serialized forms from libs which will not change and are well defined
 // Therefore they do not need versioning
 
-import {
-  DateTimeFormatter,
-  Duration,
-  Instant,
-  LocalDate,
-  OffsetDateTime,
-} from '@js-joda/core';
+import { DateTimeFormatter, Duration, Instant, LocalDate, OffsetDateTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 
 type Branded<T, TBrand extends string> = T & { _BRAND: TBrand };
@@ -29,18 +23,12 @@ export function toLocalDateJSON(value: LocalDate): LocalDateJSON {
  * @format date-time
  */
 export type OffsetDateTimeJSON = Branded<string, 'OffsetDateTime'>; // ISO formatted JS Joda OffsetDateTime
-export function fromOffsetDateTimeJSON(
-  json: OffsetDateTimeJSON,
-): OffsetDateTime {
+export function fromOffsetDateTimeJSON(json: OffsetDateTimeJSON): OffsetDateTime {
   return OffsetDateTime.parse(json, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 }
 
-export function toOffsetDateTimeJSON(
-  value: OffsetDateTime,
-): OffsetDateTimeJSON {
-  return value.format(
-    DateTimeFormatter.ISO_OFFSET_DATE_TIME,
-  ) as OffsetDateTimeJSON;
+export function toOffsetDateTimeJSON(value: OffsetDateTime): OffsetDateTimeJSON {
+  return value.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) as OffsetDateTimeJSON;
 }
 
 /**
@@ -48,12 +36,8 @@ export function toOffsetDateTimeJSON(
  */
 export type InstantJSON = Branded<string, 'Instant'>; // ISO formatted JS Joda Instant
 export function fromInstantJson(json: InstantJSON): Instant;
-export function fromInstantJson(
-  json: InstantJSON | undefined,
-): Instant | undefined;
-export function fromInstantJson(
-  json: InstantJSON | undefined,
-): Instant | undefined {
+export function fromInstantJson(json: InstantJSON | undefined): Instant | undefined;
+export function fromInstantJson(json: InstantJSON | undefined): Instant | undefined {
   if (!json) {
     return undefined;
   }
@@ -61,12 +45,8 @@ export function fromInstantJson(
 }
 
 export function toInstantJson(value: Instant): InstantJSON;
-export function toInstantJson(
-  value: Instant | undefined,
-): InstantJSON | undefined;
-export function toInstantJson(
-  value: Instant | undefined,
-): InstantJSON | undefined {
+export function toInstantJson(value: Instant | undefined): InstantJSON | undefined;
+export function toInstantJson(value: Instant | undefined): InstantJSON | undefined {
   return value?.toJSON() as InstantJSON;
 }
 
@@ -107,15 +87,11 @@ export function fromJsonString<T>(json: JsonString<T>): T {
 
 export type Base64Uint8ArrayJSON = Branded<string, 'Base64Uint8Array'>;
 
-export function fromBase64Uint8ArrayJSON(
-  json: Base64Uint8ArrayJSON,
-): Uint8Array {
+export function fromBase64Uint8ArrayJSON(json: Base64Uint8ArrayJSON): Uint8Array {
   return new Uint8Array(Buffer.from(json, 'base64'));
 }
 
-export function toBase64Uint8ArrayJSON(
-  value: Uint8Array,
-): Base64Uint8ArrayJSON {
+export function toBase64Uint8ArrayJSON(value: Uint8Array): Base64Uint8ArrayJSON {
   return Buffer.from(value).toString('base64') as Base64Uint8ArrayJSON;
 }
 export interface RsaPublicKeyJSON {
@@ -231,14 +207,10 @@ export function toAesEncryptedAndRsaSignedDataJSON(
   };
 }
 
-export function fromRsaEncryptedDataJSON(
-  json: RsaEncryptedDataJSON,
-): RsaEncryptedData {
+export function fromRsaEncryptedDataJSON(json: RsaEncryptedDataJSON): RsaEncryptedData {
   return { dataChunks: json.dataChunks.map(fromBase64Uint8ArrayJSON) };
 }
-export function toRsaEncryptedDataJSON(
-  value: RsaEncryptedData,
-): RsaEncryptedDataJSON {
+export function toRsaEncryptedDataJSON(value: RsaEncryptedData): RsaEncryptedDataJSON {
   return { dataChunks: value.dataChunks.map(toBase64Uint8ArrayJSON) };
 }
 

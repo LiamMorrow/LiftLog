@@ -2,14 +2,8 @@ import { DayOfWeek, Period } from '@js-joda/core';
 import { useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Menu } from 'react-native-paper';
-import Button, {
-  ButtonProps,
-} from '@/components/presentation/foundation/gesture-wrappers/button';
-import {
-  isLocalDateRange,
-  isLocalDateRangeEqual,
-  LocalDateRange,
-} from '@/models/time-models';
+import Button, { ButtonProps } from '@/components/presentation/foundation/gesture-wrappers/button';
+import { isLocalDateRange, isLocalDateRangeEqual, LocalDateRange } from '@/models/time-models';
 
 export interface SelectButtonOption<T> {
   value: T;
@@ -25,9 +19,7 @@ interface SelectButtonProps<T> {
   testID?: string;
   buttonProps?: Partial<Pick<ButtonProps, 'mode'>>;
 }
-export default function SelectButton<
-  T extends number | string | Period | undefined | DayOfWeek | LocalDateRange,
->({
+export default function SelectButton<T extends number | string | Period | undefined | DayOfWeek | LocalDateRange>({
   value,
   options,
   onChange,
@@ -80,9 +72,7 @@ export default function SelectButton<
   );
 }
 
-function isEqual<
-  T extends number | string | Period | undefined | DayOfWeek | LocalDateRange,
->(a: T, b: T): boolean {
+function isEqual<T extends number | string | Period | undefined | DayOfWeek | LocalDateRange>(a: T, b: T): boolean {
   if (a === b) {
     return true;
   }

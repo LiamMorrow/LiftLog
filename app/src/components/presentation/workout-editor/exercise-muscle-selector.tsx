@@ -5,10 +5,7 @@ import { T } from '@tolgee/react';
 import { View } from 'react-native';
 import { Chip, Text } from 'react-native-paper';
 
-export default function ExerciseMuscleSelector(props: {
-  muscles: string[];
-  onChange: (muscles: string[]) => void;
-}) {
+export default function ExerciseMuscleSelector(props: { muscles: string[]; onChange: (muscles: string[]) => void }) {
   const { muscles, onChange } = props;
   const muscleList = useAppSelector(selectMuscles);
   return (
@@ -28,11 +25,7 @@ export default function ExerciseMuscleSelector(props: {
             mode="outlined"
             key={x}
             onPress={() => {
-              onChange(
-                muscles.includes(x)
-                  ? muscles.filter((musc) => musc !== x)
-                  : muscles.concat([x]),
-              );
+              onChange(muscles.includes(x) ? muscles.filter((musc) => musc !== x) : muscles.concat([x]));
             }}
             showSelectedOverlay
             selected={muscles.includes(x)}

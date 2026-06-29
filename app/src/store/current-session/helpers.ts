@@ -1,61 +1,34 @@
-import {
-  RecordedCardioExercise,
-  RecordedWeightedExercise,
-  Session,
-} from '@/models/session-models';
-import {
-  toDurationJSON,
-  toInstantJson,
-} from '@/models/storage/versions/latest';
-import {
-  CardioTimerInfo,
-  CurrentExerciseDetails,
-  RestTimerInfo,
-} from '@/models/workout-worker-messages';
+import { RecordedCardioExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
+import { toDurationJSON, toInstantJson } from '@/models/storage/versions/latest';
+import { CardioTimerInfo, CurrentExerciseDetails, RestTimerInfo } from '@/models/workout-worker-messages';
 import { Duration } from '@js-joda/core';
 import { match, P } from 'ts-pattern';
 
-export function getCardioTimerInfo(
-  session: Session,
-): CardioTimerInfo | undefined {
+export function getCardioTimerInfo(session: Session): CardioTimerInfo | undefined {
   const exerciseIndex = session.recordedExercises.findIndex(
-    (x) =>
-      x instanceof RecordedCardioExercise &&
-      x.sets.some((s) => s.currentBlockStartTime),
+    (x) => x instanceof RecordedCardioExercise && x.sets.some((s) => s.currentBlockStartTime),
   );
 
   if (exerciseIndex === -1) {
     return undefined;
   }
 
-  const exerciseWithRunningTimer = session.recordedExercises[
-    exerciseIndex
-  ] as RecordedCardioExercise;
-  const setIndex = exerciseWithRunningTimer.sets.findIndex(
-    (s) => s.currentBlockStartTime,
-  );
+  const exerciseWithRunningTimer = session.recordedExercises[exerciseIndex] as RecordedCardioExercise;
+  const setIndex = exerciseWithRunningTimer.sets.findIndex((s) => s.currentBlockStartTime);
 
   if (setIndex === -1) {
     return undefined;
   }
 
   return {
-    currentBlockStartTime: toInstantJson(
-      exerciseWithRunningTimer.sets[
-        setIndex
-      ]?.currentBlockStartTime?.toInstant(),
-    ),
-    currentDuration: toDurationJSON(
-      exerciseWithRunningTimer.duration ?? Duration.ZERO,
-    ),
+    currentBlockStartTime: toInstantJson(exerciseWithRunningTimer.sets[setIndex]?.currentBlockStartTime?.toInstant()),
+    currentDuration: toDurationJSON(exerciseWithRunningTimer.duration ?? Duration.ZERO),
     exerciseIndex,
     setIndex,
   };
 }
 
-export function getCurrentExerciseDetails(
-  session: Session,
-): CurrentExerciseDetails | undefined {
+export function getCurrentExerciseDetails(session: Session): CurrentExerciseDetails | undefined {
   return session.nextExercise
     ? {
         exercise: session.nextExercise.toJSON(),
@@ -78,8 +51,7 @@ export function getTimerInfo(session: Session): RestTimerInfo | undefined {
   }
 
   const repsPerSet = lastExercise.blueprint.repsPerSet;
-  const { minRest, maxRest, failureRest } =
-    lastExercise.blueprint.restBetweenSets;
+  const { minRest, maxRest, failureRest } = lastExercise.blueprint.restBetweenSets;
 
   const rest = match(lastExercise.lastRecordedSet)
     .with({ set: { repsCompleted: P.when((x) => x >= repsPerSet) } }, () => ({
@@ -100,11 +72,7 @@ export function getTimerInfo(session: Session): RestTimerInfo | undefined {
   }
   return {
     startedAt: toInstantJson(session.restTimerStartTime.toInstant()),
-    partiallyEndAt: toInstantJson(
-      session.restTimerStartTime.plus(rest.partialRest).toInstant(),
-    ),
-    endAt: toInstantJson(
-      session.restTimerStartTime.plus(rest.fullRest).toInstant(),
-    ),
+    partiallyEndAt: toInstantJson(session.restTimerStartTime.plus(rest.partialRest).toInstant()),
+    endAt: toInstantJson(session.restTimerStartTime.plus(rest.fullRest).toInstant()),
   };
 }

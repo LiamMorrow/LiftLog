@@ -39,28 +39,18 @@ export function CardioTimer({
           ({ recordedDuration, currentBlockStartTime }) =>
             recordedDuration.plus(Duration.between(currentBlockStartTime, now)),
         )
-        .with(
-          { recordedDuration: P.nonNullable },
-          ({ recordedDuration }) => recordedDuration,
+        .with({ recordedDuration: P.nonNullable }, ({ recordedDuration }) => recordedDuration)
+        .with({ currentBlockStartTime: P.nonNullable }, ({ currentBlockStartTime }) =>
+          Duration.between(currentBlockStartTime, now),
         )
-        .with(
-          { currentBlockStartTime: P.nonNullable },
-          ({ currentBlockStartTime }) =>
-            Duration.between(currentBlockStartTime, now),
-        )
-        .with(
-          { currentBlockStartTime: undefined, recordedDuration: undefined },
-          () => Duration.ZERO,
-        )
+        .with({ currentBlockStartTime: undefined, recordedDuration: undefined }, () => Duration.ZERO)
         .exhaustive();
 
       return duration;
     },
     [currentBlockStartTime],
   );
-  const [timerState, setTimerState] = useState<Duration>(
-    getTimerState(set.duration),
-  );
+  const [timerState, setTimerState] = useState<Duration>(getTimerState(set.duration));
   const handlePlay = () => {
     const now = OffsetDateTime.now();
     setCurrentBlockStartTime(now);
@@ -72,17 +62,11 @@ export function CardioTimer({
     const now = OffsetDateTime.now();
     setCurrentBlockStartTime(undefined);
 
-    updateDuration(
-      Duration.between(currentBlockStartTime, now).plus(
-        set.duration ?? Duration.ZERO,
-      ),
-    );
+    updateDuration(Duration.between(currentBlockStartTime, now).plus(set.duration ?? Duration.ZERO));
   };
 
   const handlePlayPause = () => {
-    const toValue = currentBlockStartTime
-      ? playPauseButtonSize
-      : rounding.roundedRectangleRadius;
+    const toValue = currentBlockStartTime ? playPauseButtonSize : rounding.roundedRectangleRadius;
     if (currentBlockStartTime) {
       handlePause();
     } else {
@@ -113,20 +97,11 @@ export function CardioTimer({
       const interval = setTimeout(() => {
         const now = OffsetDateTime.now();
         setCurrentBlockStartTime(now);
-        updateDuration(
-          Duration.between(currentBlockStartTime, now).plus(
-            set.duration ?? Duration.ZERO,
-          ),
-        );
+        updateDuration(Duration.between(currentBlockStartTime, now).plus(set.duration ?? Duration.ZERO));
       }, 5000);
       return () => clearTimeout(interval);
     }
-  }, [
-    currentBlockStartTime,
-    updateDuration,
-    set.duration,
-    setCurrentBlockStartTime,
-  ]);
+  }, [currentBlockStartTime, updateDuration, set.duration, setCurrentBlockStartTime]);
 
   return (
     <CardioTrackerCard onHold={() => updateDuration(undefined)}>

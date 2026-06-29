@@ -8,13 +8,7 @@ interface JigglerProps {
   testID?: string;
   style?: ViewStyle | (ViewStyle | undefined)[];
 }
-export function Jiggler({
-  jiggling,
-  children,
-  style,
-  testID,
-  jiggleSpeed = 80,
-}: JigglerProps) {
+export function Jiggler({ jiggling, children, style, testID, jiggleSpeed = 80 }: JigglerProps) {
   const amplitude = 0.1;
   const rotation = useRef(new Animated.Value(0)).current;
   const isJigglingRef = useRef(false);
@@ -86,10 +80,7 @@ export function Jiggler({
   });
 
   return (
-    <Animated.View
-      testID={testID}
-      style={[style, { transform: [{ rotateZ }] }]}
-    >
+    <Animated.View testID={testID} style={[style, { transform: [{ rotateZ }] }]}>
       {children}
     </Animated.View>
   );

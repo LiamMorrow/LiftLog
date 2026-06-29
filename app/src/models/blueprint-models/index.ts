@@ -63,9 +63,7 @@ export class ProgramBlueprint {
       this.name === other.name &&
       this.lastEdited.equals(other.lastEdited) &&
       this.sessions.length === other.sessions.length &&
-      this.sessions.every((session, index) =>
-        session.equals(other.sessions[index]),
-      )
+      this.sessions.every((session, index) => session.equals(other.sessions[index]))
     );
   }
 
@@ -104,11 +102,7 @@ export class SessionBlueprint {
   ) {}
 
   static fromJSON(json: SessionBlueprintJSON): SessionBlueprint {
-    return new SessionBlueprint(
-      json.name,
-      json.exercises.map(fromExerciseBlueprintJSON),
-      json.notes,
-    );
+    return new SessionBlueprint(json.name, json.exercises.map(fromExerciseBlueprintJSON), json.notes);
   }
 
   equals(other: SessionBlueprint | undefined) {
@@ -123,9 +117,7 @@ export class SessionBlueprint {
       this.name === other.name &&
       this.notes === other.notes &&
       this.exercises.length === other.exercises.length &&
-      this.exercises.every((exercise, index) =>
-        exercise.equals(other.exercises[index]),
-      )
+      this.exercises.every((exercise, index) => exercise.equals(other.exercises[index]))
     );
   }
 
@@ -139,27 +131,16 @@ export class SessionBlueprint {
   }
 
   with(other: Partial<SessionBlueprint>): SessionBlueprint {
-    return new SessionBlueprint(
-      other.name ?? this.name,
-      other.exercises ?? this.exercises,
-      other.notes ?? this.notes,
-    );
+    return new SessionBlueprint(other.name ?? this.name, other.exercises ?? this.exercises, other.notes ?? this.notes);
   }
 }
 
-export type ExerciseBlueprint =
-  | WeightedExerciseBlueprint
-  | CardioExerciseBlueprint;
+export type ExerciseBlueprint = WeightedExerciseBlueprint | CardioExerciseBlueprint;
 
-function fromExerciseBlueprintJSON(
-  json: ExerciseBlueprintJSON,
-): ExerciseBlueprint {
+function fromExerciseBlueprintJSON(json: ExerciseBlueprintJSON): ExerciseBlueprint {
   return match(json)
     .with({ type: 'CardioExerciseBlueprint' }, CardioExerciseBlueprint.fromJSON)
-    .with(
-      { type: 'WeightedExerciseBlueprint' },
-      WeightedExerciseBlueprint.fromJSON,
-    )
+    .with({ type: 'WeightedExerciseBlueprint' }, WeightedExerciseBlueprint.fromJSON)
     .exhaustive();
 }
 
@@ -189,10 +170,7 @@ export function matchCardioTarget<T>(
     [k in CardioTarget['type']]: (val: Extract<CardioTarget, { type: k }>) => T;
   },
 ) {
-  return match(value)
-    .with({ type: 'time' }, matcher.time)
-    .with({ type: 'distance' }, matcher.distance)
-    .exhaustive();
+  return match(value).with({ type: 'time' }, matcher.time).with({ type: 'distance' }, matcher.distance).exhaustive();
 }
 
 export class CardioExerciseSetBlueprint {
@@ -220,9 +198,7 @@ export class CardioExerciseSetBlueprint {
     );
   }
 
-  static fromJSON(
-    json: CardioExerciseSetBlueprintJSON,
-  ): CardioExerciseSetBlueprint {
+  static fromJSON(json: CardioExerciseSetBlueprintJSON): CardioExerciseSetBlueprint {
     return new CardioExerciseSetBlueprint(
       fromCardioTargetJSON(json.target),
       json.trackDuration,
@@ -286,12 +262,7 @@ export class CardioExerciseBlueprint {
   }
 
   static empty() {
-    return new CardioExerciseBlueprint(
-      '',
-      [CardioExerciseSetBlueprint.empty()],
-      '',
-      '',
-    );
+    return new CardioExerciseBlueprint('', [CardioExerciseSetBlueprint.empty()], '', '');
   }
 
   static fromJSON(json: CardioExerciseBlueprintJSON): CardioExerciseBlueprint {
@@ -355,10 +326,7 @@ export class NoProgressiveOverload {
   toType(type: ProgressiveOverload['type']) {
     return match(type)
       .with('NoProgressiveOverload', () => this)
-      .with(
-        'IncreaseAllEvenlyProgressiveOverload',
-        () => new IncreaseAllEvenlyProgressiveOverload(BigNumber('2.5')),
-      )
+      .with('IncreaseAllEvenlyProgressiveOverload', () => new IncreaseAllEvenlyProgressiveOverload(BigNumber('2.5')))
       .with(
         'IncreaseLowestSetProgressiveOverload',
         () => new IncreaseLowestSetProgressiveOverload(BigNumber('2.5'), 'all'),
@@ -370,9 +338,7 @@ export class NoProgressiveOverload {
     return this.type === other.type;
   }
 
-  applyProgressiveOverload(
-    exercise: RecordedWeightedExercise,
-  ): RecordedWeightedExercise {
+  applyProgressiveOverload(exercise: RecordedWeightedExercise): RecordedWeightedExercise {
     return exercise;
   }
 
@@ -391,39 +357,26 @@ export class IncreaseAllEvenlyProgressiveOverload {
       amount: toBigNumberJSON(this.amount),
     };
   }
-  static fromJSON(
-    json: IncreaseAllEvenlyProgressiveOverloadJSON,
-  ): IncreaseAllEvenlyProgressiveOverload {
-    return new IncreaseAllEvenlyProgressiveOverload(
-      fromBigNumberJSON(json.amount),
-    );
+  static fromJSON(json: IncreaseAllEvenlyProgressiveOverloadJSON): IncreaseAllEvenlyProgressiveOverload {
+    return new IncreaseAllEvenlyProgressiveOverload(fromBigNumberJSON(json.amount));
   }
   toType(type: ProgressiveOverload['type']) {
     return match(type)
       .with('NoProgressiveOverload', () => new NoProgressiveOverload())
       .with('IncreaseAllEvenlyProgressiveOverload', () => this)
-      .with(
-        'IncreaseLowestSetProgressiveOverload',
-        () => new IncreaseLowestSetProgressiveOverload(this.amount, 'all'),
-      )
+      .with('IncreaseLowestSetProgressiveOverload', () => new IncreaseLowestSetProgressiveOverload(this.amount, 'all'))
       .exhaustive();
   }
 
   with(other: Partial<IncreaseAllEvenlyProgressiveOverload>) {
-    return new IncreaseAllEvenlyProgressiveOverload(
-      other.amount ?? this.amount,
-    );
+    return new IncreaseAllEvenlyProgressiveOverload(other.amount ?? this.amount);
   }
 
   equals(other: ProgressiveOverload): boolean {
     return this.type === other.type && this.amount.isEqualTo(other.amount);
   }
-  applyProgressiveOverload(
-    exercise: RecordedWeightedExercise,
-  ): RecordedWeightedExercise {
-    return exercise.withAllSets((s) =>
-      s.with({ weight: s.weight.plus(this.amount) }),
-    );
+  applyProgressiveOverload(exercise: RecordedWeightedExercise): RecordedWeightedExercise {
+    return exercise.withAllSets((s) => s.with({ weight: s.weight.plus(this.amount) }));
   }
   get weightIncrement(): BigNumber {
     return this.amount.isZero() ? new BigNumber(2.5) : this.amount;
@@ -446,13 +399,8 @@ export class IncreaseLowestSetProgressiveOverload {
       increaseStrategy: this.increaseStrategy,
     };
   }
-  static fromJSON(
-    json: IncreaseLowestSetProgressiveOverloadJSON,
-  ): IncreaseLowestSetProgressiveOverload {
-    return new IncreaseLowestSetProgressiveOverload(
-      fromBigNumberJSON(json.amount),
-      json.increaseStrategy,
-    );
+  static fromJSON(json: IncreaseLowestSetProgressiveOverloadJSON): IncreaseLowestSetProgressiveOverload {
+    return new IncreaseLowestSetProgressiveOverload(fromBigNumberJSON(json.amount), json.increaseStrategy);
   }
 
   with(other: Partial<IncreaseLowestSetProgressiveOverload>) {
@@ -465,10 +413,7 @@ export class IncreaseLowestSetProgressiveOverload {
   toType(type: ProgressiveOverload['type']) {
     return match(type)
       .with('NoProgressiveOverload', () => new NoProgressiveOverload())
-      .with(
-        'IncreaseAllEvenlyProgressiveOverload',
-        () => new IncreaseAllEvenlyProgressiveOverload(this.amount),
-      )
+      .with('IncreaseAllEvenlyProgressiveOverload', () => new IncreaseAllEvenlyProgressiveOverload(this.amount))
       .with('IncreaseLowestSetProgressiveOverload', () => this)
       .exhaustive();
   }
@@ -481,12 +426,8 @@ export class IncreaseLowestSetProgressiveOverload {
     );
   }
 
-  applyProgressiveOverload(
-    exercise: RecordedWeightedExercise,
-  ): RecordedWeightedExercise {
-    const lowestSet = [...exercise.potentialSets].sort((a, b) =>
-      a.weight.isGreaterThan(b.weight) ? 1 : -1,
-    )[0];
+  applyProgressiveOverload(exercise: RecordedWeightedExercise): RecordedWeightedExercise {
+    const lowestSet = [...exercise.potentialSets].sort((a, b) => (a.weight.isGreaterThan(b.weight) ? 1 : -1))[0];
     if (!lowestSet) {
       return exercise;
     }
@@ -495,9 +436,7 @@ export class IncreaseLowestSetProgressiveOverload {
       return exercise.potentialSets.reduce(
         (ex, set, index) =>
           set.weight.equals(lowestSet.weight)
-            ? ex.withSet(index, (s) =>
-                s.with({ weight: s.weight.plus(this.amount) }),
-              )
+            ? ex.withSet(index, (s) => s.with({ weight: s.weight.plus(this.amount) }))
             : ex,
         exercise,
       );
@@ -509,27 +448,15 @@ export class IncreaseLowestSetProgressiveOverload {
       const middleOfAll = (exercise.potentialSets.length - 1) / 2;
       const middleIndex =
         matchingIndices.reduce((closest, index) =>
-          Math.abs(index - middleOfAll) < Math.abs(closest - middleOfAll)
-            ? index
-            : closest,
+          Math.abs(index - middleOfAll) < Math.abs(closest - middleOfAll) ? index : closest,
         ) ?? 0;
-      return exercise.withSet(middleIndex, (s) =>
-        s.with({ weight: s.weight.plus(this.amount) }),
-      );
+      return exercise.withSet(middleIndex, (s) => s.with({ weight: s.weight.plus(this.amount) }));
     } else if (this.increaseStrategy === 'first') {
-      const index = exercise.potentialSets.findIndex((a, b) =>
-        a.weight.equals(lowestSet.weight),
-      );
-      return exercise.withSet(index, (s) =>
-        s.with({ weight: s.weight.plus(this.amount) }),
-      );
+      const index = exercise.potentialSets.findIndex((a) => a.weight.equals(lowestSet.weight));
+      return exercise.withSet(index, (s) => s.with({ weight: s.weight.plus(this.amount) }));
     } else if (this.increaseStrategy === 'last') {
-      const index = exercise.potentialSets.findLastIndex((a, b) =>
-        a.weight.equals(lowestSet.weight),
-      );
-      return exercise.withSet(index, (s) =>
-        s.with({ weight: s.weight.plus(this.amount) }),
-      );
+      const index = exercise.potentialSets.findLastIndex((a) => a.weight.equals(lowestSet.weight));
+      return exercise.withSet(index, (s) => s.with({ weight: s.weight.plus(this.amount) }));
     }
     assertUnreachable(this.increaseStrategy);
   }
@@ -544,19 +471,11 @@ export type ProgressiveOverload =
   | IncreaseAllEvenlyProgressiveOverload
   | IncreaseLowestSetProgressiveOverload;
 
-function fromProgressiveOverloadJSON(
-  json: ProgressiveOverloadJSON,
-): ProgressiveOverload {
+function fromProgressiveOverloadJSON(json: ProgressiveOverloadJSON): ProgressiveOverload {
   return match(json)
     .with({ type: 'NoProgressiveOverload' }, NoProgressiveOverload.fromJSON)
-    .with(
-      { type: 'IncreaseAllEvenlyProgressiveOverload' },
-      IncreaseAllEvenlyProgressiveOverload.fromJSON,
-    )
-    .with(
-      { type: 'IncreaseLowestSetProgressiveOverload' },
-      IncreaseLowestSetProgressiveOverload.fromJSON,
-    )
+    .with({ type: 'IncreaseAllEvenlyProgressiveOverload' }, IncreaseAllEvenlyProgressiveOverload.fromJSON)
+    .with({ type: 'IncreaseLowestSetProgressiveOverload' }, IncreaseLowestSetProgressiveOverload.fromJSON)
     .exhaustive();
 }
 
@@ -575,21 +494,10 @@ export class WeightedExerciseBlueprint {
   ) {}
 
   static empty() {
-    return new WeightedExerciseBlueprint(
-      '',
-      3,
-      10,
-      new NoProgressiveOverload(),
-      Rest.medium,
-      false,
-      '',
-      '',
-    );
+    return new WeightedExerciseBlueprint('', 3, 10, new NoProgressiveOverload(), Rest.medium, false, '', '');
   }
 
-  static fromJSON(
-    json: WeightedExerciseBlueprintJSON,
-  ): WeightedExerciseBlueprint {
+  static fromJSON(json: WeightedExerciseBlueprintJSON): WeightedExerciseBlueprint {
     return new WeightedExerciseBlueprint(
       json.name,
       json.sets,
@@ -620,9 +528,7 @@ export class WeightedExerciseBlueprint {
       this.progressiveOverload.equals(other.progressiveOverload) &&
       this.restBetweenSets.minRest.equals(other.restBetweenSets.minRest) &&
       this.restBetweenSets.maxRest.equals(other.restBetweenSets.maxRest) &&
-      this.restBetweenSets.failureRest.equals(
-        other.restBetweenSets.failureRest,
-      ) &&
+      this.restBetweenSets.failureRest.equals(other.restBetweenSets.failureRest) &&
       this.supersetWithNext === other.supersetWithNext &&
       this.notes === other.notes &&
       this.link === other.link
@@ -667,14 +573,8 @@ export class KeyedExerciseBlueprint {
     return new KeyedExerciseBlueprint(
       e.name,
       match(e)
-        .with(
-          P.instanceOf(WeightedExerciseBlueprint),
-          (ex) => `${ex.sets}_${ex.repsPerSet}`,
-        )
-        .with(
-          P.instanceOf(CardioExerciseBlueprint),
-          (t) => t.sets[0]?.target.type ?? 'distance',
-        )
+        .with(P.instanceOf(WeightedExerciseBlueprint), (ex) => `${ex.sets}_${ex.repsPerSet}`)
+        .with(P.instanceOf(CardioExerciseBlueprint), (t) => t.sets[0]?.target.type ?? 'distance')
         .exhaustive(),
     );
   }
@@ -704,11 +604,7 @@ export class NormalizedName {
     if (!name) {
       return '';
     }
-    const lowerName = name
-      .toLowerCase()
-      .trim()
-      .replace(/flies/g, 'flys')
-      .replace(/flyes/g, 'flys');
+    const lowerName = name.toLowerCase().trim().replace(/flies/g, 'flys').replace(/flyes/g, 'flys');
     const withoutPlural = lowerName.endsWith('es')
       ? lowerName.slice(0, -2)
       : lowerName.endsWith('s')

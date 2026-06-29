@@ -9,12 +9,7 @@ import { WeightBarChart } from '@/components/presentation/stats/weight-bar-chart
 import { WeightLineChart } from '@/components/presentation/stats/weight-line-chart';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import {
-  fetchOverallStats,
-  selectExerciseView,
-  setOverallViewTime,
-  WeightedExerciseStatistics,
-} from '@/store/stats';
+import { fetchOverallStats, selectExerciseView, setOverallViewTime, WeightedExerciseStatistics } from '@/store/stats';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect } from 'expo-router';
 import { useLocalSearchParams, useRouter } from 'expo-router/build/hooks';
@@ -45,24 +40,14 @@ export default function ExpandedExercisePage() {
         }}
       />
       <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-        <TimePeriodSelector
-          timePeriod={timePeriod}
-          setTimePeriod={(value) => dispatch(setOverallViewTime(value))}
-        />
+        <TimePeriodSelector timePeriod={timePeriod} setTimePeriod={(value) => dispatch(setOverallViewTime(value))} />
       </View>
-      <Remote
-        value={stats}
-        success={(stats) => <LoadedStats stats={stats} />}
-      />
+      <Remote value={stats} success={(stats) => <LoadedStats stats={stats} />} />
     </FullHeightScrollView>
   );
 }
 
-function LoadedStats({
-  stats,
-}: {
-  stats: WeightedExerciseStatistics | undefined;
-}) {
+function LoadedStats({ stats }: { stats: WeightedExerciseStatistics | undefined }) {
   return stats ? (
     <LoadedStatsFilled stats={stats} />
   ) : (
@@ -88,9 +73,7 @@ function LoadedStatsFilled({ stats }: { stats: WeightedExerciseStatistics }) {
       </StatCardWithTitle>
       <StatCardWithTitle title={t('stats.exercise.reps_breakdown.title')}>
         <RepsBarChart statistics={stats.repsStatistics} />
-        <Text style={{ textAlign: 'center' }}>
-          {t('stats.exercise.reps_breakdown_sets_x_axis.label')}
-        </Text>
+        <Text style={{ textAlign: 'center' }}>{t('stats.exercise.reps_breakdown_sets_x_axis.label')}</Text>
       </StatCardWithTitle>
     </View>
   );
@@ -106,9 +89,7 @@ function StatCardWithTitle(props: { title: string; children: ReactNode }) {
           backgroundColor: colors.surfaceContainer,
         }}
       >
-        <Card.Content style={{ paddingVertical: spacing[8] }}>
-          {props.children}
-        </Card.Content>
+        <Card.Content style={{ paddingVertical: spacing[8] }}>{props.children}</Card.Content>
       </Card>
     </TitledSection>
   );
@@ -143,9 +124,7 @@ function OverallStatsGrid({ stats }: { stats: WeightedExerciseStatistics }) {
         <SingleValueStatisticCard
           title={t('stats.exercise.estimated_1rm.label')}
           icon={'function'}
-          value={stats.max1RMPerSessionStatistics.currentValue.shortLocaleFormat(
-            0,
-          )}
+          value={stats.max1RMPerSessionStatistics.currentValue.shortLocaleFormat(0)}
         />
         <SingleValueStatisticCard
           title={t('stats.exercise.usual_rep_range.label')}
@@ -158,9 +137,7 @@ function OverallStatsGrid({ stats }: { stats: WeightedExerciseStatistics }) {
 }
 
 function formatWeeklyRate(value: number) {
-  return Math.abs(value - Math.round(value)) < 0.05
-    ? Math.round(value).toString()
-    : value.toFixed(1);
+  return Math.abs(value - Math.round(value)) < 0.05 ? Math.round(value).toString() : value.toFixed(1);
 }
 
 function getUsualRepRange(stats: WeightedExerciseStatistics) {
@@ -171,10 +148,7 @@ function getUsualRepRange(stats: WeightedExerciseStatistics) {
     }))
     .sort((a, b) => a.reps - b.reps);
 
-  const totalSets = breakdown.reduce(
-    (sum, entry) => sum + entry.numberOfSets,
-    0,
-  );
+  const totalSets = breakdown.reduce((sum, entry) => sum + entry.numberOfSets, 0);
   if (!totalSets) {
     return '-';
   }

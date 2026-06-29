@@ -4,10 +4,7 @@ import { useDispatch } from 'react-redux';
 
 type EffectFn<T> = (action: T) => void;
 
-export function useActionEffect(
-  allActions: undefined,
-  effect: EffectFn<UnknownAction>,
-): void;
+export function useActionEffect(allActions: undefined, effect: EffectFn<UnknownAction>): void;
 export function useActionEffect<TAction extends { type: string }>(
   action: TAction[],
   effect: EffectFn<UnknownAction>,
@@ -25,9 +22,7 @@ export function useActionEffect(
   useEffect(() => {
     const unsubscribe = dispatch(
       addListener({
-        predicate: (action) =>
-          !actionPredicate ||
-          [actionPredicate].flat().some((x) => x.type === action.type),
+        predicate: (action) => !actionPredicate || [actionPredicate].flat().some((x) => x.type === action.type),
         effect: (action) => {
           effect(action);
         },

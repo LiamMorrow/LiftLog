@@ -25,9 +25,7 @@ export class RecordedWeightedExercise {
     readonly notes: string | undefined,
   ) {}
 
-  static fromJSON(
-    json: RecordedWeightedExerciseJSON,
-  ): RecordedWeightedExercise {
+  static fromJSON(json: RecordedWeightedExerciseJSON): RecordedWeightedExercise {
     return new RecordedWeightedExercise(
       WeightedExerciseBlueprint.fromJSON(json.blueprint),
       json.potentialSets.map((x) => PotentialSet.fromJSON(x)),
@@ -35,10 +33,7 @@ export class RecordedWeightedExercise {
     );
   }
 
-  static empty(
-    b: WeightedExerciseBlueprint,
-    unit: WeightUnit,
-  ): RecordedWeightedExercise {
+  static empty(b: WeightedExerciseBlueprint, unit: WeightUnit): RecordedWeightedExercise {
     return new RecordedWeightedExercise(
       b,
       Enumerable.range(0, b.sets)
@@ -80,12 +75,8 @@ export class RecordedWeightedExercise {
 
   with(other: Partial<RecordedWeightedExercise>) {
     return new RecordedWeightedExercise(
-      'blueprint' in other
-        ? (other.blueprint ?? this.blueprint)
-        : this.blueprint,
-      'potentialSets' in other
-        ? (other.potentialSets ?? this.potentialSets)
-        : this.potentialSets,
+      'blueprint' in other ? (other.blueprint ?? this.blueprint) : this.blueprint,
+      'potentialSets' in other ? (other.potentialSets ?? this.potentialSets) : this.potentialSets,
       'notes' in other ? other.notes : this.notes,
     );
   }
@@ -93,24 +84,16 @@ export class RecordedWeightedExercise {
   withNothingCompleted(): RecordedWeightedExercise {
     return this.with({
       notes: undefined,
-      potentialSets: this.potentialSets.map((ps) =>
-        ps.with({ set: undefined }),
-      ),
+      potentialSets: this.potentialSets.map((ps) => ps.with({ set: undefined })),
     });
   }
 
-  withCycledRepCount(
-    setIndex: number,
-    time: OffsetDateTime,
-  ): RecordedWeightedExercise {
+  withCycledRepCount(setIndex: number, time: OffsetDateTime): RecordedWeightedExercise {
     return this.withSet(setIndex, (s) =>
       s.with({
         set: match(s.set)
           .returnType<RecordedSet | undefined>()
-          .with(
-            undefined,
-            () => new RecordedSet(this.blueprint.repsPerSet, time),
-          )
+          .with(undefined, () => new RecordedSet(this.blueprint.repsPerSet, time))
           .with({ repsCompleted: 0 }, () => undefined)
           .otherwise((x) =>
             x.with({
@@ -121,11 +104,7 @@ export class RecordedWeightedExercise {
     );
   }
 
-  withRepCount(
-    setIndex: number,
-    reps: number | undefined,
-    time: OffsetDateTime,
-  ): RecordedWeightedExercise {
+  withRepCount(setIndex: number, reps: number | undefined, time: OffsetDateTime): RecordedWeightedExercise {
     return this.withSet(setIndex, (s) =>
       s.with({
         set: reps === undefined ? undefined : new RecordedSet(reps, time),
@@ -152,9 +131,7 @@ export class RecordedWeightedExercise {
   withWeight(setIndex: number, weight: Weight, applyTo: WeightAppliesTo) {
     return match(applyTo)
       .with('thisSet', () => this.withSet(setIndex, (s) => s.with({ weight })))
-      .with('uncompletedSets', () =>
-        this.withAllSets((s) => s.with({ weight: s.set ? s.weight : weight })),
-      )
+      .with('uncompletedSets', () => this.withAllSets((s) => s.with({ weight: s.set ? s.weight : weight })))
       .with('allSets', () => this.withAllSets((s) => s.with({ weight })))
       .exhaustive();
   }
@@ -181,8 +158,7 @@ export class RecordedWeightedExercise {
 
   get totalWeightLifted(): Weight {
     return this.potentialSets.reduce(
-      (accum, set) =>
-        accum.plus(set.weight.multipliedBy(set.set?.repsCompleted ?? 0)),
+      (accum, set) => accum.plus(set.weight.multipliedBy(set.set?.repsCompleted ?? 0)),
       Weight.NIL,
     );
   }
@@ -196,9 +172,7 @@ export class RecordedWeightedExercise {
   }
 
   get duration(): Duration | undefined {
-    return this.latestTime && this.earliestTime
-      ? Duration.between(this.earliestTime, this.latestTime)
-      : undefined;
+    return this.latestTime && this.earliestTime ? Duration.between(this.earliestTime, this.latestTime) : undefined;
   }
 
   get latestTime(): OffsetDateTime | undefined {
@@ -231,9 +205,7 @@ export class RecordedWeightedExercise {
   /// An exercise is considered a success if ALL sets are successful
   /// </summary>
   get isSuccessForProgressiveOverload(): boolean {
-    return this.potentialSets.every(
-      (x) => x.set && x.set.repsCompleted >= this.blueprint.repsPerSet,
-    );
+    return this.potentialSets.every((x) => x.set && x.set.repsCompleted >= this.blueprint.repsPerSet);
   }
 }
 
@@ -244,10 +216,7 @@ export class RecordedSet {
   ) {}
 
   static fromJSON(json: RecordedSetJSON): RecordedSet {
-    return new RecordedSet(
-      json.repsCompleted,
-      fromOffsetDateTimeJSON(json.completionDateTime),
-    );
+    return new RecordedSet(json.repsCompleted, fromOffsetDateTimeJSON(json.completionDateTime));
   }
 
   equals(other: RecordedSet | undefined): boolean {
@@ -257,18 +226,13 @@ export class RecordedSet {
     if (other === this) {
       return true;
     }
-    return (
-      this.repsCompleted === other.repsCompleted &&
-      this.completionDateTime.equals(other.completionDateTime)
-    );
+    return this.repsCompleted === other.repsCompleted && this.completionDateTime.equals(other.completionDateTime);
   }
 
   with(other: Partial<RecordedSet>): RecordedSet {
     return new RecordedSet(
       'repsCompleted' in other ? other.repsCompleted! : this.repsCompleted,
-      'completionDateTime' in other
-        ? other.completionDateTime!
-        : this.completionDateTime,
+      'completionDateTime' in other ? other.completionDateTime! : this.completionDateTime,
     );
   }
 
@@ -288,10 +252,7 @@ export class PotentialSet {
   ) {}
 
   static fromJSON(json: PotentialSetJSON): PotentialSet {
-    return new PotentialSet(
-      json.set ? RecordedSet.fromJSON(json.set) : undefined,
-      Weight.fromJSON(json.weight),
-    );
+    return new PotentialSet(json.set ? RecordedSet.fromJSON(json.set) : undefined, Weight.fromJSON(json.weight));
   }
 
   equals(other: PotentialSet | undefined): boolean {
@@ -301,17 +262,11 @@ export class PotentialSet {
     if (other === this) {
       return true;
     }
-    return (
-      (this.set?.equals(other.set) ?? other.set === undefined) &&
-      this.weight.equals(other.weight)
-    );
+    return (this.set?.equals(other.set) ?? other.set === undefined) && this.weight.equals(other.weight);
   }
 
   with(other: Partial<PotentialSet>): PotentialSet {
-    return new PotentialSet(
-      'set' in other ? other.set : this.set,
-      'weight' in other ? other.weight! : this.weight,
-    );
+    return new PotentialSet('set' in other ? other.set : this.set, 'weight' in other ? other.weight! : this.weight);
   }
 
   toJSON(): PotentialSetJSON {

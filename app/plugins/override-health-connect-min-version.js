@@ -9,12 +9,7 @@ function withCustomManifest(config) {
 
     manifest['uses-sdk'] ??= [];
 
-    if (
-      !manifest['uses-sdk'].find(
-        (x) =>
-          x.$?.['tools:overrideLibrary'] === 'androidx.health.connect.client',
-      )
-    ) {
+    if (!manifest['uses-sdk'].find((x) => x.$?.['tools:overrideLibrary'] === 'androidx.health.connect.client')) {
       manifest['uses-sdk'].push({
         $: {
           'tools:overrideLibrary': 'androidx.health.connect.client',

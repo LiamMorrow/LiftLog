@@ -26,9 +26,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
   const { recordedExercise } = props;
   useState(false);
 
-  const setToStartNext = recordedExercise.potentialSets.findIndex(
-    (x) => !x.set,
-  );
+  const setToStartNext = recordedExercise.potentialSets.findIndex((x) => !x.set);
 
   return (
     <ExerciseSection
@@ -49,38 +47,23 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             maxReps={recordedExercise.blueprint.repsPerSet}
             onTap={() => {
               const previousSet = set.set;
-              const newSet = recordedExercise
-                .withCycledRepCount(index, timeProvider())
-                .getSet(index).set;
-              updateExercise((ex) =>
-                ex.withCycledRepCount(index, timeProvider()),
-              );
+              const newSet = recordedExercise.withCycledRepCount(index, timeProvider()).getSet(index).set;
+              updateExercise((ex) => ex.withCycledRepCount(index, timeProvider()));
               // We only want to reset the timer when switching between unfilled and filled
               // Otherwise, keep the same time
               if (!previousSet || !newSet) {
                 resetSetTimer();
               }
             }}
-            previousRepCount={
-              props.previousRecordedExercises.at(0)?.potentialSets[index]?.set
-                ?.repsCompleted
-            }
+            previousRepCount={props.previousRecordedExercises.at(0)?.potentialSets[index]?.set?.repsCompleted}
             onUpdateReps={(reps) => {
-              updateExercise((ex) =>
-                ex.withRepCount(index, reps, timeProvider()),
-              );
+              updateExercise((ex) => ex.withRepCount(index, reps, timeProvider()));
               resetSetTimer();
             }}
-            onUpdateWeight={(w, applyTo) =>
-              updateExercise((ex) => ex.withWeight(index, w, applyTo))
-            }
+            onUpdateWeight={(w, applyTo) => updateExercise((ex) => ex.withWeight(index, w, applyTo))}
             set={set}
-            toStartNext={
-              props.toStartNext && setToStartNext === index && !props.isReadonly
-            }
-            weightIncrement={
-              recordedExercise.blueprint.progressiveOverload.weightIncrement
-            }
+            toStartNext={props.toStartNext && setToStartNext === index && !props.isReadonly}
+            weightIncrement={recordedExercise.blueprint.progressiveOverload.weightIncrement}
           />
         ))}
       </View>

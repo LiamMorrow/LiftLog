@@ -62,30 +62,18 @@ import { FeedUserJSON } from '@/models/storage/versions/latest';
 export function applyFeedEffects(addEffect: AddEffectFn) {
   addEffect(
     initializeFeedStateSlice,
-    async (
-      _,
-      {
-        cancelActiveListeners,
-        getState,
-        dispatch,
-        extra: { db, logger, encryptionService },
-      },
-    ) => {
+    async (_, { cancelActiveListeners, getState, dispatch, extra: { db, logger, encryptionService } }) => {
       cancelActiveListeners();
       const sw = performance.now();
       try {
         const identity = (await db.select().from(feedIdentitySchema)).at(0);
         dispatch(
           patchFeedState({
-            identity: identity
-              ? RemoteData.success(FeedIdentity.fromJSON(identity.payload))
-              : RemoteData.notAsked(),
-            feed: (await db.select().from(feedItemsSchema)).map((x) =>
-              SessionUserEvent.fromJSON(x.payload),
+            identity: identity ? RemoteData.success(FeedIdentity.fromJSON(identity.payload)) : RemoteData.notAsked(),
+            feed: (await db.select().from(feedItemsSchema)).map((x) => SessionUserEvent.fromJSON(x.payload)),
+            followRequests: (await db.select().from(feedFollowRequestsSchema)).map((x) =>
+              FollowRequestInboxMessage.fromJSON(x.payload),
             ),
-            followRequests: (
-              await db.select().from(feedFollowRequestsSchema)
-            ).map((x) => FollowRequestInboxMessage.fromJSON(x.payload)),
             followedUsers: (
               (await db.select().from(feedFollowedUsersSchema)) as {
                 payload: FeedUserJSON;
@@ -100,9 +88,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
                 ),
                 {},
               ),
-            revokedFollowSecrets: (
-              await db.select().from(feedRevokedFollowSecretsSchema)
-            ).map((x) => x.secret),
+            revokedFollowSecrets: (await db.select().from(feedRevokedFollowSecretsSchema)).map((x) => x.secret),
             followers: (await db.select().from(feedFollowerUsersSchema))
               .map((x) => FollowerFeedUser.fromJSON(x.payload))
               .reduce(
@@ -154,12 +140,8 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
   });
 
   addEffect(removeFollowedUser, async (action, { extra: { db } }) => {
-    await db
-      .delete(feedFollowedUsersSchema)
-      .where(eq(feedFollowedUsersSchema.id, action.payload));
-    await db
-      .delete(feedPendingUsersSchema)
-      .where(eq(feedPendingUsersSchema.id, action.payload));
+    await db.delete(feedFollowedUsersSchema).where(eq(feedFollowedUsersSchema.id, action.payload));
+    await db.delete(feedPendingUsersSchema).where(eq(feedPendingUsersSchema.id, action.payload));
   });
 
   addEffect(setFollowRequests, async (action, { extra: { db } }) => {
@@ -184,14 +166,10 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     ]);
   });
   addEffect(removeFollower, async (action, { extra: { db } }) => {
-    await db
-      .delete(feedFollowerUsersSchema)
-      .where(eq(feedFollowerUsersSchema.id, action.payload));
+    await db.delete(feedFollowerUsersSchema).where(eq(feedFollowerUsersSchema.id, action.payload));
   });
   addEffect(removeFollowRequest, async (action, { extra: { db } }) => {
-    await db
-      .delete(feedFollowRequestsSchema)
-      .where(eq(feedFollowRequestsSchema.id, action.payload.senderUserId));
+    await db.delete(feedFollowRequestsSchema).where(eq(feedFollowRequestsSchema.id, action.payload.senderUserId));
   });
   addEffect(putFollowedUser, async (action, { extra: { db } }) => {
     await db.transaction(async (tx) => {
@@ -202,13 +180,9 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
             payload: action.payload.toJSON(),
           },
         ]);
-        await tx
-          .delete(feedFollowedUsersSchema)
-          .where(eq(feedFollowedUsersSchema.id, action.payload.id));
+        await tx.delete(feedFollowedUsersSchema).where(eq(feedFollowedUsersSchema.id, action.payload.id));
       } else {
-        await tx
-          .delete(feedPendingUsersSchema)
-          .where(eq(feedPendingUsersSchema.id, action.payload.id));
+        await tx.delete(feedPendingUsersSchema).where(eq(feedPendingUsersSchema.id, action.payload.id));
         await upsert(tx, feedFollowedUsersSchema, [
           {
             id: action.payload.id,
@@ -232,9 +206,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     if (!action.payload.length) {
       return;
     }
-    await db
-      .delete(feedItemsSchema)
-      .where(inArray(feedItemsSchema.id, action.payload));
+    await db.delete(feedItemsSchema).where(inArray(feedItemsSchema.id, action.payload));
   });
   addEffect(addRevokableFollowSecret, async (action, { extra: { db } }) => {
     await db
@@ -243,9 +215,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
       .onConflictDoNothing();
   });
   addEffect(removeRevokableFollowSecret, async (action, { extra: { db } }) => {
-    await db
-      .delete(feedRevokedFollowSecretsSchema)
-      .where(eq(feedRevokedFollowSecretsSchema.secret, action.payload));
+    await db.delete(feedRevokedFollowSecretsSchema).where(eq(feedRevokedFollowSecretsSchema.secret, action.payload));
   });
 
   addEffect(addUnpublishedSessionId, async (action, { extra: { db } }) => {
@@ -255,9 +225,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
       .onConflictDoNothing();
   });
   addEffect(removeUnpublishedSessionId, async (action, { extra: { db } }) => {
-    await db
-      .delete(feedUnpublishedSessionsSchema)
-      .where(eq(feedUnpublishedSessionsSchema.sessionId, action.payload));
+    await db.delete(feedUnpublishedSessionsSchema).where(eq(feedUnpublishedSessionsSchema.sessionId, action.payload));
   });
 
   addEffect(feedApiError, async (action, { dispatch, extra: { logger } }) => {
@@ -265,12 +233,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
       dispatch(showSnackbar({ text: action.payload.message }));
     }
     logger.error(
-      action.payload.message +
-        ' [msg=' +
-        action.payload.error.message +
-        '; type=' +
-        action.payload.error.type +
-        ']',
+      action.payload.message + ' [msg=' + action.payload.error.message + '; type=' + action.payload.error.type + ']',
       {
         action,
         error: action.payload.error,
@@ -280,15 +243,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
 
   addEffect(
     createFeedIdentity,
-    async (
-      action,
-      {
-        cancelActiveListeners,
-        getState,
-        dispatch,
-        extra: { feedIdentityService },
-      },
-    ) => {
+    async (action, { cancelActiveListeners, getState, dispatch, extra: { feedIdentityService } }) => {
       cancelActiveListeners();
       if (getState().feed.identity.isLoading()) {
         return;
@@ -317,65 +272,49 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     },
   );
 
-  addEffect(
-    resetFeedAccount,
-    async (
-      action,
-      { dispatch, stateAfterReduce, extra: { feedIdentityService } },
-    ) => {
-      const identityRemote = selectFeedIdentityRemote(stateAfterReduce);
+  addEffect(resetFeedAccount, async (action, { dispatch, stateAfterReduce, extra: { feedIdentityService } }) => {
+    const identityRemote = selectFeedIdentityRemote(stateAfterReduce);
 
-      const result = await identityRemote
-        .map((i) => feedIdentityService.deleteFeedIdentityAsync(i))
-        .unwrapOr(Promise.resolve(ApiResult.success()));
-      if (result.isError() && result.error.type !== ApiErrorType.NotFound) {
-        dispatch(
-          feedApiError({
-            message: 'Failed to reset account',
-            error: result.error,
-            action,
-          }),
-        );
-        return;
-      }
-      dispatch(clearFeedState());
-      if (action.payload.createNewIdentity === false) {
-        return;
-      }
+    const result = await identityRemote
+      .map((i) => feedIdentityService.deleteFeedIdentityAsync(i))
+      .unwrapOr(Promise.resolve(ApiResult.success()));
+    if (result.isError() && result.error.type !== ApiErrorType.NotFound) {
       dispatch(
-        createFeedIdentity({
-          fromUserAction: true,
-          name: action.payload.newIdentity?.name,
-          publishBodyweight:
-            action.payload.newIdentity?.publishBodyweight ?? false,
-          publishPlan: action.payload.newIdentity?.publishPlan ?? false,
-          publishWorkouts: action.payload.newIdentity?.publishWorkouts ?? false,
+        feedApiError({
+          message: 'Failed to reset account',
+          error: result.error,
+          action,
         }),
       );
-    },
-  );
+      return;
+    }
+    dispatch(clearFeedState());
+    if (action.payload.createNewIdentity === false) {
+      return;
+    }
+    dispatch(
+      createFeedIdentity({
+        fromUserAction: true,
+        name: action.payload.newIdentity?.name,
+        publishBodyweight: action.payload.newIdentity?.publishBodyweight ?? false,
+        publishPlan: action.payload.newIdentity?.publishPlan ?? false,
+        publishWorkouts: action.payload.newIdentity?.publishWorkouts ?? false,
+      }),
+    );
+  });
 
   addEffect(
     updateFeedIdentity,
     async (
       action,
-      {
-        stateAfterReduce,
-        dispatch,
-        getState,
-        extra: { feedIdentityService },
-        cancelActiveListeners,
-        signal,
-      },
+      { stateAfterReduce, dispatch, getState, extra: { feedIdentityService }, cancelActiveListeners, signal },
     ) => {
       cancelActiveListeners();
       const oldFeedIdentity = selectFeedIdentityRemote(stateAfterReduce);
       if (!oldFeedIdentity.isSuccess()) {
         return;
       }
-      dispatch(
-        setIdentity(oldFeedIdentity.map((x) => x.with(action.payload.updates))),
-      );
+      dispatch(setIdentity(oldFeedIdentity.map((x) => x.with(action.payload.updates))));
       const feedIdentityRemote = selectFeedIdentityRemote(getState());
       if (!feedIdentityRemote.isSuccess()) {
         dispatch(setIdentity(oldFeedIdentity));
@@ -393,9 +332,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
         identity.publishBodyweight,
         identity.publishPlan,
         identity.publishWorkouts,
-        stateAfterReduce.program.isHydrated
-          ? selectActiveProgram(stateAfterReduce)
-          : undefined,
+        stateAfterReduce.program.isHydrated ? selectActiveProgram(stateAfterReduce) : undefined,
       );
       if (signal.aborted) {
         return;
@@ -443,17 +380,11 @@ async function fixIosBadRSAKey(
     try {
       await selectFeedIdentityRemote(getState())
         .map((identity) =>
-          encryptionService.encryptRsaOaepSha256Async(
-            new Uint8Array([1, 2, 3]),
-            identity.rsaKeyPair.publicKey,
-          ),
+          encryptionService.encryptRsaOaepSha256Async(new Uint8Array([1, 2, 3]), identity.rsaKeyPair.publicKey),
         )
         .unwrapOr(Promise.resolve());
     } catch (error) {
-      logger.warn(
-        'Failed to encrypt with RSA public key, generating a new one',
-        { error },
-      );
+      logger.warn('Failed to encrypt with RSA public key, generating a new one', { error });
       const newKeyPair = await encryptionService.generateRsaKeys();
       dispatch(
         updateFeedIdentity({

@@ -2,11 +2,7 @@ import { File, Paths } from 'expo-file-system';
 import { shareAsync } from 'expo-sharing';
 
 export class FileExportService {
-  async exportBytes(
-    filename: string,
-    bytes: Uint8Array,
-    contentType: string,
-  ): Promise<void> {
+  async exportBytes(filename: string, bytes: Uint8Array, contentType: string): Promise<void> {
     const file = new File(Paths.join(Paths.cache, filename));
     if (file.exists) {
       file.delete();

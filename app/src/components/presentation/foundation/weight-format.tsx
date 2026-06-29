@@ -1,9 +1,4 @@
-import {
-  ColorChoice,
-  font,
-  FontChoice,
-  useAppTheme,
-} from '@/hooks/useAppTheme';
+import { ColorChoice, font, FontChoice, useAppTheme } from '@/hooks/useAppTheme';
 import { shortFormatWeightUnit, Weight } from '@/models/weight';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { Text, TextStyle } from 'react-native';
@@ -17,10 +12,7 @@ interface WeightFormatProps {
   decimalPlaces?: number;
 }
 export default function WeightFormat(props: WeightFormatProps) {
-  const weightDisplay =
-    localeFormatBigNumber(
-      props.weight?.value.decimalPlaces(props.decimalPlaces ?? 4),
-    ) || '-';
+  const weightDisplay = localeFormatBigNumber(props.weight?.value.decimalPlaces(props.decimalPlaces ?? 4)) || '-';
   const { colors } = useAppTheme();
   return (
     <Text
@@ -33,11 +25,7 @@ export default function WeightFormat(props: WeightFormatProps) {
         ...(props.fontSize ? { ...font[props.fontSize] } : undefined),
       }}
     >
-      {weightDisplay}
-      {' '}
-      <Text style={{ fontSize: 12 }}>
-        {shortFormatWeightUnit(props.weight?.unit)}
-      </Text>
+      {weightDisplay} <Text style={{ fontSize: 12 }}>{shortFormatWeightUnit(props.weight?.unit)}</Text>
     </Text>
   );
 }

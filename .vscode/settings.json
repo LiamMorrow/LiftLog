@@ -1,6 +1,6 @@
 {
   "debug.internalConsoleOptions": "neverOpen",
-  "cSpell.words": ["Fluxor", "kilometre", "Oaep", "Sqids", "Tolgee", "Unfollow"],
+  "cSpell.words": ["Fluxor", "kilometre", "Oaep", "oxlint", "Sqids", "Tolgee", "Unfollow"],
   "typescript.preferences.autoImportSpecifierExcludeRegexes": [
     "vitest/dist/chunks.*",
     "react-native/Libraries/TurboModule/TurboModuleRegistry",
@@ -20,5 +20,8 @@
     "app/modules/workout-worker/android/src/main/proto/**": true,
     "backend/RevenueCat/**": true
   },
-  "js/ts.preferences.autoImportFileExcludePatterns": ["assert", "fast-match"]
+  "js/ts.preferences.autoImportFileExcludePatterns": ["assert", "fast-match"],
+  "oxc.configPath": "app/.oxlintrc.json",
+  "oxc.tsConfigPath": "app/tsconfig.json",
+  "oxc.path.tsgolint": "app/node_modules/.bin/tsgolint"
 }

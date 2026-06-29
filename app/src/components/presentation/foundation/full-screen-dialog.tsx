@@ -74,12 +74,7 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
             transform: [{ translateY }],
           }}
         >
-          <Header
-            onClose={onClose}
-            action={action}
-            onAction={onAction}
-            title={title}
-          />
+          <Header onClose={onClose} action={action} onAction={onAction} title={title} />
           {props.noScroll ? (
             <View
               style={{

@@ -256,10 +256,7 @@ const MaterialSymbols = {
   pause: msPause,
 };
 
-export type AppIconSource =
-  | keyof typeof MaterialSymbols
-  | keyof typeof CustomIcons
-  | (() => JSX.Element);
+export type AppIconSource = keyof typeof MaterialSymbols | keyof typeof CustomIcons | (() => JSX.Element);
 
 export function MsIconSrc({ name, ...rest }: IconProps) {
   if ((name as keyof typeof CustomIcons) in CustomIcons) {

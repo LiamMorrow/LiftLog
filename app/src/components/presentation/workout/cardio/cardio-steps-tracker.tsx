@@ -20,11 +20,7 @@ export function CardioStepsTracker({
       onSave={() => updateSteps(dialogValue)}
       onHold={() => updateSteps(undefined)}
     >
-      <IntegerEditor
-        style={{ flex: 1 }}
-        value={dialogValue}
-        onChange={(value) => setDialogValue(value)}
-      />
+      <IntegerEditor style={{ flex: 1 }} value={dialogValue} onChange={(value) => setDialogValue(value)} />
     </CardioValueSelector>
   );
 }

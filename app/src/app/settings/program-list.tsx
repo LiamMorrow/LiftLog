@@ -25,26 +25,14 @@ export default function ProgramList() {
     dispatch(
       savePlan({
         programId,
-        programBlueprint: new ProgramBlueprint(
-          t('plan.new_default_name.label'),
-          [],
-          LocalDate.now(),
-        ),
+        programBlueprint: new ProgramBlueprint(t('plan.new_default_name.label'), [], LocalDate.now()),
       }),
     );
     push(`/settings/manage-workouts/${programId}/`);
   };
   const floatingBottomContainer = (
     <FloatingBottomContainer
-      fab={
-        <FAB
-          variant="surface"
-          size="small"
-          icon={'add'}
-          label={t('plan.add.button')}
-          onPress={addProgram}
-        />
-      }
+      fab={<FAB variant="surface" size="small" icon={'add'} label={t('plan.add.button')} onPress={addProgram} />}
     />
   );
   return (

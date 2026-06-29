@@ -11,9 +11,7 @@ import { Text } from 'react-native-paper';
 import { Weight } from '@/models/weight';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
-export default function SessionStatGraphCard(props: {
-  sessionStats: OptionalStatisticOverTime<Weight>[];
-}) {
+export default function SessionStatGraphCard(props: { sessionStats: OptionalStatisticOverTime<Weight>[] }) {
   const formatDate = useFormatDate();
   const weightUnit = usePreferredWeightUnit();
   const { t } = useTranslate();
@@ -34,7 +32,6 @@ export default function SessionStatGraphCard(props: {
   const points: lineDataItem[][] = props.sessionStats.map((x) =>
     x.statistics.map(
       (stat): lineDataItem => ({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
         value: stat.value?.convertTo(weightUnit).value.toNumber()!,
         dataPointText: stat.value?.shortLocaleFormat(2) ?? '',
         textShiftY: -10,
@@ -54,11 +51,7 @@ export default function SessionStatGraphCard(props: {
     return undefined;
   }
   return (
-    <View
-      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
-      style={{ gap: spacing[2] }}
-      testID="session-stat-card"
-    >
+    <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)} style={{ gap: spacing[2] }} testID="session-stat-card">
       <SurfaceText font="text-2xl" style={{ textAlign: 'center' }}>
         {t('workout.sessions.title')}
       </SurfaceText>
@@ -68,11 +61,7 @@ export default function SessionStatGraphCard(props: {
           color: pointColors[i % pointColors.length],
           dataPointsColor: pointColors[i % pointColors.length],
         }))}
-        {...lineGraphProps(
-          colors,
-          width,
-          Math.max(...points.map((x) => x.length)),
-        )}
+        {...lineGraphProps(colors, width, Math.max(...points.map((x) => x.length)))}
       />
       <View
         testID="stats-legend"
@@ -84,7 +73,7 @@ export default function SessionStatGraphCard(props: {
           marginTop: spacing[2],
         }}
       >
-        {legendItems.map((item, idx) => (
+        {legendItems.map((item) => (
           <View
             key={item.key}
             style={{

@@ -3,8 +3,6 @@ export class IndexOutOfBoundsError extends Error {
     readonly index: number,
     readonly array: unknown[],
   ) {
-    super(
-      `Index out of bounds. Index: ${index}. Array length: ${array.length}`,
-    );
+    super(`Index out of bounds. Index: ${index}. Array length: ${array.length}`);
   }
 }

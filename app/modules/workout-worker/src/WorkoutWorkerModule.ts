@@ -1,8 +1,5 @@
 import { NativeModule, requireNativeModule } from 'expo';
-import {
-  SerializedWorkoutEventPayload,
-  WorkoutWorkerModuleEvents,
-} from './WorkoutWorker.types';
+import { SerializedWorkoutEventPayload, WorkoutWorkerModuleEvents } from './WorkoutWorker.types';
 
 declare class WorkoutWorkerModule extends NativeModule<WorkoutWorkerModuleEvents> {
   broadcast(string: SerializedWorkoutEventPayload['jsonString']): void;

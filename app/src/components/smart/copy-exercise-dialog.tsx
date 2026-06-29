@@ -72,11 +72,7 @@ export default function CopyExerciseDialog({
     }
   };
 
-  const renderSessionItem = ({
-    item,
-  }: {
-    item: { session: SessionBlueprint; index: number };
-  }) => (
+  const renderSessionItem = ({ item }: { item: { session: SessionBlueprint; index: number } }) => (
     <List.Item
       title={item.session.name}
       description={`${item.session.exercises.length} exercises`}
@@ -124,12 +120,7 @@ export default function CopyExerciseDialog({
           <Button onPress={onDismiss}>
             <T keyName="generic.cancel.button" />
           </Button>
-          <Button
-            onPress={handleCopy}
-            disabled={
-              selectedSessionIndex === undefined || otherSessions.length === 0
-            }
-          >
+          <Button onPress={handleCopy} disabled={selectedSessionIndex === undefined || otherSessions.length === 0}>
             <T keyName="generic.copy.button" />
           </Button>
         </Dialog.Actions>

@@ -25,10 +25,7 @@ import {
 export const importFeedDataMigration = 'IMPORT_FEED';
 
 const storageKey = 'FeedState';
-export async function importFeed(
-  db: ExpoSQLiteDatabase,
-  keyValueStore: KeyValueStore,
-) {
+export async function importFeed(db: ExpoSQLiteDatabase, keyValueStore: KeyValueStore) {
   const feedStateBytes = await keyValueStore.getItemBytes(storageKey);
   if (!feedStateBytes) {
     return;
@@ -61,13 +58,9 @@ export async function importFeed(
       await tx.insert(feedFollowRequestsSchema).values(convertedFollowRequests);
     }
     if (decoded.revokedFollowSecrets.length) {
-      await tx
-        .insert(feedRevokedFollowSecretsSchema)
-        .values(decoded.revokedFollowSecrets.map((x) => ({ secret: x })));
+      await tx.insert(feedRevokedFollowSecretsSchema).values(decoded.revokedFollowSecrets.map((x) => ({ secret: x })));
     }
-    await tx
-      .insert(dataMigrationsSchema)
-      .values({ id: importFeedDataMigration });
+    await tx.insert(dataMigrationsSchema).values({ id: importFeedDataMigration });
   });
 }
 
@@ -75,21 +68,15 @@ function getIdentity(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
   return (
     decoded.identity && {
       id: 0,
-      payload: feedIdentityMigrations.migrate(
-        ProtobufToJsonV1Migrator.migrateFeedIdentity(decoded.identity),
-      ),
+      payload: feedIdentityMigrations.migrate(ProtobufToJsonV1Migrator.migrateFeedIdentity(decoded.identity)),
     }
   );
 }
 
-function getFollowers(
-  decoded: LiftLog.Ui.Models.FeedStateDaoV1,
-): (typeof feedFollowerUsersSchema.$inferInsert)[] {
+function getFollowers(decoded: LiftLog.Ui.Models.FeedStateDaoV1): (typeof feedFollowerUsersSchema.$inferInsert)[] {
   return decoded.followers.map((x) => ({
     id: ProtobufToJsonV1Migrator.migrateUuid(x.id),
-    payload: followerFeedUserMigrations.migrate(
-      ProtobufToJsonV1Migrator.migrateFollowerUser(x),
-    ),
+    payload: followerFeedUserMigrations.migrate(ProtobufToJsonV1Migrator.migrateFollowerUser(x)),
   }));
 }
 
@@ -123,17 +110,13 @@ function getPendingUsers(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
 function getFollowRequests(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
   return decoded.followRequests.map((x) => ({
     id: ProtobufToJsonV1Migrator.migrateUuid(x.fromUserId),
-    payload: followRequestInboxMessageMigrations.migrate(
-      ProtobufToJsonV1Migrator.migrateFollowRequest(x),
-    ),
+    payload: followRequestInboxMessageMigrations.migrate(ProtobufToJsonV1Migrator.migrateFollowRequest(x)),
   }));
 }
 
 function getFeedItems(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
   return decoded.feedItems.map((x) => {
-    const payload = sessionUserEventMigrations.migrate(
-      ProtobufToJsonV1Migrator.migrateSessionUserEvent(x),
-    );
+    const payload = sessionUserEventMigrations.migrate(ProtobufToJsonV1Migrator.migrateSessionUserEvent(x));
 
     return {
       id: SessionUserEvent.fromJSON(payload).id,

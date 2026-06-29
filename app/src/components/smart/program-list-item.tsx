@@ -3,12 +3,7 @@ import { SharedProgramBlueprint } from '@/models/feed-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { showSnackbar } from '@/store/app';
 import { encryptAndShare } from '@/store/feed';
-import {
-  deleteSavedPlan,
-  savePlan,
-  selectProgram,
-  setActivePlan,
-} from '@/store/program';
+import { deleteSavedPlan, savePlan, selectProgram, setActivePlan } from '@/store/program';
 import { uuid } from '@/utils/uuid';
 import { DateTimeFormatter } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
@@ -39,13 +34,7 @@ function ItemMenu({ id }: ItemProps) {
     <Menu
       visible={menuVisible}
       onDismiss={() => setMenuVisible(false)}
-      anchor={
-        <IconButton
-          testID="more-program-btn"
-          onPress={() => setMenuVisible(true)}
-          icon={'moreHoriz'}
-        />
-      }
+      anchor={<IconButton testID="more-program-btn" onPress={() => setMenuVisible(true)} icon={'moreHoriz'} />}
     >
       <Menu.Item
         onPress={() => {
@@ -81,9 +70,7 @@ function ItemMenu({ id }: ItemProps) {
         leadingIcon={'contentCopy'}
         onPress={() => {
           setMenuVisible(false);
-          dispatch(
-            savePlan({ programId: uuid(), programBlueprint: thisProgram }),
-          );
+          dispatch(savePlan({ programId: uuid(), programBlueprint: thisProgram }));
         }}
       />
       <Menu.Item
@@ -103,10 +90,7 @@ function ItemMenu({ id }: ItemProps) {
   );
 }
 
-export default function ProgramListItem({
-  id,
-  isFocused,
-}: ProgramListItemProps) {
+export default function ProgramListItem({ id, isFocused }: ProgramListItemProps) {
   const program = useAppSelectorWithArg(selectProgram, id);
   const activeProgramId = useAppSelector((state) => state.program.activePlanId);
   const dispatch = useDispatch();
@@ -149,9 +133,7 @@ export default function ProgramListItem({
       descriptionStyle={focusStyle}
       contentStyle={focusStyle}
       right={() => (
-        <View
-          style={{ flexDirection: 'row', alignItems: 'center', ...focusStyle }}
-        >
+        <View style={{ flexDirection: 'row', alignItems: 'center', ...focusStyle }}>
           <RadioButton
             value={id}
             status={activeProgramId === id ? 'checked' : 'unchecked'}

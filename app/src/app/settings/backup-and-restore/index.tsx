@@ -14,12 +14,7 @@ import {
   setIdentity,
   upsertFeedItems,
 } from '@/store/feed';
-import {
-  beginFeedImport,
-  exportData,
-  importData,
-  setBackupReminder,
-} from '@/store/settings';
+import { beginFeedImport, exportData, importData, setBackupReminder } from '@/store/settings';
 import { setStatsIsDirty } from '@/store/stats';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
@@ -39,9 +34,7 @@ export default function BackupAndRestorePage() {
   const [feedExportDialogOpen, setFeedExportDialogOpen] = useState(false);
   return (
     <FullHeightScrollView>
-      <Stack.Screen
-        options={{ title: t('backup.export_backup_restore.title') }}
-      />
+      <Stack.Screen options={{ title: t('backup.export_backup_restore.title') }} />
       <List.Section>
         <List.Item
           title={t('backup.backup_data.title')}
@@ -78,14 +71,8 @@ export default function BackupAndRestorePage() {
           onValueChange={(value) => dispatch(setBackupReminder(value))}
         />
       </List.Section>
-      <ImportFeedDialog
-        open={feedImportDialogOpen}
-        setOpen={setFeedImportDialogOpen}
-      />
-      <ExportFeedDialog
-        open={feedExportDialogOpen}
-        setOpen={setFeedExportDialogOpen}
-      />
+      <ImportFeedDialog open={feedImportDialogOpen} setOpen={setFeedImportDialogOpen} />
+      <ExportFeedDialog open={feedExportDialogOpen} setOpen={setFeedExportDialogOpen} />
     </FullHeightScrollView>
   );
 }

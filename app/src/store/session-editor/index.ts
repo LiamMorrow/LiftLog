@@ -15,10 +15,7 @@ const sessionEditorSlice = createSlice({
   name: 'sessionEditor',
   initialState,
   reducers: {
-    setEditingSession(
-      state,
-      action: PayloadAction<SessionBlueprint | undefined>,
-    ) {
+    setEditingSession(state, action: PayloadAction<SessionBlueprint | undefined>) {
       state.sessionBlueprint = action.payload;
     },
     setEditingSessionName(state, action: PayloadAction<string>) {
@@ -38,9 +35,7 @@ const sessionEditorSlice = createSlice({
     addExercise(state, action: PayloadAction<ExerciseBlueprint>) {
       if (state.sessionBlueprint) {
         state.sessionBlueprint = state.sessionBlueprint.with({
-          exercises: state.sessionBlueprint.exercises.concat(
-            action.payload,
-          ) as ExerciseBlueprint[],
+          exercises: state.sessionBlueprint.exercises.concat(action.payload) as ExerciseBlueprint[],
         });
       }
     },
@@ -50,25 +45,16 @@ const sessionEditorSlice = createSlice({
     removeExercise(state, action: PayloadAction<ExerciseBlueprint>) {
       if (state.sessionBlueprint) {
         state.sessionBlueprint = state.sessionBlueprint.with({
-          exercises: (
-            state.sessionBlueprint.exercises as ExerciseBlueprint[]
-          ).filter((x) => !action.payload.equals(x)),
+          exercises: (state.sessionBlueprint.exercises as ExerciseBlueprint[]).filter((x) => !action.payload.equals(x)),
         });
       }
     },
     moveExerciseUp(state, action: PayloadAction<ExerciseBlueprint>) {
       if (state.sessionBlueprint) {
-        const index = state.sessionBlueprint.exercises.findIndex((x) =>
-          action.payload.equals(x as ExerciseBlueprint),
-        );
+        const index = state.sessionBlueprint.exercises.findIndex((x) => action.payload.equals(x as ExerciseBlueprint));
         if (index > 0) {
-          const exercises = [
-            ...state.sessionBlueprint.exercises,
-          ] as ExerciseBlueprint[];
-          [exercises[index - 1], exercises[index]] = [
-            exercises[index]!,
-            exercises[index - 1]!,
-          ];
+          const exercises = [...state.sessionBlueprint.exercises] as ExerciseBlueprint[];
+          [exercises[index - 1], exercises[index]] = [exercises[index]!, exercises[index - 1]!];
           state.sessionBlueprint = state.sessionBlueprint.with({
             exercises,
           });
@@ -77,17 +63,10 @@ const sessionEditorSlice = createSlice({
     },
     moveExerciseDown(state, action: PayloadAction<ExerciseBlueprint>) {
       if (state.sessionBlueprint) {
-        const index = state.sessionBlueprint.exercises.findIndex((x) =>
-          action.payload.equals(x as ExerciseBlueprint),
-        );
+        const index = state.sessionBlueprint.exercises.findIndex((x) => action.payload.equals(x as ExerciseBlueprint));
         if (index >= 0 && index < state.sessionBlueprint.exercises.length - 1) {
-          const exercises = [
-            ...state.sessionBlueprint.exercises,
-          ] as ExerciseBlueprint[];
-          [exercises[index], exercises[index + 1]] = [
-            exercises[index + 1]!,
-            exercises[index]!,
-          ];
+          const exercises = [...state.sessionBlueprint.exercises] as ExerciseBlueprint[];
+          [exercises[index], exercises[index + 1]] = [exercises[index + 1]!, exercises[index]!];
           state.sessionBlueprint = state.sessionBlueprint.with({ exercises });
         }
       }
@@ -103,9 +82,7 @@ const sessionEditorSlice = createSlice({
         const { index, exercise } = action.payload;
         if (index >= 0 && index < state.sessionBlueprint.exercises.length) {
           state.sessionBlueprint = state.sessionBlueprint.with({
-            exercises: (
-              state.sessionBlueprint.exercises as ExerciseBlueprint[]
-            ).with(index, exercise),
+            exercises: (state.sessionBlueprint.exercises as ExerciseBlueprint[]).with(index, exercise),
           });
         }
       }
@@ -118,8 +95,7 @@ const sessionEditorSlice = createSlice({
     ),
     selectEditingExercise: createSelector(
       (state: SessionEditorState) =>
-        state.editingExerciseIndex !== undefined &&
-        state.sessionBlueprint?.exercises[state.editingExerciseIndex],
+        state.editingExerciseIndex !== undefined && state.sessionBlueprint?.exercises[state.editingExerciseIndex],
       (exercise) => (exercise ? exercise : undefined),
     ),
   },
@@ -137,7 +113,6 @@ export const {
   updateSessionExercise,
 } = sessionEditorSlice.actions;
 
-export const { selectCurrentlyEditingSession, selectEditingExercise } =
-  sessionEditorSlice.selectors;
+export const { selectCurrentlyEditingSession, selectEditingExercise } = sessionEditorSlice.selectors;
 
 export const sessionEditorReducer = sessionEditorSlice.reducer;

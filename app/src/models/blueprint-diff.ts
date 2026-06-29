@@ -76,10 +76,7 @@ interface ExerciseReorderedChange extends BaseChange {
   newIndex: number;
 }
 
-type ExerciseStructureChange =
-  | ExerciseAddedChange
-  | ExerciseRemovedChange
-  | ExerciseReorderedChange;
+type ExerciseStructureChange = ExerciseAddedChange | ExerciseRemovedChange | ExerciseReorderedChange;
 
 // ============================================================================
 // Exercise Field Changes (for modified exercises)
@@ -210,10 +207,7 @@ interface CardioSetModifiedChange extends BaseChange {
   newSet: CardioExerciseSetBlueprint;
 }
 
-type CardioSetChange =
-  | CardioSetAddedChange
-  | CardioSetRemovedChange
-  | CardioSetModifiedChange;
+type CardioSetChange = CardioSetAddedChange | CardioSetRemovedChange | CardioSetModifiedChange;
 
 /** Exercise type changed (weighted <-> cardio) */
 interface ExerciseTypeChange extends BaseChange {
@@ -242,10 +236,7 @@ type ExerciseFieldChange =
 // Aggregated Types
 // ============================================================================
 
-export type DiffChange =
-  | SessionChange
-  | ExerciseStructureChange
-  | ExerciseFieldChange;
+export type DiffChange = SessionChange | ExerciseStructureChange | ExerciseFieldChange;
 
 /**
  * Groups all changes for a single exercise that was modified
@@ -400,11 +391,7 @@ function matchExercisesByName(
 }
 
 function restEquals(a: Rest, b: Rest): boolean {
-  return (
-    a.minRest.equals(b.minRest) &&
-    a.maxRest.equals(b.maxRest) &&
-    a.failureRest.equals(b.failureRest)
-  );
+  return a.minRest.equals(b.minRest) && a.maxRest.equals(b.maxRest) && a.failureRest.equals(b.failureRest);
 }
 
 function diffWeightedExercises(
@@ -599,13 +586,7 @@ function diffCardioExercises(
     // Check if the set has any differences
     if (!oldSet.equals(newSet)) {
       // Add detailed field-level changes for this set
-      const setChanges = diffCardioSets(
-        oldSet,
-        newSet,
-        exerciseName,
-        exerciseIndex,
-        i,
-      );
+      const setChanges = diffCardioSets(oldSet, newSet, exerciseName, exerciseIndex, i);
       changes.push(...setChanges);
 
       // If there are no detailed field changes but sets aren't equal,
@@ -704,11 +685,7 @@ function diffExercises(
     return diffWeightedExercises(oldEx, newEx, exerciseIndex);
   }
 
-  return diffCardioExercises(
-    oldEx as CardioExerciseBlueprint,
-    newEx as CardioExerciseBlueprint,
-    exerciseIndex,
-  );
+  return diffCardioExercises(oldEx as CardioExerciseBlueprint, newEx as CardioExerciseBlueprint, exerciseIndex);
 }
 
 /**
@@ -718,10 +695,7 @@ function diffExercises(
  * Rest settings are grouped as a single change.
  * Reordering is detected as a separate change type.
  */
-export function diffSessionBlueprints(
-  original: SessionBlueprint,
-  modified: SessionBlueprint,
-): SessionBlueprintDiff {
+export function diffSessionBlueprints(original: SessionBlueprint, modified: SessionBlueprint): SessionBlueprintDiff {
   const sessionChanges: SessionChange[] = [];
   const allChanges: DiffChange[] = [];
 
@@ -751,32 +725,25 @@ export function diffSessionBlueprints(
   }
 
   // Match exercises
-  const { matched, added, removed } = matchExercisesByName(
-    original.exercises,
-    modified.exercises,
-  );
+  const { matched, added, removed } = matchExercisesByName(original.exercises, modified.exercises);
 
   // Added exercises
-  const addedExercises: ExerciseAddedChange[] = added.map(
-    ({ exercise, index }) => ({
-      id: generateChangeId(),
-      kind: 'exercise',
-      type: 'added',
-      exercise,
-      newIndex: index,
-    }),
-  );
+  const addedExercises: ExerciseAddedChange[] = added.map(({ exercise, index }) => ({
+    id: generateChangeId(),
+    kind: 'exercise',
+    type: 'added',
+    exercise,
+    newIndex: index,
+  }));
 
   // Removed exercises
-  const removedExercises: ExerciseRemovedChange[] = removed.map(
-    ({ exercise, index }) => ({
-      id: generateChangeId(),
-      kind: 'exercise',
-      type: 'removed',
-      exercise,
-      oldIndex: index,
-    }),
-  );
+  const removedExercises: ExerciseRemovedChange[] = removed.map(({ exercise, index }) => ({
+    id: generateChangeId(),
+    kind: 'exercise',
+    type: 'removed',
+    exercise,
+    oldIndex: index,
+  }));
 
   // Reordered exercises (matched but at different indices)
   const reorderedExercises: ExerciseReorderedChange[] = matched
@@ -835,22 +802,11 @@ export function diffSessionBlueprints(
  * @param selectedChangeIds Set of change IDs to include
  * @returns A new SessionBlueprintDiff with only the selected changes
  */
-export function filterDiff(
-  diff: SessionBlueprintDiff,
-  selectedChangeIds: Set<string>,
-): SessionBlueprintDiff {
-  const sessionChanges = diff.sessionChanges.filter((c) =>
-    selectedChangeIds.has(c.id),
-  );
-  const addedExercises = diff.addedExercises.filter((c) =>
-    selectedChangeIds.has(c.id),
-  );
-  const removedExercises = diff.removedExercises.filter((c) =>
-    selectedChangeIds.has(c.id),
-  );
-  const reorderedExercises = diff.reorderedExercises.filter((c) =>
-    selectedChangeIds.has(c.id),
-  );
+export function filterDiff(diff: SessionBlueprintDiff, selectedChangeIds: Set<string>): SessionBlueprintDiff {
+  const sessionChanges = diff.sessionChanges.filter((c) => selectedChangeIds.has(c.id));
+  const addedExercises = diff.addedExercises.filter((c) => selectedChangeIds.has(c.id));
+  const removedExercises = diff.removedExercises.filter((c) => selectedChangeIds.has(c.id));
+  const reorderedExercises = diff.reorderedExercises.filter((c) => selectedChangeIds.has(c.id));
   const modifiedExercises = diff.modifiedExercises
     .map((mod) => ({
       ...mod,
@@ -885,10 +841,7 @@ export function filterDiff(
  * @param diff The computed diff
  * @returns A new SessionBlueprint with only selected changes applied
  */
-export function applySessionBlueprintDiff(
-  original: SessionBlueprint,
-  diff: SessionBlueprintDiff,
-): SessionBlueprint {
+export function applySessionBlueprintDiff(original: SessionBlueprint, diff: SessionBlueprintDiff): SessionBlueprint {
   let name = original.name;
   let notes = original.notes;
 
@@ -930,9 +883,7 @@ export function applySessionBlueprintDiff(
   // Apply field-level modifications
   for (const mod of diff.modifiedExercises) {
     // Find the corresponding original index
-    const originalIdx = original.exercises.findIndex(
-      (ex) => ex.name === mod.exerciseName,
-    );
+    const originalIdx = original.exercises.findIndex((ex) => ex.name === mod.exerciseName);
 
     if (originalIdx === -1) continue;
 
@@ -940,40 +891,24 @@ export function applySessionBlueprintDiff(
 
     for (const change of mod.changes) {
       exercise = match(change)
-        .with({ kind: 'exerciseName' }, (c) =>
-          exercise.with({ name: c.newValue }),
-        )
+        .with({ kind: 'exerciseName' }, (c) => exercise.with({ name: c.newValue }))
         .with({ kind: 'exerciseSets' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint
-            ? exercise.with({ sets: c.newValue })
-            : exercise,
+          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ sets: c.newValue }) : exercise,
         )
         .with({ kind: 'exerciseReps' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint
-            ? exercise.with({ repsPerSet: c.newValue })
-            : exercise,
+          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ repsPerSet: c.newValue }) : exercise,
         )
         .with({ kind: 'progressiveOverload' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint
-            ? exercise.with({ progressiveOverload: c.newValue })
-            : exercise,
+          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ progressiveOverload: c.newValue }) : exercise,
         )
         .with({ kind: 'exerciseRest' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint
-            ? exercise.with({ restBetweenSets: c.newValue })
-            : exercise,
+          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ restBetweenSets: c.newValue }) : exercise,
         )
         .with({ kind: 'exerciseSuperset' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint
-            ? exercise.with({ supersetWithNext: c.newValue })
-            : exercise,
+          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ supersetWithNext: c.newValue }) : exercise,
         )
-        .with({ kind: 'exerciseNotes' }, (c) =>
-          exercise.with({ notes: c.newValue }),
-        )
-        .with({ kind: 'exerciseLink' }, (c) =>
-          exercise.with({ link: c.newValue }),
-        )
+        .with({ kind: 'exerciseNotes' }, (c) => exercise.with({ notes: c.newValue }))
+        .with({ kind: 'exerciseLink' }, (c) => exercise.with({ link: c.newValue }))
         .with({ kind: 'exerciseTarget' }, (c) => {
           if (!(exercise instanceof CardioExerciseBlueprint)) return exercise;
           const newSets = [...exercise.sets];
@@ -1032,9 +967,7 @@ export function applySessionBlueprintDiff(
   const reorderChanges = diff.reorderedExercises;
 
   // Remove exercises marked for removal
-  const finalExercises = exercises.filter(
-    (_, idx) => !indicesToRemove.has(idx),
-  );
+  const finalExercises = exercises.filter((_, idx) => !indicesToRemove.has(idx));
 
   // Add new exercises at their target positions
   // Sort by index to insert in correct order
@@ -1057,9 +990,7 @@ export function applySessionBlueprintDiff(
     });
 
     // Sort reorder changes by target index
-    const sortedReorders = [...reorderChanges].sort(
-      (a, b) => a.newIndex - b.newIndex,
-    );
+    const sortedReorders = [...reorderChanges].sort((a, b) => a.newIndex - b.newIndex);
 
     // Apply reorders (this is a simplified approach)
     for (const reorder of sortedReorders) {
@@ -1097,10 +1028,7 @@ export interface TranslatableString {
   params?: Record<string, string | number>;
 }
 
-export function getChangeDescription(
-  t: UseTranslateResult['t'],
-  change: DiffChange,
-): string {
+export function getChangeDescription(t: UseTranslateResult['t'], change: DiffChange): string {
   return match(change)
     .returnType<string>()
     .with({ kind: 'sessionName' }, (c) =>
@@ -1110,12 +1038,8 @@ export function getChangeDescription(
       }),
     )
     .with({ kind: 'sessionNotes' }, () => t('plan.diff.generic_updated.body'))
-    .with({ kind: 'exercise', type: 'added' }, (c) =>
-      t('plan.diff.exercise_added.body', { name: c.exercise.name }),
-    )
-    .with({ kind: 'exercise', type: 'removed' }, (c) =>
-      t('plan.diff.exercise_removed.body', { name: c.exercise.name }),
-    )
+    .with({ kind: 'exercise', type: 'added' }, (c) => t('plan.diff.exercise_added.body', { name: c.exercise.name }))
+    .with({ kind: 'exercise', type: 'removed' }, (c) => t('plan.diff.exercise_removed.body', { name: c.exercise.name }))
     .with({ kind: 'exercise', type: 'reordered' }, (c) =>
       t('plan.diff.exercise_reordered.body', {
         name: c.exerciseName,
@@ -1149,32 +1073,18 @@ export function getChangeDescription(
     )
     .with({ kind: 'exerciseRest' }, () => t('plan.diff.generic_updated.body'))
     .with({ kind: 'exerciseSuperset' }, (c) =>
-      t(
-        c.newValue
-          ? 'plan.diff.generic_enabled.body'
-          : 'plan.diff.generic_disabled.body',
-      ),
+      t(c.newValue ? 'plan.diff.generic_enabled.body' : 'plan.diff.generic_disabled.body'),
     )
     .with({ kind: 'exerciseNotes' }, () => t('plan.diff.generic_updated.body'))
     .with({ kind: 'exerciseLink' }, () => t('plan.diff.generic_updated.body'))
     .with({ kind: 'exerciseTarget' }, () => t('plan.diff.generic_updated.body'))
     .with({ kind: 'exerciseTracking' }, (c) =>
-      t(
-        c.newValue
-          ? 'plan.diff.generic_enabled.body'
-          : 'plan.diff.generic_disabled.body',
-      ),
+      t(c.newValue ? 'plan.diff.generic_enabled.body' : 'plan.diff.generic_disabled.body'),
     )
     .with({ kind: 'exerciseType' }, (c) =>
       t('plan.diff.generic_two_value_change.body', {
-        oldValue:
-          c.oldExercise instanceof WeightedExerciseBlueprint
-            ? 'weighted'
-            : 'cardio',
-        newValue:
-          c.newExercise instanceof WeightedExerciseBlueprint
-            ? 'weighted'
-            : 'cardio',
+        oldValue: c.oldExercise instanceof WeightedExerciseBlueprint ? 'weighted' : 'cardio',
+        newValue: c.newExercise instanceof WeightedExerciseBlueprint ? 'weighted' : 'cardio',
       }),
     )
     .with({ kind: 'cardioSet', type: 'added' }, (c) =>
@@ -1183,9 +1093,7 @@ export function getChangeDescription(
     .with({ kind: 'cardioSet', type: 'removed' }, (c) =>
       t('plan.diff.cardio_set_removed.body', { setNumber: c.setIndex + 1 }),
     )
-    .with({ kind: 'cardioSetModified' }, (c) =>
-      t('plan.diff.cardio_set_modified.body', { setNumber: c.setIndex + 1 }),
-    )
+    .with({ kind: 'cardioSetModified' }, (c) => t('plan.diff.cardio_set_modified.body', { setNumber: c.setIndex + 1 }))
     .exhaustive();
 }
 
@@ -1262,15 +1170,10 @@ export function getChangeLabelKey(change: DiffChange): TranslatableString {
     .exhaustive();
 }
 
-function stringifyProgressiveOverload(
-  t: UseTranslateResult['t'],
-  progressiveOverload: ProgressiveOverload,
-): string {
+function stringifyProgressiveOverload(t: UseTranslateResult['t'], progressiveOverload: ProgressiveOverload): string {
   return match(progressiveOverload)
     .returnType<string>()
-    .with({ type: 'NoProgressiveOverload' }, () =>
-      t('exercise.progressive_overload.no.label'),
-    )
+    .with({ type: 'NoProgressiveOverload' }, () => t('exercise.progressive_overload.no.label'))
     .with({ type: 'IncreaseAllEvenlyProgressiveOverload' }, (x) =>
       t('plan.diff.progressive_overload_increase_all_evenly.label', {
         amount: localeFormatBigNumber(x.amount),
@@ -1285,30 +1188,11 @@ function stringifyProgressiveOverload(
     .exhaustive();
 }
 
-function stringifyIncreaseStrategy(
-  t: UseTranslateResult['t'],
-  strategy: IncreaseStrategy,
-) {
+function stringifyIncreaseStrategy(t: UseTranslateResult['t'], strategy: IncreaseStrategy) {
   return match(strategy)
-    .with('all', () =>
-      t(
-        'exercise.progressive_overload.increase_lowest_set.increase_strategy.all.label',
-      ),
-    )
-    .with('first', () =>
-      t(
-        'exercise.progressive_overload.increase_lowest_set.increase_strategy.first.label',
-      ),
-    )
-    .with('middle', () =>
-      t(
-        'exercise.progressive_overload.increase_lowest_set.increase_strategy.middle.label',
-      ),
-    )
-    .with('last', () =>
-      t(
-        'exercise.progressive_overload.increase_lowest_set.increase_strategy.last.label',
-      ),
-    )
+    .with('all', () => t('exercise.progressive_overload.increase_lowest_set.increase_strategy.all.label'))
+    .with('first', () => t('exercise.progressive_overload.increase_lowest_set.increase_strategy.first.label'))
+    .with('middle', () => t('exercise.progressive_overload.increase_lowest_set.increase_strategy.middle.label'))
+    .with('last', () => t('exercise.progressive_overload.increase_lowest_set.increase_strategy.last.label'))
     .exhaustive();
 }

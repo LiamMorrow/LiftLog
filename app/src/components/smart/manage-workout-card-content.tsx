@@ -25,32 +25,19 @@ interface ManageWorkoutCardContentProps {
   sessionBlueprint: SessionBlueprint;
   programId: string;
 }
-export default function ManageWorkoutCardContent({
-  sessionBlueprint,
-  programId,
-}: ManageWorkoutCardContentProps) {
+export default function ManageWorkoutCardContent({ sessionBlueprint, programId }: ManageWorkoutCardContentProps) {
   const preferredWeightUnit = usePreferredWeightUnit();
-  const session = Session.getEmptySession(
-    sessionBlueprint,
-    preferredWeightUnit,
-  );
+  const session = Session.getEmptySession(sessionBlueprint, preferredWeightUnit);
   return (
     <SplitCardControl
       titleContent={<SessionSummaryTitle session={session} isFilled={false} />}
-      mainContent={
-        <SessionSummary isFilled={false} session={session} showWeight={false} />
-      }
-      actions={
-        <Actions programId={programId} sessionBlueprint={sessionBlueprint} />
-      }
+      mainContent={<SessionSummary isFilled={false} session={session} showWeight={false} />}
+      actions={<Actions programId={programId} sessionBlueprint={sessionBlueprint} />}
     />
   );
 }
 
-function Actions({
-  programId,
-  sessionBlueprint,
-}: ManageWorkoutCardContentProps) {
+function Actions({ programId, sessionBlueprint }: ManageWorkoutCardContentProps) {
   const dispatch = useDispatch();
   const plan = useAppSelectorWithArg(selectProgram, programId);
   const { t } = useTranslate();
@@ -117,9 +104,7 @@ function Actions({
       <Menu
         visible={menuOpen}
         onDismiss={() => setMenuOpen(false)}
-        anchor={
-          <IconButton onPress={() => setMenuOpen(true)} icon={'moreHoriz'} />
-        }
+        anchor={<IconButton onPress={() => setMenuOpen(true)} icon={'moreHoriz'} />}
       >
         <Menu.Item
           onPress={() => {

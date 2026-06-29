@@ -15,13 +15,10 @@ export async function importSessions(
   keyValueStore: KeyValueStore,
   preferenceService: PreferenceService,
 ) {
-  const preferredUnit = (await preferenceService.getUseImperialUnits())
-    ? 'pounds'
-    : 'kilograms';
-  const storedData =
-    LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.decode(
-      (await keyValueStore.getItemBytes(storageKey)) ?? Uint8Array.from([]),
-    );
+  const preferredUnit = (await preferenceService.getUseImperialUnits()) ? 'pounds' : 'kilograms';
+  const storedData = LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.decode(
+    (await keyValueStore.getItemBytes(storageKey)) ?? Uint8Array.from([]),
+  );
   // Convert old bodyweights with nil to be the set weight
   const coalesceWeightUnit = (weight: undefined | WeightJSON) =>
     weight
@@ -32,9 +29,7 @@ export async function importSessions(
       : undefined;
   const completedSessionsList: (typeof sessionsSchema.$inferInsert)[] =
     storedData?.completedSessions.map((x) => {
-      const session = sessionMigrations.migrate(
-        ProtobufToJsonV1Migrator.migrateSession(x),
-      );
+      const session = sessionMigrations.migrate(ProtobufToJsonV1Migrator.migrateSession(x));
       return {
         payload: {
           ...session,
@@ -48,8 +43,6 @@ export async function importSessions(
     if (completedSessionsList.length) {
       await tx.insert(sessionsSchema).values(completedSessionsList);
     }
-    await tx
-      .insert(dataMigrationsSchema)
-      .values({ id: importSessionsDataMigration });
+    await tx.insert(dataMigrationsSchema).values({ id: importSessionsDataMigration });
   });
 }

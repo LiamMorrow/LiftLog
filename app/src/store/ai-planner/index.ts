@@ -1,7 +1,4 @@
-import {
-  AiChatResponseV2,
-  AiChatSharedProgramMessage,
-} from '@/models/ai-models';
+import { AiChatResponseV2, AiChatSharedProgramMessage } from '@/models/ai-models';
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialState: AppState = {
@@ -34,17 +31,13 @@ const aiPlannerSlice = createSlice({
       };
     },
     updateMessage(state, action: PayloadAction<ChatMessage>) {
-      const messageIndex = state.plannerChat.findIndex(
-        (x) => x.id === action.payload.id,
-      );
+      const messageIndex = state.plannerChat.findIndex((x) => x.id === action.payload.id);
       if (messageIndex !== -1) {
         state.plannerChat[messageIndex] = action.payload;
       }
     },
     removeMessage(state, action: PayloadAction<string>) {
-      const existingMessage = state.plannerChat.findIndex(
-        (x) => x.id === action.payload,
-      );
+      const existingMessage = state.plannerChat.findIndex((x) => x.id === action.payload);
       if (existingMessage === -1) {
         return;
       }
@@ -58,17 +51,13 @@ const aiPlannerSlice = createSlice({
     },
   },
   selectors: {
-    selectIsLoadingAiPlannerMessage: (s) =>
-      s.plannerChat.some((x) => x.isLoading),
+    selectIsLoadingAiPlannerMessage: (s) => s.plannerChat.some((x) => x.isLoading),
   },
 });
 
-export const initializeAiPlannerStateSlice = createAction(
-  'initializeAiPlannerStateSlice',
-);
+export const initializeAiPlannerStateSlice = createAction('initializeAiPlannerStateSlice');
 
-export const { setIsHydrated, addMessage, restartChat, updateMessage, setChat } =
-  aiPlannerSlice.actions;
+export const { setIsHydrated, addMessage, restartChat, updateMessage, setChat } = aiPlannerSlice.actions;
 
 export const { selectIsLoadingAiPlannerMessage } = aiPlannerSlice.selectors;
 

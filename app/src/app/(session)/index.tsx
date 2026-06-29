@@ -10,15 +10,8 @@ import SessionSummaryTitle from '@/components/presentation/summary/session-summa
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
 import { spacing } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
-import {
-  RootState,
-  useAppSelector,
-  useAppSelectorWhenFocusedWithArg,
-} from '@/store';
-import {
-  selectCurrentSession,
-  setCurrentSession,
-} from '@/store/current-session';
+import { RootState, useAppSelector, useAppSelectorWhenFocusedWithArg } from '@/store';
+import { selectCurrentSession, setCurrentSession } from '@/store/current-session';
 import { encryptAndShare, publishUnpublishedSessions } from '@/store/feed';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import { setEditingSession } from '@/store/session-editor';
@@ -40,9 +33,7 @@ import { CurrentWorkoutReplacer } from '@/components/smart/current-workout-repla
 function PlanManager() {
   const { push } = useRouter();
 
-  const activeProgramId = useAppSelector(
-    (s: RootState) => s.program.activePlanId,
-  );
+  const activeProgramId = useAppSelector((s: RootState) => s.program.activePlanId);
 
   return (
     <View style={{ flexDirection: 'row', gap: spacing[2] }}>
@@ -79,19 +70,13 @@ function ListUpcomingWorkouts({
 }) {
   const plan = useAppSelector(selectActiveProgram);
   const { t } = useTranslate();
-  const currentSession = useAppSelectorWhenFocusedWithArg(
-    selectCurrentSession,
-    'workoutSession',
-  );
+  const currentSession = useAppSelectorWhenFocusedWithArg(selectCurrentSession, 'workoutSession');
   const planId = useAppSelector((x) => x.program.activePlanId);
   const { push } = useRouter();
   const dispatch = useDispatch();
-  const [confirmDeleteSessionOpen, setConfirmDeleteSessionOpen] =
-    useState(false);
+  const [confirmDeleteSessionOpen, setConfirmDeleteSessionOpen] = useState(false);
   const clearCurrentSession = () => {
-    dispatch(
-      setCurrentSession({ session: undefined, target: 'workoutSession' }),
-    );
+    dispatch(setCurrentSession({ session: undefined, target: 'workoutSession' }));
     dispatch(fetchUpcomingSessions());
   };
   const handleSharePress = (session: Session) => {
@@ -119,11 +104,7 @@ function ListUpcomingWorkouts({
             </Card.Content>
             <CardActions style={{ marginTop: spacing[2] }}>
               <Tooltip title={t('workout.share_workout.button')}>
-                <IconButton
-                  icon={'share'}
-                  mode="contained"
-                  onPress={() => handleSharePress(currentSession)}
-                />
+                <IconButton icon={'share'} mode="contained" onPress={() => handleSharePress(currentSession)} />
               </Tooltip>
               <Tooltip title={t('workout.clear_current.button')}>
                 <IconButton
@@ -161,29 +142,16 @@ function ListUpcomingWorkouts({
           );
         }}
         renderItemActions={(session) => {
-          const sessionPlanIndex = plan.sessions.findIndex((x) =>
-            x.equals(session.blueprint),
-          );
+          const sessionPlanIndex = plan.sessions.findIndex((x) => x.equals(session.blueprint));
           const handleEditPress = () => {
             dispatch(setEditingSession(session.blueprint));
-            push(
-              `/settings/manage-workouts/${planId}/manage-session/${sessionPlanIndex}`,
-              { withAnchor: true },
-            );
+            push(`/settings/manage-workouts/${planId}/manage-session/${sessionPlanIndex}`, { withAnchor: true });
           };
           return (
             <CardActions style={{ marginTop: spacing[2] }}>
-              <IconButton
-                icon={'share'}
-                mode="contained"
-                onPress={() => handleSharePress(session)}
-              />
+              <IconButton icon={'share'} mode="contained" onPress={() => handleSharePress(session)} />
               {sessionPlanIndex !== -1 ? (
-                <IconButton
-                  icon={'edit'}
-                  mode="contained"
-                  onPress={handleEditPress}
-                />
+                <IconButton icon={'edit'} mode="contained" onPress={handleEditPress} />
               ) : undefined}
               <Button
                 mode="contained"
@@ -191,11 +159,7 @@ function ListUpcomingWorkouts({
                 testID="start-resume-workout-button"
                 onPress={() => selectSession(session)}
               >
-                {session.isStarted ? (
-                  <T keyName="workout.resume.button" />
-                ) : (
-                  <T keyName="workout.start.button" />
-                )}
+                {session.isStarted ? <T keyName="workout.resume.button" /> : <T keyName="workout.start.button" />}
               </Button>
             </CardActions>
           );
@@ -219,12 +183,8 @@ function ListUpcomingWorkouts({
 function SessionCardContent({ session }: { session: Session }) {
   return (
     <SplitCardControl
-      titleContent={
-        <SessionSummaryTitle isFilled={session.isStarted} session={session} />
-      }
-      mainContent={
-        <SessionSummary session={session} isFilled={false} showWeight />
-      }
+      titleContent={<SessionSummaryTitle isFilled={session.isStarted} session={session} />}
+      mainContent={<SessionSummary session={session} isFilled={false} showWeight />}
     />
   );
 }
@@ -233,9 +193,7 @@ export default function Index() {
   const upcomingSessions = useAppSelector((s) => s.program.upcomingSessions);
   const dispatch = useDispatch();
   const { t } = useTranslate();
-  const currentBodyweight = upcomingSessions
-    .map((x) => x.at(0)?.bodyweight)
-    .unwrapOr(undefined);
+  const currentBodyweight = upcomingSessions.map((x) => x.at(0)?.bodyweight).unwrapOr(undefined);
 
   const [selectedSession, setSelectedSession] = useState<Session | undefined>();
 
@@ -246,10 +204,7 @@ export default function Index() {
   });
 
   const createFreeformSession = () => {
-    const newSession = Session.freeformSession(
-      LocalDate.now(),
-      currentBodyweight,
-    );
+    const newSession = Session.freeformSession(LocalDate.now(), currentBodyweight);
     setSelectedSession(newSession);
   };
 
@@ -282,18 +237,10 @@ export default function Index() {
       <Remote
         value={upcomingSessions}
         success={(upcoming) => {
-          return (
-            <ListUpcomingWorkouts
-              selectSession={setSelectedSession}
-              upcoming={upcoming}
-            />
-          );
+          return <ListUpcomingWorkouts selectSession={setSelectedSession} upcoming={upcoming} />;
         }}
       />
-      <CurrentWorkoutReplacer
-        session={selectedSession}
-        clearSession={() => setSelectedSession(undefined)}
-      />
+      <CurrentWorkoutReplacer session={selectedSession} clearSession={() => setSelectedSession(undefined)} />
     </FullHeightScrollView>
   );
 }

@@ -58,9 +58,7 @@ export default function Feed() {
       data={feedItems}
       keyExtractor={(x) => x.eventId}
       renderItem={({ item }) => <FeedItemRenderer feedItem={item} />}
-      ItemSeparatorComponent={() => (
-        <View style={{ height: spacing[2] }}></View>
-      )}
+      ItemSeparatorComponent={() => <View style={{ height: spacing[2] }}></View>}
       contentContainerStyle={{
         padding: spacing.pageHorizontalMargin,
         paddingBottom: insets.bottom,
@@ -72,12 +70,7 @@ export default function Feed() {
 function FeedProfileHeader() {
   const identityRemote = useAppSelector(selectFeedIdentityRemote);
 
-  return (
-    <Remote
-      value={identityRemote}
-      success={(identity) => <FeedProfile identity={identity} />}
-    />
-  );
+  return <Remote value={identityRemote} success={(identity) => <FeedProfile identity={identity} />} />;
 }
 
 function FeedProfile({ identity }: { identity: FeedIdentity }) {
@@ -191,12 +184,7 @@ function FeedProfileEditor({
   };
   const [resetAccountDialogOpen, setResetAccountDialogOpen] = useState(false);
   return (
-    <FullScreenDialog
-      avoidKeyboard
-      open={open}
-      onClose={onClose}
-      title={t('feed.manage.title')}
-    >
+    <FullScreenDialog avoidKeyboard open={open} onClose={onClose} title={t('feed.manage.title')}>
       <View
         style={{
           gap: spacing[2],
@@ -204,10 +192,7 @@ function FeedProfileEditor({
         }}
       >
         <Form>
-          <LabelledFormRow
-            icon={'personFill'}
-            label={t('feed.your_name.label')}
-          >
+          <LabelledFormRow icon={'personFill'} label={t('feed.your_name.label')}>
             <TextInput
               placeholder={t('generic.optional.label')}
               value={identity.name ?? ''}
@@ -224,17 +209,13 @@ function FeedProfileEditor({
             headline={t('feed.publish_workout.label')}
             supportingText={t('feed.publish_workout.subtitle')}
             value={identity.publishWorkouts}
-            onValueChange={(publishWorkouts) =>
-              updateProfile({ publishWorkouts })
-            }
+            onValueChange={(publishWorkouts) => updateProfile({ publishWorkouts })}
           />
           <ListSwitch
             headline={t('feed.publish_bodyweight.label')}
             supportingText={t('feed.publish_bodyweight.subtitle')}
             value={identity.publishBodyweight}
-            onValueChange={(publishBodyweight) =>
-              updateProfile({ publishBodyweight })
-            }
+            onValueChange={(publishBodyweight) => updateProfile({ publishBodyweight })}
           />
           <ListSwitch
             headline={t('feed.publish_plan.label')}
@@ -243,9 +224,7 @@ function FeedProfileEditor({
             onValueChange={(publishPlan) => updateProfile({ publishPlan })}
           />
         </List.Section>
-        <Button onPress={() => setResetAccountDialogOpen(true)}>
-          {t('feed.reset_account.button')}
-        </Button>
+        <Button onPress={() => setResetAccountDialogOpen(true)}>{t('feed.reset_account.button')}</Button>
       </View>
       <ConfirmationDialog
         headline={t('feed.reset_account.button')}
@@ -268,22 +247,14 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
           <Card.Content>
             <SplitCardControl
               titleContent={
-                <SessionSummaryTitle
-                  isFilled={props.feedItem.session.isStarted}
-                  session={props.feedItem.session}
-                />
+                <SessionSummaryTitle isFilled={props.feedItem.session.isStarted} session={props.feedItem.session} />
               }
               mainContent={
                 <View style={{ gap: spacing[2] }}>
-                  <SessionSummary
-                    session={props.feedItem.session}
-                    isFilled={false}
-                    showWeight
-                  />
+                  <SessionSummary session={props.feedItem.session} isFilled={false} showWeight />
                   <SurfaceText>
                     <SurfaceText weight={'bold'}>
-                      {users.find((x) => x.userId === props.feedItem.userId)
-                        ?.user.name ?? 'Anonymous user'}
+                      {users.find((x) => x.userId === props.feedItem.userId)?.user.name ?? 'Anonymous user'}
                     </SurfaceText>{' '}
                     completed a workout
                   </SurfaceText>

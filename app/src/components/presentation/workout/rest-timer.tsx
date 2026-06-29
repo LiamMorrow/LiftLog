@@ -17,13 +17,7 @@ interface RestTimerProps {
   resetTimer: () => void;
 }
 
-export default function RestTimer({
-  rest,
-  startTime,
-  failed,
-  style,
-  resetTimer,
-}: RestTimerProps) {
+export default function RestTimer({ rest, startTime, failed, style, resetTimer }: RestTimerProps) {
   const { colors } = useAppTheme();
   const isSameMinMaxRest = rest.minRest.equals(rest.maxRest);
   const [jiggled, setJiggled] = useState([] as string[]);
@@ -43,8 +37,7 @@ export default function RestTimer({
       failed || isSameMinMaxRest
         ? -1
         : Math.min(
-            (diffMs.toMillis() - rest.minRest.toMillis()) /
-              (rest.maxRest.toMillis() - rest.minRest.toMillis()),
+            (diffMs.toMillis() - rest.minRest.toMillis()) / (rest.maxRest.toMillis() - rest.minRest.toMillis()),
             1,
           );
     const [textColor, backgroundColor]: [ColorChoice, ColorChoice] =
@@ -141,11 +134,7 @@ export default function RestTimer({
               pillWidth={pillWidth}
               pillHeight={pillHeight}
               pillPerimeter={pillPerimeter}
-              visible={
-                !failed &&
-                !isSameMinMaxRest &&
-                timerState.secondProgressBarProgress > 0
-              }
+              visible={!failed && !isSameMinMaxRest && timerState.secondProgressBarProgress > 0}
             />
           </Svg>
         </View>

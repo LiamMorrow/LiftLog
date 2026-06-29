@@ -1,8 +1,4 @@
-import type {
-  LocalDateJSON,
-  DurationJSON,
-  BigNumberJSON,
-} from '@/models/storage/versions/libs';
+import type { LocalDateJSON, DurationJSON, BigNumberJSON } from '@/models/storage/versions/libs';
 
 export interface ProgramBlueprintJSON {
   version: 2;
@@ -24,9 +20,7 @@ export interface SessionBlueprintJSON {
 /**
  * @discriminator type
  */
-export type ExerciseBlueprintJSON =
-  | WeightedExerciseBlueprintJSON
-  | CardioExerciseBlueprintJSON;
+export type ExerciseBlueprintJSON = WeightedExerciseBlueprintJSON | CardioExerciseBlueprintJSON;
 
 export type DistanceUnitJSON = 'metre' | 'yard' | 'mile' | 'kilometre';
 

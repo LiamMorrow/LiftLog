@@ -9,14 +9,10 @@ registerTranslation('default', () => {
     selectSingle: t('date.select.button'),
     selectMultiple: t('date.select_multiple.button'),
     selectRange: t('stats.select_period.label'),
-    notAccordingToDateFormat: (inputFormat) =>
-      t('validation.date_format_must_be.message', { inputFormat }),
-    mustBeHigherThan: (date) =>
-      t('validation.must_be_later_than.message', { date }),
-    mustBeLowerThan: (date) =>
-      t('validation.must_be_earlier_than.message', { date }),
-    mustBeBetween: (startDate, endDate) =>
-      t('validation.must_be_between.message', { startDate, endDate }),
+    notAccordingToDateFormat: (inputFormat) => t('validation.date_format_must_be.message', { inputFormat }),
+    mustBeHigherThan: (date) => t('validation.must_be_later_than.message', { date }),
+    mustBeLowerThan: (date) => t('validation.must_be_earlier_than.message', { date }),
+    mustBeBetween: (startDate, endDate) => t('validation.must_be_between.message', { startDate, endDate }),
     dateIsDisabled: t('validation.day_not_allowed.message'),
     previous: t('generic.previous.button'),
     next: t('generic.next.button'),

@@ -5,11 +5,7 @@ import SessionSummaryTitle from '@/components/presentation/summary/session-summa
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
-import {
-  SharedItem,
-  SharedProgramBlueprint,
-  SharedSession,
-} from '@/models/feed-models';
+import { SharedItem, SharedProgramBlueprint, SharedSession } from '@/models/feed-models';
 import { addProgramSession, savePlan } from '@/store/program';
 import { showSnackbar } from '@/store/app';
 import { T } from '@tolgee/react';
@@ -33,11 +29,7 @@ interface SharedItemProps {
   sharedItem: SharedItem;
 }
 
-function SharedProgramBlueprintContent({
-  sharedItem,
-}: {
-  sharedItem: SharedProgramBlueprint;
-}) {
+function SharedProgramBlueprintContent({ sharedItem }: { sharedItem: SharedProgramBlueprint }) {
   const program = sharedItem.programBlueprint;
   const dispatch = useDispatch();
   const preferredWeightUnit = usePreferredWeightUnit();
@@ -85,16 +77,10 @@ function SharedProgramBlueprintContent({
           <View style={{ flex: 1 }}>
             <Text variant="titleLarge">{program.name}</Text>
             <Text variant="bodyMedium" style={{ opacity: 0.7 }}>
-              {program.sessions.length}{' '}
-              {program.sessions.length === 1 ? 'workout' : 'workouts'}
+              {program.sessions.length} {program.sessions.length === 1 ? 'workout' : 'workouts'}
             </Text>
           </View>
-          <Button
-            mode="contained"
-            icon="save"
-            style={{ alignSelf: 'center' }}
-            onPress={handleSave}
-          >
+          <Button mode="contained" icon="save" style={{ alignSelf: 'center' }} onPress={handleSave}>
             <T keyName="generic.save.button" />
           </Button>
         </View>
@@ -134,9 +120,7 @@ function SharedSessionContent({ sharedItem }: { sharedItem: SharedSession }) {
   const headerColor = useScrollHeaderColor();
   const activeProgramId = useAppSelector((x) => x.program.activePlanId);
   const { push } = useRouter();
-  const [sessionToReplace, setSessionToReplace] = useState<Session | undefined>(
-    undefined,
-  );
+  const [sessionToReplace, setSessionToReplace] = useState<Session | undefined>(undefined);
 
   useMountEffect(() => {
     dispatch(setCurrentSession({ target: 'sharedSession', session }));
@@ -176,14 +160,8 @@ function SharedSessionContent({ sharedItem }: { sharedItem: SharedSession }) {
           <T keyName="feed.shared_session.start_workout.button" />
         </Button>
       </Animated.View>
-      <CurrentWorkoutReplacer
-        session={sessionToReplace}
-        clearSession={() => setSessionToReplace(undefined)}
-      />
-      <SessionComponent
-        target="sharedSession"
-        showBodyweight={showBodyweight}
-      />
+      <CurrentWorkoutReplacer session={sessionToReplace} clearSession={() => setSessionToReplace(undefined)} />
+      <SessionComponent target="sharedSession" showBodyweight={showBodyweight} />
     </View>
   );
 }

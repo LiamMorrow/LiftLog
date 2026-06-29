@@ -7,20 +7,11 @@ import { View } from 'react-native';
 import { Portal, Dialog } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 
-function PreviousExerciseContent(props: {
-  previousRecordedExercises: RecordedExercise[];
-}) {
+function PreviousExerciseContent(props: { previousRecordedExercises: RecordedExercise[] }) {
   return (
     <View style={{ gap: spacing[2] }}>
       {props.previousRecordedExercises.map((ex, i) => (
-        <ExerciseSummary
-          key={i}
-          exercise={ex}
-          isFilled
-          showWeight
-          showName={false}
-          showDate={true}
-        />
+        <ExerciseSummary key={i} exercise={ex} isFilled showWeight showName={false} showDate={true} />
       ))}
       {props.previousRecordedExercises.length ? undefined : (
         <View style={{ height: 100 }}>
@@ -43,15 +34,10 @@ export default function PreviousExerciseViewer(props: {
     <Portal>
       <Dialog visible={props.open} onDismiss={props.close}>
         <Dialog.Title>
-          <T
-            keyName="exercise.previous_sessions_for.title"
-            params={{ exercise: props.name }}
-          />
+          <T keyName="exercise.previous_sessions_for.title" params={{ exercise: props.name }} />
         </Dialog.Title>
         <Dialog.Content>
-          <PreviousExerciseContent
-            previousRecordedExercises={props.previousRecordedExercises}
-          />
+          <PreviousExerciseContent previousRecordedExercises={props.previousRecordedExercises} />
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={props.close}>

@@ -1,11 +1,6 @@
 import { RemoteData } from '@/models/remote';
 import { AddEffectFn } from '@/store/store';
-import {
-  executeRemoteBackup,
-  remoteBackupSucceeded,
-  setLastBackup,
-  setRemoteBackupSettings,
-} from '@/store/settings';
+import { executeRemoteBackup, remoteBackupSucceeded, setLastBackup, setRemoteBackupSettings } from '@/store/settings';
 import { showSnackbar } from '@/store/app';
 import { toUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
 import { Instant } from '@js-joda/core';
@@ -22,7 +17,6 @@ export function addRemoteBackupEffects(addEffect: AddEffectFn) {
         getState,
         dispatch,
         extra: { logger, encryptionService, tolgee, expoDb },
-        signal,
         cancelActiveListeners,
         throwIfCancelled,
       },
@@ -60,15 +54,9 @@ export function addRemoteBackupEffects(addEffect: AddEffectFn) {
           loading: () => null,
           notAsked: () => null,
         });
-        console.log(
-          `Calculated Hash ${hashString} in `,
-          performance.now() - start,
-        );
+        console.log(`Calculated Hash ${hashString} in `, performance.now() - start);
 
-        if (
-          !force &&
-          lastBackupData?.lastSuccessfulRemoteBackupHash === hashString
-        ) {
+        if (!force && lastBackupData?.lastSuccessfulRemoteBackupHash === hashString) {
           return;
         }
 

@@ -8,11 +8,7 @@ import { spacing } from '@/hooks/useAppTheme';
 import { SessionBlueprint } from '@/models/blueprint-models';
 import { EmptySession } from '@/models/session-models';
 import { useAppSelectorWithArg } from '@/store';
-import {
-  addProgramSession,
-  selectProgram,
-  setSavedPlanName,
-} from '@/store/program';
+import { addProgramSession, selectProgram, setSavedPlanName } from '@/store/program';
 import { setEditingSession } from '@/store/session-editor';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
@@ -44,15 +40,7 @@ export default function ManageWorkouts() {
   };
   const floatingBottomContainer = (
     <FloatingBottomContainer
-      fab={
-        <FAB
-          variant="surface"
-          size="small"
-          icon={'add'}
-          label={t('workout.add.button')}
-          onPress={addWorkout}
-        />
-      }
+      fab={<FAB variant="surface" size="small" icon={'add'} label={t('workout.add.button')} onPress={addWorkout} />}
     />
   );
   const emptyInfo = program.sessions.length ? undefined : (
@@ -72,9 +60,7 @@ export default function ManageWorkouts() {
         value={program.name}
         style={{ marginBottom: spacing[2] }}
         mode="flat"
-        onChangeText={(name) =>
-          dispatch(setSavedPlanName({ programId: programId, name }))
-        }
+        onChangeText={(name) => dispatch(setSavedPlanName({ programId: programId, name }))}
       />
       {emptyInfo}
 
@@ -84,10 +70,7 @@ export default function ManageWorkouts() {
         onPress={selectSession}
         renderItemContent={(session) => (
           <Card.Content>
-            <ManageWorkoutCardContent
-              sessionBlueprint={session}
-              programId={programId}
-            />
+            <ManageWorkoutCardContent sessionBlueprint={session} programId={programId} />
           </Card.Content>
         )}
       />

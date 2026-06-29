@@ -61,9 +61,7 @@ function Layout() {
       iconColor={colors.onSurfaceVariant}
     >
       <NativeTabs.Trigger name="(session)">
-        <NativeTabs.Trigger.Label>
-          {t('workout.workout.label')}
-        </NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>{t('workout.workout.label')}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
           sf={{ default: 'dumbbell', selected: 'dumbbell.fill' }}
           md={{ default: 'fitness_center', selected: 'fitness_center' }}
@@ -78,14 +76,8 @@ function Layout() {
           }}
           md={{ default: 'forum', selected: 'forum' }}
         />
-        <NativeTabs.Trigger.Label>
-          {t('feed.feed.title')}
-        </NativeTabs.Trigger.Label>
-        {followRequestCount && (
-          <NativeTabs.Trigger.Badge>
-            {followRequestCount.toString()}
-          </NativeTabs.Trigger.Badge>
-        )}
+        <NativeTabs.Trigger.Label>{t('feed.feed.title')}</NativeTabs.Trigger.Label>
+        {followRequestCount && <NativeTabs.Trigger.Badge>{followRequestCount.toString()}</NativeTabs.Trigger.Badge>}
       </NativeTabs.Trigger>
       )
       <NativeTabs.Trigger name="stats">
@@ -93,30 +85,15 @@ function Layout() {
           sf={{ default: 'chart.bar', selected: 'chart.bar.fill' }}
           md={{ default: 'bar_chart', selected: 'bar_chart' }}
         />
-        <NativeTabs.Trigger.Label>
-          {t('stats.stats.title')}
-        </NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>{t('stats.stats.title')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="history">
-        <NativeTabs.Trigger.Icon
-          sf="calendar"
-          md={{ default: 'calendar_month', selected: 'calendar_month' }}
-        />
-        <NativeTabs.Trigger.Label>
-          {t('generic.history.title')}
-        </NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="calendar" md={{ default: 'calendar_month', selected: 'calendar_month' }} />
+        <NativeTabs.Trigger.Label>{t('generic.history.title')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger
-        name="settings"
-        disableAutomaticContentInsets={Platform.OS === 'ios'}
-      >
-        <NativeTabs.Trigger.Icon
-          sf="gear"
-          md={{ default: 'settings', selected: 'settings' }}
-        />
-        <NativeTabs.Trigger.Label>
-          {t('settings.settings.title')}
-        </NativeTabs.Trigger.Label>
+      <NativeTabs.Trigger name="settings" disableAutomaticContentInsets={Platform.OS === 'ios'}>
+        <NativeTabs.Trigger.Icon sf="gear" md={{ default: 'settings', selected: 'settings' }} />
+        <NativeTabs.Trigger.Label>{t('settings.settings.title')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );

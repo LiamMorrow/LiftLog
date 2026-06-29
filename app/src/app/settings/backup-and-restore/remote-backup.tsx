@@ -19,16 +19,13 @@ import { useDispatch } from 'react-redux';
 export default function RemoteBackupPage() {
   const { t } = useTranslate();
   const dispatch = useDispatch();
-  const { apiKey, endpoint, includeFeedAccount } = useAppSelector(
-    (s) => s.settings.remoteBackupSettings,
-  );
+  const { apiKey, endpoint, includeFeedAccount } = useAppSelector((s) => s.settings.remoteBackupSettings);
   const openUrl = (url: string) => {
     void Linking.canOpenURL(url).then(() => Linking.openURL(url));
   };
   const [endpointValue, setEndpoint] = useState(endpoint);
   const [apiKeyValue, setApiKey] = useState(apiKey);
-  const [includeFeedAccountValue, setIncludeFeedAccount] =
-    useState(includeFeedAccount);
+  const [includeFeedAccountValue, setIncludeFeedAccount] = useState(includeFeedAccount);
   const [endpointError, setEndpointError] = useState('');
 
   const updateEndpoint = (e: string) => {
@@ -75,25 +72,13 @@ export default function RemoteBackupPage() {
   return (
     <FullHeightScrollView avoidKeyboard>
       <Stack.Screen options={{ title: t('backup.automatic_remote.title') }} />
-      <Card
-        mode="contained"
-        style={{ marginHorizontal: spacing[6], marginBottom: spacing[4] }}
-      >
+      <Card mode="contained" style={{ marginHorizontal: spacing[6], marginBottom: spacing[4] }}>
         <Card.Content>
           <EmptyInfo>
-            <LimitedHtml
-              style={{ textAlign: 'center' }}
-              value={t('backup.remote.explanation')}
-            />
+            <LimitedHtml style={{ textAlign: 'center' }} value={t('backup.remote.explanation')} />
           </EmptyInfo>
 
-          <Button
-            onPress={() =>
-              openUrl(
-                'https://github.com/LiamMorrow/LiftLog/blob/main/docs/RemoteBackup.md',
-              )
-            }
-          >
+          <Button onPress={() => openUrl('https://github.com/LiamMorrow/LiftLog/blob/main/docs/RemoteBackup.md')}>
             <T keyName="generic.read_documentation.button" />
           </Button>
         </Card.Content>
@@ -111,12 +96,7 @@ export default function RemoteBackupPage() {
           <HelperText type="error">{endpointError}</HelperText>
         </LabelledFormRow>
         <LabelledFormRow label={t('backup.api_key.label')} icon={'vpnKeyFill'}>
-          <TextInput
-            mode="outlined"
-            value={apiKeyValue}
-            onChangeText={setApiKey}
-            autoCorrect={false}
-          />
+          <TextInput mode="outlined" value={apiKeyValue} onChangeText={setApiKey} autoCorrect={false} />
           <HelperText type="error">{endpointError}</HelperText>
         </LabelledFormRow>
         <ListSwitch

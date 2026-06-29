@@ -2,11 +2,7 @@ import SessionComponent from '@/components/smart/session-component';
 import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import {
-  finishCurrentWorkout,
-  selectCurrentSession,
-  setCurrentSession,
-} from '@/store/current-session';
+import { finishCurrentWorkout, selectCurrentSession, setCurrentSession } from '@/store/current-session';
 import { LocalDate } from '@js-joda/core';
 import { useRouter, Stack } from 'expo-router';
 import { View } from 'react-native';
@@ -23,13 +19,7 @@ export default function HistoryEditPage() {
     dismissTo('/history');
   };
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
-  const jsDate =
-    session &&
-    new Date(
-      session.date.year(),
-      session.date.month().ordinal(),
-      session.date.dayOfMonth(),
-    );
+  const jsDate = session && new Date(session.date.year(), session.date.month().ordinal(), session.date.dayOfMonth());
 
   return (
     <>
@@ -53,13 +43,7 @@ export default function HistoryEditPage() {
                   dispatch(
                     setCurrentSession({
                       target: 'historySession',
-                      session: session.withUpdatedDate(
-                        LocalDate.of(
-                          e.getFullYear(),
-                          e.getMonth() + 1,
-                          e.getDate(),
-                        ),
-                      ),
+                      session: session.withUpdatedDate(LocalDate.of(e.getFullYear(), e.getMonth() + 1, e.getDate())),
                     }),
                   );
               }}

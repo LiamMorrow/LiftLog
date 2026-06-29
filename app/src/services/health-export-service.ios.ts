@@ -1,11 +1,6 @@
 import { isNotNullOrUndefined } from '@/utils/null';
 import { HealthExportService as HES } from './health-export-service-shared';
-import {
-  RecordedCardioExercise,
-  RecordedExercise,
-  RecordedWeightedExercise,
-  Session,
-} from '@/models/session-models';
+import { RecordedCardioExercise, RecordedExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
 import { convert } from '@js-joda/core';
 import {
   isHealthDataAvailable,
@@ -32,8 +27,7 @@ export class HealthExportService implements HES {
       return;
     }
 
-    const { canShareBodyweight, canShareWorkout } =
-      await this.requestPermissionInternal();
+    const { canShareBodyweight, canShareWorkout } = await this.requestPermissionInternal();
 
     if (canShareBodyweight) {
       await deleteObjects('HKQuantityTypeIdentifierBodyMass', {
@@ -62,15 +56,10 @@ export class HealthExportService implements HES {
     if (!workout.isStarted || !workout.firstExercise || !workout.lastExercise) {
       return;
     }
-    const { canShareBodyweight, canShareWorkout } =
-      await this.requestPermissionInternal();
+    const { canShareBodyweight, canShareWorkout } = await this.requestPermissionInternal();
     await this.deleteWorkout(workout.id);
 
-    if (
-      workout.bodyweight &&
-      workout.bodyweight.unit !== 'nil' &&
-      canShareBodyweight
-    ) {
+    if (workout.bodyweight && workout.bodyweight.unit !== 'nil' && canShareBodyweight) {
       await saveQuantitySample(
         'HKQuantityTypeIdentifierBodyMass',
         toHealthKitUnit(workout.bodyweight.unit),
@@ -116,39 +105,26 @@ export class HealthExportService implements HES {
 
     return {
       canShareBodyweight:
-        authorizationStatusFor('HKQuantityTypeIdentifierBodyMass') ===
-        AuthorizationStatus.sharingAuthorized,
-      canShareWorkout:
-        authorizationStatusFor('HKWorkoutTypeIdentifier') ===
-        AuthorizationStatus.sharingAuthorized,
+        authorizationStatusFor('HKQuantityTypeIdentifierBodyMass') === AuthorizationStatus.sharingAuthorized,
+      canShareWorkout: authorizationStatusFor('HKWorkoutTypeIdentifier') === AuthorizationStatus.sharingAuthorized,
     };
   }
 }
 
-function toQuantitySampleForSaving(
-  exercise: RecordedExercise,
-): QuantitySampleForSaving | undefined {
+function toQuantitySampleForSaving(exercise: RecordedExercise): QuantitySampleForSaving | undefined {
   return match(exercise)
-    .with(
-      P.instanceOf(RecordedWeightedExercise),
-      toWeightedQuantitySampleForSaving,
-    )
-    .with(
-      P.instanceOf(RecordedCardioExercise),
-      toCardioExerciseQuantitySampleForSaving,
-    )
+    .with(P.instanceOf(RecordedWeightedExercise), toWeightedQuantitySampleForSaving)
+    .with(P.instanceOf(RecordedCardioExercise), toCardioExerciseQuantitySampleForSaving)
     .exhaustive();
 }
 
-function toWeightedQuantitySampleForSaving(
-  exercise: RecordedWeightedExercise,
-): QuantitySampleForSaving | undefined {
+function toWeightedQuantitySampleForSaving(_exercise: RecordedWeightedExercise): QuantitySampleForSaving | undefined {
   return undefined;
 }
 
 // There's a world where we do heuristics or otherwise to match to apple types
 function toCardioExerciseQuantitySampleForSaving(
-  exercise: RecordedCardioExercise,
+  _exercise: RecordedCardioExercise,
 ): QuantitySampleForSaving | undefined {
   return undefined;
 }

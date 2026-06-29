@@ -25,10 +25,7 @@ type WithAdditionalActions = {
 
 type ConfirmationDialogProps =
   | ConfirmationDialogWithoutAdditionalActionProps
-  | (Omit<
-      ConfirmationDialogWithoutAdditionalActionProps,
-      'additionalActionText' | 'onAdditionalAction'
-    > &
+  | (Omit<ConfirmationDialogWithoutAdditionalActionProps, 'additionalActionText' | 'onAdditionalAction'> &
       WithAdditionalActions);
 
 export default function ConfirmationDialog(props: ConfirmationDialogProps) {

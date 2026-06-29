@@ -7,8 +7,7 @@ vi.mock('react-native-gesture-handler', () => ({}));
 vi.mock('expo-localization', () => ({}));
 vi.mock('expo', () => ({
   requireNativeModule: () => {
-    {
-    }
+    {}
   },
 }));
 // In your existing test/setup.ts, add:
@@ -41,10 +40,7 @@ vi.mock('expo-file-system', () => {
       fileStore.delete(this.path);
     }
 
-    async move(
-      target: File,
-      _options?: { overwrite?: boolean },
-    ): Promise<void> {
+    async move(target: File, _options?: { overwrite?: boolean }): Promise<void> {
       const content = fileStore.get(this.path) ?? '';
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
       fileStore.set((target as any).path, content);

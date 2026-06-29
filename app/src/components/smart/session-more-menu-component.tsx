@@ -1,15 +1,8 @@
-import {
-  selectCurrentSession,
-  SessionTarget,
-  setCurrentSession,
-} from '@/store/current-session';
+import { selectCurrentSession, SessionTarget, setCurrentSession } from '@/store/current-session';
 import { useDispatch } from 'react-redux';
 import { useTranslate } from '@tolgee/react';
 import { useEffect, useState } from 'react';
-import {
-  EmptyExerciseBlueprint,
-  ExerciseBlueprint,
-} from '@/models/blueprint-models';
+import { EmptyExerciseBlueprint, ExerciseBlueprint } from '@/models/blueprint-models';
 import FullScreenDialog from '@/components/presentation/foundation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/workout-editor/exercise-editor';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
@@ -20,10 +13,7 @@ import { Stack } from 'expo-router';
 import { Jiggler } from '@/components/presentation/foundation/jiggler';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 
-export default function SessionMoreMenuComponent(props: {
-  target: SessionTarget;
-  save: () => void;
-}) {
+export default function SessionMoreMenuComponent(props: { target: SessionTarget; save: () => void }) {
   const { t } = useTranslate();
   const { save } = props;
   const useImperialUnits = useAppSelector((x) => x.settings.useImperialUnits);
@@ -31,9 +21,7 @@ export default function SessionMoreMenuComponent(props: {
   const dispatch = useDispatch();
 
   const isReadonly = props.target === 'feedSession';
-  const [editingExerciseBlueprint, setEditingExerciseBlueprint] = useState<
-    ExerciseBlueprint | undefined
-  >(undefined);
+  const [editingExerciseBlueprint, setEditingExerciseBlueprint] = useState<ExerciseBlueprint | undefined>(undefined);
   const [exerciseEditorOpen, setExerciseEditorOpen] = useState(false);
   const [workoutEditorOpen, setWorkoutEditorOpen] = useState(false);
 
@@ -41,10 +29,7 @@ export default function SessionMoreMenuComponent(props: {
     if (editingExerciseBlueprint !== undefined) {
       dispatch(
         setCurrentSession({
-          session: session?.withAddedExercise(
-            editingExerciseBlueprint,
-            useImperialUnits,
-          ),
+          session: session?.withAddedExercise(editingExerciseBlueprint, useImperialUnits),
           target: props.target,
         }),
       );
@@ -101,11 +86,7 @@ export default function SessionMoreMenuComponent(props: {
           />
         ) : null}
       </FullScreenDialog>
-      <WorkoutEditor
-        open={workoutEditorOpen}
-        setOpen={setWorkoutEditorOpen}
-        target={props.target}
-      />
+      <WorkoutEditor open={workoutEditorOpen} setOpen={setWorkoutEditorOpen} target={props.target} />
     </>
   );
 }
@@ -118,17 +99,8 @@ function IosMenu(props: {
   setEditingExerciseBlueprint: (o: ExerciseBlueprint) => void;
 }) {
   const { t } = useTranslate();
-  const {
-    target,
-    save,
-    setEditingExerciseBlueprint,
-    setExerciseEditorOpen,
-    setWorkoutEditorOpen,
-  } = props;
-  const finishText =
-    target === 'workoutSession'
-      ? t('generic.finish.button')
-      : t('generic.save.button');
+  const { target, save, setEditingExerciseBlueprint, setExerciseEditorOpen, setWorkoutEditorOpen } = props;
+  const finishText = target === 'workoutSession' ? t('generic.finish.button') : t('generic.save.button');
   return (
     <Stack.Toolbar placement="right">
       <Stack.Toolbar.Button onPress={save}>
@@ -139,9 +111,7 @@ function IosMenu(props: {
         <Stack.Toolbar.MenuAction
           onPress={() => {
             setExerciseEditorOpen(true);
-            setEditingExerciseBlueprint(
-              EmptyExerciseBlueprint.with({ name: 'New Exercise' }),
-            );
+            setEditingExerciseBlueprint(EmptyExerciseBlueprint.with({ name: 'New Exercise' }));
           }}
           icon={'plus'}
         >
@@ -168,13 +138,7 @@ function AndroidMenu(props: {
   setEditingExerciseBlueprint: (o: ExerciseBlueprint) => void;
 }) {
   const { t } = useTranslate();
-  const {
-    target,
-    save,
-    setEditingExerciseBlueprint,
-    setExerciseEditorOpen,
-    setWorkoutEditorOpen,
-  } = props;
+  const { target, save, setEditingExerciseBlueprint, setExerciseEditorOpen, setWorkoutEditorOpen } = props;
   const session = useAppSelectorWithArg(selectCurrentSession, target);
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -199,21 +163,13 @@ function AndroidMenu(props: {
       <Menu
         anchorPosition="bottom"
         onDismiss={() => setMenuOpen(false)}
-        anchor={
-          <Appbar.Action
-            testID="session-more"
-            icon="moreVert"
-            onPress={() => setMenuOpen(true)}
-          />
-        }
+        anchor={<Appbar.Action testID="session-more" icon="moreVert" onPress={() => setMenuOpen(true)} />}
         visible={menuOpen}
       >
         <Menu.Item
           onPress={() => {
             setExerciseEditorOpen(true);
-            setEditingExerciseBlueprint(
-              EmptyExerciseBlueprint.with({ name: 'New Exercise' }),
-            );
+            setEditingExerciseBlueprint(EmptyExerciseBlueprint.with({ name: 'New Exercise' }));
             setMenuOpen(false);
           }}
           testID="session-add-exercise"
@@ -234,11 +190,7 @@ function AndroidMenu(props: {
   );
 }
 
-function WorkoutEditor(props: {
-  target: SessionTarget;
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}) {
+function WorkoutEditor(props: { target: SessionTarget; open: boolean; setOpen: (open: boolean) => void }) {
   const { t } = useTranslate();
   const { open, setOpen, target } = props;
   const workout = useAppSelectorWithArg(selectCurrentSession, props.target);

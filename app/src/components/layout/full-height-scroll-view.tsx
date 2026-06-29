@@ -26,8 +26,7 @@ export default function FullHeightScrollView({
   const insets = useSafeAreaInsets();
   const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
   const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
-  const bottomInsetHeight =
-    floatingBottomSize + (Platform.select({ ios: insets.bottom }) ?? 0);
+  const bottomInsetHeight = floatingBottomSize + (Platform.select({ ios: insets.bottom }) ?? 0);
 
   return (
     <View
@@ -39,11 +38,7 @@ export default function FullHeightScrollView({
       ]}
     >
       {!avoidKeyboard ? (
-        <ScrollView
-          onScroll={handleScroll}
-          style={[scrollStyle]}
-          contentContainerStyle={[contentContainerStyle]}
-        >
+        <ScrollView onScroll={handleScroll} style={[scrollStyle]} contentContainerStyle={[contentContainerStyle]}>
           <View style={{ height: topInsetHeight }} />
           {children}
           <View style={{ height: bottomInsetHeight }} />
@@ -63,9 +58,7 @@ export default function FullHeightScrollView({
       )}
       {floatingChildren && (
         <View
-          onLayout={(event) =>
-            setFloatingBottomSize(event.nativeEvent.layout.height)
-          }
+          onLayout={(event) => setFloatingBottomSize(event.nativeEvent.layout.height)}
           style={{
             position: 'absolute',
             bottom: Platform.select({ ios: insets.bottom }) ?? 0,
