@@ -1,7 +1,6 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import Icon from '@/components/presentation/foundation/gesture-wrappers/icon';
 import { Remote } from '@/components/presentation/foundation/remote';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { ExerciseListSummary } from '@/components/presentation/stats/exercise-list-summary';
 import SingleValueStatisticCard from '@/components/presentation/stats/single-value-statistic-card';
 import { SingleValueStatisticsGrid } from '@/components/presentation/stats/single-value-statistics-grid';
@@ -16,8 +15,8 @@ import { formatDuration } from '@/utils/format-date';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect } from 'expo-router';
 import { useState } from 'react';
-import { View, Text } from 'react-native';
-import { Card } from 'react-native-paper';
+import { View } from 'react-native';
+import { Card, Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { match } from 'ts-pattern';
 
@@ -60,61 +59,63 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
   const [showBodyweightGraph, setShowBodyweightGraph] = useState(false);
   const canShowBodyweightGraph = showBodyweight && stats.bodyweightStats.statistics.length > 0;
   return (
-    <TitledSection title={t('stats.overview.title')}>
-      <SingleValueStatisticsGrid>
-        <SingleValueStatisticCard
-          title={t('stats.workouts_per_week.label')}
-          value={formatWeeklyRate(stats.workoutsPerWeek)}
-          icon={'assignment'}
-        />
-        <SingleValueStatisticCard
-          title={t('stats.sets_per_week.label')}
-          value={formatWeeklyRate(stats.setsPerWeek)}
-          icon={'function'}
-        />
-        <SingleValueStatisticCard
-          title={t('stats.max_weight_in_workout.label')}
-          value={stats.maxWeightLiftedInAWorkout?.shortLocaleFormat(0) ?? '-'}
-          icon={'weight'}
-        />
-        <SingleValueStatisticCard
-          title={t('workout.average_length.label')}
-          icon={'avgTime'}
-          value={formatDuration(stats.averageSessionLength, 'mins')}
-        />
-        <SingleValueStatisticCard
-          title={t('stats.bodyweight_change.label')}
-          icon={'monitorWeight'}
-          value={<BodyweightStatValue stats={stats} />}
-          onPress={canShowBodyweightGraph ? () => setShowBodyweightGraph((x) => !x) : undefined}
-        />
-        <SingleValueStatisticCard
-          title={t('stats.heaviest_lift.label')}
-          icon={'fitnessCenter'}
-          value={
-            stats.heaviestLift
-              ? stats.heaviestLift.exerciseName + ' - ' + stats.heaviestLift.weight.shortLocaleFormat(0)
-              : '-'
-          }
-        />
-      </SingleValueStatisticsGrid>
+    <>
+      <TitledSection title={t('stats.overview.title')}>
+        <SingleValueStatisticsGrid>
+          <SingleValueStatisticCard
+            title={t('stats.workouts_per_week.label')}
+            value={formatWeeklyRate(stats.workoutsPerWeek)}
+            icon={'assignment'}
+          />
+          <SingleValueStatisticCard
+            title={t('stats.sets_per_week.label')}
+            value={formatWeeklyRate(stats.setsPerWeek)}
+            icon={'function'}
+          />
+          <SingleValueStatisticCard
+            title={t('stats.max_weight_in_workout.label')}
+            value={stats.maxWeightLiftedInAWorkout?.shortLocaleFormat(0) ?? '-'}
+            icon={'weight'}
+          />
+          <SingleValueStatisticCard
+            title={t('workout.average_length.label')}
+            icon={'avgTime'}
+            value={formatDuration(stats.averageSessionLength, 'mins')}
+          />
+          <SingleValueStatisticCard
+            title={t('stats.bodyweight_change.label')}
+            icon={'monitorWeight'}
+            value={<BodyweightStatValue stats={stats} />}
+            onPress={canShowBodyweightGraph ? () => setShowBodyweightGraph((x) => !x) : undefined}
+          />
+          <SingleValueStatisticCard
+            title={t('stats.heaviest_lift.label')}
+            icon={'fitnessCenter'}
+            value={
+              stats.heaviestLift
+                ? stats.heaviestLift.exerciseName + ' - ' + stats.heaviestLift.weight.shortLocaleFormat(0)
+                : '-'
+            }
+          />
+        </SingleValueStatisticsGrid>
+      </TitledSection>
+
       {showBodyweightGraph && canShowBodyweightGraph && (
-        <Card
-          mode="contained"
-          style={{
-            backgroundColor: colors.surfaceContainer,
-            marginTop: spacing[2],
-          }}
-        >
-          <Card.Content style={{ paddingVertical: spacing[4], gap: spacing[2] }}>
-            <SurfaceText font="text-lg" style={{ textAlign: 'center' }}>
-              {t('exercise.bodyweight.label')}
-            </SurfaceText>
-            <WeightLineChart statistics={stats.bodyweightStats} />
-          </Card.Content>
-        </Card>
+        <TitledSection title={t('exercise.bodyweight.label')}>
+          <Card
+            mode="contained"
+            style={{
+              backgroundColor: colors.surfaceContainer,
+              marginBottom: spacing[2],
+            }}
+          >
+            <Card.Content>
+              <WeightLineChart statistics={stats.bodyweightStats} />
+            </Card.Content>
+          </Card>
+        </TitledSection>
       )}
-    </TitledSection>
+    </>
   );
 }
 
