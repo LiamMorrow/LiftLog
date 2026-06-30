@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 export default function ExerciseFilterer(props: {
-  exerciseName: string
+  exerciseName: string;
   onFilteredExerciseIdsChange: (ids: string[]) => void;
   onSuggestedNewExercise: (exerciseDescriptor: ExerciseDescriptor | 'NONE') => void;
 }) {

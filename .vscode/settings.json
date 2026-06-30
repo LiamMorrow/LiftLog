@@ -23,5 +23,6 @@
   "js/ts.preferences.autoImportFileExcludePatterns": ["assert", "fast-match"],
   "oxc.configPath": "app/.oxlintrc.json",
   "oxc.tsConfigPath": "app/tsconfig.json",
-  "oxc.path.tsgolint": "app/node_modules/.bin/tsgolint"
+  "oxc.path.tsgolint": "app/node_modules/.bin/tsgolint",
+  "oxc.enable": true,
 }
