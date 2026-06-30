@@ -448,5 +448,21 @@
   "workout_persistent_notification.finish_workout.action": "Завершить тренировку",
   "workout_persistent_notification.min_rest_over.message": "Минимальное время отдыха прошло!",
   "workout_persistent_notification.max_rest_over.message": "Максимальное время отдыха прошло!",
-  "workout.finish.action.tooltip": "Завершить тренировку"
+  "workout.finish.action.tooltip": "Завершить тренировку",
+  "exercise.progressive_overload.example.label": "Пример",
+  "exercise.progressive_overload.no.label": "Нет",
+  "exercise.progressive_overload.increase_all_evenly.label": "Равномерно",
+  "exercise.progressive_overload.increase_all_evenly.amount.label": "Величина увеличения",
+  "exercise.progressive_overload.increase_lowest_set.increase_strategy.label": "Стратегия увеличения",
+  "exercise.progressive_overload.increase_lowest_set.increase_strategy.all.label": "Каждый минимальный",
+  "exercise.progressive_overload.increase_lowest_set.increase_strategy.first.label": "Первый минимальный",
+  "exercise.progressive_overload.increase_lowest_set.increase_strategy.middle.label": "Средний минимальный",
+  "exercise.progressive_overload.increase_lowest_set.increase_strategy.last.label": "Последний минимальный",
+  "exercise.progressive_overload.increase_lowest_set.amount.label": "Величина увеличения",
+  "exercise.progressive_overload.increase_lowest_set.label": "Минимальные подходы",
+  "plan.diff.progressive_overload_increase_all_evenly.label": "Равномерно (величина: {amount})",
+  "plan.diff.progressive_overload_increase_lowest_set.label": "Минимальный (стратегия: {strategy}) (величина: {amount})",
+  "settings.copy_logs.subtitle": "Скопируйте логи для отчета об ошибке",
+  "settings.copy_logs.title": "Скопировать логи",
+  "settings.app_configuration.true_black_dark_theme.title": "Использовать настоящий черный для темной темы"
 }
