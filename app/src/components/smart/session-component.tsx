@@ -252,7 +252,7 @@ export default function SessionComponent(props: {
           <Text variant="bodyMedium">
             <T keyName="workout.total_weight_lifted.label" />
           </Text>
-          <WeightFormat fontWeight="bold" color="primary" weight={session.totalWeightLifted} />
+          <WeightFormat fontWeight="bold" color="primary" weight={session.totalWeightLifted} decimalPlaces={0}/>
         </View>
         <View
           style={{
