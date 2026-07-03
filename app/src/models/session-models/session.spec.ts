@@ -713,3 +713,236 @@ describe('Session.withEditedExercise', () => {
     expect(updated.recordedExercises[1]!.blueprint.name).toBe('Bench');
   });
 });
+
+// ─── getEmptySession ──────────────────────────────────────────────────────────
+
+describe('Session.getEmptySession', () => {
+  it('creates empty recorded exercises for each blueprint type', () => {
+    const blueprint = new SessionBlueprint('Legs', [makeWeightedBlueprint(), makeCardioBlueprint(2)], '');
+
+    const session = Session.getEmptySession(blueprint, 'kilograms');
+
+    expect(session.recordedExercises[0]).toBeInstanceOf(RecordedWeightedExercise);
+    expect((session.recordedExercises[0] as RecordedWeightedExercise).potentialSets).toHaveLength(3);
+    expect(session.recordedExercises[1]).toBeInstanceOf(RecordedCardioExercise);
+    expect(session.isStarted).toBe(false);
+  });
+});
+
+// ─── withNoNilWeights ─────────────────────────────────────────────────────────
+
+describe('Session.withNoNilWeights', () => {
+  it('replaces nil weight units with the fallback unit', () => {
+    const bp = makeWeightedBlueprint();
+    const exercise = new RecordedWeightedExercise(bp, [new PotentialSet(undefined, new Weight(0, 'nil'))], undefined);
+    const session = new Session(
+      uuid(),
+      new SessionBlueprint('Test', [bp], ''),
+      [exercise],
+      LocalDate.of(2025, 4, 5),
+      undefined,
+      undefined,
+    );
+
+    const result = session.withNoNilWeights('kilograms')!;
+
+    expect((result.recordedExercises[0] as RecordedWeightedExercise).potentialSets[0]!.weight.unit).toBe('kilograms');
+  });
+
+  it('leaves non-nil units untouched', () => {
+    const session = makeSession([makeWeightedBlueprint()]);
+    const result = session.withNoNilWeights('pounds')!;
+    const sets = (result.recordedExercises[0] as RecordedWeightedExercise).potentialSets;
+    expect(sets.every((s) => s.weight.unit === 'kilograms')).toBe(true);
+  });
+});
+
+// ─── equals ───────────────────────────────────────────────────────────────────
+
+describe('Session.equals', () => {
+  it('is false against undefined and true against itself', () => {
+    const session = makeSession([makeWeightedBlueprint()]);
+    expect(session.equals(undefined)).toBe(false);
+    expect(session.equals(session)).toBe(true);
+  });
+
+  it('is false when the id differs', () => {
+    const session = makeSession([makeWeightedBlueprint()]);
+    expect(session.equals(session.with({ id: uuid() }))).toBe(false);
+  });
+
+  it('is false when the exercise count differs', () => {
+    const session = makeSession([makeWeightedBlueprint()]);
+    expect(session.equals(session.withAddedExercise(makeWeightedBlueprint('Bench'), false))).toBe(false);
+  });
+});
+
+// ─── structural mutations ─────────────────────────────────────────────────────
+
+describe('Session structural mutations', () => {
+  it('withNothingCompleted clears recorded sets across exercises', () => {
+    const t = tick();
+    const bp = makeWeightedBlueprint();
+    const exercise = new RecordedWeightedExercise(bp, [filledPotentialSet(10, t)], 'note');
+    const session = new Session(
+      uuid(),
+      new SessionBlueprint('Test', [bp], ''),
+      [exercise],
+      LocalDate.of(2025, 4, 5),
+      undefined,
+      undefined,
+    );
+
+    const result = session.withNothingCompleted();
+
+    expect((result.recordedExercises[0] as RecordedWeightedExercise).potentialSets[0]!.set).toBeUndefined();
+    expect(result.isStarted).toBe(false);
+  });
+
+  it('withRemovedExercise removes from both recordedExercises and the blueprint', () => {
+    const session = makeSession([makeWeightedBlueprint('Squat'), makeWeightedBlueprint('Bench')]);
+
+    const result = session.withRemovedExercise(0);
+
+    expect(result.recordedExercises).toHaveLength(1);
+    expect(result.blueprint.exercises).toHaveLength(1);
+    expect(result.recordedExercises[0]!.blueprint.name).toBe('Bench');
+  });
+
+  it('withName renames the blueprint', () => {
+    const session = makeSession([makeWeightedBlueprint()]);
+    expect(session.withName('Push Day').blueprint.name).toBe('Push Day');
+  });
+});
+
+// ─── derived values ───────────────────────────────────────────────────────────
+
+describe('Session derived values', () => {
+  function twoExercisesStartedAt(t1: OffsetDateTime, t2: OffsetDateTime) {
+    const bp0 = makeWeightedBlueprint('Squat');
+    const bp1 = makeWeightedBlueprint('Bench');
+    const ex0 = new RecordedWeightedExercise(bp0, [filledPotentialSet(10, t1)], undefined);
+    const ex1 = new RecordedWeightedExercise(bp1, [filledPotentialSet(10, t2)], undefined);
+    return new Session(
+      uuid(),
+      new SessionBlueprint('Test', [bp0, bp1], ''),
+      [ex0, ex1],
+      LocalDate.of(2025, 4, 5),
+      undefined,
+      undefined,
+    );
+  }
+
+  it('totalWeightLifted sums weight times reps across weighted exercises', () => {
+    const t = tick();
+    const bp = makeWeightedBlueprint();
+    const exercise = new RecordedWeightedExercise(
+      bp,
+      [new PotentialSet(new RecordedSet(5, t), new Weight(100, 'kilograms'))],
+      undefined,
+    );
+    const session = new Session(
+      uuid(),
+      new SessionBlueprint('Test', [bp], ''),
+      [exercise],
+      LocalDate.of(2025, 4, 5),
+      undefined,
+      undefined,
+    );
+    expect(session.totalWeightLifted).toEqual(new Weight(500, 'kilograms'));
+  });
+
+  it('isComplete is true only when every exercise is complete', () => {
+    const incomplete = makeSession([makeWeightedBlueprint()]);
+    expect(incomplete.isComplete).toBe(false);
+  });
+
+  it('firstExercise and lastExercise track the earliest and latest recorded exercise', () => {
+    const first = tickAt(10, 0);
+    const last = tickAt(11, 0);
+    const session = twoExercisesStartedAt(first, last);
+
+    expect(session.firstExercise?.blueprint.name).toBe('Squat');
+    expect(session.lastExercise?.blueprint.name).toBe('Bench');
+    expect(session.latestWeightedExercise?.blueprint.name).toBe('Bench');
+  });
+
+  it('duration spans the first to last recorded set', () => {
+    const first = tickAt(10, 0);
+    const last = tickAt(10, 30);
+    const session = twoExercisesStartedAt(first, last);
+    expect(session.duration).toEqual(Duration.between(first, last));
+  });
+
+  it('duration is undefined when nothing is recorded', () => {
+    expect(makeSession([makeWeightedBlueprint()]).duration).toBeUndefined();
+  });
+});
+
+// ─── restTimerEndTime ─────────────────────────────────────────────────────────
+
+describe('Session.restTimerEndTime', () => {
+  function startedSession(reps: number, restTimerStartTime: OffsetDateTime | undefined) {
+    const bp = makeWeightedBlueprint();
+    const t = tick();
+    const exercise = new RecordedWeightedExercise(
+      bp,
+      [filledPotentialSet(reps, t), new PotentialSet(undefined, new Weight(100, 'kilograms'))],
+      undefined,
+    );
+    return new Session(
+      uuid(),
+      new SessionBlueprint('Test', [bp], ''),
+      [exercise],
+      LocalDate.of(2025, 4, 5),
+      undefined,
+      restTimerStartTime,
+    );
+  }
+
+  it('is undefined without a running rest timer', () => {
+    expect(startedSession(10, undefined).restTimerEndTime).toBeUndefined();
+  });
+
+  it('uses minRest after a successful set', () => {
+    const start = tickAt(12, 0);
+    const session = startedSession(10, start);
+    const minRest = makeWeightedBlueprint().restBetweenSets.minRest;
+    expect(session.restTimerEndTime).toEqual(start.plus(minRest));
+  });
+
+  it('uses failureRest after a failed set', () => {
+    const start = tickAt(12, 0);
+    const session = startedSession(3, start);
+    const failureRest = makeWeightedBlueprint().restBetweenSets.failureRest;
+    expect(session.restTimerEndTime).toEqual(start.plus(failureRest));
+  });
+});
+
+// ─── freeform / JSON ──────────────────────────────────────────────────────────
+
+describe('Session freeform and JSON', () => {
+  it('freeformSession is marked as freeform', () => {
+    const session = Session.freeformSession(LocalDate.of(2025, 4, 5), undefined);
+    expect(session.isFreeform).toBe(true);
+    expect(makeSession([makeWeightedBlueprint()]).isFreeform).toBe(false);
+  });
+
+  it('round-trips through toJSON/fromJSON', () => {
+    const t = tick();
+    const bp = makeWeightedBlueprint();
+    const exercise = new RecordedWeightedExercise(bp, [filledPotentialSet(10, t)], undefined);
+    const session = new Session(
+      '11111111-1111-1111-1111-111111111111',
+      new SessionBlueprint('Test', [bp], ''),
+      [exercise],
+      LocalDate.of(2025, 4, 5),
+      new Weight(80, 'kilograms'),
+      undefined,
+    );
+
+    const restored = Session.fromJSON(session.toJSON());
+
+    expect(restored.equals(session)).toBe(true);
+  });
+});
