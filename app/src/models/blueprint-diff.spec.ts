@@ -1,6 +1,10 @@
 import { Duration } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('expo-localization', () => ({
+  getLocales: () => [{ decimalSeparator: '.' }],
+}));
 import {
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
@@ -9,7 +13,14 @@ import {
   SessionBlueprint,
   WeightedExerciseBlueprint,
 } from './blueprint-models';
-import { applySessionBlueprintDiff, diffSessionBlueprints, getChangeDescription } from './blueprint-diff';
+import {
+  applySessionBlueprintDiff,
+  diffSessionBlueprints,
+  filterDiff,
+  getChangeDescription,
+  getChangeLabelKey,
+} from './blueprint-diff';
+import { IncreaseLowestSetProgressiveOverload, NoProgressiveOverload, ProgressiveOverload } from './blueprint-models';
 import { UseTranslateResult } from '@tolgee/react';
 
 describe('diffSessionBlueprints', () => {
@@ -659,5 +670,182 @@ describe('getChangeDescription', () => {
       oldValue: 3,
       newValue: 5,
     });
+  });
+});
+
+// ─── filterDiff ───────────────────────────────────────────────────────────────
+
+describe('filterDiff', () => {
+  const weighted = (name: string, sets = 3, reps = 10, notes = ''): WeightedExerciseBlueprint =>
+    new WeightedExerciseBlueprint(
+      name,
+      sets,
+      reps,
+      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+      Rest.medium,
+      false,
+      notes,
+      '',
+    );
+
+  it('keeps only the selected changes and recomputes hasChanges', () => {
+    const original = new SessionBlueprint('Workout', [weighted('Squat', 3, 10)], 'old notes');
+    const modified = new SessionBlueprint('Workout renamed', [weighted('Squat', 5, 8)], 'old notes');
+
+    const diff = diffSessionBlueprints(original, modified);
+    const setsChange = diff.modifiedExercises[0]!.changes.find((c) => c.kind === 'exerciseSets')!;
+
+    const filtered = filterDiff(diff, new Set([setsChange.id]));
+
+    expect(filtered.hasChanges).toBe(true);
+    expect(filtered.allChanges).toHaveLength(1);
+    expect(filtered.sessionChanges).toHaveLength(0);
+    expect(filtered.modifiedExercises[0]!.changes).toEqual([setsChange]);
+    // Applying the filtered diff changes sets but not the session name
+    const applied = applySessionBlueprintDiff(original, filtered);
+    expect(applied.name).toBe('Workout');
+    expect((applied.exercises[0] as WeightedExerciseBlueprint).sets).toBe(5);
+  });
+
+  it('drops modified exercises whose changes were all deselected', () => {
+    const original = new SessionBlueprint('Workout', [weighted('Squat', 3, 10)], '');
+    const modified = new SessionBlueprint('Workout', [weighted('Squat', 5, 10)], '');
+
+    const diff = diffSessionBlueprints(original, modified);
+    const filtered = filterDiff(diff, new Set<string>());
+
+    expect(filtered.hasChanges).toBe(false);
+    expect(filtered.modifiedExercises).toHaveLength(0);
+  });
+});
+
+// ─── applySessionBlueprintDiff (remaining branches) ───────────────────────────
+
+describe('applySessionBlueprintDiff additional branches', () => {
+  const weighted = (name: string): WeightedExerciseBlueprint =>
+    new WeightedExerciseBlueprint(
+      name,
+      3,
+      10,
+      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+      Rest.medium,
+      false,
+      '',
+      '',
+    );
+  const cardioSet = (durationMinutes: number, trackDuration = true): CardioExerciseSetBlueprint =>
+    new CardioExerciseSetBlueprint(
+      { type: 'time', value: Duration.ofMinutes(durationMinutes) },
+      trackDuration,
+      false,
+      false,
+      false,
+      false,
+      false,
+    );
+  const cardio = (name: string, sets: CardioExerciseSetBlueprint[]): CardioExerciseBlueprint =>
+    new CardioExerciseBlueprint(name, sets, '', '');
+
+  it('applies a cardio set removal', () => {
+    const original = new SessionBlueprint('W', [cardio('Run', [cardioSet(30), cardioSet(20)])], '');
+    const modified = new SessionBlueprint('W', [cardio('Run', [cardioSet(30)])], '');
+
+    const result = applySessionBlueprintDiff(original, diffSessionBlueprints(original, modified));
+
+    expect((result.exercises[0] as CardioExerciseBlueprint).sets).toHaveLength(1);
+  });
+
+  it('applies an exercise type change', () => {
+    const original = new SessionBlueprint('W', [weighted('Squat')], '');
+    const modified = new SessionBlueprint('W', [cardio('Squat', [cardioSet(30)])], '');
+
+    const result = applySessionBlueprintDiff(original, diffSessionBlueprints(original, modified));
+
+    expect(result.exercises[0]).toBeInstanceOf(CardioExerciseBlueprint);
+  });
+
+  it('applies reordering of matched exercises', () => {
+    const a = weighted('A');
+    const b = weighted('B');
+    const original = new SessionBlueprint('W', [a, b], '');
+    const modified = new SessionBlueprint('W', [b, a], '');
+
+    const result = applySessionBlueprintDiff(original, diffSessionBlueprints(original, modified));
+
+    expect(result.exercises.map((e) => e.name)).toEqual(['B', 'A']);
+  });
+
+  it('round-trips a full weighted diff back to the modified blueprint', () => {
+    const original = new SessionBlueprint('W', [weighted('Squat')], 'notes');
+    const modified = new SessionBlueprint(
+      'W2',
+      [new WeightedExerciseBlueprint('Squat', 5, 8, new NoProgressiveOverload(), Rest.long, true, 'note', 'link')],
+      'notes2',
+    );
+
+    const result = applySessionBlueprintDiff(original, diffSessionBlueprints(original, modified));
+
+    expect(result.equals(modified)).toBe(true);
+  });
+});
+
+// ─── getChangeLabelKey / description exhaustiveness ───────────────────────────
+
+describe('change label and description mapping', () => {
+  const t: UseTranslateResult['t'] = (key, params?) => ({ key, params }) as unknown as string;
+  const weighted = (
+    name: string,
+    overload: ProgressiveOverload = new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+    supersetWithNext = false,
+    notes = '',
+    link = '',
+  ): WeightedExerciseBlueprint =>
+    new WeightedExerciseBlueprint(name, 3, 10, overload, Rest.medium, supersetWithNext, notes, link);
+
+  it('produces a non-empty label key and description for every change kind', () => {
+    const original = new SessionBlueprint('Workout', [weighted('Squat'), weighted('Bench')], 'notes');
+    const modified = new SessionBlueprint(
+      'Renamed',
+      [
+        weighted('Bench'), // reordered
+        weighted('Squat', new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'last'), true, 'new note', 'new link'),
+        weighted('Deadlift'), // added
+      ],
+      'new notes',
+    );
+
+    const diff = diffSessionBlueprints(original, modified);
+    expect(diff.allChanges.length).toBeGreaterThan(0);
+
+    for (const change of diff.allChanges) {
+      const label = getChangeLabelKey(change) as unknown as { key: string };
+      expect(label.key).toBeTruthy();
+      const description = getChangeDescription(t, change) as unknown as { key: string };
+      expect(description.key).toBeTruthy();
+    }
+  });
+
+  it('describes each progressive overload strategy', () => {
+    const cases = [
+      new NoProgressiveOverload(),
+      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+      new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'all'),
+      new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'first'),
+      new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'middle'),
+      new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'last'),
+    ];
+
+    for (const overload of cases) {
+      const original = new SessionBlueprint(
+        'W',
+        [weighted('Squat', new IncreaseAllEvenlyProgressiveOverload(BigNumber(1)))],
+        '',
+      );
+      const modified = new SessionBlueprint('W', [weighted('Squat', overload)], '');
+      const diff = diffSessionBlueprints(original, modified);
+      const change = diff.modifiedExercises[0]!.changes.find((c) => c.kind === 'progressiveOverload')!;
+      const description = getChangeDescription(t, change) as unknown as { key: string };
+      expect(description.key).toBeTruthy();
+    }
   });
 });
