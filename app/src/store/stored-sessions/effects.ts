@@ -1,24 +1,17 @@
 import { AddEffectFn } from '@/store/store';
 import {
   addStoredSession,
-  checkIfWeightMigrationRequired,
   deleteExercise,
   deleteStoredSession,
   initializeStoredSessionsStateSlice,
-  migrateExerciseWeights,
-  selectSessions,
   setExercises,
-  setExercisesRequiringWeightMigration,
   setIsHydrated,
   setStoredSessions,
   updateExercise,
   upsertStoredSessions,
-  WeightMigrateableExercise,
 } from './index';
 import { fetchUpcomingSessions } from '@/store/program';
-import Enumerable from 'linq';
-import { RecordedWeightedExercise, Session } from '@/models/session-models';
-import { setCurrentSession } from '@/store/current-session';
+import { Session } from '@/models/session-models';
 import { exercisesSchema, sessionsSchema } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { toRecord } from '@/utils/reduce';
@@ -91,74 +84,10 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
       const newBuiltIns: string[] = builtinExercisesAddedInThePast.concat(Object.keys(builtInExercisesNotAlreadyAdded));
       await keyValueStore.setItem(addedBuiltInExerciseIdsStorageKey, JSON.stringify(newBuiltIns));
 
-      dispatch(checkIfWeightMigrationRequired());
-
       dispatch(setIsHydrated(true));
       dispatch(fetchUpcomingSessions());
     },
   );
-
-  addEffect(checkIfWeightMigrationRequired, (_, { dispatch, stateAfterReduce }) => {
-    const completedSessionsList = selectSessions(stateAfterReduce);
-
-    const weightsNeedMigration = Enumerable.from(completedSessionsList)
-      .selectMany((x) =>
-        Enumerable.from(x.recordedExercises)
-          .ofType<RecordedWeightedExercise>(RecordedWeightedExercise)
-          .selectMany((ex) =>
-            Enumerable.from(ex.potentialSets)
-              .where((set) => set.weight.unit === 'nil')
-              .select(() => ex)
-              .take(1),
-          ),
-      )
-      .select(
-        (ex) =>
-          ({
-            name: ex.blueprint.name,
-            unit: 'nil',
-          }) satisfies WeightMigrateableExercise,
-      )
-      .distinct((x) => x.name)
-      .orderBy((x) => x.name)
-      .toArray();
-    dispatch(setExercisesRequiringWeightMigration(weightsNeedMigration));
-  });
-
-  addEffect(migrateExerciseWeights, (_, { dispatch, stateAfterReduce }) => {
-    const sessions = selectSessions(stateAfterReduce);
-    const migrations = stateAfterReduce.storedSessions.exercisesRequiringWeightMigration;
-    const findUnit = (exerciseName: string) => migrations.find((x) => x.name === exerciseName)?.unit;
-    const applyWeightToSession = (session: Session) =>
-      session.with({
-        recordedExercises: session.recordedExercises.map((re) =>
-          re instanceof RecordedWeightedExercise
-            ? re.with({
-                potentialSets: re.potentialSets.map((ps) =>
-                  ps.with({
-                    weight: ps.weight.with({
-                      unit: ps.weight.unit === 'nil' ? (findUnit(re.blueprint.name) ?? 'nil') : ps.weight.unit,
-                    }),
-                  }),
-                ),
-              })
-            : re,
-        ),
-      });
-    const newSessions = sessions.map(applyWeightToSession);
-    const currentSession = stateAfterReduce.currentSession.workoutSession;
-    if (currentSession) {
-      dispatch(
-        setCurrentSession({
-          target: 'workoutSession',
-          session: applyWeightToSession(currentSession),
-        }),
-      );
-    }
-    dispatch(upsertStoredSessions(newSessions));
-    dispatch(fetchUpcomingSessions());
-    dispatch(setExercisesRequiringWeightMigration([]));
-  });
 
   addEffect(addStoredSession, async (a, { getState, extra: { healthExportService, logger } }) => {
     const workout = a.payload;

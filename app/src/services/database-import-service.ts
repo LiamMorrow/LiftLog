@@ -11,6 +11,10 @@ import {
   importExercisesFromWorkoutsDataMigration,
 } from '@/services/data-migrations/import-exercises-from-workouts';
 import { importFeed, importFeedDataMigration } from '@/services/data-migrations/import-feed';
+import {
+  migrateNilWeightUnits,
+  migrateNilWeightUnitsDataMigration,
+} from '@/services/data-migrations/migrate-nil-weight-units';
 
 export interface DatabaseImporter {
   importOldData(): Promise<void>;
@@ -42,6 +46,9 @@ export class DatabaseImportService implements DatabaseImporter {
     }
     if (!dataMigrationsRun.includes(importFeedDataMigration)) {
       await importFeed(this.db, this.keyValueStore);
+    }
+    if (!dataMigrationsRun.includes(migrateNilWeightUnitsDataMigration)) {
+      await migrateNilWeightUnits(this.db, this.preferenceService);
     }
 
     console.info('Imported old data to DB in ' + (performance.now() - now) + 'ms');

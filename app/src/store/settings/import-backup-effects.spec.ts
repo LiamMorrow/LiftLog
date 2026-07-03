@@ -9,7 +9,7 @@ import { FeedIdentity } from '@/models/feed-models';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { EmptySession, Session } from '@/models/session-models';
 import { uuid } from '@/utils/uuid';
-import { checkIfWeightMigrationRequired, upsertStoredSessions } from '@/store/stored-sessions';
+import { upsertStoredSessions } from '@/store/stored-sessions';
 import { upsertSavedPlans } from '@/store/program';
 import { showSnackbar } from '@/store/app';
 
@@ -63,6 +63,7 @@ describe('import-backup-effects', () => {
     const testBed = createAddEffectTestBed({
       services: {
         tolgee: { t: (s: string) => s },
+        db: { delete: () => ({ where: () => Promise.resolve() }) } as never,
       },
     });
     addImportBackupEffects(testBed.addEffect);
@@ -88,7 +89,6 @@ describe('import-backup-effects', () => {
     expect(testBed.getDispatchedAction(upsertStoredSessions).payload).toBe(mockWorkouts);
     expect(testBed.getDispatchedAction(upsertSavedPlans).payload).toBe(mockPrograms);
     expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe('Restore complete!');
-    expect(testBed.getDispatchedAction(checkIfWeightMigrationRequired)).toBeDefined();
     expect(testBed.getDispatchedAction(beginFeedImport).payload).toBe(mockFeed);
   });
 

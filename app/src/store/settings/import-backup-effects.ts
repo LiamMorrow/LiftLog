@@ -4,7 +4,7 @@ import { showSnackbar } from '@/store/app';
 import { AddEffectFn } from '@/store/store';
 import { upsertSavedPlans } from '@/store/program';
 import { beginFeedImport, importBackupData, importData, importDataProto, importDataSql } from '@/store/settings';
-import { checkIfWeightMigrationRequired, upsertStoredSessions } from '@/store/stored-sessions';
+import { upsertStoredSessions } from '@/store/stored-sessions';
 import { streamToUint8Array } from '@/utils/stream';
 import { sleep } from '@/utils/sleep';
 import { Session } from '@/models/session-models';
@@ -19,9 +19,11 @@ import {
 } from '@/models/feed-models';
 import { deserializeDatabaseAsync } from 'expo-sqlite';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { eq } from 'drizzle-orm';
 import { DatabaseMigrationService } from '@/services/database-migration-service';
 import { FeedBackupData } from '@/models/backup';
 import {
+  dataMigrationsSchema,
   feedFollowedUsersSchema,
   feedFollowerUsersSchema,
   feedFollowRequestsSchema,
@@ -31,6 +33,7 @@ import {
   programsSchema,
   sessionsSchema,
 } from '@/db/schema';
+import { migrateNilWeightUnitsDataMigration } from '@/services/data-migrations/migrate-nil-weight-units';
 import { toRecord } from '@/utils/reduce';
 import {
   followRequestInboxMessageMigrations,
@@ -77,7 +80,7 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
     }
   });
 
-  addEffect(importBackupData, async ({ payload: dao }, { dispatch, extra: { tolgee } }) => {
+  addEffect(importBackupData, async ({ payload: dao }, { dispatch, extra: { tolgee, db, databaseMigrationService } }) => {
     dispatch(upsertStoredSessions(dao.workouts));
     dispatch(upsertSavedPlans(dao.programs));
     dispatch(
@@ -85,7 +88,9 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
         text: tolgee.t('Restore complete!'),
       }),
     );
-    dispatch(checkIfWeightMigrationRequired());
+    // Let the data migration re-run on next launch so imported nil-unit weights get coalesced
+    await db.delete(dataMigrationsSchema).where(eq(dataMigrationsSchema.id, migrateNilWeightUnitsDataMigration));
+    await databaseMigrationService.migrate()
     if (dao.feed) {
       dispatch(beginFeedImport(dao.feed));
     }

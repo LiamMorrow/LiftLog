@@ -8,14 +8,8 @@ import {
 import { LocalDate, OffsetDateTime, YearMonth, ZoneId } from '@js-joda/core';
 import { createAction, createSelector, createSlice, PayloadAction, WritableDraft } from '@reduxjs/toolkit';
 import Enumerable from 'linq';
-import { WeightUnit } from '@/models/weight';
 import { TemporalComparer } from '@/models/comparers';
 import { ExerciseDescriptor } from '@/models/exercise-models';
-
-export interface WeightMigrateableExercise {
-  name: string;
-  unit: WeightUnit;
-}
 
 interface StoredSessionState {
   isHydrated: boolean;
@@ -23,7 +17,6 @@ interface StoredSessionState {
   latestExercises: Record<string, RecordedExercise | undefined>; // KeyedExerciseBlueprint -> RecordedExercise
   savedExercises: Record<string, ExerciseDescriptor>;
   filteredExerciseIds: string[];
-  exercisesRequiringWeightMigration: WeightMigrateableExercise[];
   earliestSession: Session | undefined;
 }
 
@@ -33,7 +26,6 @@ const initialState: StoredSessionState = {
   latestExercises: {},
   savedExercises: {},
   filteredExerciseIds: [],
-  exercisesRequiringWeightMigration: [],
   earliestSession: undefined,
 };
 
@@ -98,13 +90,6 @@ const storedSessionsSlice = createSlice({
     setFilteredExerciseIds(state, action: PayloadAction<string[]>) {
       state.filteredExerciseIds = action.payload;
     },
-    setExercisesRequiringWeightMigration(state, action: PayloadAction<WeightMigrateableExercise[]>) {
-      state.exercisesRequiringWeightMigration = action.payload;
-    },
-    updateExerciseRequiringWeightMigration(state, action: PayloadAction<WeightMigrateableExercise>) {
-      const val = state.exercisesRequiringWeightMigration.find((x) => x.name === action.payload.name);
-      if (val) val.unit = action.payload.unit;
-    },
   },
 
   selectors: {
@@ -166,9 +151,6 @@ export const selectSessionsBy = createSelector(
 
 export const initializeStoredSessionsStateSlice = createAction('initializeStoredSessionsStateSlice');
 
-export const migrateExerciseWeights = createAction('migrateExerciseWeights');
-export const checkIfWeightMigrationRequired = createAction('checkIfWeightMigrationRequired');
-
 export const {
   setIsHydrated,
   setStoredSessions,
@@ -179,8 +161,6 @@ export const {
   deleteExercise,
   setExercises,
   setFilteredExerciseIds,
-  setExercisesRequiringWeightMigration,
-  updateExerciseRequiringWeightMigration,
 } = storedSessionsSlice.actions;
 
 export const { selectSessions, selectSession, selectExercises, selectLatestExercises, selectExerciseById } =
