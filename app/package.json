@@ -20,7 +20,9 @@
     "json-schema": "node ./scripts/generate-json-schemas.js",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "typecheck": "tsgo --noEmit"
+    "typecheck": "tsgo --noEmit",
+    "e2e": "maestro test .maestro --exclude-tags ci-only",
+    "e2e:ci": "maestro test .maestro"
   },
   "dependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",

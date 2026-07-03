@@ -1,0 +1,55 @@
+appId: com.limajuice.liftlog
+---
+# Settings tab -> Manage exercises
+- launchApp
+# A cold dev-client launch can take up to a minute to fetch the bundle from Metro
+- extendedWaitUntil:
+    visible: "Workout"
+    timeout: 60000
+- tapOn: "Settings"
+- tapOn: "Manage exercises"
+
+# Add a new exercise
+- tapOn:
+    id: "exercise-add-fab"
+- assertVisible: "New exercise"
+
+# Delete reveals an undo snackbar that restores the exercise
+- swipe:
+    from:
+      id: "exercise-accordion"
+    direction: LEFT
+- tapOn:
+    id: "exercise-delete-btn"
+- assertVisible: "New exercise deleted"
+- tapOn: "Undo"
+- assertVisible: "New exercise"
+
+# Edit name and instructions
+- tapOn:
+    id: "exercise-name-input"
+- eraseText
+- inputText: "E2E Bench Press"
+- tapOn:
+    id: "exercise-instructions-input"
+- eraseText
+- inputText: "Lie on bench and press bar."
+- hideKeyboard
+- assertVisible: "E2E Bench Press"
+- assertVisible: "Lie on bench and press bar."
+
+# Filter narrows the list by name
+- tapOn:
+    id: "exercise-search-input"
+- inputText: "E2E"
+- hideKeyboard
+- assertVisible: "E2E Bench Press"
+
+# Remove the exercise so the flow leaves no state behind
+- swipe:
+    from:
+      id: "exercise-accordion"
+    direction: LEFT
+- tapOn:
+    id: "exercise-delete-btn"
+- assertVisible: "E2E Bench Press deleted"

@@ -1,0 +1,17 @@
+appId: com.limajuice.liftlog
+tags:
+  - ci-only
+---
+# CI/standalone-build only: `clearState` reloads straight back into the app with
+# a wiped database and shows the welcome wizard. On a local dev-client build
+# (npm run dev) this instead strands the app on the bare Expo launcher, so don't
+# run this flow as part of the normal local `npm run e2e` loop - see README.
+- launchApp:
+    clearState: true
+- tapOn:
+    id: "welcome-wizard-next"
+- tapOn:
+    id: "welcome-wizard-next"
+- tapOn:
+    id: "welcome-wizard-next"
+- assertVisible: "Freeform workout"

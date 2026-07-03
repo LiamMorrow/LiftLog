@@ -126,7 +126,7 @@ function AndroidMenu(props: {
     <>
       <Jiggler jiggling={jiggleFinishButton} jiggleSpeed={140}>
         <Tooltip title={t('workout.finish.action.tooltip')}>
-          <IconButton icon={'assignmentTurnedIn'} onPress={save} />
+          <IconButton testID="finish-session-button" icon={'assignmentTurnedIn'} onPress={save} />
         </Tooltip>
       </Jiggler>
       <Menu

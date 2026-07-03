@@ -1,0 +1,7 @@
+appId: com.limajuice.liftlog
+flows:
+  - "*.yaml"
+executionOrder:
+  continueOnFailure: false
+  flowsOrder:
+    - fresh-install-onboarding

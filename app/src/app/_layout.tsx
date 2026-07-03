@@ -15,8 +15,16 @@ import { selectFollowRequestCount } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { StatusBar } from 'expo-status-bar';
+import { requireOptionalNativeModule } from 'expo';
 
 install();
+
+if (__DEV__) {
+  // oxlint-disable-next-line typescript/no-unsafe-assignment
+  const DevMenuPreferences = requireOptionalNativeModule('DevMenuPreferences');
+  // oxlint-disable-next-line typescript/no-unsafe-call typescript/no-unsafe-member-access
+  DevMenuPreferences?.setPreferencesAsync({ showFloatingActionButton: false, showsAtLaunch: false });
+}
 
 LogBox.ignoreAllLogs();
 
