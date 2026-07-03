@@ -1,15 +1,11 @@
 import CardActions from '@/components/presentation/foundation/card-actions';
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
-import FullScreenDialog from '@/components/presentation/foundation/full-screen-dialog';
-import Form from '@/components/presentation/foundation/form';
-import LabelledFormRow from '@/components/presentation/foundation/labelled-form-row';
-import ListSwitch from '@/components/presentation/foundation/list-switch';
 import { Remote } from '@/components/presentation/foundation/remote';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { getFeedProfileEditorHref } from '@/components/smart/feed-profile-editor';
 import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
 import { FeedIdentity, SessionUserEvent } from '@/models/feed-models';
@@ -18,16 +14,14 @@ import { shareString } from '@/store/app';
 import {
   fetchFeedItems,
   fetchInboxItems,
-  resetFeedAccount,
   selectFeedFollowing,
   selectFeedIdentityRemote,
   selectFeedSessionItems,
-  updateFeedIdentity,
 } from '@/store/feed';
 import { T, useTranslate } from '@tolgee/react';
-import { useState } from 'react';
+import { useRouter } from 'expo-router';
 import { View } from 'react-native';
-import { Card, Icon, List, TextInput } from 'react-native-paper';
+import { Card, Icon } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
@@ -75,8 +69,7 @@ function FeedProfileHeader() {
 
 function FeedProfile({ identity }: { identity: FeedIdentity }) {
   const dispatch = useDispatch();
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [focusPublish, setFocusPublish] = useState(false);
+  const { push } = useRouter();
   const shareUrl = `https://app.liftlog.online/feed/share?id=${identity.lookup}${
     identity.name ? `&name=${encodeURIComponent(identity.name)}` : ''
   }`;
@@ -115,10 +108,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
               <Button
                 style={{ marginLeft: 'auto' }}
                 testID="feed-fix-button"
-                onPress={() => {
-                  setFocusPublish(true);
-                  setEditDialogOpen(true);
-                }}
+                onPress={() => push(getFeedProfileEditorHref({ focusPublish: true }))}
                 mode="outlined"
               >
                 <T keyName="generic.fix.button" />
@@ -128,14 +118,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
         </Card.Content>
 
         <CardActions>
-          <IconButton
-            mode="contained"
-            icon={'edit'}
-            onPress={() => {
-              setFocusPublish(false);
-              setEditDialogOpen(true);
-            }}
-          />
+          <IconButton mode="contained" icon={'edit'} onPress={() => push(getFeedProfileEditorHref())} />
           <Button
             testID="feed-share-button"
             mode="contained"
@@ -153,88 +136,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
           </Button>
         </CardActions>
       </Card>
-      <FeedProfileEditor
-        open={editDialogOpen}
-        focusPublish={focusPublish}
-        onClose={() => setEditDialogOpen(false)}
-        identity={identity}
-      />
     </>
-  );
-}
-
-function FeedProfileEditor({
-  open,
-  onClose,
-  identity,
-  focusPublish,
-}: {
-  open: boolean;
-  onClose: () => void;
-  identity: FeedIdentity;
-  focusPublish: boolean;
-}) {
-  const { t } = useTranslate();
-  const dispatch = useDispatch();
-  const updateProfile = (value: Partial<FeedIdentity>) => {
-    dispatch(updateFeedIdentity({ updates: value, fromUserAction: true }));
-  };
-  const resetAccount = () => {
-    dispatch(resetFeedAccount({ fromUserAction: true }));
-  };
-  const [resetAccountDialogOpen, setResetAccountDialogOpen] = useState(false);
-  return (
-    <FullScreenDialog avoidKeyboard open={open} onClose={onClose} title={t('feed.manage.title')}>
-      <View
-        style={{
-          gap: spacing[2],
-          marginHorizontal: -spacing.pageHorizontalMargin,
-        }}
-      >
-        <Form>
-          <LabelledFormRow icon={'personFill'} label={t('feed.your_name.label')}>
-            <TextInput
-              placeholder={t('generic.optional.label')}
-              value={identity.name ?? ''}
-              label={t('generic.optional.label')}
-              mode="outlined"
-              onChangeText={(name) => updateProfile({ name })}
-            />
-          </LabelledFormRow>
-        </Form>
-        <List.Section>
-          <ListSwitch
-            testID="feed-publish-workouts-switch"
-            focus={focusPublish}
-            headline={t('feed.publish_workout.label')}
-            supportingText={t('feed.publish_workout.subtitle')}
-            value={identity.publishWorkouts}
-            onValueChange={(publishWorkouts) => updateProfile({ publishWorkouts })}
-          />
-          <ListSwitch
-            headline={t('feed.publish_bodyweight.label')}
-            supportingText={t('feed.publish_bodyweight.subtitle')}
-            value={identity.publishBodyweight}
-            onValueChange={(publishBodyweight) => updateProfile({ publishBodyweight })}
-          />
-          <ListSwitch
-            headline={t('feed.publish_plan.label')}
-            supportingText={t('feed.publish_plan.subtitle')}
-            value={identity.publishPlan}
-            onValueChange={(publishPlan) => updateProfile({ publishPlan })}
-          />
-        </List.Section>
-        <Button onPress={() => setResetAccountDialogOpen(true)}>{t('feed.reset_account.button')}</Button>
-      </View>
-      <ConfirmationDialog
-        headline={t('feed.reset_account.button')}
-        textContent={t('feed.reset_account.confirm.body')}
-        open={resetAccountDialogOpen}
-        onOk={resetAccount}
-        okText={t('feed.reset_account.button')}
-        onCancel={() => setResetAccountDialogOpen(false)}
-      />
-    </FullScreenDialog>
   );
 }
 
