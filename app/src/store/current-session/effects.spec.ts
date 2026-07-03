@@ -1,14 +1,53 @@
 import { describe, it, expect, vi } from 'vitest';
+import { OffsetDateTime, ZoneOffset } from '@js-joda/core';
 import {
   initializeCurrentSessionStateSlice,
   setCurrentSession,
   setIsHydrated,
   currentWorkoutSessionUpdated,
+  finishCurrentWorkout,
+  persistCurrentSession,
+  clearSetTimerNotification,
+  notifySetTimer,
+  broadcastWorkoutEvent,
+  setCurrentSessionFromBlueprint,
 } from '@/store/current-session';
 import { RootState } from '@/store/store';
 import { applyCurrentSessionEffects } from '@/store/current-session/effects';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
-import { EmptySession } from '@/models/session-models';
+import { EmptySession, Session } from '@/models/session-models';
+import { addUnpublishedSessionId } from '@/store/feed';
+import { setStatsIsDirty } from '@/store/stats';
+import { addStoredSession } from '@/store/stored-sessions';
+import { fetchUpcomingSessions } from '@/store/program';
+import { SessionBlueprint } from '@/models/blueprint-models';
+import { RecordedWeightedExercise, PotentialSet } from '@/models/session-models/recorded-weighted-exercise';
+import { Weight } from '@/models/weight';
+import { makeWeightedBlueprint, filledPotentialSet } from '@/models/session-models/__test__/helpers';
+import { uuid } from '@/utils/uuid';
+
+function broadcastEventTypes(testBed: ReturnType<typeof createAddEffectTestBed>): string[] {
+  return testBed.dispatchedActions
+    .filter((a) => a.type === broadcastWorkoutEvent.type)
+    .map((a) => (a as unknown as { payload: { type: string } }).payload.type);
+}
+
+function sessionWithRestTimer(restTimerStartTime: OffsetDateTime): Session {
+  const bp = makeWeightedBlueprint();
+  const exercise = new RecordedWeightedExercise(
+    bp,
+    [filledPotentialSet(10, restTimerStartTime), new PotentialSet(undefined, new Weight(100, 'kilograms'))],
+    undefined,
+  );
+  return new Session(
+    uuid(),
+    new SessionBlueprint('Test', [bp], ''),
+    [exercise],
+    EmptySession.date,
+    undefined,
+    restTimerStartTime,
+  );
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -252,6 +291,190 @@ describe('current-session effects', () => {
         'Failed to persist current session state',
         expect.objectContaining({ message: 'disk full' }),
       );
+    });
+  });
+
+  // ─── finishCurrentWorkout ─────────────────────────────────────────────────────
+
+  describe('applyCurrentSessionEffects — finishCurrentWorkout', () => {
+    function testBedWithSession(session: Session | undefined) {
+      const testBed = createAddEffectTestBed({
+        initialState: {
+          currentSession: { workoutSession: session, historySession: undefined },
+        } as Partial<RootState>,
+        services: { keyValueStore: makeKeyValueStore() },
+      });
+      applyCurrentSessionEffects(testBed.addEffect);
+      return testBed;
+    }
+
+    it('queues the session id, persists, and marks stats dirty', async () => {
+      const session = EmptySession.with({ id: 'abc' });
+      const testBed = testBedWithSession(session);
+
+      await testBed.dispatchHandled(finishCurrentWorkout('workoutSession'));
+
+      expect(testBed.getDispatchedAction(addUnpublishedSessionId).payload).toBe('abc');
+      expect(testBed.getDispatchedAction(persistCurrentSession).payload).toBe('workoutSession');
+      expect(testBed.getDispatchedAction(setStatsIsDirty).payload).toBe(true);
+    });
+
+    it('still persists when there is no active session', async () => {
+      const testBed = testBedWithSession(undefined);
+
+      await testBed.dispatchHandled(finishCurrentWorkout('workoutSession'));
+
+      testBed.expectNotDispatched(addUnpublishedSessionId);
+      expect(testBed.getDispatchedAction(persistCurrentSession).payload).toBe('workoutSession');
+    });
+  });
+
+  // ─── persistCurrentSession ────────────────────────────────────────────────────
+
+  describe('applyCurrentSessionEffects — persistCurrentSession', () => {
+    it('stores the session and clears the current slot', async () => {
+      const session = EmptySession.with({ id: 'to-store' });
+      const testBed = createAddEffectTestBed({
+        initialState: {
+          currentSession: { workoutSession: session, historySession: undefined },
+        } as Partial<RootState>,
+        services: { keyValueStore: makeKeyValueStore(), notificationService: { clearSetTimerNotification: vi.fn() } },
+      });
+      applyCurrentSessionEffects(testBed.addEffect);
+
+      await testBed.dispatchHandled(persistCurrentSession('workoutSession'));
+
+      expect(testBed.getDispatchedAction(addStoredSession).payload).toBe(session);
+      expect(testBed.getDispatchedAction(setCurrentSession).payload).toEqual({
+        target: 'workoutSession',
+        session: undefined,
+      });
+      testBed.getDispatchedAction(fetchUpcomingSessions);
+    });
+  });
+
+  // ─── currentWorkoutSessionUpdated ─────────────────────────────────────────────
+
+  describe('applyCurrentSessionEffects — currentWorkoutSessionUpdated', () => {
+    function testBed() {
+      const bed = createAddEffectTestBed({
+        initialState: { settings: { restNotifications: false } } as Partial<RootState>,
+        services: { keyValueStore: makeKeyValueStore(), workoutWorkerService: { broadcast: vi.fn() } },
+      });
+      applyCurrentSessionEffects(bed.addEffect);
+      return bed;
+    }
+
+    it('broadcasts start and update events when a workout begins', async () => {
+      const bed = testBed();
+      const after = sessionWithRestTimer(OffsetDateTime.of(2025, 4, 5, 10, 0, 0, 0, ZoneOffset.UTC));
+
+      await bed.dispatchHandled(currentWorkoutSessionUpdated({ before: undefined, after }));
+
+      const events = broadcastEventTypes(bed);
+      expect(events).toContain('WorkoutStartedEvent');
+      expect(events).toContain('WorkoutUpdatedEvent');
+    });
+
+    it('broadcasts an end event when a workout is cleared', async () => {
+      const bed = testBed();
+      const before = EmptySession.with({ id: 'x' });
+
+      await bed.dispatchHandled(currentWorkoutSessionUpdated({ before, after: undefined }));
+
+      expect(broadcastEventTypes(bed)).toContain('WorkoutEndedEvent');
+    });
+  });
+
+  // ─── broadcastWorkoutEvent / notifications ────────────────────────────────────
+
+  describe('applyCurrentSessionEffects — broadcast and notifications', () => {
+    it('forwards broadcastWorkoutEvent to the worker service', async () => {
+      const broadcast = vi.fn();
+      const testBed = createAddEffectTestBed({
+        services: { keyValueStore: makeKeyValueStore(), workoutWorkerService: { broadcast } },
+      });
+      applyCurrentSessionEffects(testBed.addEffect);
+
+      await testBed.dispatchHandled(broadcastWorkoutEvent({ type: 'WorkoutEndedEvent' }));
+
+      expect(broadcast).toHaveBeenCalledWith({ type: 'WorkoutEndedEvent' });
+    });
+
+    it('clearSetTimerNotification calls the notification service', async () => {
+      const clear = vi.fn();
+      const testBed = createAddEffectTestBed({
+        services: { keyValueStore: makeKeyValueStore(), notificationService: { clearSetTimerNotification: clear } },
+      });
+      applyCurrentSessionEffects(testBed.addEffect);
+
+      await testBed.dispatchHandled(clearSetTimerNotification());
+
+      expect(clear).toHaveBeenCalled();
+    });
+
+    it('notifySetTimer schedules the next notification for a future rest timer', async () => {
+      const scheduleNextSetNotification = vi.fn();
+      const clearSetTimerNotification = vi.fn();
+      const future = OffsetDateTime.now().plusHours(1);
+      const testBed = createAddEffectTestBed({
+        initialState: {
+          settings: { restNotifications: true },
+          currentSession: { workoutSession: sessionWithRestTimer(future) },
+        } as Partial<RootState>,
+        services: {
+          keyValueStore: makeKeyValueStore(),
+          notificationService: { scheduleNextSetNotification, clearSetTimerNotification },
+        },
+      });
+      applyCurrentSessionEffects(testBed.addEffect);
+
+      await testBed.dispatchHandled(notifySetTimer());
+
+      expect(clearSetTimerNotification).toHaveBeenCalled();
+      expect(scheduleNextSetNotification).toHaveBeenCalled();
+    });
+
+    it('notifySetTimer does nothing extra when rest notifications are disabled', async () => {
+      const scheduleNextSetNotification = vi.fn();
+      const testBed = createAddEffectTestBed({
+        initialState: {
+          settings: { restNotifications: false },
+          currentSession: { workoutSession: undefined },
+        } as Partial<RootState>,
+        services: {
+          keyValueStore: makeKeyValueStore(),
+          notificationService: { scheduleNextSetNotification, clearSetTimerNotification: vi.fn() },
+        },
+      });
+      applyCurrentSessionEffects(testBed.addEffect);
+
+      await testBed.dispatchHandled(notifySetTimer());
+
+      expect(scheduleNextSetNotification).not.toHaveBeenCalled();
+    });
+  });
+
+  // ─── setCurrentSessionFromBlueprint ───────────────────────────────────────────
+
+  describe('applyCurrentSessionEffects — setCurrentSessionFromBlueprint', () => {
+    it('hydrates a session from the blueprint and sets it as current', async () => {
+      const hydrated = EmptySession.with({ id: 'hydrated' });
+      const hydrateSessionFromBlueprint = vi.fn().mockReturnValue(hydrated);
+      const blueprint = new SessionBlueprint('Test', [makeWeightedBlueprint()], '');
+      const testBed = createAddEffectTestBed({
+        initialState: { storedSessions: { latestExercises: {} } } as Partial<RootState>,
+        services: { keyValueStore: makeKeyValueStore(), sessionService: { hydrateSessionFromBlueprint } },
+      });
+      applyCurrentSessionEffects(testBed.addEffect);
+
+      await testBed.dispatchHandled(setCurrentSessionFromBlueprint({ target: 'workoutSession', blueprint }));
+
+      expect(hydrateSessionFromBlueprint).toHaveBeenCalledWith(blueprint, {});
+      expect(testBed.getDispatchedAction(setCurrentSession).payload).toEqual({
+        target: 'workoutSession',
+        session: hydrated,
+      });
     });
   });
 });
