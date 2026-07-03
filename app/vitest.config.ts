@@ -34,6 +34,25 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['**/*.spec.ts', '**/*.spec.tsx'],
     setupFiles: ['./test/setup.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text-summary', 'html', 'json-summary'],
+      include: [
+        'src/models/**/*.{ts,tsx}',
+        'src/services/**/*.{ts,tsx}',
+        'src/store/**/*.{ts,tsx}',
+        'src/utils/**/*.{ts,tsx}',
+        'src/hooks/**/*.{ts,tsx}',
+      ],
+      exclude: [
+        '**/*.spec.{ts,tsx}',
+        'src/**/__test__/**',
+        'src/**/__tests__/**',
+        'src/**/test-assets/**',
+        'src/gen/**',
+        'src/drizzle/**',
+      ],
+    },
   },
   plugins: [sqlShim, expoSqliteShim, tsconfigPaths()],
 });

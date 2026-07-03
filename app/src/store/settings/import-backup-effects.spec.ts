@@ -64,6 +64,7 @@ describe('import-backup-effects', () => {
       services: {
         tolgee: { t: (s: string) => s },
         db: { delete: () => ({ where: () => Promise.resolve() }) } as never,
+        databaseMigrationService: { migrate: vi.fn() } as never,
       },
     });
     addImportBackupEffects(testBed.addEffect);

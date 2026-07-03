@@ -1,10 +1,10 @@
-// oxlint-disable typescript/no-unsafe-assignment typescript/no-unsafe-member-access
+// oxlint-disable typescript/no-unsafe-assignment typescript/no-unsafe-member-access typescript/no-unsafe-argument
 // test-utils/createAddEffectTestBed.ts
 
 import { expect, onTestFailed, vi } from 'vitest';
 import type { AddEffectFn, RootState } from '@/store/store';
 import type { Services } from '@/services';
-import type { ActionCreatorWithPayload, UnknownAction } from '@reduxjs/toolkit';
+import type { ActionCreatorWithPayload, Reducer, UnknownAction } from '@reduxjs/toolkit';
 
 type DeepPartial<T> = T extends object
   ? {
@@ -17,14 +17,33 @@ type EffectEntry = {
   effect: (action: UnknownAction, api: unknown) => Promise<void>;
 };
 
+// Shallow-merge each provided slice over the reducer's default state so callers
+// can supply a partial slice (e.g. `{ feed: { identity } }`) and still get a
+// fully-shaped state the real reducers can operate on.
+function mergeSlices(base: any, override: any): any {
+  const result = { ...base };
+  for (const key of Object.keys(override ?? {})) {
+    const b = base?.[key];
+    const o = override[key];
+    result[key] = b && typeof b === 'object' && o && typeof o === 'object' ? { ...b, ...o } : o;
+  }
+  return result;
+}
+
 export function createAddEffectTestBed(options?: {
   initialState?: DeepPartial<RootState>;
   services?: DeepPartial<Services>;
+  // When provided, dispatched actions are run through this reducer so `getState`
+  // reflects real state transitions instead of only recording the action.
+  reducer?: Reducer<any, UnknownAction>;
 }) {
   const effects: EffectEntry[] = [];
   const dispatchedActions: UnknownAction[] = [];
-  let state: DeepPartial<RootState> = options?.initialState ?? {};
-  let stateBeforeReduce: DeepPartial<RootState> = options?.initialState ?? {};
+  const reducer = options?.reducer;
+  let state: DeepPartial<RootState> = reducer
+    ? mergeSlices(reducer(undefined, { type: '@@testbed/INIT' }), options?.initialState ?? {})
+    : (options?.initialState ?? {});
+  let stateBeforeReduce: DeepPartial<RootState> = state;
   const logs: { level: string; args: unknown[] }[] = [];
   const mockServices: Services = {
     logger: {
@@ -50,11 +69,18 @@ export function createAddEffectTestBed(options?: {
       effect,
     });
   };
+  function applyReducer(action: UnknownAction): void {
+    if (!reducer) return;
+    stateBeforeReduce = state;
+    state = reducer(state, action);
+  }
   async function dispatchHandled(action: UnknownAction): Promise<void> {
+    applyReducer(action);
     await runMatchingEffects(action);
   }
   function dispatch(action: UnknownAction): void {
     dispatchedActions.push(action);
+    applyReducer(action);
   }
 
   async function runMatchingEffects(action: UnknownAction): Promise<void> {
@@ -64,6 +90,7 @@ export function createAddEffectTestBed(options?: {
     const listenerApi = {
       dispatch: (a: UnknownAction) => {
         dispatchedActions.push(a);
+        applyReducer(a);
       },
       getState: () => state as RootState,
       stateBeforeReduce,
@@ -101,6 +128,7 @@ export function createAddEffectTestBed(options?: {
       return action! as ReturnType<typeof act>;
     },
     mockServices,
+    getState: () => state as RootState,
     setState: (s: DeepPartial<RootState>) => {
       state = { ...state, ...s };
     },
