@@ -1,5 +1,5 @@
 import { LiftLog } from '@/gen/proto';
-import { EmptySession, Session } from '@/models/session-models';
+import { Session } from '@/models/session-models';
 import {
   broadcastWorkoutEvent,
   clearSetTimerNotification,
@@ -9,16 +9,14 @@ import {
   notifySetTimer,
   persistCurrentSession,
   selectCurrentSession,
-  setCurrentPlanDiff,
   setCurrentSession,
   setCurrentSessionFromBlueprint,
   setIsHydrated,
 } from '@/store/current-session';
 import { AddEffectFn, RootState } from '@/store/store';
-import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
+import { fetchUpcomingSessions } from '@/store/program';
 import { addStoredSession, selectLatestExercises } from '@/store/stored-sessions';
 import { selectPreferredWeightUnit } from '@/store/settings';
-import { diffSessionBlueprints } from '@/models/blueprint-diff';
 import { addUnpublishedSessionId } from '@/store/feed';
 import { setStatsIsDirty } from '@/store/stats';
 import { getCardioTimerInfo, getCurrentExerciseDetails, getTimerInfo } from '@/store/current-session/helpers';
@@ -112,27 +110,8 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
   addEffect(persistCurrentSession, async (a, { dispatch, getState }) => {
     dispatch(clearSetTimerNotification());
     const session = selectCurrentSession(getState(), a.payload);
-    const program = selectActiveProgram(getState());
     if (session) {
       dispatch(addStoredSession(session));
-      const sessionInPlan = program.sessions.some((x) => x.equals(session.blueprint));
-      if (!sessionInPlan) {
-        const sessionWithSameNameInPlan = program.sessions.find((x) => x.name === session.blueprint.name);
-        dispatch(
-          setCurrentPlanDiff(
-            sessionWithSameNameInPlan
-              ? {
-                  type: 'diff',
-                  diff: diffSessionBlueprints(sessionWithSameNameInPlan, session.blueprint),
-                  sessionIndex: program.sessions.indexOf(sessionWithSameNameInPlan),
-                }
-              : {
-                  type: 'add',
-                  diff: diffSessionBlueprints(EmptySession.blueprint, session.blueprint),
-                },
-          ),
-        );
-      }
     }
     dispatch(setCurrentSession({ target: a.payload, session: undefined }));
     dispatch(fetchUpcomingSessions());

@@ -2,19 +2,19 @@ import ConfirmationDialog from '@/components/presentation/foundation/confirmatio
 import SessionComponent from '@/components/smart/session-component';
 import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { finishCurrentWorkout, selectCurrentSession } from '@/store/current-session';
+import { selectCurrentSession } from '@/store/current-session';
+import { useFinishWorkout } from '@/hooks/useFinishWorkout';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 
 export default function Index() {
-  const dispatch = useDispatch();
+  const finishWorkout = useFinishWorkout('workoutSession');
   const session = useAppSelectorWithArg(selectCurrentSession, 'workoutSession');
   const showPostWorkoutSummary = useAppSelector((x) => x.settings.showPostWorkoutSummary);
   const keepAwake = useAppSelector((x) => x.settings.keepScreenAwakeDuringWorkout);
-  const { dismissTo, push } = useRouter();
+  const { dismissTo, push, replace } = useRouter();
   const { t } = useTranslate();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [postWorkoutSessionId, setPostWorkoutSessionId] = useState<string | undefined>(undefined);
@@ -35,15 +35,14 @@ export default function Index() {
         return;
       }
     } else {
-      dispatch(finishCurrentWorkout('workoutSession'));
-      dismissTo('/');
+      const hasDiff = finishWorkout();
+      if (hasDiff) {
+        dismissTo('/diff-save', { withAnchor: true });
+      } else {
+        dismissTo('/');
+      }
     }
   };
-  useEffect(() => {
-    if (!session && !postWorkoutSessionId) {
-      dismissTo('/');
-    }
-  }, [session, dismissTo, postWorkoutSessionId]);
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
 
   return (

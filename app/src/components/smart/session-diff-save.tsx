@@ -1,4 +1,5 @@
-import FullScreenDialog from '@/components/presentation/foundation/full-screen-dialog';
+import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
 import SessionDiffView from '@/components/presentation/summary/session-diff-view';
@@ -14,9 +15,10 @@ import { useAppSelector } from '@/store';
 import { setCurrentPlanDiff } from '@/store/current-session';
 import { applyDiffToPlan, fetchUpcomingSessions, selectNewWorkoutName } from '@/store/program';
 import { useTranslate } from '@tolgee/react';
-import { useState } from 'react';
+import { Stack, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { FAB, Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 /**
@@ -46,9 +48,10 @@ function createAddNewWorkoutDiff(currentPlanDiff: PlanDiff, newWorkoutName: stri
   };
 }
 
-export function SessionDiffSaveDialog() {
+export function SessionDiffSaveEditor() {
   const dispatch = useDispatch();
   const { t } = useTranslate();
+  const { dismiss } = useRouter();
   const currentPlanDiff = useAppSelector((x) => x.currentSession.currentPlanDiff);
   const [selectedDiff, setSelectedDiff] = useState<SessionBlueprintDiff>();
   const newWorkoutName = useAppSelector(selectNewWorkoutName);
@@ -61,6 +64,9 @@ export function SessionDiffSaveDialog() {
 
   // If user selected "create new" OR we can't edit existing, we're adding a new workout
   const saveAsNewWorkout = isCreatingNewWorkout || !canEditExistingWorkout;
+
+  // Clear the diff on any exit so the trigger can reopen for a later diff
+  useEffect(() => () => void dispatch(setCurrentPlanDiff(undefined)), [dispatch]);
 
   /**
    * Handles toggling between "update existing workout" and "save as new workout" modes.
@@ -90,26 +96,29 @@ export function SessionDiffSaveDialog() {
       originalSessionName: currentPlanDiff?.diff.originalSession.name,
     });
   };
+
+  const save = () => {
+    if (selectedDiff) {
+      dispatch(
+        applyDiffToPlan(
+          saveAsNewWorkout ? { type: 'add', diff: selectedDiff } : { ...currentPlanDiff, diff: selectedDiff },
+        ),
+      );
+    }
+    dispatch(fetchUpcomingSessions());
+    dismiss();
+  };
+
+  const floatingBottomContainer = (
+    <FloatingBottomContainer fab={<FAB icon={'save'} label={t('generic.save.button')} onPress={save} />} />
+  );
+
   return (
-    <FullScreenDialog
-      open={!!currentPlanDiff}
-      onClose={() => {
-        dispatch(setCurrentPlanDiff(undefined));
-      }}
-      title={t('plan.diff.dialog.title')}
-      action={t('generic.save.button')}
-      onAction={() => {
-        if (selectedDiff) {
-          dispatch(
-            applyDiffToPlan(
-              saveAsNewWorkout ? { type: 'add', diff: selectedDiff } : { ...currentPlanDiff, diff: selectedDiff },
-            ),
-          );
-        }
-        dispatch(setCurrentPlanDiff(undefined));
-        dispatch(fetchUpcomingSessions());
-      }}
+    <FullHeightScrollView
+      floatingChildren={floatingBottomContainer}
+      scrollStyle={{ padding: spacing.pageHorizontalMargin }}
     >
+      <Stack.Screen options={{ title: t('plan.diff.dialog.title') }} />
       <Text
         style={{
           paddingBlockEnd: spacing[2],
@@ -140,6 +149,6 @@ export function SessionDiffSaveDialog() {
         diff={currentPlanDiff?.diff ?? EmptySessionBlueprintDiff}
         onSelectedDiffChange={setSelectedDiff}
       />
-    </FullScreenDialog>
+    </FullHeightScrollView>
   );
 }

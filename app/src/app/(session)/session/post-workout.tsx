@@ -3,14 +3,14 @@ import FloatingBottomContainer from '@/components/presentation/foundation/floati
 import { SessionComparisonTable } from '@/components/presentation/workout/session-comparison-table';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelectorWithArg } from '@/store';
-import { finishCurrentWorkout, selectCurrentSession } from '@/store/current-session';
+import { selectCurrentSession } from '@/store/current-session';
+import { useFinishWorkout } from '@/hooks/useFinishWorkout';
 import { selectPreviousComparableSession, selectSession } from '@/store/stored-sessions';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import { FAB } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
 
 export default function PostWorkoutPage() {
   const { sessionId, source } = useLocalSearchParams<{
@@ -24,8 +24,8 @@ export default function PostWorkoutPage() {
   const showFinishButton = openedAfterFinishingWorkout;
   const showBackButton = !openedAfterFinishingWorkout;
   const previousComparableSession = useAppSelectorWithArg(selectPreviousComparableSession, session);
-  const { dismissTo } = useRouter();
-  const dispatch = useDispatch();
+  const { dismissTo, push } = useRouter();
+  const finishWorkout = useFinishWorkout('workoutSession');
   const { t } = useTranslate();
 
   useEffect(() => {
@@ -43,8 +43,11 @@ export default function PostWorkoutPage() {
       fab={
         <FAB
           onPress={() => {
-            dispatch(finishCurrentWorkout('workoutSession'));
+            const hasDiff = finishWorkout();
             dismissTo('/');
+            if (hasDiff) {
+              push('/diff-save');
+            }
           }}
           icon={'check'}
           label={t('generic.finish.button')}

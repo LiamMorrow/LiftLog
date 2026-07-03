@@ -2,7 +2,8 @@ import SessionComponent from '@/components/smart/session-component';
 import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { finishCurrentWorkout, selectCurrentSession, setCurrentSession } from '@/store/current-session';
+import { selectCurrentSession, setCurrentSession } from '@/store/current-session';
+import { useFinishWorkout } from '@/hooks/useFinishWorkout';
 import { LocalDate } from '@js-joda/core';
 import { useRouter, Stack } from 'expo-router';
 import { View } from 'react-native';
@@ -13,10 +14,16 @@ export default function HistoryEditPage() {
   const dispatch = useDispatch();
   const session = useAppSelectorWithArg(selectCurrentSession, 'historySession');
   const { dismissTo } = useRouter();
+  const finishWorkout = useFinishWorkout('historySession');
 
   const save = () => {
-    dispatch(finishCurrentWorkout('historySession'));
-    dismissTo('/history');
+    const hasDiff = finishWorkout();
+
+    if (hasDiff) {
+      dismissTo('/history/diff-save', { withAnchor: true });
+    } else {
+      dismissTo('/history');
+    }
   };
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
   const jsDate = session && new Date(session.date.year(), session.date.month().ordinal(), session.date.dayOfMonth());

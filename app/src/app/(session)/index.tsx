@@ -25,7 +25,6 @@ import { Card, FAB, Text, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import { WelcomeWizard } from '@/components/smart/welcome-wizard';
-import { SessionDiffSaveDialog } from '@/components/smart/session-diff-save-dialog';
 import { SharedSession } from '@/models/feed-models';
 import { CurrentWorkoutReplacer } from '@/components/smart/current-workout-replacer';
 
@@ -89,7 +88,6 @@ function ListUpcomingWorkouts({
 
   return (
     <View style={{ flex: 1, gap: spacing[2], paddingTop: spacing[4] }}>
-      <SessionDiffSaveDialog />
       <WelcomeWizard />
       <PlanManager />
       {currentSession && (
