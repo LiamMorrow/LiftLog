@@ -1,9 +1,10 @@
 import MaterialScrollHeaderBackground from '@/components/layout/material-scroll-header-background';
 import { ScrollProvider } from '@/hooks/useScrollListener';
 import { Stack } from 'expo-router';
+import { ReactNode } from 'react';
 import { Platform } from 'react-native';
 
-export default function StackWithHeader() {
+export default function StackWithHeader(props: { children?: ReactNode }) {
   return (
     <ScrollProvider>
       <Stack
@@ -16,7 +17,9 @@ export default function StackWithHeader() {
           gestureEnabled: true,
           headerTransparent: Platform.OS === 'ios',
         }}
-      ></Stack>
+      >
+        {props.children}
+      </Stack>
     </ScrollProvider>
   );
 }

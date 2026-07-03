@@ -11,13 +11,12 @@ import WeightedExercise from '@/components/presentation/workout/weighted/weighte
 import WeightDisplay from '@/components/presentation/foundation/editors/weight-display';
 import BigNumber from 'bignumber.js';
 import RestTimer from '@/components/presentation/workout/rest-timer';
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import { ExerciseBlueprint } from '@/models/blueprint-models';
-import FullScreenDialog from '@/components/presentation/foundation/full-screen-dialog';
-import { ExerciseEditor } from '@/components/presentation/workout-editor/exercise-editor';
+import { getSessionExerciseEditorHref } from '@/components/smart/session-exercise-editor';
 import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
-import { useAppSelector, useAppSelectorWithArg } from '@/store';
+import { useRouter } from 'expo-router';
+import { useAppSelectorWithArg } from '@/store';
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
@@ -33,9 +32,9 @@ export default function SessionComponent(props: {
   openPostWorkoutSummary?: () => void;
 }) {
   const { colors } = useAppTheme();
-  const useImperialUnits = useAppSelector((x) => x.settings.useImperialUnits);
   const { t } = useTranslate();
   const { getState } = useStore();
+  const { push } = useRouter();
   const session = useAppSelectorWithArg(selectCurrentSession, props.target);
   const dispatch = useDispatch();
   const recentlyCompletedExercises = useAppSelectorWithArg(selectRecentlyCompletedExercises, 10);
@@ -62,22 +61,6 @@ export default function SessionComponent(props: {
   };
 
   const isReadonly = props.target === 'feedSession' || props.target === 'sharedSession';
-
-  const [exerciseToEditIndex, setExerciseToEditIndex] = useState<number | undefined>(undefined);
-  const [editingExerciseBlueprint, setEditingExerciseBlueprint] = useState<ExerciseBlueprint | undefined>(undefined);
-  const [exerciseEditorOpen, setExerciseEditorOpen] = useState(false);
-
-  const handleEditExercise = () => {
-    if (editingExerciseBlueprint !== undefined) {
-      if (exerciseToEditIndex !== undefined) {
-        updateSession((s) => s.withEditedExercise(exerciseToEditIndex, editingExerciseBlueprint, useImperialUnits));
-        setExerciseToEditIndex(undefined);
-      } else {
-        updateSession((s) => s.withAddedExercise(editingExerciseBlueprint, useImperialUnits));
-      }
-      setExerciseEditorOpen(false);
-    }
-  };
 
   if (!session) {
     return <Text>Loading</Text>;
@@ -132,11 +115,7 @@ export default function SessionComponent(props: {
           updateExercise={(update) =>
             updateSession((s) => s.withExercise(index, update(s.recordedExercises[index] as RecordedWeightedExercise)))
           }
-          onEditExercise={() => {
-            setEditingExerciseBlueprint(item.blueprint);
-            setExerciseToEditIndex(index);
-            setExerciseEditorOpen(true);
-          }}
+          onEditExercise={() => push(getSessionExerciseEditorHref(props.target, index))}
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
           isReadonly={isReadonly}
           showPreviousButton={props.target === 'workoutSession'}
@@ -150,11 +129,7 @@ export default function SessionComponent(props: {
             updateSession((s) => s.withExercise(index, ex(s.recordedExercises[index] as RecordedCardioExercise)))
           }
           toStartNext={session.nextExercise === item}
-          onEditExercise={() => {
-            setEditingExerciseBlueprint(item.blueprint);
-            setExerciseToEditIndex(index);
-            setExerciseEditorOpen(true);
-          }}
+          onEditExercise={() => push(getSessionExerciseEditorHref(props.target, index))}
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
           isReadonly={isReadonly}
           showPreviousButton={props.target === 'workoutSession'}
@@ -280,23 +255,6 @@ export default function SessionComponent(props: {
       <ItemList items={session.recordedExercises} renderItem={renderItem} />
       {bodyweight}
       {workoutSummary}
-      <FullScreenDialog
-        avoidKeyboard
-        title={exerciseToEditIndex === undefined ? t('exercise.add.title') : t('exercise.edit.title')}
-        action={exerciseToEditIndex === undefined ? t('generic.add.button') : t('generic.update.button')}
-        open={exerciseEditorOpen}
-        onAction={handleEditExercise}
-        onClose={() => setExerciseEditorOpen(false)}
-      >
-        {editingExerciseBlueprint ? (
-          <ExerciseEditor
-            exercise={editingExerciseBlueprint}
-            updateExercise={(ex) => {
-              setEditingExerciseBlueprint(ex);
-            }}
-          />
-        ) : null}
-      </FullScreenDialog>
     </FullHeightScrollView>
   );
 }
