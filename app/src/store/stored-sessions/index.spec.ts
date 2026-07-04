@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LocalDate, OffsetDateTime, ZoneOffset, YearMonth } from '@js-joda/core';
+import { Duration, LocalDate, OffsetDateTime, ZoneOffset, YearMonth } from '@js-joda/core';
 import { v4 as uuid } from 'uuid';
 import {
   selectSessionsInMonth,
@@ -20,8 +20,22 @@ import {
   deleteExercise,
   setExercises,
 } from '@/store/stored-sessions';
-import { NoProgressiveOverload, Rest, SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
-import { PotentialSet, RecordedSet, RecordedWeightedExercise, Session } from '@/models/session-models';
+import {
+  CardioExerciseBlueprint,
+  CardioExerciseSetBlueprint,
+  NoProgressiveOverload,
+  Rest,
+  SessionBlueprint,
+  WeightedExerciseBlueprint,
+} from '@/models/blueprint-models';
+import {
+  PotentialSet,
+  RecordedCardioExercise,
+  RecordedCardioExerciseSet,
+  RecordedSet,
+  RecordedWeightedExercise,
+  Session,
+} from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import { UnknownAction } from '@reduxjs/toolkit';
@@ -219,6 +233,44 @@ describe('storedSessions selectors', () => {
     const blueprint = session.recordedExercises[0]!.blueprint as WeightedExerciseBlueprint;
 
     expect(lookup(blueprint)).toHaveLength(1);
+  });
+
+  it('selectRecentlyCompletedExercises excludes same-named exercises of a different type', () => {
+    const cardioBlueprint = new CardioExerciseBlueprint('New Exercise', [CardioExerciseSetBlueprint.empty()], '', '');
+    const cardioExercise = new RecordedCardioExercise(
+      cardioBlueprint,
+      [
+        RecordedCardioExerciseSet.empty(cardioBlueprint.sets[0]!).with({
+          completionDateTime: OffsetDateTime.of(2026, 4, 10, 10, 0, 0, 0, ZoneOffset.UTC),
+          duration: Duration.ofSeconds(45),
+        }),
+      ],
+      undefined,
+    );
+    const session = new Session(
+      uuid(),
+      new SessionBlueprint('Freeform Workout', [cardioBlueprint], ''),
+      [cardioExercise],
+      LocalDate.of(2026, 4, 10),
+      undefined,
+      undefined,
+    );
+    const state = { storedSessions: reduce(addStoredSession(session)) };
+
+    const lookup = selectRecentlyCompletedExercises(state, 5);
+    const weightedBlueprint = new WeightedExerciseBlueprint(
+      'New Exercise',
+      3,
+      10,
+      new NoProgressiveOverload(),
+      Rest.medium,
+      false,
+      '',
+      '',
+    );
+
+    expect(lookup(weightedBlueprint)).toEqual([]);
+    expect(lookup(cardioBlueprint)).toEqual([cardioExercise]);
   });
 
   it('selectMuscles returns sorted distinct muscles and selectExerciseById reads one', () => {

@@ -187,7 +187,10 @@ export const selectRecentlyCompletedExercises = createSelector(
   selectLatestOrderedRecordedExercises,
   (recentlyCompletedExercises) =>
     (blueprint: ExerciseBlueprint): RecordedExercise[] =>
-      recentlyCompletedExercises[NormalizedName.fromExerciseBlueprint(blueprint).toString()] ?? [],
+      (recentlyCompletedExercises[NormalizedName.fromExerciseBlueprint(blueprint).toString()] ?? []).filter(
+        // A cardio and weighted exercise can share a name; their records aren't comparable
+        (x) => x.blueprint.type === blueprint.type,
+      ),
 );
 
 export const selectPreviousComparableSession = createSelector(
