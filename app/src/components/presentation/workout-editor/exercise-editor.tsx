@@ -399,6 +399,7 @@ function WeightedExerciseEditor({
 }) {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
+  const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
   const [restDialogOpen, setRestDialogOpen] = useState(false);
 
   const setSets = (value: number) => updateExercise({ sets: Math.max(value, 1) });
@@ -436,23 +437,28 @@ function WeightedExerciseEditor({
 
       <SharedFieldsEditor exercise={exercise} updateExercise={updateExercise} />
 
-      <RestEditorDialog
-        onRestUpdated={(restBetweenSets) => updateExercise({ restBetweenSets })}
-        rest={exercise.restBetweenSets}
-        dialogOpen={restDialogOpen}
-        setDialogOpen={setRestDialogOpen}
-      />
+      {restTimersEnabled && (
+        <RestEditorDialog
+          onRestUpdated={(restBetweenSets) => updateExercise({ restBetweenSets })}
+          rest={exercise.restBetweenSets}
+          dialogOpen={restDialogOpen}
+          setDialogOpen={setRestDialogOpen}
+        />
+      )}
       <FormRow>
         <SegmentedList
           items={[
-            <SegmentListFormElement
-              key={1}
-              label={t('rest.rest.label')}
-              icon={'airlineSeatReclineExtraFill'}
-              onPress={() => setRestDialogOpen(true)}
-              right={<RestFormat style={{ color: colors.onSurface }} rest={exercise.restBetweenSets} />}
-            />,
-
+            ...(restTimersEnabled
+              ? [
+                  <SegmentListFormElement
+                    key={1}
+                    label={t('rest.rest.label')}
+                    icon={'airlineSeatReclineExtraFill'}
+                    onPress={() => setRestDialogOpen(true)}
+                    right={<RestFormat style={{ color: colors.onSurface }} rest={exercise.restBetweenSets} />}
+                  />,
+                ]
+              : []),
             <SegmentedListSwitch
               key={2}
               label={t('workout.superset_next_exercise.button')}

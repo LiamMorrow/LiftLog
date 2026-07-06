@@ -15,6 +15,7 @@ import {
   setProToken,
   setRemoteBackupSettings,
   setRestNotifications,
+  setRestTimersEnabled,
   setShowBodyweight,
   setShowFeed,
   setShowPostWorkoutSummary,
@@ -49,6 +50,7 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
         tipToShow,
         showFeed,
         restNotifications,
+        restTimersEnabled,
         crashReportsEnabled,
         welcomeWizardCompleted,
         remoteBackupSettings,
@@ -70,6 +72,7 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
         preferenceService.getTipToShow(),
         preferenceService.getShowFeed(),
         preferenceService.getRestNotifications(),
+        preferenceService.getRestTimersEnabled(),
         preferenceService.getCrashReportsEnabled(),
         preferenceService.getWelcomeWizardCompleted(),
         preferenceService.getRemoteBackupSettings(),
@@ -92,6 +95,7 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
       dispatch(setTipToShow(tipToShow));
       dispatch(setShowFeed(showFeed));
       dispatch(setRestNotifications(restNotifications));
+      dispatch(setRestTimersEnabled(restTimersEnabled));
       dispatch(setCrashReportsEnabled(crashReportsEnabled));
       dispatch(setWelcomeWizardCompleted(welcomeWizardCompleted));
       dispatch(setRemoteBackupSettings(remoteBackupSettings));
@@ -183,6 +187,11 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
   addEffect(setRestNotifications, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
     if (stateAfterReduce.settings.isHydrated) {
       await preferenceService.setRestNotifications(action.payload);
+    }
+  });
+  addEffect(setRestTimersEnabled, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setRestTimersEnabled(action.payload);
     }
   });
   addEffect(setCrashReportsEnabled, async (action, { stateAfterReduce, extra: { preferenceService } }) => {

@@ -16,7 +16,7 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { getSessionExerciseEditorHref } from '@/components/smart/session-exercise-editor';
 import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
 import { useRouter } from 'expo-router';
-import { useAppSelectorWithArg } from '@/store';
+import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
@@ -36,6 +36,7 @@ export default function SessionComponent(props: {
   const { getState } = useStore();
   const { push } = useRouter();
   const session = useAppSelectorWithArg(selectCurrentSession, props.target);
+  const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
   const dispatch = useDispatch();
   const recentlyCompletedExercises = useAppSelectorWithArg(selectRecentlyCompletedExercises, 10);
   const resetTimer = (time: OffsetDateTime | undefined) => {
@@ -174,6 +175,7 @@ export default function SessionComponent(props: {
   // We only want to show the rest timer - which is primarily for weights
   // When we are currently working out, and the exercises we are on (or were just on) are weighted - rests for cardio aren't implemented
   const showRestTimer =
+    restTimersEnabled &&
     props.target === 'workoutSession' &&
     nextExercise &&
     nextExercise instanceof RecordedWeightedExercise &&
@@ -227,7 +229,7 @@ export default function SessionComponent(props: {
           <Text variant="bodyMedium">
             <T keyName="workout.total_weight_lifted.label" />
           </Text>
-          <WeightFormat fontWeight="bold" color="primary" weight={session.totalWeightLifted} decimalPlaces={0}/>
+          <WeightFormat fontWeight="bold" color="primary" weight={session.totalWeightLifted} decimalPlaces={0} />
         </View>
         <View
           style={{

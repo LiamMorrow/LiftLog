@@ -37,7 +37,7 @@ export default function AppConfiguration() {
                 broadcastWorkoutEvent({
                   type: 'WorkoutUpdatedEvent',
                   workout: currentWorkout.toJSON(),
-                  restTimerInfo: getTimerInfo(currentWorkout),
+                  restTimerInfo: settings.restTimersEnabled ? getTimerInfo(currentWorkout) : undefined,
                   cardioTimerInfo: getCardioTimerInfo(currentWorkout),
                   currentExerciseDetails: getCurrentExerciseDetails(currentWorkout),
                   totalWeightLifted: currentWorkout.totalWeightLifted.toJSON(),

@@ -7,6 +7,7 @@ import {
   setColorSchemeSeed,
   setKeepScreenAwakeDuringWorkout,
   setNotesExpandedByDefault,
+  setRestTimersEnabled,
   setShowBodyweight,
   setShowFeed,
   setShowPostWorkoutSummary,
@@ -60,6 +61,13 @@ export default function AppConfiguration() {
           supportingText={<T keyName="workout.keep_screen_awake.subtitle" />}
           value={settings.keepScreenAwakeDuringWorkout}
           onValueChange={(value) => dispatch(setKeepScreenAwakeDuringWorkout(value))}
+        />
+        <ListSwitch
+          testID="setRestTimersEnabled"
+          headline={<T keyName="workout.rest_timers.label" />}
+          supportingText={<T keyName="workout.rest_timers.subtitle" />}
+          value={settings.restTimersEnabled}
+          onValueChange={(value) => dispatch(setRestTimersEnabled(value))}
         />
         <ListSwitch
           headline={<T keyName="settings.show_tips.label" />}
