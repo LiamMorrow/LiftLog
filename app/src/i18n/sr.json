@@ -227,7 +227,7 @@
   "rest.max.label": "Max Odmor",
   "rest.medium.label": "Srednji odmor",
   "rest.min.label": "Min Odmor",
-  "rest.notifications.subtitle": "Prikaži notifikaciju kada istekne tajmer za odmor",
+  "rest.notifications.subtitle": "Prikaži notifikaciju kada istekne tajmer za odmor, čak i kada je aplikacija u pozadini",
   "rest.notifications.title": "Notifikacije tokom odmora",
   "rest.rest.label": "Odmor",
   "rest.short.label": "Kratki odmor",
@@ -245,8 +245,8 @@
   "settings.first_day_of_week.subtitle": "Podesi prvi dan u nedelji za kalendar",
   "settings.localisation.subtitle": "Podesite jezik LiftLog-a i podrazumevane jedinice težine",
   "settings.localisation.title": "Lokalizacija",
-  "settings.notifications.subtitle": "Podesite obaveštenja za tajmere odmora",
-  "settings.notifications.title": "Notifikacije",
+  "settings.notifications.subtitle": "Kontrolišite tajmere odmora i notifikacije koje se prikazuju kada odmor istekne",
+  "settings.notifications.title": "Odmor i notifikacije",
   "settings.pro_features.title": "Pro funkcije",
   "settings.reset_tips.button": "Resetuj savete",
   "settings.saved.message": "Postavke su sačuvane",
@@ -328,5 +328,7 @@
   "workout.upcoming.title": "Predstojeći treninzi",
   "workout.update_existing.confirm.body": "Da li želite da ažurirate postojeće vežbanje pod imenom <em>{name}</em>, ili da dodate novo vežbanje?",
   "workout.workout.label": "Trening",
-  "workout.workout_lowercase.label": "Trening"
+  "workout.workout_lowercase.label": "Trening",
+  "workout.rest_timers.label": "Tajmeri odmora",
+  "workout.rest_timers.subtitle": "Automatski meri odmor između serija. Isključivanjem se sakrivaju svi tajmeri odmora i onemogućavaju notifikacije o odmoru"
 }

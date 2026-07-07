@@ -239,7 +239,7 @@
   "rest.max.label": "Max. Pause",
   "rest.medium.label": "Mittel",
   "rest.min.label": "Min. Pause",
-  "rest.notifications.subtitle": "Zeige eine Benachrichtigung an, wenn der Pause-Timer vorbei ist",
+  "rest.notifications.subtitle": "Zeige eine Benachrichtigung an, wenn der Pause-Timer vorbei ist, auch wenn die App im Hintergrund läuft",
   "rest.notifications.title": "Pause-Benachrichtigungen",
   "rest.rest.label": "Pause",
   "rest.short.label": "Kurz",
@@ -257,8 +257,8 @@
   "settings.first_day_of_week.subtitle": "Den ersten Tag der Woche für den Kalender festlegen",
   "settings.localisation.subtitle": "Sprache von LiftLog und Standardeinheiten für Gewicht einstellen",
   "settings.localisation.title": "Lokalisierung",
-  "settings.notifications.subtitle": "Benachrichtigungen für Ruhe-Timer anpassen",
-  "settings.notifications.title": "Benachrichtigungen",
+  "settings.notifications.subtitle": "Steuere Pause-Timer und die Benachrichtigungen, die nach Ablauf der Pause angezeigt werden",
+  "settings.notifications.title": "Pause und Benachrichtigungen",
   "settings.pro_features.title": "Pro-Funktionen",
   "settings.reset_tips.button": "Tipps zurücksetzen",
   "settings.saved.message": "Einstellungen gespeichert",
@@ -345,5 +345,7 @@
   "workout.upcoming.title": "Kommende Workouts",
   "workout.update_existing.confirm.body": "Möchtest du den bestehenden Workout mit dem Namen <em>{name}</em> aktualisieren oder ein neues Workout hinzufügen?",
   "workout.workout.label": "Workout",
-  "workout.workout_lowercase.label": "Workout"
+  "workout.workout_lowercase.label": "Workout",
+  "workout.rest_timers.label": "Pause-Timer",
+  "workout.rest_timers.subtitle": "Stoppe automatisch die Zeit deiner Pause zwischen den Sätzen. Wenn du dies deaktivierst, werden alle Pause-Timer ausgeblendet und Pause-Benachrichtigungen deaktiviert"
 }

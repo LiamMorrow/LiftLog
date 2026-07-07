@@ -199,7 +199,7 @@
   "rest.max.label": "Maximální odpočinek",
   "rest.medium.label": "Střední",
   "rest.min.label": "Minimální odpočinek",
-  "rest.notifications.subtitle": "Zobrazit notifikaci když vyprší časovač odpočinku",
+  "rest.notifications.subtitle": "Zobrazit notifikaci, když vyprší časovač odpočinku, i když je aplikace na pozadí",
   "rest.notifications.title": "Notifikace odpočinku",
   "rest.short.label": "Krátký",
   "rest.singular.label": "Odpočívejte <em>{time}</em>",
@@ -215,8 +215,8 @@
   "settings.first_day_of_week.subtitle": "Nastavte první den v týdnu pro kalendář",
   "settings.localisation.subtitle": "Nastavte jazyk a výchozí jednotky hmotnosti LiftLogu",
   "settings.localisation.title": "Lokalizace",
-  "settings.notifications.subtitle": "Upravit notifikace pro odpočinek  ",
-  "settings.notifications.title": "Notifikace",
+  "settings.notifications.subtitle": "Ovládejte časovače odpočinku a notifikace zobrazené po uplynutí odpočinku",
+  "settings.notifications.title": "Odpočinek a notifikace",
   "settings.pro_features.title": "Funkce Pro",
   "settings.reset_tips.button": "Resetovat nápovědu",
   "settings.saved.message": "Nastavení uložena",
@@ -286,5 +286,7 @@
   "workout.upcoming.title": "Nadcházející tréningy",
   "workout.update_existing.confirm.body": "Chcete aktualizovat existující tréning jménem <em>{name}</em> nebo přidat nový tréning?",
   "workout.workout.label": "Cvik",
-  "workout.workout_lowercase.label": "Cvik"
+  "workout.workout_lowercase.label": "Cvik",
+  "workout.rest_timers.label": "Časovače odpočinku",
+  "workout.rest_timers.subtitle": "Automaticky měřte odpočinek mezi sériemi. Vypnutím skryjete všechny časovače odpočinku a vypnete notifikace odpočinku"
 }

@@ -212,7 +212,7 @@
   "rest.max.label": "Макс. Відпочинок",
   "rest.medium.label": "Середній",
   "rest.min.label": "Мін. Відпочинок",
-  "rest.notifications.subtitle": "Показувати сповіщення, коли час відпочинку закінчився",
+  "rest.notifications.subtitle": "Показувати сповіщення, коли таймер відпочинку завершується, навіть якщо застосунок працює у фоні",
   "rest.notifications.title": "Сповіщення про відпочинок",
   "rest.short.label": "Короткий",
   "rest.singular.label": "Відпочинок <em>{time}</em>",
@@ -229,8 +229,8 @@
   "settings.first_day_of_week.subtitle": "Встановити перший день тижня для календаря",
   "settings.localisation.subtitle": "Встановити мову та одиниці ваги за замовчуванням для LiftLog",
   "settings.localisation.title": "Локалізація",
-  "settings.notifications.subtitle": "Налаштувати параметри сповіщень для таймерів відпочинку",
-  "settings.notifications.title": "Сповіщення",
+  "settings.notifications.subtitle": "Керуйте таймерами відпочинку та сповіщеннями, які показуються після завершення відпочинку",
+  "settings.notifications.title": "Відпочинок і сповіщення",
   "settings.pro_features.title": "Pro Функції",
   "settings.reset_tips.button": "Скинути поради",
   "settings.saved.message": "Налаштування збережено",
@@ -312,5 +312,7 @@
   "workout.upcoming.title": "Майбутні Тренування",
   "workout.update_existing.confirm.body": "Бажаєте оновити наявне тренування під назвою <em>{name}</em>, чи додати нове тренування?",
   "workout.workout.label": "Тренування",
-  "workout.workout_lowercase.label": "Тренування"
+  "workout.workout_lowercase.label": "Тренування",
+  "workout.rest_timers.label": "Таймери відпочинку",
+  "workout.rest_timers.subtitle": "Автоматично відлічувати відпочинок між підходами. Вимкнення приховає всі таймери відпочинку та вимкне сповіщення про відпочинок"
 }

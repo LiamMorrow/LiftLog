@@ -215,7 +215,7 @@
   "rest.max.label": "Макс. отдых",
   "rest.medium.label": "Средний",
   "rest.min.label": "Мин. отдых",
-  "rest.notifications.subtitle": "Уведомлять по окончании отдыха",
+  "rest.notifications.subtitle": "Показывать уведомление по окончании таймера отдыха, даже если приложение свёрнуто",
   "rest.notifications.title": "Уведомления об отдыхе",
   "rest.short.label": "Короткий",
   "rest.singular.label": "Отдых <em>{time}</em>",
@@ -232,8 +232,8 @@
   "settings.first_day_of_week.subtitle": "Настройка для календаря",
   "settings.localisation.subtitle": "Установите язык и единицы измерения веса для LiftLog",
   "settings.localisation.title": "Локализация",
-  "settings.notifications.subtitle": "Настройки уведомлений для таймера отдыха",
-  "settings.notifications.title": "Уведомления",
+  "settings.notifications.subtitle": "Управление таймерами отдыха и уведомлениями, которые показываются по окончании отдыха",
+  "settings.notifications.title": "Отдых и уведомления",
   "settings.pro_features.title": "Pro-функции",
   "settings.reset_tips.button": "Сбросить подсказки",
   "settings.saved.message": "Настройки сохранены",
@@ -464,5 +464,7 @@
   "plan.diff.progressive_overload_increase_lowest_set.label": "Минимальный (стратегия: {strategy}) (величина: {amount})",
   "settings.copy_logs.subtitle": "Скопируйте логи для отчета об ошибке",
   "settings.copy_logs.title": "Скопировать логи",
-  "settings.app_configuration.true_black_dark_theme.title": "Использовать настоящий черный для темной темы"
+  "settings.app_configuration.true_black_dark_theme.title": "Использовать настоящий черный для темной темы",
+  "workout.rest_timers.label": "Таймеры отдыха",
+  "workout.rest_timers.subtitle": "Автоматически отсчитывать отдых между подходами. Отключение скроет все таймеры отдыха и выключит уведомления об отдыхе"
 }

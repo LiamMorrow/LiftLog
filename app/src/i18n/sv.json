@@ -280,7 +280,7 @@
   "rest.max.label": "Max vila",
   "rest.medium.label": "Medium",
   "rest.min.label": "Minsta vila",
-  "rest.notifications.subtitle": "Visa en notifikatikons när vilotimern är slut",
+  "rest.notifications.subtitle": "Visa en notifikation när vilotimern är slut, även om appen körs i bakgrunden",
   "rest.notifications.title": "Vilonotifikationer",
   "rest.rest.label": "Vila",
   "rest.short.label": "Kort",
@@ -298,8 +298,8 @@
   "settings.first_day_of_week.subtitle": "Välj veckans första dag i kalendern",
   "settings.localisation.subtitle": "Välj LiftLogs språk och standardenheter",
   "settings.localisation.title": "Lokalisering",
-  "settings.notifications.subtitle": "Justera notifikationsinställningar för vilotimers",
-  "settings.notifications.title": "Notifikationer",
+  "settings.notifications.subtitle": "Styr vilotimers och notifikationerna som visas när vilan är slut",
+  "settings.notifications.title": "Vila och notifikationer",
   "settings.pro_features.title": "Profunktioner",
   "settings.reset_tips.button": "Återställ tips",
   "settings.saved.message": "Inställningar sparade",
@@ -398,5 +398,7 @@
   "workout_persistent_notification.min_rest_over.message": "Kortaste vila slut!",
   "workout_persistent_notification.rest_break.message": "Ta en vilopaus",
   "workout_persistent_notification.start_now.message": "Starta nu!",
-  "workout_persistent_notification.start_soon.message": "Starta nästa set snart"
+  "workout_persistent_notification.start_soon.message": "Starta nästa set snart",
+  "workout.rest_timers.label": "Vilotimers",
+  "workout.rest_timers.subtitle": "Ta automatiskt tid på din vila mellan set. Om du stänger av detta döljs alla vilotimers och vilonotifikationer inaktiveras"
 }

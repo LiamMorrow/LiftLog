@@ -245,9 +245,9 @@
   "rest.max.label": "الحد الأقصى للراحة",
   "rest.medium.label": "متوسط",
   "rest.min.label": "الحد الأدنى للراحة",
-  "rest.notifications.subtitle": "إظهار إشعار عند انتهاء مؤقت الراحة",
+  "rest.notifications.subtitle": "إظهار إشعار عند انتهاء مؤقت الراحة، حتى إذا كان التطبيق في الخلفية",
   "rest.notifications.title": "إشعارات الراحة",
-  "rest.rest.label": "قصير",
+  "rest.rest.label": "راحة",
   "rest.short.label": "قصير",
   "rest.singular.label": "راحة <em>{time}</em>",
   "settings.app_configuration.subtitle": "ضبط المظهر وإعدادات أخرى متنوعة",
@@ -263,8 +263,8 @@
   "settings.first_day_of_week.subtitle": "تحديد أول يوم في الأسبوع للتقويم",
   "settings.localisation.subtitle": "تحديد لغة LiftLog ووحدات الوزن الافتراضية",
   "settings.localisation.title": "اللغة والمنطقة",
-  "settings.notifications.subtitle": "ضبط إعدادات الإشعارات لمؤقتات الراحة",
-  "settings.notifications.title": "الإشعارات",
+  "settings.notifications.subtitle": "التحكم في مؤقتات الراحة والإشعارات التي تظهر عند انتهاء الراحة",
+  "settings.notifications.title": "الراحة والإشعارات",
   "settings.pro_features.title": "ميزات Pro",
   "settings.reset_tips.button": "إعادة ضبط النصائح",
   "settings.saved.message": "تم حفظ الإعدادات",
@@ -276,5 +276,7 @@
   "settings.show_tips.label": "عرض النصائح",
   "settings.show_tips.subtitle": "عرض نصائح حول كيفية استخدام التطبيق",
   "settings.support.title": "الدعم",
-  "settings.system_default.label": "الإعداد الافتراضي للنظام"
+  "settings.system_default.label": "الإعداد الافتراضي للنظام",
+  "workout.rest_timers.label": "مؤقتات الراحة",
+  "workout.rest_timers.subtitle": "ضبط وقت راحتك بين المجموعات تلقائيًا. إيقاف هذا يخفي جميع مؤقتات الراحة ويعطّل إشعارات الراحة"
 }
