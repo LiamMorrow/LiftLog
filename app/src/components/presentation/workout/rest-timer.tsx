@@ -3,7 +3,8 @@ import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Rest } from '@/models/blueprint-models';
 import { Duration, OffsetDateTime } from '@js-joda/core';
 import Svg, { Path } from 'react-native-svg';
-import { Animated, View, ViewStyle } from 'react-native';
+import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
+import { GlassView, isLiquidGlassAvailable, type GlassStyle } from 'expo-glass-effect';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
@@ -112,13 +113,18 @@ export default function RestTimer({
             pointerEvents: 'none',
             overflow: 'hidden',
             borderRadius: pillHeight,
-            backgroundColor: colors[timerState.backgroundColor],
             alignItems: 'center',
             justifyContent: 'center',
           },
           style,
         ]}
       >
+        <GlassBackground
+          radius={pillHeight}
+          color={colors[timerState.backgroundColor]}
+          glassEffectStyle="clear"
+          tintColor={withAlpha(colors[timerState.backgroundColor], 0.85)}
+        />
         <View
           style={{
             position: 'absolute',
@@ -161,10 +167,11 @@ export default function RestTimer({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
+          overflow: 'hidden',
           borderRadius: pillHeight,
-          backgroundColor: colors.surfaceContainer,
         }}
       >
+        <GlassBackground radius={pillHeight} color={colors.surfaceContainer} />
         <IconButton
           icon="close"
           iconColor={colors.onSurface}
@@ -190,6 +197,44 @@ export default function RestTimer({
       </View>
     </View>
   );
+}
+
+function GlassBackground({
+  radius,
+  color,
+  tintColor,
+  glassEffectStyle = 'regular',
+}: {
+  radius: number;
+  color: string;
+  tintColor?: string;
+  glassEffectStyle?: GlassStyle;
+}) {
+  const { colorScheme } = useAppTheme();
+  if (!isLiquidGlassAvailable()) {
+    return (
+      <View
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFill, { borderRadius: radius, backgroundColor: color }]}
+      />
+    );
+  }
+  return (
+    <GlassView
+      pointerEvents="none"
+      style={[StyleSheet.absoluteFill, { borderRadius: radius }]}
+      glassEffectStyle={glassEffectStyle}
+      colorScheme={colorScheme}
+      tintColor={tintColor}
+    />
+  );
+}
+
+function withAlpha(hex: string, alpha: number): string {
+  const a = Math.round(alpha * 255)
+    .toString(16)
+    .padStart(2, '0');
+  return `${hex}${a}`;
 }
 
 function formatTimeSpan(ms: Duration): string {
