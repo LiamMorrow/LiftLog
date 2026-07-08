@@ -1,6 +1,7 @@
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
-import SelectButton, { SelectButtonOption } from '@/components/presentation/foundation/select-button';
+import SelectPicker from '@/components/presentation/foundation/select-picker';
+import { SelectPickerOption } from '@/components/presentation/foundation/select-picker-props';
 import ThemeChooser from '@/components/presentation/foundation/editors/theme-chooser';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { supportedLanguages } from '@/services/tolgee';
@@ -30,7 +31,7 @@ import { HealthExportSwitch } from './health-export-switch';
 export function WelcomeWizard() {
   const notificationsEnabled = useAppSelector((x) => x.settings.restNotifications);
   const formatDate = useFormatDate();
-  const daysOfWeekOptions: SelectButtonOption<DayOfWeek>[] = [
+  const daysOfWeekOptions: SelectPickerOption<DayOfWeek>[] = [
     {
       value: DayOfWeek.SUNDAY,
       label: formatDate(getDateOnDay(DayOfWeek.SUNDAY), { weekday: 'long' }),
@@ -71,7 +72,7 @@ export function WelcomeWizard() {
     void Linking.canOpenURL(url).then(() => Linking.openURL(url));
   };
 
-  const languageOptions: SelectButtonOption<string | undefined>[] = useMemo(
+  const languageOptions: SelectPickerOption<string | undefined>[] = useMemo(
     () => [
       {
         value: undefined,
@@ -151,7 +152,7 @@ export function WelcomeWizard() {
           title={t('settings.first_day_of_week.label')}
           description={t('settings.first_day_of_week.subtitle')}
           right={() => (
-            <SelectButton
+            <SelectPicker
               value={settings.firstDayOfWeek}
               options={daysOfWeekOptions}
               onChange={(value) => dispatch(setFirstDayOfWeek(value))}
@@ -162,7 +163,7 @@ export function WelcomeWizard() {
           title={t('settings.set_language.button')}
           description={t('settings.set_language.subtitle')}
           right={() => (
-            <SelectButton
+            <SelectPicker
               value={settings.preferredLanguage}
               options={languageOptions}
               onChange={(value) => dispatch(setPreferredLanguage(value))}

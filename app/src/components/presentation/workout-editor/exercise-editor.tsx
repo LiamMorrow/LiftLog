@@ -4,7 +4,7 @@ import FixedIncrementer from '@/components/presentation/foundation/editors/fixed
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import Form from '@/components/presentation/foundation/form';
 import { RestEditorDialog } from '@/components/presentation/workout-editor/rest-editor-dialog';
-import SelectButton from '@/components/presentation/foundation/select-button';
+import SelectPicker from '@/components/presentation/foundation/select-picker';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import {
   CardioExerciseBlueprint,
@@ -370,7 +370,7 @@ function DistanceTargetEditor(props: {
         />
       </View>
 
-      <SelectButton
+      <SelectPicker
         testID="setDistanceUnit"
         value={target.value.unit}
         options={distanceUnitOptions}

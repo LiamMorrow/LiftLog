@@ -1,4 +1,5 @@
-import SelectButton, { SelectButtonOption } from '@/components/presentation/foundation/select-button';
+import SelectPicker from '@/components/presentation/foundation/select-picker';
+import { SelectPickerOption } from '@/components/presentation/foundation/select-picker-props';
 import {
   IncreaseAllEvenlyProgressiveOverload,
   IncreaseLowestSetProgressiveOverload,
@@ -30,7 +31,7 @@ interface Props {
 
 export function ProgressiveOverloadSelect(props: Props) {
   const { t } = useTranslate();
-  const values: SelectButtonOption<ProgressiveOverload['type']>[] = [
+  const values: SelectPickerOption<ProgressiveOverload['type']>[] = [
     {
       value: 'NoProgressiveOverload',
       label: t('exercise.progressive_overload.no.label'),
@@ -45,7 +46,7 @@ export function ProgressiveOverloadSelect(props: Props) {
     },
   ];
   return (
-    <SelectButton
+    <SelectPicker
       value={props.value.type}
       onChange={(value) => {
         props.onChange(props.value.toType(value));
@@ -94,7 +95,7 @@ function IncreaseAllEvenlyValues(props: Props & { value: IncreaseAllEvenlyProgre
 
 function IncreaseLowestSetValues(props: Props & { value: IncreaseLowestSetProgressiveOverload }) {
   const { t } = useTranslate();
-  const increaseStrategyOptions: SelectButtonOption<IncreaseStrategy>[] = [
+  const increaseStrategyOptions: SelectPickerOption<IncreaseStrategy>[] = [
     {
       label: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.all.label'),
       value: 'all',
@@ -131,7 +132,7 @@ function IncreaseLowestSetValues(props: Props & { value: IncreaseLowestSetProgre
         }}
       >
         <Text>{t('exercise.progressive_overload.increase_lowest_set.increase_strategy.label')}</Text>
-        <SelectButton
+        <SelectPicker
           value={props.value.increaseStrategy}
           onChange={(increaseStrategy) => props.onChange(props.value.with({ increaseStrategy }))}
           options={increaseStrategyOptions}

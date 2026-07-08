@@ -3,8 +3,8 @@ import { Host, LoadingIndicator } from '@expo/ui/jetpack-compose';
 export function IndeterminateProgress() {
   const { colors } = useAppTheme();
   return (
-    <Host matchContents>
-      <LoadingIndicator color={colors.primary} />
+    <Host matchContents seedColor={colors.primary}>
+      <LoadingIndicator />
     </Host>
   );
 }

@@ -39,7 +39,7 @@ export default function ExpandedExercisePage() {
           title: exerciseName,
         }}
       />
-      <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingRight: spacing[2] }}>
         <TimePeriodSelector timePeriod={timePeriod} setTimePeriod={(value) => dispatch(setOverallViewTime(value))} />
       </View>
       <Remote value={stats} success={(stats) => <LoadedStats stats={stats} />} />

@@ -5,9 +5,8 @@ import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
-import { TextInput, Tooltip, useTheme } from 'react-native-paper';
-import { Weight, WeightUnit } from '@/models/weight';
-import SelectButton from '@/components/presentation/foundation/select-button';
+import { Text, TextInput, Tooltip, useTheme } from 'react-native-paper';
+import { shortFormatWeightUnit, Weight, WeightUnit } from '@/models/weight';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 
 type WeightEditorProps = {
@@ -117,15 +116,12 @@ export function WeightEditor(props: WeightEditorProps) {
           }}
         />
 
-        <SelectButton
+        <IconButton
+          mode="outlined"
           testID="weight-dialog-unit-selector"
-          options={[
-            { label: 'kg', value: 'kilograms' },
-            { label: 'lbs', value: 'pounds' },
-            { label: 'Unit', value: 'nil', disabledAndHidden: true },
-          ]}
-          value={editorWeightUnit}
-          onChange={(unit) => {
+          icon={() => <Text>{shortFormatWeightUnit(editorWeightUnit)}</Text>}
+          onPress={() => {
+            const unit = editorWeightUnit === 'kilograms' ? 'pounds' : 'kilograms';
             setEditorWeightUnit(unit);
             emitCurrentValues(editorWeightValue, unit);
           }}
