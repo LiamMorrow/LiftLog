@@ -11,7 +11,8 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
-import { List, Menu, RadioButton } from 'react-native-paper';
+import { List, RadioButton } from 'react-native-paper';
+import Menu from '@/components/presentation/foundation/menu';
 import { useDispatch } from 'react-redux';
 
 interface ProgramListItemProps {
@@ -26,27 +27,25 @@ interface ItemProps {
 function ItemMenu({ id }: ItemProps) {
   const thisProgram = useAppSelectorWithArg(selectProgram, id);
   const isActive = useAppSelector((x) => x.program.activePlanId) === id;
-  const [menuVisible, setMenuVisible] = useState(false);
   const dispatch = useDispatch();
   const { push } = useRouter();
   const { t } = useTranslate();
   return (
     <Menu
-      visible={menuVisible}
-      onDismiss={() => setMenuVisible(false)}
-      anchor={<IconButton testID="more-program-btn" onPress={() => setMenuVisible(true)} icon={'moreHoriz'} />}
-    >
-      <Menu.Item
-        onPress={() => {
-          push(`/settings/manage-workouts/${id}`);
-          setMenuVisible(false);
-        }}
-        leadingIcon={'edit'}
-        title={t('generic.edit.button')}
-      />
-      <Menu.Item
-        onPress={() => {
-          if (!isActive) {
+      trigger={(open) => <IconButton testID="more-program-btn" onPress={open} icon={'moreHoriz'} />}
+      items={[
+        {
+          label: t('generic.edit.button'),
+          icon: 'edit',
+          systemImage: 'pencil',
+          onPress: () => push(`/settings/manage-workouts/${id}`),
+        },
+        {
+          label: t('generic.remove.button'),
+          icon: 'delete',
+          systemImage: 'trash',
+          disabled: isActive,
+          onPress: () => {
             dispatch(
               showSnackbar({
                 text: t('plan.deleted.message'),
@@ -58,35 +57,28 @@ function ItemMenu({ id }: ItemProps) {
               }),
             );
             dispatch(deleteSavedPlan({ programId: id }));
-          }
-          setMenuVisible(false);
-        }}
-        leadingIcon={'delete'}
-        disabled={isActive}
-        title={t('generic.remove.button')}
-      />
-      <Menu.Item
-        title={t('generic.duplicate.button')}
-        leadingIcon={'contentCopy'}
-        onPress={() => {
-          setMenuVisible(false);
-          dispatch(savePlan({ programId: uuid(), programBlueprint: thisProgram }));
-        }}
-      />
-      <Menu.Item
-        leadingIcon={'share'}
-        title={t('generic.share.button')}
-        onPress={() => {
-          setMenuVisible(false);
-          dispatch(
-            encryptAndShare({
-              title: t('plan.shared_item.title'),
-              item: new SharedProgramBlueprint(thisProgram),
-            }),
-          );
-        }}
-      />
-    </Menu>
+          },
+        },
+        {
+          label: t('generic.duplicate.button'),
+          icon: 'contentCopy',
+          systemImage: 'doc.on.doc',
+          onPress: () => dispatch(savePlan({ programId: uuid(), programBlueprint: thisProgram })),
+        },
+        {
+          label: t('generic.share.button'),
+          icon: 'share',
+          systemImage: 'square.and.arrow.up',
+          onPress: () =>
+            dispatch(
+              encryptAndShare({
+                title: t('plan.shared_item.title'),
+                item: new SharedProgramBlueprint(thisProgram),
+              }),
+            ),
+        },
+      ]}
+    />
   );
 }
 

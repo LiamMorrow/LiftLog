@@ -3,7 +3,9 @@ import { spacing } from '@/hooks/useAppTheme';
 import { RecordedExercise, RecordedWeightedExercise } from '@/models/session-models';
 import { ReactNode, useState } from 'react';
 import { Linking, View } from 'react-native';
-import { Menu, Tooltip } from 'react-native-paper';
+import { Tooltip } from 'react-native-paper';
+import Menu from '@/components/presentation/foundation/menu';
+import { MenuItem } from '@/components/presentation/foundation/menu-props';
 import { useTranslate } from '@tolgee/react';
 import PreviousExerciseViewer from '@/components/presentation/workout/weighted/previous-exercise-viewer';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
@@ -35,7 +37,6 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
   const { t } = useTranslate();
   const { push } = useRouter();
   const { recordedExercise } = props;
-  const [menuVisible, setMenuVisible] = useState(false);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [previousDialogOpen, setPreviousDialogOpen] = useState(false);
   const [removeExerciseDialogOpen, setRemoveExerciseDialogOpen] = useState(false);
@@ -65,61 +66,55 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
       ) : null}
 
       <Menu
-        visible={menuVisible}
-        onDismiss={() => setMenuVisible(false)}
-        anchor={<IconButton testID="more-exercise-btn" onPress={() => setMenuVisible(true)} icon={'moreHoriz'} />}
-      >
-        <Menu.Item
-          onPress={() => {
-            props.onEditExercise();
-            setMenuVisible(false);
-          }}
-          testID="exercise-edit-menu-button"
-          leadingIcon={'edit'}
-          title={t('generic.edit.button')}
-        />
-        <Menu.Item
-          testID="exercise-notes-more-btn"
-          title={t('generic.notes.label')}
-          leadingIcon={'notes'}
-          onPress={() => {
-            setNotesDialogOpen(true);
-            setMenuVisible(false);
-          }}
-        />
-        {showStats ? (
-          <Menu.Item
-            onPress={() => {
-              push(
-                `/stats/expanded-weighted-exercise?exerciseName=${encodeURIComponent(recordedExercise.blueprint.name)}`,
-                { withAnchor: true },
-              );
-              setMenuVisible(false);
-            }}
-            testID="exercise-stats-menu-button"
-            leadingIcon={'analytics'}
-            title={t('stats.stats.title')}
-          />
-        ) : null}
-        <Menu.Item
-          onPress={() => {
-            setRemoveExerciseDialogOpen(true);
-            setMenuVisible(false);
-          }}
-          leadingIcon={'delete'}
-          title={t('generic.remove.button')}
-        />
-        {!!props.recordedExercise.blueprint.link && (
-          <Menu.Item
-            onPress={() => {
-              openUrl(props.recordedExercise.blueprint.link);
-              setMenuVisible(false);
-            }}
-            leadingIcon={'openInBrowser'}
-            title={t('generic.open_link.button')}
-          />
-        )}
-      </Menu>
+        trigger={(open) => <IconButton testID="more-exercise-btn" onPress={open} icon={'moreHoriz'} />}
+        items={[
+          {
+            label: t('generic.edit.button'),
+            icon: 'edit',
+            systemImage: 'pencil',
+            testID: 'exercise-edit-menu-button',
+            onPress: () => props.onEditExercise(),
+          },
+          {
+            label: t('generic.notes.label'),
+            icon: 'notes',
+            systemImage: 'note.text',
+            testID: 'exercise-notes-more-btn',
+            onPress: () => setNotesDialogOpen(true),
+          },
+          ...(showStats
+            ? [
+                {
+                  label: t('stats.stats.title'),
+                  icon: 'analytics',
+                  systemImage: 'chart.bar',
+                  testID: 'exercise-stats-menu-button',
+                  onPress: () =>
+                    push(
+                      `/stats/expanded-weighted-exercise?exerciseName=${encodeURIComponent(recordedExercise.blueprint.name)}`,
+                      { withAnchor: true },
+                    ),
+                } satisfies MenuItem,
+              ]
+            : []),
+          {
+            label: t('generic.remove.button'),
+            icon: 'delete',
+            systemImage: 'trash',
+            onPress: () => setRemoveExerciseDialogOpen(true),
+          },
+          ...(props.recordedExercise.blueprint.link
+            ? [
+                {
+                  label: t('generic.open_link.button'),
+                  icon: 'openInBrowser',
+                  systemImage: 'safari',
+                  onPress: () => openUrl(props.recordedExercise.blueprint.link),
+                } satisfies MenuItem,
+              ]
+            : []),
+        ]}
+      />
     </View>
   );
   return (

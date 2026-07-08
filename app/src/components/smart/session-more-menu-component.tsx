@@ -6,7 +6,8 @@ import { EmptyExerciseBlueprint } from '@/models/blueprint-models';
 import { getSessionExerciseEditorHref } from '@/components/smart/session-exercise-editor';
 import { getSessionWorkoutEditorHref } from '@/components/smart/session-workout-editor';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { Appbar, Menu, Tooltip } from 'react-native-paper';
+import { Appbar, Tooltip } from 'react-native-paper';
+import Menu from '@/components/presentation/foundation/menu';
 import { Platform } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Jiggler } from '@/components/presentation/foundation/jiggler';
@@ -110,7 +111,6 @@ function AndroidMenu(props: {
   const { target, save, onAddExercise, onEditWorkout } = props;
   const session = useAppSelectorWithArg(selectCurrentSession, target);
 
-  const [menuOpen, setMenuOpen] = useState(false);
   const [jiggleFinishButton, setJiggleFinishButton] = useState(false);
   const isComplete = session?.isComplete;
 
@@ -130,30 +130,22 @@ function AndroidMenu(props: {
         </Tooltip>
       </Jiggler>
       <Menu
-        anchorPosition="bottom"
-        onDismiss={() => setMenuOpen(false)}
-        anchor={<Appbar.Action testID="session-more" icon="moreVert" onPress={() => setMenuOpen(true)} />}
-        visible={menuOpen}
-      >
-        <Menu.Item
-          onPress={() => {
-            onAddExercise();
-            setMenuOpen(false);
-          }}
-          testID="session-add-exercise"
-          leadingIcon={'add'}
-          title={t('exercise.add.title')}
-        />
-        <Menu.Item
-          onPress={() => {
-            onEditWorkout();
-            setMenuOpen(false);
-          }}
-          testID="session-edit"
-          leadingIcon={'edit'}
-          title={t('workout.edit.button')}
-        />
-      </Menu>
+        trigger={(open) => <Appbar.Action testID="session-more" icon="moreVert" onPress={open} />}
+        items={[
+          {
+            label: t('exercise.add.title'),
+            icon: 'add',
+            testID: 'session-add-exercise',
+            onPress: onAddExercise,
+          },
+          {
+            label: t('workout.edit.button'),
+            icon: 'edit',
+            testID: 'session-edit',
+            onPress: onEditWorkout,
+          },
+        ]}
+      />
     </>
   );
 }

@@ -18,7 +18,7 @@ import {
 } from '@/store/program';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
-import { Menu } from 'react-native-paper';
+import Menu from '@/components/presentation/foundation/menu';
 import { useDispatch } from 'react-redux';
 
 interface ManageWorkoutCardContentProps {
@@ -41,7 +41,6 @@ function Actions({ programId, sessionBlueprint }: ManageWorkoutCardContentProps)
   const dispatch = useDispatch();
   const plan = useAppSelectorWithArg(selectProgram, programId);
   const { t } = useTranslate();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [copyDialogOpen, setCopyDialogOpen] = useState(false);
   const moveSessionUp = () =>
     dispatch(
@@ -102,35 +101,28 @@ function Actions({ programId, sessionBlueprint }: ManageWorkoutCardContentProps)
       <IconButton onPress={moveSessionUp} icon={'arrowUpward'} />
       <IconButton onPress={moveSessionDown} icon={'arrowDownward'} />
       <Menu
-        visible={menuOpen}
-        onDismiss={() => setMenuOpen(false)}
-        anchor={<IconButton onPress={() => setMenuOpen(true)} icon={'moreHoriz'} />}
-      >
-        <Menu.Item
-          onPress={() => {
-            setMenuOpen(false);
-            removeSession();
-          }}
-          leadingIcon={'delete'}
-          title={t('generic.remove.button')}
-        />
-        <Menu.Item
-          title={t('generic.duplicate.button')}
-          leadingIcon={'contentCopy'}
-          onPress={() => {
-            setMenuOpen(false);
-            duplicateSession();
-          }}
-        />
-        <Menu.Item
-          title={t('exercise.copy_to.button')}
-          leadingIcon={'copyAll'}
-          onPress={() => {
-            setMenuOpen(false);
-            setCopyDialogOpen(true);
-          }}
-        />
-      </Menu>
+        trigger={(open) => <IconButton onPress={open} icon={'moreHoriz'} />}
+        items={[
+          {
+            label: t('generic.remove.button'),
+            icon: 'delete',
+            systemImage: 'trash',
+            onPress: removeSession,
+          },
+          {
+            label: t('generic.duplicate.button'),
+            icon: 'contentCopy',
+            systemImage: 'doc.on.doc',
+            onPress: duplicateSession,
+          },
+          {
+            label: t('exercise.copy_to.button'),
+            icon: 'copyAll',
+            systemImage: 'doc.on.clipboard',
+            onPress: () => setCopyDialogOpen(true),
+          },
+        ]}
+      />
       <CopyWorkoutDialog
         visible={copyDialogOpen}
         onDismiss={() => setCopyDialogOpen(false)}
