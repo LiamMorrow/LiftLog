@@ -11,8 +11,8 @@ expo-env.d.ts
 
 coverage/
 
-android
-ios
+/android/
+/ios/
 
 # Native
 *.orig.*
