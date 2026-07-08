@@ -6,7 +6,13 @@ import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/foundation/item-list';
-import { RecordedCardioExercise, RecordedExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
+import {
+  RecordedCardioExercise,
+  RecordedExercise,
+  RecordedWeightedExercise,
+  RestTimer as RestTimerModel,
+  Session,
+} from '@/models/session-models';
 import WeightedExercise from '@/components/presentation/workout/weighted/weighted-exercise';
 import WeightDisplay from '@/components/presentation/foundation/editors/weight-display';
 import BigNumber from 'bignumber.js';
@@ -40,7 +46,10 @@ export default function SessionComponent(props: {
   const dispatch = useDispatch();
   const recentlyCompletedExercises = useAppSelectorWithArg(selectRecentlyCompletedExercises, 10);
   const resetTimer = (time: OffsetDateTime | undefined) => {
-    updateSession((s) => s.with({ restTimerStartTime: time }));
+    updateSession((s) => s.with({ restTimer: time ? new RestTimerModel(time) : undefined }));
+  };
+  const toggleRestTimerPaused = () => {
+    updateSession((s) => s.with({ restTimer: s.restTimer?.togglePause(OffsetDateTime.now()) }));
   };
   const withLatestSession = (callback: (session: Session) => void) => {
     // Ensure we always have the latest session, allows us to call callbacks consecutively
@@ -181,7 +190,7 @@ export default function SessionComponent(props: {
     nextExercise instanceof RecordedWeightedExercise &&
     lastExercise &&
     lastExercise instanceof RecordedWeightedExercise &&
-    session.restTimerStartTime;
+    session.restTimer;
   const lastSetFailed =
     lastRecordedSet?.set &&
     lastExercise &&
@@ -191,9 +200,12 @@ export default function SessionComponent(props: {
     <View style={{ flex: 1 }}>
       <RestTimer
         rest={lastExercise.blueprint.restBetweenSets}
-        startTime={session.restTimerStartTime}
+        startTime={session.restTimer.startedAt}
+        pausedAt={session.restTimer.pausedAt}
         failed={!!lastSetFailed}
-        resetTimer={() => resetTimer(OffsetDateTime.now())}
+        onRestart={() => resetTimer(OffsetDateTime.now())}
+        onDismiss={() => resetTimer(undefined)}
+        onTogglePause={toggleRestTimerPaused}
       />
     </View>
   ) : undefined;

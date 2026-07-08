@@ -11,6 +11,7 @@ import {
 } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { Session } from '@/models/session-models/session';
+import { RestTimer } from '@/models/session-models/rest-timer';
 import { RecordedCardioExercise } from '@/models/session-models/recorded-cardio-exercise';
 import {
   PotentialSet,
@@ -883,6 +884,7 @@ describe('Session derived values', () => {
 
 describe('Session.restTimerEndTime', () => {
   function startedSession(reps: number, restTimerStartTime: OffsetDateTime | undefined) {
+    const restTimer = restTimerStartTime ? new RestTimer(restTimerStartTime) : undefined;
     const bp = makeWeightedBlueprint();
     const t = tick();
     const exercise = new RecordedWeightedExercise(
@@ -896,7 +898,7 @@ describe('Session.restTimerEndTime', () => {
       [exercise],
       LocalDate.of(2025, 4, 5),
       undefined,
-      restTimerStartTime,
+      restTimer,
     );
   }
 

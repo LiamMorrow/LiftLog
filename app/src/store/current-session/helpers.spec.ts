@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { LocalDate } from '@js-joda/core';
 import { ProgramBlueprint, SessionBlueprint } from '@/models/blueprint-models';
 import { Session } from '@/models/session-models/session';
+import { RestTimer } from '@/models/session-models/rest-timer';
 import { RecordedCardioExercise } from '@/models/session-models/recorded-cardio-exercise';
 import { PotentialSet, RecordedWeightedExercise } from '@/models/session-models/recorded-weighted-exercise';
 import { Weight as WeightModel } from '@/models/weight';
@@ -110,7 +111,7 @@ describe('getTimerInfo', () => {
       [exercise],
       LocalDate.of(2025, 4, 5),
       undefined,
-      start,
+      new RestTimer(start),
     );
   }
 

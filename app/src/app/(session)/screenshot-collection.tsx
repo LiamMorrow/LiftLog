@@ -4,7 +4,7 @@ import {
   SessionBlueprint,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
-import { Session, RecordedWeightedExercise, RecordedSet } from '@/models/session-models';
+import { Session, RecordedWeightedExercise, RecordedSet, RestTimer } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { setCurrentSession } from '@/store/current-session';
 import { useAppSelector } from '@/store';
@@ -383,7 +383,7 @@ function PrepareWorkoutPage() {
     session = setExerciseWeight(session, 0, 100);
     session = session
       .withCycledExerciseReps(0, 0, OffsetDateTime.now())
-      .with({ restTimerStartTime: OffsetDateTime.now().minusSeconds(45) })
+      .with({ restTimer: new RestTimer(OffsetDateTime.now().minusSeconds(45)) })
       .withAddedExercise(
         WeightedExerciseBlueprint.empty().with({
           name: 'Bench Press',

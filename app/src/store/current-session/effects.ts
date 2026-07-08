@@ -124,10 +124,12 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
     if (!previousValue && currentValue) {
       dispatch(broadcastWorkoutEvent({ type: 'WorkoutStartedEvent' }));
     }
-    if (
-      currentValue?.restTimerEndTime &&
-      !currentValue.restTimerEndTime?.isEqual(previousValue?.restTimerEndTime ?? OffsetDateTime.MAX)
-    ) {
+    const previousEndTime = previousValue?.restTimerEndTime;
+    const currentEndTime = currentValue?.restTimerEndTime;
+    const restTimerEndTimeChanged = previousEndTime
+      ? !previousEndTime.isEqual(currentEndTime ?? OffsetDateTime.MAX)
+      : currentEndTime !== undefined;
+    if (restTimerEndTimeChanged) {
       dispatch(notifySetTimer());
     }
     if (currentValue) {
