@@ -5,7 +5,7 @@
   "ai.restart_chat.button": "채팅 재시작",
   "ai.type_your_message.placeholder": "메시지 입력",
   "ai.upgrade_to_pro.button": "Pro 업그레이드",
-  "ai.upgrade_to_pro.explanation": "AI 플래너를 잠금 해제하여 목표에 맞는 맞춤형 운동 플랜 생성<br>1회 결제 금액:",
+  "ai.upgrade_to_pro.explanation": "AI 플래너를 해제하고 나만의 맞춤형 플랜을 받아보세요. <br>1회만 결제되는 상품입니다:",
   "backup.api_key.label": "API 키",
   "backup.automatic_remote.subtitle": "원격 서버로 백업 전송 (고급 사용자용)",
   "backup.automatic_remote.title": "자동 원격 백업",
@@ -23,7 +23,7 @@
   "backup.reminder.body": "마지막 백업 이후 오랜 시간이 지났습니다. 데이터 손실 방지를 위해 정기 백업을 권장합니다. 지금 백업할까요?",
   "backup.reminders.subtitle": "오랫동안 백업하지 않은 경우 주기적으로 알림",
   "backup.reminders.title": "백업 알림",
-  "backup.remote.explanation": "원격 서버로 백업을 전송하는 고급 기능입니다.<br>원격 서버 설정 방법은 문서를 참조하세요.",
+  "backup.remote.explanation": "백업을 원격 서버로 전송하는 고급 기능입니다.<br>원격 서버 설정 방법은 사용 가이드를 확인해 주세요.",
   "backup.restore_data.subtitle": "파일에서 데이터 가져오기 및 복원",
   "backup.restore_data.title": "데이터 복원",
   "backup.sent_successfully.message": "백업 전송 완료",
@@ -465,6 +465,9 @@
   "exercise.progressive_overload.increase_lowest_set.increase_strategy.last.label": "마지막 최하위",
   "exercise.progressive_overload.increase_lowest_set.amount.label": "증가시킬 무게",
   "exercise.progressive_overload.example.label": "예시 보기",
+  "ai.share_program.button": "프로그램 공유하기",
+  "ai.update_required.title": "업데이트 필요",
+  "ai.update_required.explanation": "현재 버전에서는 더 이상 운동 루틴을 생성할 수 없습니다. 계속하시려면 최신 버전으로 업데이트해 주세요."
   "workout.rest_timers.label": "휴식 타이머",
   "workout.rest_timers.subtitle": "세트 사이의 휴식 시간을 자동으로 측정합니다. 이 기능을 끄면 모든 휴식 타이머가 숨겨지고 휴식 알림이 비활성화됩니다"
 }
