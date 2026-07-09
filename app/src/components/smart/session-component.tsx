@@ -1,4 +1,5 @@
 import { selectCurrentSession, SessionTarget, setCurrentSession } from '@/store/current-session';
+import { showSnackbar } from '@/store/app';
 import { Card, Icon, Text } from 'react-native-paper';
 import { useDispatch, useStore } from 'react-redux';
 import { View } from 'react-native';
@@ -47,6 +48,22 @@ export default function SessionComponent(props: {
   const recentlyCompletedExercises = useAppSelectorWithArg(selectRecentlyCompletedExercises, 10);
   const resetTimer = (time: OffsetDateTime | undefined) => {
     updateSession((s) => s.with({ restTimer: time ? new RestTimerModel(time) : undefined }));
+  };
+  const dismissTimer = () => {
+    withLatestSession((latestSession) => {
+      const dismissedTimer = latestSession.restTimer;
+      resetTimer(undefined);
+      dispatch(
+        showSnackbar({
+          text: t('rest_timer.dismissed.message'),
+          action: t('generic.undo.button'),
+          dispatchAction: setCurrentSession({
+            session: latestSession.with({ restTimer: dismissedTimer }),
+            target: props.target,
+          }),
+        }),
+      );
+    });
   };
   const toggleRestTimerPaused = () => {
     updateSession((s) => s.with({ restTimer: s.restTimer?.togglePause(OffsetDateTime.now()) }));
@@ -204,7 +221,7 @@ export default function SessionComponent(props: {
         pausedAt={session.restTimer.pausedAt}
         failed={!!lastSetFailed}
         onRestart={() => resetTimer(OffsetDateTime.now())}
-        onDismiss={() => resetTimer(undefined)}
+        onDismiss={dismissTimer}
         onTogglePause={toggleRestTimerPaused}
       />
     </View>

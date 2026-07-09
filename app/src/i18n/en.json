@@ -322,6 +322,7 @@
   "rest.short.label": "Short",
   "rest.singular.label": "Rest <em>{time}</em>",
   "rest_timer.dismiss": "Dismiss rest timer",
+  "rest_timer.dismissed.message": "Rest timer dismissed",
   "rest_timer.pause": "Pause rest timer",
   "rest_timer.restart": "Restart rest timer",
   "rest_timer.resume": "Resume rest timer",
