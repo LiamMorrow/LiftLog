@@ -195,7 +195,7 @@
   "rest.max.label": "Repos max",
   "rest.medium.label": "Moyen",
   "rest.min.label": "Repos min",
-  "rest.notifications.subtitle": "Afficher une notification quand le minuteur de repos est terminé",
+  "rest.notifications.subtitle": "Afficher une notification quand le minuteur de repos est terminé, même si l'application est en arrière-plan",
   "rest.notifications.title": "Notifications de repos",
   "rest.short.label": "Court",
   "rest.singular.label": "Repos <em>{time}</em>",
@@ -210,8 +210,8 @@
   "settings.feature_request.title": "Demande de fonctionnalité",
   "settings.localisation.subtitle": "Définissez la langue et les unités de poids par défaut de LiftLog",
   "settings.localisation.title": "Localisation",
-  "settings.notifications.subtitle": "Ajustez les paramètres de notification pour les minuteurs de repos",
-  "settings.notifications.title": "Notifications",
+  "settings.notifications.subtitle": "Contrôlez les minuteurs de repos et les notifications affichées à la fin du repos",
+  "settings.notifications.title": "Repos et notifications",
   "settings.pro_features.title": "Fonctionnalités Pro",
   "settings.reset_tips.button": "Réinitialiser les conseils",
   "settings.saved.message": "Paramètres sauvegardés",
@@ -291,5 +291,7 @@
   "workout.upcoming.title": "Prochains entraînements",
   "workout.update_existing.confirm.body": "Voulez-vous mettre à jour l'entraînement existant nommé <em>{name}</em>, ou ajouter un nouvel entraînement ?",
   "workout.workout.label": "Entraînement",
-  "workout.workout_lowercase.label": "Entraînement"
+  "workout.workout_lowercase.label": "Entraînement",
+  "workout.rest_timers.label": "Minuteurs de repos",
+  "workout.rest_timers.subtitle": "Chronométrez automatiquement votre repos entre les séries. Désactiver cette option masque tous les minuteurs de repos et désactive les notifications de repos"
 }

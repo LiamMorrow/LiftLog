@@ -16,7 +16,7 @@ import {
 import { AddEffectFn, RootState } from '@/store/store';
 import { fetchUpcomingSessions } from '@/store/program';
 import { addStoredSession, selectLatestExercises } from '@/store/stored-sessions';
-import { selectPreferredWeightUnit } from '@/store/settings';
+import { selectPreferredWeightUnit, setRestTimersEnabled } from '@/store/settings';
 import { addUnpublishedSessionId } from '@/store/feed';
 import { setStatsIsDirty } from '@/store/stats';
 import { getCardioTimerInfo, getCurrentExerciseDetails, getTimerInfo } from '@/store/current-session/helpers';
@@ -117,33 +117,34 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
     dispatch(fetchUpcomingSessions());
   });
 
-  addEffect(currentWorkoutSessionUpdated, (action, { dispatch }) => {
+  addEffect(currentWorkoutSessionUpdated, (action, { dispatch, getState }) => {
     const previousValue = action.payload.before;
     const currentValue = action.payload.after;
+    const { restTimersEnabled } = getState().settings;
     if (!previousValue && currentValue) {
       dispatch(broadcastWorkoutEvent({ type: 'WorkoutStartedEvent' }));
     }
-    if (
-      currentValue?.restTimerEndTime &&
-      !currentValue.restTimerEndTime?.isEqual(previousValue?.restTimerEndTime ?? OffsetDateTime.MAX)
-    ) {
+    const previousEndTime = previousValue?.restTimerEndTime;
+    const currentEndTime = currentValue?.restTimerEndTime;
+    const restTimerEndTimeChanged = previousEndTime
+      ? !previousEndTime.isEqual(currentEndTime ?? OffsetDateTime.MAX)
+      : currentEndTime !== undefined;
+    if (restTimerEndTimeChanged) {
       dispatch(notifySetTimer());
     }
     if (currentValue) {
-      dispatch(
-        broadcastWorkoutEvent({
-          type: 'WorkoutUpdatedEvent',
-          workout: currentValue.toJSON(),
-          restTimerInfo: getTimerInfo(currentValue),
-          cardioTimerInfo: getCardioTimerInfo(currentValue),
-          currentExerciseDetails: getCurrentExerciseDetails(currentValue),
-          totalWeightLifted: currentValue.totalWeightLifted.toJSON(),
-          workoutDuration: toDurationJSON(currentValue.duration ?? Duration.ZERO),
-        }),
-      );
+      dispatch(broadcastWorkoutEvent(workoutUpdatedEvent(currentValue, restTimersEnabled)));
     }
     if (previousValue && !currentValue) {
       dispatch(broadcastWorkoutEvent({ type: 'WorkoutEndedEvent' }));
+    }
+  });
+
+  addEffect(setRestTimersEnabled, (action, { dispatch, getState }) => {
+    dispatch(notifySetTimer());
+    const workoutSession = getState().currentSession.workoutSession;
+    if (workoutSession) {
+      dispatch(broadcastWorkoutEvent(workoutUpdatedEvent(workoutSession, action.payload)));
     }
   });
 
@@ -158,10 +159,10 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
   addEffect(notifySetTimer, async (_, { extra: { notificationService }, getState }) => {
     await notificationService.clearSetTimerNotification();
     const {
-      settings: { restNotifications },
+      settings: { restNotifications, restTimersEnabled },
       currentSession: { workoutSession },
     } = getState();
-    if (!restNotifications) {
+    if (!restNotifications || !restTimersEnabled) {
       return;
     }
     const restTimerEndTime = workoutSession?.restTimerEndTime;
@@ -180,6 +181,18 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
       dispatch(setCurrentSession({ session, target: action.payload.target }));
     },
   );
+}
+
+function workoutUpdatedEvent(session: Session, restTimersEnabled: boolean) {
+  return {
+    type: 'WorkoutUpdatedEvent',
+    workout: session.toJSON(),
+    restTimerInfo: restTimersEnabled ? getTimerInfo(session) : undefined,
+    cardioTimerInfo: getCardioTimerInfo(session),
+    currentExerciseDetails: getCurrentExerciseDetails(session),
+    totalWeightLifted: session.totalWeightLifted.toJSON(),
+    workoutDuration: toDurationJSON(session.duration ?? Duration.ZERO),
+  } as const;
 }
 
 function fromCurrentSessionDao(dao: LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2) {

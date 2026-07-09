@@ -17,29 +17,15 @@ import com.limajuice.liftlog.WorkoutEndedEvent
 import com.limajuice.liftlog.WorkoutMessagePayload
 import com.limajuice.liftlog.WorkoutStartedEvent
 import com.limajuice.liftlog.WorkoutUpdatedEvent
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.ToJson
 import com.squareup.moshi.adapter
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import java.math.BigDecimal
-import kotlin.time.Duration
 import kotlin.time.Instant
-
-class DurationAdapter : JsonAdapter<Duration>() {
-    @FromJson
-    override fun fromJson(reader: JsonReader): Duration =
-        Duration.parseIsoString(reader.nextString())
-
-    @ToJson
-    override fun toJson(writer: JsonWriter, value: Duration?) {
-        writer.value(value?.toIsoString())
-    }
-}
 
 class InstantAdapter : JsonAdapter<Instant>() {
     override fun fromJson(reader: JsonReader): Instant =
@@ -84,7 +70,6 @@ object Json {
                 .withSubtype(IncreaseAllEvenlyProgressiveOverload::class.java, "IncreaseAllEvenlyProgressiveOverload")
                 .withSubtype(IncreaseLowestSetProgressiveOverload::class.java, "IncreaseLowestSetProgressiveOverload")
         )
-        .add(Duration::class.java, DurationAdapter())
         .add(Instant::class.java, InstantAdapter())
         .add(BigDecimal::class.java, BigDecimalAdapter())
         .addLast(KotlinJsonAdapterFactory())

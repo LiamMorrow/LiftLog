@@ -15,7 +15,9 @@ import { Duration, OffsetDateTime } from '@js-joda/core';
 import { View } from 'react-native';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { Menu, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
+import Menu from '@/components/presentation/foundation/menu';
+import { MenuItem } from '@/components/presentation/foundation/menu-props';
 import BigNumber from 'bignumber.js';
 import { useAppSelector } from '@/store';
 import { isNotNullOrUndefinedOrFalse } from '@/utils/null';
@@ -182,24 +184,17 @@ function AddTrackerButtonMenu(props: {
     updateWeight,
   } = props;
   const { blueprint } = set;
-  const [menuOpen, setMenuOpen] = useState(false);
 
   const distanceTarget = (blueprint.target.type === 'distance' && blueprint.target.value) || {
     value: BigNumber(0),
     unit: imperialByDefault ? 'mile' : 'kilometre',
   };
 
-  const menuItem = (name: string, labelKey: TranslationKey, action: () => void) => (
-    <Menu.Item
-      key={name}
-      title={t(labelKey)}
-      testID={'add-tracker-menu-' + name}
-      onPress={() => {
-        setMenuOpen(false);
-        action();
-      }}
-    />
-  );
+  const menuItem = (name: string, labelKey: TranslationKey, action: () => void): MenuItem => ({
+    label: t(labelKey),
+    testID: 'add-tracker-menu-' + name,
+    onPress: action,
+  });
 
   const menuItems = [
     !set.distance &&
@@ -230,23 +225,20 @@ function AddTrackerButtonMenu(props: {
   }
   return (
     <Menu
-      visible={menuOpen}
-      style={{ justifyContent: 'center' }}
-      onDismiss={() => setMenuOpen(false)}
-      anchor={
+      size={56}
+      trigger={(open) => (
         <FocusRing isSelected={toStartNext} padding={0} radius={rounding.roundedRectangleFocusRingRadius}>
           <IconButton
             style={{ borderRadius: rounding.roundedRectangleRadius }}
             testID="add-tracker-button"
             icon={'plus'}
             mode="contained"
-            onPress={() => setMenuOpen(true)}
+            onPress={open}
           />
         </FocusRing>
-      }
-    >
-      {menuItems}
-    </Menu>
+      )}
+      items={menuItems}
+    />
   );
 }
 
@@ -258,18 +250,8 @@ function CardioDistanceTracker({
   updateDistance: (distance: Distance | undefined) => void;
 }) {
   const { t } = useTranslate();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [dialogValue, setDialogValue] = useState(distance);
-  const getMenuItem = (unit: DistanceUnit) => (
-    <Menu.Item
-      key={unit}
-      title={unit}
-      onPress={() => {
-        setMenuOpen(false);
-        setDialogValue((dv) => ({ ...dv, unit }));
-      }}
-    />
-  );
+  const units: DistanceUnit[] = ['kilometre', 'metre', 'mile', 'yard'];
   return (
     <CardioValueSelector
       buttonText={localeFormatBigNumber(distance.value) + getShortUnit(distance.unit)}
@@ -284,23 +266,14 @@ function CardioDistanceTracker({
         onChange={(value) => setDialogValue((dv) => ({ ...dv, value }))}
       />
       <Menu
-        visible={menuOpen}
-        onDismiss={() => setMenuOpen(false)}
-        anchor={
-          <IconButton
-            onPress={() => {
-              setMenuOpen(true);
-            }}
-            mode="outlined"
-            icon={() => <Text>{getShortUnit(dialogValue.unit)}</Text>}
-          />
-        }
-      >
-        {getMenuItem('kilometre')}
-        {getMenuItem('metre')}
-        {getMenuItem('mile')}
-        {getMenuItem('yard')}
-      </Menu>
+        trigger={(open) => (
+          <IconButton onPress={open} mode="outlined" icon={() => <Text>{getShortUnit(dialogValue.unit)}</Text>} />
+        )}
+        items={units.map((unit) => ({
+          label: unit,
+          onPress: () => setDialogValue((dv) => ({ ...dv, unit })),
+        }))}
+      />
     </CardioValueSelector>
   );
 }

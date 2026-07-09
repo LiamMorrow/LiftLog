@@ -61,5 +61,11 @@
   "exercise.no_exercises_found.message": "Egzersiz bulunamadı.",
   "exercise.previous_sessions_for.title": "{exercise} için önceki çalışmalar",
   "exercise.remove.confirm.body": "Egzersiz bu çalışma planından çıkarılacak, diğer çalışma planları etkilenmeyecek.",
-  "exercise.remove.confirm.title": "Egzersizi sil?"
+  "exercise.remove.confirm.title": "Egzersizi sil?",
+  "settings.notifications.title": "Dinlenme ve bildirimler",
+  "settings.notifications.subtitle": "Dinlenme zamanlayıcılarını ve dinlenme bittiğinde gösterilen bildirimleri kontrol edin",
+  "rest.notifications.subtitle": "Uygulama arka planda olsa bile dinlenme zamanlayıcısı bittiğinde bir bildirim göster",
+  "workout.rest_timers.label": "Dinlenme zamanlayıcıları",
+  "workout.rest_timers.subtitle": "Setler arasındaki dinlenmeni otomatik olarak zamanla. Bunu kapatmak tüm dinlenme zamanlayıcılarını gizler ve dinlenme bildirimlerini devre dışı bırakır",
+  "rest.notifications.title": "Dinlenme bildirimleri"
 }

@@ -228,8 +228,8 @@
   "settings.first_day_of_week.subtitle": "Wybierz pierwszy dzień tygodnia w kalendarzu",
   "settings.localisation.subtitle": "Ustaw język aplikacji LiftLog oraz domyślne jednostki wagi",
   "settings.localisation.title": "Lokalizacja",
-  "settings.notifications.subtitle": "Dostosuj ustawienia powiadomień dla timerów odpoczynku",
-  "settings.notifications.title": "Powiadomienia",
+  "settings.notifications.subtitle": "Zarządzaj timerami odpoczynku i powiadomieniami wyświetlanymi po zakończeniu odpoczynku",
+  "settings.notifications.title": "Odpoczynek i powiadomienia",
   "settings.pro_features.title": "Funkcje Pro",
   "settings.reset_tips.button": "Resetuj podpowiedzi",
   "settings.saved.message": "Ustawienia zapisane",
@@ -316,5 +316,9 @@
   "workout.upcoming.title": "Nadchodzące treningi",
   "workout.update_existing.confirm.body": "Czy chcesz zaktualizować istniejący trening o nazwie <em>{name}</em> czy dodać nowy trening?",
   "workout.workout.label": "Trening",
-  "workout.workout_lowercase.label": "Trening"
+  "workout.workout_lowercase.label": "Trening",
+  "rest.notifications.subtitle": "Pokaż powiadomienie, gdy timer odpoczynku dobiegnie końca, nawet jeśli aplikacja działa w tle",
+  "workout.rest_timers.label": "Timery odpoczynku",
+  "workout.rest_timers.subtitle": "Automatycznie mierz odpoczynek między seriami. Wyłączenie tego ukrywa wszystkie timery odpoczynku i wyłącza powiadomienia o odpoczynku",
+  "rest.notifications.title": "Powiadomienia o odpoczynku"
 }

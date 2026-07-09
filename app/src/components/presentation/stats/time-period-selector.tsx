@@ -1,4 +1,5 @@
-import SelectButton, { SelectButtonOption } from '@/components/presentation/foundation/select-button';
+import SelectPicker from '@/components/presentation/foundation/select-picker';
+import { SelectPickerOption } from '@/components/presentation/foundation/select-picker-props';
 import { isLocalDateRangeEqual, LocalDateRange } from '@/models/time-models';
 import { convert, LocalDate, nativeJs, Period } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
@@ -14,7 +15,7 @@ export function TimePeriodSelector({ timePeriod, setTimePeriod }: TimePeriodSele
   const today = LocalDate.now();
   const [timeRangeSelectorOpen, setTimeRangeSelectorOpen] = useState(false);
   const { t } = useTranslate();
-  const timeOptions: SelectButtonOption<LocalDateRange | 'all-time' | 'custom'>[] = [
+  const timeOptions: SelectPickerOption<LocalDateRange | 'all-time' | 'custom'>[] = [
     {
       label: t('time_period_select.num_days.label', { count: '7' }),
       value: getPeriod(Period.ofDays(7), today),
@@ -48,9 +49,17 @@ export function TimePeriodSelector({ timePeriod, setTimePeriod }: TimePeriodSele
       value: 'custom',
     },
   ];
-  const nonCustomValues: SelectButtonOption<LocalDateRange>[] = timeOptions.filter(
-    (x): x is SelectButtonOption<LocalDateRange> => x.value !== 'custom' && x.value !== 'all-time',
+  const nonCustomValues: SelectPickerOption<LocalDateRange>[] = timeOptions.filter(
+    (x): x is SelectPickerOption<LocalDateRange> => x.value !== 'custom' && x.value !== 'all-time',
   );
+
+  const activeCustomRange =
+    timePeriod !== 'all-time' && !nonCustomValues.some((x) => isLocalDateRangeEqual(x.value, timePeriod))
+      ? timePeriod
+      : undefined;
+  const options: SelectPickerOption<LocalDateRange | 'all-time' | 'custom'>[] = activeCustomRange
+    ? [...timeOptions, { label: `${activeCustomRange.from.toString()} - ${activeCustomRange.to.toString()}`, value: activeCustomRange }]
+    : timeOptions;
 
   function handleCustomRangePicked(params: { startDate: Date | undefined; endDate: Date | undefined }) {
     setTimeRangeSelectorOpen(false);
@@ -65,22 +74,10 @@ export function TimePeriodSelector({ timePeriod, setTimePeriod }: TimePeriodSele
 
   return (
     <>
-      <SelectButton
+      <SelectPicker
         testID="stats-time-selector"
         value={timePeriod}
-        buttonProps={{ mode: 'outlined' }}
-        options={timeOptions}
-        renderLabel={() => {
-          if (timePeriod === 'all-time') {
-            return t('time_period_select.all_time.label');
-          }
-          const selectedOption = nonCustomValues.find((x) => isLocalDateRangeEqual(x.value, timePeriod));
-
-          if (!selectedOption) {
-            return `${timePeriod.from.toString()} - ${timePeriod.to.toString()}`;
-          }
-          return selectedOption.label;
-        }}
+        options={options}
         onChange={(value) => {
           if (value === 'custom') {
             setTimeRangeSelectorOpen(true);

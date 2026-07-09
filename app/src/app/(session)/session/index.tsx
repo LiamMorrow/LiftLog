@@ -7,17 +7,16 @@ import { useFinishWorkout } from '@/hooks/useFinishWorkout';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export default function Index() {
   const finishWorkout = useFinishWorkout('workoutSession');
   const session = useAppSelectorWithArg(selectCurrentSession, 'workoutSession');
   const showPostWorkoutSummary = useAppSelector((x) => x.settings.showPostWorkoutSummary);
   const keepAwake = useAppSelector((x) => x.settings.keepScreenAwakeDuringWorkout);
-  const { dismissTo, push, replace } = useRouter();
+  const { dismissTo, push } = useRouter();
   const { t } = useTranslate();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [postWorkoutSessionId, setPostWorkoutSessionId] = useState<string | undefined>(undefined);
 
   const save = (force = false) => {
     const finishedSessionId = session?.id;
@@ -29,7 +28,6 @@ export default function Index() {
       setConfirmOpen(false);
     }
     if (showPostWorkoutSummary) {
-      setPostWorkoutSessionId(finishedSessionId);
       if (finishedSessionId) {
         push(`/session/post-workout?sessionId=${encodeURIComponent(finishedSessionId)}&source=finished`);
         return;

@@ -2,9 +2,8 @@ import ItemTitle from '@/components/presentation/foundation/item-title';
 import { formatTimeSpan } from '@/components/presentation/foundation/rest-format';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
-import { useState } from 'react';
 import { View } from 'react-native';
-import { Menu } from 'react-native-paper';
+import Menu from '@/components/presentation/foundation/menu';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
 import { useTranslate } from '@tolgee/react';
@@ -37,7 +36,6 @@ export default function ExerciseBlueprintSummary({
   onCopyTo,
 }: ExerciseBlueprintSummaryProps) {
   const { t } = useTranslate();
-  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <TouchableRipple
@@ -62,19 +60,16 @@ export default function ExerciseBlueprintSummary({
             <IconButton onPress={onMoveDown} icon={'arrowDownward'} />
             <IconButton onPress={onRemove} icon={'delete'} />
             <Menu
-              visible={menuOpen}
-              onDismiss={() => setMenuOpen(false)}
-              anchor={<IconButton onPress={() => setMenuOpen(true)} icon={'moreHoriz'} />}
-            >
-              <Menu.Item
-                title={t('exercise.copy_to.button')}
-                leadingIcon={'copyAll'}
-                onPress={() => {
-                  setMenuOpen(false);
-                  onCopyTo();
-                }}
-              />
-            </Menu>
+              trigger={(open) => <IconButton onPress={open} icon={'moreHoriz'} />}
+              items={[
+                {
+                  label: t('exercise.copy_to.button'),
+                  icon: 'copyAll',
+                  systemImage: 'doc.on.clipboard',
+                  onPress: onCopyTo,
+                },
+              ]}
+            />
           </View>
         </View>
         {match(blueprint)

@@ -4,6 +4,8 @@ on:
     paths:
       - app/**
       - .github/**
+permissions:
+  contents: read
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,7 +29,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Setup Android SDK Tools
-        uses: android-actions/setup-android@v3.2.2
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3.2.2
 
       - name: Install
         run: npm ci

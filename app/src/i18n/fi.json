@@ -232,7 +232,7 @@
   "rest.max.label": "Maksimi lepo",
   "rest.medium.label": "Keskipitkä",
   "rest.min.label": "Minimi lepo",
-  "rest.notifications.subtitle": "Näytä ilmoitus kun lepoaika on kulunut",
+  "rest.notifications.subtitle": "Näytä ilmoitus, kun lepoajastin päättyy, vaikka sovellus olisi taustalla",
   "rest.notifications.title": "Lepoajan ilmoitukset",
   "rest.short.label": "Lyhyt",
   "rest.singular.label": "Lepää <em>{time}</em>",
@@ -249,8 +249,8 @@
   "settings.first_day_of_week.subtitle": "Aseta kalenterin ensimmäinen viikonpäivä",
   "settings.localisation.subtitle": "Aseta LiftLogin kieli ja oletusyksiköt painoille",
   "settings.localisation.title": "Lokalisointi",
-  "settings.notifications.subtitle": "Säädä lepoajastimen ilmoitusasetuksia",
-  "settings.notifications.title": "Ilmoitukset",
+  "settings.notifications.subtitle": "Hallitse lepoajastimia ja ilmoituksia, jotka näytetään lepoajan päätyttyä",
+  "settings.notifications.title": "Lepo ja ilmoitukset",
   "settings.pro_features.title": "Maksulliset ominaisuudet",
   "settings.reset_tips.button": "Nollaa vinkit",
   "settings.saved.message": "Asetukset tallennettu",
@@ -324,5 +324,7 @@
   "workout.upcoming.title": "Tulevat harjoitukset",
   "workout.update_existing.confirm.body": "Haluatko päivittää olemassa olevan harjoituksen nimeltä <em>{name}</em>, vai lisätä uuden harjoituksen?",
   "workout.workout.label": "Harjoitus",
-  "workout.workout_lowercase.label": "Harjoitus"
+  "workout.workout_lowercase.label": "Harjoitus",
+  "workout.rest_timers.label": "Lepoajastimet",
+  "workout.rest_timers.subtitle": "Ajasta lepo sarjojen välillä automaattisesti. Tämän poistaminen käytöstä piilottaa kaikki lepoajastimet ja poistaa lepoajan ilmoitukset käytöstä"
 }

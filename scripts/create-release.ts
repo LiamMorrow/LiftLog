@@ -54,6 +54,7 @@ Requirements:
 - Avoid technical jargon
 - Do not include version numbers or dates
 - Do not use markdown formatting (no ** or # etc)
+- DO NOT INCLUDE ANYTHING OTHER THAN THE RELEASE NOTES, NO TITLES, NO PREAMBLE like "Here are the notes:"
 
 Release notes:
 ${releaseNotes}`;

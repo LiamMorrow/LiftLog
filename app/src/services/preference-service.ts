@@ -51,6 +51,15 @@ export class PreferenceService {
     await this.keyValueStore.setItem('restNotifications', toBooleanString(restNotifications));
   }
 
+  async getRestTimersEnabled(): Promise<boolean> {
+    const value = await this.keyValueStore.getItem('restTimersEnabled');
+    return fromBooleanString(value, true);
+  }
+
+  async setRestTimersEnabled(restTimersEnabled: boolean): Promise<void> {
+    await this.keyValueStore.setItem('restTimersEnabled', toBooleanString(restTimersEnabled));
+  }
+
   async getCrashReportsEnabled(): Promise<boolean> {
     const value = await this.keyValueStore.getItem('crashReportsEnabled');
     return fromBooleanString(value, true);

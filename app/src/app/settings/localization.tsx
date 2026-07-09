@@ -1,6 +1,7 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
-import SelectButton, { SelectButtonOption } from '@/components/presentation/foundation/select-button';
+import SelectPicker from '@/components/presentation/foundation/select-picker';
+import { SelectPickerOption } from '@/components/presentation/foundation/select-picker-props';
 import { supportedLanguages } from '@/services/tolgee';
 import { RootState, useAppSelector } from '@/store';
 import { setFirstDayOfWeek, setPreferredLanguage, setUseImperialUnits } from '@/store/settings';
@@ -18,7 +19,7 @@ export default function Localization() {
   const { t } = useTranslate();
   const settings = useAppSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
-  const daysOfWeekOptions: SelectButtonOption<DayOfWeek>[] = [
+  const daysOfWeekOptions: SelectPickerOption<DayOfWeek>[] = [
     {
       value: DayOfWeek.SUNDAY,
       label: formatDate(getDateOnDay(DayOfWeek.SUNDAY), {
@@ -63,7 +64,7 @@ export default function Localization() {
     },
   ];
 
-  const languageOptions: SelectButtonOption<string | undefined>[] = useMemo(
+  const languageOptions: SelectPickerOption<string | undefined>[] = useMemo(
     () => [
       {
         value: undefined,
@@ -89,7 +90,7 @@ export default function Localization() {
           title={t('settings.first_day_of_week.label')}
           description={t('settings.first_day_of_week.subtitle')}
           right={() => (
-            <SelectButton
+            <SelectPicker
               testID="setFirstDayOfWeek"
               value={settings.firstDayOfWeek}
               options={daysOfWeekOptions}
@@ -101,7 +102,7 @@ export default function Localization() {
           title={t('settings.set_language.button')}
           description={t('settings.set_language.subtitle')}
           right={() => (
-            <SelectButton
+            <SelectPicker
               testID="setPreferredLanguage"
               value={settings.preferredLanguage}
               options={languageOptions}

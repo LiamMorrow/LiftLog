@@ -1,4 +1,5 @@
 import { selectCurrentSession, SessionTarget, setCurrentSession } from '@/store/current-session';
+import { showSnackbar } from '@/store/app';
 import { Card, Icon, Text } from 'react-native-paper';
 import { useDispatch, useStore } from 'react-redux';
 import { View } from 'react-native';
@@ -6,7 +7,13 @@ import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/foundation/item-list';
-import { RecordedCardioExercise, RecordedExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
+import {
+  RecordedCardioExercise,
+  RecordedExercise,
+  RecordedWeightedExercise,
+  RestTimer as RestTimerModel,
+  Session,
+} from '@/models/session-models';
 import WeightedExercise from '@/components/presentation/workout/weighted/weighted-exercise';
 import WeightDisplay from '@/components/presentation/foundation/editors/weight-display';
 import BigNumber from 'bignumber.js';
@@ -16,7 +23,7 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { getSessionExerciseEditorHref } from '@/components/smart/session-exercise-editor';
 import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
 import { useRouter } from 'expo-router';
-import { useAppSelectorWithArg } from '@/store';
+import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
@@ -36,10 +43,30 @@ export default function SessionComponent(props: {
   const { getState } = useStore();
   const { push } = useRouter();
   const session = useAppSelectorWithArg(selectCurrentSession, props.target);
+  const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
   const dispatch = useDispatch();
   const recentlyCompletedExercises = useAppSelectorWithArg(selectRecentlyCompletedExercises, 10);
   const resetTimer = (time: OffsetDateTime | undefined) => {
-    updateSession((s) => s.with({ restTimerStartTime: time }));
+    updateSession((s) => s.with({ restTimer: time ? new RestTimerModel(time) : undefined }));
+  };
+  const dismissTimer = () => {
+    withLatestSession((latestSession) => {
+      const dismissedTimer = latestSession.restTimer;
+      resetTimer(undefined);
+      dispatch(
+        showSnackbar({
+          text: t('rest_timer.dismissed.message'),
+          action: t('generic.undo.button'),
+          dispatchAction: setCurrentSession({
+            session: latestSession.with({ restTimer: dismissedTimer }),
+            target: props.target,
+          }),
+        }),
+      );
+    });
+  };
+  const toggleRestTimerPaused = () => {
+    updateSession((s) => s.with({ restTimer: s.restTimer?.togglePause(OffsetDateTime.now()) }));
   };
   const withLatestSession = (callback: (session: Session) => void) => {
     // Ensure we always have the latest session, allows us to call callbacks consecutively
@@ -174,12 +201,13 @@ export default function SessionComponent(props: {
   // We only want to show the rest timer - which is primarily for weights
   // When we are currently working out, and the exercises we are on (or were just on) are weighted - rests for cardio aren't implemented
   const showRestTimer =
+    restTimersEnabled &&
     props.target === 'workoutSession' &&
     nextExercise &&
     nextExercise instanceof RecordedWeightedExercise &&
     lastExercise &&
     lastExercise instanceof RecordedWeightedExercise &&
-    session.restTimerStartTime;
+    session.restTimer;
   const lastSetFailed =
     lastRecordedSet?.set &&
     lastExercise &&
@@ -189,9 +217,12 @@ export default function SessionComponent(props: {
     <View style={{ flex: 1 }}>
       <RestTimer
         rest={lastExercise.blueprint.restBetweenSets}
-        startTime={session.restTimerStartTime}
+        startTime={session.restTimer.startedAt}
+        pausedAt={session.restTimer.pausedAt}
         failed={!!lastSetFailed}
-        resetTimer={() => resetTimer(OffsetDateTime.now())}
+        onRestart={() => resetTimer(OffsetDateTime.now())}
+        onDismiss={dismissTimer}
+        onTogglePause={toggleRestTimerPaused}
       />
     </View>
   ) : undefined;
@@ -227,7 +258,7 @@ export default function SessionComponent(props: {
           <Text variant="bodyMedium">
             <T keyName="workout.total_weight_lifted.label" />
           </Text>
-          <WeightFormat fontWeight="bold" color="primary" weight={session.totalWeightLifted} decimalPlaces={0}/>
+          <WeightFormat fontWeight="bold" color="primary" weight={session.totalWeightLifted} decimalPlaces={0} />
         </View>
         <View
           style={{

@@ -9,6 +9,9 @@ on:
       - app/**
       - .github/**
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

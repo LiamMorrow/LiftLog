@@ -3,22 +3,38 @@ import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Rest } from '@/models/blueprint-models';
 import { Duration, OffsetDateTime } from '@js-joda/core';
 import Svg, { Path } from 'react-native-svg';
-import { Animated, View, ViewStyle } from 'react-native';
+import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
+import { GlassView, isLiquidGlassAvailable, type GlassStyle } from 'expo-glass-effect';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
-import Holdable from '@/components/presentation/foundation/holdable';
+import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { Jiggler } from '@/components/presentation/foundation/jiggler';
+import { useTranslate } from '@tolgee/react';
 
 interface RestTimerProps {
   rest: Rest;
   startTime: OffsetDateTime;
+  pausedAt: OffsetDateTime | undefined;
   failed: boolean;
   style?: ViewStyle;
-  resetTimer: () => void;
+  onRestart: () => void;
+  onDismiss: () => void;
+  onTogglePause: () => void;
 }
 
-export default function RestTimer({ rest, startTime, failed, style, resetTimer }: RestTimerProps) {
+export default function RestTimer({
+  rest,
+  startTime,
+  pausedAt,
+  failed,
+  style,
+  onRestart,
+  onDismiss,
+  onTogglePause,
+}: RestTimerProps) {
   const { colors } = useAppTheme();
+  const { t } = useTranslate();
+  const paused = pausedAt !== undefined;
   const isSameMinMaxRest = rest.minRest.equals(rest.maxRest);
   const [jiggled, setJiggled] = useState([] as string[]);
 
@@ -27,7 +43,7 @@ export default function RestTimer({ rest, startTime, failed, style, resetTimer }
   }, [startTime]);
 
   const getTimerState = useCallback(() => {
-    const now = OffsetDateTime.now();
+    const now = pausedAt ?? OffsetDateTime.now();
     const diffMs = Duration.between(startTime, now);
     const timeSinceStart = formatTimeSpan(diffMs);
     const firstProgressBarProgress = failed
@@ -53,7 +69,7 @@ export default function RestTimer({ rest, startTime, failed, style, resetTimer }
       textColor,
       backgroundColor,
     };
-  }, [startTime, rest, failed, isSameMinMaxRest]);
+  }, [startTime, pausedAt, rest, failed, isSameMinMaxRest]);
 
   const [timerState, setTimerState] = useState(getTimerState());
   const [jiggling, setJiggling] = useState(false);
@@ -86,12 +102,7 @@ export default function RestTimer({ rest, startTime, failed, style, resetTimer }
   }, [getTimerState, triggerJiggle]);
 
   return (
-    <Holdable
-      onLongPress={() => {
-        resetTimer();
-        triggerJiggle('reset');
-      }}
-    >
+    <View style={{ alignItems: 'center', gap: spacing[2] }}>
       <Jiggler
         testID="rest-timer"
         jiggling={jiggling}
@@ -102,13 +113,18 @@ export default function RestTimer({ rest, startTime, failed, style, resetTimer }
             pointerEvents: 'none',
             overflow: 'hidden',
             borderRadius: pillHeight,
-            backgroundColor: colors[timerState.backgroundColor],
             alignItems: 'center',
             justifyContent: 'center',
           },
           style,
         ]}
       >
+        <GlassBackground
+          radius={pillHeight}
+          color={colors[timerState.backgroundColor]}
+          glassEffectStyle="clear"
+          tintColor={withAlpha(colors[timerState.backgroundColor], 0.85)}
+        />
         <View
           style={{
             position: 'absolute',
@@ -147,8 +163,78 @@ export default function RestTimer({ rest, startTime, failed, style, resetTimer }
           {timerState.timeSinceStart}
         </SurfaceText>
       </Jiggler>
-    </Holdable>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          overflow: 'hidden',
+          borderRadius: pillHeight,
+        }}
+      >
+        <GlassBackground radius={pillHeight} color={colors.surfaceContainer} />
+        <IconButton
+          icon="close"
+          iconColor={colors.onSurface}
+          accessibilityLabel={t('rest_timer.dismiss')}
+          onPress={onDismiss}
+        />
+        <IconButton
+          icon={paused ? 'playArrow' : 'pause'}
+          iconColor={colors.onSurface}
+          animated
+          accessibilityLabel={paused ? t('rest_timer.resume') : t('rest_timer.pause')}
+          onPress={onTogglePause}
+        />
+        <IconButton
+          icon="replay"
+          iconColor={colors.onSurface}
+          accessibilityLabel={t('rest_timer.restart')}
+          onPress={() => {
+            onRestart();
+            triggerJiggle('reset');
+          }}
+        />
+      </View>
+    </View>
   );
+}
+
+function GlassBackground({
+  radius,
+  color,
+  tintColor,
+  glassEffectStyle = 'regular',
+}: {
+  radius: number;
+  color: string;
+  tintColor?: string;
+  glassEffectStyle?: GlassStyle;
+}) {
+  const { colorScheme } = useAppTheme();
+  if (!isLiquidGlassAvailable()) {
+    return (
+      <View
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFill, { borderRadius: radius, backgroundColor: color }]}
+      />
+    );
+  }
+  return (
+    <GlassView
+      pointerEvents="none"
+      style={[StyleSheet.absoluteFill, { borderRadius: radius }]}
+      glassEffectStyle={glassEffectStyle}
+      colorScheme={colorScheme}
+      tintColor={tintColor}
+    />
+  );
+}
+
+function withAlpha(hex: string, alpha: number): string {
+  const a = Math.round(alpha * 255)
+    .toString(16)
+    .padStart(2, '0');
+  return `${hex}${a}`;
 }
 
 function formatTimeSpan(ms: Duration): string {

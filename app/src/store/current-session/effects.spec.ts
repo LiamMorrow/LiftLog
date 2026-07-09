@@ -15,11 +15,13 @@ import {
 import { RootState } from '@/store/store';
 import { applyCurrentSessionEffects } from '@/store/current-session/effects';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
-import { EmptySession, Session } from '@/models/session-models';
+import { EmptySession, RestTimer, Session } from '@/models/session-models';
 import { addUnpublishedSessionId } from '@/store/feed';
 import { setStatsIsDirty } from '@/store/stats';
 import { addStoredSession } from '@/store/stored-sessions';
 import { fetchUpcomingSessions } from '@/store/program';
+import { setRestTimersEnabled } from '@/store/settings';
+import { WorkoutUpdatedEvent } from '@/models/workout-worker-messages';
 import { SessionBlueprint } from '@/models/blueprint-models';
 import { RecordedWeightedExercise, PotentialSet } from '@/models/session-models/recorded-weighted-exercise';
 import { Weight } from '@/models/weight';
@@ -45,7 +47,7 @@ function sessionWithRestTimer(restTimerStartTime: OffsetDateTime): Session {
     [exercise],
     EmptySession.date,
     undefined,
-    restTimerStartTime,
+    new RestTimer(restTimerStartTime),
   );
 }
 
@@ -356,13 +358,20 @@ describe('current-session effects', () => {
   // ─── currentWorkoutSessionUpdated ─────────────────────────────────────────────
 
   describe('applyCurrentSessionEffects — currentWorkoutSessionUpdated', () => {
-    function testBed() {
+    function testBed(settings: Partial<RootState['settings']> = { restNotifications: false }) {
       const bed = createAddEffectTestBed({
-        initialState: { settings: { restNotifications: false } } as Partial<RootState>,
+        initialState: { settings } as Partial<RootState>,
         services: { keyValueStore: makeKeyValueStore(), workoutWorkerService: { broadcast: vi.fn() } },
       });
       applyCurrentSessionEffects(bed.addEffect);
       return bed;
+    }
+
+    function broadcastUpdateEvents(bed: ReturnType<typeof createAddEffectTestBed>): WorkoutUpdatedEvent[] {
+      return bed.dispatchedActions
+        .filter((a) => a.type === broadcastWorkoutEvent.type)
+        .map((a) => (a as ReturnType<typeof broadcastWorkoutEvent>).payload)
+        .filter((p): p is WorkoutUpdatedEvent => p.type === 'WorkoutUpdatedEvent');
     }
 
     it('broadcasts start and update events when a workout begins', async () => {
@@ -376,6 +385,27 @@ describe('current-session effects', () => {
       expect(events).toContain('WorkoutUpdatedEvent');
     });
 
+    it('includes rest timer info in update events when rest timers are enabled', async () => {
+      const bed = testBed({ restTimersEnabled: true });
+      const after = sessionWithRestTimer(OffsetDateTime.of(2025, 4, 5, 10, 0, 0, 0, ZoneOffset.UTC));
+
+      await bed.dispatchHandled(currentWorkoutSessionUpdated({ before: undefined, after }));
+
+      const [update] = broadcastUpdateEvents(bed);
+      expect(update?.restTimerInfo).toBeDefined();
+    });
+
+    it('omits rest timer info from update events when rest timers are disabled', async () => {
+      const bed = testBed({ restTimersEnabled: false });
+      const after = sessionWithRestTimer(OffsetDateTime.of(2025, 4, 5, 10, 0, 0, 0, ZoneOffset.UTC));
+
+      await bed.dispatchHandled(currentWorkoutSessionUpdated({ before: undefined, after }));
+
+      const [update] = broadcastUpdateEvents(bed);
+      expect(update).toBeDefined();
+      expect(update?.restTimerInfo).toBeUndefined();
+    });
+
     it('broadcasts an end event when a workout is cleared', async () => {
       const bed = testBed();
       const before = EmptySession.with({ id: 'x' });
@@ -383,6 +413,50 @@ describe('current-session effects', () => {
       await bed.dispatchHandled(currentWorkoutSessionUpdated({ before, after: undefined }));
 
       expect(broadcastEventTypes(bed)).toContain('WorkoutEndedEvent');
+    });
+
+    function notifyDispatched(bed: ReturnType<typeof createAddEffectTestBed>): boolean {
+      return bed.dispatchedActions.some((a) => a.type === notifySetTimer.type);
+    }
+
+    it('clears the notification by dispatching notifySetTimer when the rest timer is paused', async () => {
+      const bed = testBed();
+      const before = sessionWithRestTimer(OffsetDateTime.now());
+      const after = before.with({ restTimer: before.restTimer!.pause(OffsetDateTime.now()) });
+
+      await bed.dispatchHandled(currentWorkoutSessionUpdated({ before, after }));
+
+      expect(notifyDispatched(bed)).toBe(true);
+    });
+
+    it('clears the notification by dispatching notifySetTimer when the rest timer is dismissed', async () => {
+      const bed = testBed();
+      const before = sessionWithRestTimer(OffsetDateTime.now());
+      const after = before.with({ restTimer: undefined });
+
+      await bed.dispatchHandled(currentWorkoutSessionUpdated({ before, after }));
+
+      expect(notifyDispatched(bed)).toBe(true);
+    });
+
+    it('reschedules by dispatching notifySetTimer when the rest timer is resumed', async () => {
+      const bed = testBed();
+      const running = sessionWithRestTimer(OffsetDateTime.now());
+      const before = running.with({ restTimer: running.restTimer!.pause(OffsetDateTime.now()) });
+      const after = before.with({ restTimer: before.restTimer!.resume(OffsetDateTime.now()) });
+
+      await bed.dispatchHandled(currentWorkoutSessionUpdated({ before, after }));
+
+      expect(notifyDispatched(bed)).toBe(true);
+    });
+
+    it('does not dispatch notifySetTimer when the rest timer is unchanged', async () => {
+      const bed = testBed();
+      const session = sessionWithRestTimer(OffsetDateTime.now());
+
+      await bed.dispatchHandled(currentWorkoutSessionUpdated({ before: session, after: session }));
+
+      expect(notifyDispatched(bed)).toBe(false);
     });
   });
 
@@ -419,7 +493,7 @@ describe('current-session effects', () => {
       const future = OffsetDateTime.now().plusHours(1);
       const testBed = createAddEffectTestBed({
         initialState: {
-          settings: { restNotifications: true },
+          settings: { restNotifications: true, restTimersEnabled: true },
           currentSession: { workoutSession: sessionWithRestTimer(future) },
         } as Partial<RootState>,
         services: {
@@ -452,6 +526,111 @@ describe('current-session effects', () => {
       await testBed.dispatchHandled(notifySetTimer());
 
       expect(scheduleNextSetNotification).not.toHaveBeenCalled();
+    });
+
+    it('notifySetTimer does not schedule when rest timers are disabled', async () => {
+      const scheduleNextSetNotification = vi.fn();
+      const testBed = createAddEffectTestBed({
+        initialState: {
+          settings: { restNotifications: true, restTimersEnabled: false },
+          currentSession: { workoutSession: sessionWithRestTimer(OffsetDateTime.now().plusHours(1)) },
+        } as Partial<RootState>,
+        services: {
+          keyValueStore: makeKeyValueStore(),
+          notificationService: { scheduleNextSetNotification, clearSetTimerNotification: vi.fn() },
+        },
+      });
+      applyCurrentSessionEffects(testBed.addEffect);
+
+      await testBed.dispatchHandled(notifySetTimer());
+
+      expect(scheduleNextSetNotification).not.toHaveBeenCalled();
+    });
+
+    it('notifySetTimer clears without scheduling when there is no active rest timer', async () => {
+      const scheduleNextSetNotification = vi.fn();
+      const clearSetTimerNotification = vi.fn();
+      const testBed = createAddEffectTestBed({
+        initialState: {
+          settings: { restNotifications: true, restTimersEnabled: true },
+          currentSession: { workoutSession: undefined },
+        } as Partial<RootState>,
+        services: {
+          keyValueStore: makeKeyValueStore(),
+          notificationService: { scheduleNextSetNotification, clearSetTimerNotification },
+        },
+      });
+      applyCurrentSessionEffects(testBed.addEffect);
+
+      await testBed.dispatchHandled(notifySetTimer());
+
+      expect(clearSetTimerNotification).toHaveBeenCalled();
+      expect(scheduleNextSetNotification).not.toHaveBeenCalled();
+    });
+
+    it('notifySetTimer clears without scheduling when the rest timer is paused', async () => {
+      const scheduleNextSetNotification = vi.fn();
+      const clearSetTimerNotification = vi.fn();
+      const running = sessionWithRestTimer(OffsetDateTime.now().plusHours(1));
+      const paused = running.with({ restTimer: running.restTimer!.pause(OffsetDateTime.now()) });
+      const testBed = createAddEffectTestBed({
+        initialState: {
+          settings: { restNotifications: true, restTimersEnabled: true },
+          currentSession: { workoutSession: paused },
+        } as Partial<RootState>,
+        services: {
+          keyValueStore: makeKeyValueStore(),
+          notificationService: { scheduleNextSetNotification, clearSetTimerNotification },
+        },
+      });
+      applyCurrentSessionEffects(testBed.addEffect);
+
+      await testBed.dispatchHandled(notifySetTimer());
+
+      expect(clearSetTimerNotification).toHaveBeenCalled();
+      expect(scheduleNextSetNotification).not.toHaveBeenCalled();
+    });
+
+    it('notifySetTimer clears without scheduling when the rest timer has already ended', async () => {
+      const scheduleNextSetNotification = vi.fn();
+      const clearSetTimerNotification = vi.fn();
+      const testBed = createAddEffectTestBed({
+        initialState: {
+          settings: { restNotifications: true, restTimersEnabled: true },
+          currentSession: { workoutSession: sessionWithRestTimer(OffsetDateTime.now().minusHours(1)) },
+        } as Partial<RootState>,
+        services: {
+          keyValueStore: makeKeyValueStore(),
+          notificationService: { scheduleNextSetNotification, clearSetTimerNotification },
+        },
+      });
+      applyCurrentSessionEffects(testBed.addEffect);
+
+      await testBed.dispatchHandled(notifySetTimer());
+
+      expect(clearSetTimerNotification).toHaveBeenCalled();
+      expect(scheduleNextSetNotification).not.toHaveBeenCalled();
+    });
+
+    it('setRestTimersEnabled rebroadcasts the workout without rest timer info when disabled', async () => {
+      const broadcast = vi.fn();
+      const testBed = createAddEffectTestBed({
+        initialState: {
+          settings: { restNotifications: true, restTimersEnabled: false },
+          currentSession: {
+            workoutSession: sessionWithRestTimer(OffsetDateTime.of(2025, 4, 5, 10, 0, 0, 0, ZoneOffset.UTC)),
+          },
+        } as Partial<RootState>,
+        services: { keyValueStore: makeKeyValueStore(), workoutWorkerService: { broadcast } },
+      });
+      applyCurrentSessionEffects(testBed.addEffect);
+
+      await testBed.dispatchHandled(setRestTimersEnabled(false));
+
+      testBed.getDispatchedAction(notifySetTimer);
+      const update = testBed.getDispatchedAction(broadcastWorkoutEvent).payload as WorkoutUpdatedEvent;
+      expect(update.type).toBe('WorkoutUpdatedEvent');
+      expect(update.restTimerInfo).toBeUndefined();
     });
   });
 

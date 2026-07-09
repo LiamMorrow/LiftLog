@@ -14,9 +14,13 @@ on:
         description: "Commit SHA to checkout (optional, defaults to the branch head)"
         required: false
         type: string
+permissions:
+  contents: read
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Upload APK to the GitHub release
     env:
       EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY: ${{secrets.EXPO_REVENUECAT_GOOGLE_API_KEY}}
     steps:
@@ -41,7 +45,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Setup Android SDK Tools
-        uses: android-actions/setup-android@v3.2.2
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3.2.2
 
       - name: Install
         run: npm ci
@@ -68,7 +72,7 @@ jobs:
         run: echo "${ANDROID_KEYSTORE_BASE64}" | base64 -d > liftlog.keystore
         working-directory: ./app/android/app
 
-      - uses: mlilback/build-number@v1
+      - uses: mlilback/build-number@81a5eb0abae9b77d036138284ba1094d49acbc32 # v1
         name: Set build number
         id: buildNumber
         with:
@@ -76,21 +80,26 @@ jobs:
           run-id: ${{github.run_number}}
 
       - name: Build Android AAB
+        env:
+          ORG_GRADLE_PROJECT_ANDROID_UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          ORG_GRADLE_PROJECT_ANDROID_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          DISPLAY_VERSION: ${{ inputs.version_code }}
+          BUILD_NUMBER: ${{ steps.buildNumber.outputs.build-number }}
         run: ./gradlew bundleRelease
           -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
           -PANDROID_UPLOAD_STORE_FILE=liftlog.keystore
-          '-PANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}'
           -PANDROID_UPLOAD_KEY_ALIAS=liftlog
-          '-PANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}'
-          '-PDISPLAY_VERSION=${{ inputs.version_code }}'
-          '-PBUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}'
+          "-PDISPLAY_VERSION=$DISPLAY_VERSION"
+          "-PBUILD_NUMBER=$BUILD_NUMBER"
         working-directory: ./app/android
 
       - name: Create release notes directory
         run: mkdir -p release_notes
 
       - name: Write release notes
-        run: echo "${{ inputs.release_notes }}" > release_notes/whatsnew-en-AU
+        env:
+          RELEASE_NOTES: ${{ inputs.release_notes }}
+        run: printf '%s' "$RELEASE_NOTES" > release_notes/whatsnew-en-AU
 
       - name: Upload AAB to artifacts
         uses: actions/upload-artifact@v7
@@ -99,7 +108,7 @@ jobs:
           path: app/android/app/build/outputs/bundle/release/app-release.aab
 
       - name: Upload Android Release to Play Store
-        uses: r0adkll/upload-google-play@v1.1.3
+        uses: r0adkll/upload-google-play@935ef9c68bb393a8e6116b1575626a7f5be3a7fb # v1.1.3
         with:
           packageName: com.limajuice.liftlog
           releaseFiles: app/android/app/build/outputs/bundle/release/app-release.aab
@@ -109,18 +118,21 @@ jobs:
           whatsNewDirectory: release_notes
 
       - name: Build Android APK
+        env:
+          ORG_GRADLE_PROJECT_ANDROID_UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          ORG_GRADLE_PROJECT_ANDROID_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          DISPLAY_VERSION: ${{ inputs.version_code }}
+          BUILD_NUMBER: ${{ steps.buildNumber.outputs.build-number }}
         run: ./gradlew assembleRelease
           -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
           -PANDROID_UPLOAD_STORE_FILE=liftlog.keystore
-          '-PANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}'
           -PANDROID_UPLOAD_KEY_ALIAS=liftlog
-          '-PANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}'
-          '-PDISPLAY_VERSION=${{ inputs.version_code }}'
-          '-PBUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}'
+          "-PDISPLAY_VERSION=$DISPLAY_VERSION"
+          "-PBUILD_NUMBER=$BUILD_NUMBER"
         working-directory: ./app/android
 
       - name: Upload APK to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           files: app/android/app/build/outputs/apk/release/app-release.apk
           tag_name: ${{ inputs.version_code }}

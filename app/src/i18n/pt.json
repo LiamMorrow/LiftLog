@@ -299,7 +299,7 @@
   "rest.max.label": "Descanso máximo",
   "rest.medium.label": "Médio",
   "rest.min.label": "Descanso mínimo",
-  "rest.notifications.subtitle": "Exibir uma notificação quando o timer de descanso terminar",
+  "rest.notifications.subtitle": "Exibir uma notificação quando o timer de descanso terminar, mesmo se o aplicativo estiver em segundo plano",
   "rest.notifications.title": "Notificações de descanso",
   "rest.rest.label": "Descanso",
   "rest.short.label": "Curto",
@@ -317,8 +317,8 @@
   "settings.first_day_of_week.subtitle": "Definir o primeiro dia da semana para o calendário",
   "settings.localisation.subtitle": "Defina o idioma e as unidades de peso padrão do LiftLog",
   "settings.localisation.title": "Idioma e Região",
-  "settings.notifications.subtitle": "Ajustar as configurações de notificação para os timers de descanso",
-  "settings.notifications.title": "Notificações",
+  "settings.notifications.subtitle": "Controle os timers de descanso e as notificações exibidas quando o descanso termina",
+  "settings.notifications.title": "Descanso e notificações",
   "settings.pro_features.title": "Recursos Pro",
   "settings.reset_tips.button": "Redefinir dicas",
   "settings.saved.message": "Configurações salvas",
@@ -436,5 +436,7 @@
   "workout_persistent_notification.min_rest_over.message": "Fim do descanso mínimo!",
   "workout_persistent_notification.rest_break.message": "Faça uma pausa para descanso",
   "workout_persistent_notification.start_now.message": "Iniciar agora!",
-  "workout_persistent_notification.start_soon.message": "Próxima série em instantes"
+  "workout_persistent_notification.start_soon.message": "Próxima série em instantes",
+  "workout.rest_timers.label": "Timers de descanso",
+  "workout.rest_timers.subtitle": "Cronometre automaticamente o descanso entre as séries. Desativar isso oculta todos os timers de descanso e desativa as notificações de descanso"
 }

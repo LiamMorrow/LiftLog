@@ -66,7 +66,7 @@ class WorkoutUpdatedHandler(
         val message = messageTemplate.replace(
             "\$WEIGHT$", formatWeight(event.totalWeightLifted)
         ).replace(
-            "\$TIME$", formatDuration(event.workoutDuration)
+            "\$TIME$", formatDuration(Duration.parseIsoString(event.workoutDuration))
         )
 
         val notifBuilder = notificationManager.createWorkoutNotificationBuilder()
@@ -178,7 +178,7 @@ class WorkoutUpdatedHandler(
             return
         }
         timer.updateCallback {
-            val currentDuration = cardioTimerInfo.currentDuration
+            val currentDuration = Duration.parseIsoString(cardioTimerInfo.currentDuration)
             val timeStartSecs =
                 cardioTimerInfo.currentBlockStartTime.epochSeconds - currentDuration.toInt(SECONDS)
             val now = Clock.System.now().epochSeconds
@@ -231,7 +231,7 @@ class WorkoutUpdatedHandler(
                 set = exercise.sets[setIndex.toInt()]
             }
             return when (val cardioTarget = set.blueprint.target) {
-                is TimeCardioTarget -> formatDuration(cardioTarget.value)
+                is TimeCardioTarget -> formatDuration(Duration.parseIsoString(cardioTarget.value))
 
                 is DistanceCardioTarget -> "${cardioTarget.value.value} ${cardioTarget.value.unit}"
                 else -> ""

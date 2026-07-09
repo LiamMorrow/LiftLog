@@ -301,7 +301,7 @@
   "rest.max.label": "최대 휴식",
   "rest.medium.label": "보통",
   "rest.min.label": "최소 휴식",
-  "rest.notifications.subtitle": "휴식 타이머 종료 시 알림 표시",
+  "rest.notifications.subtitle": "앱이 백그라운드에 있어도 휴식 타이머가 끝나면 알림을 표시합니다",
   "rest.notifications.title": "휴식 알림",
   "rest.rest.label": "휴식",
   "rest.short.label": "짧게",
@@ -319,8 +319,8 @@
   "settings.first_day_of_week.subtitle": "캘린더의 시작 요일 설정",
   "settings.localisation.subtitle": "언어 및 기본 무게 단위 설정",
   "settings.localisation.title": "지역 설정",
-  "settings.notifications.subtitle": "휴식 타이머 알림 설정",
-  "settings.notifications.title": "알림",
+  "settings.notifications.subtitle": "휴식 타이머와 휴식이 끝났을 때 표시되는 알림을 제어합니다",
+  "settings.notifications.title": "휴식 및 알림",
   "settings.pro_features.title": "Pro 기능",
   "settings.reset_tips.button": "팁 초기화",
   "settings.saved.message": "설정 저장됨",
@@ -468,4 +468,6 @@
   "ai.share_program.button": "프로그램 공유하기",
   "ai.update_required.title": "업데이트 필요",
   "ai.update_required.explanation": "현재 버전에서는 더 이상 운동 루틴을 생성할 수 없습니다. 계속하시려면 최신 버전으로 업데이트해 주세요."
+  "workout.rest_timers.label": "휴식 타이머",
+  "workout.rest_timers.subtitle": "세트 사이의 휴식 시간을 자동으로 측정합니다. 이 기능을 끄면 모든 휴식 타이머가 숨겨지고 휴식 알림이 비활성화됩니다"
 }

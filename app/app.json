@@ -33,6 +33,7 @@
       "./plugins/override-health-connect-min-version.js",
       "./plugins/android-signing.js",
       "./plugins/android-gradle-properties.js",
+      "./plugins/android-react-native-feature-flags.js",
       [
         "expo-notifications",
         {

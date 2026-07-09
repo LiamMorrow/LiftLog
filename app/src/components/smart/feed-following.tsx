@@ -5,8 +5,9 @@ import { FeedUser } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import { fetchInboxItems, selectFeedFollowing, unfollowFeedUser } from '@/store/feed';
 import { T, useTranslate } from '@tolgee/react';
-import React, { useState } from 'react';
-import { List, Menu } from 'react-native-paper';
+import React from 'react';
+import { List } from 'react-native-paper';
+import Menu from '@/components/presentation/foundation/menu';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { LegendList } from '@legendapp/list';
@@ -47,26 +48,22 @@ function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
     dispatch(unfollowFeedUser({ feedUser: props.user }));
   };
   const { t } = useTranslate();
-  const [menuVisible, setMenuVisible] = useState(false);
   return (
     <List.Item
       title={props.user.name || 'Anonymous user'}
       description={props.user.type === 'FollowedFeedUser' ? undefined : t('generic.awaiting_response.label')}
       right={() => (
         <Menu
-          visible={menuVisible}
-          onDismiss={() => setMenuVisible(false)}
-          anchor={<IconButton testID="following-more-btn" onPress={() => setMenuVisible(true)} icon={'moreHoriz'} />}
-        >
-          <Menu.Item
-            onPress={() => {
-              unfollow();
-              setMenuVisible(false);
-            }}
-            leadingIcon={'personRemove'}
-            title={t('feed.unfollow.button')}
-          />
-        </Menu>
+          trigger={(open) => <IconButton testID="following-more-btn" onPress={open} icon={'moreHoriz'} />}
+          items={[
+            {
+              label: t('feed.unfollow.button'),
+              icon: 'personRemove',
+              systemImage: 'person.badge.minus',
+              onPress: unfollow,
+            },
+          ]}
+        />
       )}
     />
   );

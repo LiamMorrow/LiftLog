@@ -66,7 +66,8 @@ export function getTimerInfo(session: Session): RestTimerInfo | undefined {
   const lastExercise = session.lastExercise;
   const nextExercise = session.nextExercise;
   if (
-    !session.restTimerStartTime ||
+    !session.restTimer ||
+    session.restTimer.isPaused ||
     !lastExercise ||
     !nextExercise ||
     !(nextExercise instanceof RecordedWeightedExercise) ||
@@ -96,8 +97,8 @@ export function getTimerInfo(session: Session): RestTimerInfo | undefined {
     return;
   }
   return {
-    startedAt: toInstantJson(session.restTimerStartTime.toInstant()),
-    partiallyEndAt: toInstantJson(session.restTimerStartTime.plus(rest.partialRest).toInstant()),
-    endAt: toInstantJson(session.restTimerStartTime.plus(rest.fullRest).toInstant()),
+    startedAt: toInstantJson(session.restTimer.startedAt.toInstant()),
+    partiallyEndAt: toInstantJson(session.restTimer.startedAt.plus(rest.partialRest).toInstant()),
+    endAt: toInstantJson(session.restTimer.startedAt.plus(rest.fullRest).toInstant()),
   };
 }

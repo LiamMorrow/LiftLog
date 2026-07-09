@@ -194,8 +194,8 @@
   "rest.max.label": "Recupero Massimo",
   "rest.medium.label": "Medio",
   "rest.min.label": "Recupero Minimo",
-  "rest.notifications.subtitle": "Mostra una notifica quando il timer del recupero giunge al termine",
-  "rest.notifications.title": "Notifche recupero",
+  "rest.notifications.subtitle": "Mostra una notifica quando il timer del recupero giunge al termine, anche se l'app è in background",
+  "rest.notifications.title": "Notifiche di recupero",
   "rest.short.label": "Corto",
   "rest.singular.label": "Recupero <em>{time}</em>",
   "settings.app_configuration.subtitle": "Regola tema e altre impostazioni varie",
@@ -209,8 +209,8 @@
   "settings.feature_request.title": "Suggerisci una funzione",
   "settings.localisation.subtitle": "Imposta la lingua e le unità di peso predefinite di LiftLog",
   "settings.localisation.title": "Localizzazione",
-  "settings.notifications.subtitle": "Modifica le impostazioni delle notifiche dei timer di recupero",
-  "settings.notifications.title": "Notifiche",
+  "settings.notifications.subtitle": "Controlla i timer di recupero e le notifiche mostrate al termine del recupero",
+  "settings.notifications.title": "Recupero e notifiche",
   "settings.pro_features.title": "Funzionalità Pro",
   "settings.reset_tips.button": "Reimposta suggerimenti",
   "settings.saved.message": "Impostazioni salvate",
@@ -281,5 +281,7 @@
   "workout.upcoming.title": "Prossimi Allenamenti",
   "workout.update_existing.confirm.body": "Vuoi aggiornare l'allenamento <em>{name}</em>, o aggiungerne uno nuovo?",
   "workout.workout.label": "Allenamento",
-  "workout.workout_lowercase.label": "Allenamento"
+  "workout.workout_lowercase.label": "Allenamento",
+  "workout.rest_timers.label": "Timer di recupero",
+  "workout.rest_timers.subtitle": "Cronometra automaticamente il recupero tra le serie. Disattivandolo, tutti i timer di recupero vengono nascosti e le notifiche di recupero disattivate"
 }

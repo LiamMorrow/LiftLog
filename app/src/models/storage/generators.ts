@@ -209,7 +209,7 @@ export const SessionGenerator = fc
       blueprint: SessionBlueprintGenerator,
       date: LocalDateGenerator,
       bodyweight: fc.option(WeightGenerator, { nil: undefined }),
-      restTimerStartTime: fc.constant(undefined),
+      restTimer: fc.constant(undefined),
     }),
     fc.array(fc.oneof(RecordedWeightedExerciseGenerator, RecordedCardioExerciseGenerator), { maxLength: 10 }),
   )
@@ -223,6 +223,6 @@ export const SessionGenerator = fc
         exercises,
         session.date,
         session.bodyweight,
-        session.restTimerStartTime,
+        session.restTimer,
       ),
   );

@@ -211,7 +211,7 @@
   "rest.max.label": "Descanso máximo",
   "rest.medium.label": "Medio",
   "rest.min.label": "Descanso mínimo",
-  "rest.notifications.subtitle": "Mostrar una notificación cuando el reloj de descanso se haya cumplido",
+  "rest.notifications.subtitle": "Mostrar una notificación cuando el cronómetro de descanso termine, incluso si la aplicación está en segundo plano",
   "rest.notifications.title": "Notificaciones de descanso",
   "rest.short.label": "Corto",
   "rest.singular.label": "Descanse <em>{time}</em>",
@@ -226,8 +226,8 @@
   "settings.feature_request.title": "Solicitar funcionalidad",
   "settings.localisation.subtitle": "Configura el idioma de LiftLog y las unidades de peso predeterminadas",
   "settings.localisation.title": "Localización",
-  "settings.notifications.subtitle": "Ajustar configuración de notificaciones para los cronómetros de descanso",
-  "settings.notifications.title": "Notificaciones",
+  "settings.notifications.subtitle": "Controla los cronómetros de descanso y las notificaciones que se muestran cuando termina el descanso",
+  "settings.notifications.title": "Descanso y notificaciones",
   "settings.pro_features.title": "Funcionalidades Pro",
   "settings.reset_tips.button": "Reiniciar consejos",
   "settings.saved.message": "Ajustes guardados",
@@ -398,5 +398,7 @@
   "stats.exercise.reps_breakdown.title": "Desglose de las Repes",
   "stats.exercise.max_weight.label": "Peso Máximo",
   "stats.exercise.total_lifted.label": "Total levantado",
-  "stats.exercise.sets_per_week.label": "Prom. series por semana"
+  "stats.exercise.sets_per_week.label": "Prom. series por semana",
+  "workout.rest_timers.label": "Cronómetros de descanso",
+  "workout.rest_timers.subtitle": "Cronometra automáticamente tu descanso entre series. Desactivar esto oculta todos los cronómetros de descanso y desactiva las notificaciones de descanso"
 }

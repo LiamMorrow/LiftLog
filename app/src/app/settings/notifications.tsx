@@ -4,7 +4,7 @@ import { toDurationJSON } from '@/models/storage/versions/latest';
 import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
 import { broadcastWorkoutEvent, selectCurrentSession } from '@/store/current-session';
 import { getCardioTimerInfo, getCurrentExerciseDetails, getTimerInfo } from '@/store/current-session/helpers';
-import { setRestNotifications } from '@/store/settings';
+import { setRestNotifications, setRestTimersEnabled } from '@/store/settings';
 import { Duration } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
@@ -37,7 +37,7 @@ export default function AppConfiguration() {
                 broadcastWorkoutEvent({
                   type: 'WorkoutUpdatedEvent',
                   workout: currentWorkout.toJSON(),
-                  restTimerInfo: getTimerInfo(currentWorkout),
+                  restTimerInfo: settings.restTimersEnabled ? getTimerInfo(currentWorkout) : undefined,
                   cardioTimerInfo: getCardioTimerInfo(currentWorkout),
                   currentExerciseDetails: getCurrentExerciseDetails(currentWorkout),
                   totalWeightLifted: currentWorkout.totalWeightLifted.toJSON(),
@@ -46,6 +46,13 @@ export default function AppConfiguration() {
               );
             }
           }}
+        />
+        <ListSwitch
+          testID="setRestTimersEnabled"
+          headline={<T keyName="workout.rest_timers.label" />}
+          supportingText={<T keyName="workout.rest_timers.subtitle" />}
+          value={settings.restTimersEnabled}
+          onValueChange={(value) => dispatch(setRestTimersEnabled(value))}
         />
       </List.Section>
     </FullHeightScrollView>

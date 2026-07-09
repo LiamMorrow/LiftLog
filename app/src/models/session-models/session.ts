@@ -21,6 +21,7 @@ import {
   fromRecordedExerciseJSON,
 } from '@/models/session-models/recorded-exercise';
 import { PotentialSet, RecordedWeightedExercise } from '@/models/session-models/recorded-weighted-exercise';
+import { RestTimer } from '@/models/session-models/rest-timer';
 import { IndexOutOfBoundsError } from '@/utils/index-out-of-bounds';
 
 export class Session {
@@ -30,7 +31,7 @@ export class Session {
     readonly recordedExercises: RecordedExercise[],
     readonly date: LocalDate,
     readonly bodyweight: Weight | undefined,
-    readonly restTimerStartTime: OffsetDateTime | undefined,
+    readonly restTimer: RestTimer | undefined,
   ) {}
   get duration(): Duration | undefined {
     return this.lastExercise?.latestTime && this.firstExercise?.earliestTime
@@ -118,7 +119,7 @@ export class Session {
       'recordedExercises' in other ? (other.recordedExercises ?? this.recordedExercises) : this.recordedExercises,
       'date' in other ? (other.date ?? this.date) : this.date,
       'bodyweight' in other ? other.bodyweight : this.bodyweight,
-      'restTimerStartTime' in other ? other.restTimerStartTime : this.restTimerStartTime,
+      'restTimer' in other ? other.restTimer : this.restTimer,
     );
   }
 
@@ -433,7 +434,7 @@ export class Session {
   }
 
   get restTimerEndTime(): OffsetDateTime | undefined {
-    if (!this.restTimerStartTime) {
+    if (!this.restTimer || this.restTimer.isPaused) {
       return undefined;
     }
     const exercise = this.lastExercise;
@@ -449,7 +450,7 @@ export class Session {
       if (rest.equals(Duration.ZERO)) {
         return undefined;
       }
-      return this.restTimerStartTime.plus(rest);
+      return this.restTimer.startedAt.plus(rest);
     }
   }
 

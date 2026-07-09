@@ -93,5 +93,11 @@
   "feed.feed.title": "Hírcsatorna",
   "feed.shared_session.save_to_plan.button": "Mentés az edzéstervbe",
   "feed.shared_session.start_workout.button": "Edzés megkezdése",
-  "stats.bodyweight_change.label": "Testsúly"
+  "stats.bodyweight_change.label": "Testsúly",
+  "settings.notifications.title": "Pihenő és értesítések",
+  "settings.notifications.subtitle": "A pihenőidőzítők és a pihenő végén megjelenő értesítések vezérlése",
+  "rest.notifications.subtitle": "Értesítés megjelenítése, amikor a pihenőidőzítő lejár, akkor is, ha az alkalmazás a háttérben van",
+  "workout.rest_timers.label": "Pihenőidőzítők",
+  "workout.rest_timers.subtitle": "Automatikusan méri a sorozatok közötti pihenőt. Kikapcsolása elrejti az összes pihenőidőzítőt, és letiltja a pihenőértesítéseket",
+  "rest.notifications.title": "Pihenő értesítések"
 }
