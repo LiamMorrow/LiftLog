@@ -467,7 +467,7 @@
   "exercise.progressive_overload.example.label": "예시 보기",
   "ai.share_program.button": "프로그램 공유하기",
   "ai.update_required.title": "업데이트 필요",
-  "ai.update_required.explanation": "현재 버전에서는 더 이상 운동 루틴을 생성할 수 없습니다. 계속하시려면 최신 버전으로 업데이트해 주세요."
+  "ai.update_required.explanation": "현재 버전에서는 더 이상 운동 루틴을 생성할 수 없습니다. 계속하시려면 최신 버전으로 업데이트해 주세요.",
   "workout.rest_timers.label": "휴식 타이머",
   "workout.rest_timers.subtitle": "세트 사이의 휴식 시간을 자동으로 측정합니다. 이 기능을 끄면 모든 휴식 타이머가 숨겨지고 휴식 알림이 비활성화됩니다"
 }
