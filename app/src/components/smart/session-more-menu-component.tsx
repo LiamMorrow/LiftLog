@@ -1,11 +1,9 @@
-import { selectCurrentSession, SessionTarget, setCurrentSession } from '@/store/current-session';
-import { useDispatch } from 'react-redux';
+import { selectCurrentSession, SessionTarget } from '@/store/current-session';
 import { useTranslate } from '@tolgee/react';
 import { useEffect, useState } from 'react';
-import { EmptyExerciseBlueprint } from '@/models/blueprint-models';
-import { getSessionExerciseEditorHref } from '@/components/smart/session-exercise-editor';
 import { getSessionWorkoutEditorHref } from '@/components/smart/session-workout-editor';
-import { useAppSelector, useAppSelectorWithArg } from '@/store';
+import { useAppSelectorWithArg } from '@/store';
+import { useAddExercise } from '@/hooks/useAddExercise';
 import { Appbar, Tooltip } from 'react-native-paper';
 import Menu from '@/components/presentation/foundation/menu';
 import { Platform } from 'react-native';
@@ -15,9 +13,7 @@ import IconButton from '@/components/presentation/foundation/gesture-wrappers/ic
 
 export default function SessionMoreMenuComponent(props: { target: SessionTarget; save: () => void }) {
   const { save } = props;
-  const useImperialUnits = useAppSelector((x) => x.settings.useImperialUnits);
   const session = useAppSelectorWithArg(selectCurrentSession, props.target);
-  const dispatch = useDispatch();
   const { push } = useRouter();
 
   const isReadonly = props.target === 'feedSession';
@@ -26,19 +22,7 @@ export default function SessionMoreMenuComponent(props: { target: SessionTarget;
     push(getSessionWorkoutEditorHref(props.target));
   };
 
-  const handleAddExercise = () => {
-    if (!session) {
-      return;
-    }
-    const newIndex = session.recordedExercises.length;
-    dispatch(
-      setCurrentSession({
-        session: session.withAddedExercise(EmptyExerciseBlueprint.with({ name: 'New Exercise' }), useImperialUnits),
-        target: props.target,
-      }),
-    );
-    push(getSessionExerciseEditorHref(props.target, newIndex, { isNew: true }));
-  };
+  const handleAddExercise = useAddExercise(props.target);
 
   if (!session || isReadonly) {
     return <></>;

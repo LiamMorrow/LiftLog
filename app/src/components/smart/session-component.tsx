@@ -31,6 +31,8 @@ import { match, P } from 'ts-pattern';
 import { CardioExercise } from '@/components/presentation/workout/cardio/cardio-exercise';
 import WeightFormat from '../presentation/foundation/weight-format';
 import { formatDuration } from '@/utils/format-date';
+import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import { useAddExercise } from '@/hooks/useAddExercise';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -46,6 +48,7 @@ export default function SessionComponent(props: {
   const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
   const dispatch = useDispatch();
   const recentlyCompletedExercises = useAppSelectorWithArg(selectRecentlyCompletedExercises, 10);
+  const addExercise = useAddExercise(props.target);
   const resetTimer = (time: OffsetDateTime | undefined) => {
     updateSession((s) => s.with({ restTimer: time ? new RestTimerModel(time) : undefined }));
   };
@@ -195,6 +198,26 @@ export default function SessionComponent(props: {
     </Card>
   ) : null;
 
+  const addExerciseButton = isReadonly ? null : (
+    <View
+      style={{
+        marginHorizontal: spacing.pageHorizontalMargin,
+        marginBottom: spacing[6],
+      }}
+    >
+      <Button
+        icon="add"
+        mode="outlined"
+        onPress={addExercise}
+        testID="session-add-exercise-button"
+        style={{ borderStyle: 'dashed', borderWidth: 1.5, borderRadius: spacing[3] }}
+        contentStyle={{ paddingVertical: spacing[2] }}
+      >
+        {t('exercise.add.title')}
+      </Button>
+    </View>
+  );
+
   const lastExercise = session.lastExercise;
   const lastRecordedSet = lastExercise instanceof RecordedWeightedExercise ? lastExercise?.lastRecordedSet : undefined;
   const nextExercise = session.nextExercise;
@@ -284,6 +307,7 @@ export default function SessionComponent(props: {
       {notesComponent}
       {emptyInfo}
       <ItemList items={session.recordedExercises} renderItem={renderItem} />
+      {addExerciseButton}
       {bodyweight}
       {workoutSummary}
     </FullHeightScrollView>
