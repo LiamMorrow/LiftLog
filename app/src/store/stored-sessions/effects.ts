@@ -16,10 +16,33 @@ import { exercisesSchema, sessionsSchema } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { toRecord } from '@/utils/reduce';
 import { ExerciseDescriptor, fromExerciseDescriptorJSON, toExerciseDescriptorJSON } from '@/models/exercise-models';
+import { KeyValueStore } from '@/services/key-value-store';
 
 // We keep track of added builting exerciseIds (which are the exercise name for builtins)
 // Then we make sure builtins don't get re-added if they are deleted
 const addedBuiltInExerciseIdsStorageKey = 'AddedBuiltInExerciseIdList';
+
+// Session ids queued before each health export and cleared on success, so exports lost to
+// process death are retried on next launch. Re-exports are idempotent (keyed by workout id).
+const pendingHealthExportSessionIdsStorageKey = 'PendingHealthExportSessionIdList';
+
+async function getPendingHealthExportSessionIds(keyValueStore: KeyValueStore): Promise<string[]> {
+  return JSON.parse((await keyValueStore.getItem(pendingHealthExportSessionIdsStorageKey)) ?? '[]') as string[];
+}
+
+// Serialized so concurrent effects can't interleave read-modify-write on the key
+let pendingHealthExportUpdateChain: Promise<unknown> = Promise.resolve();
+function updatePendingHealthExportIds(
+  keyValueStore: KeyValueStore,
+  update: (ids: string[]) => string[],
+): Promise<void> {
+  const run = pendingHealthExportUpdateChain.then(async () => {
+    const ids = await getPendingHealthExportSessionIds(keyValueStore);
+    await keyValueStore.setItem(pendingHealthExportSessionIdsStorageKey, JSON.stringify(update(ids)));
+  });
+  pendingHealthExportUpdateChain = run.catch(() => undefined);
+  return run;
+}
 export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
   // Dispatched AFTER settings, so we can safely access settings
   addEffect(
@@ -89,15 +112,42 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
     },
   );
 
-  addEffect(addStoredSession, async (a, { getState, extra: { healthExportService, logger } }) => {
+  addEffect(addStoredSession, async (a, { getState, extra: { healthExportService, keyValueStore, logger } }) => {
     const workout = a.payload;
     if (!getState().settings.exportToHealthAggregator || !healthExportService.canExport()) {
       return;
     }
+    await updatePendingHealthExportIds(keyValueStore, (ids) =>
+      ids.includes(workout.id) ? ids : ids.concat(workout.id),
+    );
     try {
       await healthExportService.exportWorkout(workout);
+      await updatePendingHealthExportIds(keyValueStore, (ids) => ids.filter((id) => id !== workout.id));
     } catch (e) {
       logger.error('Failed to sync to health aggregator', e);
+    }
+  });
+
+  // Retry queued exports that never completed
+  addEffect(setIsHydrated, async (action, { getState, extra: { healthExportService, keyValueStore, logger } }) => {
+    if (!action.payload) {
+      return;
+    }
+    const state = getState();
+    if (!state.settings.exportToHealthAggregator || !healthExportService.canExport()) {
+      return;
+    }
+    for (const sessionId of await getPendingHealthExportSessionIds(keyValueStore)) {
+      const workout = state.storedSessions.sessions[sessionId];
+      try {
+        if (workout) {
+          await healthExportService.exportWorkout(workout);
+        }
+        // A session deleted since it was queued is dropped rather than retried forever
+        await updatePendingHealthExportIds(keyValueStore, (ids) => ids.filter((id) => id !== sessionId));
+      } catch (e) {
+        logger.error('Failed to sync to health aggregator', e);
+      }
     }
   });
 
