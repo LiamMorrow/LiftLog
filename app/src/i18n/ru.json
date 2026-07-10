@@ -466,5 +466,13 @@
   "settings.copy_logs.title": "Скопировать логи",
   "settings.app_configuration.true_black_dark_theme.title": "Использовать настоящий черный для темной темы",
   "workout.rest_timers.label": "Таймеры отдыха",
-  "workout.rest_timers.subtitle": "Автоматически отсчитывать отдых между подходами. Отключение скроет все таймеры отдыха и выключит уведомления об отдыхе"
+  "workout.rest_timers.subtitle": "Автоматически отсчитывать отдых между подходами. Отключение скроет все таймеры отдыха и выключит уведомления об отдыхе",
+  "ai.share_program.button": "Поделиться программой",
+  "rest_timer.dismiss": "Закрыть таймер отдыха",
+  "rest_timer.dismissed.message": "Таймер отдыха закрыт",
+  "rest_timer.pause": "Поставить таймер отдыха на паузу",
+  "rest_timer.restart": "Перезапустить таймер отдыха",
+  "rest_timer.resume": "Возобновить таймер отдыха",
+  "ai.update_required.title": "Требуется обновление",
+  "ai.update_required.explanation": "Эта версия приложения устарела и создание планов тренировок недоступно. Пожалуйста, обновите приложение, чтобы продолжить."
 }
