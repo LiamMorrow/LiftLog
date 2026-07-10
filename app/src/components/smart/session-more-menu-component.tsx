@@ -1,10 +1,10 @@
 import { selectCurrentSession, SessionTarget } from '@/store/current-session';
 import { useTranslate } from '@tolgee/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getSessionWorkoutEditorHref } from '@/components/smart/session-workout-editor';
 import { useAppSelectorWithArg } from '@/store';
 import { useAddExercise } from '@/hooks/useAddExercise';
-import { Appbar, Tooltip } from 'react-native-paper';
+import { Appbar, Tooltip, TooltipHandle } from 'react-native-paper';
 import Menu from '@/components/presentation/foundation/menu';
 import { Platform } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
@@ -97,19 +97,24 @@ function AndroidMenu(props: {
 
   const [jiggleFinishButton, setJiggleFinishButton] = useState(false);
   const isComplete = session?.isComplete;
+  const tooltipRef = useRef<TooltipHandle>(null);
 
   useEffect(() => {
     const shouldJiggle = isComplete === true;
     setJiggleFinishButton(shouldJiggle);
     if (shouldJiggle) {
-      const timeout = setTimeout(() => setJiggleFinishButton(false), 2000);
+      tooltipRef.current?.show();
+      const timeout = setTimeout(() => {
+        setJiggleFinishButton(false);
+        tooltipRef.current?.hide();
+      }, 10000);
       return () => clearTimeout(timeout);
     }
   }, [isComplete]);
   return (
     <>
       <Jiggler jiggling={jiggleFinishButton} jiggleSpeed={140}>
-        <Tooltip title={t('workout.finish.action.tooltip')}>
+        <Tooltip ref={tooltipRef} title={t('workout.finish.action.tooltip')}>
           <IconButton testID="finish-session-button" icon={'assignmentTurnedIn'} onPress={save} />
         </Tooltip>
       </Jiggler>

@@ -1,0 +1,201 @@
+diff --git a/node_modules/react-native-paper/lib/commonjs/components/Tooltip/Tooltip.js b/node_modules/react-native-paper/lib/commonjs/components/Tooltip/Tooltip.js
+index 5342dd9..b21bc76 100644
+--- a/node_modules/react-native-paper/lib/commonjs/components/Tooltip/Tooltip.js
++++ b/node_modules/react-native-paper/lib/commonjs/components/Tooltip/Tooltip.js
+@@ -40,6 +40,7 @@ const Tooltip = ({
+   title,
+   theme: themeOverrides,
+   titleMaxFontSizeMultiplier,
++  ref,
+   ...rest
+ }) => {
+   const isWeb = _reactNative.Platform.OS === 'web';
+@@ -103,6 +104,24 @@ const Tooltip = ({
+     }, leaveTouchDelay);
+     hideTooltipTimer.current.push(id);
+   }, [leaveTouchDelay]);
++
++  React.useImperativeHandle(ref, () => ({
++    show: () => {
++      if (hideTooltipTimer.current.length) {
++        hideTooltipTimer.current.forEach(t => clearTimeout(t));
++        hideTooltipTimer.current = [];
++      }
++      setVisible(true);
++    },
++    hide: () => {
++      setVisible(false);
++      setMeasurement({
++        children: {},
++        tooltip: {},
++        measured: false
++      });
++    }
++  }), []);
+   const handlePress = React.useCallback(() => {
+     var _props$onPress;
+     if (touched.current) {
+diff --git a/node_modules/react-native-paper/lib/module/components/Tooltip/Tooltip.js b/node_modules/react-native-paper/lib/module/components/Tooltip/Tooltip.js
+index 45d24fe..6eeaf00 100644
+--- a/node_modules/react-native-paper/lib/module/components/Tooltip/Tooltip.js
++++ b/node_modules/react-native-paper/lib/module/components/Tooltip/Tooltip.js
+@@ -32,6 +32,7 @@ const Tooltip = ({
+   title,
+   theme: themeOverrides,
+   titleMaxFontSizeMultiplier,
++  ref,
+   ...rest
+ }) => {
+   const isWeb = Platform.OS === 'web';
+@@ -95,6 +96,24 @@ const Tooltip = ({
+     }, leaveTouchDelay);
+     hideTooltipTimer.current.push(id);
+   }, [leaveTouchDelay]);
++
++  React.useImperativeHandle(ref, () => ({
++    show: () => {
++      if (hideTooltipTimer.current.length) {
++        hideTooltipTimer.current.forEach(t => clearTimeout(t));
++        hideTooltipTimer.current = [];
++      }
++      setVisible(true);
++    },
++    hide: () => {
++      setVisible(false);
++      setMeasurement({
++        children: {},
++        tooltip: {},
++        measured: false
++      });
++    }
++  }), []);
+   const handlePress = React.useCallback(() => {
+     var _props$onPress;
+     if (touched.current) {
+diff --git a/node_modules/react-native-paper/lib/typescript/components/Tooltip/Tooltip.d.ts b/node_modules/react-native-paper/lib/typescript/components/Tooltip/Tooltip.d.ts
+index 1255efd..67dce97 100644
+--- a/node_modules/react-native-paper/lib/typescript/components/Tooltip/Tooltip.d.ts
++++ b/node_modules/react-native-paper/lib/typescript/components/Tooltip/Tooltip.d.ts
+@@ -1,10 +1,24 @@
+ import * as React from 'react';
+ import type { ThemeProp } from 'src/types';
++export type TooltipHandle = {
++    /**
++     * Show the tooltip, cancelling any pending hide.
++     */
++    show: () => void;
++    /**
++     * Hide the tooltip immediately.
++     */
++    hide: () => void;
++};
+ export type Props = {
+     /**
+      * Tooltip reference element. Needs to be able to hold a ref.
+      */
+     children: React.ReactElement;
++    /**
++     * Imperative handle for showing and hiding the tooltip programmatically.
++     */
++    ref?: React.Ref<TooltipHandle>;
+     /**
+      * The number of milliseconds a user must touch the element before showing the tooltip.
+      */
+@@ -46,7 +60,7 @@ export type Props = {
+  * ```
+  */
+ declare const Tooltip: {
+-    ({ children, enterTouchDelay, leaveTouchDelay, title, theme: themeOverrides, titleMaxFontSizeMultiplier, ...rest }: Props): React.JSX.Element;
++    ({ children, enterTouchDelay, leaveTouchDelay, title, theme: themeOverrides, titleMaxFontSizeMultiplier, ref, ...rest }: Props): React.JSX.Element;
+     displayName: string;
+ };
+ export default Tooltip;
+diff --git a/node_modules/react-native-paper/lib/typescript/index.d.ts b/node_modules/react-native-paper/lib/typescript/index.d.ts
+index 187b220..4272785 100644
+--- a/node_modules/react-native-paper/lib/typescript/index.d.ts
++++ b/node_modules/react-native-paper/lib/typescript/index.d.ts
+@@ -128,6 +128,7 @@ export type { Props as TextProps } from './components/Typography/Text';
+ export type { Props as SegmentedButtonsProps } from './components/SegmentedButtons/SegmentedButtons';
+ export type { Props as ListImageProps } from './components/List/ListImage';
+ export type { Props as TooltipProps } from './components/Tooltip/Tooltip';
++export type { TooltipHandle } from './components/Tooltip/Tooltip';
+ export type { MaterialBottomTabNavigationEventMap, MaterialBottomTabNavigationOptions, MaterialBottomTabNavigationProp, MaterialBottomTabScreenProps, } from './react-navigation';
+ export type { MD2Theme, MD3Theme, ThemeBase, MD3Elevation, MD3TypescaleKey, } from './types';
+ //# sourceMappingURL=index.d.ts.map
+\ No newline at end of file
+diff --git a/node_modules/react-native-paper/src/components/Tooltip/Tooltip.tsx b/node_modules/react-native-paper/src/components/Tooltip/Tooltip.tsx
+index f5a483d..e1251c0 100644
+--- a/node_modules/react-native-paper/src/components/Tooltip/Tooltip.tsx
++++ b/node_modules/react-native-paper/src/components/Tooltip/Tooltip.tsx
+@@ -17,11 +17,26 @@ import { addEventListener } from '../../utils/addEventListener';
+ import Portal from '../Portal/Portal';
+ import Text from '../Typography/Text';
+ 
++export type TooltipHandle = {
++  /**
++   * Show the tooltip, cancelling any pending hide.
++   */
++  show: () => void;
++  /**
++   * Hide the tooltip immediately.
++   */
++  hide: () => void;
++};
++
+ export type Props = {
+   /**
+    * Tooltip reference element. Needs to be able to hold a ref.
+    */
+   children: React.ReactElement;
++  /**
++   * Imperative handle for showing and hiding the tooltip programmatically.
++   */
++  ref?: React.Ref<TooltipHandle>;
+   /**
+    * The number of milliseconds a user must touch the element before showing the tooltip.
+    */
+@@ -70,6 +85,7 @@ const Tooltip = ({
+   title,
+   theme: themeOverrides,
+   titleMaxFontSizeMultiplier,
++  ref,
+   ...rest
+ }: Props) => {
+   const isWeb = Platform.OS === 'web';
+@@ -147,6 +163,24 @@ const Tooltip = ({
+     hideTooltipTimer.current.push(id);
+   }, [leaveTouchDelay]);
+ 
++  React.useImperativeHandle(
++    ref,
++    () => ({
++      show: () => {
++        if (hideTooltipTimer.current.length) {
++          hideTooltipTimer.current.forEach((t) => clearTimeout(t));
++          hideTooltipTimer.current = [];
++        }
++        setVisible(true);
++      },
++      hide: () => {
++        setVisible(false);
++        setMeasurement({ children: {}, tooltip: {}, measured: false });
++      },
++    }),
++    []
++  );
++
+   const handlePress = React.useCallback(() => {
+     if (touched.current) {
+       return null;
+diff --git a/node_modules/react-native-paper/src/index.tsx b/node_modules/react-native-paper/src/index.tsx
+index 1b20528..4455304 100644
+--- a/node_modules/react-native-paper/src/index.tsx
++++ b/node_modules/react-native-paper/src/index.tsx
+@@ -153,6 +153,7 @@ export type { Props as TextProps } from './components/Typography/Text';
+ export type { Props as SegmentedButtonsProps } from './components/SegmentedButtons/SegmentedButtons';
+ export type { Props as ListImageProps } from './components/List/ListImage';
+ export type { Props as TooltipProps } from './components/Tooltip/Tooltip';
++export type { TooltipHandle } from './components/Tooltip/Tooltip';
+ export type {
+   MaterialBottomTabNavigationEventMap,
+   MaterialBottomTabNavigationOptions,
