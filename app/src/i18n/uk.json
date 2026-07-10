@@ -246,7 +246,7 @@
   "settings.theme.title": "Тема",
   "settings.translation.subtitle": "Надішліть переклади для частин застосунку!",
   "settings.translation.title": "Запропонувати переклад",
-  "settings.use_imperial_units.label": "Використовувати імперські одиниці",
+  "settings.use_imperial_units.label": "Імперські одиниці",
   "settings.use_imperial_units.subtitle": "Використовувати фунти замість кілограмів",
   "stats.average_time_between_sets.label": "Середній час між підходами",
   "stats.heaviest_lift.label": "Найважчий підйом",
@@ -314,5 +314,16 @@
   "workout.workout.label": "Тренування",
   "workout.workout_lowercase.label": "Тренування",
   "workout.rest_timers.label": "Таймери відпочинку",
-  "workout.rest_timers.subtitle": "Автоматично відлічувати відпочинок між підходами. Вимкнення приховає всі таймери відпочинку та вимкне сповіщення про відпочинок"
+  "workout.rest_timers.subtitle": "Автоматично відлічувати відпочинок між підходами. Вимкнення приховає всі таймери відпочинку та вимкне сповіщення про відпочинок",
+  "settings.app_configuration.true_black_dark_theme.title": "Використовувати чорний колір для темної теми",
+  "exercise.distance.label": "Відстань",
+  "onboarding.get_started.button": "Розпочати",
+  "ai.share_program.button": "Поділитися застосунком",
+  "exercise.add_hint.body": "Додайте вправу, натиснувши «Ще» у вехрньому правому куту",
+  "exercise.cardio_set.add.button": "Додати підхід",
+  "exercise.cardio_set.remove.button": "Видалити підхід",
+  "exercise.steps.label": "Кроки",
+  "exercise.progressive_overload.example.label": "Приклад",
+  "exercise.target_distance.label": "Ціль у відстані",
+  "exercise.target_time.label": "Ціль у часі"
 }
