@@ -4,6 +4,7 @@ import { RecordedCardioExercise, RecordedExercise, RecordedWeightedExercise, Ses
 import {
   initialize,
   requestPermission,
+  getGrantedPermissions,
   ExerciseSegmentType,
   ExerciseSessionRecord,
   ExerciseType,
@@ -25,11 +26,11 @@ export class HealthExportService implements HES {
     if (!this.canExport()) {
       return;
     }
-    const grantedPermissions = await this.requestPermissionInternal();
-    if (grantedPermissions.some((x) => x.recordType === 'Weight')) {
+    const grantedPermissions = await this.getGrantedPermissionsInternal();
+    if (grantedPermissions.some((x) => x.accessType === 'write' && x.recordType === 'Weight')) {
       await deleteRecordsByUuids('Weight', [], [workoutId]);
     }
-    if (grantedPermissions.some((x) => x.recordType === 'ExerciseSession')) {
+    if (grantedPermissions.some((x) => x.accessType === 'write' && x.recordType === 'ExerciseSession')) {
       await deleteRecordsByUuids('ExerciseSession', [], [workoutId]);
     }
   }
@@ -42,7 +43,9 @@ export class HealthExportService implements HES {
       return;
     }
 
-    const grantedPermissions = await this.requestPermissionInternal();
+    // Non-interactive on purpose: the permission activity round-trip can hang or die when the
+    // app backgrounds right after a workout. The interactive request runs from the settings toggle.
+    const grantedPermissions = await this.getGrantedPermissionsInternal();
 
     const exerciseSegments = workout.recordedExercises.filter((x) => x.isStarted).map(toExerciseSegment);
     const exerciseSessionRecord: ExerciseSessionRecord = {
@@ -56,13 +59,13 @@ export class HealthExportService implements HES {
       endTime: workout.lastExercise.latestTime!.toString(),
       title: workout.blueprint.name,
     };
-    if (grantedPermissions.some((x) => x.recordType === 'ExerciseSession')) {
+    if (grantedPermissions.some((x) => x.accessType === 'write' && x.recordType === 'ExerciseSession')) {
       await insertRecords([exerciseSessionRecord]);
     }
     if (
       workout.bodyweight &&
       workout.bodyweight.unit !== 'nil' &&
-      grantedPermissions.some((x) => x.recordType === 'Weight')
+      grantedPermissions.some((x) => x.accessType === 'write' && x.recordType === 'Weight')
     ) {
       await insertRecords([
         {
@@ -91,6 +94,12 @@ export class HealthExportService implements HES {
       { accessType: 'write', recordType: 'Weight' },
       { accessType: 'write', recordType: 'ExerciseSession' },
     ]);
+  }
+
+  private async getGrantedPermissionsInternal() {
+    await initialize();
+
+    return await getGrantedPermissions();
   }
 }
 
