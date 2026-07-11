@@ -41,6 +41,15 @@ export interface WeightedExerciseStatistics {
   repsStatistics: RepsBreakdownStatistics;
 }
 
+export interface WorkoutExerciseStatistics {
+  workoutName: string;
+  exerciseStats: OptionalStatisticOverTime<Weight>[];
+}
+
+export interface PinnedExerciseStatistic {
+  exerciseName: string;
+}
+
 export interface WeightedStatisticOverTime {
   statistics: TimeTrackedStatistic<Weight>[];
   currentValue: Weight;
@@ -69,6 +78,7 @@ export interface GranularStatisticView {
   heaviestLift: HeaviestLift | undefined;
   weightedExerciseStats: WeightedExerciseStatistics[];
   sessionStats: OptionalStatisticOverTime<Weight>[];
+  workoutExerciseStats: WorkoutExerciseStatistics[];
   bodyweightStats: WeightedStatisticOverTime;
 }
 
@@ -114,6 +124,13 @@ export const selectExerciseView = createSelector(
         new NormalizedName(ex.exerciseName).equals(new NormalizedName(exerciseName)),
       ),
     ),
+);
+
+export const selectWorkoutView = createSelector(
+  selectOverallView,
+  (_, workoutName: string) => workoutName,
+  (state: RemoteData<GranularStatisticView>, workoutName: string) =>
+    state.map((x) => x.workoutExerciseStats.find((w) => w.workoutName === workoutName)),
 );
 
 export const fetchOverallStats = createAction('fetchOverallStats');

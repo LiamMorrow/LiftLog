@@ -2,11 +2,11 @@ import { WeightedStatisticOverTime } from '@/store/stats';
 import { usePreferredWeightSuffix, usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 import { View } from 'react-native';
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import { useEffect, useState } from 'react';
 import { lineGraphProps } from '@/components/presentation/stats/line-graph-props';
+import { DataPointCallout } from '@/components/presentation/stats/data-point-callout';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { Text } from 'react-native-paper';
 
 export function WeightLineChart({
   statistics: { statistics, maxValue, minValue },
@@ -15,6 +15,7 @@ export function WeightLineChart({
 }) {
   const formatDate = useFormatDate();
   const weightUnit = usePreferredWeightUnit();
+  const weightSuffix = usePreferredWeightSuffix();
   const { colors } = useAppTheme();
   const points: lineDataItem[] = statistics.map((stat): lineDataItem => {
     const value = stat.value.convertTo(weightUnit).value.toNumber();
@@ -25,7 +26,9 @@ export function WeightLineChart({
     return {
       value,
       label,
-      focusedDataPointLabelComponent: () => <FocusedDatapointLabelComponent value={value} label={label} />,
+      focusedDataPointLabelComponent: () => (
+        <DataPointCallout label={label} value={`${value.toFixed(0)}${weightSuffix}`} />
+      ),
     };
   });
   const [width, setWidth] = useState(0);
@@ -65,30 +68,6 @@ export function WeightLineChart({
         yAxisOffset={Math.floor(minValue.convertTo(weightUnit).value.toNumber()) - 10}
         noOfSectionsBelowXAxis={minValue.value.lt(0) ? 5 : 0}
       />
-    </View>
-  );
-}
-
-function FocusedDatapointLabelComponent(props: { value: number; label: string }) {
-  const { colors } = useAppTheme();
-  const weightSuffix = usePreferredWeightSuffix();
-  return (
-    <View
-      style={{
-        alignItems: 'center',
-        paddingVertical: spacing[1],
-        backgroundColor: colors.surface,
-        borderRadius: 4,
-        borderColor: colors.outline,
-        borderStyle: 'solid',
-        borderWidth: 1,
-      }}
-    >
-      <Text>{props.label}</Text>
-      <Text>
-        {props.value.toFixed(0)}
-        {weightSuffix}
-      </Text>
     </View>
   );
 }
