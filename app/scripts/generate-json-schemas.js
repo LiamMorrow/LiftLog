@@ -19,11 +19,26 @@ createSingleSchema(
   'AiPlan',
 );
 
+// Create schema for an importable/exportable program blueprint file. The docs
+// copy is published for users to author plans against; the app copy is bundled
+// so it can be loaded at runtime for validation (Metro can't reach docs/).
+createSingleSchema(
+  join(modelsDir, 'storage/versions/latest/blueprint.ts'),
+  [
+    join(docsSchemasPath, 'program-blueprint/ProgramBlueprint.json'),
+    join(modelsDir, 'generated/program-blueprint.schema.json'),
+  ],
+  'ProgramBlueprint',
+);
+
 /**
  * Write a single self-contained JSON Schema file rooted at `rootType`.
  * The root definition's body becomes the top-level schema; every other
  * definition is kept under `definitions` with internal `#/definitions/...`
  * refs preserved (as produced by `buildSchema`).
+ *
+ * `outputPath` may be a single path or an array of paths to write the same
+ * schema to.
  */
 function createSingleSchema(inputFile, outputPath, rootType) {
   const schema = buildSchema(inputFile);
@@ -41,9 +56,12 @@ function createSingleSchema(inputFile, outputPath, rootType) {
     definitions: restDefs,
   };
 
-  fs.mkdirSync(dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, JSON.stringify(fileSchema, null, 2));
-  console.log(`Wrote schema to ${outputPath}`);
+  const contents = JSON.stringify(fileSchema, null, 2);
+  for (const path of Array.isArray(outputPath) ? outputPath : [outputPath]) {
+    fs.mkdirSync(dirname(path), { recursive: true });
+    fs.writeFileSync(path, contents);
+    console.log(`Wrote schema to ${path}`);
+  }
 }
 
 /**
