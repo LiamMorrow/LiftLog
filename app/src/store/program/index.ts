@@ -12,6 +12,8 @@ interface ProgramState {
   readonly savedPrograms: {
     readonly [programId: string]: ProgramBlueprintPOJO;
   };
+  /** A plan parsed from an imported file, awaiting the user's confirmation to save. */
+  readonly pendingImport?: ProgramBlueprint;
 }
 
 const initialState: ProgramState = {
@@ -178,6 +180,14 @@ const programSlice = createSlice({
     ) {
       state.savedPrograms[action.payload.programId] = action.payload.programBlueprint.toPOJO();
     },
+
+    setPendingImport(state, action: PayloadAction<{ programBlueprint: ProgramBlueprint }>) {
+      state.pendingImport = action.payload.programBlueprint;
+    },
+
+    clearPendingImport(state) {
+      state.pendingImport = undefined;
+    },
   },
   selectors: {
     selectActiveProgram: createSelector(
@@ -200,6 +210,7 @@ const programSlice = createSlice({
       [(state: ProgramState) => state.savedPrograms, (_, id: string) => id],
       (programs, id) => ProgramBlueprint.fromPOJO(programs[id]!),
     ),
+    selectPendingImport: (state: ProgramState) => state.pendingImport,
     /**
      * Finds a unique name for a new workout in the current active plan.
      * Will be Workout {Number} where number is the first non conflicting number after sessions.length
@@ -238,11 +249,18 @@ export const {
   setSavedPlanName,
   upsertSavedPlans,
   setSavedPlans,
+  setPendingImport,
+  clearPendingImport,
 } = programSlice.actions;
 
-export const { selectActiveProgram, selectProgram, selectAllPrograms, selectNewWorkoutName } = programSlice.selectors;
+export const { selectActiveProgram, selectProgram, selectAllPrograms, selectNewWorkoutName, selectPendingImport } =
+  programSlice.selectors;
 
 export const fetchUpcomingSessions = createAction('fetchUpcomingSessions');
 export const initializeProgramStateSlice = createAction('initializeProgramStateSlice');
+
+export const exportPlan = createAction<{ programId: string }>('exportPlan');
+export const importPlanFromPicker = createAction('importPlanFromPicker');
+export const importPlanFromFile = createAction<{ name?: string; bytes: Uint8Array }>('importPlanFromFile');
 
 export default programSlice.reducer;

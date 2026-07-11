@@ -290,6 +290,7 @@
   "plan.diff.cardio_set_modified.body": "Set {setNumber} modified",
   "plan.diff.progressive_overload_increase_all_evenly.label": "Evenly (amount: {amount})",
   "plan.diff.progressive_overload_increase_lowest_set.label": "Lowest (strategy: {strategy}) (amount: {amount})",
+  "plan.import.error.message": "That file isn't a valid workout plan.",
   "plan.manage.subtitle": "Setup your workout plans",
   "plan.manage.title": "Manage plans",
   "plan.name.label": "Plan Name",

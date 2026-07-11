@@ -3,6 +3,7 @@ import { useSelector as untypedUseSelector } from 'react-redux';
 
 import { type RootState, createStore } from '@/store/store';
 import { applyProgramEffects } from '@/store/program/effects';
+import { applyProgramImportExportEffects } from '@/store/program/import-export-effects';
 import { applyCurrentSessionEffects } from '@/store/current-session/effects';
 import { applyAppEffects } from '@/store/app/effects';
 import { initializeAppStateSlice } from '@/store/app';
@@ -23,6 +24,7 @@ export function resolveStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
   const { store, addEffect } = createStore(db, expoDb);
   store.dispatch(clearAllListeners());
   applyProgramEffects(addEffect);
+  applyProgramImportExportEffects(addEffect);
   applyCurrentSessionEffects(addEffect);
   applyAppEffects(addEffect);
   applySettingsEffects(addEffect);
