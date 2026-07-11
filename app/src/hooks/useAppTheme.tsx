@@ -1,7 +1,7 @@
 import { useAppSelector } from '@/store';
 import { Material3Scheme, useMaterial3Theme } from '@pchmn/expo-material3-theme';
 import React, { createContext, ReactNode, useContext, useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import { Platform, useColorScheme } from 'react-native';
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { DarkTheme, ThemeProvider as NavigationThemeProvider, DefaultTheme } from 'expo-router';
 import { MsIconSrc } from '@/components/presentation/foundation/ms-icon-source';
@@ -116,6 +116,8 @@ export type AppThemeColors = Material3Scheme & {
   onLime: string;
   amber: string;
   onAmber: string;
+
+  seedColor: string | undefined;
 };
 
 export type ColorChoice = keyof {
@@ -148,9 +150,10 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) 
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   // If the device is not compatible, it will return a theme based on the fallback source color (optional, default to #6750A4)
+  const sourceColor = colorSchemeSeed === 'default' ? undefined : colorSchemeSeed;
   const { theme, updateTheme, resetTheme } = useMaterial3Theme({
     fallbackSourceColor: '0x005500',
-    sourceColor: colorSchemeSeed === 'default' ? undefined! : colorSchemeSeed,
+    sourceColor,
   });
   let newTheme = theme;
   if (trueBlack) {
@@ -165,11 +168,20 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) 
     } else {
       updateTheme(colorSchemeSeed);
     }
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [colorSchemeSeed]);
   const schemedTheme = colorScheme === 'dark' ? newTheme.dark : newTheme.light;
 
   const paperTheme = isDark ? { ...MD3DarkTheme, colors: newTheme.dark } : { ...MD3LightTheme, colors: newTheme.light };
+  /* The seedColor is passed into the expo ui host to and is platform dependent
+   * On android, the seedColor is used to generate the tonal pallette, and therefore should be the same as the source color.
+   * If it is undefined, it will use the system's theme which matches our useMaterialTheme pallette in that case.
+   * On IOS we just want to use the primary color as that is what it represents.
+   */
+  const seedColor = Platform.select({
+    android: sourceColor,
+    ios: schemedTheme.primary,
+  });
   const appTheme = {
     colors: {
       ...schemedTheme,
@@ -186,6 +198,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) 
       ...colorPair('indigo', 'ff4b0082', schemedTheme.primary, isDark),
       ...colorPair('lime', 'ffcddc39', schemedTheme.primary, isDark),
       ...colorPair('amber', 'ffffc107', schemedTheme.primary, isDark),
+      seedColor: seedColor,
     } satisfies AppThemeColors,
     colorScheme: colorScheme === 'unspecified' ? 'light' : colorScheme,
   };
