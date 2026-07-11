@@ -2,6 +2,7 @@ import { AppThemeProvider } from '@/hooks/useAppTheme';
 import { I18nManager, LogBox, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppStateProvider } from '@/components/smart/app-state-provider';
+import { PlanImportGate } from '@/components/smart/plan-import-gate';
 import SnackbarProvider from '@/components/smart/snackbar-provider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '@/utils/date-locale';
@@ -43,6 +44,7 @@ export default function RootLayout() {
                 <AppStateProvider>
                   <SnackbarProvider>
                     {Platform.OS === 'android' && <StatusBar style="auto" />}
+                    <PlanImportGate />
                     <Layout />
                   </SnackbarProvider>
                 </AppStateProvider>

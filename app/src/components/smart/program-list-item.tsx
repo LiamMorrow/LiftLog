@@ -3,7 +3,7 @@ import { SharedProgramBlueprint } from '@/models/feed-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { showSnackbar } from '@/store/app';
 import { encryptAndShare } from '@/store/feed';
-import { deleteSavedPlan, savePlan, selectProgram, setActivePlan } from '@/store/program';
+import { deleteSavedPlan, exportPlan, savePlan, selectProgram, setActivePlan } from '@/store/program';
 import { uuid } from '@/utils/uuid';
 import { DateTimeFormatter } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
@@ -76,6 +76,12 @@ function ItemMenu({ id }: ItemProps) {
                 item: new SharedProgramBlueprint(thisProgram),
               }),
             ),
+        },
+        {
+          label: t('plan.export.button'),
+          icon: 'upload',
+          systemImage: 'arrow.up.doc',
+          onPress: () => dispatch(exportPlan({ programId: id })),
         },
       ]}
     />

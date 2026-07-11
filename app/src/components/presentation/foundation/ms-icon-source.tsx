@@ -38,6 +38,8 @@ import { msSettingsBackupRestore } from '@material-symbols-react-native/outlined
 import { msShare } from '@material-symbols-react-native/outlined-400/msShare';
 import { msIosShare } from '@material-symbols-react-native/outlined-400/msIosShare';
 import { msShareWindows } from '@material-symbols-react-native/outlined-400/msShareWindows';
+import { msUpload } from '@material-symbols-react-native/outlined-400/msUpload';
+import { msDownload } from '@material-symbols-react-native/outlined-400/msDownload';
 import { msTextAd } from '@material-symbols-react-native/outlined-400/msTextAd';
 import { msTranslate } from '@material-symbols-react-native/outlined-400/msTranslate';
 import { msWeight } from '@material-symbols-react-native/outlined-400/msWeight';
@@ -215,6 +217,8 @@ const MaterialSymbols = {
   calendar: msCalendarMonth,
   'calendar-blank': msCalendarToday,
   cloudUpload: msCloudUpload,
+  upload: msUpload,
+  download: msDownload,
   translate: msTranslate,
   weight: msWeight,
   avgTime: msAvgTime,
