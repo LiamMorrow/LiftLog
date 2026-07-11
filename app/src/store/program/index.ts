@@ -261,6 +261,7 @@ export const initializeProgramStateSlice = createAction('initializeProgramStateS
 
 export const exportPlan = createAction<{ programId: string }>('exportPlan');
 export const importPlanFromPicker = createAction('importPlanFromPicker');
+export const importPlanFromUri = createAction<{ uri: string }>('importPlanFromUri');
 export const importPlanFromFile = createAction<{ name?: string; bytes: Uint8Array }>('importPlanFromFile');
 
 export default programSlice.reducer;

@@ -1,3 +1,4 @@
+import { useIncomingPlanFile } from '@/hooks/useIncomingPlanFile';
 import { useAppSelector } from '@/store';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
@@ -7,6 +8,7 @@ import { useEffect } from 'react';
  * opened from the OS) and routes to the import preview screen to confirm it.
  */
 export function PlanImportGate() {
+  useIncomingPlanFile();
   const hasPendingImport = useAppSelector((s) => !!s.program.pendingImport);
   const { navigate } = useRouter();
   useEffect(() => {
