@@ -80,21 +80,24 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
     }
   });
 
-  addEffect(importBackupData, async ({ payload: dao }, { dispatch, extra: { tolgee, db, databaseMigrationService } }) => {
-    dispatch(upsertStoredSessions(dao.workouts));
-    dispatch(upsertSavedPlans(dao.programs));
-    dispatch(
-      showSnackbar({
-        text: tolgee.t('Restore complete!'),
-      }),
-    );
-    // Let the data migration re-run on next launch so imported nil-unit weights get coalesced
-    await db.delete(dataMigrationsSchema).where(eq(dataMigrationsSchema.id, migrateNilWeightUnitsDataMigration));
-    await databaseMigrationService.migrate()
-    if (dao.feed) {
-      dispatch(beginFeedImport(dao.feed));
-    }
-  });
+  addEffect(
+    importBackupData,
+    async ({ payload: dao }, { dispatch, extra: { tolgee, db, databaseMigrationService } }) => {
+      dispatch(upsertStoredSessions(dao.workouts));
+      dispatch(upsertSavedPlans(dao.programs));
+      dispatch(
+        showSnackbar({
+          text: tolgee.t('Restore complete!'),
+        }),
+      );
+      // Let the data migration re-run on next launch so imported nil-unit weights get coalesced
+      await db.delete(dataMigrationsSchema).where(eq(dataMigrationsSchema.id, migrateNilWeightUnitsDataMigration));
+      await databaseMigrationService.migrate();
+      if (dao.feed) {
+        dispatch(beginFeedImport(dao.feed));
+      }
+    },
+  );
 
   addEffect(importDataSql, async (action, { dispatch, extra: { logger } }) => {
     try {

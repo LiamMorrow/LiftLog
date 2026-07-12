@@ -9,9 +9,9 @@ tags:
 - launchApp:
     clearState: true
 - tapOn:
-    id: "welcome-wizard-next"
+    id: 'welcome-wizard-next'
 - tapOn:
-    id: "welcome-wizard-next"
+    id: 'welcome-wizard-next'
 - tapOn:
-    id: "welcome-wizard-next"
-- assertVisible: "Freeform workout"
+    id: 'welcome-wizard-next'
+- assertVisible: 'Freeform workout'

@@ -4,29 +4,29 @@ appId: com.limajuice.liftlog
 - launchApp
 # A cold dev-client launch can take up to a minute to fetch the bundle from Metro
 - extendedWaitUntil:
-    visible: "Workout"
+    visible: 'Workout'
     timeout: 60000
-- tapOn: "Settings"
-- tapOn: "Manage plans"
-- tapOn: "Add plan"
+- tapOn: 'Settings'
+- tapOn: 'Manage plans'
+- tapOn: 'Add plan'
 
 # Add a workout, which opens into the workout editor
-- assertVisible: "Add workout"
-- tapOn: "Add workout"
+- assertVisible: 'Add workout'
+- tapOn: 'Add workout'
 
 # Add an exercise, which opens into the exercise editor
-- assertVisible: "Add exercise"
-- tapOn: "Add exercise"
+- assertVisible: 'Add exercise'
+- tapOn: 'Add exercise'
 
 # Drop reps 10 -> 9, raise sets 3 -> 4.
 # Sets and reps share child testIDs and sit side by side, so pick by render
 # order: sets is index 0, reps is index 1.
-- assertVisible: "Weighted"
+- assertVisible: 'Weighted'
 - tapOn:
-    id: "fixed-decrement"
+    id: 'fixed-decrement'
     index: 1
 - tapOn:
-    id: "fixed-increment"
+    id: 'fixed-increment'
     index: 0
 
 # Enable superset (further down the form, so scroll to it).
@@ -34,45 +34,45 @@ appId: com.limajuice.liftlog
 # row (its label toggles the switch) rather than the switch itself.
 - scrollUntilVisible:
     element:
-      text: "Superset next exercise"
+      text: 'Superset next exercise'
     direction: DOWN
-- tapOn: "Superset next exercise"
+- tapOn: 'Superset next exercise'
 
 # Switch progressive overload from "Lowest set/s" to "Evenly" via its dropdown
 - scrollUntilVisible:
     element:
-      text: "Lowest set/s"
+      text: 'Lowest set/s'
     direction: DOWN
-- tapOn: "Lowest set/s"
-- tapOn: "Evenly"
+- tapOn: 'Lowest set/s'
+- tapOn: 'Evenly'
 
 # Back to the workout; the exercise persisted
 - back
-- assertVisible: "Exercise 1"
+- assertVisible: 'Exercise 1'
 
 # Reopen it and confirm every edit was saved
-- tapOn: "Exercise 1"
+- tapOn: 'Exercise 1'
 # The two value inputs hold different numbers, so id + text identifies each
 - assertVisible:
-    id: "fixed-value-input"
-    text: "9"
+    id: 'fixed-value-input'
+    text: '9'
 - assertVisible:
-    id: "fixed-value-input"
-    text: "4"
+    id: 'fixed-value-input'
+    text: '4'
 - scrollUntilVisible:
     element:
-      text: "Superset next exercise"
+      text: 'Superset next exercise'
     direction: DOWN
 - assertVisible:
     checked: true
-    rightOf: "Superset next exercise"
-- assertVisible: "Evenly"
+    rightOf: 'Superset next exercise'
+- assertVisible: 'Evenly'
 
 # Back out to the plan list and remove the plan so the flow leaves no state behind
 - back
 - back
 - back
 - tapOn:
-    id: "more-program-btn"
-    rightOf: "New plan"
-- tapOn: "Remove"
+    id: 'more-program-btn'
+    rightOf: 'New plan'
+- tapOn: 'Remove'

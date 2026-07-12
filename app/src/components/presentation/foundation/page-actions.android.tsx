@@ -18,7 +18,7 @@ import { useCallback } from 'react';
 
 const contentPadding = { start: 24, top: 16, end: 24, bottom: 16 };
 
-export function PageActions({ primary, secondary = [], primaryKind = 'surface' }: PageActionsProps) {
+export function PageActions({ primary, secondary = [], primaryKind = 'surface', accessory }: PageActionsProps) {
   const { colors } = useAppTheme();
   const { isScrollingDown, setScrollingDown } = useScroll();
 
@@ -61,6 +61,7 @@ export function PageActions({ primary, secondary = [], primaryKind = 'surface' }
     <View
       style={{
         alignItems: 'flex-end',
+        gap: spacing[2],
         paddingHorizontal: spacing.pageHorizontalMargin,
         paddingBottom: spacing[3],
       }}
@@ -81,6 +82,7 @@ export function PageActions({ primary, secondary = [], primaryKind = 'surface' }
           </Row>
         )}
       </Host>
+      {accessory && <View style={{ alignSelf: 'stretch' }}>{accessory}</View>}
     </View>
   );
 }

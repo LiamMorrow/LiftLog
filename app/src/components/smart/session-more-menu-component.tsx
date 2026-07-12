@@ -3,7 +3,6 @@ import { useTranslate } from '@tolgee/react';
 import { useEffect, useRef, useState } from 'react';
 import { getSessionWorkoutEditorHref } from '@/components/smart/session-workout-editor';
 import { useAppSelectorWithArg } from '@/store';
-import { useAddExercise } from '@/hooks/useAddExercise';
 import { Appbar, Tooltip, TooltipHandle } from 'react-native-paper';
 import Menu from '@/components/presentation/foundation/menu';
 import { Platform } from 'react-native';
@@ -22,8 +21,6 @@ export default function SessionMoreMenuComponent(props: { target: SessionTarget;
     push(getSessionWorkoutEditorHref(props.target));
   };
 
-  const handleAddExercise = useAddExercise(props.target);
-
   if (!session || isReadonly) {
     return <></>;
   }
@@ -31,25 +28,11 @@ export default function SessionMoreMenuComponent(props: { target: SessionTarget;
   return (
     <>
       {Platform.select({
-        ios: (
-          <IosMenu
-            target={props.target}
-            save={save}
-            onAddExercise={handleAddExercise}
-            onEditWorkout={handleEditWorkout}
-          />
-        ),
+        ios: <IosMenu target={props.target} save={save} onEditWorkout={handleEditWorkout} />,
         android: (
           <Stack.Screen
             options={{
-              headerRight: () => (
-                <AndroidMenu
-                  target={props.target}
-                  save={save}
-                  onAddExercise={handleAddExercise}
-                  onEditWorkout={handleEditWorkout}
-                />
-              ),
+              headerRight: () => <AndroidMenu target={props.target} save={save} onEditWorkout={handleEditWorkout} />,
             }}
           />
         ),
@@ -58,14 +41,9 @@ export default function SessionMoreMenuComponent(props: { target: SessionTarget;
   );
 }
 
-function IosMenu(props: {
-  target: SessionTarget;
-  save: () => void;
-  onEditWorkout: () => void;
-  onAddExercise: () => void;
-}) {
+function IosMenu(props: { target: SessionTarget; save: () => void; onEditWorkout: () => void }) {
   const { t } = useTranslate();
-  const { target, save, onAddExercise, onEditWorkout } = props;
+  const { target, save, onEditWorkout } = props;
   const finishText = target === 'workoutSession' ? t('generic.finish.button') : t('generic.save.button');
   return (
     <Stack.Toolbar placement="right">
@@ -74,9 +52,6 @@ function IosMenu(props: {
       </Stack.Toolbar.Button>
       <Stack.Toolbar.Menu>
         <Stack.Toolbar.Icon sf="ellipsis.circle" />
-        <Stack.Toolbar.MenuAction onPress={onAddExercise} icon={'plus'}>
-          {t('exercise.add.title')}
-        </Stack.Toolbar.MenuAction>
         <Stack.Toolbar.MenuAction onPress={onEditWorkout} icon={'pencil'}>
           {t('workout.edit.button')}
         </Stack.Toolbar.MenuAction>
@@ -85,14 +60,9 @@ function IosMenu(props: {
   );
 }
 
-function AndroidMenu(props: {
-  target: SessionTarget;
-  save: () => void;
-  onEditWorkout: () => void;
-  onAddExercise: () => void;
-}) {
+function AndroidMenu(props: { target: SessionTarget; save: () => void; onEditWorkout: () => void }) {
   const { t } = useTranslate();
-  const { target, save, onAddExercise, onEditWorkout } = props;
+  const { target, save, onEditWorkout } = props;
   const session = useAppSelectorWithArg(selectCurrentSession, target);
 
   const [jiggleFinishButton, setJiggleFinishButton] = useState(false);
@@ -121,12 +91,6 @@ function AndroidMenu(props: {
       <Menu
         trigger={(open) => <Appbar.Action testID="session-more" icon="moreVert" onPress={open} />}
         items={[
-          {
-            label: t('exercise.add.title'),
-            icon: 'add',
-            testID: 'session-add-exercise',
-            onPress: onAddExercise,
-          },
           {
             label: t('workout.edit.button'),
             icon: 'edit',

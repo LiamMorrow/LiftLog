@@ -25,13 +25,13 @@ import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
 import { useRouter } from 'expo-router';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
-import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
+import { PageActions } from '@/components/presentation/foundation/page-actions';
+import AddIcon from '@expo/material-symbols/add.xml';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { match, P } from 'ts-pattern';
 import { CardioExercise } from '@/components/presentation/workout/cardio/cardio-exercise';
 import WeightFormat from '../presentation/foundation/weight-format';
 import { formatDuration } from '@/utils/format-date';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useAddExercise } from '@/hooks/useAddExercise';
 
 export default function SessionComponent(props: {
@@ -198,26 +198,6 @@ export default function SessionComponent(props: {
     </Card>
   ) : null;
 
-  const addExerciseButton = isReadonly ? null : (
-    <View
-      style={{
-        marginHorizontal: spacing.pageHorizontalMargin,
-        marginBottom: spacing[6],
-      }}
-    >
-      <Button
-        icon="add"
-        mode="outlined"
-        onPress={addExercise}
-        testID="session-add-exercise-button"
-        style={{ borderStyle: 'dashed', borderWidth: 1.5, borderRadius: spacing[3] }}
-        contentStyle={{ paddingVertical: spacing[2] }}
-      >
-        {t('exercise.add.title')}
-      </Button>
-    </View>
-  );
-
   const lastExercise = session.lastExercise;
   const lastRecordedSet = lastExercise instanceof RecordedWeightedExercise ? lastExercise?.lastRecordedSet : undefined;
   const nextExercise = session.nextExercise;
@@ -237,30 +217,27 @@ export default function SessionComponent(props: {
     lastExercise instanceof RecordedWeightedExercise &&
     lastRecordedSet.set.repsCompleted < lastExercise.blueprint.repsPerSet;
   const restTimer = showRestTimer ? (
-    <View style={{ flex: 1 }}>
-      <RestTimer
-        rest={lastExercise.blueprint.restBetweenSets}
-        startTime={session.restTimer.startedAt}
-        pausedAt={session.restTimer.pausedAt}
-        failed={!!lastSetFailed}
-        onRestart={() => resetTimer(OffsetDateTime.now())}
-        onDismiss={dismissTimer}
-        onTogglePause={toggleRestTimerPaused}
-      />
-    </View>
+    <RestTimer
+      rest={lastExercise.blueprint.restBetweenSets}
+      startTime={session.restTimer.startedAt}
+      pausedAt={session.restTimer.pausedAt}
+      failed={!!lastSetFailed}
+      onRestart={() => resetTimer(OffsetDateTime.now())}
+      onDismiss={dismissTimer}
+      onTogglePause={toggleRestTimerPaused}
+    />
   ) : undefined;
 
+  // The timer rides above the action, so the action stays put whether or not a rest is running.
   const floatingBottomContainer = isReadonly ? null : (
-    <FloatingBottomContainer
-      additionalContent={
-        <View
-          style={{
-            alignItems: 'center',
-          }}
-        >
-          {restTimer}
-        </View>
-      }
+    <PageActions
+      accessory={restTimer}
+      primary={{
+        label: t('exercise.add.title'),
+        icon: AddIcon,
+        systemImage: 'plus',
+        onPress: addExercise,
+      }}
     />
   );
 
@@ -307,7 +284,6 @@ export default function SessionComponent(props: {
       {notesComponent}
       {emptyInfo}
       <ItemList items={session.recordedExercises} renderItem={renderItem} />
-      {addExerciseButton}
       {bodyweight}
       {workoutSummary}
     </FullHeightScrollView>

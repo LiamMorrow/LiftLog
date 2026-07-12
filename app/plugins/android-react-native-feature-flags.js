@@ -26,9 +26,7 @@ module.exports = function withAndroidReactNativeFeatureFlags(config) {
       return config;
     }
     if (!contents.includes(IMPORT_ANCHOR) || !LOAD_ANCHOR.test(contents)) {
-      throw new Error(
-        'android-react-native-feature-flags: MainApplication.kt no longer matches the expected template'
-      );
+      throw new Error('android-react-native-feature-flags: MainApplication.kt no longer matches the expected template');
     }
     contents = contents.replace(IMPORT_ANCHOR, `${IMPORT_ANCHOR}\n${IMPORTS}`);
     contents = contents.replace(LOAD_ANCHOR, `$1${OVERRIDE}`);

@@ -5,9 +5,7 @@ import type { ProgramBlueprintJSON } from '@/models/storage/versions/latest/blue
 const ajv = new Ajv({ validateFormats: false, discriminator: true });
 const validate = ajv.compile<ProgramBlueprintJSON>(programBlueprintSchema);
 
-export type BlueprintValidationResult =
-  | { ok: true; value: ProgramBlueprintJSON }
-  | { ok: false; error: string };
+export type BlueprintValidationResult = { ok: true; value: ProgramBlueprintJSON } | { ok: false; error: string };
 
 /**
  * Validates that `json` matches the latest {@link ProgramBlueprintJSON} shape.

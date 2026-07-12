@@ -1,14 +1,12 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import ProgramListItem from '@/components/smart/program-list-item';
 import { ProgramBlueprint } from '@/models/blueprint-models';
-import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { importPlanFromPicker, savePlan, selectAllPrograms } from '@/store/program';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { View } from 'react-native';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import AddIcon from '@expo/material-symbols/add.xml';
 import DownloadIcon from '@expo/material-symbols/download.xml';

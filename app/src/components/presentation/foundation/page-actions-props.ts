@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { ImageSourcePropType } from 'react-native';
 import { SFSymbol } from 'sf-symbols-typescript';
 
@@ -22,4 +23,9 @@ export interface PageActionsProps {
   primary: PageAction;
   secondary?: PageAction[];
   primaryKind?: PrimaryActionKind;
+  /**
+   * Floats above the actions, spanning the full width so that it reads the same whether the
+   * platform centres its actions or anchors them to a corner.
+   */
+  accessory?: ReactNode;
 }

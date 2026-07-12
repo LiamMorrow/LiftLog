@@ -1,6 +1,6 @@
 appId: com.limajuice.liftlog
 flows:
-  - "*.yaml"
+  - '*.yaml'
 executionOrder:
   continueOnFailure: false
   flowsOrder:

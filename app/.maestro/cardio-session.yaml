@@ -4,42 +4,42 @@ appId: com.limajuice.liftlog
 - launchApp
 # A cold dev-client launch can take up to a minute to fetch the bundle from Metro
 - extendedWaitUntil:
-    visible: "Workout"
+    visible: 'Workout'
     timeout: 60000
-- tapOn: "Workout"
-- tapOn: "Freeform workout"
+- tapOn: 'Workout'
+- tapOn: 'Freeform workout'
 - tapOn:
-    id: "session-more"
+    id: 'session-more'
 - tapOn:
-    id: "session-add-exercise"
+    id: 'session-add-exercise'
 - tapOn:
-    id: "cardio-button"
+    id: 'cardio-button'
 - back
 
 # Add a time tracker; the timer appears
 - tapOn:
-    id: "add-tracker-button"
+    id: 'add-tracker-button'
 - tapOn:
-    id: "add-tracker-menu-time"
+    id: 'add-tracker-menu-time'
 - assertVisible:
-    id: "cardio-timer-play-pause"
+    id: 'cardio-timer-play-pause'
 
 # Start and stop the timer (verifies play/pause without a flaky elapsed-time check)
 - tapOn:
-    id: "cardio-timer-play-pause"
+    id: 'cardio-timer-play-pause'
 - tapOn:
-    id: "cardio-timer-play-pause"
+    id: 'cardio-timer-play-pause'
 
 # When stopped the timer is editable; set 45 seconds and confirm it takes
 - tapOn:
-    id: "timer-editor-seconds"
+    id: 'timer-editor-seconds'
 - eraseText
-- inputText: "45"
+- inputText: '45'
 - hideKeyboard
-- assertVisible: "45"
+- assertVisible: '45'
 
 # Finish the (incomplete) session and confirm
 - tapOn:
-    id: "finish-session-button"
+    id: 'finish-session-button'
 - tapOn:
-    id: "action-ok"
+    id: 'action-ok'

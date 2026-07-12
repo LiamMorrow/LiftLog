@@ -1,4 +1,3 @@
-
 import { GesturePressableProps } from '@/components/presentation/foundation/gesture-wrappers/pressable-props';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { isNotNullOrUndefined } from '@/utils/null';

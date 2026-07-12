@@ -4,44 +4,44 @@ appId: com.limajuice.liftlog
 - launchApp
 # A cold dev-client launch can take up to a minute to fetch the bundle from Metro
 - extendedWaitUntil:
-    visible: "Workout"
+    visible: 'Workout'
     timeout: 60000
-- tapOn: "Workout"
-- tapOn: "Freeform workout"
+- tapOn: 'Workout'
+- tapOn: 'Freeform workout'
 
 # Add an exercise (defaults to "New Exercise", 3 sets x 10 reps) and leave it as-is
 - tapOn:
-    id: "session-more"
+    id: 'session-more'
 - tapOn:
-    id: "session-add-exercise"
+    id: 'session-add-exercise'
 - back
 
 # Log the first set, which starts the rest timer
 - tapOn:
-    id: "repcount"
+    id: 'repcount'
 - assertVisible:
-    id: "rest-timer"
+    id: 'rest-timer'
 
 # Set the weight to 7.5kg (3 x 2.5kg increments) and save
 - tapOn:
-    id: "repcount-weight"
+    id: 'repcount-weight'
 - tapOn:
-    id: "increment-weight"
+    id: 'increment-weight'
 - tapOn:
-    id: "increment-weight"
+    id: 'increment-weight'
 - tapOn:
-    id: "increment-weight"
+    id: 'increment-weight'
 - tapOn:
-    id: "save"
+    id: 'save'
 
 # Finish the (incomplete) session and confirm
 - tapOn:
-    id: "finish-session-button"
+    id: 'finish-session-button'
 - tapOn:
-    id: "action-ok"
+    id: 'action-ok'
 
 # It shows up in History with the logged weight
-- tapOn: "History"
+- tapOn: 'History'
 - assertVisible:
-    id: "session-summary-title"
-- assertVisible: "7.5 kg"
+    id: 'session-summary-title'
+- assertVisible: '7.5 kg'

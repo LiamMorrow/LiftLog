@@ -1,12 +1,13 @@
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { PageAction, PageActionsProps } from '@/components/presentation/foundation/page-actions-props';
 import { Button, HStack, Host } from '@expo/ui/swift-ui';
-import { buttonStyle, foregroundStyle, glassEffect, padding } from '@expo/ui/swift-ui/modifiers';
+import { buttonStyle, foregroundStyle, glassEffect, padding, shadow } from '@expo/ui/swift-ui/modifiers';
+import { floatingShadowModifier } from '@/components/presentation/foundation/floating-shadow';
 import { View } from 'react-native';
 
 // iOS draws a commit and a recurring action the same way, so `primaryKind` is unused here:
 // emphasis comes from the glass tint rather than from a different control.
-export function PageActions({ primary, secondary = [] }: PageActionsProps) {
+export function PageActions({ primary, secondary = [], accessory }: PageActionsProps) {
   const { colors } = useAppTheme();
 
   const glassButton = (action: PageAction, isPrimary: boolean) => (
@@ -29,13 +30,22 @@ export function PageActions({ primary, secondary = [] }: PageActionsProps) {
   );
 
   return (
-    <View style={{ alignItems: 'center', paddingHorizontal: spacing.pageHorizontalMargin, paddingBottom: spacing[3] }}>
+    <View
+      style={{
+        alignItems: 'center',
+        gap: spacing[2],
+        paddingHorizontal: spacing.pageHorizontalMargin,
+        paddingBottom: spacing[3],
+      }}
+    >
       <Host matchContents seedColor={colors.seedColor}>
-        <HStack spacing={8}>
+        {/* The shadow rides the stack, not the buttons: glass swallows a shadow set on itself. */}
+        <HStack spacing={8} modifiers={[shadow(floatingShadowModifier)]}>
           {glassButton(primary, true)}
           {secondary.map((action) => glassButton(action, false))}
         </HStack>
       </Host>
+      {accessory && <View style={{ alignSelf: 'stretch' }}>{accessory}</View>}
     </View>
   );
 }

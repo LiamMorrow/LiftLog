@@ -58,7 +58,13 @@ export function TimePeriodSelector({ timePeriod, setTimePeriod }: TimePeriodSele
       ? timePeriod
       : undefined;
   const options: SelectPickerOption<LocalDateRange | 'all-time' | 'custom'>[] = activeCustomRange
-    ? [...timeOptions, { label: `${activeCustomRange.from.toString()} - ${activeCustomRange.to.toString()}`, value: activeCustomRange }]
+    ? [
+        ...timeOptions,
+        {
+          label: `${activeCustomRange.from.toString()} - ${activeCustomRange.to.toString()}`,
+          value: activeCustomRange,
+        },
+      ]
     : timeOptions;
 
   function handleCustomRangePicked(params: { startDate: Date | undefined; endDate: Date | undefined }) {

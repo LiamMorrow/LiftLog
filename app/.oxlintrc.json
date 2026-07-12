@@ -26,7 +26,17 @@
     "no-redeclare": "off",
     "no-empty-pattern": "off",
 
-    "no-unused-vars": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        "fix": {
+          "imports": "fix",
+          "variables": "suggestion"
+        },
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
 
     "react/rules-of-hooks": "error",
     "react/exhaustive-deps": "warn",

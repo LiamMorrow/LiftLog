@@ -7,9 +7,7 @@ import { fromJsonBytes, toJsonBytes } from '@/services/encryption-service';
 export const PLAN_FILE_EXTENSION = 'liftlogplan';
 export const PLAN_FILE_MIME = 'application/json';
 
-export type ParsedPlanFile =
-  | { ok: true; blueprint: ProgramBlueprint }
-  | { ok: false; error: string };
+export type ParsedPlanFile = { ok: true; blueprint: ProgramBlueprint } | { ok: false; error: string };
 
 export function serializeProgramBlueprint(blueprint: ProgramBlueprint): Uint8Array {
   return toJsonBytes(blueprint.toJSON());
