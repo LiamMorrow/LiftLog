@@ -12,7 +12,6 @@ export default function Menu({ trigger, items, testID, size = 40 }: MenuProps) {
         {items.map((item) => (
           <Button
             key={item.label}
-            testID={item.testID}
             role={item.destructive ? 'destructive' : undefined}
             systemImage={item.systemImage}
             label={item.label}

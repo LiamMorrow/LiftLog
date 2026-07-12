@@ -94,7 +94,6 @@ function AndroidMenu(props: { target: SessionTarget; save: () => void; onEditWor
           {
             label: t('workout.edit.button'),
             icon: 'edit',
-            testID: 'session-edit',
             onPress: onEditWorkout,
           },
         ]}

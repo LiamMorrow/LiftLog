@@ -190,34 +190,31 @@ function AddTrackerButtonMenu(props: {
     unit: imperialByDefault ? 'mile' : 'kilometre',
   };
 
-  const menuItem = (name: string, labelKey: TranslationKey, action: () => void): MenuItem => ({
+  const menuItem = (labelKey: TranslationKey, action: () => void): MenuItem => ({
     label: t(labelKey),
-    testID: 'add-tracker-menu-' + name,
     onPress: action,
   });
 
   const menuItems = [
     !set.distance &&
       (blueprint.trackDistance || blueprint.target.type === 'distance') &&
-      menuItem('distance', 'exercise.distance.label', () => updateDistance(distanceTarget)),
+      menuItem('exercise.distance.label', () => updateDistance(distanceTarget)),
 
     !set.duration &&
       (blueprint.trackDuration || blueprint.target.type === 'time') &&
-      menuItem('time', 'generic.time.label', () => updateDuration(Duration.ZERO)),
+      menuItem('generic.time.label', () => updateDuration(Duration.ZERO)),
 
-    !set.incline &&
-      blueprint.trackIncline &&
-      menuItem('incline', 'exercise.incline.label', () => updateIncline(BigNumber(0))),
+    !set.incline && blueprint.trackIncline && menuItem('exercise.incline.label', () => updateIncline(BigNumber(0))),
 
     !set.resistance &&
       blueprint.trackResistance &&
-      menuItem('resistance', 'exercise.resistance.label', () => updateResistance(BigNumber(0))),
+      menuItem('exercise.resistance.label', () => updateResistance(BigNumber(0))),
 
     !set.weight &&
       blueprint.trackWeight &&
-      menuItem('weight', 'weight.weight.label', () => updateWeight(new Weight(0, preferredWeightUnit))),
+      menuItem('weight.weight.label', () => updateWeight(new Weight(0, preferredWeightUnit))),
 
-    blueprint.trackSteps && menuItem('steps', 'exercise.steps.label', () => updateSteps(0)),
+    blueprint.trackSteps && menuItem('exercise.steps.label', () => updateSteps(0)),
   ].filter(isNotNullOrUndefinedOrFalse);
   const showAddButton = !!menuItems.length;
   if (!showAddButton) {

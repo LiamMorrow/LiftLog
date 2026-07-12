@@ -7,13 +7,18 @@ appId: com.limajuice.liftlog
     visible: 'Workout'
     timeout: 60000
 - tapOn: 'Workout'
-- tapOn: 'Freeform workout'
+# Text matching is case-insensitive by default, which would also match the "Freeform Workout"
+# cards in the list, so `(?-i)` pins this to the button's own casing.
+- tapOn: '(?-i)Freeform workout'
+# A session left in progress by an earlier run has to be replaced before a fresh one starts
+- runFlow:
+    when:
+      visible: 'Replace current workout?'
+    commands:
+      - tapOn: 'Replace'
 
 # Add an exercise (defaults to "New Exercise", 3 sets x 10 reps) and leave it as-is
-- tapOn:
-    id: 'session-more'
-- tapOn:
-    id: 'session-add-exercise'
+- tapOn: 'Add exercise'
 - back
 
 # Log the first set, which starts the rest timer

@@ -8,10 +8,10 @@ tags:
 # run this flow as part of the normal local `npm run e2e` loop - see README.
 - launchApp:
     clearState: true
-- tapOn:
-    id: 'welcome-wizard-next'
-- tapOn:
-    id: 'welcome-wizard-next'
-- tapOn:
-    id: 'welcome-wizard-next'
-- assertVisible: 'Freeform workout'
+# The wizard is three pages, so the last of these commits it
+- tapOn: '^Next$'
+- tapOn: '^Next$'
+- tapOn: 'Get started'
+# The freeform button names itself via its icon's content description; matching is
+# case-insensitive by default, so `(?-i)` keeps this off the "Freeform Workout" cards.
+- assertVisible: '(?-i)Freeform workout'

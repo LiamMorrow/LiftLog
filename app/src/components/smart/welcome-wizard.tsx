@@ -246,12 +246,7 @@ export function WelcomeWizard() {
                 <Button mode="text" onPress={handlePrevious} disabled={currentPage === 0} style={styles.button}>
                   {t('generic.previous.button')}
                 </Button>
-                <Button
-                  mode="contained"
-                  testID="welcome-wizard-next"
-                  onPress={() => void handleNext()}
-                  style={styles.button}
-                >
+                <Button mode="contained" onPress={() => void handleNext()} style={styles.button}>
                   {currentPage === totalPages - 1 ? t('onboarding.get_started.button') : t('generic.next.button')}
                 </Button>
               </View>

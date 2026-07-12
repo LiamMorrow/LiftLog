@@ -10,8 +10,7 @@ appId: com.limajuice.liftlog
 - tapOn: 'Manage exercises'
 
 # Add a new exercise
-- tapOn:
-    id: 'exercise-add-fab'
+- tapOn: 'Add exercise'
 - assertVisible: 'New exercise'
 
 # Delete reveals an undo snackbar that restores the exercise

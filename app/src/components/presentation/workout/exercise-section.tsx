@@ -72,14 +72,12 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             label: t('generic.edit.button'),
             icon: 'edit',
             systemImage: 'pencil',
-            testID: 'exercise-edit-menu-button',
             onPress: () => props.onEditExercise(),
           },
           {
             label: t('generic.notes.label'),
             icon: 'notes',
             systemImage: 'note.text',
-            testID: 'exercise-notes-more-btn',
             onPress: () => setNotesDialogOpen(true),
           },
           ...(showStats
@@ -88,7 +86,6 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
                   label: t('stats.stats.title'),
                   icon: 'analytics',
                   systemImage: 'chart.bar',
-                  testID: 'exercise-stats-menu-button',
                   onPress: () =>
                     push(
                       `/stats/expanded-weighted-exercise?exerciseName=${encodeURIComponent(recordedExercise.blueprint.name)}`,

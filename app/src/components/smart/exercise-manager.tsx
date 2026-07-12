@@ -215,7 +215,6 @@ export default function ExerciseManager() {
             icon: AddIcon,
             systemImage: 'plus',
             onPress: addExercise,
-            testID: 'exercise-add-fab',
           }}
         />
       </View>

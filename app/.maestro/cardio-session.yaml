@@ -7,20 +7,25 @@ appId: com.limajuice.liftlog
     visible: 'Workout'
     timeout: 60000
 - tapOn: 'Workout'
-- tapOn: 'Freeform workout'
-- tapOn:
-    id: 'session-more'
-- tapOn:
-    id: 'session-add-exercise'
+# Text matching is case-insensitive by default, which would also match the "Freeform Workout"
+# cards in the list, so `(?-i)` pins this to the button's own casing.
+- tapOn: '(?-i)Freeform workout'
+# A session left in progress by an earlier run has to be replaced before a fresh one starts
+- runFlow:
+    when:
+      visible: 'Replace current workout?'
+    commands:
+      - tapOn: 'Replace'
+- tapOn: 'Add exercise'
 - tapOn:
     id: 'cardio-button'
 - back
 
-# Add a time tracker; the timer appears
+# Add a time tracker; the timer appears.
+# Anchored so it picks the menu item over the "Total workout time" summary row.
 - tapOn:
     id: 'add-tracker-button'
-- tapOn:
-    id: 'add-tracker-menu-time'
+- tapOn: '^Time$'
 - assertVisible:
     id: 'cardio-timer-play-pause'
 

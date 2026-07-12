@@ -15,7 +15,6 @@ export function PageActions({ primary, secondary = [], accessory }: PageActionsP
       key={action.label}
       label={action.label}
       systemImage={action.systemImage}
-      testID={action.testID}
       onPress={action.onPress}
       modifiers={[
         buttonStyle('plain'),

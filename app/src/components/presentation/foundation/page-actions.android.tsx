@@ -35,10 +35,17 @@ export function PageActions({ primary, secondary = [], primaryKind = 'surface', 
 
   // A toolbar holding nothing but a FAB is an icon with no way to read its meaning, so a
   // lone surface action gets an extended FAB, which keeps its label alongside the icon.
+  // A FAB shows its label as a Compose Text, which never reaches the accessibility tree, and the
+  // extended one drops the label entirely once collapsed. Either way the icon is the only thing
+  // left to name the button, so it carries the description.
+  const primaryIcon = (
+    <Icon source={primary.icon} size={24} tint={colors.onPrimaryContainer} contentDescription={primary.label} />
+  );
+
   const surfaceActions = secondary.length ? (
     <HorizontalFloatingToolbar variant="standard">
       <HorizontalFloatingToolbar.FloatingActionButton onPress={primary.onPress}>
-        <Icon source={primary.icon} size={24} tint={colors.onPrimaryContainer} />
+        {primaryIcon}
       </HorizontalFloatingToolbar.FloatingActionButton>
       {secondary.map((action) => (
         <TextButton key={action.label} onClick={action.onPress}>
@@ -48,9 +55,7 @@ export function PageActions({ primary, secondary = [], primaryKind = 'surface', 
     </HorizontalFloatingToolbar>
   ) : (
     <ExtendedFloatingActionButton onClick={primary.onPress} expanded={!isScrollingDown}>
-      <ExtendedFloatingActionButton.Icon>
-        <Icon source={primary.icon} size={24} tint={colors.onPrimaryContainer} />
-      </ExtendedFloatingActionButton.Icon>
+      <ExtendedFloatingActionButton.Icon>{primaryIcon}</ExtendedFloatingActionButton.Icon>
       <ExtendedFloatingActionButton.Text>
         <Text>{primary.label}</Text>
       </ExtendedFloatingActionButton.Text>

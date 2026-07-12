@@ -9,7 +9,6 @@ export interface PageAction {
   icon: ImageSourcePropType;
   /** iOS only. */
   systemImage: SFSymbol;
-  testID?: string;
 }
 
 /**

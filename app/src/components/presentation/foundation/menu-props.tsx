@@ -9,7 +9,6 @@ export interface MenuItem {
   systemImage?: SFSymbol;
   destructive?: boolean;
   disabled?: boolean;
-  testID?: string;
 }
 
 export interface MenuProps {
