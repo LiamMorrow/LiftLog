@@ -32,8 +32,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release view plan-builder-skill > /dev/null 2>&1 || gh release create plan-builder-skill \
-            --title "LiftLog Plan Builder skill" \
-            --notes "The latest \`create-liftlog-plan\` skill, packaged for upload to claude.ai. See [docs/PlanFileFormat.md](https://github.com/LiamMorrow/LiftLog/blob/main/docs/PlanFileFormat.md)." \
-            --latest=false
+          if ! gh release view plan-builder-skill > /dev/null 2>&1; then
+            echo "::error::The 'plan-builder-skill' release does not exist, and CI cannot create it (tag creation is blocked by the Release Blocking ruleset). A repo admin must create it once with: gh release create plan-builder-skill --title 'LiftLog Plan Builder skill' --notes '...' --latest=false"
+            exit 1
+          fi
           gh release upload plan-builder-skill create-liftlog-plan.zip --clobber

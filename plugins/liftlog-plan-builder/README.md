@@ -33,13 +33,13 @@ When it's done, get the file onto your phone (AirDrop, email, or Files) and tap 
 
 ## What's in here
 
-| Path | |
-| --- | --- |
-| `skills/create-liftlog-plan/SKILL.md` | The skill itself. |
-| `skills/create-liftlog-plan/reference/format.md` | Field-by-field guide to the format. |
-| `skills/create-liftlog-plan/reference/ProgramBlueprint.json` | The JSON Schema. Generated — see below. |
-| `skills/create-liftlog-plan/scripts/validate-plan.mjs` | Validator. No dependencies, no network. Generated — see below. |
-| `skills/create-liftlog-plan/examples/` | A weighted plan and a cardio plan. |
+| Path                                                         |                                                                |
+| ------------------------------------------------------------ | -------------------------------------------------------------- |
+| `skills/create-liftlog-plan/SKILL.md`                        | The skill itself.                                              |
+| `skills/create-liftlog-plan/reference/format.md`             | Field-by-field guide to the format.                            |
+| `skills/create-liftlog-plan/reference/ProgramBlueprint.json` | The JSON Schema. Generated — see below.                        |
+| `skills/create-liftlog-plan/scripts/validate-plan.mjs`       | Validator. No dependencies, no network. Generated — see below. |
+| `skills/create-liftlog-plan/examples/`                       | A weighted plan and a cardio plan.                             |
 
 `ProgramBlueprint.json` and `validate-plan.mjs` are **generated** from the app's TypeScript models by `cd app && npm run json-schema`. Don't edit them by hand; change `app/src/models/storage/versions/latest/blueprint.ts` and regenerate.
 
