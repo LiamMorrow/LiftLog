@@ -9,7 +9,6 @@ import { Platform } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Jiggler } from '@/components/presentation/foundation/jiggler';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
-import { sessionUserEventMigrations } from '@/models/storage/versions/migrations';
 
 export default function SessionMoreMenuComponent(props: { target: SessionTarget; save: () => void }) {
   const { save, target } = props;
