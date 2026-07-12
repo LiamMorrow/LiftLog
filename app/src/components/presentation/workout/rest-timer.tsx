@@ -179,6 +179,7 @@ export default function RestTimer({
               textTransform: 'uppercase',
               letterSpacing: 0.8,
             }}
+            numberOfLines={1}
             font="text-xs"
             weight="bold"
             color={accent}

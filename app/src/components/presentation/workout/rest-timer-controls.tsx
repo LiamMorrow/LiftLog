@@ -9,7 +9,7 @@ import { useTranslate } from '@tolgee/react';
 
 // A button hugs its label, so without padding the puck shrink-wraps the glyph and the controls run
 // together.
-const controlPadding = padding({ horizontal: spacing[2], vertical: spacing[2] });
+const controlPadding = padding({ horizontal: spacing[1], vertical: spacing[1] });
 
 // SF Symbols have different intrinsic widths at the same point size, so a button hugging the glyph
 // alone lets `arrow.counterclockwise` outgrow `xmark`. Squaring off the icon keeps the pucks equal.
@@ -21,7 +21,7 @@ export function RestTimerControls({ paused, onRestart, onTogglePause, onDismiss 
 
   return (
     <Host matchContents seedColor={colors.seedColor}>
-      <HStack spacing={spacing[1]} alignment="center">
+      <HStack alignment="center">
         <Button
           onPress={onRestart}
           modifiers={[buttonStyle('glass'), controlPadding, accessibilityLabel(t('rest_timer.restart'))]}
