@@ -1,0 +1,62 @@
+name: Build plan builder skill
+
+on:
+  push:
+    branches-ignore: [main]
+    paths:
+      - plugins/**
+      - app/scripts/generate-json-schemas.js
+      - app/scripts/build-plan-validator.mjs
+      - app/src/models/storage/versions/latest/blueprint.ts
+      - .github/workflows/plan-builder-skill-build.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: ./app/package-lock.json
+      - name: Install
+        run: npm ci
+        working-directory: ./app
+
+      # The schema is copied to three places and the validator is compiled from
+      # it, all as committed build artifacts. Regenerating them here proves the
+      # committed copies still match the models they came from.
+      - name: Regenerate schemas and validator
+        run: npm run json-schema
+        working-directory: ./app
+      - name: Format the generated app schema
+        run: npx oxfmt --write src/models/generated
+        working-directory: ./app
+      - name: Check the committed artifacts are up to date
+        run: |
+          if ! git diff --exit-code -- docs/schemas app/src/models/generated plugins/liftlog-plan-builder; then
+            echo "::error::Generated schema or validator is out of date. Run 'cd app && npm run json-schema && npm run format' and commit the result."
+            exit 1
+          fi
+
+      - name: Validate the published example plans
+        run: |
+          for plan in plugins/liftlog-plan-builder/skills/create-liftlog-plan/examples/*.liftlogplan; do
+            node plugins/liftlog-plan-builder/skills/create-liftlog-plan/scripts/validate-plan.mjs "$plan"
+          done
+
+      - name: Package the skill for claude.ai
+        run: zip -r ../../../create-liftlog-plan.zip create-liftlog-plan/
+        working-directory: ./plugins/liftlog-plan-builder/skills
+
+      - name: Upload the skill zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: create-liftlog-plan
+          path: create-liftlog-plan.zip

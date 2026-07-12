@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "liftlog-plan-builder",
+  "displayName": "LiftLog Plan Builder",
+  "description": "Generate LiftLog workout plans (.liftlogplan files) from a training goal, validated against the app's own schema.",
+  "author": {
+    "name": "Liam Morrow",
+    "url": "https://github.com/LiamMorrow"
+  },
+  "homepage": "https://github.com/LiamMorrow/LiftLog/blob/main/docs/PlanFileFormat.md",
+  "repository": "https://github.com/LiamMorrow/LiftLog",
+  "license": "AGPL-3.0",
+  "keywords": ["liftlog", "workout", "fitness", "training-plan"]
+}

@@ -1,0 +1,160 @@
+{
+  "version": 2,
+  "name": "Couch to 5k",
+  "lastEdited": "2026-07-12",
+  "sessions": [
+    {
+      "version": 2,
+      "name": "Run - Intervals",
+      "notes": "Alternate the jog and walk intervals. Stop early if you cannot hold a conversation.",
+      "exercises": [
+        {
+          "type": "CardioExerciseBlueprint",
+          "name": "Brisk Walk (warm up)",
+          "notes": "",
+          "link": "",
+          "sets": [
+            {
+              "target": { "type": "time", "value": "PT5M" },
+              "trackDuration": true,
+              "trackDistance": false,
+              "trackResistance": false,
+              "trackIncline": false,
+              "trackWeight": false,
+              "trackSteps": false
+            }
+          ]
+        },
+        {
+          "type": "CardioExerciseBlueprint",
+          "name": "Jog",
+          "notes": "Eight rounds of one minute.",
+          "link": "",
+          "sets": [
+            {
+              "target": { "type": "time", "value": "PT1M" },
+              "trackDuration": true,
+              "trackDistance": true,
+              "trackResistance": false,
+              "trackIncline": false,
+              "trackWeight": false,
+              "trackSteps": false
+            },
+            {
+              "target": { "type": "time", "value": "PT1M" },
+              "trackDuration": true,
+              "trackDistance": true,
+              "trackResistance": false,
+              "trackIncline": false,
+              "trackWeight": false,
+              "trackSteps": false
+            },
+            {
+              "target": { "type": "time", "value": "PT1M" },
+              "trackDuration": true,
+              "trackDistance": true,
+              "trackResistance": false,
+              "trackIncline": false,
+              "trackWeight": false,
+              "trackSteps": false
+            },
+            {
+              "target": { "type": "time", "value": "PT1M" },
+              "trackDuration": true,
+              "trackDistance": true,
+              "trackResistance": false,
+              "trackIncline": false,
+              "trackWeight": false,
+              "trackSteps": false
+            }
+          ]
+        },
+        {
+          "type": "CardioExerciseBlueprint",
+          "name": "Walk (recovery)",
+          "notes": "",
+          "link": "",
+          "sets": [
+            {
+              "target": { "type": "time", "value": "PT90S" },
+              "trackDuration": true,
+              "trackDistance": false,
+              "trackResistance": false,
+              "trackIncline": false,
+              "trackWeight": false,
+              "trackSteps": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "version": 2,
+      "name": "Run - Distance",
+      "notes": "",
+      "exercises": [
+        {
+          "type": "CardioExerciseBlueprint",
+          "name": "Steady Run",
+          "notes": "Build up to the full five kilometres over the programme.",
+          "link": "",
+          "sets": [
+            {
+              "target": {
+                "type": "distance",
+                "value": { "value": "5", "unit": "kilometre" }
+              },
+              "trackDuration": true,
+              "trackDistance": true,
+              "trackResistance": false,
+              "trackIncline": false,
+              "trackWeight": false,
+              "trackSteps": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "version": 2,
+      "name": "Cross Training",
+      "notes": "A low impact day between runs.",
+      "exercises": [
+        {
+          "type": "CardioExerciseBlueprint",
+          "name": "Stationary Bike",
+          "notes": "",
+          "link": "",
+          "sets": [
+            {
+              "target": { "type": "time", "value": "PT20M" },
+              "trackDuration": true,
+              "trackDistance": true,
+              "trackResistance": true,
+              "trackIncline": false,
+              "trackWeight": false,
+              "trackSteps": false
+            }
+          ]
+        },
+        {
+          "type": "WeightedExerciseBlueprint",
+          "name": "Bodyweight Squat",
+          "sets": 3,
+          "repsPerSet": 15,
+          "restBetweenSets": {
+            "minRest": "PT1M",
+            "maxRest": "PT90S",
+            "failureRest": "PT2M"
+          },
+          "supersetWithNext": false,
+          "notes": "No added weight - this is here to keep the legs honest.",
+          "link": "",
+          "progressiveOverload": {
+            "type": "NoProgressiveOverload"
+          }
+        }
+      ]
+    }
+  ]
+}

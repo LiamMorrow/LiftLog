@@ -2,7 +2,7 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import ProgramListItem from '@/components/smart/program-list-item';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { useAppSelector } from '@/store';
-import { importPlanFromPicker, savePlan, selectAllPrograms } from '@/store/program';
+import { savePlan, selectAllPrograms } from '@/store/program';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
@@ -45,7 +45,7 @@ export default function ProgramList() {
           label: t('plan.import.button'),
           icon: DownloadIcon,
           systemImage: 'square.and.arrow.down',
-          onPress: () => dispatch(importPlanFromPicker()),
+          onPress: () => push('/settings/import-plan-info'),
         },
       ]}
     />

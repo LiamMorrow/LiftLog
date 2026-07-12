@@ -6,6 +6,7 @@ const { join, dirname } = require('node:path');
 
 const modelsDir = join(__dirname, '../src/models');
 const docsSchemasPath = join(__dirname, '../../docs/schemas/');
+const planBuilderSkillDir = join(__dirname, '../../plugins/liftlog-plan-builder/skills/create-liftlog-plan');
 // Create schemas for storage
 
 // Create schema for workout-worker — one file per definition
@@ -21,12 +22,15 @@ createSingleSchema(
 
 // Create schema for an importable/exportable program blueprint file. The docs
 // copy is published for users to author plans against; the app copy is bundled
-// so it can be loaded at runtime for validation (Metro can't reach docs/).
+// so it can be loaded at runtime for validation (Metro can't reach docs/); the
+// skill copy ships inside the plan-builder skill, which is installed standalone
+// into ~/.claude or a claude.ai container and so can reach neither of the above.
 createSingleSchema(
   join(modelsDir, 'storage/versions/latest/blueprint.ts'),
   [
     join(docsSchemasPath, 'program-blueprint/ProgramBlueprint.json'),
     join(modelsDir, 'generated/program-blueprint.schema.json'),
+    join(planBuilderSkillDir, 'reference/ProgramBlueprint.json'),
   ],
   'ProgramBlueprint',
 );

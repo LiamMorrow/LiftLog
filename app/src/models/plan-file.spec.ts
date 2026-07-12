@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { parseProgramBlueprintFile, serializeProgramBlueprint } from '@/models/plan-file';
 import type { ProgramBlueprintJSON } from '@/models/storage/versions/latest/blueprint';
@@ -91,5 +93,16 @@ describe('plan-file', () => {
   it('rejects a plan whose shape does not match the schema', () => {
     const result = parseProgramBlueprintFile(encode({ version: 2, name: 'Broken', sessions: 'nope' }));
     expect(result.ok).toBe(false);
+  });
+
+  // The plan-builder skill publishes these as the reference for anyone authoring
+  // a plan by hand or with an AI, so they have to survive the real import path.
+  it.each(['push-pull-legs', 'couch-to-5k'])('imports the published %s example', (name) => {
+    const path = join(
+      __dirname,
+      `../../../plugins/liftlog-plan-builder/skills/create-liftlog-plan/examples/${name}.liftlogplan`,
+    );
+    const result = parseProgramBlueprintFile(readFileSync(path));
+    expect(result.ok).toBe(true);
   });
 });

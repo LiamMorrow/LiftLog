@@ -1,0 +1,39 @@
+name: Publish plan builder skill
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - plugins/**
+      - .github/workflows/plan-builder-skill-publish.yml
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Package the skill for claude.ai
+        run: zip -r ../../../create-liftlog-plan.zip create-liftlog-plan/
+        working-directory: ./plugins/liftlog-plan-builder/skills
+
+      # A rolling release, so the download URL in the docs stays valid and always
+      # serves the current skill. Claude Code installs the plugin from the repo
+      # itself and never touches this; it exists for the claude.ai upload flow,
+      # which needs a single file rather than a checkout.
+      - name: Publish to the rolling release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view plan-builder-skill > /dev/null 2>&1 || gh release create plan-builder-skill \
+            --title "LiftLog Plan Builder skill" \
+            --notes "The latest \`create-liftlog-plan\` skill, packaged for upload to claude.ai. See [docs/PlanFileFormat.md](https://github.com/LiamMorrow/LiftLog/blob/main/docs/PlanFileFormat.md)." \
+            --latest=false
+          gh release upload plan-builder-skill create-liftlog-plan.zip --clobber

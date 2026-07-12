@@ -116,6 +116,7 @@ Contributions, issues, and feature requests are welcome! See [CONTRIBUTING.md](.
 
 ## 📚 Documentation
 
+- [Plan Files](./docs/PlanFileFormat.md) - Documents the `.liftlogplan` file format, and how to generate plans with an AI for import into the app.
 - [Feed Process](./docs/FeedProcess.md) - Documents how the feed and sharing works, especially around e2e encryption.
 - [Remote Backup](./docs/RemoteBackup.md) - Documents how to connect LiftLog to a remote backup server.
 - [Plaintext Export](./docs/PlaintextExport.md) - Documents how to export your data as plaintext.

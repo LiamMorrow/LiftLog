@@ -1,0 +1,15 @@
+{
+  "name": "liftlog",
+  "description": "Claude plugins for LiftLog, the open source workout tracker.",
+  "owner": {
+    "name": "Liam Morrow",
+    "url": "https://github.com/LiamMorrow"
+  },
+  "plugins": [
+    {
+      "name": "liftlog-plan-builder",
+      "source": "./plugins/liftlog-plan-builder",
+      "description": "Generate LiftLog workout plans (.liftlogplan files) from a training goal, validated against the app's own schema."
+    }
+  ]
+}

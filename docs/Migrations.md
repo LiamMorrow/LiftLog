@@ -70,10 +70,14 @@ This is the common case. Follow these steps:
 4. If your model **embeds another model** that has its own chain, migrate the
    nested value with `migrateUntil` (see below).
 5. If the changed type feeds a generated JSON schema (e.g. anything reachable
-   from the workout-worker messages), regenerate the schemas:
+   from the workout-worker messages, or the program blueprint), regenerate the
+   schemas:
    ```bash
    cd app && npm run json-schema
    ```
+   As well as the schemas themselves, this rebuilds the plan-file validator
+   shipped inside the plan-builder skill. Both are committed build artifacts, so
+   include them in your change. See [Plan Files](./PlanFileFormat.md).
 
 ### Adding a brand-new model
 
