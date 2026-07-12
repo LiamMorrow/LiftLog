@@ -11,11 +11,18 @@ import {
   Text,
   TextButton,
 } from '@expo/ui/jetpack-compose';
+import { PageActionsAccessory } from '@/components/presentation/foundation/page-actions-accessory';
 import { View } from 'react-native';
 
 const contentPadding = { start: 24, top: 16, end: 24, bottom: 16 };
 
-export function PageActions({ primary, secondary = [], primaryKind = 'surface', accessory }: PageActionsProps) {
+export function PageActions({
+  primary,
+  secondary = [],
+  primaryKind = 'surface',
+  primaryExpanded = true,
+  accessory,
+}: PageActionsProps) {
   const { colors } = useAppTheme();
 
   const label = (action: PageAction, color: string, iconSize: number) => (
@@ -46,7 +53,7 @@ export function PageActions({ primary, secondary = [], primaryKind = 'surface', 
       ))}
     </HorizontalFloatingToolbar>
   ) : (
-    <ExtendedFloatingActionButton onClick={primary.onPress} expanded>
+    <ExtendedFloatingActionButton onClick={primary.onPress} expanded={primaryExpanded}>
       <ExtendedFloatingActionButton.Icon>{primaryIcon}</ExtendedFloatingActionButton.Icon>
       <ExtendedFloatingActionButton.Text>
         <Text>{primary.label}</Text>
@@ -79,7 +86,7 @@ export function PageActions({ primary, secondary = [], primaryKind = 'surface', 
           </Row>
         )}
       </Host>
-      {accessory && <View style={{ alignSelf: 'stretch' }}>{accessory}</View>}
+      <PageActionsAccessory>{accessory}</PageActionsAccessory>
     </View>
   );
 }

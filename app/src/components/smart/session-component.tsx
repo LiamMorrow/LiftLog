@@ -232,6 +232,7 @@ export default function SessionComponent(props: {
   const floatingBottomContainer = isReadonly ? null : (
     <PageActions
       accessory={restTimer}
+      primaryExpanded={!restTimer}
       primary={{
         label: t('exercise.add.title'),
         icon: AddIcon,
