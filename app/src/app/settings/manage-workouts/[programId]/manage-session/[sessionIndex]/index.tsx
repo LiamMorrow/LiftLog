@@ -1,12 +1,13 @@
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import ExerciseBlueprintSummary from '@/components/presentation/workout-editor/exercise-blueprint-summary';
-import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import ItemList from '@/components/presentation/foundation/item-list';
 import Form from '@/components/presentation/foundation/form';
 import LabelledFormRow from '@/components/presentation/foundation/labelled-form-row';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
+import { PageActions } from '@/components/presentation/foundation/page-actions';
+import AddIcon from '@expo/material-symbols/add.xml';
 import CopyExerciseDialog from '@/components/smart/copy-exercise-dialog';
 import { spacing } from '@/hooks/useAppTheme';
 import {
@@ -32,7 +33,7 @@ import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { Redirect, Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Card, FAB, TextInput } from 'react-native-paper';
+import { Card, TextInput } from 'react-native-paper';
 import { useDispatch, useStore } from 'react-redux';
 
 export default function ManageWorkouts() {
@@ -111,10 +112,13 @@ function SessionEditor({
   };
 
   const floatingBottomContainer = (
-    <FloatingBottomContainer
-      fab={
-        <FAB variant="surface" size="small" icon={'add'} label={t('exercise.add.title')} onPress={beginAddExercise} />
-      }
+    <PageActions
+      primary={{
+        label: t('exercise.add.title'),
+        icon: AddIcon,
+        systemImage: 'plus',
+        onPress: beginAddExercise,
+      }}
     />
   );
   return (

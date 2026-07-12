@@ -1,8 +1,9 @@
 import CardList from '@/components/presentation/foundation/card-list';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
-import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
+import { PageActions } from '@/components/presentation/foundation/page-actions';
+import AddIcon from '@expo/material-symbols/add.xml';
 import ManageWorkoutCardContent from '@/components/smart/manage-workout-card-content';
 import { spacing } from '@/hooks/useAppTheme';
 import { SessionBlueprint } from '@/models/blueprint-models';
@@ -12,7 +13,7 @@ import { addProgramSession, selectProgram, setSavedPlanName } from '@/store/prog
 import { setEditingSession } from '@/store/session-editor';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { Card, FAB, TextInput } from 'react-native-paper';
+import { Card, TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export default function ManageWorkouts() {
@@ -39,8 +40,13 @@ export default function ManageWorkouts() {
     );
   };
   const floatingBottomContainer = (
-    <FloatingBottomContainer
-      fab={<FAB variant="surface" size="small" icon={'add'} label={t('workout.add.button')} onPress={addWorkout} />}
+    <PageActions
+      primary={{
+        label: t('workout.add.button'),
+        icon: AddIcon,
+        systemImage: 'plus',
+        onPress: addWorkout,
+      }}
     />
   );
   const emptyInfo = program.sessions.length ? undefined : (

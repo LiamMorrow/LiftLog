@@ -1,5 +1,6 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
+import AssignmentAddIcon from '@expo/material-symbols/assignment_add.xml';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
@@ -43,7 +44,7 @@ export default function ImportPlan() {
             primaryKind="commit"
             primary={{
               label: t('plan.import.save.button'),
-              icon: 'assignmentAdd',
+              icon: AssignmentAddIcon,
               systemImage: 'plus',
               onPress: save,
             }}

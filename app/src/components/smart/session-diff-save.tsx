@@ -1,7 +1,8 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
+import { PageActions } from '@/components/presentation/foundation/page-actions';
+import SaveIcon from '@expo/material-symbols/save.xml';
 import SessionDiffView from '@/components/presentation/summary/session-diff-view';
 import { spacing } from '@/hooks/useAppTheme';
 import {
@@ -18,7 +19,7 @@ import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { FAB, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 /**
@@ -110,7 +111,15 @@ export function SessionDiffSaveEditor() {
   };
 
   const floatingBottomContainer = (
-    <FloatingBottomContainer fab={<FAB icon={'save'} label={t('generic.save.button')} onPress={save} />} />
+    <PageActions
+      primaryKind="commit"
+      primary={{
+        label: t('generic.save.button'),
+        icon: SaveIcon,
+        systemImage: 'square.and.arrow.down',
+        onPress: save,
+      }}
+    />
   );
 
   return (

@@ -1,10 +1,12 @@
-import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
+import { ImageSourcePropType } from 'react-native';
 import { SFSymbol } from 'sf-symbols-typescript';
 
 export interface PageAction {
   label: string;
   onPress: () => void;
-  icon: AppIconSource;
+  /** Android only: an XML vector drawable, e.g. `@expo/material-symbols/add.xml`. */
+  icon: ImageSourcePropType;
+  /** iOS only. */
   systemImage: SFSymbol;
   testID?: string;
 }

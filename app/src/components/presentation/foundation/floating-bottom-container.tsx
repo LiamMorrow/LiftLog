@@ -2,13 +2,7 @@ import { spacing } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
 
-export default function FloatingBottomContainer({
-  fab,
-  additionalContent,
-}: {
-  fab?: ReactNode;
-  additionalContent?: ReactNode;
-}) {
+export default function FloatingBottomContainer({ additionalContent }: { additionalContent?: ReactNode }) {
   return (
     <View
       style={{
@@ -20,19 +14,6 @@ export default function FloatingBottomContainer({
         pointerEvents: 'box-none',
       }}
     >
-      {fab ? (
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            width: '100%',
-            marginTop: spacing[2],
-          }}
-        >
-          {fab}
-        </View>
-      ) : undefined}
       {additionalContent}
     </View>
   );

@@ -1,5 +1,6 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
+import { PageActions } from '@/components/presentation/foundation/page-actions';
+import CheckIcon from '@expo/material-symbols/check.xml';
 import { SessionComparisonTable } from '@/components/presentation/workout/session-comparison-table';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelectorWithArg } from '@/store';
@@ -9,7 +10,6 @@ import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { View } from 'react-native';
-import { FAB } from 'react-native-paper';
 
 export default function PostWorkoutPage() {
   const { sessionId, source } = useLocalSearchParams<{
@@ -37,8 +37,14 @@ export default function PostWorkoutPage() {
   }
 
   const floatingBottomContainer = showFinishButton ? (
-    <FloatingBottomContainer
-      fab={<FAB onPress={() => dismissTo('/(session)')} icon={'check'} label={t('generic.finish.button')} />}
+    <PageActions
+      primaryKind="commit"
+      primary={{
+        label: t('generic.finish.button'),
+        icon: CheckIcon,
+        systemImage: 'checkmark',
+        onPress: () => dismissTo('/(session)'),
+      }}
     />
   ) : undefined;
 

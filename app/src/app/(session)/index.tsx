@@ -1,9 +1,10 @@
 import CardActions from '@/components/presentation/foundation/card-actions';
 import CardList from '@/components/presentation/foundation/card-list';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
-import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import { PageActions } from '@/components/presentation/foundation/page-actions';
+import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
 import { Remote } from '@/components/presentation/foundation/remote';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
@@ -21,7 +22,7 @@ import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Card, FAB, Text, Tooltip } from 'react-native-paper';
+import { Card, Text, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import { WelcomeWizard } from '@/components/smart/welcome-wizard';
@@ -206,16 +207,13 @@ export default function Index() {
   };
 
   const floatingBottomContainer = (
-    <FloatingBottomContainer
-      fab={
-        <FAB
-          variant="surface"
-          size="small"
-          icon="fitnessCenter"
-          label={t('workout.freeform.title')}
-          onPress={createFreeformSession}
-        />
-      }
+    <PageActions
+      primary={{
+        label: t('workout.freeform.title'),
+        icon: FitnessCenterIcon,
+        systemImage: 'dumbbell',
+        onPress: createFreeformSession,
+      }}
     />
   );
 

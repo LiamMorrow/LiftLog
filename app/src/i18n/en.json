@@ -447,7 +447,7 @@
   "workout.post_workout.title": "Workout Stats",
   "workout.removed.message": "Workout removed",
   "workout.rest_timers.label": "Rest timers",
-  "workout.rest_timers.subtitle": "Automatically time your rest between sets. Turning this off hides all rest timers and disables rest notifications",
+  "workout.rest_timers.subtitle": "Disabling this hides all rest timers and disables rest notifications",
   "workout.replace_current.confirm.title": "Replace current workout?",
   "workout.replace_current_session.button": "Replace current session",
   "workout.replace_in_progress.confirm.body": "There is already a workout in progress, replace it without saving?",

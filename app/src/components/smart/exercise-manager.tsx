@@ -1,8 +1,10 @@
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { NativeScrollEvent, NativeSyntheticEvent, Platform, View } from 'react-native';
-import { AnimatedFAB, Icon, List, TextInput } from 'react-native-paper';
+import { Platform, View } from 'react-native';
+import { Icon, List, TextInput } from 'react-native-paper';
+import { PageActions } from '@/components/presentation/foundation/page-actions';
+import AddIcon from '@expo/material-symbols/add.xml';
 import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
 import { AccordionItem } from '@/components/presentation/foundation/accordion-item';
 import { useScroll } from '@/hooks/useScrollListener';
@@ -126,7 +128,8 @@ export default function ExerciseManager() {
   const insets = useSafeAreaInsets();
   const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
   const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
-  const bottomInsetHeight = Platform.select({ ios: insets.bottom }) ?? 0;
+  const [floatingBottomSize, setFloatingBottomSize] = useState(0);
+  const bottomInsetHeight = floatingBottomSize + (Platform.select({ ios: insets.bottom }) ?? 0);
 
   const addExercise = () => {
     const newId = uuid();
@@ -167,17 +170,10 @@ export default function ExerciseManager() {
 
   const flatListItems = useMemo(() => ['filter', ...filteredExerciseIds], [filteredExerciseIds]);
   const { handleScroll } = useScroll();
-  const [fabExtended, setFabExtended] = useState(true);
-  const [lastScrollPosition, setLastScrollPosition] = useState(0);
-  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    handleScroll(e);
-    setFabExtended(e.nativeEvent.contentOffset.y <= Math.max(lastScrollPosition, 0));
-    setLastScrollPosition(e.nativeEvent.contentOffset.y);
-  };
   return (
     <View style={{ flex: 1 }}>
       <LegendList
-        onScroll={onScroll}
+        onScroll={handleScroll}
         contentContainerStyle={{
           insetBlockStart: topInsetHeight,
           insetBlockEnd: bottomInsetHeight,
@@ -205,18 +201,24 @@ export default function ExerciseManager() {
           );
         }}
       />
-      <AnimatedFAB
+      <View
+        onLayout={(event) => setFloatingBottomSize(event.nativeEvent.layout.height)}
         style={{
-          bottom: spacing.pageHorizontalMargin + bottomInsetHeight,
-          right: spacing.pageHorizontalMargin,
+          position: 'absolute',
+          bottom: Platform.select({ ios: insets.bottom }) ?? 0,
+          width: '100%',
         }}
-        extended={fabExtended}
-        variant="secondary"
-        label={t('exercise.add.button')}
-        onPress={addExercise}
-        icon={'add'}
-        testID="exercise-add-fab"
-      />
+      >
+        <PageActions
+          primary={{
+            label: t('exercise.add.button'),
+            icon: AddIcon,
+            systemImage: 'plus',
+            onPress: addExercise,
+            testID: 'exercise-add-fab',
+          }}
+        />
+      </View>
     </View>
   );
 }

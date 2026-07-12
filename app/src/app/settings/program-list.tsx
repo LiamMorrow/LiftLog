@@ -10,6 +10,8 @@ import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
+import AddIcon from '@expo/material-symbols/add.xml';
+import DownloadIcon from '@expo/material-symbols/download.xml';
 import { List } from 'react-native-paper';
 
 import { useDispatch } from 'react-redux';
@@ -36,14 +38,14 @@ export default function ProgramList() {
     <PageActions
       primary={{
         label: t('plan.add.button'),
-        icon: 'add',
+        icon: AddIcon,
         systemImage: 'plus',
         onPress: addProgram,
       }}
       secondary={[
         {
           label: t('plan.import.button'),
-          icon: 'download',
+          icon: DownloadIcon,
           systemImage: 'square.and.arrow.down',
           onPress: () => dispatch(importPlanFromPicker()),
         },
