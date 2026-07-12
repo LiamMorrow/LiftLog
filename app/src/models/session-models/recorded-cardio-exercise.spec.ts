@@ -179,4 +179,82 @@ describe('RecordedCardioExerciseSet', () => {
     expect(a.equals(undefined)).toBe(false);
     expect(a.equals(b.with({ duration: Duration.ofMinutes(6) }))).toBe(false);
   });
+
+  it('treats a zero as an answer and only undefined as unanswered', () => {
+    const bp = makeCardioSetBlueprint({ trackDuration: true, trackSteps: true });
+    const set = RecordedCardioExerciseSet.empty(bp).with({ duration: Duration.ZERO, distance });
+
+    expect(set.isCompletelyFilled).toBe(false);
+    expect(set.with({ steps: 0 }).isCompletelyFilled).toBe(true);
+  });
+});
+
+describe('RecordedCardioExerciseSet timer', () => {
+  const bp = makeCardioSetBlueprint({ trackDuration: true });
+  const start = tick();
+
+  it('counts what the running block has added on top of what was banked', () => {
+    const set = RecordedCardioExerciseSet.empty(bp).with({
+      duration: Duration.ofSeconds(30),
+      currentBlockStartTime: start,
+    });
+
+    expect(set.elapsedAt(start.plusSeconds(15))).toEqual(Duration.ofSeconds(45));
+  });
+
+  it('records the time actually run, not the time targeted', () => {
+    const set = RecordedCardioExerciseSet.empty(bp).withTimerStarted(start);
+    const stopped = set.withTimerStopped(start.plusSeconds(90));
+
+    expect(stopped.duration).toEqual(Duration.ofSeconds(90));
+    expect(stopped.currentBlockStartTime).toBeUndefined();
+    expect(stopped.isTimerRunning).toBe(false);
+  });
+
+  it('banks each block, so stopping and restarting accumulates', () => {
+    const first = RecordedCardioExerciseSet.empty(bp).withTimerStarted(start).withTimerStopped(start.plusSeconds(60));
+    const second = first.withTimerStarted(start.plusSeconds(90)).withTimerStopped(start.plusSeconds(120));
+
+    expect(second.duration).toEqual(Duration.ofSeconds(90));
+  });
+
+  it('stopping a set that was never started leaves it alone', () => {
+    const set = RecordedCardioExerciseSet.empty(bp);
+    expect(set.withTimerStopped(tick())).toBe(set);
+  });
+
+  it('re-anchoring banks the block so far without stopping the clock', () => {
+    const set = RecordedCardioExerciseSet.empty(bp).withTimerStarted(start);
+    const reanchored = set.withTimerReanchored(start.plusSeconds(10));
+
+    expect(reanchored.duration).toEqual(Duration.ofSeconds(10));
+    expect(reanchored.currentBlockStartTime).toEqual(start.plusSeconds(10));
+    expect(reanchored.elapsedAt(start.plusSeconds(10))).toEqual(Duration.ofSeconds(10));
+  });
+
+  it('re-anchoring a stopped clock does not restart it', () => {
+    // The periodic re-anchor can land in the gap between the user stopping a set and the timer
+    // being torn down.
+    const stopped = RecordedCardioExerciseSet.empty(bp).withTimerStarted(start).withTimerStopped(start.plusSeconds(30));
+    const reanchored = stopped.withTimerReanchored(start.plusSeconds(31));
+
+    expect(reanchored.isTimerRunning).toBe(false);
+    expect(reanchored.duration).toEqual(Duration.ofSeconds(30));
+  });
+});
+
+describe('RecordedCardioExercise.lastCompletedSet', () => {
+  it('is the set most recently completed, not the last in order', () => {
+    const exercise = RecordedCardioExercise.empty(makeCardioBlueprint(3));
+    const t = tick();
+    const withCompletions = exercise
+      .withSet(0, (s) => s.with({ completionDateTime: t.plusSeconds(10) }))
+      .withSet(2, (s) => s.with({ completionDateTime: t.plusSeconds(5) }));
+
+    expect(withCompletions.lastCompletedSet).toBe(withCompletions.sets[0]);
+  });
+
+  it('is undefined when nothing has been completed', () => {
+    expect(RecordedCardioExercise.empty(makeCardioBlueprint(2)).lastCompletedSet).toBeUndefined();
+  });
 });

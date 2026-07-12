@@ -52,6 +52,8 @@ export interface CardioExerciseSetBlueprintJSON {
   trackIncline: boolean;
   trackWeight: boolean;
   trackSteps: boolean;
+  /** Absent when the set has no rest - steady-state cardio does not need one. */
+  restBetweenSets?: RestJSON | undefined;
 }
 
 export interface CardioExerciseBlueprintJSON {

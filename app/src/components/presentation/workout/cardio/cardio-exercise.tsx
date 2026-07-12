@@ -1,41 +1,29 @@
 import { RecordedCardioExercise, RecordedCardioExerciseSet } from '@/models/session-models';
 import ExerciseSection from '@/components/presentation/workout/exercise-section';
-import {
-  CardioTarget,
-  Distance,
-  DistanceCardioTarget,
-  DistanceUnit,
-  TimeCardioTarget,
-} from '@/models/blueprint-models';
-import { T, TranslationKey, useTranslate } from '@tolgee/react';
+import { CardioTarget, Distance, DistanceUnit } from '@/models/blueprint-models';
+import { T, useTranslate } from '@tolgee/react';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
-import { useState } from 'react';
 import { Duration, OffsetDateTime } from '@js-joda/core';
+import { useEffect, useState } from 'react';
 
 import { View } from 'react-native';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Text } from 'react-native-paper';
 import Menu from '@/components/presentation/foundation/menu';
-import { MenuItem } from '@/components/presentation/foundation/menu-props';
 import BigNumber from 'bignumber.js';
 import { useAppSelector } from '@/store';
-import { isNotNullOrUndefinedOrFalse } from '@/utils/null';
-import { CardioTimer } from '@/components/presentation/workout/cardio/cardio-timer';
-import { CardioResistanceTracker } from '@/components/presentation/workout/cardio/cardio-tesistance-tracker';
-import { CardioInclineTracker } from '@/components/presentation/workout/cardio/cardio-incline-tracker';
 import { formatDuration } from '@/utils/format-duration';
 import { getShortUnit } from '@/utils/unit';
 import { DecimalEditor } from '@/components/presentation/foundation/editors/decimal-editor';
-import { CardioValueSelector } from '@/components/presentation/workout/cardio/cardio-value-selector';
+import { IntegerEditor } from '@/components/presentation/foundation/editors/integer-editor';
+import { WeightEditor } from '@/components/presentation/foundation/editors/weight-editor';
+import DurationEditor from '@/components/presentation/foundation/editors/duration-editor';
+import { CardioValueTile } from '@/components/presentation/workout/cardio/cardio-value-tile';
 import FocusRing from '@/components/presentation/foundation/focus-ring';
 import { Weight } from '@/models/weight';
-import { CardioWeightTracker } from '@/components/presentation/workout/cardio/cardio-weight-tracker';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
-import { CardioStepsTracker } from '@/components/presentation/workout/cardio/cardio-steps-tracker';
 import { Updater } from '@/utils/types';
-
-type CardioExerciseSetCallback<T> = (value: T) => void;
 
 interface CardioExerciseProps {
   recordedExercise: RecordedCardioExercise;
@@ -45,44 +33,36 @@ interface CardioExerciseProps {
   showPreviousButton: boolean;
 
   updateExercise: (update: Updater<RecordedCardioExercise>) => void;
+  updateSet: (setIndex: number, update: Updater<RecordedCardioExerciseSet>) => void;
+  onStartTimer: (setIndex: number) => void;
   onEditExercise: () => void;
   onRemoveExercise: () => void;
 }
 
 export function CardioExercise(props: CardioExerciseProps) {
-  const setCallback =
-    <K extends keyof RecordedCardioExerciseSet, T extends RecordedCardioExerciseSet[K]>(
-      key: K,
-      setIndex: number,
-    ): CardioExerciseSetCallback<T> =>
-    (val) =>
-      props.updateExercise((ex) =>
-        ex.withSet(setIndex, (s) => s.with({ [key]: val }).withCompletionTimeIfCompleted(OffsetDateTime.now())),
-      );
+  const { recordedExercise, updateExercise, updateSet } = props;
+
   return (
     <ExerciseSection
-      recordedExercise={props.recordedExercise}
+      recordedExercise={recordedExercise}
       previousRecordedExercises={props.previousRecordedExercises}
       toStartNext={props.toStartNext}
       isReadonly={props.isReadonly}
       showPreviousButton={props.showPreviousButton}
-      updateExercise={props.updateExercise}
+      updateExercise={updateExercise}
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
     >
       <View style={{ gap: spacing[4] }}>
-        {props.recordedExercise.sets.map((set, setIndex) => (
+        {recordedExercise.sets.map((set, setIndex) => (
           <CardioExerciseSet
             set={set}
             key={setIndex}
-            toStartNext={props.toStartNext && (props.recordedExercise.sets[setIndex - 1]?.isCompletelyFilled ?? true)}
-            setCurrentBlockStartTime={setCallback('currentBlockStartTime', setIndex)}
-            updateDuration={setCallback('duration', setIndex)}
-            updateDistance={setCallback('distance', setIndex)}
-            updateWeight={setCallback('weight', setIndex)}
-            updateSteps={setCallback('steps', setIndex)}
-            updateIncline={setCallback('incline', setIndex)}
-            updateResistance={setCallback('resistance', setIndex)}
+            isReadonly={props.isReadonly}
+            toStartNext={props.toStartNext && (recordedExercise.sets[setIndex - 1]?.isCompletelyFilled ?? true)}
+            updateSet={(update) => updateSet(setIndex, update)}
+            onStartTimer={() => props.onStartTimer(setIndex)}
+            onStopTimer={() => updateSet(setIndex, (s) => s.withTimerStopped(OffsetDateTime.now()))}
           />
         ))}
       </View>
@@ -93,43 +73,43 @@ export function CardioExercise(props: CardioExerciseProps) {
 interface CardioExerciseSetProps {
   set: RecordedCardioExerciseSet;
   toStartNext: boolean;
+  isReadonly: boolean;
 
-  setCurrentBlockStartTime: CardioExerciseSetCallback<OffsetDateTime | undefined>;
-  updateDuration: CardioExerciseSetCallback<Duration | undefined>;
-  updateDistance: CardioExerciseSetCallback<Distance | undefined>;
-  updateWeight: CardioExerciseSetCallback<Weight | undefined>;
-  updateSteps: CardioExerciseSetCallback<number | undefined>;
-  updateIncline: CardioExerciseSetCallback<BigNumber | undefined>;
-  updateResistance: CardioExerciseSetCallback<BigNumber | undefined>;
+  updateSet: (update: Updater<RecordedCardioExerciseSet>) => void;
+  onStartTimer: () => void;
+  onStopTimer: () => void;
+}
+
+/** The recorded duration only banks on a cycle, so a running set reads the clock instead. */
+function useLiveDuration(set: RecordedCardioExerciseSet): Duration | undefined {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    if (!set.isTimerRunning) {
+      return;
+    }
+    const interval = setInterval(() => setTick((tick) => tick + 1), 500);
+    return () => clearInterval(interval);
+  }, [set.isTimerRunning]);
+
+  return set.isTimerRunning ? set.elapsedAt(OffsetDateTime.now()) : set.duration;
 }
 
 function CardioExerciseSet(props: CardioExerciseSetProps) {
-  const timer = props.set.duration && (
-    <CardioTimer
-      currentBlockStartTime={props.set.currentBlockStartTime}
-      setCurrentBlockStartTime={props.setCurrentBlockStartTime}
-      set={props.set}
-      updateDuration={props.updateDuration}
-    />
-  );
-  const distanceTracker = props.set.distance && (
-    <CardioDistanceTracker distance={props.set.distance} updateDistance={props.updateDistance} />
-  );
-  const inclineTracker = props.set.incline && (
-    <CardioInclineTracker incline={props.set.incline} updateIncline={props.updateIncline} />
-  );
-  const resistanceTracker = props.set.resistance && (
-    <CardioResistanceTracker resistance={props.set.resistance} updateResistance={props.updateResistance} />
-  );
-  const weightTracker = props.set.weight && (
-    <CardioWeightTracker weight={props.set.weight} updateWeight={props.updateWeight} />
-  );
-  const stepsTracker = props.set.steps !== undefined && (
-    <CardioStepsTracker steps={props.set.steps} updateSteps={props.updateSteps} />
-  );
+  const { set, updateSet, isReadonly } = props;
+  const { t } = useTranslate();
+  const imperialByDefault = useAppSelector((x) => x.settings.useImperialUnits);
+  const preferredWeightUnit = usePreferredWeightUnit();
+  const liveDuration = useLiveDuration(set);
+  const { blueprint } = set;
+
+  const emptyDistance: Distance = (blueprint.target.type === 'distance' && blueprint.target.value) || {
+    value: BigNumber(0),
+    unit: imperialByDefault ? 'mile' : 'kilometre',
+  };
+
   return (
     <View style={{ gap: spacing[4] }}>
-      <CardioTargetHandler target={props.set.blueprint.target} />
+      <CardioTargetHandler target={blueprint.target} />
       <View
         style={{
           flexDirection: 'row',
@@ -138,173 +118,177 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
           gap: spacing[2],
         }}
       >
-        {timer}
-        {distanceTracker}
-        {inclineTracker}
-        {resistanceTracker}
-        {weightTracker}
-        {stepsTracker}
-        <AddTrackerButtonMenu
-          set={props.set}
-          toStartNext={props.toStartNext}
-          updateDistance={props.updateDistance}
-          updateDuration={props.updateDuration}
-          updateIncline={props.updateIncline}
-          updateResistance={props.updateResistance}
-          updateWeight={props.updateWeight}
-          updateSteps={props.updateSteps}
-        />
+        {set.tracksDuration && (
+          <CardioDurationTile
+            duration={liveDuration}
+            isTimerRunning={set.isTimerRunning}
+            onSave={(duration) => updateSet((s) => s.with({ duration }))}
+          />
+        )}
+        {set.tracksDistance && (
+          <CardioDistanceTile
+            distance={set.distance}
+            emptyValue={emptyDistance}
+            onSave={(distance) => updateSet((s) => s.with({ distance }))}
+          />
+        )}
+        {blueprint.trackIncline && (
+          <CardioValueTile
+            value={set.incline}
+            emptyValue={BigNumber(0)}
+            format={localeFormatBigNumber}
+            label={t('exercise.incline.label')}
+            testID="cardio-incline-tile"
+            onSave={(incline) => updateSet((s) => s.with({ incline }))}
+          >
+            {(value, setValue) => <DecimalEditor style={{ flex: 1 }} value={value} onChange={setValue} />}
+          </CardioValueTile>
+        )}
+        {blueprint.trackResistance && (
+          <CardioValueTile
+            value={set.resistance}
+            emptyValue={BigNumber(0)}
+            format={localeFormatBigNumber}
+            label={t('exercise.resistance.label')}
+            testID="cardio-resistance-tile"
+            onSave={(resistance) => updateSet((s) => s.with({ resistance }))}
+          >
+            {(value, setValue) => <DecimalEditor style={{ flex: 1 }} value={value} onChange={setValue} />}
+          </CardioValueTile>
+        )}
+        {blueprint.trackWeight && (
+          <CardioValueTile
+            value={set.weight}
+            emptyValue={new Weight(0, preferredWeightUnit)}
+            format={(weight) => weight.shortLocaleFormat()}
+            label={t('weight.weight.label')}
+            testID="cardio-weight-tile"
+            dialogStyle={{ flexDirection: 'column', alignItems: 'stretch' }}
+            onSave={(weight) => updateSet((s) => s.with({ weight }))}
+          >
+            {(value, setValue) => (
+              <WeightEditor increment={BigNumber(2.5)} updateWeight={setValue} weight={value} allowNegative />
+            )}
+          </CardioValueTile>
+        )}
+        {blueprint.trackSteps && (
+          <CardioValueTile
+            value={set.steps}
+            emptyValue={0}
+            format={(steps) => steps.toString()}
+            label={t('exercise.steps.label')}
+            testID="cardio-steps-tile"
+            onSave={(steps) => updateSet((s) => s.with({ steps }))}
+          >
+            {(value, setValue) => <IntegerEditor style={{ flex: 1 }} value={value} onChange={setValue} />}
+          </CardioValueTile>
+        )}
+        {set.tracksDuration && !isReadonly && (
+          <FocusRing
+            isSelected={props.toStartNext && !set.isTimerRunning}
+            padding={0}
+            radius={rounding.roundedRectangleFocusRingRadius}
+          >
+            <CardioTimerButton
+              isTimerRunning={set.isTimerRunning}
+              onStart={props.onStartTimer}
+              onStop={props.onStopTimer}
+            />
+          </FocusRing>
+        )}
       </View>
     </View>
   );
 }
 
-function AddTrackerButtonMenu(props: {
-  set: RecordedCardioExerciseSet;
-  toStartNext: boolean;
-
-  updateDuration: CardioExerciseSetCallback<Duration | undefined>;
-  updateDistance: CardioExerciseSetCallback<Distance | undefined>;
-  updateIncline: CardioExerciseSetCallback<BigNumber | undefined>;
-  updateWeight: CardioExerciseSetCallback<Weight | undefined>;
-  updateSteps: CardioExerciseSetCallback<number | undefined>;
-  updateResistance: CardioExerciseSetCallback<BigNumber | undefined>;
+function CardioDurationTile(props: {
+  duration: Duration | undefined;
+  isTimerRunning: boolean;
+  onSave: (duration: Duration) => void;
 }) {
   const { t } = useTranslate();
-  const imperialByDefault = useAppSelector((x) => x.settings.useImperialUnits);
-  const preferredWeightUnit = usePreferredWeightUnit();
-  const {
-    set,
-    toStartNext,
-    updateDistance,
-    updateDuration,
-    updateIncline,
-    updateResistance,
-    updateSteps,
-    updateWeight,
-  } = props;
-  const { blueprint } = set;
-
-  const distanceTarget = (blueprint.target.type === 'distance' && blueprint.target.value) || {
-    value: BigNumber(0),
-    unit: imperialByDefault ? 'mile' : 'kilometre',
-  };
-
-  const menuItem = (labelKey: TranslationKey, action: () => void): MenuItem => ({
-    label: t(labelKey),
-    onPress: action,
-  });
-
-  const menuItems = [
-    !set.distance &&
-      (blueprint.trackDistance || blueprint.target.type === 'distance') &&
-      menuItem('exercise.distance.label', () => updateDistance(distanceTarget)),
-
-    !set.duration &&
-      (blueprint.trackDuration || blueprint.target.type === 'time') &&
-      menuItem('generic.time.label', () => updateDuration(Duration.ZERO)),
-
-    !set.incline && blueprint.trackIncline && menuItem('exercise.incline.label', () => updateIncline(BigNumber(0))),
-
-    !set.resistance &&
-      blueprint.trackResistance &&
-      menuItem('exercise.resistance.label', () => updateResistance(BigNumber(0))),
-
-    !set.weight &&
-      blueprint.trackWeight &&
-      menuItem('weight.weight.label', () => updateWeight(new Weight(0, preferredWeightUnit))),
-
-    blueprint.trackSteps && menuItem('exercise.steps.label', () => updateSteps(0)),
-  ].filter(isNotNullOrUndefinedOrFalse);
-  const showAddButton = !!menuItems.length;
-  if (!showAddButton) {
-    return undefined;
-  }
   return (
-    <Menu
-      size={56}
-      trigger={(open) => (
-        <FocusRing isSelected={toStartNext} padding={0} radius={rounding.roundedRectangleFocusRingRadius}>
-          <IconButton
-            style={{ borderRadius: rounding.roundedRectangleRadius }}
-            testID="add-tracker-button"
-            icon={'plus'}
-            mode="contained"
-            onPress={open}
-          />
-        </FocusRing>
+    <CardioValueTile
+      value={props.duration}
+      emptyValue={Duration.ZERO}
+      format={formatDuration}
+      label={t('generic.time.label')}
+      testID="cardio-duration-tile"
+      dialogStyle={{ flexDirection: 'column', alignItems: 'stretch' }}
+      onSave={props.onSave}
+    >
+      {(value, setValue) => (
+        <DurationEditor duration={value} showHours onDurationUpdated={setValue} readonly={props.isTimerRunning} />
       )}
-      items={menuItems}
+    </CardioValueTile>
+  );
+}
+
+function CardioDistanceTile(props: {
+  distance: Distance | undefined;
+  emptyValue: Distance;
+  onSave: (distance: Distance) => void;
+}) {
+  const { t } = useTranslate();
+  const units: DistanceUnit[] = ['kilometre', 'metre', 'mile', 'yard'];
+  return (
+    <CardioValueTile
+      value={props.distance}
+      emptyValue={props.emptyValue}
+      format={(distance) => localeFormatBigNumber(distance.value) + getShortUnit(distance.unit)}
+      label={t('exercise.distance.label')}
+      testID="cardio-distance-tile"
+      onSave={props.onSave}
+    >
+      {(value, setValue) => (
+        <>
+          <DecimalEditor
+            style={{ flex: 1 }}
+            value={value.value}
+            onChange={(distanceValue) => setValue({ ...value, value: distanceValue })}
+          />
+          <Menu
+            trigger={(open) => (
+              <IconButton onPress={open} mode="outlined" icon={() => <Text>{getShortUnit(value.unit)}</Text>} />
+            )}
+            items={units.map((unit) => ({
+              label: unit,
+              onPress: () => setValue({ ...value, unit }),
+            }))}
+          />
+        </>
+      )}
+    </CardioValueTile>
+  );
+}
+
+function CardioTimerButton(props: { isTimerRunning: boolean; onStart: () => void; onStop: () => void }) {
+  const { colors } = useAppTheme();
+  return (
+    <IconButton
+      testID="cardio-timer-play-pause"
+      icon={props.isTimerRunning ? 'pause' : 'playArrow'}
+      mode="contained-tonal"
+      onPress={props.isTimerRunning ? props.onStop : props.onStart}
+      containerColor={props.isTimerRunning ? colors.amber : colors.green}
+      iconColor={props.isTimerRunning ? colors.onAmber : colors.onGreen}
+      style={{ borderRadius: rounding.roundedRectangleRadius }}
     />
   );
 }
 
-function CardioDistanceTracker({
-  distance,
-  updateDistance,
-}: {
-  distance: Distance;
-  updateDistance: (distance: Distance | undefined) => void;
-}) {
-  const { t } = useTranslate();
-  const [dialogValue, setDialogValue] = useState(distance);
-  const units: DistanceUnit[] = ['kilometre', 'metre', 'mile', 'yard'];
-  return (
-    <CardioValueSelector
-      buttonText={localeFormatBigNumber(distance.value) + getShortUnit(distance.unit)}
-      label={t('exercise.distance.label')}
-      onButtonPress={() => setDialogValue(distance)}
-      onSave={() => updateDistance(dialogValue)}
-      onHold={() => updateDistance(undefined)}
-    >
-      <DecimalEditor
-        style={{ flex: 1 }}
-        value={dialogValue.value}
-        onChange={(value) => setDialogValue((dv) => ({ ...dv, value }))}
-      />
-      <Menu
-        trigger={(open) => (
-          <IconButton onPress={open} mode="outlined" icon={() => <Text>{getShortUnit(dialogValue.unit)}</Text>} />
-        )}
-        items={units.map((unit) => ({
-          label: unit,
-          onPress: () => setDialogValue((dv) => ({ ...dv, unit })),
-        }))}
-      />
-    </CardioValueSelector>
-  );
-}
-
 function CardioTargetHandler(props: { target: CardioTarget }) {
-  if (props.target.type === 'distance') {
-    return <DistanceCardioTargetHandler target={props.target} />;
-  }
-  return <TimeCardioTargetHandler target={props.target} />;
-}
-
-function DistanceCardioTargetHandler(props: { target: DistanceCardioTarget }) {
   const { colors } = useAppTheme();
+  const isDistance = props.target.type === 'distance';
   return (
     <View style={{ flexDirection: 'row', gap: spacing[2] }}>
       <Text variant="bodyLarge">
-        <T keyName="exercise.target_distance.label" />
+        <T keyName={isDistance ? 'exercise.target_distance.label' : 'exercise.target_time.label'} />
       </Text>
       <Text variant="bodyLarge" style={{ color: colors.primary }}>
-        {localeFormatBigNumber(props.target.value.value) + getShortUnit(props.target.value.unit)}
-      </Text>
-    </View>
-  );
-}
-
-function TimeCardioTargetHandler(props: { target: TimeCardioTarget }) {
-  const { colors } = useAppTheme();
-  return (
-    <View style={{ flexDirection: 'row', gap: spacing[2] }}>
-      <Text variant="bodyLarge">
-        <T keyName="exercise.target_time.label" />
-      </Text>
-      <Text variant="bodyLarge" style={{ color: colors.primary }}>
-        {formatDuration(props.target.value)}
+        {props.target.type === 'distance'
+          ? localeFormatBigNumber(props.target.value.value) + getShortUnit(props.target.value.unit)
+          : formatDuration(props.target.value)}
       </Text>
     </View>
   );

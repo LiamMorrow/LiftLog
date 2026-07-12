@@ -51,10 +51,11 @@ export function makeCardioSetBlueprint(
     { type: 'distance', value: { unit: 'kilometre', value: BigNumber(1000) } },
     overrides.trackDuration ?? true,
     overrides.trackDistance ?? false,
-    overrides.trackSteps ?? false,
     false, // trackResistance
     false, // trackIncline
     false, // trackWeight
+    overrides.trackSteps ?? false,
+    undefined, // restBetweenSets
   );
 }
 

@@ -1240,6 +1240,12 @@ var require_validate_schema = __commonJS({
             errors++;
           }
         }
+        if (data.restBetweenSets !== void 0) {
+          if (!validate14(data.restBetweenSets, { instancePath: instancePath + "/restBetweenSets", parentData: data, parentDataProperty: "restBetweenSets", rootData })) {
+            vErrors = vErrors === null ? validate14.errors : vErrors.concat(validate14.errors);
+            errors = vErrors.length;
+          }
+        }
       } else {
         const err13 = { instancePath, schemaPath: "#/type", keyword: "type", params: { type: "object" }, message: "must be object" };
         if (vErrors === null) {

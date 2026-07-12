@@ -279,6 +279,10 @@
         },
         "trackSteps": {
           "type": "boolean"
+        },
+        "restBetweenSets": {
+          "$ref": "#/definitions/Rest",
+          "description": "Absent when the set has no rest - steady-state cardio does not need one."
         }
       },
       "required": [

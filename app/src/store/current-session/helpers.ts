@@ -1,4 +1,10 @@
-import { EmptySession, RecordedCardioExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
+import {
+  EmptySession,
+  RecordedCardioExercise,
+  RecordedExercise,
+  RecordedWeightedExercise,
+  Session,
+} from '@/models/session-models';
 import { toDurationJSON, toInstantJson } from '@/models/storage/versions/latest';
 import { CardioTimerInfo, CurrentExerciseDetails, RestTimerInfo } from '@/models/workout-worker-messages';
 import { diffSessionBlueprints, PlanDiff } from '@/models/blueprint-diff';
@@ -30,24 +36,17 @@ export function getPlanDiff(program: ProgramBlueprint, session: Session): PlanDi
 }
 
 export function getCardioTimerInfo(session: Session): CardioTimerInfo | undefined {
-  const exerciseIndex = session.recordedExercises.findIndex(
-    (x) => x instanceof RecordedCardioExercise && x.sets.some((s) => s.currentBlockStartTime),
-  );
-
-  if (exerciseIndex === -1) {
+  const running = session.runningCardioSet;
+  if (!running) {
     return undefined;
   }
 
-  const exerciseWithRunningTimer = session.recordedExercises[exerciseIndex] as RecordedCardioExercise;
-  const setIndex = exerciseWithRunningTimer.sets.findIndex((s) => s.currentBlockStartTime);
-
-  if (setIndex === -1) {
-    return undefined;
-  }
-
+  const { set, exerciseIndex, setIndex } = running;
   return {
-    currentBlockStartTime: toInstantJson(exerciseWithRunningTimer.sets[setIndex]?.currentBlockStartTime?.toInstant()),
-    currentDuration: toDurationJSON(exerciseWithRunningTimer.duration ?? Duration.ZERO),
+    currentBlockStartTime: toInstantJson(set.currentBlockStartTime?.toInstant()),
+    // The notification anchors its clock at `currentBlockStartTime - currentDuration`, so this must
+    // be the set's own banked time and not the exercise's running total.
+    currentDuration: toDurationJSON(set.duration ?? Duration.ZERO),
     exerciseIndex,
     setIndex,
   };
@@ -65,21 +64,35 @@ export function getCurrentExerciseDetails(session: Session): CurrentExerciseDeta
 export function getTimerInfo(session: Session): RestTimerInfo | undefined {
   const lastExercise = session.lastExercise;
   const nextExercise = session.nextExercise;
-  if (
-    !session.restTimer ||
-    session.restTimer.isPaused ||
-    !lastExercise ||
-    !nextExercise ||
-    !(nextExercise instanceof RecordedWeightedExercise) ||
-    !(lastExercise instanceof RecordedWeightedExercise)
-  ) {
+  if (!session.restTimer || session.restTimer.isPaused || !lastExercise || !nextExercise) {
+    return undefined;
+  }
+
+  const rest = getRestWindow(lastExercise);
+  if (!rest || rest.partialRest.equals(Duration.ZERO)) {
+    return;
+  }
+  return {
+    startedAt: toInstantJson(session.restTimer.startedAt.toInstant()),
+    partiallyEndAt: toInstantJson(session.restTimer.startedAt.plus(rest.partialRest).toInstant()),
+    endAt: toInstantJson(session.restTimer.startedAt.plus(rest.fullRest).toInstant()),
+  };
+}
+
+/** Cardio rests per set and has nothing to fail; a weighted exercise rests per exercise. */
+function getRestWindow(lastExercise: RecordedExercise) {
+  if (lastExercise instanceof RecordedCardioExercise) {
+    const rest = lastExercise.lastCompletedSet?.blueprint.restBetweenSets;
+    return rest && { partialRest: rest.minRest, fullRest: rest.maxRest };
+  }
+  if (!(lastExercise instanceof RecordedWeightedExercise)) {
     return undefined;
   }
 
   const repsPerSet = lastExercise.blueprint.repsPerSet;
   const { minRest, maxRest, failureRest } = lastExercise.blueprint.restBetweenSets;
 
-  const rest = match(lastExercise.lastRecordedSet)
+  return match(lastExercise.lastRecordedSet)
     .with({ set: { repsCompleted: P.when((x) => x >= repsPerSet) } }, () => ({
       partialRest: minRest,
       fullRest: maxRest,
@@ -92,13 +105,4 @@ export function getTimerInfo(session: Session): RestTimerInfo | undefined {
       partialRest: Duration.ZERO,
       fullRest: Duration.ZERO,
     }));
-
-  if (rest.partialRest.equals(Duration.ZERO)) {
-    return;
-  }
-  return {
-    startedAt: toInstantJson(session.restTimer.startedAt.toInstant()),
-    partiallyEndAt: toInstantJson(session.restTimer.startedAt.plus(rest.partialRest).toInstant()),
-    endAt: toInstantJson(session.restTimer.startedAt.plus(rest.fullRest).toInstant()),
-  };
 }

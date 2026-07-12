@@ -21,26 +21,34 @@ appId: com.limajuice.liftlog
     id: 'cardio-button'
 - back
 
-# Add a time tracker; the timer appears.
-# Anchored so it picks the menu item over the "Total workout time" summary row.
-- tapOn:
-    id: 'add-tracker-button'
-- tapOn: '^Time$'
+# The plan says which metrics the set tracks, so its tiles are there before anything is entered.
 - assertVisible:
-    id: 'cardio-timer-play-pause'
+    id: 'cardio-duration-tile'
+- assertVisible:
+    id: 'cardio-distance-tile'
+- assertNotVisible:
+    id: 'add-tracker-button'
 
-# Start and stop the timer (verifies play/pause without a flaky elapsed-time check)
+# Running the clock docks the timer pane; stopping it puts the pane away again.
 - tapOn:
     id: 'cardio-timer-play-pause'
+- assertVisible:
+    id: 'cardio-timer'
 - tapOn:
     id: 'cardio-timer-play-pause'
+- assertNotVisible:
+    id: 'cardio-timer'
 
-# When stopped the timer is editable; set 45 seconds and confirm it takes
+# Typing is always available: the time tile takes a value without the clock being involved.
 - tapOn:
-    id: 'timer-editor-seconds'
+    id: 'cardio-duration-tile'
+- tapOn:
+    id: 'duration-editor-seconds'
 - eraseText
 - inputText: '45'
 - hideKeyboard
+- tapOn:
+    id: 'cardio-value-save'
 - assertVisible: '45'
 
 # Finish the (incomplete) session and confirm

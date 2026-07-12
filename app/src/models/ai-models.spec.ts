@@ -59,6 +59,7 @@ describe('aiPlanFromJSON', () => {
           true,
           true,
           true,
+          undefined,
         ),
       ],
       'Steady pace',

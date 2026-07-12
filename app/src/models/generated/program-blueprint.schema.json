@@ -20,7 +20,12 @@
       "$ref": "#/definitions/LocalDate"
     }
   },
-  "required": ["version", "name", "sessions", "lastEdited"],
+  "required": [
+    "version",
+    "name",
+    "sessions",
+    "lastEdited"
+  ],
   "definitions": {
     "SessionBlueprint": {
       "type": "object",
@@ -42,14 +47,21 @@
           "type": "string"
         }
       },
-      "required": ["version", "name", "exercises", "notes"]
+      "required": [
+        "version",
+        "name",
+        "exercises",
+        "notes"
+      ]
     },
     "ExerciseBlueprint": {
       "type": "object",
       "discriminator": {
         "propertyName": "type"
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "oneOf": [
         {
           "$ref": "#/definitions/WeightedExerciseBlueprint"
@@ -119,7 +131,11 @@
           "description": "Rest taken after a set where the user failed to hit their target reps."
         }
       },
-      "required": ["minRest", "maxRest", "failureRest"]
+      "required": [
+        "minRest",
+        "maxRest",
+        "failureRest"
+      ]
     },
     "Duration": {
       "type": "string",
@@ -130,7 +146,9 @@
       "discriminator": {
         "propertyName": "type"
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "oneOf": [
         {
           "$ref": "#/definitions/NoProgressiveOverload"
@@ -151,7 +169,9 @@
           "const": "NoProgressiveOverload"
         }
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "description": "Used when the user does not want progressive overload at all. Potentially with bodyweight exercises."
     },
     "IncreaseAllEvenlyProgressiveOverload": {
@@ -165,12 +185,17 @@
           "$ref": "#/definitions/BigNumber"
         }
       },
-      "required": ["type", "amount"],
+      "required": [
+        "type",
+        "amount"
+      ],
       "description": "The standard \"increase every set across the board\" progressive overload. Usually 2.5kg, or 5lb."
     },
     "BigNumber": {
       "type": "string",
-      "examples": ["1.23"],
+      "examples": [
+        "1.23"
+      ],
       "format": "decimal"
     },
     "IncreaseLowestSetProgressiveOverload": {
@@ -185,10 +210,19 @@
         },
         "increaseStrategy": {
           "type": "string",
-          "enum": ["first", "middle", "last", "all"]
+          "enum": [
+            "first",
+            "middle",
+            "last",
+            "all"
+          ]
         }
       },
-      "required": ["type", "amount", "increaseStrategy"],
+      "required": [
+        "type",
+        "amount",
+        "increaseStrategy"
+      ],
       "description": "A more complex progressive overload which allows the user to increase only a single set, or all sets which have the lowest weight.\n\nA user might want to increase the middle weight for exercises where going up across the board would be too much e.g. lateral raises, or other shoulder exercises"
     },
     "CardioExerciseBlueprint": {
@@ -214,7 +248,13 @@
           "type": "string"
         }
       },
-      "required": ["type", "name", "sets", "notes", "link"]
+      "required": [
+        "type",
+        "name",
+        "sets",
+        "notes",
+        "link"
+      ]
     },
     "CardioExerciseSetBlueprint": {
       "type": "object",
@@ -239,6 +279,10 @@
         },
         "trackSteps": {
           "type": "boolean"
+        },
+        "restBetweenSets": {
+          "$ref": "#/definitions/Rest",
+          "description": "Absent when the set has no rest - steady-state cardio does not need one."
         }
       },
       "required": [
@@ -256,7 +300,9 @@
       "discriminator": {
         "propertyName": "type"
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "oneOf": [
         {
           "$ref": "#/definitions/TimeCardioTarget"
@@ -277,7 +323,10 @@
           "$ref": "#/definitions/Duration"
         }
       },
-      "required": ["type", "value"]
+      "required": [
+        "type",
+        "value"
+      ]
     },
     "DistanceCardioTarget": {
       "type": "object",
@@ -290,7 +339,10 @@
           "$ref": "#/definitions/Distance"
         }
       },
-      "required": ["type", "value"]
+      "required": [
+        "type",
+        "value"
+      ]
     },
     "Distance": {
       "type": "object",
@@ -302,11 +354,19 @@
           "$ref": "#/definitions/DistanceUnit"
         }
       },
-      "required": ["value", "unit"]
+      "required": [
+        "value",
+        "unit"
+      ]
     },
     "DistanceUnit": {
       "type": "string",
-      "enum": ["metre", "yard", "mile", "kilometre"]
+      "enum": [
+        "metre",
+        "yard",
+        "mile",
+        "kilometre"
+      ]
     },
     "LocalDate": {
       "type": "string",

@@ -67,16 +67,64 @@ export class RecordedCardioExerciseSet {
 
   get isCompletelyFilled(): boolean {
     return (
-      (this.blueprint.trackDuration || this.blueprint.target.type === 'time'
-        ? !!this.duration && !this.duration.equals(Duration.ZERO)
-        : true) &&
-      (this.blueprint.trackDistance || this.blueprint.target.type === 'distance' ? !!this.distance : true) &&
+      (this.tracksDuration ? this.duration !== undefined : true) &&
+      (this.tracksDistance ? this.distance !== undefined : true) &&
       (this.blueprint.trackSteps ? this.steps !== undefined : true) &&
-      (this.blueprint.trackResistance ? !!this.resistance : true) &&
-      (this.blueprint.trackWeight ? !!this.weight : true) &&
-      (this.blueprint.trackIncline ? !!this.incline : true) &&
+      (this.blueprint.trackResistance ? this.resistance !== undefined : true) &&
+      (this.blueprint.trackWeight ? this.weight !== undefined : true) &&
+      (this.blueprint.trackIncline ? this.incline !== undefined : true) &&
       !this.currentBlockStartTime
     );
+  }
+
+  /** A time target implies its duration is tracked, whether or not the flag says so. */
+  get tracksDuration(): boolean {
+    return this.blueprint.trackDuration || this.blueprint.target.type === 'time';
+  }
+
+  /** A distance target implies its distance is tracked, whether or not the flag says so. */
+  get tracksDistance(): boolean {
+    return this.blueprint.trackDistance || this.blueprint.target.type === 'distance';
+  }
+
+  get isTimerRunning(): boolean {
+    return this.currentBlockStartTime !== undefined;
+  }
+
+  earnsRest(previous: RecordedCardioExerciseSet | undefined): boolean {
+    return (
+      this.blueprint.restBetweenSets !== undefined &&
+      previous !== undefined &&
+      previous.isCompletelyFilled !== this.isCompletelyFilled
+    );
+  }
+
+  elapsedAt(now: OffsetDateTime): Duration {
+    const banked = this.duration ?? Duration.ZERO;
+    return this.currentBlockStartTime ? banked.plus(Duration.between(this.currentBlockStartTime, now)) : banked;
+  }
+
+  withTimerStarted(now: OffsetDateTime): RecordedCardioExerciseSet {
+    return this.with({ currentBlockStartTime: now });
+  }
+
+  /** A re-anchor can race the user's own stop, and must never restart a clock they stopped. */
+  withTimerReanchored(now: OffsetDateTime): RecordedCardioExerciseSet {
+    if (!this.currentBlockStartTime) {
+      return this;
+    }
+    return this.with({ duration: this.elapsedAt(now), currentBlockStartTime: now });
+  }
+
+  /** The target is a goal, not a bound: a set run long records what it ran to, not what it aimed for. */
+  withTimerStopped(now: OffsetDateTime): RecordedCardioExerciseSet {
+    if (!this.currentBlockStartTime) {
+      return this;
+    }
+    return this.with({
+      duration: this.elapsedAt(now),
+      currentBlockStartTime: undefined,
+    });
   }
 
   toJSON(): RecordedCardioExerciseSetJSON {
@@ -107,7 +155,13 @@ export class RecordedCardioExerciseSet {
   }
 
   withCompletionTimeIfCompleted(time: OffsetDateTime): RecordedCardioExerciseSet {
-    const hasData = !!(this.distance || (this.duration && !this.duration.isZero()) || this.incline || this.resistance);
+    const hasData =
+      this.duration !== undefined ||
+      this.distance !== undefined ||
+      this.incline !== undefined ||
+      this.resistance !== undefined ||
+      this.weight !== undefined ||
+      this.steps !== undefined;
     const newCompletionDateTime = hasData ? (this.completionDateTime ?? time) : undefined;
 
     return this.with({ completionDateTime: newCompletionDateTime });
@@ -169,6 +223,15 @@ export class RecordedCardioExercise {
 
   get isComplete(): boolean {
     return this.sets.every((x) => x.isCompletelyFilled);
+  }
+
+  /** The set whose rest is owed — cardio carries its rest per set, not per exercise. */
+  get lastCompletedSet(): RecordedCardioExerciseSet | undefined {
+    return this.sets.reduce<RecordedCardioExerciseSet | undefined>((latest, set) => {
+      if (!set.completionDateTime) return latest;
+      if (!latest?.completionDateTime) return set;
+      return set.completionDateTime.isAfter(latest.completionDateTime) ? set : latest;
+    }, undefined);
   }
 
   get isStarted() {

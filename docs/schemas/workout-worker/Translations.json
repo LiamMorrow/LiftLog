@@ -20,6 +20,9 @@
     "workoutPersistentNotificationCurrentExerciseMessage": {
       "type": "string"
     },
+    "workoutPersistentNotificationCardioTargetReachedMessage": {
+      "type": "string"
+    },
     "workoutPersistentNotificationFinishedMessage": {
       "type": "string"
     },
@@ -37,6 +40,7 @@
     "workoutPersistentNotificationMinRestOverMessage",
     "workoutPersistentNotificationMaxRestOverMessage",
     "workoutPersistentNotificationCurrentExerciseMessage",
+    "workoutPersistentNotificationCardioTargetReachedMessage",
     "workoutPersistentNotificationFinishedMessage",
     "workoutPersistentNotificationInProgressMessage",
     "workoutPersistentNotificationFinishWorkoutAction"

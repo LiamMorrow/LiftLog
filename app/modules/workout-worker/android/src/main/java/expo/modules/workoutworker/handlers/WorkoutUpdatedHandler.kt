@@ -35,6 +35,10 @@ class WorkoutUpdatedHandler(
 
     val timer = RepeatingTimerAction(MainScope(), {})
 
+    // Every workout update restarts the timer callback, so "have we announced this target yet" has to
+    // outlive it - otherwise a set left running past its target re-announces on every update.
+    private var announcedCardioTarget: Pair<Int, Int>? = null
+
     override suspend fun handle(
         event: WorkoutMessage,
         dispatch: (type: String, event: WorkoutMessage) -> Unit
@@ -177,20 +181,59 @@ class WorkoutUpdatedHandler(
         if(cardioTimerInfo.currentBlockStartTime == null){
             return
         }
+
+        // Nothing knows when a distance target will be met, so only a time target can be counted down to.
+        val target = getRunningCardioSet(workoutUpdatedEvent)?.blueprint?.target
+        val targetSecs = (target as? TimeCardioTarget)?.let {
+            Duration.parseIsoString(it.value).toLong(SECONDS)
+        }
+
+        val setKey = cardioTimerInfo.exerciseIndex.toInt() to cardioTimerInfo.setIndex.toInt()
         timer.updateCallback {
             val currentDuration = Duration.parseIsoString(cardioTimerInfo.currentDuration)
             val timeStartSecs =
                 cardioTimerInfo.currentBlockStartTime.epochSeconds - currentDuration.toInt(SECONDS)
             val now = Clock.System.now().epochSeconds
-            val timeMessage = formatDuration((now - timeStartSecs).toDuration(SECONDS))
-            val notifBuilder =
+            val elapsedSecs = now - timeStartSecs
+
+            val reached = targetSecs != null && elapsedSecs >= targetSecs
+            if (reached && announcedCardioTarget != setKey) {
+                announcedCardioTarget = setKey
+                notificationManager.notifyRest(
+                    notificationManager.createRestNotificationBuilder()
+                        .setContentTitle(translations.workoutPersistentNotificationCardioTargetReachedMessage)
+                        .build()
+                )
+                MainScope().launch {
+                    delay(10_000)
+                    notificationManager.clearRestNotification()
+                }
+            }
+
+            val timeMessage = when {
+                targetSecs == null -> formatDuration(elapsedSecs.toDuration(SECONDS))
+                reached -> "+${formatDuration((elapsedSecs - targetSecs).toDuration(SECONDS))}"
+                else -> formatDuration((targetSecs - elapsedSecs).toDuration(SECONDS))
+            }
+
+            var notifBuilder =
                 notificationManager.createWorkoutNotificationBuilder()
                     .setContentText(currentExerciseMessage)
                     .setSubText(timeMessage)
+            if (targetSecs != null && !reached) {
+                notifBuilder = notifBuilder.setProgress(targetSecs.toInt(), elapsedSecs.toInt(), false)
+            }
 
             notificationManager.notifyPersistent(notifBuilder.build())
         }
         timer.start()
+    }
+
+    private fun getRunningCardioSet(event: WorkoutUpdatedEvent): RecordedCardioExerciseSet? {
+        val cardioTimerInfo = event.cardioTimerInfo ?: return null
+        val exercise = event.workout.recordedExercises
+            .getOrNull(cardioTimerInfo.exerciseIndex.toInt()) as? RecordedCardioExercise ?: return null
+        return exercise.sets.getOrNull(cardioTimerInfo.setIndex.toInt())
     }
 
     @SuppressLint("DefaultLocale")
@@ -214,21 +257,10 @@ class WorkoutUpdatedHandler(
             (event.currentExerciseDetails?.exercise as? RecordedWeightedExercise?)?.potentialSets?.firstOrNull { it.set == null }
 
         fun getCardioTarget(): String {
-            var set: RecordedCardioExerciseSet
-            if (event.cardioTimerInfo != null) {
-                val exerciseIndex = event.cardioTimerInfo.exerciseIndex
-                val setIndex = event.cardioTimerInfo.setIndex
-                val exercise =
-                    event.workout.recordedExercises[exerciseIndex.toInt()] as? RecordedCardioExercise?
-                        ?: return ""
-                set = exercise.sets[setIndex.toInt()]
-            } else {
-                val currentExercise = event.currentExerciseDetails?:return ""
-                val setIndex = currentExercise.setIndex
-                val exercise =
-                    currentExercise.exercise as? RecordedCardioExercise?
-                        ?: return ""
-                set = exercise.sets[setIndex.toInt()]
+            val set = getRunningCardioSet(event) ?: run {
+                val currentExercise = event.currentExerciseDetails ?: return ""
+                val exercise = currentExercise.exercise as? RecordedCardioExercise? ?: return ""
+                exercise.sets.getOrNull(currentExercise.setIndex.toInt()) ?: return ""
             }
             return when (val cardioTarget = set.blueprint.target) {
                 is TimeCardioTarget -> formatDuration(Duration.parseIsoString(cardioTarget.value))

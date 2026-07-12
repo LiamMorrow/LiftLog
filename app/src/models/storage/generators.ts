@@ -93,6 +93,7 @@ const CardioExerciseSetBlueprintGenerator = fc
     trackIncline: fc.boolean(),
     trackWeight: fc.boolean(),
     trackSteps: fc.boolean(),
+    restBetweenSets: fc.option(RestGenerator, { nil: undefined }),
   })
   .map(
     (x) =>
@@ -104,6 +105,7 @@ const CardioExerciseSetBlueprintGenerator = fc
         x.trackIncline,
         x.trackWeight,
         x.trackSteps,
+        x.restBetweenSets,
       ),
   );
 

@@ -182,6 +182,8 @@ export class CardioExerciseSetBlueprint {
     readonly trackIncline: boolean,
     readonly trackWeight: boolean,
     readonly trackSteps: boolean,
+    /** Undefined when the set has no rest. Steady-state cardio does not need one; intervals do. */
+    readonly restBetweenSets: Rest | undefined,
   ) {}
   static empty() {
     return new CardioExerciseSetBlueprint(
@@ -195,6 +197,7 @@ export class CardioExerciseSetBlueprint {
       false,
       false,
       false,
+      undefined,
     );
   }
 
@@ -207,6 +210,7 @@ export class CardioExerciseSetBlueprint {
       json.trackIncline,
       json.trackWeight,
       json.trackSteps,
+      json.restBetweenSets ? Rest.fromJSON(json.restBetweenSets) : undefined,
     );
   }
 
@@ -219,6 +223,7 @@ export class CardioExerciseSetBlueprint {
       trackResistance: this.trackResistance,
       trackWeight: this.trackWeight,
       trackSteps: this.trackSteps,
+      restBetweenSets: this.restBetweenSets ? Rest.toJSON(this.restBetweenSets) : undefined,
     };
   }
 
@@ -231,6 +236,9 @@ export class CardioExerciseSetBlueprint {
       this.trackDuration === other.trackDuration &&
       this.trackIncline === other.trackIncline &&
       this.trackResistance === other.trackResistance &&
+      this.trackWeight === other.trackWeight &&
+      this.trackSteps === other.trackSteps &&
+      restEquals(this.restBetweenSets, other.restBetweenSets) &&
       cardioTargetEquals(this.target, other.target)
     );
   }
@@ -244,6 +252,7 @@ export class CardioExerciseSetBlueprint {
       other.trackIncline ?? this.trackIncline,
       other.trackWeight ?? this.trackWeight,
       other.trackSteps ?? this.trackSteps,
+      'restBetweenSets' in other ? other.restBetweenSets : this.restBetweenSets,
     );
   }
 }
@@ -664,6 +673,11 @@ export const EmptyExerciseBlueprint = new WeightedExerciseBlueprint(
   '',
   '',
 );
+
+export function restEquals(a: Rest | undefined, b: Rest | undefined): boolean {
+  if (!a || !b) return a === b;
+  return a.minRest.equals(b.minRest) && a.maxRest.equals(b.maxRest) && a.failureRest.equals(b.failureRest);
+}
 
 export function cardioTargetEquals(a: CardioTarget, b: CardioTarget): boolean {
   if (a.type !== b.type) return false;

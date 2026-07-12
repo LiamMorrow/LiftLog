@@ -79,6 +79,9 @@ export interface Translations {
   workoutPersistentNotificationMaxRestOverMessage: string;
   workoutPersistentNotificationCurrentExerciseMessage: string;
 
+  // Fired once when a cardio set reaches its target; the set keeps running afterwards.
+  workoutPersistentNotificationCardioTargetReachedMessage: string;
+
   workoutPersistentNotificationFinishedMessage: string;
 
   // The initial content of the notification "Workout in progress"

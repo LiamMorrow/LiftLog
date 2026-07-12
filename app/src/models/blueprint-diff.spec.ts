@@ -44,6 +44,7 @@ describe('diffSessionBlueprints', () => {
     trackIncline = false,
     trackWeight = false,
     trackSteps = false,
+    restBetweenSets?: Rest,
   ): CardioExerciseSetBlueprint =>
     new CardioExerciseSetBlueprint(
       { type: 'time', value: Duration.ofMinutes(durationMinutes) },
@@ -53,6 +54,7 @@ describe('diffSessionBlueprints', () => {
       trackIncline,
       trackWeight,
       trackSteps,
+      restBetweenSets,
     );
 
   const createCardioExercise = (
@@ -535,6 +537,7 @@ describe('applySessionBlueprintDiff', () => {
       false,
       false,
       false,
+      undefined,
     );
 
   const createCardioExercise = (
@@ -742,6 +745,7 @@ describe('applySessionBlueprintDiff additional branches', () => {
       false,
       false,
       false,
+      undefined,
     );
   const cardio = (name: string, sets: CardioExerciseSetBlueprint[]): CardioExerciseBlueprint =>
     new CardioExerciseBlueprint(name, sets, '', '');

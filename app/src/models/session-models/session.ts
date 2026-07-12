@@ -356,11 +356,65 @@ export class Session {
     return this.recordedExercises.some((x) => x.isStarted);
   }
 
+  get runningCardioSet():
+    | { exerciseIndex: number; setIndex: number; exercise: RecordedCardioExercise; set: RecordedCardioExerciseSet }
+    | undefined {
+    for (const [exerciseIndex, exercise] of this.recordedExercises.entries()) {
+      if (!(exercise instanceof RecordedCardioExercise)) {
+        continue;
+      }
+      const setIndex = exercise.sets.findIndex((set) => set.isTimerRunning);
+      const set = exercise.sets[setIndex];
+      if (set) {
+        return { exerciseIndex, setIndex, exercise, set };
+      }
+    }
+    return undefined;
+  }
+
+  cardioSetAt(exerciseIndex: number, setIndex: number): RecordedCardioExerciseSet | undefined {
+    const exercise = this.recordedExercises[exerciseIndex];
+    return exercise instanceof RecordedCardioExercise ? exercise.sets[setIndex] : undefined;
+  }
+
+  withCardioSet(
+    exerciseIndex: number,
+    setIndex: number,
+    update: (set: RecordedCardioExerciseSet) => RecordedCardioExerciseSet,
+    now: OffsetDateTime,
+  ): Session {
+    const exercise = this.recordedExercises[exerciseIndex];
+    if (!(exercise instanceof RecordedCardioExercise)) {
+      return this;
+    }
+    return this.withExercise(
+      exerciseIndex,
+      exercise.withSet(setIndex, (set) => update(set).withCompletionTimeIfCompleted(now)),
+    );
+  }
+
+  /** Only one cardio clock runs at a time, so whatever another set had going is banked first. */
+  withCardioTimerStarted(exerciseIndex: number, setIndex: number, now: OffsetDateTime): Session {
+    const running = this.runningCardioSet;
+    const banked = running
+      ? this.withExercise(
+          running.exerciseIndex,
+          running.exercise.withAllSets((set) =>
+            set.isTimerRunning ? set.withTimerStopped(now).withCompletionTimeIfCompleted(now) : set,
+          ),
+        )
+      : this;
+
+    const exercise = banked.recordedExercises[exerciseIndex];
+    if (!(exercise instanceof RecordedCardioExercise)) {
+      return banked;
+    }
+    return banked.withExercise(exerciseIndex, exercise.withSet(setIndex, (set) => set.withTimerStarted(now)));
+  }
+
   get nextExercise(): RecordedExercise | undefined {
     const recordedExercises = this.recordedExercises;
-    const cardioExerciseWithRunningTimer = recordedExercises.find(
-      (x) => x instanceof RecordedCardioExercise && x.sets.some((s) => s.currentBlockStartTime),
-    );
+    const cardioExerciseWithRunningTimer = this.runningCardioSet?.exercise;
     if (cardioExerciseWithRunningTimer) {
       return cardioExerciseWithRunningTimer;
     }

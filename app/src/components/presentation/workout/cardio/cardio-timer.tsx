@@ -1,134 +1,119 @@
-import { CardioTrackerCard } from '@/components/presentation/workout/cardio/cardio-tracker-card';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
-import TimerEditor from '@/components/presentation/foundation/editors/timer-editor';
-import { useAppTheme, spacing, rounding } from '@/hooks/useAppTheme';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ColorChoice } from '@/hooks/useAppTheme';
+import { matchCardioTarget } from '@/models/blueprint-models';
 import { RecordedCardioExerciseSet } from '@/models/session-models';
-import { Duration, OffsetDateTime } from '@js-joda/core';
-import { useState, useCallback, useEffect } from 'react';
-import { useAnimatedValue, Animated, View } from 'react-native';
-import { match, P } from 'ts-pattern';
+import { OffsetDateTime } from '@js-joda/core';
+import { ViewStyle } from 'react-native';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
+import { formatTimeSpan, TimerPane, TimerSegment } from '@/components/presentation/workout/timer-pane';
+import { CardioTimerControls } from '@/components/presentation/workout/cardio/cardio-timer-controls';
+import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import { getShortUnit, toMetres } from '@/utils/unit';
+import { useTranslate } from '@tolgee/react';
 
-export function CardioTimer({
-  set,
-  currentBlockStartTime,
-  setCurrentBlockStartTime,
-  updateDuration,
-}: {
+interface CardioTimerProps {
   set: RecordedCardioExerciseSet;
-  currentBlockStartTime: OffsetDateTime | undefined;
+  /** Banks the elapsed time so far without stopping, so a killed app loses at most one interval. */
+  onPersist: () => void;
+  onStop: () => void;
+  style?: ViewStyle;
+}
 
-  setCurrentBlockStartTime: (val: OffsetDateTime | undefined) => void;
-  updateDuration: (duration: Duration | undefined) => void;
-}) {
-  const playPauseButtonSize = 24;
-  const { colors } = useAppTheme();
-  const animatedRadius = useAnimatedValue(40);
+const persistIntervalMs = 1000;
 
-  const getTimerState = useCallback(
-    (providedDuration: Duration | undefined) => {
-      const now = OffsetDateTime.now();
-      const duration = match({
-        recordedDuration: providedDuration,
-        currentBlockStartTime,
-      })
-        .with(
-          {
-            recordedDuration: P.nonNullable,
-            currentBlockStartTime: P.nonNullable,
-          },
-          ({ recordedDuration, currentBlockStartTime }) =>
-            recordedDuration.plus(Duration.between(currentBlockStartTime, now)),
-        )
-        .with({ recordedDuration: P.nonNullable }, ({ recordedDuration }) => recordedDuration)
-        .with({ currentBlockStartTime: P.nonNullable }, ({ currentBlockStartTime }) =>
-          Duration.between(currentBlockStartTime, now),
-        )
-        .with({ currentBlockStartTime: undefined, recordedDuration: undefined }, () => Duration.ZERO)
-        .exhaustive();
+/**
+ * The clock for a running cardio set. Passing the target is the goal rather than a failure, so unlike
+ * a rest it goes green and stays there rather than reddening, and it never stops itself.
+ */
+export function CardioTimer({ set, onPersist, onStop, style }: CardioTimerProps) {
+  const { t } = useTranslate();
+  const [jiggling, setJiggling] = useState(false);
+  const [hasReachedTarget, setHasReachedTarget] = useState(false);
 
-      return duration;
-    },
-    [currentBlockStartTime],
-  );
-  const [timerState, setTimerState] = useState<Duration>(getTimerState(set.duration));
-  const handlePlay = () => {
-    const now = OffsetDateTime.now();
-    setCurrentBlockStartTime(now);
-  };
-  const handlePause = () => {
-    if (!currentBlockStartTime) {
-      return;
-    }
-    const now = OffsetDateTime.now();
-    setCurrentBlockStartTime(undefined);
+  const getTimerState = useCallback(() => {
+    const elapsedMs = set.elapsedAt(OffsetDateTime.now()).toMillis();
 
-    updateDuration(Duration.between(currentBlockStartTime, now).plus(set.duration ?? Duration.ZERO));
-  };
+    return matchCardioTarget(set.blueprint.target, {
+      time: (target) => {
+        const targetMs = target.value.toMillis();
+        const reached = elapsedMs >= targetMs;
+        return {
+          reached,
+          time: reached ? `+${formatTimeSpan(elapsedMs - targetMs)}` : formatTimeSpan(targetMs - elapsedMs),
+          status: reached ? t('cardio_timer.status.over_target') : t('cardio_timer.status.working'),
+          accent: (reached ? 'green' : 'onSurfaceVariant') as ColorChoice,
+          segments: [
+            {
+              flex: 1,
+              progress: targetMs > 0 ? Math.min(1, elapsedMs / targetMs) : 1,
+              color: (reached ? 'green' : 'onSurfaceVariant') as ColorChoice,
+            },
+          ] satisfies TimerSegment[],
+        };
+      },
+      distance: (target) => {
+        // Nothing knows when a distance target will be met, so there is nothing to count down to: the
+        // clock runs up, and the track follows the distance the user enters.
+        const targetMetres = toMetres(target.value);
+        const doneMetres = set.distance ? toMetres(set.distance) : undefined;
+        const reached = !!doneMetres && doneMetres.gte(targetMetres);
+        const progress =
+          doneMetres && targetMetres.gt(0)
+            ? Math.min(1, doneMetres.dividedBy(targetMetres).toNumber())
+            : 0;
+        const done = set.distance ? localeFormatBigNumber(set.distance.value) + getShortUnit(set.distance.unit) : '-';
+        return {
+          reached,
+          time: formatTimeSpan(elapsedMs),
+          status: `${done} / ${localeFormatBigNumber(target.value.value) + getShortUnit(target.value.unit)}`,
+          accent: (reached ? 'green' : 'onSurfaceVariant') as ColorChoice,
+          segments: [
+            {
+              flex: 1,
+              progress,
+              color: (reached ? 'green' : 'onSurfaceVariant') as ColorChoice,
+            },
+          ] satisfies TimerSegment[],
+        };
+      },
+    });
+  }, [set, t]);
 
-  const handlePlayPause = () => {
-    const toValue = currentBlockStartTime ? playPauseButtonSize : rounding.roundedRectangleRadius;
-    if (currentBlockStartTime) {
-      handlePause();
-    } else {
-      handlePlay();
-    }
+  const [timerState, setTimerState] = useState(getTimerState);
 
-    Animated.timing(animatedRadius, {
-      toValue,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  // Update timer
   useEffect(() => {
-    if (currentBlockStartTime) {
-      const timer = setInterval(() => {
-        const state = getTimerState(set.duration);
-        setTimerState(state);
-      }, 200);
-      return () => clearInterval(timer);
-    }
-  }, [currentBlockStartTime, getTimerState, set.duration]);
+    const timer = setInterval(() => setTimerState(getTimerState()), 200);
+    return () => clearInterval(timer);
+  }, [getTimerState]);
 
-  // Periodically persist - This will cyclically update the duration and it is a dependency, so it implicitly retriggers
   useEffect(() => {
-    if (currentBlockStartTime) {
-      const interval = setTimeout(() => {
-        const now = OffsetDateTime.now();
-        setCurrentBlockStartTime(now);
-        updateDuration(Duration.between(currentBlockStartTime, now).plus(set.duration ?? Duration.ZERO));
-      }, 5000);
-      return () => clearTimeout(interval);
+    if (timerState.reached && !hasReachedTarget) {
+      setHasReachedTarget(true);
+      impactAsync(ImpactFeedbackStyle.Heavy).catch(console.log);
+      setJiggling(true);
+      setTimeout(() => setJiggling(false), 10);
     }
-  }, [currentBlockStartTime, updateDuration, set.duration, setCurrentBlockStartTime]);
+  }, [timerState.reached, hasReachedTarget]);
+
+  // Persisting re-renders the parent, which hands us a fresh `onPersist`. Holding it in a ref keeps
+  // that from resetting the interval and pushing the next write further out each time.
+  const persist = useRef(onPersist);
+  persist.current = onPersist;
+  useEffect(() => {
+    const interval = setInterval(() => persist.current(), persistIntervalMs);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <CardioTrackerCard onHold={() => updateDuration(undefined)}>
-      <View style={{ alignItems: 'center', gap: spacing[2] }}>
-        <TimerEditor
-          readonly={!!currentBlockStartTime}
-          duration={timerState}
-          onDurationUpdated={(d) => {
-            updateDuration(d);
-            const state = getTimerState(d);
-            setTimerState(state);
-          }}
-        />
-        <IconButton
-          icon={currentBlockStartTime ? 'pause' : 'playArrow'}
-          animated
-          size={playPauseButtonSize}
-          testID="cardio-timer-play-pause"
-          onPress={handlePlayPause}
-          containerColor={currentBlockStartTime ? colors.amber : colors.green}
-          iconColor={currentBlockStartTime ? colors.onAmber : colors.onGreen}
-          style={{
-            borderRadius: animatedRadius,
-          }}
-          mode="contained-tonal"
-        />
-      </View>
-    </CardioTrackerCard>
+    <TimerPane
+      testID="cardio-timer"
+      time={timerState.time}
+      status={timerState.status}
+      accent={timerState.accent}
+      segments={timerState.segments}
+      jiggling={jiggling}
+      style={style}
+      controls={<CardioTimerControls onStop={onStop} />}
+    />
   );
 }

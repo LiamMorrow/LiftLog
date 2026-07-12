@@ -948,3 +948,55 @@ describe('Session freeform and JSON', () => {
     expect(restored.equals(session)).toBe(true);
   });
 });
+
+describe('Session.runningCardioSet', () => {
+  it('is undefined when no cardio clock is running', () => {
+    const session = makeSession([makeWeightedBlueprint(), makeCardioBlueprint(2)]);
+
+    expect(session.runningCardioSet).toBeUndefined();
+  });
+
+  it('locates the exercise and set whose clock is running', () => {
+    const session = makeSession([makeWeightedBlueprint(), makeCardioBlueprint(3)]);
+    const started = session.withExercise(
+      1,
+      (session.recordedExercises[1] as RecordedCardioExercise).withSet(2, (s) => s.withTimerStarted(tick())),
+    );
+
+    const running = started.runningCardioSet;
+
+    expect(running?.exerciseIndex).toBe(1);
+    expect(running?.setIndex).toBe(2);
+    expect(running?.set.isTimerRunning).toBe(true);
+  });
+});
+
+describe('Session cardio timer', () => {
+  const cardioSession = () => makeSession([makeCardioBlueprint(2), makeCardioBlueprint(2)]);
+
+  it('starting a clock banks the set another clock was already running', () => {
+    const now = tick();
+    const started = cardioSession().withCardioTimerStarted(0, 0, now);
+    const moved = started.withCardioTimerStarted(1, 1, now.plusSeconds(30));
+
+    expect(moved.runningCardioSet?.exerciseIndex).toBe(1);
+    expect(moved.runningCardioSet?.setIndex).toBe(1);
+    expect(moved.cardioSetAt(0, 0)?.isTimerRunning).toBe(false);
+    expect(moved.cardioSetAt(0, 0)?.duration).toEqual(Duration.ofSeconds(30));
+  });
+
+  it('withCardioSet edits the set and leaves the others alone', () => {
+    const now = tick();
+    const updated = cardioSession().withCardioSet(1, 0, (s) => s.with({ duration: Duration.ofMinutes(4) }), now);
+
+    expect(updated.cardioSetAt(1, 0)?.duration).toEqual(Duration.ofMinutes(4));
+    expect(updated.cardioSetAt(1, 1)?.duration).toBeUndefined();
+    expect(updated.cardioSetAt(0, 0)?.duration).toBeUndefined();
+  });
+
+  it('withCardioSet is a no-op when the exercise is not cardio', () => {
+    const session = makeSession([makeWeightedBlueprint()]);
+
+    expect(session.withCardioSet(0, 0, (s) => s.with({ duration: Duration.ofMinutes(4) }), tick())).toBe(session);
+  });
+});

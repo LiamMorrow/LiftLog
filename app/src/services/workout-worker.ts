@@ -79,6 +79,9 @@ export class WorkoutWorker {
       workoutPersistentNotificationMaxRestOverMessage: this.tolgee.t(
         'workout_persistent_notification.max_rest_over.message' satisfies TranslationKey,
       ),
+      workoutPersistentNotificationCardioTargetReachedMessage: this.tolgee.t(
+        'workout_persistent_notification.cardio_target_reached.message' satisfies TranslationKey,
+      ),
     };
   }
 }

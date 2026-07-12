@@ -14,6 +14,7 @@ import {
   DistanceUnits,
   ExerciseBlueprint,
   matchCardioTarget,
+  Rest,
   TimeCardioTarget,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
@@ -189,64 +190,101 @@ function CardioSetEditor(props: {
   updateSet: (val: CardioExerciseSetBlueprint) => void;
 }) {
   const { t } = useTranslate();
+  const { colors } = useAppTheme();
+  const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
+  const [restDialogOpen, setRestDialogOpen] = useState(false);
   const { set, updateSet } = props;
+  const rest = set.restBetweenSets;
   const toggleSetItem = (item: KeysOfType<CardioExerciseSetBlueprint, boolean>) => () =>
     updateSet(set.with({ [item]: !set[item] }));
   return (
     <>
       <CardioTargetEditor target={set.target} onValueChange={(target) => updateSet(set.with({ target }))} />
+      {restTimersEnabled && rest && (
+        <RestEditorDialog
+          onRestUpdated={(restBetweenSets) => updateSet(set.with({ restBetweenSets }))}
+          rest={rest}
+          dialogOpen={restDialogOpen}
+          setDialogOpen={setRestDialogOpen}
+        />
+      )}
       <SegmentedList
         renderItem={(i) => i}
-        items={
-          [
-            <SegmentedListSwitch
-              key={0}
-              value={set.trackDuration || set.target.type === 'time'}
-              testID="track-time-switch"
-              icon={'timer'}
-              onValueChange={toggleSetItem('trackDuration')}
-              label={t('exercise.track_time.label')}
-              disabled={set.target.type === 'time'}
-            />,
-            <SegmentedListSwitch
-              key={1}
-              value={set.trackDistance || set.target.type === 'distance'}
-              icon={'trailLength'}
-              testID="track-distance-switch"
-              onValueChange={toggleSetItem('trackDistance')}
-              label={t('exercise.track_distance.label')}
-              disabled={set.target.type === 'distance'}
-            />,
-            <SegmentedListSwitch
-              key={2}
-              icon={'speed'}
-              value={set.trackResistance}
-              onValueChange={toggleSetItem('trackResistance')}
-              label={t('exercise.track_resistance.label')}
-            />,
-            <SegmentedListSwitch
-              key={3}
-              value={set.trackIncline}
-              icon={'elevation'}
-              onValueChange={toggleSetItem('trackIncline')}
-              label={t('exercise.track_incline.label')}
-            />,
-            <SegmentedListSwitch
-              key={4}
-              value={set.trackWeight}
-              icon={'weight'}
-              onValueChange={toggleSetItem('trackWeight')}
-              label={t('exercise.track_weight.label')}
-            />,
-            <SegmentedListSwitch
-              key={5}
-              value={set.trackSteps}
-              icon={'steps'}
-              onValueChange={toggleSetItem('trackSteps')}
-              label={t('exercise.track_steps.label')}
-            />,
-          ] as const
-        }
+        items={[
+          <SegmentedListSwitch
+            key="track-time"
+            value={set.trackDuration || set.target.type === 'time'}
+            testID="track-time-switch"
+            icon={'timer'}
+            onValueChange={toggleSetItem('trackDuration')}
+            label={t('exercise.track_time.label')}
+            disabled={set.target.type === 'time'}
+          />,
+          <SegmentedListSwitch
+            key="track-distance"
+            value={set.trackDistance || set.target.type === 'distance'}
+            icon={'trailLength'}
+            testID="track-distance-switch"
+            onValueChange={toggleSetItem('trackDistance')}
+            label={t('exercise.track_distance.label')}
+            disabled={set.target.type === 'distance'}
+          />,
+          <SegmentedListSwitch
+            key="track-resistance"
+            icon={'speed'}
+            value={set.trackResistance}
+            onValueChange={toggleSetItem('trackResistance')}
+            label={t('exercise.track_resistance.label')}
+          />,
+          <SegmentedListSwitch
+            key="track-incline"
+            value={set.trackIncline}
+            icon={'elevation'}
+            onValueChange={toggleSetItem('trackIncline')}
+            label={t('exercise.track_incline.label')}
+          />,
+          <SegmentedListSwitch
+            key="track-weight"
+            value={set.trackWeight}
+            icon={'weight'}
+            onValueChange={toggleSetItem('trackWeight')}
+            label={t('exercise.track_weight.label')}
+          />,
+          <SegmentedListSwitch
+            key="track-steps"
+            value={set.trackSteps}
+            icon={'steps'}
+            onValueChange={toggleSetItem('trackSteps')}
+            label={t('exercise.track_steps.label')}
+          />,
+          // Steady-state cardio has no rest to speak of, so a set opts in rather than being given a
+          // window it will never use.
+          ...(restTimersEnabled
+            ? [
+                <SegmentedListSwitch
+                  key="rest-enabled"
+                  value={!!rest}
+                  icon={'airlineSeatReclineExtraFill'}
+                  testID="cardio-rest-switch"
+                  onValueChange={(enabled) =>
+                    updateSet(set.with({ restBetweenSets: enabled ? Rest.short : undefined }))
+                  }
+                  label={t('exercise.rest_between_sets.label')}
+                />,
+              ]
+            : []),
+          ...(restTimersEnabled && rest
+            ? [
+                <SegmentListFormElement
+                  key="rest-edit"
+                  label={t('rest.rest.label')}
+                  icon={'timer'}
+                  onPress={() => setRestDialogOpen(true)}
+                  right={<RestFormat style={{ color: colors.onSurface }} rest={rest} />}
+                />,
+              ]
+            : []),
+        ]}
       />
 
       <Divider />

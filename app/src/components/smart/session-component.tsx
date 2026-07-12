@@ -9,11 +9,14 @@ import { T, useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/foundation/item-list';
 import {
   RecordedCardioExercise,
+  RecordedCardioExerciseSet,
   RecordedExercise,
   RecordedWeightedExercise,
   RestTimer as RestTimerModel,
   Session,
 } from '@/models/session-models';
+import { Updater } from '@/utils/types';
+import { CardioTimer } from '@/components/presentation/workout/cardio/cardio-timer';
 import WeightedExercise from '@/components/presentation/workout/weighted/weighted-exercise';
 import WeightDisplay from '@/components/presentation/foundation/editors/weight-display';
 import BigNumber from 'bignumber.js';
@@ -90,6 +93,25 @@ export default function SessionComponent(props: {
     });
   };
 
+  // Both the set's own tiles and the docked clock write through here, so a set earns its rest
+  // whichever way it was filled in.
+  const updateCardioSet =
+    (exerciseIndex: number) => (setIndex: number, update: Updater<RecordedCardioExerciseSet>) => {
+      const now = OffsetDateTime.now();
+      withLatestSession((latestSession) => {
+        const before = latestSession.cardioSetAt(exerciseIndex, setIndex);
+        const session = latestSession.withCardioSet(exerciseIndex, setIndex, update, now);
+        dispatch(setCurrentSession({ session, target: props.target }));
+
+        if (session.cardioSetAt(exerciseIndex, setIndex)?.earnsRest(before)) {
+          withLatestSession((s) => resetTimer(s.lastExercise?.latestTime));
+        }
+      });
+    };
+
+  const startCardioTimer = (exerciseIndex: number) => (setIndex: number) =>
+    updateSession((s) => s.withCardioTimerStarted(exerciseIndex, setIndex, OffsetDateTime.now()));
+
   const isReadonly = props.target === 'feedSession' || props.target === 'sharedSession';
 
   if (!session) {
@@ -158,6 +180,8 @@ export default function SessionComponent(props: {
           updateExercise={(ex) =>
             updateSession((s) => s.withExercise(index, ex(s.recordedExercises[index] as RecordedCardioExercise)))
           }
+          updateSet={updateCardioSet(index)}
+          onStartTimer={startCardioTimer(index)}
           toStartNext={session.nextExercise === item}
           onEditExercise={() => push(getSessionExerciseEditorHref(props.target, index))}
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
@@ -201,24 +225,23 @@ export default function SessionComponent(props: {
   const lastExercise = session.lastExercise;
   const lastRecordedSet = lastExercise instanceof RecordedWeightedExercise ? lastExercise?.lastRecordedSet : undefined;
   const nextExercise = session.nextExercise;
-  // We only want to show the rest timer - which is primarily for weights
-  // When we are currently working out, and the exercises we are on (or were just on) are weighted - rests for cardio aren't implemented
+
+  // A weighted exercise rests per exercise; cardio rests per set, and may not rest at all.
+  const restBetweenSets = match(lastExercise)
+    .with(P.instanceOf(RecordedWeightedExercise), (exercise) => exercise.blueprint.restBetweenSets)
+    .with(P.instanceOf(RecordedCardioExercise), (exercise) => exercise.lastCompletedSet?.blueprint.restBetweenSets)
+    .otherwise(() => undefined);
+
   const showRestTimer =
-    restTimersEnabled &&
-    props.target === 'workoutSession' &&
-    nextExercise &&
-    nextExercise instanceof RecordedWeightedExercise &&
-    lastExercise &&
-    lastExercise instanceof RecordedWeightedExercise &&
-    session.restTimer;
+    restTimersEnabled && props.target === 'workoutSession' && nextExercise && restBetweenSets && session.restTimer;
+  // Only a weighted set can be failed — cardio has no rep count to fall short of.
   const lastSetFailed =
     lastRecordedSet?.set &&
-    lastExercise &&
     lastExercise instanceof RecordedWeightedExercise &&
     lastRecordedSet.set.repsCompleted < lastExercise.blueprint.repsPerSet;
   const restTimer = showRestTimer ? (
     <RestTimer
-      rest={lastExercise.blueprint.restBetweenSets}
+      rest={restBetweenSets}
       startTime={session.restTimer.startedAt}
       pausedAt={session.restTimer.pausedAt}
       failed={!!lastSetFailed}
@@ -228,11 +251,30 @@ export default function SessionComponent(props: {
     />
   ) : undefined;
 
+  const runningCardio = props.target === 'workoutSession' ? session.runningCardioSet : undefined;
+  const cardioTimer = runningCardio ? (
+    <CardioTimer
+      set={runningCardio.set}
+      onPersist={() =>
+        updateCardioSet(runningCardio.exerciseIndex)(runningCardio.setIndex, (s) =>
+          s.withTimerReanchored(OffsetDateTime.now()),
+        )
+      }
+      onStop={() =>
+        updateCardioSet(runningCardio.exerciseIndex)(runningCardio.setIndex, (s) =>
+          s.withTimerStopped(OffsetDateTime.now()),
+        )
+      }
+    />
+  ) : undefined;
+
+  const timer = cardioTimer ?? restTimer;
+
   // The timer rides above the action, so the action stays put whether or not a rest is running.
   const floatingBottomContainer = isReadonly ? null : (
     <PageActions
-      accessory={restTimer}
-      primaryExpanded={!restTimer}
+      accessory={timer}
+      primaryExpanded={!timer}
       primary={{
         label: t('exercise.add.title'),
         icon: AddIcon,

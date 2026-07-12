@@ -59,6 +59,7 @@ const TRANSLATIONS: Translations = {
   workoutPersistentNotificationMinRestOverMessage: 'Min rest over',
   workoutPersistentNotificationMaxRestOverMessage: 'Max rest over',
   workoutPersistentNotificationCurrentExerciseMessage: 'Current exercise',
+  workoutPersistentNotificationCardioTargetReachedMessage: 'Target reached',
   workoutPersistentNotificationFinishedMessage: 'Finished',
   workoutPersistentNotificationInProgressMessage: 'Workout in progress',
   workoutPersistentNotificationFinishWorkoutAction: 'Finish',
