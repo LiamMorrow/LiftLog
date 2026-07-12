@@ -11,7 +11,7 @@ interface SessionSummaryProps {
 }
 export default function SessionSummary({ session, isFilled, showWeight, color = 'onSurface' }: SessionSummaryProps) {
   return (
-    <View style={{ gap: spacing[2], flex: 1 }} testID="session-summary">
+    <View style={{ gap: spacing[2] }} testID="session-summary">
       {session.recordedExercises
         .filter((x) => x.isStarted || !isFilled)
         .map((ex, index) => (

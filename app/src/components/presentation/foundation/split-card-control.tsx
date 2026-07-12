@@ -31,7 +31,7 @@ export default function SplitCardControl(props: SplitCardControlProps) {
           {props.actions}
         </View>
       </View>
-      <View style={{ paddingRight: spacing[2], flex: 1 }}>{props.mainContent}</View>
+      <View style={{ paddingRight: spacing[2] }}>{props.mainContent}</View>
     </View>
   );
 }
