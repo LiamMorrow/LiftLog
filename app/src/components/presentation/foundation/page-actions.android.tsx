@@ -20,11 +20,6 @@ const contentPadding = { start: 24, top: 16, end: 24, bottom: 16 };
 
 export function PageActions({ primary, secondary = [], primaryKind = 'surface', accessory }: PageActionsProps) {
   const { colors } = useAppTheme();
-  const { isScrollingDown, setScrollingDown } = useScroll();
-
-  // The scroll state is shared across the stack, so without this a page would take on the
-  // collapsed FAB of whichever page was scrolled before it.
-  useFocusEffect(useCallback(() => setScrollingDown(false), [setScrollingDown]));
 
   const label = (action: PageAction, color: string, iconSize: number) => (
     <Row horizontalArrangement={{ spacedBy: spacing[2] }} verticalAlignment="center">
@@ -54,7 +49,7 @@ export function PageActions({ primary, secondary = [], primaryKind = 'surface', 
       ))}
     </HorizontalFloatingToolbar>
   ) : (
-    <ExtendedFloatingActionButton onClick={primary.onPress} expanded={!isScrollingDown}>
+    <ExtendedFloatingActionButton onClick={primary.onPress} expanded>
       <ExtendedFloatingActionButton.Icon>{primaryIcon}</ExtendedFloatingActionButton.Icon>
       <ExtendedFloatingActionButton.Text>
         <Text>{primary.label}</Text>
