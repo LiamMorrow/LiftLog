@@ -85,8 +85,10 @@
           "data": [
             { "scheme": "content", "mimeType": "application/octet-stream" },
             { "scheme": "content", "mimeType": "application/json" },
+            { "scheme": "content", "mimeType": "text/plain" },
             { "scheme": "file", "mimeType": "application/octet-stream" },
-            { "scheme": "file", "mimeType": "application/json" }
+            { "scheme": "file", "mimeType": "application/json" },
+            { "scheme": "file", "mimeType": "text/plain" }
           ]
         },
         {
