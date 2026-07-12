@@ -3,74 +3,68 @@ import { useTranslate } from '@tolgee/react';
 import { useEffect, useRef, useState } from 'react';
 import { getSessionWorkoutEditorHref } from '@/components/smart/session-workout-editor';
 import { useAppSelectorWithArg } from '@/store';
-import { Appbar, Tooltip, TooltipHandle } from 'react-native-paper';
-import Menu from '@/components/presentation/foundation/menu';
+import { Tooltip, TooltipHandle } from 'react-native-paper';
+import PageMenu from '@/components/presentation/foundation/page-menu';
 import { Platform } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Jiggler } from '@/components/presentation/foundation/jiggler';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import { sessionUserEventMigrations } from '@/models/storage/versions/migrations';
 
 export default function SessionMoreMenuComponent(props: { target: SessionTarget; save: () => void }) {
-  const { save } = props;
-  const session = useAppSelectorWithArg(selectCurrentSession, props.target);
+  const { save, target } = props;
+  const session = useAppSelectorWithArg(selectCurrentSession, target);
   const { push } = useRouter();
+  const { t } = useTranslate();
 
-  const isReadonly = props.target === 'feedSession';
+  const isReadonly = target === 'feedSession';
 
   const handleEditWorkout = () => {
-    push(getSessionWorkoutEditorHref(props.target));
+    push(getSessionWorkoutEditorHref(target));
   };
+
+  const finishText = target === 'workoutSession' ? t('generic.finish.button') : t('generic.save.button');
 
   if (!session || isReadonly) {
     return <></>;
   }
 
   return (
-    <>
-      {Platform.select({
-        ios: <IosMenu target={props.target} save={save} onEditWorkout={handleEditWorkout} />,
-        android: (
-          <Stack.Screen
-            options={{
-              headerRight: () => <AndroidMenu target={props.target} save={save} onEditWorkout={handleEditWorkout} />,
-            }}
-          />
+    <PageMenu
+      testID="session-more"
+      actions={Platform.select({
+        // The toolbar reads its children natively, so this has to stay a literal toolbar button
+        // rather than a component that renders one.
+        ios: (
+          <Stack.Toolbar.Button onPress={save}>
+            <Stack.Toolbar.Label>{finishText}</Stack.Toolbar.Label>
+          </Stack.Toolbar.Button>
         ),
+        android: <AndroidFinishButton target={target} save={save} />,
       })}
-    </>
+      items={[
+        {
+          label: t('workout.edit.button'),
+          icon: 'edit',
+          systemImage: 'pencil',
+          onPress: handleEditWorkout,
+        },
+      ]}
+    />
   );
 }
 
-function IosMenu(props: { target: SessionTarget; save: () => void; onEditWorkout: () => void }) {
+function AndroidFinishButton({ target, save }: { target: SessionTarget; save: () => void }) {
   const { t } = useTranslate();
-  const { target, save, onEditWorkout } = props;
-  const finishText = target === 'workoutSession' ? t('generic.finish.button') : t('generic.save.button');
-  return (
-    <Stack.Toolbar placement="right">
-      <Stack.Toolbar.Button onPress={save}>
-        <Stack.Toolbar.Label>{finishText}</Stack.Toolbar.Label>
-      </Stack.Toolbar.Button>
-      <Stack.Toolbar.Menu>
-        <Stack.Toolbar.Icon sf="ellipsis.circle" />
-        <Stack.Toolbar.MenuAction onPress={onEditWorkout} icon={'pencil'}>
-          {t('workout.edit.button')}
-        </Stack.Toolbar.MenuAction>
-      </Stack.Toolbar.Menu>
-    </Stack.Toolbar>
-  );
-}
-
-function AndroidMenu(props: { target: SessionTarget; save: () => void; onEditWorkout: () => void }) {
-  const { t } = useTranslate();
-  const { target, save, onEditWorkout } = props;
   const session = useAppSelectorWithArg(selectCurrentSession, target);
 
   const [jiggleFinishButton, setJiggleFinishButton] = useState(false);
   const isComplete = session?.isComplete;
+  const hasExercises = !!session?.recordedExercises.length;
   const tooltipRef = useRef<TooltipHandle>(null);
 
   useEffect(() => {
-    const shouldJiggle = isComplete === true;
+    const shouldJiggle = hasExercises && isComplete === true;
     setJiggleFinishButton(shouldJiggle);
     if (shouldJiggle) {
       tooltipRef.current?.show();
@@ -80,24 +74,13 @@ function AndroidMenu(props: { target: SessionTarget; save: () => void; onEditWor
       }, 10000);
       return () => clearTimeout(timeout);
     }
-  }, [isComplete]);
+  }, [isComplete, hasExercises]);
+
   return (
-    <>
-      <Jiggler jiggling={jiggleFinishButton} jiggleSpeed={140}>
-        <Tooltip ref={tooltipRef} title={t('workout.finish.action.tooltip')}>
-          <IconButton testID="finish-session-button" icon={'assignmentTurnedIn'} onPress={save} />
-        </Tooltip>
-      </Jiggler>
-      <Menu
-        trigger={(open) => <Appbar.Action testID="session-more" icon="moreVert" onPress={open} />}
-        items={[
-          {
-            label: t('workout.edit.button'),
-            icon: 'edit',
-            onPress: onEditWorkout,
-          },
-        ]}
-      />
-    </>
+    <Jiggler jiggling={jiggleFinishButton} jiggleSpeed={140}>
+      <Tooltip ref={tooltipRef} title={t('workout.finish.action.tooltip')}>
+        <IconButton testID="finish-session-button" icon={'assignmentTurnedIn'} onPress={save} />
+      </Tooltip>
+    </Jiggler>
   );
 }

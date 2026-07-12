@@ -5,13 +5,17 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
+import NativeButton from '@/components/presentation/foundation/native-button';
+import EditIcon from '@expo/material-symbols/edit.xml';
+import { useFormatDate } from '@/hooks/useFormatDate';
+import PlanMenu, { usePlanNavigation } from '@/components/smart/plan-menu';
 import { Remote } from '@/components/presentation/foundation/remote';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
-import { spacing } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
-import { RootState, useAppSelector, useAppSelectorWhenFocusedWithArg } from '@/store';
+import { useAppSelector, useAppSelectorWhenFocusedWithArg } from '@/store';
 import { selectCurrentSession, setCurrentSession } from '@/store/current-session';
 import { encryptAndShare, publishUnpublishedSessions } from '@/store/feed';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
@@ -22,43 +26,12 @@ import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Card, Text, Tooltip } from 'react-native-paper';
+import { Card, Icon as PaperIcon, Text, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import { WelcomeWizard } from '@/components/smart/welcome-wizard';
 import { SharedSession } from '@/models/feed-models';
 import { CurrentWorkoutReplacer } from '@/components/smart/current-workout-replacer';
-
-function PlanManager() {
-  const { push } = useRouter();
-
-  const activeProgramId = useAppSelector((s: RootState) => s.program.activePlanId);
-
-  return (
-    <View style={{ flexDirection: 'row', gap: spacing[2] }}>
-      <Button
-        mode="outlined"
-        style={{ flex: 1 }}
-        icon={'assignment'}
-        onPress={() => push(`/settings/program-list`, { withAnchor: true })}
-      >
-        <T keyName="plan.choose.button" />
-      </Button>
-      <Button
-        mode="contained-tonal"
-        style={{ flex: 1 }}
-        icon={'edit'}
-        onPress={() =>
-          push(`/settings/manage-workouts/${activeProgramId}`, {
-            withAnchor: true,
-          })
-        }
-      >
-        <T keyName="workout.edit_workouts.button" />
-      </Button>
-    </View>
-  );
-}
 
 function ListUpcomingWorkouts({
   upcoming,
@@ -69,6 +42,7 @@ function ListUpcomingWorkouts({
 }) {
   const plan = useAppSelector(selectActiveProgram);
   const { t } = useTranslate();
+  const formatDate = useFormatDate();
   const currentSession = useAppSelectorWhenFocusedWithArg(selectCurrentSession, 'workoutSession');
   const planId = useAppSelector((x) => x.program.activePlanId);
   const { push } = useRouter();
@@ -90,12 +64,17 @@ function ListUpcomingWorkouts({
   return (
     <View style={{ flex: 1, gap: spacing[2], paddingTop: spacing[4] }}>
       <WelcomeWizard />
-      <PlanManager />
       {currentSession && (
         <>
-          <Text style={{ marginTop: spacing[2] }} variant="titleSmall">
-            {t('workout.current.title')}
-          </Text>
+          <SectionHeader
+            title={t('workout.current.title')}
+            trailing={formatDate(currentSession.date, {
+              year: currentSession.date.year() !== LocalDate.now().year() ? 'numeric' : undefined,
+              day: 'numeric',
+              weekday: 'long',
+              month: 'long',
+            })}
+          />
           <Card mode="contained">
             <Card.Content>
               <SessionCardContent session={currentSession} />
@@ -124,14 +103,11 @@ function ListUpcomingWorkouts({
           </Card>
         </>
       )}
-      {!!upcoming.length && (
-        <Text style={{ marginTop: spacing[2] }} variant="titleSmall">
-          {t('workout.upcoming.title')}
-        </Text>
-      )}
+      {!!upcoming.length && <SectionHeader title={t('workout.upcoming.title')} trailing={plan.name} />}
       <CardList
         cardType="contained"
         items={upcoming}
+        emptyTemplate={currentSession ? undefined : <NoUpcomingWorkouts />}
         renderItemContent={(session) => {
           return (
             <Card.Content>
@@ -178,10 +154,70 @@ function ListUpcomingWorkouts({
   );
 }
 
+function SectionHeader({ title, trailing }: { title: string; trailing: string }) {
+  const { colors } = useAppTheme();
+
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'baseline',
+        justifyContent: 'space-between',
+        gap: spacing[4],
+        marginTop: spacing[2],
+      }}
+    >
+      <Text variant="titleMedium">{title}</Text>
+      <Text variant="bodyMedium" numberOfLines={1} style={{ flexShrink: 1, color: colors.onSurfaceVariant }}>
+        {trailing}
+      </Text>
+    </View>
+  );
+}
+
+function NoUpcomingWorkouts() {
+  const { t } = useTranslate();
+  const { colors } = useAppTheme();
+  const { choosePlan, editWorkouts } = usePlanNavigation();
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: spacing[8],
+        paddingBottom: spacing[12],
+        paddingHorizontal: spacing[4],
+      }}
+    >
+      <View style={{ alignItems: 'center', gap: spacing[3] }}>
+        <PaperIcon source="fitnessCenter" size={40} color={colors.onSurfaceVariant} />
+        <Text variant="titleLarge" style={{ textAlign: 'center' }}>
+          {t('plan.no_upcoming_workouts.title')}
+        </Text>
+        <Text variant="bodyMedium" style={{ textAlign: 'center', color: colors.onSurfaceVariant }}>
+          {t('plan.no_upcoming_workouts.message')}
+        </Text>
+      </View>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: spacing[2] }}>
+        <NativeButton
+          variant="filled"
+          icon={EditIcon}
+          systemImage="pencil"
+          label={t('workout.edit_workouts.button')}
+          onPress={editWorkouts}
+        />
+        <NativeButton variant="text" label={t('plan.choose.button')} onPress={choosePlan} />
+      </View>
+    </View>
+  );
+}
+
 function SessionCardContent({ session }: { session: Session }) {
   return (
     <SplitCardControl
-      titleContent={<SessionSummaryTitle isFilled={session.isStarted} session={session} />}
+      titleContent={<SessionSummaryTitle session={session} />}
       mainContent={<SessionSummary session={session} isFilled={false} showWeight />}
     />
   );
@@ -221,6 +257,7 @@ export default function Index() {
     <FullHeightScrollView
       floatingChildren={floatingBottomContainer}
       scrollStyle={{ paddingHorizontal: spacing.pageHorizontalMargin }}
+      contentContainerStyle={{ flexGrow: 1 }}
     >
       <Stack.Screen
         options={{
@@ -228,6 +265,7 @@ export default function Index() {
           headerBackVisible: false,
         }}
       />
+      <PlanMenu />
       <Remote
         value={upcomingSessions}
         success={(upcoming) => {

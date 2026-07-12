@@ -148,9 +148,7 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
         <Card mode="contained">
           <Card.Content>
             <SplitCardControl
-              titleContent={
-                <SessionSummaryTitle isFilled={props.feedItem.session.isStarted} session={props.feedItem.session} />
-              }
+              titleContent={<SessionSummaryTitle showDate session={props.feedItem.session} />}
               mainContent={
                 <View style={{ gap: spacing[2] }}>
                   <SessionSummary session={props.feedItem.session} isFilled={false} showWeight />

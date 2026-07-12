@@ -304,6 +304,8 @@
   "plan.new_default_name.label": "New plan",
   "plan.no_other_available.message": "No other plans available",
   "plan.no_other_sessions_available.message": "No other sessions available",
+  "plan.no_upcoming_workouts.message": "Add some workouts to get started, or pick a plan that already has them.",
+  "plan.no_upcoming_workouts.title": "No workouts in your plan yet",
   "plan.not_created_yet.message": "No plan created yet!",
   "plan.notes.label": "Plan Notes",
   "plan.plans.title": "Plans",

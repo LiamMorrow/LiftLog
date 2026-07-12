@@ -116,7 +116,7 @@ export default function History() {
           renderItemContent={(session) => (
             <Card.Content>
               <SplitCardControl
-                titleContent={<SessionSummaryTitle isFilled session={session} />}
+                titleContent={<SessionSummaryTitle showDate session={session} />}
                 mainContent={<SessionSummary isFilled showWeight session={session} />}
               />
             </Card.Content>

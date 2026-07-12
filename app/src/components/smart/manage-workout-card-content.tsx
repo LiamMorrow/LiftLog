@@ -30,7 +30,7 @@ export default function ManageWorkoutCardContent({ sessionBlueprint, programId }
   const session = Session.getEmptySession(sessionBlueprint, preferredWeightUnit);
   return (
     <SplitCardControl
-      titleContent={<SessionSummaryTitle session={session} isFilled={false} />}
+      titleContent={<SessionSummaryTitle session={session} />}
       mainContent={<SessionSummary isFilled={false} session={session} showWeight={false} />}
       actions={<Actions programId={programId} sessionBlueprint={sessionBlueprint} />}
     />
