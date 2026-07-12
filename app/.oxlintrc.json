@@ -30,7 +30,7 @@
       "error",
       {
         "fix": {
-          "imports": "fix",
+          "imports": "safe-fix",
           "variables": "suggestion"
         },
         "argsIgnorePattern": "^_",

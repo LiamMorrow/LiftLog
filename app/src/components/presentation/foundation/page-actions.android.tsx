@@ -12,9 +12,6 @@ import {
   TextButton,
 } from '@expo/ui/jetpack-compose';
 import { View } from 'react-native';
-import { useScroll } from '@/hooks/useScrollListener';
-import { useFocusEffect } from 'expo-router';
-import { useCallback } from 'react';
 
 const contentPadding = { start: 24, top: 16, end: 24, bottom: 16 };
 
