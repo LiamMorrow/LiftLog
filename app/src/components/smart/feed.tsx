@@ -25,7 +25,8 @@ import { Card, Icon } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
-import { LegendList } from '@legendapp/list';
+import { LegendList, LegendListRef } from '@legendapp/list';
+import { useEffect, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Feed() {
@@ -34,9 +35,18 @@ export default function Feed() {
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
+  const listRef = useRef<LegendListRef>(null);
+  const itemSignature = feedItems.map((x) => x.eventId).join(',');
+
+  useEffect(() => {
+    listRef.current?.scrollToOffset({ offset: 0, animated: false });
+  }, [itemSignature]);
+
   return (
     <LegendList
+      ref={listRef}
       testID="feed-list"
+      maintainVisibleContentPosition={false}
       ListHeaderComponent={<FeedProfileHeader />}
       onRefresh={() => {
         dispatch(fetchInboxItems({ fromUserAction: true }));
