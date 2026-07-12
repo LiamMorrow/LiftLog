@@ -2,7 +2,9 @@
 
 LiftLog plans can be exported to, and imported from, `.liftlogplan` files. A plan file is plain JSON, so you can write one yourself, share one with a friend, keep one in version control — or have an AI write one for you.
 
-To import a plan, either tap a `.liftlogplan` file on your device (LiftLog is registered to open them), or open the app and go to `Plans -> Import`. To export one, use the `⋮` menu next to any plan.
+To import a plan, either tap a `.liftlogplan` file on your device (LiftLog is registered to open them), or open the app and go to `Plans -> Import`.
+
+To export one, open `Plans`, tap the `⋮` next to the plan and choose `Export to file`. LiftLog writes the `.liftlogplan` and hands it to the system share sheet, so you can save it to Files or Drive, AirDrop it, or mail it to yourself — whatever gets it somewhere you can reach it again.
 
 The authoritative definition of the format is the JSON Schema at [`docs/schemas/program-blueprint/ProgramBlueprint.json`](./schemas/program-blueprint/ProgramBlueprint.json). It is generated from the app's own models, so it is always in step with what the app will accept.
 
@@ -28,6 +30,20 @@ Once it is installed, just ask for what you want:
 > Build me a 5x5 strength program, three days a week.
 
 Get the resulting file onto your phone (AirDrop, email, or save it to Files) and tap it.
+
+### Changing a plan you already run
+
+The skill reads plans as happily as it writes them, so you can send it the one you are training on rather than describing it. Export the plan from `Plans -> ⋮ -> Export to file`, save it somewhere you can get at it from your computer (Drive, or mail it to yourself), then give the `.liftlogplan` to Claude and say what you want changed:
+
+> Here's my current plan. Swap all the barbell work for dumbbells, and add a fourth day.
+
+> This plan is taking too long. Cut it to 45 minutes without losing the compounds.
+
+> Have a look at my plan and tell me what's missing.
+
+Exporting means Claude sees your real exercise names, rest times, and progressive overload settings, so what comes back is your plan with the change made — not an approximation of it rebuilt from a description.
+
+Importing the result **adds a new plan**; it does not overwrite the original. Delete the old one from `Plans` once the replacement is in. Your logged workout history is kept separately and is untouched by either.
 
 ## Generating a plan with another AI
 
