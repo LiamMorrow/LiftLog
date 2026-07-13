@@ -502,5 +502,12 @@
   "stats.streak.keep_going.one": "1 more this week to keep your {weeks} week streak",
   "stats.streak.keep_going.other": "{remaining} more this week to keep your {weeks} week streak",
   "stats.last_7_days.one": "1 training day in the last 7",
-  "stats.last_7_days.other": "{count} training days in the last 7"
+  "stats.last_7_days.other": "{count} training days in the last 7",
+  "history.calendar.feed_horizon.message": "Workouts from people you follow are only kept for 90 days, so older months show your own training only.",
+  "history.calendar.no_sessions_on_day.message": "No workout on {date}.",
+  "history.calendar.add_workout.button": "Add a workout",
+  "history.calendar.who_else_trained.title": "Who else trained",
+  "feed.this_week.title": "This week",
+  "feed.this_week.more_people": "+{count} more",
+  "feed.you.label": "You"
 }

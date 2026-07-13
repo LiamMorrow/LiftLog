@@ -7,6 +7,7 @@ import SplitCardControl from '@/components/presentation/foundation/split-card-co
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { getFeedItemHref } from '@/components/smart/feed-item';
 import { getFeedProfileEditorHref } from '@/components/smart/feed-profile-editor';
+import { FeedWeekStrip } from '@/components/smart/feed-week-strip';
 import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
 import { FeedIdentity, SessionUserEvent } from '@/models/feed-models';
@@ -75,7 +76,12 @@ export default function Feed() {
 function FeedProfileHeader() {
   const identityRemote = useAppSelector(selectFeedIdentityRemote);
 
-  return <Remote value={identityRemote} success={(identity) => <FeedProfile identity={identity} />} />;
+  return (
+    <>
+      <Remote value={identityRemote} success={(identity) => <FeedProfile identity={identity} />} />
+      <FeedWeekStrip />
+    </>
+  );
 }
 
 function FeedProfile({ identity }: { identity: FeedIdentity }) {

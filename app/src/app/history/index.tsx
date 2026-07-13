@@ -4,7 +4,8 @@ import ConfirmationDialog from '@/components/presentation/foundation/confirmatio
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
-import HistoryCalendarCard from '@/components/presentation/summary/history-calendar-card';
+import { HistoryActivityCalendar } from '@/components/smart/history-activity-calendar';
+import { WhoElseTrainedCard } from '@/components/smart/who-else-trained-card';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
@@ -17,12 +18,13 @@ import { selectStreakStats } from '@/store/activity';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { selectCurrentSession, setCurrentSession } from '@/store/current-session';
 import { addUnpublishedSessionId, encryptAndShare } from '@/store/feed';
-import { deleteStoredSession, selectSessions, selectSessionsInMonth } from '@/store/stored-sessions';
+import { deleteStoredSession, selectSessionsBy, selectSessionsInMonth } from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
 import { LocalDate, YearMonth } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { View } from 'react-native';
 import { Card, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
@@ -37,8 +39,12 @@ export default function History() {
   const latesBodyweight = useAppSelector((x) =>
     x.program.upcomingSessions.map((x) => x.at(0)?.bodyweight).unwrapOr(undefined),
   );
-  const sessions = useAppSelector(selectSessions);
+  const [selectedDate, setSelectedDate] = useState<LocalDate>();
   const sessionsInMonth = useAppSelectorWithArg(selectSessionsInMonth, currentYearMonth);
+  const sessionsOnSelectedDate = useAppSelector((state) =>
+    selectedDate ? selectSessionsBy(state, selectedDate, selectedDate) : undefined,
+  );
+  const visibleSessions = sessionsOnSelectedDate ?? sessionsInMonth;
   const today = useToday();
   const streakStats = useAppSelectorWithArg(selectStreakStats, today);
   const { push } = useRouter();
@@ -105,19 +111,19 @@ export default function History() {
         }}
       >
         <StreakCard stats={streakStats} />
-        <HistoryCalendarCard
+        <HistoryActivityCalendar
           currentYearMonth={currentYearMonth}
-          sessions={sessions}
-          onDateSelect={createSessionAtDate}
-          onMonthChange={setCurrentYearMonth}
-          onDeleteSession={(s) => {
-            deleteWorkout(s);
+          selectedDate={selectedDate}
+          onMonthChange={(yearMonth) => {
+            setCurrentYearMonth(yearMonth);
+            setSelectedDate(undefined);
           }}
-          onSessionSelect={onSelectSession}
+          onDateSelect={setSelectedDate}
         />
+        {selectedDate && <WhoElseTrainedCard date={selectedDate} />}
         <CardList
           testID="history-list"
-          items={sessionsInMonth}
+          items={visibleSessions}
           cardType="contained"
           renderItemContent={(session) => (
             <Card.Content>
@@ -149,15 +155,35 @@ export default function History() {
             </CardActions>
           )}
           emptyTemplate={
-            <EmptyInfo>
-              <LimitedHtml
-                value={t('workout.no_sessions_in_month.message', {
-                  month: formatDate(currentYearMonth.atDay(1), {
-                    month: 'long',
-                  }),
-                })}
-              />
-            </EmptyInfo>
+            selectedDate ? (
+              <View style={{ gap: spacing[4], alignItems: 'center' }}>
+                <EmptyInfo>
+                  <LimitedHtml
+                    value={t('history.calendar.no_sessions_on_day.message', {
+                      date: formatDate(selectedDate, { day: 'numeric', month: 'long' }),
+                    })}
+                  />
+                </EmptyInfo>
+                <Button
+                  mode="contained"
+                  icon="plus"
+                  testID="history-add-workout-on-day"
+                  onPress={() => createSessionAtDate(selectedDate)}
+                >
+                  <T keyName="history.calendar.add_workout.button" />
+                </Button>
+              </View>
+            ) : (
+              <EmptyInfo>
+                <LimitedHtml
+                  value={t('workout.no_sessions_in_month.message', {
+                    month: formatDate(currentYearMonth.atDay(1), {
+                      month: 'long',
+                    }),
+                  })}
+                />
+              </EmptyInfo>
+            )
           }
         />
       </FullHeightScrollView>
