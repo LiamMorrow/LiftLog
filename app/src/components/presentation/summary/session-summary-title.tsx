@@ -9,9 +9,15 @@ import { ColorChoice } from '@/hooks/useAppTheme';
 interface SessionSummaryTitleProps {
   session: Session;
   showDate?: boolean;
+  byline?: string;
   color?: ColorChoice;
 }
-export default function SessionSummaryTitle({ session, showDate, color = 'onSurface' }: SessionSummaryTitleProps) {
+export default function SessionSummaryTitle({
+  session,
+  showDate,
+  byline,
+  color = 'onSurface',
+}: SessionSummaryTitleProps) {
   const formatDate = useFormatDate();
   const formattedDate = formatDate(session.date, {
     year: session.date.year() !== LocalDate.now().year() ? 'numeric' : undefined,
@@ -19,12 +25,13 @@ export default function SessionSummaryTitle({ session, showDate, color = 'onSurf
     weekday: 'long',
     month: 'long',
   });
+  const subtitle = [byline, showDate ? formattedDate : undefined].filter((x) => !!x).join(' · ');
   return (
     <View style={{ flexShrink: 1, alignItems: 'flex-start', overflow: 'hidden' }} testID="session-summary-title">
       <ItemTitle title={session.blueprint.name} color={color} />
-      {showDate ? (
+      {subtitle ? (
         <SurfaceText font="text-sm" color={color}>
-          {formattedDate}
+          {subtitle}
         </SurfaceText>
       ) : undefined}
     </View>

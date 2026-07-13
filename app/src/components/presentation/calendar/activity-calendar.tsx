@@ -5,10 +5,12 @@ import { ActivityCell, ActivityRow } from '@/store/activity';
 import { getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek, LocalDate } from '@js-joda/core';
 import { ReactNode } from 'react';
-import { I18nManager, View } from 'react-native';
+import { I18nManager, View, ViewStyle } from 'react-native';
 import { ActivityDayCell } from '@/components/presentation/calendar/activity-day-cell';
 
 const ENTRANCE_STAGGER_MS = 5;
+/** Keeps every week row's cells aligned under one another regardless of how long the names are. */
+const LABEL_WIDTH = 64;
 
 export type ActivityDensity = 'month' | 'week';
 
@@ -52,14 +54,9 @@ export function ActivityCalendar({
         </ForceLTRRow>
       )}
 
-      {rows.map((row, rowIndex) => (
-        <View key={row.key} style={{ gap: spacing[1] }}>
-          {row.label !== undefined && (
-            <SurfaceText font="text-sm" color="onSurfaceVariant" numberOfLines={1}>
-              {row.label}
-            </SurfaceText>
-          )}
-          <ForceLTRRow>
+      {rows.map((row, rowIndex) => {
+        const cells = (
+          <ForceLTRRow style={{ flex: 1 }}>
             {row.cells.map((cell, columnIndex) => (
               <ActivityDayCell
                 key={cell.date.toString()}
@@ -71,14 +68,38 @@ export function ActivityCalendar({
               />
             ))}
           </ForceLTRRow>
-        </View>
-      ))}
+        );
+
+        if (density === 'week') {
+          return (
+            <View key={row.key} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
+              {row.label !== undefined && (
+                <SurfaceText font="text-sm" color="onSurfaceVariant" numberOfLines={1} style={{ width: LABEL_WIDTH }}>
+                  {row.label}
+                </SurfaceText>
+              )}
+              {cells}
+            </View>
+          );
+        }
+
+        return (
+          <View key={row.key} style={{ gap: spacing[1] }}>
+            {row.label !== undefined && (
+              <SurfaceText font="text-sm" color="onSurfaceVariant" numberOfLines={1}>
+                {row.label}
+              </SurfaceText>
+            )}
+            {cells}
+          </View>
+        );
+      })}
 
       {footer}
     </View>
   );
 }
 
-function ForceLTRRow({ children }: { children: ReactNode }) {
-  return <View style={{ flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row' }}>{children}</View>;
+function ForceLTRRow({ children, style }: { children: ReactNode; style?: ViewStyle }) {
+  return <View style={[{ flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row' }, style]}>{children}</View>;
 }

@@ -35,12 +35,14 @@ export function FeedWeekStrip() {
   return (
     <Card mode="contained" style={{ marginBottom: spacing[2] }}>
       <Card.Content style={{ gap: spacing[2] }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <SurfaceText font="text-lg" weight="bold">
+        <View
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing[2] }}
+        >
+          <SurfaceText font="text-lg" weight="bold" numberOfLines={1}>
             {t('feed.this_week.title')}
           </SurfaceText>
           {streak.state !== 'none' && (
-            <SurfaceText font="text-sm" color="onSurfaceVariant">
+            <SurfaceText font="text-sm" color="onSurfaceVariant" numberOfLines={1} style={{ flexShrink: 1 }}>
               {streak.weeks + (streak.state === 'secured' ? 1 : 0) === 1
                 ? t('stats.streak.weeks.one')
                 : t('stats.streak.weeks.other', {

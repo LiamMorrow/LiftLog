@@ -9,6 +9,7 @@ import { getFeedItemHref } from '@/components/smart/feed-item';
 import { getFeedProfileEditorHref } from '@/components/smart/feed-profile-editor';
 import { FeedWeekStrip } from '@/components/smart/feed-week-strip';
 import { ReactionBar } from '@/components/smart/reaction-bar';
+import { ReactionSummary } from '@/components/smart/reaction-summary';
 import { PrBadges } from '@/components/smart/pr-badges';
 import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
@@ -18,17 +19,19 @@ import { shareString } from '@/store/app';
 import {
   fetchFeedItems,
   fetchInboxItems,
+  getFeedShareUrl,
+  selectFeedFollowers,
   selectFeedFollowing,
   selectFeedIdentityRemote,
   selectFeedSessionItems,
+  selectOwnFeedUserId,
 } from '@/store/feed';
 import { T, useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { View } from 'react-native';
-import { Card, Icon } from 'react-native-paper';
+import { Card } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { LegendList, LegendListRef } from '@legendapp/list';
 import { useEffect, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -89,115 +92,113 @@ function FeedProfileHeader() {
 function FeedProfile({ identity }: { identity: FeedIdentity }) {
   const dispatch = useDispatch();
   const { push } = useRouter();
-  const shareUrl = `https://app.liftlog.online/feed/share?id=${identity.lookup}${
-    identity.name ? `&name=${encodeURIComponent(identity.name)}` : ''
-  }`;
-  const { t } = useTranslate();
+  const following = useAppSelector(selectFeedFollowing);
+  const followers = useAppSelector(selectFeedFollowers);
+  const shareUrl = getFeedShareUrl(identity);
+  const isAlone = following.length === 0 && followers.length === 0;
+
   return (
     <>
-      <Card mode="contained" style={{ marginBottom: spacing[2] }}>
-        <Card.Title
-          left={({ size }) => <Icon source={'personFill'} size={size} />}
-          title={t('feed.profile.title')}
-          titleVariant="headlineSmall"
-        />
-        <Card.Content>
-          <View
-            style={{ display: 'none' }}
-            testID="share-url"
-            // @ts-expect-error -- This only works on web, ignored elsewhere
-            dataSet={{ shareUrl }}
-          />
-          <SurfaceText>
-            <T keyName="feed.explanation.body" />
-          </SurfaceText>
+      <View
+        style={{ display: 'none' }}
+        testID="share-url"
+        // @ts-expect-error -- This only works on web, ignored elsewhere
+        dataSet={{ shareUrl }}
+      />
 
-          {identity.publishWorkouts ? undefined : (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                justifyContent: 'space-between',
-              }}
-            >
-              <SurfaceText color="error">
-                <T keyName="feed.not_publishing_workouts.error" />
-              </SurfaceText>
-              <Button
-                style={{ marginLeft: 'auto' }}
-                testID="feed-fix-button"
-                onPress={() => push(getFeedProfileEditorHref({ focusPublish: true }))}
-                mode="outlined"
-              >
-                <T keyName="generic.fix.button" />
-              </Button>
-            </View>
-          )}
-        </Card.Content>
-
-        <CardActions>
-          <IconButton mode="contained" icon={'edit'} onPress={() => push(getFeedProfileEditorHref())} />
-          <Button
-            testID="feed-share-button"
-            mode="contained"
-            icon={'share'}
-            onPress={() => {
-              dispatch(
-                shareString({
-                  title: 'Share feed profile',
-                  value: shareUrl,
-                }),
-              );
+      {identity.publishWorkouts ? undefined : (
+        <Card mode="contained" style={{ marginBottom: spacing[2] }}>
+          <Card.Content
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: spacing[2],
             }}
           >
-            <T keyName="generic.share.button" />
-          </Button>
-        </CardActions>
-      </Card>
+            <SurfaceText color="error">
+              <T keyName="feed.not_publishing_workouts.error" />
+            </SurfaceText>
+            <Button
+              style={{ marginLeft: 'auto' }}
+              testID="feed-fix-button"
+              onPress={() => push(getFeedProfileEditorHref({ focusPublish: true }))}
+              mode="outlined"
+            >
+              <T keyName="generic.fix.button" />
+            </Button>
+          </Card.Content>
+        </Card>
+      )}
+
+      {isAlone && (
+        <Card mode="contained" style={{ marginBottom: spacing[2] }}>
+          <Card.Content style={{ gap: spacing[2] }}>
+            <SurfaceText>
+              <T keyName="feed.explanation.body" />
+            </SurfaceText>
+          </Card.Content>
+          <CardActions>
+            <Button
+              testID="feed-share-button"
+              mode="contained"
+              icon={'share'}
+              onPress={() => {
+                dispatch(
+                  shareString({
+                    title: 'Share feed profile',
+                    value: shareUrl,
+                  }),
+                );
+              }}
+            >
+              <T keyName="generic.share.button" />
+            </Button>
+          </CardActions>
+        </Card>
+      )}
     </>
   );
 }
 
 function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
   const users = useAppSelector(selectFeedFollowing);
+  const ownUserId = useAppSelector(selectOwnFeedUserId);
+  const { t } = useTranslate();
   const { push } = useRouter();
+  const isOwnItem = props.feedItem.userId === ownUserId;
   switch (props.feedItem.type) {
-    case 'SessionUserEvent':
+    case 'SessionUserEvent': {
+      const userName = isOwnItem
+        ? t('feed.you.label')
+        : (users.find((x) => x.userId === props.feedItem.userId)?.user.name ?? 'Anonymous user');
       return (
-        <Card mode="contained">
+        <Card
+          mode="contained"
+          testID="feed-view-workout"
+          onPress={() => push(getFeedItemHref(props.feedItem.eventId))}
+        >
           <Card.Content>
             <SplitCardControl
-              titleContent={<SessionSummaryTitle showDate session={props.feedItem.session} />}
+              titleContent={<SessionSummaryTitle showDate byline={userName} session={props.feedItem.session} />}
               mainContent={
                 <View style={{ gap: spacing[2] }}>
                   <SessionSummary session={props.feedItem.session} isFilled showWeight />
                   <PrBadges eventId={props.feedItem.eventId} />
-                  <SurfaceText>
-                    <SurfaceText weight={'bold'}>
-                      {users.find((x) => x.userId === props.feedItem.userId)?.user.name ?? 'Anonymous user'}
-                    </SurfaceText>{' '}
-                    completed a workout
-                  </SurfaceText>
                 </View>
               }
             />
             <View style={{ marginTop: spacing[2] }}>
-              <ReactionBar eventId={props.feedItem.eventId} animateOnMount />
+              {isOwnItem ? (
+                <ReactionSummary compact eventId={props.feedItem.eventId} animateOnMount />
+              ) : (
+                <ReactionBar eventId={props.feedItem.eventId} animateOnMount />
+              )}
             </View>
           </Card.Content>
-          <CardActions>
-            <Button
-              testID="feed-view-workout"
-              mode="contained"
-              icon={'visibility'}
-              onPress={() => push(getFeedItemHref(props.feedItem.eventId))}
-            >
-              <T keyName="feed.view_workout.button" />
-            </Button>
-          </CardActions>
         </Card>
       );
+    }
     default:
       return undefined;
   }

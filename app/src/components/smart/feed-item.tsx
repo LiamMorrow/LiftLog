@@ -2,13 +2,14 @@ import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import SessionComponent from '@/components/smart/session-component';
 import { ReactionBar } from '@/components/smart/reaction-bar';
+import { ReactionSummary } from '@/components/smart/reaction-summary';
 import { PrBadges } from '@/components/smart/pr-badges';
 import { spacing } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useAppSelector } from '@/store';
 import { setCurrentSession } from '@/store/current-session';
-import { selectFeedFollowing, selectFeedSessionItems } from '@/store/feed';
-import { T } from '@tolgee/react';
+import { selectFeedFollowing, selectFeedSessionItems, selectOwnFeedUserId } from '@/store/feed';
+import { T, useTranslate } from '@tolgee/react';
 import { LocalDate } from '@js-joda/core';
 import { Href, Stack } from 'expo-router';
 import { useEffect } from 'react';
@@ -24,8 +25,10 @@ export function FeedItem({ eventId }: { eventId: string }) {
   const dispatch = useDispatch();
   const feedItem = useAppSelector(selectFeedSessionItems).find((x) => x.eventId === eventId);
   const users = useAppSelector(selectFeedFollowing);
+  const ownUserId = useAppSelector(selectOwnFeedUserId);
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
   const formatDate = useFormatDate();
+  const { t } = useTranslate();
   const session = feedItem?.session;
 
   useEffect(() => {
@@ -43,7 +46,10 @@ export function FeedItem({ eventId }: { eventId: string }) {
     );
   }
 
-  const userName = users.find((x) => x.userId === feedItem.userId)?.user.name ?? 'Anonymous user';
+  const isOwnItem = feedItem.userId === ownUserId;
+  const userName = isOwnItem
+    ? t('feed.you.label')
+    : (users.find((x) => x.userId === feedItem.userId)?.user.name ?? 'Anonymous user');
   const formattedDate = formatDate(session.date, {
     year: session.date.year() !== LocalDate.now().year() ? 'numeric' : undefined,
     day: 'numeric',
@@ -70,7 +76,11 @@ export function FeedItem({ eventId }: { eventId: string }) {
                   </SurfaceText>
                 </View>
                 <PrBadges eventId={feedItem.eventId} />
-                <ReactionBar eventId={feedItem.eventId} animateOnMount />
+                {isOwnItem ? (
+                  <ReactionSummary eventId={feedItem.eventId} animateOnMount />
+                ) : (
+                  <ReactionBar eventId={feedItem.eventId} animateOnMount />
+                )}
               </View>
             </Card.Content>
           </Card>

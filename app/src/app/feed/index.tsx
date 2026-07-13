@@ -1,6 +1,7 @@
 import Feed from '@/components/smart/feed';
 import { FeedFollowers } from '@/components/smart/feed-followers';
 import { FeedFollowing } from '@/components/smart/feed-following';
+import { FeedMenu } from '@/components/smart/feed-menu';
 import { ScrollProvider, useScroll, useScrollHeaderColor } from '@/hooks/useScrollListener';
 import { useAppSelector } from '@/store';
 import { selectFollowRequestCount } from '@/store/feed';
@@ -35,6 +36,7 @@ export default function FeedIndexPage() {
   return (
     <>
       <Stack.Screen options={{ title: t('feed.feed.title') }} />
+      <FeedMenu />
       <TabsProvider onChangeIndex={setActiveTabIndex}>
         <Tabs
           tabHeaderStyle={{

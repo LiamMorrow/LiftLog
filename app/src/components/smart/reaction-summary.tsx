@@ -12,13 +12,15 @@ interface ReactionSummaryProps {
   /** The session id, which is also its feed event id. */
   eventId: string;
   animateOnMount?: boolean;
+  /** Counts only, without the attribution and privacy copy. */
+  compact?: boolean;
 }
 
 /**
  * Author-only. The feed is end-to-end encrypted with one-way follows, so there is no channel by which anyone
  * but the author could learn who cheered — the copy has to say so, or it reads as a broken like count.
  */
-export function ReactionSummary({ eventId, animateOnMount }: ReactionSummaryProps) {
+export function ReactionSummary({ eventId, animateOnMount, compact }: ReactionSummaryProps) {
   const { t } = useTranslate();
   const receivedByEvent = useAppSelector(selectReceivedReactionsByEvent);
   const followers = useAppSelector(selectFeedFollowers);
@@ -73,12 +75,16 @@ export function ReactionSummary({ eventId, animateOnMount }: ReactionSummaryProp
         <FloatingEmojiLayer emojis={floating} onFinished={handleFinished} />
       </View>
 
-      <SurfaceText font="text-sm" color="onSurfaceVariant">
-        {t('feed.cheers.from.message', { names: names.join(', ') })}
-      </SurfaceText>
-      <SurfaceText font="text-xs" color="onSurfaceVariant">
-        {t('feed.cheers.private.explanation')}
-      </SurfaceText>
+      {compact ? undefined : (
+        <>
+          <SurfaceText font="text-sm" color="onSurfaceVariant">
+            {t('feed.cheers.from.message', { names: names.join(', ') })}
+          </SurfaceText>
+          <SurfaceText font="text-xs" color="onSurfaceVariant">
+            {t('feed.cheers.private.explanation')}
+          </SurfaceText>
+        </>
+      )}
     </View>
   );
 }

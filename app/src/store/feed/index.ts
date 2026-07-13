@@ -157,6 +157,7 @@ const feedSlice = createSlice({
     ),
     selectFeedSessionItems: (state: FeedState) => state.feed,
     selectFeedIdentityRemote: (state: FeedState) => state.identity,
+    selectOwnFeedUserId: (state: FeedState) => state.identity.unwrapOr(undefined)?.id,
     selectReceivedReactionsByEvent: createSelector(
       (state: FeedState) => state.receivedReactions,
       (reactions) => {
@@ -223,11 +224,18 @@ export const {
   selectFeedFollowers,
   selectFeedFollowRequests,
   selectFeedIdentityRemote,
+  selectOwnFeedUserId,
   selectReceivedReactionsByEvent,
   selectSentReactionsByEvent,
 } = feedSlice.selectors;
 
 export const initializeFeedStateSlice = createAction('initializeFeedStateSlice');
+
+export function getFeedShareUrl(identity: FeedIdentity) {
+  return `https://app.liftlog.online/feed/share?id=${identity.lookup}${
+    identity.name ? `&name=${encodeURIComponent(identity.name)}` : ''
+  }`;
+}
 
 type FeedAction = {
   fromUserAction: boolean;
