@@ -493,5 +493,7 @@
   "workout_persistent_notification.cardio_target_reached.message": "Target reached!",
   "workout.finish.action.tooltip": "Finish workout",
   "ai.update_required.title": "Update required",
-  "ai.update_required.explanation": "This version of the app is out of date and can no longer generate workout plans. Please update to the latest version to continue."
+  "ai.update_required.explanation": "This version of the app is out of date and can no longer generate workout plans. Please update to the latest version to continue.",
+  "feed.item_unavailable.message": "This workout is no longer available.",
+  "feed.view_workout.button": "View workout"
 }

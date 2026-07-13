@@ -9,6 +9,7 @@ import { msContentCopy } from '@material-symbols-react-native/outlined-400/msCon
 import { msDelete } from '@material-symbols-react-native/outlined-400/msDelete';
 import { msEdit } from '@material-symbols-react-native/outlined-400/msEdit';
 import { msFitnessCenter } from '@material-symbols-react-native/outlined-400/msFitnessCenter';
+import { msVisibility } from '@material-symbols-react-native/outlined-400/msVisibility';
 import { msBolt } from '@material-symbols-react-native/outlined-400/msBolt';
 import { msStar } from '@material-symbols-react-native/outlined-400/msStar';
 import { msPromptSuggestion } from '@material-symbols-react-native/outlined-400/msPromptSuggestion';
@@ -145,6 +146,7 @@ const MaterialSymbols = {
   error: msError,
   history: msHistory,
   info: msInfo,
+  visibility: msVisibility,
   minus: msRemove,
   trendingUp: msTrendingUp,
   moreHoriz: msMoreHoriz,

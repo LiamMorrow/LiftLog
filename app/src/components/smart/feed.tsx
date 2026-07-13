@@ -5,6 +5,7 @@ import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { getFeedItemHref } from '@/components/smart/feed-item';
 import { getFeedProfileEditorHref } from '@/components/smart/feed-profile-editor';
 import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
@@ -152,6 +153,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
 
 function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
   const users = useAppSelector(selectFeedFollowing);
+  const { push } = useRouter();
   switch (props.feedItem.type) {
     case 'SessionUserEvent':
       return (
@@ -161,7 +163,7 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
               titleContent={<SessionSummaryTitle showDate session={props.feedItem.session} />}
               mainContent={
                 <View style={{ gap: spacing[2] }}>
-                  <SessionSummary session={props.feedItem.session} isFilled={false} showWeight />
+                  <SessionSummary session={props.feedItem.session} isFilled showWeight />
                   <SurfaceText>
                     <SurfaceText weight={'bold'}>
                       {users.find((x) => x.userId === props.feedItem.userId)?.user.name ?? 'Anonymous user'}
@@ -172,6 +174,16 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
               }
             />
           </Card.Content>
+          <CardActions style={{ marginTop: spacing[2] }}>
+            <Button
+              testID="feed-view-workout"
+              mode="contained"
+              icon={'visibility'}
+              onPress={() => push(getFeedItemHref(props.feedItem.eventId))}
+            >
+              <T keyName="feed.view_workout.button" />
+            </Button>
+          </CardActions>
         </Card>
       );
     default:
