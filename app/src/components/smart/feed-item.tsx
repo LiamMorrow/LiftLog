@@ -4,7 +4,7 @@ import SessionComponent from '@/components/smart/session-component';
 import { ReactionBar } from '@/components/smart/reaction-bar';
 import { ReactionSummary } from '@/components/smart/reaction-summary';
 import { PrBadges } from '@/components/smart/pr-badges';
-import { spacing } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useAppSelector } from '@/store';
 import { setCurrentSession } from '@/store/current-session';
@@ -23,6 +23,7 @@ export function getFeedItemHref(eventId: string): Href {
 
 export function FeedItem({ eventId }: { eventId: string }) {
   const dispatch = useDispatch();
+  const { colors } = useAppTheme();
   const feedItem = useAppSelector(selectFeedSessionItems).find((x) => x.eventId === eventId);
   const users = useAppSelector(selectFeedFollowing);
   const ownUserId = useAppSelector(selectOwnFeedUserId);
@@ -76,11 +77,13 @@ export function FeedItem({ eventId }: { eventId: string }) {
                   </SurfaceText>
                 </View>
                 <PrBadges eventId={feedItem.eventId} />
-                {isOwnItem ? (
-                  <ReactionSummary eventId={feedItem.eventId} animateOnMount />
-                ) : (
-                  <ReactionBar eventId={feedItem.eventId} animateOnMount />
-                )}
+                <View style={{ paddingTop: spacing[2], borderTopWidth: 1, borderTopColor: colors.outlineVariant }}>
+                  {isOwnItem ? (
+                    <ReactionSummary eventId={feedItem.eventId} animateOnMount />
+                  ) : (
+                    <ReactionBar eventId={feedItem.eventId} animateOnMount />
+                  )}
+                </View>
               </View>
             </Card.Content>
           </Card>

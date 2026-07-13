@@ -12,7 +12,7 @@ interface ReactionSummaryProps {
   /** The session id, which is also its feed event id. */
   eventId: string;
   animateOnMount?: boolean;
-  /** Counts only, without the attribution and privacy copy. */
+  /** Drops the privacy copy, which only needs saying once per screen rather than once per card. */
   compact?: boolean;
 }
 
@@ -75,15 +75,14 @@ export function ReactionSummary({ eventId, animateOnMount, compact }: ReactionSu
         <FloatingEmojiLayer emojis={floating} onFinished={handleFinished} />
       </View>
 
+      <SurfaceText font="text-sm" color="onSurfaceVariant">
+        {t('feed.cheers.from.message', { names: names.join(', ') })}
+      </SurfaceText>
+
       {compact ? undefined : (
-        <>
-          <SurfaceText font="text-sm" color="onSurfaceVariant">
-            {t('feed.cheers.from.message', { names: names.join(', ') })}
-          </SurfaceText>
-          <SurfaceText font="text-xs" color="onSurfaceVariant">
-            {t('feed.cheers.private.explanation')}
-          </SurfaceText>
-        </>
+        <SurfaceText font="text-xs" color="onSurfaceVariant">
+          {t('feed.cheers.private.explanation')}
+        </SurfaceText>
       )}
     </View>
   );

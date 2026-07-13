@@ -89,7 +89,14 @@ export type FontChoice = keyof typeof font;
 
 type ColorPair<T extends string> = { [k in T | `on${Capitalize<T>}`]: string };
 
-export type AppThemeColors = Material3Scheme & {
+/** Level 0 is the absence of a session, so it has no fill of its own and no entry here. */
+export type ActivityRampColors = ColorPair<'activityLevel1'> &
+  ColorPair<'activityLevel2'> &
+  ColorPair<'activityLevel3'> &
+  ColorPair<'activityLevel4'>;
+
+export type AppThemeColors = Material3Scheme &
+  ActivityRampColors & {
   orange: string;
   onOrange: string;
   red: string;
@@ -198,6 +205,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) 
       ...colorPair('indigo', 'ff4b0082', schemedTheme.primary, isDark),
       ...colorPair('lime', 'ffcddc39', schemedTheme.primary, isDark),
       ...colorPair('amber', 'ffffc107', schemedTheme.primary, isDark),
+      ...activityRamp(schemedTheme.primary, isDark),
       seedColor: seedColor,
     } satisfies AppThemeColors,
     colorScheme: colorScheme === 'unspecified' ? 'light' : colorScheme,
@@ -229,6 +237,31 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) 
     </AppThemeContext.Provider>
   );
 };
+
+/**
+ * Tones for the activity ramp, walking from "barely there" to "full primary". Light and dark move in
+ * opposite directions: on a light surface intensity reads as *darker*, on a dark surface as *brighter*.
+ */
+const ACTIVITY_TONES_LIGHT = [92, 80, 62, 45];
+const ACTIVITY_TONES_DARK = [28, 40, 55, 72];
+
+/**
+ * The graded fills the activity calendar shades its days with. Derived here, with the rest of the theme,
+ * because each one costs an iterative CAM16 solve -- far too much to pay once per cell, per render.
+ */
+function activityRamp(primary: string, isDark: boolean): ActivityRampColors {
+  const seed = Hct.fromInt(argbFromHex(primary));
+  const tones = isDark ? ACTIVITY_TONES_DARK : ACTIVITY_TONES_LIGHT;
+
+  return Object.assign(
+    {},
+    ...tones.map((tone, index) => ({
+      [`activityLevel${index + 1}`]: hexFromArgb(Hct.from(seed.hue, seed.chroma, tone).toInt()),
+      // Text stays legible against the fill: the same tone inversion `colorPair` uses.
+      [`onActivityLevel${index + 1}`]: hexFromArgb(Hct.from(seed.hue, seed.chroma, tone > 60 ? 10 : 100).toInt()),
+    })),
+  ) as ActivityRampColors;
+}
 
 function colorPair<T extends string>(name: T, hex: string, primary: string, isDark: boolean): ColorPair<T> {
   // Step 1: Harmonize the input with the seed

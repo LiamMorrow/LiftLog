@@ -1,110 +1,103 @@
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { useMountEffect } from '@/hooks/useMountEffect';
 import { ActivityCell } from '@/store/activity';
-import { useRef } from 'react';
-import { Animated, Easing, View } from 'react-native';
+import { memo } from 'react';
+import { Animated, View } from 'react-native';
 import { levelColor, markerColor } from '@/components/presentation/calendar/activity-colors';
+import { CellEntrance } from '@/components/presentation/calendar/activity-entrance';
 
-const CELL_SIZE = spacing[10];
-const MARKER_SIZE = 5;
+const MARKER_SIZE = 4;
+/** Tall enough for the "+N" glyph, which is what sets the row's height -- not the dots. */
+const MARKER_ROW_HEIGHT = 10;
+/** Once a "+N" is in the row there's only room for two dots beside it. */
+const MAX_VISIBLE_MARKERS_WITH_COUNT = 2;
 
 interface ActivityDayCellProps {
   cell: ActivityCell;
   isSelected: boolean;
-  entranceDelayMs: number;
+  entrance: CellEntrance;
   onPress?: (cell: ActivityCell) => void;
 }
 
-export function ActivityDayCell({ cell, isSelected, entranceDelayMs, onPress }: ActivityDayCellProps) {
-  const { colors, colorScheme } = useAppTheme();
+export const ActivityDayCell = memo(function ActivityDayCell({
+  cell,
+  isSelected,
+  entrance,
+  onPress,
+}: ActivityDayCellProps) {
+  const { colors } = useAppTheme();
   const formatDate = useFormatDate();
 
-  const anim = useRef(new Animated.Value(0)).current;
-
-  useMountEffect(() => {
-    Animated.timing(anim, {
-      toValue: 1,
-      duration: 150,
-      delay: entranceDelayMs,
-      easing: Easing.out(Easing.back(1.5)),
-      useNativeDriver: true,
-    }).start();
-  });
-
-  const { background, foreground } = levelColor(cell.level, colors, colorScheme === 'dark');
+  const { background, foreground } = levelColor(cell.level, colors);
   const isEmpty = cell.level === 0;
   const outlineToday = cell.isToday && isEmpty;
 
-  const hasMarkers = cell.markers.length > 0 || cell.overflowMarkers > 0;
+  // Beyond the feed horizon we render no marker slot at all -- an empty one would claim, falsely, that
+  // nobody trained, when in truth their events have simply expired.
+  const showMarkers = !cell.isBeyondFeedHorizon && (cell.markers.length > 0 || cell.overflowMarkers > 0);
+
+  // The row has to fit across a chord of the circle, which is a good deal narrower than the cell. A count
+  // costs about as much width as two dots, so it takes their place rather than being added beside them.
+  const hasOverflow = cell.overflowMarkers > 0;
+  const visibleMarkers = hasOverflow ? cell.markers.slice(0, MAX_VISIBLE_MARKERS_WITH_COUNT) : cell.markers;
+  const overflowCount = cell.overflowMarkers + (cell.markers.length - visibleMarkers.length);
 
   return (
     <Animated.View
       style={{
         flex: 1,
-        alignItems: 'center',
-        opacity: cell.isOutsideFocus ? Animated.multiply(anim, 0.4) : anim,
-        transform: [{ scale: anim }],
+        aspectRatio: 1,
+        opacity: cell.isOutsideFocus ? Animated.multiply(entrance.opacity, 0.4) : entrance.opacity,
+        transform: [{ scale: entrance.scale }],
       }}
     >
       <TouchableRipple
         onPress={onPress && !cell.isFuture ? () => onPress(cell) : undefined}
         disabled={cell.isFuture}
-        style={{ padding: spacing[1], borderRadius: 1000, overflow: 'hidden' }}
+        style={{ flex: 1, borderRadius: 1000, overflow: 'hidden' }}
       >
-        <View style={{ alignItems: 'center', gap: spacing[1] }}>
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              aspectRatio: 1,
-              width: CELL_SIZE,
-              borderRadius: 1000,
-              backgroundColor: background,
-              borderColor: isSelected ? colors.primary : outlineToday ? colors.outline : 'transparent',
-              borderWidth: isSelected ? 2 : 1,
-            }}
-          >
-            <SurfaceText style={[{ textAlign: 'center' }, isEmpty ? undefined : { color: foreground }]}>
-              {formatDate(cell.date, { day: 'numeric' })}
-            </SurfaceText>
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 2,
+            borderRadius: 1000,
+            backgroundColor: background,
+            borderColor: isSelected ? colors.primary : outlineToday ? colors.outline : 'transparent',
+            borderWidth: isSelected ? 2 : 1,
+          }}
+        >
+          <SurfaceText font="text-sm" style={isEmpty ? undefined : { color: foreground }}>
+            {formatDate(cell.date, { day: 'numeric' })}
+          </SurfaceText>
 
-            {cell.sessionCount > 1 && (
-              <View
-                style={{
-                  position: 'absolute',
-                  top: 2,
-                  right: 2,
-                  width: MARKER_SIZE,
-                  height: MARKER_SIZE,
-                  borderRadius: 1000,
-                  backgroundColor: colors.tertiary,
-                }}
-              />
-            )}
-          </View>
-
-          {/* Beyond the feed horizon we render no marker row at all -- an empty one would claim, falsely,
-              that nobody trained, when in truth their events have simply expired. */}
-          {!cell.isBeyondFeedHorizon && (
-            <View style={{ flexDirection: 'row', gap: 2, height: MARKER_SIZE }}>
-              {hasMarkers &&
-                cell.markers.map((marker) => (
-                  <View
-                    key={marker.userId}
-                    style={{
-                      width: MARKER_SIZE,
-                      height: MARKER_SIZE,
-                      borderRadius: 1000,
-                      backgroundColor: markerColor(marker.userId, colors),
-                    }}
-                  />
-                ))}
-              {cell.overflowMarkers > 0 && (
-                <SurfaceText font="text-xs" color="onSurfaceVariant" style={{ lineHeight: MARKER_SIZE }}>
-                  {`+${cell.overflowMarkers}`}
+          {showMarkers && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2, height: MARKER_ROW_HEIGHT }}>
+              {visibleMarkers.map((marker) => (
+                <View
+                  key={marker.userId + marker.eventId}
+                  style={{
+                    width: MARKER_SIZE,
+                    height: MARKER_SIZE,
+                    borderRadius: 1000,
+                    backgroundColor: markerColor(marker.userId, colors),
+                  }}
+                />
+              ))}
+              {hasOverflow && (
+                <SurfaceText
+                  font="text-2xs"
+                  numberOfLines={1}
+                  style={{
+                    fontSize: 9,
+                    lineHeight: MARKER_ROW_HEIGHT,
+                    color: isEmpty ? colors.onSurfaceVariant : foreground,
+                  }}
+                >
+                  {`+${overflowCount}`}
                 </SurfaceText>
               )}
             </View>
@@ -113,4 +106,4 @@ export function ActivityDayCell({ cell, isSelected, entranceDelayMs, onPress }: 
       </TouchableRipple>
     </Animated.View>
   );
-}
+});

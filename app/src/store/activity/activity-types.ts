@@ -5,6 +5,9 @@ export type ActivityLevel = 0 | 1 | 2 | 3 | 4;
 
 export const MAX_ACTIVITY_LEVEL = 4;
 
+/** The graded levels, lightest to heaviest. Level 0 is absence, so it has nothing to show in a key. */
+export const ACTIVITY_LEVELS = [1, 2, 3, 4] as const satisfies ActivityLevel[];
+
 export interface ActivityMarker {
   userId: string;
   name: string | undefined;

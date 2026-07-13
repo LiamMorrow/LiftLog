@@ -11,7 +11,7 @@ import { FeedWeekStrip } from '@/components/smart/feed-week-strip';
 import { ReactionBar } from '@/components/smart/reaction-bar';
 import { ReactionSummary } from '@/components/smart/reaction-summary';
 import { PrBadges } from '@/components/smart/pr-badges';
-import { spacing } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
 import { FeedIdentity, SessionUserEvent } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
@@ -164,6 +164,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
 function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
   const users = useAppSelector(selectFeedFollowing);
   const ownUserId = useAppSelector(selectOwnFeedUserId);
+  const { colors } = useAppTheme();
   const { t } = useTranslate();
   const { push } = useRouter();
   const isOwnItem = props.feedItem.userId === ownUserId;
@@ -188,7 +189,14 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
                 </View>
               }
             />
-            <View style={{ marginTop: spacing[2] }}>
+            <View
+              style={{
+                marginTop: spacing[3],
+                paddingTop: spacing[3],
+                borderTopWidth: 1,
+                borderTopColor: colors.outlineVariant,
+              }}
+            >
               {isOwnItem ? (
                 <ReactionSummary compact eventId={props.feedItem.eventId} animateOnMount />
               ) : (

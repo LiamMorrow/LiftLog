@@ -1,8 +1,6 @@
 import CardActions from '@/components/presentation/foundation/card-actions';
-import CardList from '@/components/presentation/foundation/card-list';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
-import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { HistoryActivityCalendar } from '@/components/smart/history-activity-calendar';
 import { WhoElseTrainedCard } from '@/components/smart/who-else-trained-card';
@@ -13,6 +11,7 @@ import SessionSummaryTitle from '@/components/presentation/summary/session-summa
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
 import { StreakCard } from '@/components/presentation/summary/streak-card';
 import { spacing } from '@/hooks/useAppTheme';
+import { useScroll } from '@/hooks/useScrollListener';
 import { useToday } from '@/hooks/useToday';
 import { Session } from '@/models/session-models';
 import { selectStreakStats } from '@/store/activity';
@@ -24,8 +23,10 @@ import { uuid } from '@/utils/uuid';
 import { LocalDate, YearMonth } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View } from 'react-native';
+import { LegendList } from '@legendapp/list';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Card, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
@@ -37,6 +38,8 @@ export default function History() {
   const dispatch = useDispatch();
   const formatDate = useFormatDate();
   const [currentYearMonth, setCurrentYearMonth] = useState(YearMonth.now());
+  const { handleScroll } = useScroll();
+  const insets = useSafeAreaInsets();
   const latesBodyweight = useAppSelector((x) =>
     x.program.upcomingSessions.map((x) => x.at(0)?.bodyweight).unwrapOr(undefined),
   );
@@ -106,28 +109,34 @@ export default function History() {
           title: t('generic.history.title'),
         }}
       />
-      <FullHeightScrollView
+      <LegendList
+        testID="history-list"
+        maintainVisibleContentPosition={false}
+        data={visibleSessions}
+        keyExtractor={(session) => session.id}
+        onScroll={handleScroll}
         contentContainerStyle={{
-          gap: spacing[4],
           paddingHorizontal: spacing.pageHorizontalMargin,
+          paddingBottom: insets.bottom,
         }}
-      >
-        <StreakCard stats={streakStats} />
-        <HistoryActivityCalendar
-          currentYearMonth={currentYearMonth}
-          selectedDate={selectedDate}
-          onMonthChange={(yearMonth) => {
-            setCurrentYearMonth(yearMonth);
-            setSelectedDate(undefined);
-          }}
-          onDateSelect={setSelectedDate}
-        />
-        {selectedDate && <WhoElseTrainedCard date={selectedDate} />}
-        <CardList
-          testID="history-list"
-          items={visibleSessions}
-          cardType="contained"
-          renderItemContent={(session) => (
+        ItemSeparatorComponent={() => <View style={{ height: spacing[2] }} />}
+        ListHeaderComponent={
+          <View style={{ gap: spacing[4], marginBottom: spacing[4] }}>
+            <StreakCard stats={streakStats} />
+            <HistoryActivityCalendar
+              currentYearMonth={currentYearMonth}
+              selectedDate={selectedDate}
+              onMonthChange={(yearMonth) => {
+                setCurrentYearMonth(yearMonth);
+                setSelectedDate(undefined);
+              }}
+              onDateSelect={setSelectedDate}
+            />
+            {selectedDate && <WhoElseTrainedCard date={selectedDate} />}
+          </View>
+        }
+        renderItem={({ item: session }) => (
+          <Card mode="contained">
             <Card.Content>
               <SplitCardControl
                 titleContent={<SessionSummaryTitle showDate session={session} />}
@@ -135,8 +144,6 @@ export default function History() {
               />
               <ReactionSummary eventId={session.id} />
             </Card.Content>
-          )}
-          renderItemActions={(session) => (
             <CardActions style={{ marginTop: spacing[2] }}>
               <Tooltip title={t('workout.share_workout.button')}>
                 <IconButton icon={'share'} mode="contained" onPress={() => handleSharePress(session)} />
@@ -156,40 +163,40 @@ export default function History() {
                 <T keyName="workout.edit.button" />
               </Button>
             </CardActions>
-          )}
-          emptyTemplate={
-            selectedDate ? (
-              <View style={{ gap: spacing[4], alignItems: 'center' }}>
-                <EmptyInfo>
-                  <LimitedHtml
-                    value={t('history.calendar.no_sessions_on_day.message', {
-                      date: formatDate(selectedDate, { day: 'numeric', month: 'long' }),
-                    })}
-                  />
-                </EmptyInfo>
-                <Button
-                  mode="contained"
-                  icon="plus"
-                  testID="history-add-workout-on-day"
-                  onPress={() => createSessionAtDate(selectedDate)}
-                >
-                  <T keyName="history.calendar.add_workout.button" />
-                </Button>
-              </View>
-            ) : (
+          </Card>
+        )}
+        ListEmptyComponent={
+          selectedDate ? (
+            <View style={{ gap: spacing[4], alignItems: 'center' }}>
               <EmptyInfo>
                 <LimitedHtml
-                  value={t('workout.no_sessions_in_month.message', {
-                    month: formatDate(currentYearMonth.atDay(1), {
-                      month: 'long',
-                    }),
+                  value={t('history.calendar.no_sessions_on_day.message', {
+                    date: formatDate(selectedDate, { day: 'numeric', month: 'long' }),
                   })}
                 />
               </EmptyInfo>
-            )
-          }
-        />
-      </FullHeightScrollView>
+              <Button
+                mode="contained"
+                icon="plus"
+                testID="history-add-workout-on-day"
+                onPress={() => createSessionAtDate(selectedDate)}
+              >
+                <T keyName="history.calendar.add_workout.button" />
+              </Button>
+            </View>
+          ) : (
+            <EmptyInfo>
+              <LimitedHtml
+                value={t('workout.no_sessions_in_month.message', {
+                  month: formatDate(currentYearMonth.atDay(1), {
+                    month: 'long',
+                  }),
+                })}
+              />
+            </EmptyInfo>
+          )
+        }
+      />
       <ConfirmationDialog
         headline={t('workout.replace_current.confirm.title')}
         textContent={t('workout.replace_in_progress.confirm.body')}

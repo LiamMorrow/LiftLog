@@ -52,7 +52,17 @@ export function FeedWeekStrip() {
           )}
         </View>
 
-        <ActivityCalendar density="week" rows={labelledRows} firstDayOfWeek={firstDayOfWeek} />
+        <ActivityCalendar
+          density="week"
+          rows={labelledRows}
+          firstDayOfWeek={firstDayOfWeek}
+          renderRowTrailing={(row) => {
+            const days = row.cells.filter((cell) => cell.level > 0).length;
+            return days === 1
+              ? t('feed.this_week.workouts.one')
+              : t('feed.this_week.workouts.other', { count: days.toString() });
+          }}
+        />
 
         {overflow > 0 && (
           <SurfaceText font="text-sm" color="onSurfaceVariant">

@@ -1,7 +1,7 @@
 import { FloatingEmoji, FloatingEmojiLayer } from '@/components/presentation/feed/floating-emoji';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
-import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { REACTION_EMOJIS, ReactionEmoji } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import { cheerFeedItem, selectSentReactionsByEvent } from '@/store/feed';
@@ -64,10 +64,12 @@ export function ReactionBar({ eventId, animateOnMount }: ReactionBarProps) {
               emit(emoji, 1);
             }}
             style={{
-              borderRadius: rounding.roundedRectangleRadius,
+              borderRadius: 1000,
               overflow: 'hidden',
               paddingVertical: spacing[1],
-              paddingHorizontal: spacing[2],
+              paddingHorizontal: spacing[3],
+              borderWidth: 1,
+              borderColor: count > 0 ? colors.secondary : colors.outlineVariant,
               backgroundColor: count > 0 ? colors.secondaryContainer : 'transparent',
             }}
           >
