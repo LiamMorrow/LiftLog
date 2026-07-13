@@ -15,6 +15,12 @@ import { Duration, OffsetDateTime, ZoneId } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
 
+/** Epley: 1RM = weight * (1 + reps/30). */
+export function calculateOneRepMax(ps: PotentialSet): Weight {
+  const reps = ps.set!.repsCompleted;
+  return ps.weight.multipliedBy(new BigNumber(1).plus(new BigNumber(reps).div(30)));
+}
+
 export function calculateStats(
   sessions: Session[],
   preferredUnit: WeightUnit,
@@ -111,14 +117,6 @@ export function calculateStats(
     latestTime: OffsetDateTime;
   }
   const exerciseStatsMap = new Map<string, ExerciseStatAcc>();
-
-  function calculateOneRepMax(ps: PotentialSet): Weight {
-    // One rep max formula (Epley): 1RM = weight * (1 + reps/30)
-    const reps = ps.set!.repsCompleted;
-    const weight = ps.weight;
-    const oneRepMax = weight.multipliedBy(new BigNumber(1).plus(new BigNumber(reps).div(30)));
-    return oneRepMax;
-  }
 
   for (const session of sessionsWithExercises) {
     for (const ex of session.recordedExercises) {

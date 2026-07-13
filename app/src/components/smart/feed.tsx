@@ -9,6 +9,7 @@ import { getFeedItemHref } from '@/components/smart/feed-item';
 import { getFeedProfileEditorHref } from '@/components/smart/feed-profile-editor';
 import { FeedWeekStrip } from '@/components/smart/feed-week-strip';
 import { ReactionBar } from '@/components/smart/reaction-bar';
+import { PrBadges } from '@/components/smart/pr-badges';
 import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
 import { FeedIdentity, SessionUserEvent } from '@/models/feed-models';
@@ -171,6 +172,7 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
               mainContent={
                 <View style={{ gap: spacing[2] }}>
                   <SessionSummary session={props.feedItem.session} isFilled showWeight />
+                  <PrBadges eventId={props.feedItem.eventId} />
                   <SurfaceText>
                     <SurfaceText weight={'bold'}>
                       {users.find((x) => x.userId === props.feedItem.userId)?.user.name ?? 'Anonymous user'}

@@ -7,6 +7,7 @@ import { selectSessions } from '@/store/stored-sessions';
 import { ActivityCell, ActivityMarker, ActivityRow, VolumeScale } from '@/store/activity/activity-types';
 import { levelFor, sessionVolume, volumeScaleOf } from '@/store/activity/volume';
 import { calculateStreak } from '@/store/activity/streak';
+import { findPersonalRecords, PersonalRecord } from '@/store/stats/personal-records';
 
 export * from '@/store/activity/activity-types';
 export * from '@/store/activity/volume';
@@ -251,6 +252,38 @@ export const selectStreakStats = createSelector(
   [selectSessions, selectFirstDayOfWeek, (_: RootState, today: LocalDate) => today],
   (sessions, firstDayOfWeek, today) => calculateStreak(sessions, firstDayOfWeek, today),
 );
+
+/**
+ * Records per feed event, computed per author over the sessions of theirs we hold. That's only the 90-day
+ * retention window, so the copy must say "best in 90 days" and never "all-time".
+ */
+export const selectFeedPersonalRecords = createSelector([selectFeedEvents], (feed) => {
+  const byUser = new Map<string, SessionUserEvent[]>();
+  for (const event of feed) {
+    const existing = byUser.get(event.userId);
+    if (existing) {
+      existing.push(event);
+    } else {
+      byUser.set(event.userId, [event]);
+    }
+  }
+
+  const recordsByEvent = new Map<string, PersonalRecord[]>();
+
+  for (const events of byUser.values()) {
+    const ordered = [...events].sort((a, b) => a.session.date.compareTo(b.session.date));
+    const bySessionId = findPersonalRecords(ordered.map((x) => x.session));
+
+    for (const event of ordered) {
+      const records = bySessionId.get(event.session.id);
+      if (records) {
+        recordsByEvent.set(event.eventId, records);
+      }
+    }
+  }
+
+  return recordsByEvent;
+});
 
 export const selectFriendActivityOnDate = createSelector(
   [selectFeedEventsByDate, selectFollowedUserNames, (_: RootState, date: LocalDate) => date],

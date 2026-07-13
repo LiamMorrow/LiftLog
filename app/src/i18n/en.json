@@ -511,5 +511,6 @@
   "feed.this_week.more_people": "+{count} more",
   "feed.you.label": "You",
   "feed.cheers.from.message": "Cheered by {names}",
-  "feed.cheers.private.explanation": "Only you can see who cheered your workout."
+  "feed.cheers.private.explanation": "Only you can see who cheered your workout.",
+  "feed.pr_badge.label": "Best {exercise} in 90 days"
 }

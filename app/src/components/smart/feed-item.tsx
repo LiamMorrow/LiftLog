@@ -2,6 +2,7 @@ import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import SessionComponent from '@/components/smart/session-component';
 import { ReactionBar } from '@/components/smart/reaction-bar';
+import { PrBadges } from '@/components/smart/pr-badges';
 import { spacing } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useAppSelector } from '@/store';
@@ -68,6 +69,7 @@ export function FeedItem({ eventId }: { eventId: string }) {
                     {formattedDate}
                   </SurfaceText>
                 </View>
+                <PrBadges eventId={feedItem.eventId} />
                 <ReactionBar eventId={feedItem.eventId} animateOnMount />
               </View>
             </Card.Content>
