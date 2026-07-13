@@ -53,7 +53,7 @@ export function ReactionBar({ eventId, animateOnMount }: ReactionBarProps) {
   }, []);
 
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: spacing[1] }}>
       {REACTION_EMOJIS.map((emoji) => {
         const count = countFor(emoji);
         return (

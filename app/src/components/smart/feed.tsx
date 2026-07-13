@@ -182,11 +182,11 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
                 </View>
               }
             />
-          </Card.Content>
-          <CardActions style={{ marginTop: spacing[2] }}>
-            <View style={{ marginRight: 'auto' }}>
+            <View style={{ marginTop: spacing[2] }}>
               <ReactionBar eventId={props.feedItem.eventId} animateOnMount />
             </View>
+          </Card.Content>
+          <CardActions>
             <Button
               testID="feed-view-workout"
               mode="contained"
