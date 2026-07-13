@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import ExerciseSection from '@/components/presentation/workout/exercise-section';
 import { OffsetDateTime } from '@js-joda/core';
 import { Updater } from '@/utils/types';
+import { KeyedExerciseBlueprint } from '@/models/blueprint-models';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedWeightedExercise;
@@ -55,7 +56,15 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
                 resetSetTimer();
               }
             }}
-            previousRepCount={props.previousRecordedExercises.at(0)?.potentialSets[index]?.set?.repsCompleted}
+            previousRepCount={
+              props.previousRecordedExercises
+                .filter(
+                  (x) =>
+                    KeyedExerciseBlueprint.fromExerciseBlueprint(x.blueprint).toString() ===
+                    KeyedExerciseBlueprint.fromExerciseBlueprint(props.recordedExercise.blueprint).toString(),
+                )
+                .at(0)?.potentialSets[index]?.set?.repsCompleted
+            }
             onUpdateReps={(reps) => {
               updateExercise((ex) => ex.withRepCount(index, reps, timeProvider()));
               resetSetTimer();
