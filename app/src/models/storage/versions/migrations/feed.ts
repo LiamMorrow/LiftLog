@@ -10,8 +10,12 @@ import {
   FollowResponseInboxMessageJSON,
   FollowResponseJSON,
   PendingFeedUserJSON,
+  ReactionInboxMessageJSON,
+  ReactionJSON,
+  ReceivedReactionJSON,
   RejectedFollowResponseJSON,
   RemovedSessionUserEventJSON,
+  SentReactionJSON,
   SessionUserEventJSON,
   SharedProgramBlueprintJSON,
   SharedSessionJSON,
@@ -29,6 +33,13 @@ export const followResponseInboxMessageMigrations =
   createMigrations<FollowResponseInboxMessageJSON>().build<Latest.FollowResponseInboxMessageJSON>();
 export const unfollowNotificationInboxMessageMigrations =
   createMigrations<UnfollowNotificationInboxMessageJSON>().build<Latest.UnfollowNotificationInboxMessageJSON>();
+export const reactionInboxMessageMigrations =
+  createMigrations<ReactionInboxMessageJSON>().build<Latest.ReactionInboxMessageJSON>();
+
+export const reactionMigrations = createMigrations<ReactionJSON>().build<Latest.ReactionJSON>();
+export const receivedReactionMigrations =
+  createMigrations<ReceivedReactionJSON>().build<Latest.ReceivedReactionJSON>();
+export const sentReactionMigrations = createMigrations<SentReactionJSON>().build<Latest.SentReactionJSON>();
 
 export const followerFeedUserMigrations = createMigrations<FollowerFeedUserJSON>().build<Latest.FollowerFeedUserJSON>();
 
@@ -98,21 +109,25 @@ export const inboxMessageMigrations = {
   $anyType: undefined! as
     | typeof followRequestInboxMessageMigrations.$anyType
     | typeof unfollowNotificationInboxMessageMigrations.$anyType
-    | typeof followResponseInboxMessageMigrations.$anyType,
+    | typeof followResponseInboxMessageMigrations.$anyType
+    | typeof reactionInboxMessageMigrations.$anyType,
   $finalType: undefined! as
     | typeof followRequestInboxMessageMigrations.$finalType
     | typeof unfollowNotificationInboxMessageMigrations.$finalType
-    | typeof followResponseInboxMessageMigrations.$finalType,
+    | typeof followResponseInboxMessageMigrations.$finalType
+    | typeof reactionInboxMessageMigrations.$finalType,
   migrate: (
     value:
       | typeof followRequestInboxMessageMigrations.$anyType
       | typeof unfollowNotificationInboxMessageMigrations.$anyType
-      | typeof followResponseInboxMessageMigrations.$anyType,
+      | typeof followResponseInboxMessageMigrations.$anyType
+      | typeof reactionInboxMessageMigrations.$anyType,
   ) => {
     return match(value)
       .with({ type: 'FollowRequest' }, (x) => followRequestInboxMessageMigrations.migrate(x))
       .with({ type: 'FollowResponse' }, (x) => followResponseInboxMessageMigrations.migrate(x))
       .with({ type: 'UnfollowNotification' }, (x) => unfollowNotificationInboxMessageMigrations.migrate(x))
+      .with({ type: 'Reaction' }, (x) => reactionInboxMessageMigrations.migrate(x))
       .exhaustive();
   },
 };

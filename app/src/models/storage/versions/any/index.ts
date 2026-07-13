@@ -15,6 +15,8 @@ import {
   userEventMigrations,
   sharedItemMigrations,
   aiPlanMigrations,
+  receivedReactionMigrations,
+  sentReactionMigrations,
 } from '@/models/storage/versions/migrations';
 
 export type AnyVersionSessionJSON = typeof sessionMigrations.$anyType;
@@ -31,6 +33,9 @@ export type AnyVersionSessionUserEventJSON = typeof sessionUserEventMigrations.$
 export type AnyVersionUserEventJSON = typeof userEventMigrations.$anyType;
 
 export type AnyVersionInboxMessageJSON = typeof inboxMessageMigrations.$anyType;
+
+export type AnyVersionReceivedReactionJSON = typeof receivedReactionMigrations.$anyType;
+export type AnyVersionSentReactionJSON = typeof sentReactionMigrations.$anyType;
 
 export type AnyVersionSharedItemJSON = typeof sharedItemMigrations.$anyType;
 

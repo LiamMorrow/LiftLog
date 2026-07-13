@@ -509,5 +509,7 @@
   "history.calendar.who_else_trained.title": "Who else trained",
   "feed.this_week.title": "This week",
   "feed.this_week.more_people": "+{count} more",
-  "feed.you.label": "You"
+  "feed.you.label": "You",
+  "feed.cheers.from.message": "Cheered by {names}",
+  "feed.cheers.private.explanation": "Only you can see who cheered your workout."
 }

@@ -9,6 +9,8 @@ import {
   updateFeedIdentityToLatestVersion,
   updateFeedItemsToLatestVersion,
   updateFeedPendingUsersToLatestVersion,
+  updateFeedReactionsToLatestVersion,
+  updateFeedSentReactionsToLatestVersion,
   updateProgramsToLatestVersion,
   updateSessionsToLatestVersion,
 } from './data-migrations/update-to-latest';
@@ -39,6 +41,8 @@ export class DatabaseMigrationService {
     await updateFeedFollowerUsersToLatestVersion(this.db);
     await updateFeedFollowRequestsToLatestVersion(this.db);
     await updateFeedPendingUsersToLatestVersion(this.db);
+    await updateFeedReactionsToLatestVersion(this.db);
+    await updateFeedSentReactionsToLatestVersion(this.db);
 
     this.logger.info('Migrated DB in ' + (performance.now() - now) + 'ms');
   }

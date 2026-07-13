@@ -69,17 +69,44 @@ interface InboxMessageBaseJSON<TType extends string, T> {
   signature: Base64Uint8ArrayJSON;
 }
 
+export interface ReactionJSON {
+  reactionId: string;
+  eventId: string;
+  emoji: string;
+  count: number;
+  reactedAt: InstantJSON;
+}
+
 export type FollowRequestInboxMessageJSON = InboxMessageBaseJSON<'FollowRequest', FollowRequestJSON>;
 export type FollowResponseInboxMessageJSON = InboxMessageBaseJSON<'FollowResponse', FollowResponseJSON>;
 export type UnfollowNotificationInboxMessageJSON = InboxMessageBaseJSON<
   'UnfollowNotification',
   UnfollowNotificationJSON
 >;
+export type ReactionInboxMessageJSON = InboxMessageBaseJSON<'Reaction', ReactionJSON>;
 
 export type InboxMessageJSON =
   | FollowRequestInboxMessageJSON
   | FollowResponseInboxMessageJSON
-  | UnfollowNotificationInboxMessageJSON;
+  | UnfollowNotificationInboxMessageJSON
+  | ReactionInboxMessageJSON;
+
+export interface ReceivedReactionJSON {
+  id: string;
+  eventId: string;
+  fromUserId: string;
+  emoji: string;
+  count: number;
+  reactedAt: InstantJSON;
+}
+
+export interface SentReactionJSON {
+  id: string;
+  eventId: string;
+  emoji: string;
+  count: number;
+  reactedAt: InstantJSON;
+}
 
 export interface FollowRequestJSON {
   name: string | undefined;

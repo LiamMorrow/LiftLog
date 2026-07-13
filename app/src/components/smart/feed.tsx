@@ -8,6 +8,7 @@ import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { getFeedItemHref } from '@/components/smart/feed-item';
 import { getFeedProfileEditorHref } from '@/components/smart/feed-profile-editor';
 import { FeedWeekStrip } from '@/components/smart/feed-week-strip';
+import { ReactionBar } from '@/components/smart/reaction-bar';
 import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
 import { FeedIdentity, SessionUserEvent } from '@/models/feed-models';
@@ -181,6 +182,9 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
             />
           </Card.Content>
           <CardActions style={{ marginTop: spacing[2] }}>
+            <View style={{ marginRight: 'auto' }}>
+              <ReactionBar eventId={props.feedItem.eventId} animateOnMount />
+            </View>
             <Button
               testID="feed-view-workout"
               mode="contained"

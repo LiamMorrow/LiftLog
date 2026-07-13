@@ -2,6 +2,7 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import CheckIcon from '@expo/material-symbols/check.xml';
 import { SessionComparisonTable } from '@/components/presentation/workout/session-comparison-table';
+import { ReactionSummary } from '@/components/smart/reaction-summary';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelectorWithArg } from '@/store';
 import { selectCurrentSession } from '@/store/current-session';
@@ -62,8 +63,9 @@ export default function PostWorkoutPage() {
           headerLeft: showFinishButton ? () => null : undefined!,
         }}
       />
-      <View style={{ marginVertical: spacing[4] }}>
+      <View style={{ marginVertical: spacing[4], gap: spacing[4] }}>
         <SessionComparisonTable mode="full" previousSession={previousComparableSession} session={session} />
+        <ReactionSummary eventId={session.id} animateOnMount />
       </View>
     </FullHeightScrollView>
   );

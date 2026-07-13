@@ -14,7 +14,9 @@ import {
   removeFollowedUser,
   removeFollower,
   removeFollowRequest,
+  removeReactionsForEvents,
   removeRevokableFollowSecret,
+  removeSentReaction,
   removeUnpublishedSessionId,
   resetFeedAccount,
   revokeFollowSecrets,
@@ -22,8 +24,10 @@ import {
   setFollowRequests,
   setIdentity,
   setIsHydrated,
+  setSentReaction,
   updateFeedIdentity,
   upsertFeedItems,
+  upsertReceivedReactions,
 } from '@/store/feed';
 import { RemoteData } from '@/models/remote';
 import { addSharedItemEffects } from '@/store/feed/shared-item-effects';
@@ -31,6 +35,7 @@ import { showSnackbar } from '@/store/app';
 import { addFeedItemEffects } from '@/store/feed/feed-items-effects';
 import { addInboxEffects } from '@/store/feed/inbox-effects';
 import { addFollowingEffects } from '@/store/feed/following-effects';
+import { addReactionEffects } from '@/store/feed/reaction-effects';
 import { selectActiveProgram } from '@/store/program';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { Platform } from 'react-native';
@@ -41,16 +46,20 @@ import {
   feedIdentitySchema,
   feedItemsSchema,
   feedPendingUsersSchema,
+  feedReactionsSchema,
   feedRevokedFollowSecretsSchema,
+  feedSentReactionsSchema,
   feedUnpublishedSessionsSchema,
 } from '@/db/schema';
-import { eq, inArray } from 'drizzle-orm';
+import { eq, inArray, sql } from 'drizzle-orm';
 import { upsert } from '@/db/helpers';
 import {
   FeedIdentity,
   FollowerFeedUser,
   FollowRequestInboxMessage,
   fromFeedUserJSON,
+  ReceivedReaction,
+  SentReaction,
   SessionUserEvent,
 } from '@/models/feed-models';
 import { Dispatch } from '@reduxjs/toolkit';
@@ -91,6 +100,24 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
             revokedFollowSecrets: (await db.select().from(feedRevokedFollowSecretsSchema)).map((x) => x.secret),
             followers: (await db.select().from(feedFollowerUsersSchema))
               .map((x) => FollowerFeedUser.fromJSON(x.payload))
+              .reduce(
+                toRecord(
+                  (x) => x.id,
+                  (x) => x,
+                ),
+                {},
+              ),
+            receivedReactions: (await db.select().from(feedReactionsSchema))
+              .map((x) => ReceivedReaction.fromJSON(x.payload))
+              .reduce(
+                toRecord(
+                  (x) => x.id,
+                  (x) => x,
+                ),
+                {},
+              ),
+            sentReactions: (await db.select().from(feedSentReactionsSchema))
+              .map((x) => SentReaction.fromJSON(x.payload))
               .reduce(
                 toRecord(
                   (x) => x.id,
@@ -207,6 +234,31 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
       return;
     }
     await db.delete(feedItemsSchema).where(inArray(feedItemsSchema.id, action.payload));
+  });
+  addEffect(upsertReceivedReactions, async (action, { extra: { db } }) => {
+    await upsert(
+      db,
+      feedReactionsSchema,
+      action.payload.map((x) => ({ id: x.id, payload: x.toJSON() })),
+    );
+  });
+  addEffect(setSentReaction, async (action, { extra: { db } }) => {
+    await upsert(db, feedSentReactionsSchema, [{ id: action.payload.id, payload: action.payload.toJSON() }]);
+  });
+  addEffect(removeSentReaction, async (action, { extra: { db } }) => {
+    await db.delete(feedSentReactionsSchema).where(eq(feedSentReactionsSchema.id, action.payload));
+  });
+  // Rows are keyed by reactionId, so deleting a session's cheers has to match on the payload's eventId.
+  addEffect(removeReactionsForEvents, async (action, { extra: { db } }) => {
+    if (!action.payload.length) {
+      return;
+    }
+    await db
+      .delete(feedReactionsSchema)
+      .where(inArray(sql`json_extract(${feedReactionsSchema.payload}, '$.eventId')`, action.payload));
+    await db
+      .delete(feedSentReactionsSchema)
+      .where(inArray(sql`json_extract(${feedSentReactionsSchema.payload}, '$.eventId')`, action.payload));
   });
   addEffect(addRevokableFollowSecret, async (action, { extra: { db } }) => {
     await db
@@ -366,6 +418,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
   addFeedItemEffects(addEffect);
   addInboxEffects(addEffect);
   addFollowingEffects(addEffect);
+  addReactionEffects(addEffect);
 }
 
 // There was a period of time where we generated bad keys on IOS

@@ -36,6 +36,10 @@ import {
   UnfollowNotificationJSON,
   FollowResponseInboxMessageJSON,
   UnfollowNotificationInboxMessageJSON,
+  ReactionJSON,
+  ReactionInboxMessageJSON,
+  ReceivedReactionJSON,
+  SentReactionJSON,
 } from '@/models/storage/versions/latest';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { Instant } from '@js-joda/core';
@@ -609,7 +613,84 @@ export class UnfollowNotification {
   }
 }
 
-export type InboxMessagePayload = FollowRequest | FollowResponse | UnfollowNotification;
+/**
+ * A fixed allowlist. The emoji arrives from another user over an unauthenticated inbox, so it is
+ * attacker-controlled: it must be validated on receipt, not merely constrained on send.
+ */
+export const REACTION_EMOJIS = ['💪', '🔥', '👏', '🎉', '🫡'] as const;
+export type ReactionEmoji = (typeof REACTION_EMOJIS)[number];
+
+/** Cheers accumulate, so a single message can carry several taps of the same emoji. */
+export const MAX_REACTION_COUNT = 50;
+/** Bounds how much a hostile follower can grow your database. */
+export const MAX_REACTIONS_PER_SENDER_PER_EVENT = 20;
+
+export function isReactionEmoji(value: string): value is ReactionEmoji {
+  return (REACTION_EMOJIS as readonly string[]).includes(value);
+}
+
+export function isValidReactionCount(value: number): boolean {
+  return Number.isInteger(value) && value >= 1 && value <= MAX_REACTION_COUNT;
+}
+
+export class Reaction {
+  readonly type = 'Reaction' as const;
+
+  constructor(
+    readonly reactionId: string,
+    readonly eventId: string,
+    readonly emoji: ReactionEmoji,
+    readonly count: number,
+    readonly reactedAt: Instant,
+  ) {}
+
+  // Both fields arrive from another user over an unauthenticated inbox. Rejecting here means a hostile
+  // payload is dropped at the parse boundary, before it can reach the database or the screen.
+  static fromJSON(json: ReactionJSON): Reaction {
+    if (!isReactionEmoji(json.emoji)) {
+      throw new Error('Unrecognised reaction emoji');
+    }
+    if (!isValidReactionCount(json.count)) {
+      throw new Error('Reaction count out of range');
+    }
+    return new Reaction(json.reactionId, json.eventId, json.emoji, json.count, fromInstantJson(json.reactedAt));
+  }
+
+  toJSON(): ReactionJSON {
+    return {
+      reactionId: this.reactionId,
+      eventId: this.eventId,
+      emoji: this.emoji,
+      count: this.count,
+      reactedAt: toInstantJson(this.reactedAt),
+    };
+  }
+
+  equals(other: InboxMessagePayload | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return (
+      this.reactionId === other.reactionId &&
+      this.eventId === other.eventId &&
+      this.emoji === other.emoji &&
+      this.count === other.count &&
+      this.reactedAt.equals(other.reactedAt)
+    );
+  }
+
+  with(other: Partial<Reaction>): Reaction {
+    return new Reaction(
+      other.reactionId ?? this.reactionId,
+      other.eventId ?? this.eventId,
+      other.emoji ?? this.emoji,
+      other.count ?? this.count,
+      other.reactedAt ?? this.reactedAt,
+    );
+  }
+}
+
+export type InboxMessagePayload = FollowRequest | FollowResponse | UnfollowNotification | Reaction;
 
 // ---------------------------------------------------------------------------
 // InboxMessage
@@ -741,12 +822,124 @@ export class UnfollowNotificationInboxMessage {
   }
 }
 
-export type InboxMessage = FollowRequestInboxMessage | FollowResponseInboxMessage | UnfollowNotificationInboxMessage;
+export class ReactionInboxMessage {
+  readonly type = 'Reaction' as const;
+
+  constructor(
+    readonly senderUserId: string,
+    readonly signature: Uint8Array,
+    readonly payload: Reaction,
+  ) {}
+
+  static fromJSON(json: ReactionInboxMessageJSON): ReactionInboxMessage {
+    return new ReactionInboxMessage(
+      json.senderUserId,
+      fromBase64Uint8ArrayJSON(json.signature),
+      Reaction.fromJSON(fromJsonString(json.payloadJson)),
+    );
+  }
+
+  toJSON(): ReactionInboxMessageJSON {
+    return {
+      type: 'Reaction',
+      senderUserId: this.senderUserId,
+      signature: toBase64Uint8ArrayJSON(this.signature),
+      payloadJson: toJsonString(this.payload.toJSON()),
+    };
+  }
+
+  equals(other: InboxMessage | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return this.senderUserId === other.senderUserId && this.payload.equals(other.payload);
+  }
+
+  with(other: Partial<ReactionInboxMessage>): ReactionInboxMessage {
+    return new ReactionInboxMessage(
+      other.senderUserId ?? this.senderUserId,
+      other.signature ?? this.signature,
+      other.payload ?? this.payload,
+    );
+  }
+}
+
+export type InboxMessage =
+  | FollowRequestInboxMessage
+  | FollowResponseInboxMessage
+  | UnfollowNotificationInboxMessage
+  | ReactionInboxMessage;
 
 export function fromInboxMessageJSON(json: InboxMessageJSON): InboxMessage {
   return match(json)
     .with({ type: 'FollowRequest' }, FollowRequestInboxMessage.fromJSON)
     .with({ type: 'FollowResponse' }, FollowResponseInboxMessage.fromJSON)
     .with({ type: 'UnfollowNotification' }, UnfollowNotificationInboxMessage.fromJSON)
+    .with({ type: 'Reaction' }, ReactionInboxMessage.fromJSON)
     .exhaustive();
+}
+
+/** A cheer someone sent you. Author-only: nobody else can see who cheered your workout. */
+export class ReceivedReaction {
+  constructor(
+    readonly id: string,
+    readonly eventId: string,
+    readonly fromUserId: string,
+    readonly emoji: ReactionEmoji,
+    readonly count: number,
+    readonly reactedAt: Instant,
+  ) {}
+
+  static fromJSON(json: ReceivedReactionJSON): ReceivedReaction {
+    if (!isReactionEmoji(json.emoji)) {
+      throw new Error('Unrecognised reaction emoji');
+    }
+    return new ReceivedReaction(
+      json.id,
+      json.eventId,
+      json.fromUserId,
+      json.emoji,
+      json.count,
+      fromInstantJson(json.reactedAt),
+    );
+  }
+
+  toJSON(): ReceivedReactionJSON {
+    return {
+      id: this.id,
+      eventId: this.eventId,
+      fromUserId: this.fromUserId,
+      emoji: this.emoji,
+      count: this.count,
+      reactedAt: toInstantJson(this.reactedAt),
+    };
+  }
+}
+
+/** A cheer you sent. The server deletes inbox messages on read, so this is the only record you'll ever have. */
+export class SentReaction {
+  constructor(
+    readonly id: string,
+    readonly eventId: string,
+    readonly emoji: ReactionEmoji,
+    readonly count: number,
+    readonly reactedAt: Instant,
+  ) {}
+
+  static fromJSON(json: SentReactionJSON): SentReaction {
+    if (!isReactionEmoji(json.emoji)) {
+      throw new Error('Unrecognised reaction emoji');
+    }
+    return new SentReaction(json.id, json.eventId, json.emoji, json.count, fromInstantJson(json.reactedAt));
+  }
+
+  toJSON(): SentReactionJSON {
+    return {
+      id: this.id,
+      eventId: this.eventId,
+      emoji: this.emoji,
+      count: this.count,
+      reactedAt: toInstantJson(this.reactedAt),
+    };
+  }
 }

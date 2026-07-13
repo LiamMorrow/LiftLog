@@ -7,6 +7,8 @@ import {
   feedIdentitySchema,
   feedItemsSchema,
   feedPendingUsersSchema,
+  feedReactionsSchema,
+  feedSentReactionsSchema,
   programsSchema,
   sessionsSchema,
 } from '@/db/schema';
@@ -21,6 +23,8 @@ import {
   followerFeedUserMigrations,
   programBlueprintMigrations,
   pendingFeedUserMigrations,
+  receivedReactionMigrations,
+  sentReactionMigrations,
 } from '@/models/storage/versions/migrations';
 
 export async function updateSessionsToLatestVersion(db: ExpoSQLiteDatabase) {
@@ -135,6 +139,42 @@ export async function updateFeedItemsToLatestVersion(db: ExpoSQLiteDatabase) {
           payload: sessionUserEventMigrations.migrate(record.payload),
         })
         .where(eq(feedItemsSchema.id, record.id));
+    }
+  });
+}
+
+export async function updateFeedReactionsToLatestVersion(db: ExpoSQLiteDatabase) {
+  await db.transaction(async (tx) => {
+    const recordsRequiringMigration = await tx
+      .select()
+      .from(feedReactionsSchema)
+      .where(
+        sql`COALESCE(json_extract(${feedReactionsSchema.payload}, '$.version'), 1) < ${receivedReactionMigrations.latestVersion}`,
+      );
+
+    for (const record of recordsRequiringMigration) {
+      await tx
+        .update(feedReactionsSchema)
+        .set({ payload: receivedReactionMigrations.migrate(record.payload) })
+        .where(eq(feedReactionsSchema.id, record.id));
+    }
+  });
+}
+
+export async function updateFeedSentReactionsToLatestVersion(db: ExpoSQLiteDatabase) {
+  await db.transaction(async (tx) => {
+    const recordsRequiringMigration = await tx
+      .select()
+      .from(feedSentReactionsSchema)
+      .where(
+        sql`COALESCE(json_extract(${feedSentReactionsSchema.payload}, '$.version'), 1) < ${sentReactionMigrations.latestVersion}`,
+      );
+
+    for (const record of recordsRequiringMigration) {
+      await tx
+        .update(feedSentReactionsSchema)
+        .set({ payload: sentReactionMigrations.migrate(record.payload) })
+        .where(eq(feedSentReactionsSchema.id, record.id));
     }
   });
 }

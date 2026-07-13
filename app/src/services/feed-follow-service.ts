@@ -6,6 +6,7 @@ import {
   FollowedFeedUser,
   FollowRequestInboxMessage,
   PendingFeedUser,
+  Reaction,
 } from '@/models/feed-models';
 import { RsaPublicKey } from '@/models/encryption-models';
 import { FeedInboxDecryptionService } from './feed-inbox-decryption-service';
@@ -72,6 +73,10 @@ export class FeedFollowService {
       userToUnfollow,
       toJsonString({ followSecret: userToUnfollow.followSecret }),
     );
+  }
+
+  async sendReactionAsync(identity: FeedIdentity, recipient: FeedUser, reaction: Reaction): Promise<ApiResult<void>> {
+    return this.sendMessage('Reaction', identity, recipient, toJsonString(reaction.toJSON()));
   }
 
   async acceptFollowRequestAsync(

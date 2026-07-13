@@ -45,7 +45,7 @@ function groupByDate<T>(items: T[], dateOf: (item: T) => LocalDate): Map<string,
 
 export const selectOwnSessionsByDate = createSelector([selectSessions], (sessions) =>
   groupByDate(
-    Object.values(sessions).filter((x) => x.isStarted),
+    sessions.filter((x) => x.isStarted),
     (x) => x.date,
   ),
 );
@@ -74,7 +74,7 @@ export const selectVolumeScales = createSelector(
       }
     };
 
-    for (const session of Object.values(sessions)) {
+    for (const session of sessions) {
       push(OWN_USER_KEY, session);
     }
     for (const event of feed) {
@@ -249,7 +249,7 @@ export const selectActivityWeek = createSelector(
 
 export const selectStreakStats = createSelector(
   [selectSessions, selectFirstDayOfWeek, (_: RootState, today: LocalDate) => today],
-  (sessions, firstDayOfWeek, today) => calculateStreak(Object.values(sessions), firstDayOfWeek, today),
+  (sessions, firstDayOfWeek, today) => calculateStreak(sessions, firstDayOfWeek, today),
 );
 
 export const selectFriendActivityOnDate = createSelector(

@@ -6,6 +6,8 @@ import {
   FollowRequestInboxMessageJSON,
   PendingFeedUserJSON,
   ProgramBlueprintJSON,
+  ReceivedReactionJSON,
+  SentReactionJSON,
   SessionJSON,
   SessionUserEventJSON,
 } from '@/models/storage/versions/latest';
@@ -66,6 +68,17 @@ export const feedFollowerUsersSchema = sqliteTable('feed_follower_user', {
 export const feedFollowRequestsSchema = sqliteTable('feed_follow_request', {
   id: text().primaryKey(),
   payload: text('payload', { mode: 'json' }).$type<FollowRequestInboxMessageJSON>().notNull(),
+});
+
+// id is the reactionId, so a redelivered cheer upserts over itself instead of inflating the count.
+export const feedReactionsSchema = sqliteTable('feed_reaction', {
+  id: text().primaryKey(),
+  payload: text('payload', { mode: 'json' }).$type<ReceivedReactionJSON>().notNull(),
+});
+
+export const feedSentReactionsSchema = sqliteTable('feed_sent_reaction', {
+  id: text().primaryKey(),
+  payload: text('payload', { mode: 'json' }).$type<SentReactionJSON>().notNull(),
 });
 
 export const feedRevokedFollowSecretsSchema = sqliteTable('feed_revoked_follow_secrets', {

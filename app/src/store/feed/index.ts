@@ -6,6 +6,9 @@ import {
   FollowRequestInboxMessage,
   FollowResponseInboxMessage,
   PendingFeedUser,
+  ReactionEmoji,
+  ReceivedReaction,
+  SentReaction,
   SessionUserEvent,
   SharedItem,
 } from '@/models/feed-models';
@@ -28,6 +31,10 @@ type FeedState = {
   revokedFollowSecrets: string[];
   sharedItem: RemoteData<SharedItem>;
   isFetching: boolean;
+  /** Cheers others sent you, keyed by reactionId. Only ever populated for your own workouts. */
+  receivedReactions: Record<string, ReceivedReaction>;
+  /** Cheers you sent, keyed by reactionId. The server deletes on read, so this is the only record. */
+  sentReactions: Record<string, SentReaction>;
 };
 
 const initialState: FeedState = {
@@ -41,6 +48,8 @@ const initialState: FeedState = {
   followRequests: [],
   followers: {},
   sharedItem: RemoteData.notAsked(),
+  receivedReactions: {},
+  sentReactions: {},
 };
 
 const feedSlice = createSlice({
@@ -102,6 +111,29 @@ const feedSlice = createSlice({
     removeRevokableFollowSecret(state, actions: PayloadAction<string>) {
       state.revokedFollowSecrets = state.revokedFollowSecrets.filter((x) => x !== actions.payload);
     },
+    upsertReceivedReactions(state, action: PayloadAction<ReceivedReaction[]>) {
+      for (const reaction of action.payload) {
+        state.receivedReactions[reaction.id] = reaction;
+      }
+    },
+    setSentReaction(state, action: PayloadAction<SentReaction>) {
+      state.sentReactions[action.payload.id] = action.payload;
+    },
+    removeSentReaction(state, action: PayloadAction<string>) {
+      delete state.sentReactions[action.payload];
+    },
+    removeReactionsForEvents(state, action: PayloadAction<string[]>) {
+      for (const [id, reaction] of Object.entries(state.receivedReactions)) {
+        if (action.payload.includes(reaction.eventId)) {
+          delete state.receivedReactions[id];
+        }
+      }
+      for (const [id, reaction] of Object.entries(state.sentReactions)) {
+        if (action.payload.includes(reaction.eventId)) {
+          delete state.sentReactions[id];
+        }
+      }
+    },
   },
   selectors: {
     selectSharedFeedUser: (state: FeedState) => state.sharedFeedUser,
@@ -125,6 +157,36 @@ const feedSlice = createSlice({
     ),
     selectFeedSessionItems: (state: FeedState) => state.feed,
     selectFeedIdentityRemote: (state: FeedState) => state.identity,
+    selectReceivedReactionsByEvent: createSelector(
+      (state: FeedState) => state.receivedReactions,
+      (reactions) => {
+        const byEvent = new Map<string, ReceivedReaction[]>();
+        for (const reaction of Object.values(reactions)) {
+          const existing = byEvent.get(reaction.eventId);
+          if (existing) {
+            existing.push(reaction);
+          } else {
+            byEvent.set(reaction.eventId, [reaction]);
+          }
+        }
+        return byEvent;
+      },
+    ),
+    selectSentReactionsByEvent: createSelector(
+      (state: FeedState) => state.sentReactions,
+      (reactions) => {
+        const byEvent = new Map<string, SentReaction[]>();
+        for (const reaction of Object.values(reactions)) {
+          const existing = byEvent.get(reaction.eventId);
+          if (existing) {
+            existing.push(reaction);
+          } else {
+            byEvent.set(reaction.eventId, [reaction]);
+          }
+        }
+        return byEvent;
+      },
+    ),
   },
 });
 
@@ -146,6 +208,10 @@ export const {
   addRevokableFollowSecret,
   removeRevokableFollowSecret,
   removeFeedItems,
+  upsertReceivedReactions,
+  setSentReaction,
+  removeSentReaction,
+  removeReactionsForEvents,
 } = feedSlice.actions;
 
 export const {
@@ -157,6 +223,8 @@ export const {
   selectFeedFollowers,
   selectFeedFollowRequests,
   selectFeedIdentityRemote,
+  selectReceivedReactionsByEvent,
+  selectSentReactionsByEvent,
 } = feedSlice.selectors;
 
 export const initializeFeedStateSlice = createAction('initializeFeedStateSlice');
@@ -223,5 +291,8 @@ export const resetFeedAccount = createAction<FeedAction & { newIdentity?: FeedId
 );
 
 export const updateFeedIdentity = createAction<{ updates: Partial<FeedIdentity> } & FeedAction>('updateFeedIdentity');
+
+/** One tap. Taps are coalesced in the effect, so a flurry of them becomes a single encrypted message. */
+export const cheerFeedItem = createAction<{ eventId: string; emoji: ReactionEmoji } & FeedAction>('cheerFeedItem');
 
 export default feedSlice.reducer;

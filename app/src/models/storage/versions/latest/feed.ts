@@ -102,17 +102,49 @@ export interface UnfollowNotificationJSON {
   followSecret: string;
 }
 
+export interface ReactionJSON {
+  reactionId: string;
+  // The id of the SessionUserEvent being cheered
+  eventId: string;
+  // Permissive here, narrowed to the allowlist in the domain model. Persisted data must survive values the
+  // current app version doesn't recognise.
+  emoji: string;
+  count: number;
+  reactedAt: InstantJSON;
+}
+
 export type FollowRequestInboxMessageJSON = InboxMessageBaseJSON<'FollowRequest', FollowRequestJSON>;
 export type FollowResponseInboxMessageJSON = InboxMessageBaseJSON<'FollowResponse', FollowResponseJSON>;
 export type UnfollowNotificationInboxMessageJSON = InboxMessageBaseJSON<
   'UnfollowNotification',
   UnfollowNotificationJSON
 >;
+export type ReactionInboxMessageJSON = InboxMessageBaseJSON<'Reaction', ReactionJSON>;
 
 export type InboxMessageJSON =
   | FollowRequestInboxMessageJSON
   | FollowResponseInboxMessageJSON
-  | UnfollowNotificationInboxMessageJSON;
+  | UnfollowNotificationInboxMessageJSON
+  | ReactionInboxMessageJSON;
+
+/** A cheer someone sent you. Only ever visible to the author of the cheered workout. */
+export interface ReceivedReactionJSON {
+  id: string;
+  eventId: string;
+  fromUserId: string;
+  emoji: string;
+  count: number;
+  reactedAt: InstantJSON;
+}
+
+/** A cheer you sent. The server deletes inbox messages on read, so this is the only record of it. */
+export interface SentReactionJSON {
+  id: string;
+  eventId: string;
+  emoji: string;
+  count: number;
+  reactedAt: InstantJSON;
+}
 
 export interface SharedProgramBlueprintJSON {
   version: 2;

@@ -6,6 +6,7 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { HistoryActivityCalendar } from '@/components/smart/history-activity-calendar';
 import { WhoElseTrainedCard } from '@/components/smart/who-else-trained-card';
+import { ReactionSummary } from '@/components/smart/reaction-summary';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
@@ -17,7 +18,7 @@ import { Session } from '@/models/session-models';
 import { selectStreakStats } from '@/store/activity';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { selectCurrentSession, setCurrentSession } from '@/store/current-session';
-import { addUnpublishedSessionId, encryptAndShare } from '@/store/feed';
+import { addUnpublishedSessionId, encryptAndShare, removeReactionsForEvents } from '@/store/feed';
 import { deleteStoredSession, selectSessionsBy, selectSessionsInMonth } from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
 import { LocalDate, YearMonth } from '@js-joda/core';
@@ -67,6 +68,7 @@ export default function History() {
     } else if (selectedWorkout) {
       dispatch(deleteStoredSession(selectedWorkout.id));
       dispatch(addUnpublishedSessionId(selectedWorkout.id));
+      dispatch(removeReactionsForEvents([selectedWorkout.id]));
       setDeleteSelectedWorkoutConfirmOpen(false);
       setSelectedWorkout(undefined);
     }
@@ -131,6 +133,7 @@ export default function History() {
                 titleContent={<SessionSummaryTitle showDate session={session} />}
                 mainContent={<SessionSummary isFilled showWeight session={session} />}
               />
+              <ReactionSummary eventId={session.id} />
             </Card.Content>
           )}
           renderItemActions={(session) => (

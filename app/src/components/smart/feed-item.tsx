@@ -1,6 +1,7 @@
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import SessionComponent from '@/components/smart/session-component';
+import { ReactionBar } from '@/components/smart/reaction-bar';
 import { spacing } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useAppSelector } from '@/store';
@@ -58,13 +59,16 @@ export function FeedItem({ eventId }: { eventId: string }) {
         header={
           <Card mode="contained" style={{ margin: spacing.pageHorizontalMargin }}>
             <Card.Content>
-              <View style={{ gap: spacing[1] }}>
-                <SurfaceText>
-                  <SurfaceText weight="bold">{userName}</SurfaceText> completed a workout
-                </SurfaceText>
-                <SurfaceText font="text-sm" color="onSurfaceVariant">
-                  {formattedDate}
-                </SurfaceText>
+              <View style={{ gap: spacing[2] }}>
+                <View style={{ gap: spacing[1] }}>
+                  <SurfaceText>
+                    <SurfaceText weight="bold">{userName}</SurfaceText> completed a workout
+                  </SurfaceText>
+                  <SurfaceText font="text-sm" color="onSurfaceVariant">
+                    {formattedDate}
+                  </SurfaceText>
+                </View>
+                <ReactionBar eventId={feedItem.eventId} animateOnMount />
               </View>
             </Card.Content>
           </Card>
