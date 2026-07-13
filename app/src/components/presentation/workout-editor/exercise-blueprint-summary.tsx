@@ -1,5 +1,4 @@
 import ItemTitle from '@/components/presentation/foundation/item-title';
-import { formatTimeSpan } from '@/components/presentation/foundation/rest-format';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { View } from 'react-native';
@@ -9,13 +8,12 @@ import TouchableRipple from '@/components/presentation/foundation/gesture-wrappe
 import { useTranslate } from '@tolgee/react';
 import {
   CardioExerciseBlueprint,
-  CardioTarget,
   ExerciseBlueprint,
   matchCardioTarget,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { match, P } from 'ts-pattern';
-import { formatDistance } from '@/utils/distance';
+import { formatCardioTarget } from '@/utils/format-cardio-target';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 
 interface ExerciseBlueprintSummaryProps {
@@ -103,12 +101,7 @@ function CardioExerciseBlueprintSummary({ blueprint }: { blueprint: CardioExerci
   );
 }
 
-export function formatCardioTarget(target: CardioTarget): string {
-  return matchCardioTarget(target, {
-    distance: (t) => formatDistance(t.value),
-    time: (t) => formatTimeSpan(t.value),
-  });
-}
+export { formatCardioTarget };
 
 function WeightedExerciseBlueprintSummary({ blueprint }: { blueprint: WeightedExerciseBlueprint }) {
   return (

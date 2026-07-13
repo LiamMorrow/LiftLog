@@ -3,6 +3,7 @@ import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import { Remote } from '@/components/presentation/foundation/remote';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
+import { PendingFeedUser } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
 import { useAppSelector } from '@/store';
 import { fetchAndSetSharedFeedUser, requestFollowUser, selectSharedFeedUser, setSharedFeedUser } from '@/store/feed';
@@ -43,8 +44,8 @@ export default function FeedSharePage() {
 
   const sharedProfileRemote = useAppSelector(selectSharedFeedUser);
 
-  const handleAcceptRequest = () => {
-    dispatch(requestFollowUser({ fromUserAction: true }));
+  const handleAcceptRequest = (user: PendingFeedUser) => {
+    dispatch(requestFollowUser({ user, fromUserAction: true }));
     back();
   };
 
@@ -85,7 +86,12 @@ export default function FeedSharePage() {
                 <Button mode="outlined" onPress={() => back()} style={{ marginRight: spacing[2] }}>
                   {t('generic.cancel.button')}
                 </Button>
-                <Button testID="feed-share-accept-button" mode="contained" onPress={handleAcceptRequest} icon="check">
+                <Button
+                  testID="feed-share-accept-button"
+                  mode="contained"
+                  onPress={() => handleAcceptRequest(sharedProfile)}
+                  icon="check"
+                >
                   {t('generic.accept.button')}
                 </Button>
               </Card.Actions>

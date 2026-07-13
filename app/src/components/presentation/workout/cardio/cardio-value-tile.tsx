@@ -46,10 +46,7 @@ export function CardioValueTile<T>({
           setDialogValue(value ?? emptyValue);
           setDialogOpen(true);
         }}
-        style={[
-          styles.tile,
-          { backgroundColor: filled ? colors.secondaryContainer : colors.surfaceContainerHighest },
-        ]}
+        style={[styles.tile, { backgroundColor: filled ? colors.secondaryContainer : colors.surfaceContainerHighest }]}
       >
         <View style={{ alignItems: 'center' }}>
           <Text style={[styles.value, { color: filled ? colors.onSecondaryContainer : colors.outline }]}>

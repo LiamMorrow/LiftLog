@@ -160,29 +160,49 @@ describe('following-effects', () => {
 
   describe('requestFollowUser', () => {
     it('does nothing when identity is not loaded', async () => {
-      const { testBed, services } = makeTestBed({
-        identity: RemoteData.notAsked(),
-        sharedFeedUser: RemoteData.success(new PendingFeedUser('u1', publicKey, 'Bob')),
-      });
+      const { testBed, services } = makeTestBed({ identity: RemoteData.notAsked() });
 
-      await testBed.dispatchHandled(requestFollowUser({ fromUserAction: true }));
+      await testBed.dispatchHandled(
+        requestFollowUser({ user: new PendingFeedUser('u1', publicKey, 'Bob'), fromUserAction: true }),
+      );
 
       expect(services.feedFollowService.requestToFollowAUserAsync).not.toHaveBeenCalled();
       testBed.expectNotDispatched(putFollowedUser);
     });
 
-    it('follows the shared user and resets the shared slot on success', async () => {
+    it('follows the requested user and resets the shared slot on success', async () => {
       const sharedUser = new PendingFeedUser('u1', publicKey, 'Bob');
       const { testBed } = makeTestBed({ sharedFeedUser: RemoteData.success(sharedUser) });
 
-      await testBed.dispatchHandled(requestFollowUser({ fromUserAction: true }));
+      await testBed.dispatchHandled(requestFollowUser({ user: sharedUser, fromUserAction: true }));
 
-      expect(testBed.getDispatchedAction(putFollowedUser).payload).toBe(sharedUser);
+      const put = testBed.getDispatchedAction(putFollowedUser).payload;
+      expect(put).toBeInstanceOf(PendingFeedUser);
+      expect(put.id).toBe('u1');
+      expect(put.name).toBe('Bob');
       expect(
         testBed
           .getDispatchedAction(setSharedFeedUser)
           .payload.match({ loading: () => false, success: () => false, error: () => false, notAsked: () => true }),
       ).toBe(true);
+    });
+
+    it('follows a follower back as a pending user, without their follow secret', async () => {
+      const follower = new FollowerFeedUser('u1', publicKey, 'Bob', 'their-secret-to-read-my-feed');
+      const { testBed, services } = makeTestBed({ followers: { u1: follower } });
+
+      await testBed.dispatchHandled(requestFollowUser({ user: follower, fromUserAction: true }));
+
+      expect(services.feedFollowService.requestToFollowAUserAsync).toHaveBeenCalledWith(identity, follower);
+
+      const put = testBed.getDispatchedAction(putFollowedUser).payload;
+      expect(put).toBeInstanceOf(PendingFeedUser);
+      expect(put).not.toHaveProperty('followSecret');
+      expect(put.publicKey).toBe(publicKey);
+
+      // They stay a follower; following back is a separate, still-pending grant.
+      expect(feedState(testBed).followers.u1).toBe(follower);
+      expect(feedState(testBed).followedUsers.u1).toBeInstanceOf(PendingFeedUser);
     });
 
     it('reports an error and does not follow when the request fails', async () => {
@@ -191,7 +211,7 @@ describe('following-effects', () => {
       services.feedFollowService.requestToFollowAUserAsync.mockResolvedValue(ApiResult.fromError(apiError()));
       const { testBed } = makeTestBed({ sharedFeedUser: RemoteData.success(sharedUser) }, services);
 
-      await testBed.dispatchHandled(requestFollowUser({ fromUserAction: true }));
+      await testBed.dispatchHandled(requestFollowUser({ user: sharedUser, fromUserAction: true }));
 
       expect(testBed.getDispatchedAction(feedApiError).payload.message).toBe('Failed to request follow user');
       testBed.expectNotDispatched(putFollowedUser);

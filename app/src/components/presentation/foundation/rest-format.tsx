@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextProps } from 'react-native';
 import { Rest } from '@/models/blueprint-models';
-import { Duration } from '@js-joda/core';
+import { formatTimeSpan } from '@/utils/format-time-span';
 import { Text } from 'react-native-paper';
 
 interface RestFormatProps {
@@ -20,9 +20,4 @@ export default function RestFormat({ rest }: RestFormatProps & TextProps) {
   );
 }
 
-export const formatTimeSpan = (duration: Duration): string => {
-  const totalSeconds = duration.seconds();
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-};
+export { formatTimeSpan };

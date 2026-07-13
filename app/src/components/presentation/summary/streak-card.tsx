@@ -22,9 +22,7 @@ export function StreakCard({ stats }: StreakCardProps) {
   const streakWeeks = stats.weeks + (stats.state === 'secured' ? 1 : 0);
 
   const streakLabel =
-    streakWeeks === 1
-      ? t('stats.streak.weeks.one')
-      : t('stats.streak.weeks.other', { weeks: streakWeeks.toString() });
+    streakWeeks === 1 ? t('stats.streak.weeks.one') : t('stats.streak.weeks.other', { weeks: streakWeeks.toString() });
 
   return (
     <Card mode="contained">

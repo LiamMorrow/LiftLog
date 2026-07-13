@@ -271,7 +271,7 @@ export const fetchAndSetSharedFeedUser = createAction<{ idOrLookup: string; name
   'fetchAndSetSharedFeedUser',
 );
 
-export const requestFollowUser = createAction<FeedAction>('requestFollowUser');
+export const requestFollowUser = createAction<{ user: FeedUser } & FeedAction>('requestFollowUser');
 
 export const processFollowResponses = createAction<{
   responses: FollowResponseInboxMessage[];

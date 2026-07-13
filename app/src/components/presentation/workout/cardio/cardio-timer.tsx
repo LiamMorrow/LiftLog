@@ -58,9 +58,7 @@ export function CardioTimer({ set, onPersist, onStop, style }: CardioTimerProps)
         const doneMetres = set.distance ? toMetres(set.distance) : undefined;
         const reached = !!doneMetres && doneMetres.gte(targetMetres);
         const progress =
-          doneMetres && targetMetres.gt(0)
-            ? Math.min(1, doneMetres.dividedBy(targetMetres).toNumber())
-            : 0;
+          doneMetres && targetMetres.gt(0) ? Math.min(1, doneMetres.dividedBy(targetMetres).toNumber()) : 0;
         const done = set.distance ? localeFormatBigNumber(set.distance.value) + getShortUnit(set.distance.unit) : '-';
         return {
           reached,

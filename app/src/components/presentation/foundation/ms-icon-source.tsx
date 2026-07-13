@@ -21,6 +21,7 @@ import { msHistory } from '@material-symbols-react-native/outlined-400/msHistory
 import { msInfo } from '@material-symbols-react-native/outlined-400/msInfo';
 import { msMoreHoriz } from '@material-symbols-react-native/outlined-400/msMoreHoriz';
 import { msMoreVert } from '@material-symbols-react-native/outlined-400/msMoreVert';
+import { msPersonAdd } from '@material-symbols-react-native/outlined-400/msPersonAdd';
 import { msPersonRemove } from '@material-symbols-react-native/outlined-400/msPersonRemove';
 import { msNotes } from '@material-symbols-react-native/outlined-400/msNotes';
 import { msPlayCircle } from '@material-symbols-react-native/outlined-400/msPlayCircle';
@@ -154,6 +155,7 @@ const MaterialSymbols = {
   playArrow: msPlayArrow,
   moreVert: msMoreVert,
   notes: msNotes,
+  personAdd: msPersonAdd,
   personRemove: msPersonRemove,
   heartCheck: msHeartCheck,
   cancel: msCancel,

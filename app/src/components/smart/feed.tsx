@@ -1,4 +1,5 @@
 import CardActions from '@/components/presentation/foundation/card-actions';
+import { PersonAvatar } from '@/components/presentation/feed/person-avatar';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { Remote } from '@/components/presentation/foundation/remote';
 import SessionSummary from '@/components/presentation/summary/session-summary';
@@ -164,24 +165,28 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
 function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
   const users = useAppSelector(selectFeedFollowing);
   const ownUserId = useAppSelector(selectOwnFeedUserId);
+  const identity = useAppSelector((x) => x.feed.identity.unwrapOr(undefined));
   const { colors } = useAppTheme();
   const { t } = useTranslate();
   const { push } = useRouter();
   const isOwnItem = props.feedItem.userId === ownUserId;
   switch (props.feedItem.type) {
     case 'SessionUserEvent': {
-      const userName = isOwnItem
-        ? t('feed.you.label')
-        : (users.find((x) => x.userId === props.feedItem.userId)?.user.name ?? 'Anonymous user');
+      const authorName = isOwnItem ? identity?.name : users.find((x) => x.userId === props.feedItem.userId)?.user.name;
+      const byline = isOwnItem ? t('feed.you.label') : (authorName ?? t('feed.anonymous_user.label'));
       return (
-        <Card
-          mode="contained"
-          testID="feed-view-workout"
-          onPress={() => push(getFeedItemHref(props.feedItem.eventId))}
-        >
+        <Card mode="contained" testID="feed-view-workout" onPress={() => push(getFeedItemHref(props.feedItem.eventId))}>
           <Card.Content>
             <SplitCardControl
-              titleContent={<SessionSummaryTitle showDate byline={userName} session={props.feedItem.session} />}
+              titleContent={
+                <SessionSummaryTitle
+                  showDate
+                  showVolume
+                  byline={byline}
+                  bylineLeading={<PersonAvatar userId={props.feedItem.userId} name={authorName} size={24} />}
+                  session={props.feedItem.session}
+                />
+              }
               mainContent={
                 <View style={{ gap: spacing[2] }}>
                   <SessionSummary session={props.feedItem.session} isFilled showWeight />

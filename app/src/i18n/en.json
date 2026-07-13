@@ -111,6 +111,7 @@
   "feed.explanation.body": "This is your feed, share it with your friends to let them follow your workouts!",
   "feed.feed.title": "Feed",
   "feed.follow_back.button": "Follow {user} back",
+  "feed.follow_back.short.button": "Follow back",
   "feed.followers.title": "Followers",
   "feed.following.title": "Following",
   "feed.import_data.confirm.body": "This backup includes a feed account. Would you like to import it?<br>You will lose access to your current account without a backup.<br><em>This will replace your current account and cannot be undone!</em>",
@@ -518,5 +519,13 @@
   "feed.you.label": "You",
   "feed.cheers.from.message": "Cheered by {names}",
   "feed.cheers.private.explanation": "Only you can see who cheered your workout.",
-  "feed.pr_badge.label": "Best {exercise} in 90 days"
+  "feed.pr_badge.label": "Best {exercise} in 90 days",
+  "feed.requests.title": "Requests",
+  "feed.wants_to_follow_you.subtitle": "Wants to follow you",
+  "feed.following_back.label": "You follow them back",
+  "feed.last_workout.label": "Last workout {day}",
+  "feed.workouts_this_week.one": "1 workout this week",
+  "feed.workouts_this_week.other": "{count} workouts this week",
+  "feed.no_recent_workouts.label": "No workouts in the last 90 days",
+  "feed.remove_follower.confirm.body": "This will stop <em>{user}</em> from following you and remove all your content from their device."
 }

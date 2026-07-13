@@ -54,18 +54,19 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
   addEffect(requestFollowUser, async (action, { dispatch, getState, extra: { feedFollowService } }) => {
     const state = getState();
     const identityRemote = state.feed.identity;
-    const sharedFeedUserRemote = state.feed.sharedFeedUser;
 
-    if (!identityRemote.isSuccess() || !sharedFeedUserRemote.isSuccess()) {
+    if (!identityRemote.isSuccess()) {
       return;
     }
 
     const identity = identityRemote.data;
-    const sharedFeedUser = sharedFeedUserRemote.data;
-    const result = await feedFollowService.requestToFollowAUserAsync(identity, sharedFeedUser);
+    const user = action.payload.user;
+    const result = await feedFollowService.requestToFollowAUserAsync(identity, user);
 
     if (result.isSuccess()) {
-      dispatch(putFollowedUser(sharedFeedUser));
+      // A follower carries a follow secret granting them *our* feed; following them back is a separate
+      // grant that only exists once they accept, so they start out pending regardless of what they were.
+      dispatch(putFollowedUser(new PendingFeedUser(user.id, user.publicKey, user.name)));
       dispatch(setSharedFeedUser(RemoteData.notAsked()));
     } else {
       dispatch(

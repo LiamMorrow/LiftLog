@@ -248,6 +248,82 @@ export const selectActivityWeek = createSelector(
   },
 );
 
+export interface FollowingActivity {
+  cells: ActivityCell[];
+  workoutsThisWeek: number;
+  /** Absent when they have published nothing inside the retention window -- not when they have never trained. */
+  lastWorkoutDate?: LocalDate;
+}
+
+/**
+ * One seven-day row per followed user, including the ones who have gone quiet -- `selectActivityWeek` drops
+ * those, but the Following tab has to say something about them, so they get a row of empty cells instead.
+ *
+ * A self-follow reads from stored sessions rather than the feed: your own events are filtered out of the feed
+ * to stop them being counted twice, so sourcing this row from there would report you as never having trained.
+ */
+export const selectFollowingActivity = createSelector(
+  [
+    selectFeedEventsByDate,
+    selectOwnSessionsByDate,
+    selectVolumeScales,
+    selectFollowedUsers,
+    selectOwnFeedUserId,
+    (_: RootState, today: LocalDate) => today,
+  ],
+  (feedEvents, ownSessions, scales, followedUsers, ownUserId, today): Map<string, FollowingActivity> => {
+    const days = Array.from({ length: 7 }, (_, index) => today.minusDays(6 - index));
+
+    return new Map(
+      Object.keys(followedUsers).map((userId) => {
+        const isOwn = userId === ownUserId;
+        const scale = scales.get(isOwn ? OWN_USER_KEY : userId);
+
+        const sessionsOn = (date: LocalDate): Session[] =>
+          isOwn
+            ? (ownSessions.get(date.toString()) ?? [])
+            : (feedEvents.get(date.toString()) ?? [])
+                .filter((event) => event.userId === userId)
+                .map((event) => event.session);
+
+        const cells = days.map((date): ActivityCell => {
+          const sessions = sessionsOn(date);
+          const volume = sessions.reduce((total, session) => total + sessionVolume(session), 0);
+
+          return {
+            date,
+            level: sessions.length === 0 || !scale ? 0 : levelFor(volume, scale),
+            sessionCount: sessions.length,
+            markers: [],
+            overflowMarkers: 0,
+            isToday: date.isEqual(today),
+            isFuture: false,
+            isOutsideFocus: false,
+            isBeyondFeedHorizon: false,
+          };
+        });
+
+        const lastWorkoutDate = [...(isOwn ? ownSessions : feedEvents).keys()]
+          .map((date) => LocalDate.parse(date))
+          .filter((date) => sessionsOn(date).length > 0)
+          .reduce<LocalDate | undefined>(
+            (latest, date) => (!latest || date.isAfter(latest) ? date : latest),
+            undefined,
+          );
+
+        return [
+          userId,
+          {
+            cells,
+            workoutsThisWeek: cells.filter((cell) => cell.sessionCount > 0).length,
+            lastWorkoutDate,
+          },
+        ];
+      }),
+    );
+  },
+);
+
 export const selectStreakStats = createSelector(
   [selectSessions, selectFirstDayOfWeek, (_: RootState, today: LocalDate) => today],
   (sessions, firstDayOfWeek, today) => calculateStreak(sessions, firstDayOfWeek, today),
@@ -293,4 +369,3 @@ export const selectFriendActivityOnDate = createSelector(
       name: names.get(event.userId),
     })),
 );
-
