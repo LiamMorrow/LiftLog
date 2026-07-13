@@ -9,8 +9,11 @@ import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
+import { StreakCard } from '@/components/presentation/summary/streak-card';
 import { spacing } from '@/hooks/useAppTheme';
+import { useToday } from '@/hooks/useToday';
 import { Session } from '@/models/session-models';
+import { selectStreakStats } from '@/store/activity';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { selectCurrentSession, setCurrentSession } from '@/store/current-session';
 import { addUnpublishedSessionId, encryptAndShare } from '@/store/feed';
@@ -36,6 +39,8 @@ export default function History() {
   );
   const sessions = useAppSelector(selectSessions);
   const sessionsInMonth = useAppSelectorWithArg(selectSessionsInMonth, currentYearMonth);
+  const today = useToday();
+  const streakStats = useAppSelectorWithArg(selectStreakStats, today);
   const { push } = useRouter();
   const currentWorkoutSession = useAppSelectorWithArg(selectCurrentSession, 'workoutSession');
   const onSelectSession = (session: Session) => {
@@ -99,6 +104,7 @@ export default function History() {
           paddingHorizontal: spacing.pageHorizontalMargin,
         }}
       >
+        <StreakCard stats={streakStats} />
         <HistoryCalendarCard
           currentYearMonth={currentYearMonth}
           sessions={sessions}

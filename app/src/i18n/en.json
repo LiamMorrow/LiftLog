@@ -495,5 +495,12 @@
   "ai.update_required.title": "Update required",
   "ai.update_required.explanation": "This version of the app is out of date and can no longer generate workout plans. Please update to the latest version to continue.",
   "feed.item_unavailable.message": "This workout is no longer available.",
-  "feed.view_workout.button": "View workout"
+  "feed.view_workout.button": "View workout",
+  "stats.streak.weeks.one": "1 week streak",
+  "stats.streak.weeks.other": "{weeks} week streak",
+  "stats.streak.secured.message": "This week's done. Your streak is safe.",
+  "stats.streak.keep_going.one": "1 more this week to keep your {weeks} week streak",
+  "stats.streak.keep_going.other": "{remaining} more this week to keep your {weeks} week streak",
+  "stats.last_7_days.one": "1 training day in the last 7",
+  "stats.last_7_days.other": "{count} training days in the last 7"
 }

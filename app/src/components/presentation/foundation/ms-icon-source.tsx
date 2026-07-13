@@ -11,6 +11,7 @@ import { msEdit } from '@material-symbols-react-native/outlined-400/msEdit';
 import { msFitnessCenter } from '@material-symbols-react-native/outlined-400/msFitnessCenter';
 import { msVisibility } from '@material-symbols-react-native/outlined-400/msVisibility';
 import { msBolt } from '@material-symbols-react-native/outlined-400/msBolt';
+import { msLocalFireDepartment } from '@material-symbols-react-native/outlined-400/msLocalFireDepartment';
 import { msStar } from '@material-symbols-react-native/outlined-400/msStar';
 import { msPromptSuggestion } from '@material-symbols-react-native/outlined-400/msPromptSuggestion';
 import { msCancel } from '@material-symbols-react-native/outlined-400/msCancel';
@@ -168,6 +169,7 @@ const MaterialSymbols = {
   promptSuggestion: msPromptSuggestion,
   send: msSend,
   bolt: msBolt,
+  localFireDepartment: msLocalFireDepartment,
   link: msLink,
   steps: msSteps,
   elevation: msElevation,

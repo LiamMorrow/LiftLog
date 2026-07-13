@@ -1,14 +1,17 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { DayOfWeek, LocalDate, YearMonth } from '@js-joda/core';
+import { LocalDate, YearMonth } from '@js-joda/core';
 import { Session } from '@/models/session-models';
 import { FEED_EVENT_RETENTION_DAYS, SessionUserEvent } from '@/models/feed-models';
 import { RootState } from '@/store/store';
 import { selectSessions } from '@/store/stored-sessions';
 import { ActivityCell, ActivityMarker, ActivityRow, VolumeScale } from '@/store/activity/activity-types';
 import { levelFor, sessionVolume, volumeScaleOf } from '@/store/activity/volume';
+import { calculateStreak } from '@/store/activity/streak';
 
 export * from '@/store/activity/activity-types';
 export * from '@/store/activity/volume';
+export * from '@/store/activity/streak';
+export * from '@/store/activity/week-start';
 
 /** Identifies the current user's own row/scale, which has no feed userId of its own. */
 export const OWN_USER_KEY = 'me';
@@ -237,6 +240,11 @@ export const selectActivityWeek = createSelector(
   },
 );
 
+export const selectStreakStats = createSelector(
+  [selectSessions, selectFirstDayOfWeek, (_: RootState, today: LocalDate) => today],
+  (sessions, firstDayOfWeek, today) => calculateStreak(Object.values(sessions), firstDayOfWeek, today),
+);
+
 export const selectFriendActivityOnDate = createSelector(
   [selectFeedEventsByDate, selectFollowedUserNames, (_: RootState, date: LocalDate) => date],
   (feedEvents, names, date) =>
@@ -246,7 +254,3 @@ export const selectFriendActivityOnDate = createSelector(
     })),
 );
 
-export function weekStart(date: LocalDate, firstDayOfWeek: DayOfWeek): LocalDate {
-  const delta = (date.dayOfWeek().value() - firstDayOfWeek.value() + 7) % 7;
-  return date.minusDays(delta);
-}
