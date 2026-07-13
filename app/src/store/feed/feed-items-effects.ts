@@ -15,6 +15,7 @@ import {
   FeedUser,
   FollowedFeedUser,
   FeedUserEvent,
+  FEED_EVENT_RETENTION_SECONDS,
   fromFeedUserEventJSON,
   RemovedSessionUserEvent,
   SessionUserEvent,
@@ -240,15 +241,23 @@ async function publishEvent(
     expiry: event.expiry.toString(),
   });
 }
-async function publishSessionAsync(
+export async function publishSessionAsync(
   identity: FeedIdentity,
   session: Session,
   encryptionService: EncryptionService,
   feedApiService: FeedApiService,
 ) {
+  const publishedSession = identity.publishBodyweight ? session : session.with({ bodyweight: undefined });
+
   return publishEvent(
     identity,
-    new SessionUserEvent(identity.id, session.id, Instant.now(), Instant.now().plusSeconds(90 * 24 * 60 * 60), session),
+    new SessionUserEvent(
+      identity.id,
+      session.id,
+      Instant.now(),
+      Instant.now().plusSeconds(FEED_EVENT_RETENTION_SECONDS),
+      publishedSession,
+    ),
     encryptionService,
     feedApiService,
   );
@@ -266,7 +275,7 @@ async function removePublishedSessionAsync(
       identity.id,
       sessionId,
       Instant.now(),
-      Instant.now().plusSeconds(90 * 24 * 60 * 60), // 90 days
+      Instant.now().plusSeconds(FEED_EVENT_RETENTION_SECONDS),
       sessionId,
     ),
     encryptionService,
