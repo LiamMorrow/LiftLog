@@ -1,10 +1,7 @@
 import { Session } from '@/models/session-models';
 import { ActivityLevel, MAX_ACTIVITY_LEVEL, VolumeScale } from '@/store/activity/activity-types';
 
-/**
- * Total weight moved in a session, in kilograms. Cardio contributes nothing, so a cardio-only session scores
- * zero — which is why zero volume must never mean "no activity". See `levelFor`.
- */
+/** Kilograms moved. Cardio contributes nothing, so a cardio-only session scores zero — see `levelFor`. */
 export function sessionVolume(session: Session): number {
   let total = 0;
   for (const exercise of session.recordedExercises) {
@@ -19,10 +16,6 @@ export function sessionVolume(session: Session): number {
     }
   }
   return total;
-}
-
-export function isStartedSession(session: Session): boolean {
-  return session.isStarted;
 }
 
 /** Linear-interpolated percentile over an ascending-sorted array. */
@@ -43,12 +36,9 @@ export function volumeScaleOf(volumes: number[]): VolumeScale {
   return { lo: percentile(ascending, 0.1), hi: percentile(ascending, 0.9) };
 }
 
-/**
- * Grades a day's volume against the user's own range. Always returns at least 1 for a day that was trained:
- * level 0 is reserved for "no session at all".
- */
+/** Never returns 0 for a day that was trained — level 0 is reserved for "no session at all". */
 export function levelFor(volume: number, scale: VolumeScale): ActivityLevel {
-  // A single session, or a run of identical ones, gives us no spread to grade against. Pick the middle.
+  // No spread to grade against (one session, or a run of identical ones).
   if (scale.hi <= scale.lo) {
     return 3;
   }

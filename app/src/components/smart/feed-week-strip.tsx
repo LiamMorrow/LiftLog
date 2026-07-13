@@ -3,7 +3,7 @@ import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useToday } from '@/hooks/useToday';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { selectActivityWeek, selectStreakStats } from '@/store/activity';
+import { selectActivityWeek, selectFollowsOtherUsers, selectStreakStats } from '@/store/activity';
 import { useTranslate } from '@tolgee/react';
 import { View } from 'react-native';
 import { Card } from 'react-native-paper';
@@ -17,7 +17,7 @@ export function FeedWeekStrip() {
   const firstDayOfWeek = useAppSelector((x) => x.settings.firstDayOfWeek);
   const rows = useAppSelectorWithArg(selectActivityWeek, today);
   const streak = useAppSelectorWithArg(selectStreakStats, today);
-  const followsAnyone = useAppSelector((x) => Object.keys(x.feed.followedUsers).length > 0);
+  const followsAnyone = useAppSelector(selectFollowsOtherUsers);
 
   if (!followsAnyone) {
     return null;

@@ -19,9 +19,15 @@ export const OWN_USER_KEY = 'me';
 /** How many friend markers fit under a day number before we collapse the rest into a "+N" dot. */
 const MAX_MARKERS_PER_CELL = 3;
 
-const selectFeedEvents = (state: RootState) => state.feed.feed;
+const selectAllFeedEvents = (state: RootState) => state.feed.feed;
 const selectFollowedUsers = (state: RootState) => state.feed.followedUsers;
 const selectFirstDayOfWeek = (state: RootState) => state.settings.firstDayOfWeek;
+const selectOwnFeedUserId = (state: RootState) => state.feed.identity.unwrapOr(undefined)?.id;
+
+/** Own activity always comes from stored sessions, so a self-follow would otherwise count everything twice. */
+const selectFeedEvents = createSelector([selectAllFeedEvents, selectOwnFeedUserId], (feed, ownUserId) =>
+  ownUserId === undefined ? feed : feed.filter((x) => x.userId !== ownUserId),
+);
 
 function groupByDate<T>(items: T[], dateOf: (item: T) => LocalDate): Map<string, T[]> {
   const byDate = new Map<string, T[]>();
@@ -44,10 +50,7 @@ export const selectOwnSessionsByDate = createSelector([selectSessions], (session
   ),
 );
 
-/**
- * Keyed by the date the session was *performed*, not the event timestamp — a workout published late still
- * belongs on the day it happened.
- */
+/** Keyed by the date the session was performed, not the event timestamp. */
 export const selectFeedEventsByDate = createSelector([selectFeedEvents], (feed) =>
   groupByDate(
     feed.filter((x) => x.session.isStarted),
@@ -98,6 +101,12 @@ function markersFor(events: SessionUserEvent[], names: Map<string, string | unde
 const selectFollowedUserNames = createSelector(
   [selectFollowedUsers],
   (followedUsers) => new Map(Object.entries(followedUsers).map(([userId, user]) => [userId, user.name])),
+);
+
+/** Self-follows don't count: they contribute no activity that isn't already yours. */
+export const selectFollowsOtherUsers = createSelector(
+  [selectFollowedUsers, selectOwnFeedUserId],
+  (followedUsers, ownUserId) => Object.keys(followedUsers).some((userId) => userId !== ownUserId),
 );
 
 interface CellContext {
@@ -153,18 +162,16 @@ export interface ActivityMonth {
   crossesFeedHorizon: boolean;
 }
 
-/**
- * `today` is passed in rather than read from the clock so memoization can't go stale across midnight.
- */
+/** `today` is an argument rather than read from the clock, so memoization can't go stale across midnight. */
 export const selectActivityMonth = createSelector(
   [
     selectCellContext,
     selectFirstDayOfWeek,
-    selectFollowedUsers,
+    selectFollowsOtherUsers,
     (_: RootState, params: ActivityMonthParams) => params.yearMonth,
     (_: RootState, params: ActivityMonthParams) => params.today,
   ],
-  (cellContext, firstDayOfWeek, followedUsers, yearMonth, today): ActivityMonth => {
+  (cellContext, firstDayOfWeek, followsOthers, yearMonth, today): ActivityMonth => {
     const context = withHorizon(cellContext, today);
     const firstOfMonth = LocalDate.of(yearMonth.year(), yearMonth.monthValue(), 1);
 
@@ -187,7 +194,7 @@ export const selectActivityMonth = createSelector(
 
     return {
       rows,
-      crossesFeedHorizon: firstOfMonth.isBefore(context.horizon) && Object.keys(followedUsers).length > 0,
+      crossesFeedHorizon: firstOfMonth.isBefore(context.horizon) && followsOthers,
     };
   },
 );
