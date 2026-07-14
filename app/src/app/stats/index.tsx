@@ -7,6 +7,7 @@ import { SingleValueStatisticsGrid } from '@/components/presentation/stats/singl
 import { TimePeriodSelector } from '@/components/presentation/stats/time-period-selector';
 import { TitledSection } from '@/components/presentation/stats/titled-section';
 import { WeightLineChart } from '@/components/presentation/stats/weight-line-chart';
+import { WorkoutListSummary } from '@/components/presentation/stats/workout-list-summary';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Weight } from '@/models/weight';
 import { useAppSelector } from '@/store';
@@ -47,6 +48,7 @@ function LoadedStats({ stats }: { stats: GranularStatisticView }) {
   return (
     <View>
       <OverallStatsGrid stats={stats} />
+      <WorkoutListSummary stats={stats} />
       <ExerciseListSummary stats={stats} />
     </View>
   );
