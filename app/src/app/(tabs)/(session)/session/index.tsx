@@ -34,10 +34,9 @@ export default function Index() {
       }
     } else {
       const hasDiff = finishWorkout();
+      dismissTo('/');
       if (hasDiff) {
-        dismissTo('/diff-save', { withAnchor: true });
-      } else {
-        dismissTo('/');
+        push('/diff-save');
       }
     }
   };

@@ -92,7 +92,7 @@ export default function History() {
       setReplaceCurrentSessionConfirmOpen(false);
       setSelectedWorkout(undefined);
 
-      push('/(session)/session', { withAnchor: true });
+      push('/(tabs)/(session)/session', { withAnchor: true });
     }
   };
   const handleSharePress = (session: Session) => {

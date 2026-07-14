@@ -13,16 +13,14 @@ import { useDispatch } from 'react-redux';
 export default function HistoryEditPage() {
   const dispatch = useDispatch();
   const session = useAppSelectorWithArg(selectCurrentSession, 'historySession');
-  const { dismissTo } = useRouter();
+  const { dismissTo, push } = useRouter();
   const finishWorkout = useFinishWorkout('historySession');
 
   const save = () => {
     const hasDiff = finishWorkout();
-
+    dismissTo('/history');
     if (hasDiff) {
-      dismissTo('/history/diff-save', { withAnchor: true });
-    } else {
-      dismissTo('/history');
+      push('/diff-save');
     }
   };
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);

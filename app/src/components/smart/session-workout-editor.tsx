@@ -10,7 +10,7 @@ import { TextInput } from 'react-native-paper';
 import { useDispatch, useStore } from 'react-redux';
 
 export function getSessionWorkoutEditorHref(target: SessionTarget): Href {
-  return (target === 'historySession' ? '/history/workout-editor' : '/session/workout-editor') as Href;
+  return `/workout-editor?target=${target}` as Href;
 }
 
 export function SessionWorkoutEditor(props: { target: SessionTarget }) {

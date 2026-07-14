@@ -2,11 +2,9 @@ import Icon from '@/components/presentation/foundation/gesture-wrappers/icon';
 import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { rounding, spacing } from '@/hooks/useAppTheme';
-import { useBottomSheetScrollableCreator } from '@gorhom/bottom-sheet';
 import { LegendList } from '@legendapp/list';
 import { ReactNode } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
 import { Card, Text } from 'react-native-paper';
 import { match } from 'ts-pattern';
 type TupleKeysNum<T extends readonly unknown[]> = Exclude<Partial<T>['length'], T['length']>;
@@ -15,11 +13,8 @@ export function SegmentedList<TItems extends readonly unknown[]>(props: {
   itemKey?: (item: TItems[number], index: TupleKeysNum<TItems>) => string;
   items: TItems;
   scrollable?: boolean;
-  isInBottomSheet?: boolean;
-  renderScrollComponent?: ScrollView;
   style?: ViewStyle;
 }) {
-  const BottomSheetScrollable = useBottomSheetScrollableCreator();
   const itemKey = props.itemKey ?? ((_, index) => String(index));
   if (!props.scrollable) {
     return (
@@ -41,7 +36,6 @@ export function SegmentedList<TItems extends readonly unknown[]>(props: {
       contentContainerStyle={[props.style]}
       ItemSeparatorComponent={() => <View style={{ height: spacing[0.5] }}></View>}
       data={props.items}
-      renderScrollComponent={props.isInBottomSheet ? BottomSheetScrollable : undefined!}
       keyExtractor={(i, index) => itemKey(i, index as TupleKeysNum<TItems>)}
       renderItem={({ item, index }) => (
         <SegmentedListItem

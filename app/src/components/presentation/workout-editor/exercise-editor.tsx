@@ -267,7 +267,11 @@ function CardioSetEditor(props: {
                   icon={'airlineSeatReclineExtraFill'}
                   testID="cardio-rest-switch"
                   onValueChange={(enabled) =>
-                    updateSet(set.with({ restBetweenSets: enabled ? Rest.short : undefined }))
+                    updateSet(
+                      set.with({
+                        restBetweenSets: enabled ? Rest.short : undefined,
+                      }),
+                    )
                   }
                   label={t('exercise.rest_between_sets.label')}
                 />,

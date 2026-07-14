@@ -9,8 +9,7 @@ import { useEffect, useRef } from 'react';
 import { useDispatch, useStore } from 'react-redux';
 
 export function getSessionExerciseEditorHref(target: SessionTarget, index: number, opts?: { isNew?: boolean }): Href {
-  const base = target === 'historySession' ? '/history/exercise-editor' : '/session/exercise-editor';
-  return `${base}?index=${index}${opts?.isNew ? '&isNew=1' : ''}` as Href;
+  return `/exercise-editor?target=${target}&index=${index}${opts?.isNew ? '&isNew=1' : ''}` as Href;
 }
 
 export function SessionExerciseEditor(props: { target: SessionTarget; index: number; isNew?: boolean }) {

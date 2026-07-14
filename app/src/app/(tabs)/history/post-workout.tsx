@@ -44,7 +44,7 @@ export default function PostWorkoutPage() {
         label: t('generic.finish.button'),
         icon: CheckIcon,
         systemImage: 'checkmark',
-        onPress: () => dismissTo('/(session)'),
+        onPress: () => dismissTo('/(tabs)/(session)'),
       }}
     />
   ) : undefined;

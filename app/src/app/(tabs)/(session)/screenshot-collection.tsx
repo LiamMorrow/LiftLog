@@ -361,7 +361,7 @@ function PrepareHomePage() {
     );
   });
 
-  return <Redirect href={'/(session)'} />;
+  return <Redirect href={'/(tabs)/(session)'} />;
 }
 
 function setExerciseWeight(s: Session, exIdx: number, weightKg: number): Session {
@@ -405,5 +405,5 @@ function PrepareWorkoutPage() {
     dispatch(setCurrentSession({ target: 'workoutSession', session }));
   });
 
-  return <Redirect href={'/(session)/session'} />;
+  return <Redirect href={'/(tabs)/(session)/session'} />;
 }
