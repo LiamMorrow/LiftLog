@@ -409,7 +409,10 @@ export class Session {
     if (!(exercise instanceof RecordedCardioExercise)) {
       return banked;
     }
-    return banked.withExercise(exerciseIndex, exercise.withSet(setIndex, (set) => set.withTimerStarted(now)));
+    return banked.withExercise(
+      exerciseIndex,
+      exercise.withSet(setIndex, (set) => set.withTimerStarted(now)),
+    );
   }
 
   get nextExercise(): RecordedExercise | undefined {

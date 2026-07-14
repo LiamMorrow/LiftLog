@@ -97,35 +97,35 @@ export type ActivityRampColors = ColorPair<'activityLevel1'> &
 
 export type AppThemeColors = Material3Scheme &
   ActivityRampColors & {
-  orange: string;
-  onOrange: string;
-  red: string;
-  onRed: string;
-  green: string;
-  onGreen: string;
-  blue: string;
-  onBlue: string;
-  yellow: string;
-  onYellow: string;
-  purple: string;
-  onPurple: string;
-  pink: string;
-  onPink: string;
-  teal: string;
-  onTeal: string;
-  cyan: string;
-  onCyan: string;
-  brown: string;
-  onBrown: string;
-  indigo: string;
-  onIndigo: string;
-  lime: string;
-  onLime: string;
-  amber: string;
-  onAmber: string;
+    orange: string;
+    onOrange: string;
+    red: string;
+    onRed: string;
+    green: string;
+    onGreen: string;
+    blue: string;
+    onBlue: string;
+    yellow: string;
+    onYellow: string;
+    purple: string;
+    onPurple: string;
+    pink: string;
+    onPink: string;
+    teal: string;
+    onTeal: string;
+    cyan: string;
+    onCyan: string;
+    brown: string;
+    onBrown: string;
+    indigo: string;
+    onIndigo: string;
+    lime: string;
+    onLime: string;
+    amber: string;
+    onAmber: string;
 
-  seedColor: string | undefined;
-};
+    seedColor: string | undefined;
+  };
 
 export type ColorChoice = keyof {
   [K in keyof AppThemeColors as AppThemeColors[K] extends string ? K : never]: AppThemeColors[K];

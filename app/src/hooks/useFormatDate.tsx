@@ -24,8 +24,7 @@ function formatterFor(locale: string | undefined, opts: Intl.DateTimeFormatOptio
 export function useFormatDate(): (date: LocalDate, opts: Intl.DateTimeFormatOptions) => string {
   const locale = useAppSelector((x) => x.settings.preferredLanguage);
   return useCallback(
-    (date, opts) =>
-      formatterFor(locale, opts).format(new Date(date.year(), date.month().ordinal(), date.dayOfMonth())),
+    (date, opts) => formatterFor(locale, opts).format(new Date(date.year(), date.month().ordinal(), date.dayOfMonth())),
     [locale],
   );
 }

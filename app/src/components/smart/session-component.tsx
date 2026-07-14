@@ -95,19 +95,18 @@ export default function SessionComponent(props: {
 
   // Both the set's own tiles and the docked clock write through here, so a set earns its rest
   // whichever way it was filled in.
-  const updateCardioSet =
-    (exerciseIndex: number) => (setIndex: number, update: Updater<RecordedCardioExerciseSet>) => {
-      const now = OffsetDateTime.now();
-      withLatestSession((latestSession) => {
-        const before = latestSession.cardioSetAt(exerciseIndex, setIndex);
-        const session = latestSession.withCardioSet(exerciseIndex, setIndex, update, now);
-        dispatch(setCurrentSession({ session, target: props.target }));
+  const updateCardioSet = (exerciseIndex: number) => (setIndex: number, update: Updater<RecordedCardioExerciseSet>) => {
+    const now = OffsetDateTime.now();
+    withLatestSession((latestSession) => {
+      const before = latestSession.cardioSetAt(exerciseIndex, setIndex);
+      const session = latestSession.withCardioSet(exerciseIndex, setIndex, update, now);
+      dispatch(setCurrentSession({ session, target: props.target }));
 
-        if (session.cardioSetAt(exerciseIndex, setIndex)?.earnsRest(before)) {
-          withLatestSession((s) => resetTimer(s.lastExercise?.latestTime));
-        }
-      });
-    };
+      if (session.cardioSetAt(exerciseIndex, setIndex)?.earnsRest(before)) {
+        withLatestSession((s) => resetTimer(s.lastExercise?.latestTime));
+      }
+    });
+  };
 
   const startCardioTimer = (exerciseIndex: number) => (setIndex: number) =>
     updateSession((s) => s.withCardioTimerStarted(exerciseIndex, setIndex, OffsetDateTime.now()));

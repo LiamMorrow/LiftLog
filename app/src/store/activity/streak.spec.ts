@@ -2,12 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { DayOfWeek, LocalDate, OffsetDateTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { calculateStreak } from '@/store/activity/streak';
-import {
-  PotentialSet,
-  RecordedSet,
-  RecordedWeightedExercise,
-  Session,
-} from '@/models/session-models';
+import { PotentialSet, RecordedSet, RecordedWeightedExercise, Session } from '@/models/session-models';
 import {
   IncreaseLowestSetProgressiveOverload,
   Rest,

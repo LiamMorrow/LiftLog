@@ -33,10 +33,7 @@ export interface StreakStats {
 }
 
 /** Distinct days trained per week. A two-a-day is one day, so it can't inflate the bar. */
-function countDistinctDaysByWeek(
-  sessions: Session[],
-  firstDayOfWeek: DayOfWeek,
-): Map<string, Set<string>> {
+function countDistinctDaysByWeek(sessions: Session[], firstDayOfWeek: DayOfWeek): Map<string, Set<string>> {
   const byWeek = new Map<string, Set<string>>();
 
   for (const session of sessions) {
@@ -96,11 +93,7 @@ export function calculateStreak(sessions: Session[], firstDayOfWeek: DayOfWeek, 
 
   // Completed weeks only: the current week is still in progress and would drag the median down.
   const completedWeeks: number[] = [];
-  for (
-    let week = LocalDate.parse(earliest);
-    week.isBefore(currentWeekStart);
-    week = week.plusWeeks(1)
-  ) {
+  for (let week = LocalDate.parse(earliest); week.isBefore(currentWeekStart); week = week.plusWeeks(1)) {
     completedWeeks.push(countForWeek(week));
   }
 
@@ -123,11 +116,7 @@ export function calculateStreak(sessions: Session[], firstDayOfWeek: DayOfWeek, 
 
   // The current week can never break a streak — it isn't over yet.
   const state: StreakState =
-    currentWeekCount >= target && (weeks > 0 || currentWeekCount > 0)
-      ? 'secured'
-      : weeks > 0
-        ? 'in_progress'
-        : 'none';
+    currentWeekCount >= target && (weeks > 0 || currentWeekCount > 0) ? 'secured' : weeks > 0 ? 'in_progress' : 'none';
 
   return {
     target,

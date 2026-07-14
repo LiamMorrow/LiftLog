@@ -69,9 +69,7 @@ describe('reaction-effects', () => {
     vi.useFakeTimers();
     const { testBed, services } = makeTestBed();
 
-    const dispatched = testBed.dispatchHandled(
-      cheerFeedItem({ eventId: EVENT_ID, emoji: '💪', fromUserAction: true }),
-    );
+    const dispatched = testBed.dispatchHandled(cheerFeedItem({ eventId: EVENT_ID, emoji: '💪', fromUserAction: true }));
     await vi.advanceTimersByTimeAsync(1500);
     await dispatched;
 
@@ -120,9 +118,7 @@ describe('reaction-effects', () => {
     vi.useFakeTimers();
     const { testBed } = makeTestBed();
 
-    const dispatched = testBed.dispatchHandled(
-      cheerFeedItem({ eventId: EVENT_ID, emoji: '🔥', fromUserAction: true }),
-    );
+    const dispatched = testBed.dispatchHandled(cheerFeedItem({ eventId: EVENT_ID, emoji: '🔥', fromUserAction: true }));
 
     // Optimistic: the row exists while the batch window is still open.
     expect(sentReactions(testBed)).toHaveLength(1);
@@ -139,9 +135,7 @@ describe('reaction-effects', () => {
       ApiResult.fromError({ type: ApiErrorType.Unknown, message: 'boom', exception: undefined }),
     );
 
-    const dispatched = testBed.dispatchHandled(
-      cheerFeedItem({ eventId: EVENT_ID, emoji: '💪', fromUserAction: true }),
-    );
+    const dispatched = testBed.dispatchHandled(cheerFeedItem({ eventId: EVENT_ID, emoji: '💪', fromUserAction: true }));
     await vi.advanceTimersByTimeAsync(1500);
     await dispatched;
 

@@ -37,8 +37,7 @@ export const reactionInboxMessageMigrations =
   createMigrations<ReactionInboxMessageJSON>().build<Latest.ReactionInboxMessageJSON>();
 
 export const reactionMigrations = createMigrations<ReactionJSON>().build<Latest.ReactionJSON>();
-export const receivedReactionMigrations =
-  createMigrations<ReceivedReactionJSON>().build<Latest.ReceivedReactionJSON>();
+export const receivedReactionMigrations = createMigrations<ReceivedReactionJSON>().build<Latest.ReceivedReactionJSON>();
 export const sentReactionMigrations = createMigrations<SentReactionJSON>().build<Latest.SentReactionJSON>();
 
 export const followerFeedUserMigrations = createMigrations<FollowerFeedUserJSON>().build<Latest.FollowerFeedUserJSON>();

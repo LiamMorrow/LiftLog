@@ -39,10 +39,7 @@ import { initializeCurrentSessionStateSlice } from '@/store/current-session';
 export function applySettingsEffects(addEffect: AddEffectFn) {
   addEffect(
     initializeSettingsStateSlice,
-    async (
-      _,
-      { cancelActiveListeners, dispatch, extra: { preferenceService, logger } },
-    ) => {
+    async (_, { cancelActiveListeners, dispatch, extra: { preferenceService, logger } }) => {
       const start = performance.now();
       cancelActiveListeners();
 
@@ -149,108 +146,65 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
       dispatch(initializeStoredSessionsStateSlice());
       dispatch(initializeCurrentSessionStateSlice());
       const end = performance.now();
-      logger.log(
-        `initializeSettingsStateSlice effect took ${(end - start).toFixed(2)}ms`,
-      );
+      logger.log(`initializeSettingsStateSlice effect took ${(end - start).toFixed(2)}ms`);
     },
   );
 
-  addEffect(
-    setUseImperialUnits,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setUseImperialUnits(action.payload);
-      }
-    },
-  );
-  addEffect(
-    setShowBodyweight,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setShowBodyweight(action.payload);
-      }
-    },
-  );
-  addEffect(
-    setShowTips,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setShowTips(action.payload);
-      }
-    },
-  );
+  addEffect(setUseImperialUnits, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setUseImperialUnits(action.payload);
+    }
+  });
+  addEffect(setShowBodyweight, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setShowBodyweight(action.payload);
+    }
+  });
+  addEffect(setShowTips, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setShowTips(action.payload);
+    }
+  });
 
-  addEffect(
-    setPreferredLanguage,
-    async (
-      action,
-      { stateAfterReduce, extra: { preferenceService, tolgee } },
-    ) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setPreferredLanguage(action.payload);
-      }
-      const languageCode =
-        action.payload ??
-        detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code));
-      const languageSettings = supportedLanguages.find(
-        (x) => x.code === languageCode,
-      );
-      await tolgee.changeLanguage(languageCode);
-      I18nManager.forceRTL(!!languageSettings?.isRTL);
-    },
-  );
+  addEffect(setPreferredLanguage, async (action, { stateAfterReduce, extra: { preferenceService, tolgee } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setPreferredLanguage(action.payload);
+    }
+    const languageCode = action.payload ?? detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code));
+    const languageSettings = supportedLanguages.find((x) => x.code === languageCode);
+    await tolgee.changeLanguage(languageCode);
+    I18nManager.forceRTL(!!languageSettings?.isRTL);
+  });
 
-  addEffect(
-    setTipToShow,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setTipToShow(action.payload);
-      }
-    },
-  );
-  addEffect(
-    setShowFeed,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setShowFeed(action.payload);
-      }
-    },
-  );
-  addEffect(
-    setRestNotifications,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setRestNotifications(action.payload);
-      }
-    },
-  );
-  addEffect(
-    setRestTimersEnabled,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setRestTimersEnabled(action.payload);
-      }
-    },
-  );
-  addEffect(
-    setCrashReportsEnabled,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setCrashReportsEnabled(action.payload);
-      }
-    },
-  );
+  addEffect(setTipToShow, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setTipToShow(action.payload);
+    }
+  });
+  addEffect(setShowFeed, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setShowFeed(action.payload);
+    }
+  });
+  addEffect(setRestNotifications, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setRestNotifications(action.payload);
+    }
+  });
+  addEffect(setRestTimersEnabled, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setRestTimersEnabled(action.payload);
+    }
+  });
+  addEffect(setCrashReportsEnabled, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setCrashReportsEnabled(action.payload);
+    }
+  });
 
   addEffect(
     setExportToHealthAggregator,
-    async (
-      action,
-      {
-        stateAfterReduce,
-        dispatch,
-        extra: { preferenceService, healthExportService },
-      },
-    ) => {
+    async (action, { stateAfterReduce, dispatch, extra: { preferenceService, healthExportService } }) => {
       if (action.payload && !healthExportService.canExport()) {
         dispatch(setExportToHealthAggregator(false));
         return;
@@ -263,102 +217,65 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
       }
     },
   );
-  addEffect(
-    setWelcomeWizardCompleted,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setWelcomeWizardCompleted(action.payload);
-      }
-    },
-  );
-  addEffect(
-    setShowPostWorkoutSummary,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setShowPostWorkoutSummary(action.payload);
-      }
-    },
-  );
-  addEffect(
-    setTrueBlackDarkTheme,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setTrueBlackDarkTheme(action.payload);
-      }
-    },
-  );
-  addEffect(
-    setRemoteBackupSettings,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setRemoteBackupSettings(action.payload);
-      }
-    },
-  );
-  addEffect(
-    setProToken,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setProToken(action.payload);
-      }
-    },
-  );
-  addEffect(
-    setLastBackup,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated && action.payload.isSuccess()) {
-        await preferenceService.setLastBackupTime(
-          action.payload.data.lastBackupTime,
-        );
-        await preferenceService.setLastSuccessfulRemoteBackupHash(
-          action.payload.data.lastSuccessfulRemoteBackupHash,
-        );
-      }
-    },
-  );
-  addEffect(
-    setBackupReminder,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setBackupReminder(action.payload);
-      }
-    },
-  );
-  addEffect(
-    setFirstDayOfWeek,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setFirstDayOfWeek(action.payload);
-      }
-    },
-  );
+  addEffect(setWelcomeWizardCompleted, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setWelcomeWizardCompleted(action.payload);
+    }
+  });
+  addEffect(setShowPostWorkoutSummary, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setShowPostWorkoutSummary(action.payload);
+    }
+  });
+  addEffect(setTrueBlackDarkTheme, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setTrueBlackDarkTheme(action.payload);
+    }
+  });
+  addEffect(setRemoteBackupSettings, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setRemoteBackupSettings(action.payload);
+    }
+  });
+  addEffect(setProToken, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setProToken(action.payload);
+    }
+  });
+  addEffect(setLastBackup, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated && action.payload.isSuccess()) {
+      await preferenceService.setLastBackupTime(action.payload.data.lastBackupTime);
+      await preferenceService.setLastSuccessfulRemoteBackupHash(action.payload.data.lastSuccessfulRemoteBackupHash);
+    }
+  });
+  addEffect(setBackupReminder, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setBackupReminder(action.payload);
+    }
+  });
+  addEffect(setFirstDayOfWeek, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setFirstDayOfWeek(action.payload);
+    }
+  });
 
-  addEffect(
-    setColorSchemeSeed,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setColorSchemeSeed(action.payload);
-      }
-    },
-  );
+  addEffect(setColorSchemeSeed, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setColorSchemeSeed(action.payload);
+    }
+  });
 
-  addEffect(
-    setNotesExpandedByDefault,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setNotesExpandedByDefault(action.payload);
-      }
-    },
-  );
+  addEffect(setNotesExpandedByDefault, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setNotesExpandedByDefault(action.payload);
+    }
+  });
 
-  addEffect(
-    setKeepScreenAwakeDuringWorkout,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setKeepScreenAwakeDuringWorkout(action.payload);
-      }
-    },
-  );
+  addEffect(setKeepScreenAwakeDuringWorkout, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setKeepScreenAwakeDuringWorkout(action.payload);
+    }
+  });
 
   addExportPlaintextEffects(addEffect);
   addExportBackupEffects(addEffect);

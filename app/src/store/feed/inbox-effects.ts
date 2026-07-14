@@ -117,14 +117,14 @@ export function addInboxEffects(addEffect: AddEffectFn) {
       const newReactions: ReactionInboxMessage[] = [];
 
       for (const item of inboxItems) {
-        try{
-        match(item)
-          .with({ type: 'FollowRequest' }, (x) => newFollowRequests.push(x))
-          .with({ type: 'FollowResponse' }, (x) => newFollowResponses.push(x))
-          .with({ type: 'UnfollowNotification' }, (x) => followersWhoStoppedFollowing.push(x.senderUserId))
-          .with({ type: 'Reaction' }, (x) => newReactions.push(x))
-          .exhaustive();
-        }catch{
+        try {
+          match(item)
+            .with({ type: 'FollowRequest' }, (x) => newFollowRequests.push(x))
+            .with({ type: 'FollowResponse' }, (x) => newFollowResponses.push(x))
+            .with({ type: 'UnfollowNotification' }, (x) => followersWhoStoppedFollowing.push(x.senderUserId))
+            .with({ type: 'Reaction' }, (x) => newReactions.push(x))
+            .exhaustive();
+        } catch {
           // continue dropping the message
         }
       }
