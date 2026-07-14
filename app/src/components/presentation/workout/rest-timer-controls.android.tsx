@@ -18,12 +18,7 @@ export function RestTimerControls({ paused, onRestart, onTogglePause, onDismiss 
     <Host matchContents seedColor={colors.seedColor}>
       <Row horizontalArrangement={{ spacedBy: spacing[1] }} verticalAlignment="center">
         <IconButton onClick={onRestart}>
-          <Icon
-            source={RestartIcon}
-            size={restControlIconSize}
-            tint={colors.onSurfaceVariant}
-            contentDescription={t('rest_timer.restart')}
-          />
+          <Icon source={RestartIcon} size={restControlIconSize} contentDescription={t('rest_timer.restart')} />
         </IconButton>
         {/* Pausing is a state, not an action, so it gets the control Material has for state: the
             checked container carries "this timer is stopped" alongside the glyph. */}
@@ -35,12 +30,7 @@ export function RestTimerControls({ paused, onRestart, onTogglePause, onDismiss 
           />
         </FilledIconToggleButton>
         <IconButton onClick={onDismiss}>
-          <Icon
-            source={DismissIcon}
-            size={restControlIconSize}
-            tint={colors.onSurfaceVariant}
-            contentDescription={t('rest_timer.dismiss')}
-          />
+          <Icon source={DismissIcon} size={restControlIconSize} contentDescription={t('rest_timer.dismiss')} />
         </IconButton>
       </Row>
     </Host>

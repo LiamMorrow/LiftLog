@@ -5,6 +5,11 @@ import Button from '@/components/presentation/foundation/gesture-wrappers/button
 import Form from '@/components/presentation/foundation/form';
 import { RestEditorDialog } from '@/components/presentation/workout-editor/rest-editor-dialog';
 import SelectPicker from '@/components/presentation/foundation/select-picker';
+import SegmentedPicker from '@/components/presentation/foundation/segmented-picker';
+import DirectionsRunIcon from '@expo/material-symbols/directions_run.xml';
+import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
+import StraightenIcon from '@expo/material-symbols/straighten.xml';
+import TimerIcon from '@expo/material-symbols/timer.xml';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import {
   CardioExerciseBlueprint,
@@ -26,7 +31,7 @@ import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import { Divider, List, SegmentedButtons, TextInput } from 'react-native-paper';
+import { Divider, List, TextInput } from 'react-native-paper';
 import { match, P } from 'ts-pattern';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import { FormRow } from '@/components/presentation/foundation/form-row';
@@ -107,23 +112,25 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
           <ExerciseSearcher currentExercise={exercise} onSelectExercise={selectExerciseFromSearch} />
         </FormRow>
         <FormRow>
-          <SegmentedButtons
+          <SegmentedPicker
             value={exercise instanceof WeightedExerciseBlueprint ? 'weighted' : 'cardio'}
-            buttons={[
+            options={[
               {
                 value: 'weighted',
                 label: 'Weighted',
-                icon: 'fitnessCenter',
+                icon: FitnessCenterIcon,
+                systemImage: 'dumbbell',
                 testID: 'weighted-button',
               },
               {
                 value: 'cardio',
                 label: 'Cardio/Time',
-                icon: 'directionsRun',
+                icon: DirectionsRunIcon,
+                systemImage: 'figure.run',
                 testID: 'cardio-button',
               },
             ]}
-            onValueChange={handleTypeChange}
+            onChange={handleTypeChange}
           />
         </FormRow>
         {exerciseEditor}
@@ -364,20 +371,22 @@ function CardioTargetEditor(props: { target: CardioTarget; onValueChange: (t: Ca
   return (
     <>
       <FormRow>
-        <SegmentedButtons
+        <SegmentedPicker
           value={target.type}
-          onValueChange={handleTypeChange}
-          buttons={[
+          onChange={handleTypeChange}
+          options={[
             {
               value: 'distance',
               label: t('exercise.distance.label'),
-              icon: 'trailLength',
+              icon: StraightenIcon,
+              systemImage: 'ruler',
               testID: 'distance-button',
             },
             {
               value: 'time',
               label: t('generic.time.label'),
-              icon: 'timer',
+              icon: TimerIcon,
+              systemImage: 'timer',
               testID: 'time-button',
             },
           ]}

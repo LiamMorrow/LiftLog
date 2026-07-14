@@ -6,9 +6,10 @@ import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { match } from 'ts-pattern';
-import { Dialog, SegmentedButtons } from 'react-native-paper';
+import { Dialog } from 'react-native-paper';
 import { Portal } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import SegmentedPicker from '@/components/presentation/foundation/segmented-picker';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 type ButtonValues = 'short' | 'medium' | 'long' | 'custom';
@@ -71,11 +72,11 @@ export function RestEditorDialog(props: RestEditorDialogProps) {
           <Dialog visible={props.dialogOpen} onDismiss={() => props.setDialogOpen(false)}>
             <Dialog.Content>
               <View style={{ width: '100%' }}>
-                <SegmentedButtons
-                  style={{ width: '100%' }}
+                <SegmentedPicker
                   value={buttonValue}
-                  onValueChange={(s) => handleValueChange(s)}
-                  buttons={[
+                  onChange={handleValueChange}
+                  equalWidth={false}
+                  options={[
                     {
                       value: 'short',
                       label: t('rest.short.label'),

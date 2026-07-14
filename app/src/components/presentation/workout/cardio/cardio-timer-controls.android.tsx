@@ -15,12 +15,7 @@ export function CardioTimerControls({ onStop }: CardioTimerControlsProps) {
     <Host matchContents seedColor={colors.seedColor}>
       <Row horizontalArrangement={{ spacedBy: spacing[1] }} verticalAlignment="center">
         <IconButton onClick={onStop}>
-          <Icon
-            source={StopIcon}
-            size={cardioControlIconSize + 3}
-            tint={colors.onSurfaceVariant}
-            contentDescription={t('cardio_timer.stop')}
-          />
+          <Icon source={StopIcon} size={cardioControlIconSize + 3} contentDescription={t('cardio_timer.stop')} />
         </IconButton>
       </Row>
     </Host>

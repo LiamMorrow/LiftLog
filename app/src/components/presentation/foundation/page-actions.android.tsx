@@ -25,9 +25,9 @@ export function PageActions({
 }: PageActionsProps) {
   const { colors } = useAppTheme();
 
-  const label = (action: PageAction, color: string, iconSize: number) => (
+  const label = (action: PageAction, iconSize: number) => (
     <Row horizontalArrangement={{ spacedBy: spacing[2] }} verticalAlignment="center">
-      <Icon source={action.icon} size={iconSize} tint={color} />
+      <Icon source={action.icon} size={iconSize} />
       <Text>{action.label}</Text>
     </Row>
   );
@@ -37,9 +37,7 @@ export function PageActions({
   // A FAB shows its label as a Compose Text, which never reaches the accessibility tree, and the
   // extended one drops the label entirely once collapsed. Either way the icon is the only thing
   // left to name the button, so it carries the description.
-  const primaryIcon = (
-    <Icon source={primary.icon} size={24} tint={colors.onPrimaryContainer} contentDescription={primary.label} />
-  );
+  const primaryIcon = <Icon source={primary.icon} size={24} contentDescription={primary.label} />;
 
   const surfaceActions = secondary.length ? (
     <HorizontalFloatingToolbar variant="standard">
@@ -48,7 +46,7 @@ export function PageActions({
       </HorizontalFloatingToolbar.FloatingActionButton>
       {secondary.map((action) => (
         <TextButton key={action.label} onClick={action.onPress}>
-          {label(action, colors.onSecondaryContainer, 20)}
+          {label(action, 20)}
         </TextButton>
       ))}
     </HorizontalFloatingToolbar>
@@ -77,11 +75,11 @@ export function PageActions({
           <Row horizontalArrangement={{ spacedBy: spacing[2] }} verticalAlignment="center">
             {secondary.map((action) => (
               <TextButton key={action.label} onClick={action.onPress}>
-                {label(action, colors.primary, 18)}
+                {label(action, 18)}
               </TextButton>
             ))}
             <Button onClick={primary.onPress} shape={Shape.Pill({})} contentPadding={contentPadding}>
-              {label(primary, colors.onPrimary, 18)}
+              {label(primary, 18)}
             </Button>
           </Row>
         )}
