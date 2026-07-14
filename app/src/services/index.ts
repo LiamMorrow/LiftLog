@@ -25,14 +25,9 @@ import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { SQLiteDatabase } from 'expo-sqlite';
 import { DatabaseImportService } from '@/services/database-import-service';
 
-export type Services = Awaited<ReturnType<typeof resolveServicesInternal>>;
+export type Services = ReturnType<typeof createServices>;
 
-let resolvedServices: Services | undefined;
-
-function resolveServicesInternal(store: Store<RootState>, db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
-  if (!store) {
-    throw new Error('Tried to resolve services without store');
-  }
+export function createServices(store: Store<RootState>, db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
   const logger = new Logger();
   const keyValueStore = new KeyValueStore();
   const progressRepository = new ProgressRepository(store.getState);
@@ -81,9 +76,3 @@ function resolveServicesInternal(store: Store<RootState>, db: ExpoSQLiteDatabase
     databaseMigrationService,
   };
 }
-
-function resolveServices(store: Store<RootState>, db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
-  return (resolvedServices ??= resolveServicesInternal(store, db, expoDb));
-}
-
-export { resolveServices };

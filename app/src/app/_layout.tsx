@@ -5,7 +5,6 @@ import { AppStateProvider } from '@/components/smart/app-state-provider';
 import { PlanImportGate } from '@/components/smart/plan-import-gate';
 import SnackbarProvider from '@/components/smart/snackbar-provider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import '@/utils/date-locale';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import ServicesProvider from '@/components/smart/services-provider';
 import { PreventNavigateProvider } from '@/hooks/usePreventNavigate';

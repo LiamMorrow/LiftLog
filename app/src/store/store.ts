@@ -14,14 +14,29 @@ import feedReducer from './feed';
 import { storedSessionsReducer } from './stored-sessions';
 import { sessionEditorReducer } from './session-editor';
 import { statsReducer } from '@/store/stats';
-import { resolveServices, Services } from '@/services';
+import { createServices, Services } from '@/services';
 import { aiPlannerReducer } from '@/store/ai-planner';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { SQLiteDatabase } from 'expo-sqlite';
 
+const rootReducer = combineReducers({
+  currentSession: currentSessionReducer,
+  aiPlanner: aiPlannerReducer,
+  settings: settingsReducer,
+  program: programReducer,
+  feed: feedReducer,
+  app: appReducer,
+  sessionEditor: sessionEditorReducer,
+  storedSessions: storedSessionsReducer,
+  stats: statsReducer,
+});
+
+export type RootState = ReturnType<typeof rootReducer>;
+
 export function createStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
+  let services: Services;
   const listenerMiddleware = createListenerMiddleware({
-    extra: (s: AppStore) => resolveServices(s, db, expoDb),
+    extra: () => services,
   });
 
   const store = configureStore({
@@ -31,18 +46,10 @@ export function createStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
         serializableCheck: false,
         immutableCheck: false,
       }).prepend(listenerMiddleware.middleware),
-    reducer: combineReducers({
-      currentSession: currentSessionReducer,
-      aiPlanner: aiPlannerReducer,
-      settings: settingsReducer,
-      program: programReducer,
-      feed: feedReducer,
-      app: appReducer,
-      sessionEditor: sessionEditorReducer,
-      storedSessions: storedSessionsReducer,
-      stats: statsReducer,
-    }),
+    reducer: rootReducer,
   });
+
+  services = createServices(store, db, expoDb);
 
   const startAppListening = listenerMiddleware.startListening;
 
@@ -77,7 +84,7 @@ export function createStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
         const failureHandlers: (() => void)[] = [];
         const stateBeforeReduce = listenerApi.getOriginalState() as RootState;
         const stateAfterReduce = listenerApi.getState() as RootState;
-        const services = listenerApi.extra(store);
+        const services = listenerApi.extra();
         try {
           await effect(action, {
             ...listenerApi,
@@ -107,6 +114,7 @@ export function createStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
 
   return {
     store,
+    services,
     addAppListener,
     addEffect,
   };
@@ -114,6 +122,5 @@ export function createStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
 
 type AppStore = ReturnType<typeof createStore>['store'];
 
-export type RootState = ReturnType<AppStore['getState']>;
 export type AppDispatch = AppStore['dispatch'];
 export type AddEffectFn = ReturnType<typeof createStore>['addEffect'];

@@ -21,7 +21,7 @@ import { SQLiteDatabase } from 'expo-sqlite';
 export { RootState };
 
 export function resolveStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
-  const { store, addEffect } = createStore(db, expoDb);
+  const { store, services, addEffect } = createStore(db, expoDb);
   store.dispatch(clearAllListeners());
   applyProgramEffects(addEffect);
   applyProgramImportExportEffects(addEffect);
@@ -34,7 +34,7 @@ export function resolveStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
   applyAiPlannerEffects(addEffect);
 
   store.dispatch(initializeAppStateSlice());
-  return store;
+  return { store, services };
 }
 
 export const useAppSelector = untypedUseSelector.withTypes<RootState>();
