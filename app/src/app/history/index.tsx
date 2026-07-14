@@ -3,6 +3,7 @@ import ConfirmationDialog from '@/components/presentation/foundation/confirmatio
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { HistoryActivityCalendar } from '@/components/smart/history-activity-calendar';
+import { HistoryPrBadges } from '@/components/smart/pr-badges';
 import { WhoElseTrainedCard } from '@/components/smart/who-else-trained-card';
 import { ReactionSummary } from '@/components/smart/reaction-summary';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
@@ -140,7 +141,12 @@ export default function History() {
             <Card.Content>
               <SplitCardControl
                 titleContent={<SessionSummaryTitle showDate session={session} />}
-                mainContent={<SessionSummary isFilled showWeight session={session} />}
+                mainContent={
+                  <View style={{ gap: spacing[2] }}>
+                    <SessionSummary isFilled showWeight session={session} />
+                    <HistoryPrBadges sessionId={session.id} />
+                  </View>
+                }
               />
               <ReactionSummary eventId={session.id} />
             </Card.Content>

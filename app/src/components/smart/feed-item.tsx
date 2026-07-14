@@ -4,7 +4,7 @@ import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import SessionComponent from '@/components/smart/session-component';
 import { ReactionBar } from '@/components/smart/reaction-bar';
 import { ReactionSummary } from '@/components/smart/reaction-summary';
-import { PrBadges } from '@/components/smart/pr-badges';
+import { FeedPrBadges } from '@/components/smart/pr-badges';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useAppSelector } from '@/store';
@@ -80,7 +80,7 @@ export function FeedItem({ eventId }: { eventId: string }) {
                     </SurfaceText>
                   </View>
                 </View>
-                <PrBadges eventId={feedItem.eventId} />
+                <FeedPrBadges eventId={feedItem.eventId} />
                 <View style={{ paddingTop: spacing[2], borderTopWidth: 1, borderTopColor: colors.outlineVariant }}>
                   {isOwnItem ? (
                     <ReactionSummary eventId={feedItem.eventId} animateOnMount />

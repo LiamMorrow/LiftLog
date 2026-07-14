@@ -507,6 +507,7 @@
   "stats.last_7_days.one": "1 training day in the last 7",
   "stats.last_7_days.other": "{count} training days in the last 7",
   "history.calendar.feed_horizon.message": "Workouts from people you follow are only kept for 90 days, so older months show your own training only.",
+  "history.pr_badge.label": "Best ever {exercise}",
   "history.calendar.no_sessions_on_day.message": "No workout on {date}.",
   "history.calendar.add_workout.button": "Add a workout",
   "history.calendar.who_else_trained.title": "Who else trained",

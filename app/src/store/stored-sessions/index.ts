@@ -10,6 +10,7 @@ import { createAction, createSelector, createSlice, PayloadAction, WritableDraft
 import Enumerable from 'linq';
 import { TemporalComparer } from '@/models/comparers';
 import { ExerciseDescriptor } from '@/models/exercise-models';
+import { findPersonalRecords } from '@/store/stats/personal-records';
 
 interface StoredSessionState {
   isHydrated: boolean;
@@ -211,6 +212,18 @@ export const selectPreviousComparableSession = createSelector(
 
     return previousSessions.firstOrDefault((storedSession) => storedSession.blueprint.name === session.blueprint.name);
   },
+);
+
+/**
+ * Records per session across the user's whole history. Unlike the feed, which only holds its 90-day retention
+ * window, nothing here is truncated, so these are all-time bests.
+ */
+export const selectHistoryPersonalRecords = createSelector([selectSessions], (sessions) =>
+  findPersonalRecords(
+    Enumerable.from(sessions)
+      .orderBy((x) => getSessionReferenceTime(x), TemporalComparer)
+      .toArray(),
+  ),
 );
 
 export const selectSessionsInMonth = createSelector([selectSessions, (_, ym: YearMonth) => ym], (sessions, ym) =>

@@ -2,14 +2,34 @@ import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { selectFeedPersonalRecords } from '@/store/activity';
+import { PersonalRecord } from '@/store/stats/personal-records';
+import { selectHistoryPersonalRecords } from '@/store/stored-sessions';
 import { useTranslate } from '@tolgee/react';
 import { View } from 'react-native';
 import { Icon } from 'react-native-paper';
 
-export function PrBadges({ eventId }: { eventId: string }) {
+export function FeedPrBadges({ eventId }: { eventId: string }) {
+  const records = useAppSelector(selectFeedPersonalRecords).get(eventId);
+
+  // Only the 90-day feed window is knowable, so this can never claim to be an all-time best.
+  return <PrBadges records={records} labelKey="feed.pr_badge.label" />;
+}
+
+export function HistoryPrBadges({ sessionId }: { sessionId: string }) {
+  const records = useAppSelector(selectHistoryPersonalRecords).get(sessionId);
+
+  return <PrBadges records={records} labelKey="history.pr_badge.label" />;
+}
+
+function PrBadges({
+  records,
+  labelKey,
+}: {
+  records: PersonalRecord[] | undefined;
+  labelKey: 'feed.pr_badge.label' | 'history.pr_badge.label';
+}) {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
-  const records = useAppSelector(selectFeedPersonalRecords).get(eventId);
 
   if (!records?.length) {
     return null;
@@ -32,8 +52,7 @@ export function PrBadges({ eventId }: { eventId: string }) {
         >
           <Icon source="trendingUp" size={14} color={colors.onTertiaryContainer} />
           <SurfaceText font="text-xs" color="onTertiaryContainer">
-            {/* Only the 90-day feed window is knowable, so this can never claim to be an all-time best. */}
-            {t('feed.pr_badge.label', { exercise: record.exerciseName })}
+            {t(labelKey, { exercise: record.exerciseName })}
           </SurfaceText>
         </View>
       ))}
