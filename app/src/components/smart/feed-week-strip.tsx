@@ -14,7 +14,6 @@ const MAX_ROWS = 8;
 export function FeedWeekStrip() {
   const { t } = useTranslate();
   const today = useToday();
-  const firstDayOfWeek = useAppSelector((x) => x.settings.firstDayOfWeek);
   const rows = useAppSelectorWithArg(selectActivityWeek, today);
   const streak = useAppSelectorWithArg(selectStreakStats, today);
   const followsAnyone = useAppSelector(selectFollowsOtherUsers);
@@ -53,7 +52,6 @@ export function FeedWeekStrip() {
         <ActivityCalendar
           density="week"
           rows={labelledRows}
-          firstDayOfWeek={firstDayOfWeek}
           renderRowTrailing={(row) => {
             const days = row.cells.filter((cell) => cell.level > 0).length;
             return days === 1

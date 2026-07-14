@@ -60,7 +60,6 @@ function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const today = useToday();
-  const firstDayOfWeek = useAppSelector((x) => x.settings.firstDayOfWeek);
   const activity = useAppSelectorWithArg(selectFollowingActivity, today).get(props.userId);
   const [confirmUnfollowVisible, setConfirmUnfollowVisible] = useState(false);
 
@@ -105,7 +104,7 @@ function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
           />
         }
       >
-        {isAccepted && activity ? <WeekActivityStrip cells={activity.cells} firstDayOfWeek={firstDayOfWeek} /> : null}
+        {isAccepted && activity ? <WeekActivityStrip cells={activity.cells} /> : null}
       </PersonCard>
     </>
   );

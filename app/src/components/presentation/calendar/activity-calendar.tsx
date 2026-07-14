@@ -21,7 +21,8 @@ export type ActivityDensity = 'month' | 'week';
 interface ActivityCalendarProps {
   density: ActivityDensity;
   rows: ActivityRow[];
-  firstDayOfWeek: DayOfWeek;
+  /** Only the month grid needs it; a week row is a rolling window, so its columns are named by their own dates. */
+  firstDayOfWeek?: DayOfWeek;
   selectedDate?: LocalDate;
   header?: ReactNode;
   footer?: ReactNode;
@@ -54,6 +55,14 @@ export function ActivityCalendar({
   const totalCells = rows.reduce((total, row) => total + row.cells.length, 0);
   const isWeek = density === 'week';
 
+  // A week row ends on today rather than on the last day of the week, so naming its columns from
+  // `firstDayOfWeek` would slide the letters off the days they sit above.
+  const headerDates = isWeek
+    ? (rows[0]?.cells ?? []).map((cell) => cell.date)
+    : Array.from({ length: 7 }, (_, offset) =>
+        getDateOnDay(DayOfWeek.of((((firstDayOfWeek ?? DayOfWeek.MONDAY).ordinal() + offset) % 7) + 1)),
+      );
+
   // Held so the memoized cells don't re-render on every parent render.
   const entrances = useMemo(
     () => Array.from({ length: totalCells }, (_, index) => cellEntrance(progress, index, totalCells)),
@@ -67,19 +76,16 @@ export function ActivityCalendar({
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
         {isWeek && <View style={{ width: LABEL_WIDTH }} />}
         <ForceLTRRow style={{ flex: 1, gap: spacing[1] }}>
-          {Array.from({ length: 7 }, (_, offset) => {
-            const dayOfWeek = ((offset + firstDayOfWeek.ordinal()) % 7) + 1;
-            return (
-              <SurfaceText
-                key={dayOfWeek}
-                font="text-xs"
-                color="onSurfaceVariant"
-                style={{ flex: 1, textAlign: 'center', letterSpacing: 0.6 }}
-              >
-                {formatDate(getDateOnDay(DayOfWeek.of(dayOfWeek)), { weekday: 'narrow' }).toUpperCase()}
-              </SurfaceText>
-            );
-          })}
+          {headerDates.map((date, index) => (
+            <SurfaceText
+              key={index}
+              font="text-xs"
+              color="onSurfaceVariant"
+              style={{ flex: 1, textAlign: 'center', letterSpacing: 0.6 }}
+            >
+              {formatDate(date, { weekday: 'narrow' }).toUpperCase()}
+            </SurfaceText>
+          ))}
         </ForceLTRRow>
         {isWeek && renderRowTrailing && <View style={{ width: TRAILING_WIDTH }} />}
       </View>
