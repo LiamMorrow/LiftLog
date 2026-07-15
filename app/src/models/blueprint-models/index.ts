@@ -550,6 +550,14 @@ function repsConfigKey(config: RepsConfig): string {
     .exhaustive();
 }
 
+function resizeRepsTargets(targets: RepsTarget[], length: number): RepsTarget[] {
+  if (targets.length >= length) {
+    return targets.slice(0, length);
+  }
+  const last = targets.at(-1) ?? { min: 10, max: 10 };
+  return [...targets, ...Array.from({ length: length - targets.length }, () => ({ ...last }))];
+}
+
 export class WeightedExerciseBlueprint {
   readonly type = 'WeightedExerciseBlueprint';
 
@@ -596,6 +604,31 @@ export class WeightedExerciseBlueprint {
       .with({ type: 'range' }, (c) => ({ min: c.min, max: c.max }))
       .with({ type: 'perSet' }, (c) => c.targets[index] ?? c.targets.at(-1) ?? { min: 0, max: 0 })
       .exhaustive();
+  }
+
+  withSets(value: number): WeightedExerciseBlueprint {
+    const sets = Math.max(value, 1);
+    return this.with({
+      sets,
+      repsConfig:
+        this.repsConfig.type === 'perSet'
+          ? { type: 'perSet', targets: resizeRepsTargets(this.repsConfig.targets, sets) }
+          : this.repsConfig,
+    });
+  }
+
+  withRepsConfigType(type: RepsType): WeightedExerciseBlueprint {
+    const target = this.repsTargetForSet(0);
+    const repsConfig = match(type)
+      .returnType<RepsConfig>()
+      .with('fixed', () => ({ type: 'fixed', reps: target.min }))
+      .with('range', () => ({ type: 'range', min: target.min, max: target.max }))
+      .with('perSet', () => ({
+        type: 'perSet',
+        targets: Array.from({ length: this.sets }, () => ({ min: target.max, max: target.max })),
+      }))
+      .exhaustive();
+    return this.with({ repsConfig });
   }
 
   equals(other: ExerciseBlueprint | undefined) {

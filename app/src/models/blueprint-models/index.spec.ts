@@ -450,4 +450,116 @@ describe('WeightedExerciseBlueprint rep schemes', () => {
     expect(WeightedExerciseBlueprint.fromJSON(range.toJSON()).equals(range)).toBe(true);
     expect(WeightedExerciseBlueprint.fromJSON(pyramid.toJSON()).equals(pyramid)).toBe(true);
   });
+
+  describe('withRepsConfigType', () => {
+    it('fixed → range seeds min and max from the fixed reps', () => {
+      expect(fixed.withRepsConfigType('range').repsConfig).toEqual({ type: 'range', min: 10, max: 10 });
+    });
+
+    it('fixed → perSet fills every set with the fixed reps', () => {
+      expect(fixed.withRepsConfigType('perSet').repsConfig).toEqual({
+        type: 'perSet',
+        targets: [
+          { min: 10, max: 10 },
+          { min: 10, max: 10 },
+          { min: 10, max: 10 },
+        ],
+      });
+    });
+
+    it('range → fixed uses the range min', () => {
+      expect(range.withRepsConfigType('fixed').repsConfig).toEqual({ type: 'fixed', reps: 10 });
+    });
+
+    it('range → perSet fills every set with the range max', () => {
+      expect(range.withRepsConfigType('perSet').repsConfig).toEqual({
+        type: 'perSet',
+        targets: [
+          { min: 12, max: 12 },
+          { min: 12, max: 12 },
+          { min: 12, max: 12 },
+        ],
+      });
+    });
+
+    it('perSet → fixed uses set 0 min', () => {
+      expect(pyramid.withRepsConfigType('fixed').repsConfig).toEqual({ type: 'fixed', reps: 12 });
+    });
+
+    it('perSet → range uses set 0 min and max', () => {
+      expect(pyramid.withRepsConfigType('range').repsConfig).toEqual({ type: 'range', min: 12, max: 12 });
+    });
+
+    it('perSet targets length tracks the current set count', () => {
+      const fiveSets = fixed.with({ sets: 5 });
+      expect(fiveSets.withRepsConfigType('perSet').repsConfig).toEqual({
+        type: 'perSet',
+        targets: Array.from({ length: 5 }, () => ({ min: 10, max: 10 })),
+      });
+    });
+
+    it('returns a new blueprint instance leaving the original unchanged', () => {
+      const updated = fixed.withRepsConfigType('range');
+      expect(updated).not.toBe(fixed);
+      expect(updated).toBeInstanceOf(WeightedExerciseBlueprint);
+      expect(fixed.repsConfig).toEqual({ type: 'fixed', reps: 10 });
+    });
+  });
+
+  describe('withSets', () => {
+    it('updates sets and leaves a fixed repsConfig untouched', () => {
+      const updated = fixed.withSets(5);
+      expect(updated.sets).toBe(5);
+      expect(updated.repsConfig).toEqual({ type: 'fixed', reps: 10 });
+    });
+
+    it('updates sets and leaves a range repsConfig untouched', () => {
+      const updated = range.withSets(5);
+      expect(updated.sets).toBe(5);
+      expect(updated.repsConfig).toEqual({ type: 'range', min: 10, max: 12 });
+    });
+
+    it('grows a perSet repsConfig by repeating the last target', () => {
+      const updated = pyramid.withSets(5);
+      expect(updated.sets).toBe(5);
+      expect(updated.repsConfig).toEqual({
+        type: 'perSet',
+        targets: [
+          { min: 12, max: 12 },
+          { min: 10, max: 10 },
+          { min: 8, max: 8 },
+          { min: 8, max: 8 },
+          { min: 8, max: 8 },
+        ],
+      });
+    });
+
+    it('shrinks a perSet repsConfig by truncating targets', () => {
+      const updated = pyramid.withSets(2);
+      expect(updated.sets).toBe(2);
+      expect(updated.repsConfig).toEqual({
+        type: 'perSet',
+        targets: [
+          { min: 12, max: 12 },
+          { min: 10, max: 10 },
+        ],
+      });
+    });
+
+    it('leaves a perSet repsConfig untouched when the count is unchanged', () => {
+      const updated = pyramid.withSets(3);
+      expect(updated.repsConfig).toEqual(pyramid.repsConfig);
+    });
+
+    it('returns a new blueprint instance leaving the original unchanged', () => {
+      const updated = pyramid.withSets(5);
+      expect(updated).not.toBe(pyramid);
+      expect(pyramid.sets).toBe(3);
+    });
+
+    it('clamps to a minimum of 1 set', () => {
+      expect(fixed.withSets(0).sets).toBe(1);
+      expect(fixed.withSets(-5).sets).toBe(1);
+    });
+  });
 });
