@@ -169,6 +169,11 @@ class MigratorImpl<TFinal, TMigrations extends readonly [...AnyMigration[], AnyM
     maxVersion: TVersion,
   ): TMigrations[TVersion]['$type'] {
     const currentVersion = value.version ?? 0;
+    if (currentVersion > this.latestVersion) {
+      throw new Error(
+        `Cannot migrate value at version ${currentVersion}: latest known version is ${this.latestVersion}`,
+      );
+    }
     if (!this.migrations.length || currentVersion >= maxVersion) {
       return value;
     }
