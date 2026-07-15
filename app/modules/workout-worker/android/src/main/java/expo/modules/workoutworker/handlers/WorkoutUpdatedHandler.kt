@@ -5,9 +5,13 @@ import android.annotation.SuppressLint
 import android.app.Notification
 import android.util.Log
 import com.limajuice.liftlog.DistanceCardioTarget
+import com.limajuice.liftlog.FixedRepsConfig
+import com.limajuice.liftlog.PerSetRepsConfig
+import com.limajuice.liftlog.RangeRepsConfig
 import com.limajuice.liftlog.RecordedCardioExercise
 import com.limajuice.liftlog.RecordedCardioExerciseSet
 import com.limajuice.liftlog.RecordedWeightedExercise
+import com.limajuice.liftlog.RepsConfig
 import com.limajuice.liftlog.TimeCardioTarget
 import com.limajuice.liftlog.Translations
 import com.limajuice.liftlog.Weight
@@ -253,8 +257,9 @@ class WorkoutUpdatedHandler(
             event.currentExerciseDetails?.exercise
         val messageTemplate = translations.workoutPersistentNotificationCurrentExerciseMessage
 
-        val nextSet =
-            (event.currentExerciseDetails?.exercise as? RecordedWeightedExercise?)?.potentialSets?.firstOrNull { it.set == null }
+        val weightedExercise = event.currentExerciseDetails?.exercise as? RecordedWeightedExercise?
+        val nextSetIndex = weightedExercise?.potentialSets?.indexOfFirst { it.set == null }?.takeIf { it >= 0 }
+        val nextSet = nextSetIndex?.let { weightedExercise.potentialSets.getOrNull(it) }
 
         fun getCardioTarget(): String {
             val set = getRunningCardioSet(event) ?: run {
@@ -273,7 +278,9 @@ class WorkoutUpdatedHandler(
         return when {
             event.currentExerciseDetails == null -> ""
             currentExercise is RecordedWeightedExercise -> messageTemplate.replace(
-                "\$EXERCISE_DESCRIPTOR$", "${currentExercise.blueprint.name} - ${currentExercise.blueprint.repsPerSet}${
+                "\$EXERCISE_DESCRIPTOR$", "${currentExercise.blueprint.name} - ${
+                    formatRepsConfig(currentExercise.blueprint.repsConfig, nextSetIndex ?: 0)
+                }${
                     if (nextSet?.weight != null) "x${formatWeight(nextSet.weight)}" else ""
                 }"
             )
@@ -282,6 +289,22 @@ class WorkoutUpdatedHandler(
                 "\$EXERCISE_DESCRIPTOR$", "${currentExercise.blueprint.name} - ${getCardioTarget()}"
             )
 
+            else -> ""
+        }
+    }
+
+    private fun formatRepsTarget(min: Long, max: Long): String {
+        return if (min == max) "$max" else "$min–$max"
+    }
+
+    private fun formatRepsConfig(repsConfig: RepsConfig, setIndex: Int): String {
+        return when (repsConfig) {
+            is FixedRepsConfig -> "${repsConfig.reps}"
+            is RangeRepsConfig -> formatRepsTarget(repsConfig.min, repsConfig.max)
+            is PerSetRepsConfig -> {
+                val target = repsConfig.targets.getOrNull(setIndex) ?: repsConfig.targets.lastOrNull()
+                target?.let { formatRepsTarget(it.min, it.max) } ?: ""
+            }
             else -> ""
         }
     }

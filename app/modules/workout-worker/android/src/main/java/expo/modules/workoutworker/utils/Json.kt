@@ -4,13 +4,17 @@ import com.limajuice.liftlog.CardioExerciseBlueprint
 import com.limajuice.liftlog.CardioTarget
 import com.limajuice.liftlog.DistanceCardioTarget
 import com.limajuice.liftlog.FinishWorkoutCommand
+import com.limajuice.liftlog.FixedRepsConfig
 import com.limajuice.liftlog.IncreaseAllEvenlyProgressiveOverload
 import com.limajuice.liftlog.IncreaseLowestSetProgressiveOverload
 import com.limajuice.liftlog.NoProgressiveOverload
+import com.limajuice.liftlog.PerSetRepsConfig
 import com.limajuice.liftlog.ProgressiveOverload
+import com.limajuice.liftlog.RangeRepsConfig
 import com.limajuice.liftlog.RecordedCardioExercise
 import com.limajuice.liftlog.RecordedExercise
 import com.limajuice.liftlog.RecordedWeightedExercise
+import com.limajuice.liftlog.RepsConfig
 import com.limajuice.liftlog.TimeCardioTarget
 import com.limajuice.liftlog.WeightedExerciseBlueprint
 import com.limajuice.liftlog.WorkoutEndedEvent
@@ -63,6 +67,12 @@ object Json {
             PolymorphicJsonAdapterFactory.of(CardioTarget::class.java, "type")
                 .withSubtype(DistanceCardioTarget::class.java, "distance")
                 .withSubtype(TimeCardioTarget::class.java, "time")
+        )
+        .add(
+            PolymorphicJsonAdapterFactory.of(RepsConfig::class.java, "type")
+                .withSubtype(FixedRepsConfig::class.java, "fixed")
+                .withSubtype(RangeRepsConfig::class.java, "range")
+                .withSubtype(PerSetRepsConfig::class.java, "perSet")
         )
         .add(
             PolymorphicJsonAdapterFactory.of(ProgressiveOverload::class.java, "type")
