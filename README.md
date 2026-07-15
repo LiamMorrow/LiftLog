@@ -114,6 +114,8 @@ For documentation on running the backend for local development, see [the README]
 
 Contributions, issues, and feature requests are welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) (or open an issue/PR).
 
+AI/LLM-assisted contributions are welcome, but issues and feature requests should be written in your own words - see the [AI Usage Policy](./CONTRIBUTING.md#ai-usage-policy).
+
 ## 📚 Documentation
 
 - [Plan Files](./docs/PlanFileFormat.md) - Documents the `.liftlogplan` file format, and how to generate plans with an AI for import into the app.

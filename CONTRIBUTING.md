@@ -42,6 +42,22 @@ If you find a bug, please [open an issue](https://github.com/LiamMorrow/LiftLog/
 If you have a feature request, please search through [discussions](https://github.com/LiamMorrow/LiftLog/discussions) to see if it has been suggested, and if not submit a new discussion.
 Feature requests will go through a vetting/planning phase in discussions before being turned into issues to signal it is planned or ready to be picked up.
 
+Write issues and discussions in your own words. See [AI Usage Policy](#ai-usage-policy) below for details.
+
+## AI Usage Policy
+
+Using AI/LLM tools to help write code is acceptable when used with restraint. Follow the same rules you'd follow for a human written PR:
+
+- PRs over a certain threshold (~100 lines) will likely not be reviewed in any reasonably timeframe
+- PRs should be submitted AFTER raising issues or feature requests which have been accepted as wanted for the project
+
+If you raise a PR out of the blue, it is unlikely to get any traction.
+
+When it comes to issues, bug reports, and feature requests, please keep the following in mind:
+
+- Do not post AI-written feature requests or bug reports. AI summaries tend to be verbose, which wastes the reader's time. Write your own problem statement in your own words.
+- Submit bug reports and feature requests in your original language. If you're not comfortable writing in English, write in your own language and I'll translate it if needed.
+
 ## License
 
 By contributing, you agree that your contributions will be licensed under the [AGPL v3 license](LICENSE).
