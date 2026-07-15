@@ -55,6 +55,7 @@ export function PageActions({ primary, secondary = [], primaryExpanded, accessor
         gap: spacing[2],
         paddingHorizontal: spacing.pageHorizontalMargin,
         paddingBottom: spacing[3],
+        pointerEvents: 'box-none',
       }}
     >
       <Host matchContents seedColor={colors.seedColor}>

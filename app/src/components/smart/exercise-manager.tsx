@@ -26,7 +26,7 @@ import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-
 import { LegendList } from '@legendapp/list';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import { HeaderHeightContext } from 'expo-router/react-navigation';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function ExerciseListItem({
   exerciseId,
@@ -171,7 +171,7 @@ export default function ExerciseManager() {
   const flatListItems = useMemo(() => ['filter', ...filteredExerciseIds], [filteredExerciseIds]);
   const { handleScroll } = useScroll();
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }} edges={{ left: 'additive', right: 'additive', top: 'off', bottom: 'off' }}>
       <LegendList
         onScroll={handleScroll}
         contentContainerStyle={{
@@ -218,7 +218,7 @@ export default function ExerciseManager() {
           }}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

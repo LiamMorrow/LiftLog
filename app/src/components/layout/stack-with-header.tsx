@@ -3,6 +3,7 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { Stack } from 'expo-router';
 import { ReactNode } from 'react';
 import { Platform } from 'react-native';
+import { useIsLandscape } from '@/hooks/useWindowLayout';
 
 export default function StackWithHeader(props: { children?: ReactNode }) {
   return (
@@ -21,7 +22,6 @@ function ScrollAwareStack({ children }: { children?: ReactNode }) {
       screenOptions={{
         headerShadowVisible: false,
         headerBackButtonDisplayMode: 'minimal',
-        headerLargeTitleEnabled: Platform.OS === 'android',
         headerTitleAlign: 'center',
         // Tint the native header rather than supplying a `headerBackground`. A headerBackground makes
         // expo-router mark the header translucent, which lets react-native-screens size the content to the

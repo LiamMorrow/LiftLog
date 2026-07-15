@@ -1,11 +1,10 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
-import { HeaderHeightContext } from 'expo-router/react-navigation';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { View, StyleProp, ViewStyle, Platform } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Edges, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function FullHeightScrollView({
   children,
@@ -13,23 +12,24 @@ export default function FullHeightScrollView({
   scrollStyle,
   avoidKeyboard,
   contentContainerStyle,
+  safeAreaEdges = { left: 'additive', right: 'additive', top: 'off', bottom: 'off' },
 }: {
   children: React.ReactNode;
   floatingChildren?: React.ReactNode;
   avoidKeyboard?: boolean;
   scrollStyle?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
+  safeAreaEdges?: Edges;
 }) {
   const { colors } = useAppTheme();
   const { handleScroll } = useScroll();
   const [floatingBottomSize, setFloatingBottomSize] = useState(0);
   const insets = useSafeAreaInsets();
-  const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
-  const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
-  const bottomInsetHeight = floatingBottomSize + (Platform.select({ ios: insets.bottom }) ?? 0);
+  const bottomInsetHeight = floatingBottomSize;
 
   return (
-    <View
+    <SafeAreaView
+      edges={safeAreaEdges}
       style={[
         {
           backgroundColor: colors.surface,
@@ -39,7 +39,6 @@ export default function FullHeightScrollView({
     >
       {!avoidKeyboard ? (
         <ScrollView onScroll={handleScroll} style={[scrollStyle]} contentContainerStyle={[contentContainerStyle]}>
-          <View style={{ height: topInsetHeight }} />
           {children}
           <View style={{ height: bottomInsetHeight }} />
         </ScrollView>
@@ -51,7 +50,6 @@ export default function FullHeightScrollView({
           style={[scrollStyle]}
           contentContainerStyle={[contentContainerStyle]}
         >
-          <View style={{ height: topInsetHeight }} />
           {children}
           <View style={{ height: bottomInsetHeight }} />
         </KeyboardAwareScrollView>
@@ -68,6 +66,6 @@ export default function FullHeightScrollView({
           {floatingChildren}
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }

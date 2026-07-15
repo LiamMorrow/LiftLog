@@ -21,6 +21,7 @@ import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 /**
  * Creates a diff for updating an existing workout in the plan.
@@ -123,41 +124,43 @@ export function SessionDiffSaveEditor() {
   );
 
   return (
-    <FullHeightScrollView
-      floatingChildren={floatingBottomContainer}
-      scrollStyle={{ padding: spacing.pageHorizontalMargin }}
-    >
-      <Stack.Screen options={{ title: t('plan.diff.dialog.title') }} />
-      <Text
-        style={{
-          paddingBlockEnd: spacing[2],
-        }}
-        variant="bodyMedium"
+    <SafeAreaView edges={{ bottom: 'additive', top: 'off' }} style={{ flex: 1 }}>
+      <FullHeightScrollView
+        floatingChildren={floatingBottomContainer}
+        scrollStyle={{ padding: spacing.pageHorizontalMargin }}
       >
-        {currentPlanDiff?.type === 'diff' ? (
-          <LimitedHtml
-            value={t('plan.diff.dialog_update.body', {
-              originalSessionName: currentPlanDiff?.diff.originalSession.name,
-            })}
-          />
-        ) : (
-          t('plan.diff.dialog_add.body')
-        )}
-      </Text>
-      <View style={{ marginHorizontal: -spacing.pageHorizontalMargin }}>
-        {canEditExistingWorkout && (
-          <ListSwitch
-            value={isCreatingNewWorkout}
-            supportingText={<LimitedHtml value={getSwitchSubtitle()} />}
-            onValueChange={handleSaveModeChange}
-            headline={t('plan.diff.dialog_save_as_new_switch.title')}
-          />
-        )}
-      </View>
-      <SessionDiffView
-        diff={currentPlanDiff?.diff ?? EmptySessionBlueprintDiff}
-        onSelectedDiffChange={setSelectedDiff}
-      />
-    </FullHeightScrollView>
+        <Stack.Screen options={{ title: t('plan.diff.dialog.title') }} />
+        <Text
+          style={{
+            paddingBlockEnd: spacing[2],
+          }}
+          variant="bodyMedium"
+        >
+          {currentPlanDiff?.type === 'diff' ? (
+            <LimitedHtml
+              value={t('plan.diff.dialog_update.body', {
+                originalSessionName: currentPlanDiff?.diff.originalSession.name,
+              })}
+            />
+          ) : (
+            t('plan.diff.dialog_add.body')
+          )}
+        </Text>
+        <View style={{ marginHorizontal: -spacing.pageHorizontalMargin }}>
+          {canEditExistingWorkout && (
+            <ListSwitch
+              value={isCreatingNewWorkout}
+              supportingText={<LimitedHtml value={getSwitchSubtitle()} />}
+              onValueChange={handleSaveModeChange}
+              headline={t('plan.diff.dialog_save_as_new_switch.title')}
+            />
+          )}
+        </View>
+        <SessionDiffView
+          diff={currentPlanDiff?.diff ?? EmptySessionBlueprintDiff}
+          onSelectedDiffChange={setSelectedDiff}
+        />
+      </FullHeightScrollView>
+    </SafeAreaView>
   );
 }

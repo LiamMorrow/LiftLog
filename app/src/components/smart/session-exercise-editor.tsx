@@ -5,7 +5,9 @@ import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { selectCurrentSession, SessionTarget, setCurrentSession } from '@/store/current-session';
 import { useTranslate } from '@tolgee/react';
 import { Href, Stack, useRouter } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { HeaderHeightContext } from 'expo-router/react-navigation';
+import { useContext, useEffect, useRef } from 'react';
+import { Platform } from 'react-native';
 import { useDispatch, useStore } from 'react-redux';
 
 export function getSessionExerciseEditorHref(target: SessionTarget, index: number, opts?: { isNew?: boolean }): Href {
@@ -31,6 +33,8 @@ export function SessionExerciseEditor(props: { target: SessionTarget; index: num
   const saveExercise = (updated: ExerciseBlueprint) => {
     draftRef.current = updated;
   };
+  const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
+  const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
 
   const commitRef = useRef(() => {});
   commitRef.current = () => {
@@ -58,7 +62,16 @@ export function SessionExerciseEditor(props: { target: SessionTarget; index: num
   }, [hasExercise, dismiss]);
 
   return (
-    <FullHeightScrollView avoidKeyboard>
+    <FullHeightScrollView
+      safeAreaEdges={{
+        left: 'additive',
+        right: 'additive',
+        top: 'off',
+        bottom: 'additive',
+      }}
+      avoidKeyboard
+      contentContainerStyle={{ insetBlockStart: topInsetHeight }}
+    >
       <Stack.Screen options={{ title }} />
       {exercise ? <ExerciseEditor exercise={exercise} updateExercise={saveExercise} /> : null}
     </FullHeightScrollView>

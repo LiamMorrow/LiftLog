@@ -13,6 +13,7 @@ import { HeaderHeightContext } from 'expo-router/react-navigation';
 import { useContext, useMemo, useState } from 'react';
 import { Platform, View } from 'react-native';
 import { List } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 
 export function ExerciseSearch(props: { requestId: string; exerciseName: string }) {
@@ -37,7 +38,15 @@ export function ExerciseSearch(props: { requestId: string; exerciseName: string 
   const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
 
   return (
-    <View style={{ flex: 1, insetBlockStart: topInsetHeight }}>
+    <SafeAreaView
+      edges={{
+        left: 'additive',
+        right: 'additive',
+        top: Platform.OS === 'ios' ? 'additive' : 'off',
+        bottom: 'additive',
+      }}
+      style={{ flex: 1, insetBlockStart: topInsetHeight }}
+    >
       <Stack.Screen options={{ title: t('generic.search.button') }} />
       <LegendList
         data={exerciseListItems}
@@ -61,7 +70,7 @@ export function ExerciseSearch(props: { requestId: string; exerciseName: string 
           return <ExerciseIdSearchListItem exerciseId={i.item as string} onPress={onSelect} />;
         }}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

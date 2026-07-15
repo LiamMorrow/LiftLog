@@ -3,7 +3,6 @@ import { useAppSelector } from '@/store';
 import { selectFollowRequestCount } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
-import { Platform } from 'react-native';
 
 export default function TabsLayout() {
   const { t } = useTranslate();
@@ -47,7 +46,7 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Icon sf="calendar" md={{ default: 'calendar_month', selected: 'calendar_month' }} />
         <NativeTabs.Trigger.Label>{t('generic.history.title')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="settings" disableAutomaticContentInsets={Platform.OS === 'ios'}>
+      <NativeTabs.Trigger name="settings">
         <NativeTabs.Trigger.Icon sf="gear" md={{ default: 'settings', selected: 'settings' }} />
         <NativeTabs.Trigger.Label>{t('settings.settings.title')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
