@@ -85,3 +85,12 @@ body:
     attributes:
       label: Additional context
       description: Add any other context about the problem here.
+
+  - type: checkboxes
+    id: ai-usage-policy
+    attributes:
+      label: AI Usage Policy
+      description: See our [AI Usage Policy](https://github.com/LiamMorrow/LiftLog/blob/main/CONTRIBUTING.md#ai-usage-policy) for details.
+      options:
+        - label: This report is written in my own words (not an AI-generated summary), in my original language.
+          required: true
