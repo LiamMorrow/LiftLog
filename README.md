@@ -100,11 +100,12 @@ For documentation on running the backend for local development, see [the README]
 
 ## 📊 Stats
 
-<a href="https://www.star-history.com/#LiamMorrow/LiftLog&Date">
+
+<a href="https://www.star-history.com/?type=date&repos=LiamMorrow%2FLiftLog">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=LiamMorrow/LiftLog&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=LiamMorrow/LiftLog&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=LiamMorrow/LiftLog&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=LiamMorrow/LiftLog&type=date&theme=dark&legend=top-left&sealed_token=4B9Ugtb3Kc7qXvqb65ZwPsxrnDwQPgGjYfiEGm3y0xNgxLObO-TJGQ5DetyZbtH0rGUZ5fvEje57YH4ip5m1O0DmxI32HHOUPNzIaSYXpCA3nzMEhe1-M08DlvXm5CtQLXpbTgpVSdIssFhbmwbM0obLXqglZFXYNrz-skEA7FJgI-tkP0t3ez3gJHnp" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=LiamMorrow/LiftLog&type=date&legend=top-left&sealed_token=4B9Ugtb3Kc7qXvqb65ZwPsxrnDwQPgGjYfiEGm3y0xNgxLObO-TJGQ5DetyZbtH0rGUZ5fvEje57YH4ip5m1O0DmxI32HHOUPNzIaSYXpCA3nzMEhe1-M08DlvXm5CtQLXpbTgpVSdIssFhbmwbM0obLXqglZFXYNrz-skEA7FJgI-tkP0t3ez3gJHnp" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=LiamMorrow/LiftLog&type=date&legend=top-left&sealed_token=4B9Ugtb3Kc7qXvqb65ZwPsxrnDwQPgGjYfiEGm3y0xNgxLObO-TJGQ5DetyZbtH0rGUZ5fvEje57YH4ip5m1O0DmxI32HHOUPNzIaSYXpCA3nzMEhe1-M08DlvXm5CtQLXpbTgpVSdIssFhbmwbM0obLXqglZFXYNrz-skEA7FJgI-tkP0t3ez3gJHnp" />
  </picture>
 </a>
 
