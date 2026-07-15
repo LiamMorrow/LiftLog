@@ -79,7 +79,7 @@
     "react-native-gesture-handler": "~2.32.0",
     "react-native-gifted-charts": "^1.4.77",
     "react-native-health-connect": "^3.5.3",
-    "react-native-keyboard-controller": "1.21.9",
+    "react-native-keyboard-controller": "1.22.1",
     "react-native-nitro-modules": "^0.35.9",
     "react-native-pager-view": "8.0.2",
     "react-native-paper": "^5.15.3",
