@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useRef } from 'react';
 import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { Animated, Platform, View, ViewStyle } from 'react-native';
+import { Animated, Platform, useWindowDimensions, View, ViewStyle } from 'react-native';
 import { GlassBackground } from '@/components/presentation/foundation/glass-background';
 import { floatingShadowStyle } from '@/components/presentation/foundation/floating-shadow';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
@@ -30,6 +30,8 @@ interface TimerPaneProps {
 /** The chrome shared by every timer that runs against a target. */
 export function TimerPane({ time, status, accent, segments, controls, jiggling, testID, style }: TimerPaneProps) {
   const { colors } = useAppTheme();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
 
   return (
     // The bar clips its glass to the radius, and a clipping layer cannot cast a shadow — so the lift
@@ -37,7 +39,7 @@ export function TimerPane({ time, status, accent, segments, controls, jiggling, 
     <View
       style={[
         {
-          alignSelf: 'stretch',
+          alignSelf: isLandscape ? 'flex-end' : 'stretch',
           // Separates the bar from the action floating above it, which the shared gap alone leaves too tight.
           marginTop: spacing[2],
         },
@@ -71,10 +73,10 @@ export function TimerPane({ time, status, accent, segments, controls, jiggling, 
           </Jiggler>
           <SurfaceText
             style={{
-              flex: 1,
               marginLeft: spacing[2],
               textTransform: 'uppercase',
               letterSpacing: 0.8,
+              marginRight: 'auto',
             }}
             numberOfLines={1}
             font="text-xs"
@@ -135,7 +137,7 @@ function ProgressSegment({ flex, progress, color, trackColor }: ProgressSegmentP
     Animated.timing(fill, {
       toValue: progress,
       duration: 200,
-      useNativeDriver: false,
+      useNativeDriver: true,
     }).start();
   }, [progress, fill]);
 
@@ -154,10 +156,9 @@ function ProgressSegment({ flex, progress, color, trackColor }: ProgressSegmentP
           height: '100%',
           borderRadius: trackHeight,
           backgroundColor: color,
-          width: fill.interpolate({
-            inputRange: [0, 1],
-            outputRange: ['0%', '100%'],
-          }),
+          width: '100%',
+          transform: [{ scaleX: fill }],
+          transformOrigin: 'left',
         }}
       />
     </View>
