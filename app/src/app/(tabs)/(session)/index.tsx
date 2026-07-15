@@ -105,6 +105,7 @@ function ListUpcomingWorkouts({
       )}
       {!!upcoming.length && <SectionHeader title={t('workout.upcoming.title')} trailing={plan.name} />}
       <CardList
+        keySelector={(x) => x.id}
         cardType="contained"
         items={upcoming}
         emptyTemplate={currentSession ? undefined : <NoUpcomingWorkouts />}

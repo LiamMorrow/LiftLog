@@ -3,7 +3,6 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { Stack } from 'expo-router';
 import { ReactNode } from 'react';
 import { Platform } from 'react-native';
-import { useIsLandscape } from '@/hooks/useWindowLayout';
 
 export default function StackWithHeader(props: { children?: ReactNode }) {
   return (

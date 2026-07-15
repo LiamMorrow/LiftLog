@@ -6,7 +6,6 @@ import {
 } from '@/models/blueprint-models';
 import { Weight, WeightUnit } from '@/models/weight';
 import {
-  EmptySession,
   PotentialSet,
   RecordedCardioExercise,
   RecordedCardioExerciseSet,
@@ -43,13 +42,23 @@ export class SessionService {
       currentSession ?? this.progressRepository.getOrderedSessions().firstOrDefault((x) => !x.isFreeform);
 
     await yieldToEventLoop();
+    // Track the plan position by index so progression walks the plan in order.
+    // Matching only by name would stall on duplicate-named workouts, always
+    // resolving to the first one and never advancing past it.
+    let index: number;
     if (!latestSession) {
       latestSession = this.createNewSession(firstSessionBlueprint, latestExercises);
+      index = 0;
       yield latestSession;
+    } else {
+      index = sessionBlueprints.findIndex((x) => x.name === latestSession!.blueprint.name);
     }
 
     while (true) {
-      latestSession = this.getNextSession(latestSession, sessionBlueprints, latestExercises);
+      index = (index + 1) % sessionBlueprints.length;
+      latestSession = this.createNewSession(sessionBlueprints[index]!, latestExercises).with({
+        bodyweight: latestSession.bodyweight,
+      });
       yield latestSession;
     }
   }
@@ -59,26 +68,6 @@ export class SessionService {
     latestExercises: Record<string, RecordedExercise | undefined>, // KeyedExerciseBlueprint -> Exercise
   ): Session {
     return this.createNewSession(blueprint, latestExercises);
-  }
-
-  private getNextSession(
-    previousSession: Session,
-    sessionBlueprints: SessionBlueprint[],
-    latestRecordedExercises: Record<
-      string, //KeyedExerciseBlueprint,
-      RecordedExercise | undefined
-    >,
-  ): Session {
-    const lastBlueprint = previousSession.blueprint;
-    const lastBlueprintIndex = sessionBlueprints.findIndex((x) => x.name === lastBlueprint.name);
-    const nextBlueprint = sessionBlueprints[(lastBlueprintIndex + 1) % sessionBlueprints.length];
-    if (!nextBlueprint) {
-      return EmptySession.with({ id: uuid() });
-    }
-
-    return this.createNewSession(nextBlueprint, latestRecordedExercises).with({
-      bodyweight: previousSession.bodyweight,
-    });
   }
 
   private createNewSession(
