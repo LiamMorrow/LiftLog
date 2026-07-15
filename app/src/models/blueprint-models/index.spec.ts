@@ -369,7 +369,7 @@ describe('blueprint models', () => {
       const blueprint = WeightedExerciseBlueprint.empty().with({
         name: 'Squat',
         sets: 4,
-        repsPerSet: 8,
+        repsConfig: { type: 'fixed', reps: 8 },
       });
       const key = KeyedExerciseBlueprint.fromExerciseBlueprint(blueprint);
       expect(key.toString()).toBe('Squat_4_8');
@@ -380,14 +380,14 @@ describe('blueprint models', () => {
         WeightedExerciseBlueprint.empty().with({
           name: 'Press',
           sets: 3,
-          repsPerSet: 10,
+          repsConfig: { type: 'fixed', reps: 10 },
         }),
       );
       const b = KeyedExerciseBlueprint.fromExerciseBlueprint(
         WeightedExerciseBlueprint.empty().with({
           name: 'Press',
           sets: 5,
-          repsPerSet: 10,
+          repsConfig: { type: 'fixed', reps: 10 },
         }),
       );
       expect(a.toString()).not.toBe(b.toString());
@@ -411,5 +411,43 @@ describe('blueprint models', () => {
       const key = KeyedExerciseBlueprint.fromExerciseBlueprint(blueprint);
       expect(key.toString()).toContain('distance');
     });
+  });
+});
+
+describe('WeightedExerciseBlueprint rep schemes', () => {
+  const fixed = WeightedExerciseBlueprint.empty().with({ sets: 3, repsConfig: { type: 'fixed', reps: 10 } });
+  const range = fixed.with({ repsConfig: { type: 'range', min: 10, max: 12 } });
+  const pyramid = fixed.with({
+    repsConfig: {
+      type: 'perSet',
+      targets: [
+        { min: 12, max: 12 },
+        { min: 10, max: 10 },
+        { min: 8, max: 8 },
+      ],
+    },
+  });
+
+  it('resolves a fixed target to min === max', () => {
+    expect(fixed.repsTargetForSet(0)).toEqual({ min: 10, max: 10 });
+  });
+
+  it('resolves a uniform range for every set', () => {
+    expect(range.repsTargetForSet(0)).toEqual({ min: 10, max: 12 });
+    expect(range.repsTargetForSet(2)).toEqual({ min: 10, max: 12 });
+  });
+
+  it('resolves per-set targets for a pyramid', () => {
+    expect(pyramid.repsTargetForSet(0)).toEqual({ min: 12, max: 12 });
+    expect(pyramid.repsTargetForSet(2)).toEqual({ min: 8, max: 8 });
+  });
+
+  it('falls back to the last target when the index runs past a short pyramid', () => {
+    expect(pyramid.repsTargetForSet(5)).toEqual({ min: 8, max: 8 });
+  });
+
+  it('round-trips ranges and pyramids through JSON', () => {
+    expect(WeightedExerciseBlueprint.fromJSON(range.toJSON()).equals(range)).toBe(true);
+    expect(WeightedExerciseBlueprint.fromJSON(pyramid.toJSON()).equals(pyramid)).toBe(true);
   });
 });

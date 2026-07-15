@@ -28,7 +28,7 @@ describe('diffSessionBlueprints', () => {
     new WeightedExerciseBlueprint(
       name,
       sets,
-      reps,
+      { type: 'fixed', reps },
       new IncreaseAllEvenlyProgressiveOverload(new BigNumber('2.5')),
       Rest.medium,
       false,
@@ -208,8 +208,8 @@ describe('diffSessionBlueprints', () => {
 
       expect(diff.modifiedExercises[0]!.changes[0]).toMatchObject({
         kind: 'exerciseReps',
-        oldValue: 10,
-        newValue: 8,
+        oldValue: { type: 'fixed', reps: 10 },
+        newValue: { type: 'fixed', reps: 8 },
       });
     });
 
@@ -220,7 +220,7 @@ describe('diffSessionBlueprints', () => {
           new WeightedExerciseBlueprint(
             'Squat',
             3,
-            10,
+            { type: 'fixed', reps: 10 },
             new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
             Rest.short,
             false,
@@ -236,7 +236,7 @@ describe('diffSessionBlueprints', () => {
           new WeightedExerciseBlueprint(
             'Squat',
             3,
-            10,
+            { type: 'fixed', reps: 10 },
             new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
             Rest.long,
             false,
@@ -307,8 +307,8 @@ describe('diffSessionBlueprints', () => {
       // First Squat: reps 10 -> 12
       const firstSquatChanges = diff.modifiedExercises.find((m) => m.exerciseIndex === 0)?.changes;
       expect(firstSquatChanges?.find((c) => c.kind === 'exerciseReps')).toMatchObject({
-        oldValue: 10,
-        newValue: 12,
+        oldValue: { type: 'fixed', reps: 10 },
+        newValue: { type: 'fixed', reps: 12 },
       });
       // Second Squat: sets 4 -> 5
       const secondSquatChanges = diff.modifiedExercises.find((m) => m.exerciseIndex === 1)?.changes;
@@ -448,7 +448,7 @@ describe('applySessionBlueprintDiff', () => {
     new WeightedExerciseBlueprint(
       name,
       sets,
-      reps,
+      { type: 'fixed', reps },
       new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
       Rest.medium,
       false,
@@ -521,7 +521,7 @@ describe('applySessionBlueprintDiff', () => {
 
     const exercise = result.exercises[0]! as WeightedExerciseBlueprint;
     expect(exercise.sets).toBe(5);
-    expect(exercise.repsPerSet).toBe(8);
+    expect(exercise.repsConfig).toEqual({ type: 'fixed', reps: 8 });
   });
 
   const createCardioSet = (
@@ -599,7 +599,7 @@ describe('getChangeDescription', () => {
     new WeightedExerciseBlueprint(
       name,
       3,
-      10,
+      { type: 'fixed', reps: 10 },
       new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
       Rest.medium,
       false,
@@ -648,7 +648,7 @@ describe('getChangeDescription', () => {
         new WeightedExerciseBlueprint(
           'Squat',
           5,
-          10,
+          { type: 'fixed', reps: 10 },
           new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
           Rest.medium,
           false,
@@ -683,7 +683,7 @@ describe('filterDiff', () => {
     new WeightedExerciseBlueprint(
       name,
       sets,
-      reps,
+      { type: 'fixed', reps },
       new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
       Rest.medium,
       false,
@@ -729,7 +729,7 @@ describe('applySessionBlueprintDiff additional branches', () => {
     new WeightedExerciseBlueprint(
       name,
       3,
-      10,
+      { type: 'fixed', reps: 10 },
       new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
       Rest.medium,
       false,
@@ -783,7 +783,18 @@ describe('applySessionBlueprintDiff additional branches', () => {
     const original = new SessionBlueprint('W', [weighted('Squat')], 'notes');
     const modified = new SessionBlueprint(
       'W2',
-      [new WeightedExerciseBlueprint('Squat', 5, 8, new NoProgressiveOverload(), Rest.long, true, 'note', 'link')],
+      [
+        new WeightedExerciseBlueprint(
+          'Squat',
+          5,
+          { type: 'fixed', reps: 8 },
+          new NoProgressiveOverload(),
+          Rest.long,
+          true,
+          'note',
+          'link',
+        ),
+      ],
       'notes2',
     );
 
@@ -804,7 +815,16 @@ describe('change label and description mapping', () => {
     notes = '',
     link = '',
   ): WeightedExerciseBlueprint =>
-    new WeightedExerciseBlueprint(name, 3, 10, overload, Rest.medium, supersetWithNext, notes, link);
+    new WeightedExerciseBlueprint(
+      name,
+      3,
+      { type: 'fixed', reps: 10 },
+      overload,
+      Rest.medium,
+      supersetWithNext,
+      notes,
+      link,
+    );
 
   it('produces a non-empty label key and description for every change kind', () => {
     const original = new SessionBlueprint('Workout', [weighted('Squat'), weighted('Bench')], 'notes');

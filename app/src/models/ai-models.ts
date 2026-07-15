@@ -13,6 +13,7 @@ import {
   ExerciseBlueprintJSON,
   ProgramBlueprintJSON,
   ProgressiveOverloadJSON,
+  RepsConfigJSON,
   RestJSON,
   SessionBlueprintJSON,
   toLocalDateJSON,
@@ -101,6 +102,7 @@ const emptyWeightedExercise = WeightedExerciseBlueprint.empty().toJSON();
 const emptyCardioExercise = CardioExerciseBlueprint.empty().toJSON();
 const emptyCardioSet = emptyCardioExercise.sets[0]!;
 const defaultIncreaseAmount = '2.5' as BigNumberJSON;
+const defaultReps = emptyWeightedExercise.repsConfig.type === 'fixed' ? emptyWeightedExercise.repsConfig.reps : 10;
 
 function fillRest(partial: DeepPartial<RestJSON> = {}): RestJSON {
   const { restBetweenSets } = emptyWeightedExercise;
@@ -129,12 +131,26 @@ function fillProgressiveOverload(partial: DeepPartial<ProgressiveOverloadJSON> =
   }
 }
 
+function fillRepsConfig(partial: DeepPartial<RepsConfigJSON> = {}): RepsConfigJSON {
+  switch (partial.type) {
+    case 'range':
+      return { type: 'range', min: partial.min ?? 8, max: partial.max ?? 12 };
+    case 'perSet':
+      return {
+        type: 'perSet',
+        targets: (partial.targets ?? []).map((t) => ({ min: t?.min ?? defaultReps, max: t?.max ?? defaultReps })),
+      };
+    default:
+      return { type: 'fixed', reps: (partial as { reps?: number }).reps ?? defaultReps };
+  }
+}
+
 function fillWeightedExercise(partial: DeepPartial<WeightedExerciseBlueprintJSON> = {}): WeightedExerciseBlueprintJSON {
   return {
     type: 'WeightedExerciseBlueprint',
     name: partial.name ?? emptyWeightedExercise.name,
     sets: partial.sets ?? emptyWeightedExercise.sets,
-    repsPerSet: partial.repsPerSet ?? emptyWeightedExercise.repsPerSet,
+    repsConfig: fillRepsConfig(partial.repsConfig),
     restBetweenSets: fillRest(partial.restBetweenSets),
     supersetWithNext: partial.supersetWithNext ?? emptyWeightedExercise.supersetWithNext,
     notes: partial.notes ?? emptyWeightedExercise.notes,
@@ -195,7 +211,7 @@ function fillExercise(partial: DeepPartial<ExerciseBlueprintJSON> = {}): Exercis
 
 function fillSession(partial: DeepPartial<SessionBlueprintJSON> = {}): SessionBlueprintJSON {
   return {
-    version: 2,
+    version: 3,
     name: partial.name ?? emptySessionBlueprint.name,
     exercises: (partial.exercises ?? []).map(fillExercise),
     notes: partial.notes ?? emptySessionBlueprint.notes,
@@ -204,7 +220,7 @@ function fillSession(partial: DeepPartial<SessionBlueprintJSON> = {}): SessionBl
 
 function fillBlueprint(partial: DeepPartial<ProgramBlueprintJSON> = {}): ProgramBlueprintJSON {
   return {
-    version: 2,
+    version: 3,
     name: partial.name ?? '',
     sessions: (partial.sessions ?? []).map(fillSession),
     lastEdited: toLocalDateJSON(LocalDate.now()),
@@ -222,9 +238,9 @@ export function aiPlanFromJSON(partialJson: DeepPartial<AnyVersionAiPlanJSON>): 
     throw new Error('Cannot parse partial json');
   }
   const plan = aiPlanMigrations.migrate(
-    partialJson.version === 2
+    partialJson.version === 3
       ? {
-          version: 2,
+          version: 3,
           name: partialJson.name ?? '',
           description: partialJson.description ?? '',
           blueprint: fillBlueprint(partialJson.blueprint),

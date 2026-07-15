@@ -19,6 +19,9 @@ import {
   DistanceUnits,
   ExerciseBlueprint,
   matchCardioTarget,
+  RepsConfig,
+  RepsTarget,
+  RepsType,
   Rest,
   TimeCardioTarget,
   WeightedExerciseBlueprint,
@@ -44,6 +47,7 @@ import {
   ProgressiveOverloadSelect,
   ProgressiveOverloadValuesEditor,
 } from '@/components/presentation/workout-editor/progressive-overload';
+import { ExtractType } from '@/utils/extract-type';
 
 interface ExerciseEditorProps {
   exercise: ExerciseBlueprint;
@@ -441,6 +445,14 @@ function TimeTargetEditor(props: { target: TimeCardioTarget; onValueChange: (t: 
   );
 }
 
+function resizeRepsTargets(targets: RepsTarget[], length: number): RepsTarget[] {
+  if (targets.length >= length) {
+    return targets.slice(0, length);
+  }
+  const last = targets.at(-1) ?? { min: 10, max: 10 };
+  return [...targets, ...Array.from({ length: length - targets.length }, () => ({ ...last }))];
+}
+
 function WeightedExerciseEditor({
   exercise,
   updateExercise,
@@ -453,16 +465,57 @@ function WeightedExerciseEditor({
   const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
   const [restDialogOpen, setRestDialogOpen] = useState(false);
 
-  const setSets = (value: number) => updateExercise({ sets: Math.max(value, 1) });
+  const mode = exercise.repsConfig.type;
 
-  const setReps = (value: number) => updateExercise({ repsPerSet: Math.max(value, 1) });
+  const setSets = (value: number) => {
+    const sets = Math.max(value, 1);
+    updateExercise(
+      exercise.repsConfig.type === 'perSet'
+        ? { sets, repsConfig: { type: 'perSet', targets: resizeRepsTargets(exercise.repsConfig.targets, sets) } }
+        : { sets },
+    );
+  };
+
+  const setMode = (next: RepsType) => {
+    if (next === mode) {
+      return;
+    }
+    updateExercise({
+      repsConfig: match(next)
+        .returnType<RepsConfig>()
+        .with('fixed', () => ({ type: 'fixed', reps: exercise.repsTargetForSet(0).min }))
+        .with('range', () => ({
+          type: 'range',
+          min: exercise.repsTargetForSet(0).min,
+          max: exercise.repsTargetForSet(0).max,
+        }))
+        .with('perSet', () => ({
+          type: 'perSet',
+          targets: Array.from({ length: exercise.sets }, () => ({
+            min: exercise.repsTargetForSet(0).min,
+            max: exercise.repsTargetForSet(0).max,
+          })),
+        }))
+        .exhaustive(),
+    });
+  };
 
   return (
     <View style={{ gap: spacing[2] }}>
+      <SegmentedPicker
+        value={mode}
+        options={[
+          { value: 'fixed', label: 'Fixed', testID: 'reps-mode-fixed' },
+          { value: 'range', label: 'Range', testID: 'reps-mode-range' },
+          { value: 'perSet', label: 'Per set', testID: 'reps-mode-per-set' },
+        ]}
+        onChange={setMode}
+      />
+
       <View
         style={{
           flexDirection: 'row',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           width: '100%',
           gap: spacing[4],
           marginBlockEnd: spacing[2],
@@ -476,14 +529,22 @@ function WeightedExerciseEditor({
             testID="exercise-sets"
           />
         </View>
-        <View style={{ flex: 1 }}>
-          <FixedIncrementer
-            label={t('exercise.reps.label')}
-            onValueChange={setReps}
-            value={exercise.repsPerSet}
-            testID="exercise-reps"
+        {mode === 'perSet' ? (
+          <PerSetRepsEditor
+            repsConfig={exercise.repsConfig}
+            setRepsConfig={(repsConfig) => updateExercise(exercise.with({ repsConfig }))}
           />
-        </View>
+        ) : mode === 'range' ? (
+          <RangeRepsEditor
+            repsConfig={exercise.repsConfig}
+            setRepsConfig={(repsConfig) => updateExercise(exercise.with({ repsConfig }))}
+          />
+        ) : (
+          <FixedRepsEditor
+            repsConfig={exercise.repsConfig}
+            setRepsConfig={(repsConfig) => updateExercise(exercise.with({ repsConfig }))}
+          />
+        )}
       </View>
 
       <SharedFieldsEditor exercise={exercise} updateExercise={updateExercise} />
@@ -539,6 +600,91 @@ function WeightedExerciseEditor({
           renderItem={(i) => i}
         />
       </FormRow>
+    </View>
+  );
+}
+
+function RangeRepsEditor({
+  repsConfig,
+  setRepsConfig,
+}: {
+  repsConfig: ExtractType<RepsConfig, 'range'>;
+  setRepsConfig: (config: RepsConfig) => void;
+}) {
+  const { t } = useTranslate();
+  return (
+    <>
+      <View style={{ flex: 1 }}>
+        <FixedIncrementer
+          label={t('exercise.min_reps.label')}
+          onValueChange={(min) =>
+            setRepsConfig({ ...repsConfig, min: Math.max(min, 1), max: Math.max(repsConfig.max, min) })
+          }
+          value={repsConfig.min}
+          testID="exercise-min-reps"
+        />
+      </View>
+      <View style={{ flex: 1 }}>
+        <FixedIncrementer
+          label={t('exercise.max_reps.label')}
+          onValueChange={(max) => setRepsConfig({ ...repsConfig, max: Math.max(max, repsConfig.min) })}
+          value={repsConfig.max}
+          testID="exercise-max-reps"
+        />
+      </View>
+    </>
+  );
+}
+
+function FixedRepsEditor({
+  repsConfig,
+  setRepsConfig,
+}: {
+  repsConfig: ExtractType<RepsConfig, 'fixed'>;
+  setRepsConfig: (config: RepsConfig) => void;
+}) {
+  const { t } = useTranslate();
+  return (
+    <View style={{ flex: 1 }}>
+      <FixedIncrementer
+        label={t('exercise.reps.label')}
+        onValueChange={(reps) => setRepsConfig({ ...repsConfig, reps: Math.max(reps, 1) })}
+        value={repsConfig.reps}
+        testID="exercise-reps"
+      />
+    </View>
+  );
+}
+
+function PerSetRepsEditor({
+  repsConfig,
+  setRepsConfig,
+}: {
+  repsConfig: ExtractType<RepsConfig, 'perSet'>;
+  setRepsConfig: (config: RepsConfig) => void;
+}) {
+  const { t } = useTranslate();
+
+  const setSetReps = (index: number, value: number) => {
+    const reps = Math.max(value, 1);
+    setRepsConfig({
+      type: 'perSet',
+      targets: repsConfig.targets.map((target, i) => (i === index ? { min: reps, max: reps } : target)),
+    });
+  };
+
+  return (
+    <View style={{ flex: 3, flexDirection: 'row', flexWrap: 'wrap', gap: spacing[4] }}>
+      {repsConfig.targets?.map((target, index) => (
+        <View key={index} style={{ flexGrow: 1, flexBasis: '25%', minWidth: spacing[16] }}>
+          <FixedIncrementer
+            label={t('exercise.set_number.label', { number: index + 1 })}
+            onValueChange={(value) => setSetReps(index, value)}
+            value={target.max}
+            testID={`exercise-set-reps-${index}`}
+          />
+        </View>
+      ))}
     </View>
   );
 }

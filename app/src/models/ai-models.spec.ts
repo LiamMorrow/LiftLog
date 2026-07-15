@@ -38,7 +38,7 @@ describe('aiPlanFromJSON', () => {
     const weighted = new WeightedExerciseBlueprint(
       'Squat',
       5,
-      5,
+      { type: 'fixed', reps: 5 },
       new IncreaseLowestSetProgressiveOverload(new BigNumber(2.5), 'middle'),
       Rest.long,
       true,
@@ -72,7 +72,7 @@ describe('aiPlanFromJSON', () => {
     );
 
     const result = parse({
-      version: 2,
+      version: 3,
       name: 'Strength',
       description: 'A complete plan',
       blueprint: blueprint.toJSON(),
@@ -88,7 +88,7 @@ describe('aiPlanFromJSON', () => {
 
   describe('top-level fields', () => {
     it('fills empty description and blueprint when only a name streamed in', () => {
-      const plan = parse({ version: 2, name: 'here' });
+      const plan = parse({ version: 3, name: 'here' });
 
       expect(plan.name).toBe('here');
       expect(plan.description).toBe('');
@@ -97,14 +97,14 @@ describe('aiPlanFromJSON', () => {
     });
 
     it('always stamps the blueprint as last edited today', () => {
-      const plan = parse({ version: 2, name: 'here' });
+      const plan = parse({ version: 3, name: 'here' });
 
       expect(plan.blueprint.lastEdited.equals(LocalDate.now())).toBe(true);
     });
 
     it('keeps the provided name and description', () => {
       const plan = parse({
-        version: 2,
+        version: 3,
         name: 'PPL',
         description: 'Push pull legs',
       });
@@ -117,7 +117,7 @@ describe('aiPlanFromJSON', () => {
   describe('sessions', () => {
     it('fills missing exercises and notes on a session', () => {
       const session = firstSession({
-        version: 2,
+        version: 3,
         name: 'PPL',
         blueprint: { sessions: [{ name: 'Day 1' }] },
       });
@@ -129,7 +129,7 @@ describe('aiPlanFromJSON', () => {
 
     it('fills every session in the array', () => {
       const plan = parse({
-        version: 2,
+        version: 3,
         name: 'PPL',
         blueprint: { sessions: [{ name: 'Day 1' }, { name: 'Day 2' }] },
       });
@@ -141,7 +141,7 @@ describe('aiPlanFromJSON', () => {
   describe('weighted exercises', () => {
     it('defaults an exercise with no type to a weighted exercise', () => {
       const exercise = firstExercise({
-        version: 2,
+        version: 3,
         name: 'PPL',
         blueprint: { sessions: [{ exercises: [{ name: 'Bench' }] }] },
       });
@@ -151,7 +151,7 @@ describe('aiPlanFromJSON', () => {
 
     it('falls back to the empty weighted defaults for absent fields', () => {
       const exercise = firstExercise({
-        version: 2,
+        version: 3,
         name: 'PPL',
         blueprint: { sessions: [{ exercises: [{ name: 'Bench' }] }] },
       }) as WeightedExerciseBlueprint;
@@ -159,7 +159,7 @@ describe('aiPlanFromJSON', () => {
       const empty = WeightedExerciseBlueprint.empty();
       expect(exercise.name).toBe('Bench');
       expect(exercise.sets).toBe(empty.sets);
-      expect(exercise.repsPerSet).toBe(empty.repsPerSet);
+      expect(exercise.repsConfig).toEqual(empty.repsConfig);
       expect(exercise.supersetWithNext).toBe(false);
       expect(exercise.notes).toBe('');
       expect(exercise.link).toBe('');
@@ -169,7 +169,7 @@ describe('aiPlanFromJSON', () => {
 
     it('fills only the missing parts of rest', () => {
       const exercise = firstExercise({
-        version: 2,
+        version: 3,
         name: 'PPL',
         blueprint: {
           sessions: [
@@ -194,7 +194,7 @@ describe('aiPlanFromJSON', () => {
 
     it('keeps every field of a fully specified weighted exercise', () => {
       const exercise = firstExercise({
-        version: 2,
+        version: 3,
         name: 'PPL',
         blueprint: {
           sessions: [
@@ -204,7 +204,7 @@ describe('aiPlanFromJSON', () => {
                   type: 'WeightedExerciseBlueprint',
                   name: 'Squat',
                   sets: 5,
-                  repsPerSet: 5,
+                  repsConfig: { type: 'fixed', reps: 5 },
                   supersetWithNext: true,
                   notes: 'Go deep',
                   link: 'https://example.com',
@@ -226,7 +226,7 @@ describe('aiPlanFromJSON', () => {
 
       expect(exercise.name).toBe('Squat');
       expect(exercise.sets).toBe(5);
-      expect(exercise.repsPerSet).toBe(5);
+      expect(exercise.repsConfig).toEqual({ type: 'fixed', reps: 5 });
       expect(exercise.supersetWithNext).toBe(true);
       expect(exercise.notes).toBe('Go deep');
       expect(exercise.link).toBe('https://example.com');
@@ -238,7 +238,7 @@ describe('aiPlanFromJSON', () => {
   describe('progressive overload', () => {
     it('defaults the amount when only the type streamed in', () => {
       const exercise = firstExercise({
-        version: 2,
+        version: 3,
         name: 'PPL',
         blueprint: {
           sessions: [
@@ -263,7 +263,7 @@ describe('aiPlanFromJSON', () => {
 
     it('defaults the amount and strategy for an increase-lowest overload', () => {
       const exercise = firstExercise({
-        version: 2,
+        version: 3,
         name: 'PPL',
         blueprint: {
           sessions: [
@@ -291,7 +291,7 @@ describe('aiPlanFromJSON', () => {
   describe('cardio exercises', () => {
     it('produces a default time set when none streamed in', () => {
       const exercise = firstExercise({
-        version: 2,
+        version: 3,
         name: 'PPL',
         blueprint: {
           sessions: [
@@ -310,7 +310,7 @@ describe('aiPlanFromJSON', () => {
 
     it('fills a partial distance target', () => {
       const exercise = firstExercise({
-        version: 2,
+        version: 3,
         name: 'PPL',
         blueprint: {
           sessions: [

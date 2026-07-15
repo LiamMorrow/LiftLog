@@ -66,9 +66,10 @@ class ExportedSetCsvRow {
       return [];
     }
     return exercise.potentialSets
-      .filter((x) => x.set)
+      .map((set, index) => ({ set, index }))
+      .filter((x) => x.set.set)
       .map(
-        (set) =>
+        ({ set, index }) =>
           new ExportedSetCsvRow(
             session.id,
             set.set!.completionDateTime.toString(),
@@ -76,7 +77,7 @@ class ExportedSetCsvRow {
             set.weight.value,
             shortFormatWeightUnit(set.weight.unit),
             set.set!.repsCompleted,
-            exercise.blueprint.repsPerSet,
+            exercise.blueprint.repsTargetForSet(index).max,
             exercise.notes ?? '',
           ),
       );

@@ -10,7 +10,6 @@ import { CardioTimerInfo, CurrentExerciseDetails, RestTimerInfo } from '@/models
 import { diffSessionBlueprints, PlanDiff } from '@/models/blueprint-diff';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { Duration } from '@js-joda/core';
-import { match, P } from 'ts-pattern';
 
 /**
  * Computes how a finished session differs from the active plan, or `undefined`
@@ -89,20 +88,15 @@ function getRestWindow(lastExercise: RecordedExercise) {
     return undefined;
   }
 
-  const repsPerSet = lastExercise.blueprint.repsPerSet;
   const { minRest, maxRest, failureRest } = lastExercise.blueprint.restBetweenSets;
 
-  return match(lastExercise.lastRecordedSet)
-    .with({ set: { repsCompleted: P.when((x) => x >= repsPerSet) } }, () => ({
-      partialRest: minRest,
-      fullRest: maxRest,
-    }))
-    .with({ set: { repsCompleted: P.when((x) => x < repsPerSet) } }, () => ({
-      partialRest: failureRest,
-      fullRest: failureRest,
-    }))
-    .otherwise(() => ({
-      partialRest: Duration.ZERO,
-      fullRest: Duration.ZERO,
-    }));
+  const lastSet = lastExercise.lastRecordedSet;
+  if (!lastSet?.set) {
+    return { partialRest: Duration.ZERO, fullRest: Duration.ZERO };
+  }
+
+  const targetMin = lastExercise.blueprint.repsTargetForSet(lastExercise.potentialSets.indexOf(lastSet)).min;
+  return lastSet.set.repsCompleted >= targetMin
+    ? { partialRest: minRest, fullRest: maxRest }
+    : { partialRest: failureRest, fullRest: failureRest };
 }

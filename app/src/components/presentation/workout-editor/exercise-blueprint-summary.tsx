@@ -9,6 +9,7 @@ import { useTranslate } from '@tolgee/react';
 import {
   CardioExerciseBlueprint,
   ExerciseBlueprint,
+  formatRepsTarget,
   matchCardioTarget,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
@@ -107,8 +108,29 @@ function WeightedExerciseBlueprintSummary({ blueprint }: { blueprint: WeightedEx
   return (
     <View style={{ gap: spacing[1], alignItems: 'flex-start' }}>
       <SurfaceText>
-        <SurfaceText color="primary">{blueprint.sets}</SurfaceText> {pluralize(blueprint.sets, 'set')} of{' '}
-        <SurfaceText color="primary">{blueprint.repsPerSet}</SurfaceText> {pluralize(blueprint.repsPerSet, 'rep')}
+        {match(blueprint.repsConfig)
+          .with({ type: 'fixed' }, (c) => (
+            <>
+              <SurfaceText color="primary">{blueprint.sets}</SurfaceText> {pluralize(blueprint.sets, 'set')} of{' '}
+              <SurfaceText color="primary">{c.reps}</SurfaceText> {pluralize(c.reps, 'rep')}
+            </>
+          ))
+          .with({ type: 'range' }, (c) => (
+            <>
+              <SurfaceText color="primary">{blueprint.sets}</SurfaceText> {pluralize(blueprint.sets, 'set')} of{' '}
+              <SurfaceText color="primary">
+                {c.min}–{c.max}
+              </SurfaceText>{' '}
+              reps
+            </>
+          ))
+          .with({ type: 'perSet' }, (c) => (
+            <>
+              <SurfaceText color="primary">{blueprint.sets}</SurfaceText> {pluralize(blueprint.sets, 'set')}:{' '}
+              <SurfaceText color="primary">{c.targets.map(formatRepsTarget).join(' / ')}</SurfaceText> reps
+            </>
+          ))
+          .exhaustive()}
       </SurfaceText>
     </View>
   );

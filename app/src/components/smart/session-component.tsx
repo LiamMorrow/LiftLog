@@ -237,7 +237,8 @@ export default function SessionComponent(props: {
   const lastSetFailed =
     lastRecordedSet?.set &&
     lastExercise instanceof RecordedWeightedExercise &&
-    lastRecordedSet.set.repsCompleted < lastExercise.blueprint.repsPerSet;
+    lastRecordedSet.set.repsCompleted <
+      lastExercise.blueprint.repsTargetForSet(lastExercise.potentialSets.indexOf(lastRecordedSet)).min;
   const restTimer = showRestTimer ? (
     <RestTimer
       rest={restBetweenSets}

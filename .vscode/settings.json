@@ -25,4 +25,11 @@
   "oxc.tsConfigPath": "app/tsconfig.json",
   "oxc.path.tsgolint": "app/node_modules/.bin/tsgolint",
   "oxc.enable": true,
+
+  "[typescript]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+    },
+    "editor.defaultFormatter": "oxc.oxc-vscode",
+  },
 }

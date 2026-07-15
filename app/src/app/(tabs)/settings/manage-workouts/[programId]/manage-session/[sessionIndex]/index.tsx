@@ -90,7 +90,7 @@ function SessionEditor({
       addExercise(
         WeightedExerciseBlueprint.empty().with({
           name: `Exercise ${session.exercises.length + 1}`,
-          repsPerSet: 10,
+          repsConfig: { type: 'fixed', reps: 10 },
           sets: 3,
           progressiveOverload: new IncreaseLowestSetProgressiveOverload(BigNumber('2.5'), 'all'),
           link: '',

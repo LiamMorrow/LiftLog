@@ -15,7 +15,7 @@ function exercise(name: string, weight: Weight, reps: number) {
   const blueprint = new WeightedExerciseBlueprint(
     name,
     3,
-    5,
+    { type: 'fixed', reps: 5 },
     new IncreaseLowestSetProgressiveOverload(new BigNumber(2.5), 'middle'),
     Rest.long,
     false,

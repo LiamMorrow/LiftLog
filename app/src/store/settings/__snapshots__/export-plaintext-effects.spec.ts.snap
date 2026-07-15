@@ -37,7 +37,10 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
             "amount": "2.5",
             "type": "IncreaseAllEvenlyProgressiveOverload",
           },
-          "repsPerSet": 10,
+          "repsConfig": {
+            "reps": 10,
+            "type": "fixed",
+          },
           "restBetweenSets": {
             "failureRest": "PT5M",
             "maxRest": "PT3M",
@@ -100,7 +103,10 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
             "amount": "2.5",
             "type": "IncreaseAllEvenlyProgressiveOverload",
           },
-          "repsPerSet": 10,
+          "repsConfig": {
+            "reps": 10,
+            "type": "fixed",
+          },
           "restBetweenSets": {
             "failureRest": "PT5M",
             "maxRest": "PT3M",

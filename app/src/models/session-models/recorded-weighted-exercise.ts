@@ -93,7 +93,7 @@ export class RecordedWeightedExercise {
       s.with({
         set: match(s.set)
           .returnType<RecordedSet | undefined>()
-          .with(undefined, () => new RecordedSet(this.blueprint.repsPerSet, time))
+          .with(undefined, () => new RecordedSet(this.blueprint.repsTargetForSet(setIndex).max, time))
           .with({ repsCompleted: 0 }, () => undefined)
           .otherwise((x) =>
             x.with({
@@ -205,7 +205,9 @@ export class RecordedWeightedExercise {
   /// An exercise is considered a success if ALL sets are successful
   /// </summary>
   get isSuccessForProgressiveOverload(): boolean {
-    return this.potentialSets.every((x) => x.set && x.set.repsCompleted >= this.blueprint.repsPerSet);
+    return this.potentialSets.every(
+      (x, index) => x.set && x.set.repsCompleted >= this.blueprint.repsTargetForSet(index).max,
+    );
   }
 }
 

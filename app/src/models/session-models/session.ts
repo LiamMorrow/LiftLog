@@ -44,7 +44,7 @@ export class Session {
       json.id,
       SessionBlueprint.fromJSON({
         ...json.blueprint,
-        version: 2,
+        version: 3,
         exercises: json.recordedExercises.map((x) => x.blueprint),
       }),
       json.recordedExercises.map(fromRecordedExerciseJSON),
@@ -311,7 +311,7 @@ export class Session {
 
   toJSON(): SessionJSON {
     return {
-      version: 2,
+      version: 3,
       blueprint: this.blueprint.toJSON(),
       bodyweight: this.bodyweight?.toJSON(),
       date: toLocalDateJSON(this.date),
@@ -496,13 +496,14 @@ export class Session {
     }
     const exercise = this.lastExercise;
     if (this.nextExercise && exercise && exercise.latestTime && exercise instanceof RecordedWeightedExercise) {
-      const repsPerSet = exercise.blueprint.repsPerSet;
       const { minRest, failureRest } = exercise.blueprint.restBetweenSets;
 
-      const rest = match(exercise.lastRecordedSet)
-        .with({ set: { repsCompleted: P.when((x) => x >= repsPerSet) } }, () => minRest)
-        .with({ set: { repsCompleted: P.when((x) => x < repsPerSet) } }, () => failureRest)
-        .otherwise(() => Duration.ZERO);
+      const lastSet = exercise.lastRecordedSet;
+      const targetMin = lastSet?.set
+        ? exercise.blueprint.repsTargetForSet(exercise.potentialSets.indexOf(lastSet)).min
+        : undefined;
+      const rest =
+        targetMin === undefined ? Duration.ZERO : lastSet!.set!.repsCompleted >= targetMin ? minRest : failureRest;
 
       if (rest.equals(Duration.ZERO)) {
         return undefined;

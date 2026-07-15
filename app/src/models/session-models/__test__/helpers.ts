@@ -31,7 +31,7 @@ export function makeWeightedBlueprint(name = 'Squat', supersetWithNext = false) 
   return new WeightedExerciseBlueprint(
     name,
     3,
-    10,
+    { type: 'fixed', reps: 10 },
     new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
     Rest.medium,
     supersetWithNext,
@@ -90,7 +90,7 @@ export function createExerciseBlueprint(index: number, supersetWithNext: boolean
   return new WeightedExerciseBlueprint(
     `Ex${index}`,
     3, // sets
-    10, // repsPerSet
+    { type: 'fixed', reps: 10 },
     new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
     Rest.medium,
     supersetWithNext,
@@ -109,7 +109,10 @@ export function createSession(sessionBlueprint: SessionBlueprint, fillSets: numb
       const potentialSets = Array.from({ length: exerciseBlueprint.sets }).map((_, setIndex) => {
         const shouldFillSet = fillSets.includes(exerciseIndex);
         const set = shouldFillSet
-          ? new RecordedSet(exerciseBlueprint.repsPerSet, tick().plusSeconds(exerciseIndex * 60 + setIndex * 10))
+          ? new RecordedSet(
+              exerciseBlueprint.repsTargetForSet(setIndex).max,
+              tick().plusSeconds(exerciseIndex * 60 + setIndex * 10),
+            )
           : undefined;
 
         return new PotentialSet(set, new Weight(100, 'kilograms'));

@@ -8,12 +8,12 @@ import type { ProgramBlueprintJSON as InitialProgramBlueprintJSON } from '@/mode
 import type { BigNumberJSON, DurationJSON, LocalDateJSON } from '@/models/storage/versions/libs';
 
 const validBlueprint: ProgramBlueprintJSON = {
-  version: 2,
+  version: 3,
   name: 'Test Plan',
   lastEdited: '2024-01-01' as LocalDateJSON,
   sessions: [
     {
-      version: 2,
+      version: 3,
       name: 'Day 1',
       notes: '',
       exercises: [
@@ -21,7 +21,7 @@ const validBlueprint: ProgramBlueprintJSON = {
           type: 'WeightedExerciseBlueprint',
           name: 'Squat',
           sets: 3,
-          repsPerSet: 5,
+          repsConfig: { type: 'fixed', reps: 5 },
           restBetweenSets: {
             minRest: 'PT1M' as DurationJSON,
             maxRest: 'PT3M' as DurationJSON,

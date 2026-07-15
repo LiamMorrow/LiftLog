@@ -70,7 +70,7 @@ const WeightedExerciseBlueprintGenerator = fc
     type: fc.constant('WeightedExerciseBlueprint'),
     name: fc.string(),
     sets: fc.integer({ min: 1, max: 10 }),
-    repsPerSet: fc.integer({ min: 1, max: 20 }),
+    repsConfig: fc.record({ type: fc.constant('fixed' as const), reps: fc.integer({ min: 1, max: 20 }) }),
     weightIncreaseOnSuccess: BigNumberGenerator,
     restBetweenSets: RestGenerator,
     supersetWithNext: fc.boolean(),

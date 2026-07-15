@@ -78,7 +78,7 @@ export class ProgramBlueprint {
 
   toJSON(): ProgramBlueprintJSON {
     return {
-      version: 2,
+      version: 3,
       name: this.name,
       sessions: this.sessions.map((session) => session.toJSON()),
       lastEdited: toLocalDateJSON(this.lastEdited),
@@ -123,7 +123,7 @@ export class SessionBlueprint {
 
   toJSON(): SessionBlueprintJSON {
     return {
-      version: 2,
+      version: 3,
       name: this.name,
       exercises: this.exercises.map((exercise) => exercise.toJSON()),
       notes: this.notes,
@@ -488,13 +488,75 @@ function fromProgressiveOverloadJSON(json: ProgressiveOverloadJSON): Progressive
     .exhaustive();
 }
 
+export interface RepsTarget {
+  min: number;
+  max: number;
+}
+
+/**
+ * How a weighted exercise's rep targets are laid out.
+ * - `fixed`: every set shares one target.
+ * - `range`: every set shares a min–max band.
+ * - `perSet`: each set has its own target (a pyramid); `targets` length matches `sets`.
+ */
+export type RepsConfig =
+  | { type: 'fixed'; reps: number }
+  | { type: 'range'; min: number; max: number }
+  | { type: 'perSet'; targets: RepsTarget[] };
+
+export type RepsType = RepsConfig['type'];
+
+export function formatRepsTarget(target: RepsTarget): string {
+  return target.min === target.max ? `${target.max}` : `${target.min}–${target.max}`;
+}
+
+export function formatRepsConfig(config: RepsConfig): string {
+  return match(config)
+    .with({ type: 'fixed' }, (c) => `${c.reps}`)
+    .with({ type: 'range' }, (c) => `${c.min}–${c.max}`)
+    .with({ type: 'perSet' }, (c) => c.targets.map(formatRepsTarget).join(', '))
+    .exhaustive();
+}
+
+function cloneRepsConfig(config: RepsConfig): RepsConfig {
+  return match(config)
+    .with({ type: 'fixed' }, (c) => ({ type: 'fixed' as const, reps: c.reps }))
+    .with({ type: 'range' }, (c) => ({ type: 'range' as const, min: c.min, max: c.max }))
+    .with({ type: 'perSet' }, (c) => ({
+      type: 'perSet' as const,
+      targets: c.targets.map((t) => ({ min: t.min, max: t.max })),
+    }))
+    .exhaustive();
+}
+
+export function repsConfigEquals(a: RepsConfig, b: RepsConfig): boolean {
+  return match([a, b] as const)
+    .with([{ type: 'fixed' }, { type: 'fixed' }], ([x, y]) => x.reps === y.reps)
+    .with([{ type: 'range' }, { type: 'range' }], ([x, y]) => x.min === y.min && x.max === y.max)
+    .with([{ type: 'perSet' }, { type: 'perSet' }], ([x, y]) => {
+      return (
+        x.targets.length === y.targets.length &&
+        x.targets.every((t, i) => t.min === y.targets[i]!.min && t.max === y.targets[i]!.max)
+      );
+    })
+    .otherwise(() => false);
+}
+
+function repsConfigKey(config: RepsConfig): string {
+  return match(config)
+    .with({ type: 'fixed' }, (c) => `${c.reps}`)
+    .with({ type: 'range' }, (c) => `${c.min}-${c.max}`)
+    .with({ type: 'perSet' }, (c) => c.targets.map(formatRepsTarget).join(','))
+    .exhaustive();
+}
+
 export class WeightedExerciseBlueprint {
   readonly type = 'WeightedExerciseBlueprint';
 
   constructor(
     readonly name: string,
     readonly sets: number,
-    readonly repsPerSet: number,
+    readonly repsConfig: RepsConfig,
     readonly progressiveOverload: ProgressiveOverload,
     readonly restBetweenSets: Rest,
     readonly supersetWithNext: boolean,
@@ -503,20 +565,37 @@ export class WeightedExerciseBlueprint {
   ) {}
 
   static empty() {
-    return new WeightedExerciseBlueprint('', 3, 10, new NoProgressiveOverload(), Rest.medium, false, '', '');
+    return new WeightedExerciseBlueprint(
+      '',
+      3,
+      { type: 'fixed', reps: 10 },
+      new NoProgressiveOverload(),
+      Rest.medium,
+      false,
+      '',
+      '',
+    );
   }
 
   static fromJSON(json: WeightedExerciseBlueprintJSON): WeightedExerciseBlueprint {
     return new WeightedExerciseBlueprint(
       json.name,
       json.sets,
-      json.repsPerSet,
+      cloneRepsConfig(json.repsConfig),
       fromProgressiveOverloadJSON(json.progressiveOverload),
       Rest.fromJSON(json.restBetweenSets),
       json.supersetWithNext,
       json.notes,
       json.link,
     );
+  }
+
+  repsTargetForSet(index: number): RepsTarget {
+    return match(this.repsConfig)
+      .with({ type: 'fixed' }, (c) => ({ min: c.reps, max: c.reps }))
+      .with({ type: 'range' }, (c) => ({ min: c.min, max: c.max }))
+      .with({ type: 'perSet' }, (c) => c.targets[index] ?? c.targets.at(-1) ?? { min: 0, max: 0 })
+      .exhaustive();
   }
 
   equals(other: ExerciseBlueprint | undefined) {
@@ -533,7 +612,7 @@ export class WeightedExerciseBlueprint {
     return (
       this.name === other.name &&
       this.sets === other.sets &&
-      this.repsPerSet === other.repsPerSet &&
+      repsConfigEquals(this.repsConfig, other.repsConfig) &&
       this.progressiveOverload.equals(other.progressiveOverload) &&
       this.restBetweenSets.minRest.equals(other.restBetweenSets.minRest) &&
       this.restBetweenSets.maxRest.equals(other.restBetweenSets.maxRest) &&
@@ -549,7 +628,7 @@ export class WeightedExerciseBlueprint {
       type: 'WeightedExerciseBlueprint',
       name: this.name,
       sets: this.sets,
-      repsPerSet: this.repsPerSet,
+      repsConfig: cloneRepsConfig(this.repsConfig),
       progressiveOverload: this.progressiveOverload.toJSON(),
       restBetweenSets: Rest.toJSON(this.restBetweenSets),
       supersetWithNext: this.supersetWithNext,
@@ -562,7 +641,7 @@ export class WeightedExerciseBlueprint {
     return new WeightedExerciseBlueprint(
       other.name ?? this.name,
       other.sets ?? this.sets,
-      other.repsPerSet ?? this.repsPerSet,
+      other.repsConfig ?? this.repsConfig,
       other.progressiveOverload ?? this.progressiveOverload,
       other.restBetweenSets ?? this.restBetweenSets,
       other.supersetWithNext ?? this.supersetWithNext,
@@ -582,7 +661,7 @@ export class KeyedExerciseBlueprint {
     return new KeyedExerciseBlueprint(
       e.name,
       match(e)
-        .with(P.instanceOf(WeightedExerciseBlueprint), (ex) => `${ex.sets}_${ex.repsPerSet}`)
+        .with(P.instanceOf(WeightedExerciseBlueprint), (ex) => `${ex.sets}_${repsConfigKey(ex.repsConfig)}`)
         .with(P.instanceOf(CardioExerciseBlueprint), (t) => t.sets[0]?.target.type ?? 'distance')
         .exhaustive(),
     );
@@ -666,7 +745,7 @@ export const Rest = {
 export const EmptyExerciseBlueprint = new WeightedExerciseBlueprint(
   '',
   3,
-  10,
+  { type: 'fixed', reps: 10 },
   new NoProgressiveOverload(),
   Rest.medium,
   false,

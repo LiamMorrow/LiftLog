@@ -5,6 +5,7 @@ import {
 import { ProgramBlueprintJSON, SessionBlueprintJSON } from '@/models/storage/versions/latest/blueprint';
 import { createMigrations } from './migrator';
 import { addProgressiveOverloadToExercise } from '@/models/storage/versions/migrations/steps/add-progressive-overload';
+import { repsPerSetToRepsConfig } from '@/models/storage/versions/migrations/steps/reps-per-set-to-reps-config';
 
 export const sessionBlueprintMigrations = createMigrations<InitialSessionBlueprintJSON>()
   .add((value) => ({
@@ -12,6 +13,12 @@ export const sessionBlueprintMigrations = createMigrations<InitialSessionBluepri
     exercises: value.exercises.map((x) =>
       x.type === 'WeightedExerciseBlueprint' ? addProgressiveOverloadToExercise(x) : x,
     ),
+    name: value.name,
+    notes: value.notes,
+  }))
+  .add((value) => ({
+    version: 3 as const,
+    exercises: value.exercises.map((x) => (x.type === 'WeightedExerciseBlueprint' ? repsPerSetToRepsConfig(x) : x)),
     name: value.name,
     notes: value.notes,
   }))
@@ -23,5 +30,11 @@ export const programBlueprintMigrations = createMigrations<InitialProgramBluepri
     lastEdited: value.lastEdited,
     name: value.name,
     sessions: value.sessions.map((session) => sessionBlueprintMigrations.migrateUntil(session, 2)),
+  }))
+  .add((value) => ({
+    version: 3,
+    lastEdited: value.lastEdited,
+    name: value.name,
+    sessions: value.sessions.map((session) => sessionBlueprintMigrations.migrateUntil(session, 3)),
   }))
   .build<ProgramBlueprintJSON>();

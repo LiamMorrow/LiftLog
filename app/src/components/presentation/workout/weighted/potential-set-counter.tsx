@@ -1,4 +1,5 @@
 import { PotentialSet, WeightAppliesTo } from '@/models/session-models';
+import { formatRepsTarget, RepsTarget } from '@/models/blueprint-models';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { Text as PaperText, Chip } from 'react-native-paper';
@@ -17,7 +18,7 @@ import Icon from '@/components/presentation/foundation/gesture-wrappers/icon';
 interface PotentialSetCounterProps {
   set: PotentialSet;
   weightIncrement: BigNumber;
-  maxReps: number;
+  repsTarget: RepsTarget;
   previousRepCount: number | undefined;
   toStartNext: boolean;
   isReadonly: boolean;
@@ -33,6 +34,8 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const [isRepsDialogOpen, setIsRepsDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
   const placeholderRepCount = props.previousRepCount;
+  const maxReps = props.repsTarget.max;
+  const targetLabel = formatRepsTarget(props.repsTarget);
 
   useEffect(() => {
     if (!isRepsDialogOpen) {
@@ -88,7 +91,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
                       verticalAlign: 'top',
                     }}
                   >
-                    /{props.maxReps}
+                    /{targetLabel}
                   </Text>
                 </Text>
                 {repCountValue === undefined && placeholderRepCount !== undefined && (
@@ -194,7 +197,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
 
       <PotentialSetAdditionalActionsDialog
         open={isRepsDialogOpen}
-        repTarget={props.maxReps}
+        repTarget={maxReps}
         set={props.set}
         updateRepCount={(reps) => props.onUpdateReps(reps)}
         close={() => setIsRepsDialogOpen(false)}

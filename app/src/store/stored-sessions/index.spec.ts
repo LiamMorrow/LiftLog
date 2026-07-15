@@ -43,13 +43,29 @@ import { UnknownAction } from '@reduxjs/toolkit';
 function createSessionWithCompletionTime(sessionDate: LocalDate, completionTime: OffsetDateTime, name: string) {
   const blueprint = new SessionBlueprint(
     name,
-    [new WeightedExerciseBlueprint(`${name} Exercise`, 1, 5, new NoProgressiveOverload(), Rest.medium, false, '', '')],
+    [
+      new WeightedExerciseBlueprint(
+        `${name} Exercise`,
+        1,
+        { type: 'fixed', reps: 5 },
+        new NoProgressiveOverload(),
+        Rest.medium,
+        false,
+        '',
+        '',
+      ),
+    ],
     '',
   );
   const exerciseBlueprint = blueprint.exercises[0] as WeightedExerciseBlueprint;
   const recordedExercise = new RecordedWeightedExercise(
     exerciseBlueprint,
-    [new PotentialSet(new RecordedSet(exerciseBlueprint.repsPerSet, completionTime), new Weight(100, 'kilograms'))],
+    [
+      new PotentialSet(
+        new RecordedSet(exerciseBlueprint.repsTargetForSet(0).max, completionTime),
+        new Weight(100, 'kilograms'),
+      ),
+    ],
     undefined,
   );
 
@@ -261,7 +277,7 @@ describe('storedSessions selectors', () => {
     const weightedBlueprint = new WeightedExerciseBlueprint(
       'New Exercise',
       3,
-      10,
+      { type: 'fixed', reps: 10 },
       new NoProgressiveOverload(),
       Rest.medium,
       false,
@@ -298,7 +314,18 @@ describe('getSessionReferenceTime', () => {
   it('falls back to the start of the session date when nothing is recorded', () => {
     const blueprint = new SessionBlueprint(
       'Empty',
-      [new WeightedExerciseBlueprint('Squat', 1, 5, new NoProgressiveOverload(), Rest.medium, false, '', '')],
+      [
+        new WeightedExerciseBlueprint(
+          'Squat',
+          1,
+          { type: 'fixed', reps: 5 },
+          new NoProgressiveOverload(),
+          Rest.medium,
+          false,
+          '',
+          '',
+        ),
+      ],
       '',
     );
     const exercise = new RecordedWeightedExercise(

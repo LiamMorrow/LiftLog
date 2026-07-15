@@ -563,7 +563,7 @@ describe('Session.withEditedExercise', () => {
       const fewerSetsBp = new WeightedExerciseBlueprint(
         'Squat',
         2,
-        10,
+        { type: 'fixed', reps: 10 },
         new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
         Rest.medium,
         false,
@@ -578,7 +578,7 @@ describe('Session.withEditedExercise', () => {
       const bp = new WeightedExerciseBlueprint(
         'Squat',
         2,
-        10,
+        { type: 'fixed', reps: 10 },
         new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
         Rest.medium,
         false,
@@ -603,7 +603,7 @@ describe('Session.withEditedExercise', () => {
       const moreSets = new WeightedExerciseBlueprint(
         'Squat',
         4,
-        10,
+        { type: 'fixed', reps: 10 },
         new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
         Rest.medium,
         false,

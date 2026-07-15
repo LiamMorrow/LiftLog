@@ -147,7 +147,7 @@ function ProgressiveOverloadExample(props: { value: ProgressiveOverload }) {
   const [exampleOpen, setExampleOpen] = useState(false);
   const unit = usePreferredWeightUnit();
   const exampleExercise = RecordedWeightedExercise.empty(
-    WeightedExerciseBlueprint.empty().with({ repsPerSet: 8 }),
+    WeightedExerciseBlueprint.empty().with({ repsConfig: { type: 'fixed', reps: 8 }, sets: 3 }),
     unit,
   )
     .withAllSets((s) =>
@@ -210,7 +210,7 @@ function DummySet(props: { maxReps: number; set: PotentialSet }) {
   return (
     <PotentialSetCounter
       isReadonly
-      maxReps={props.maxReps}
+      repsTarget={{ min: props.maxReps, max: props.maxReps }}
       onTap={() => {}}
       onUpdateReps={() => {}}
       onUpdateWeight={() => {}}

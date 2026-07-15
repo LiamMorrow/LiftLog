@@ -37,7 +37,7 @@ export interface FollowerFeedUserJSON {
 }
 
 export interface FollowedFeedUserJSON {
-  version: 2;
+  version: 3;
   type: 'FollowedFeedUser';
   id: string;
   publicKey: RsaPublicKeyJSON;
@@ -57,7 +57,7 @@ interface UserEventBaseJSON {
 }
 
 export interface SessionUserEventJSON extends UserEventBaseJSON {
-  version: 2;
+  version: 3;
   type: 'SessionUserEvent';
   session: SessionJSON;
 }
@@ -147,13 +147,13 @@ export interface SentReactionJSON {
 }
 
 export interface SharedProgramBlueprintJSON {
-  version: 2;
+  version: 3;
   type: 'SharedProgramBlueprint';
   programBlueprint: ProgramBlueprintJSON;
 }
 
 export interface SharedSessionJSON {
-  version: 2;
+  version: 3;
   type: 'SharedSession';
   session: SessionJSON;
 }

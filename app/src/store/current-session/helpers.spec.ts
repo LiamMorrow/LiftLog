@@ -140,4 +140,45 @@ describe('getTimerInfo', () => {
     const info = getTimerInfo(sessionWithRestTimer(3))!;
     expect(info.partiallyEndAt).toEqual(info.endAt);
   });
+
+  function sessionWithPyramidRestTimer(lastSetReps: number) {
+    const bp = makeWeightedBlueprint().with({
+      sets: 3,
+      repsConfig: {
+        type: 'perSet',
+        targets: [
+          { min: 12, max: 12 },
+          { min: 10, max: 10 },
+          { min: 8, max: 8 },
+        ],
+      },
+    });
+    // Set 0 stays open so a next exercise exists; the most recent completion is set 2 (target 8).
+    const exercise = new RecordedWeightedExercise(
+      bp,
+      [
+        new PotentialSet(undefined, new WeightModel(100, 'kilograms')),
+        filledPotentialSet(10, tick()),
+        filledPotentialSet(lastSetReps, tick()),
+      ],
+      undefined,
+    );
+    return new Session(
+      uuid(),
+      new SessionBlueprint('Test', [bp], ''),
+      [exercise],
+      LocalDate.of(2025, 4, 5),
+      undefined,
+      new RestTimer(tick()),
+    );
+  }
+
+  it("judges rest against the last completed set's own pyramid target", () => {
+    // Last completed set targets 8; hitting it is a success even though it is below the earlier sets' targets.
+    const success = getTimerInfo(sessionWithPyramidRestTimer(8))!;
+    expect(success.partiallyEndAt).not.toEqual(success.endAt);
+
+    const failure = getTimerInfo(sessionWithPyramidRestTimer(7))!;
+    expect(failure.partiallyEndAt).toEqual(failure.endAt);
+  });
 });

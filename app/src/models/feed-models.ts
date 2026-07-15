@@ -159,7 +159,7 @@ export class FollowedFeedUser {
 
   toJSON(): FollowedFeedUserJSON {
     return {
-      version: 2,
+      version: 3,
       type: 'FollowedFeedUser',
       id: this.id,
       publicKey: toRsaPublicKeyJSON(this.publicKey),
@@ -235,7 +235,7 @@ export class SessionUserEvent {
 
   toJSON(): SessionUserEventJSON {
     return {
-      version: 2,
+      version: 3,
       type: 'SessionUserEvent',
       userId: this.userId,
       eventId: this.eventId,
@@ -415,7 +415,7 @@ export class SharedProgramBlueprint {
 
   toJSON(): SharedProgramBlueprintJSON {
     return {
-      version: 2,
+      version: 3,
       type: 'SharedProgramBlueprint',
       programBlueprint: this.programBlueprint.toJSON(),
     };
@@ -444,7 +444,7 @@ export class SharedSession {
 
   toJSON(): SharedSessionJSON {
     return {
-      version: 2,
+      version: 3,
       type: 'SharedSession',
       session: this.session.toJSON(),
     };

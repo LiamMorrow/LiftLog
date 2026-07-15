@@ -5,6 +5,7 @@ import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { Weight } from '@/models/weight';
+import { formatRepsTarget } from '@/models/blueprint-models';
 import { RecordedExercise, RecordedWeightedExercise } from '@/models/session-models';
 import { formatDistance } from '@/utils/distance';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
@@ -190,24 +191,29 @@ interface WeightAndRepsChipData {
 }
 
 interface PotentialSetChipData {
-  repTarget: number;
+  repTarget: string;
   numSets: number;
   weight: Weight;
 }
 
 function getWeightAndRepsChips(exercise: RecordedWeightedExercise): WeightAndRepsChipData[] {
-  return exercise.potentialSets.map((set) => ({
+  return exercise.potentialSets.map((set, index) => ({
     repsCompleted: set.set?.repsCompleted,
-    repTarget: exercise.blueprint.repsPerSet,
+    repTarget: exercise.blueprint.repsTargetForSet(index).max,
     weight: set.weight,
   }));
 }
 
 function getPlannedChipData(exercise: RecordedWeightedExercise): PotentialSetChipData[] {
-  return Enumerable.from(exercise.potentialSets)
-    .groupBy((x) => x.weight.shortLocaleFormat())
+  return Enumerable.from(
+    exercise.potentialSets.map((set, index) => ({
+      repTarget: formatRepsTarget(exercise.blueprint.repsTargetForSet(index)),
+      weight: set.weight,
+    })),
+  )
+    .groupBy((x) => `${x.weight.shortLocaleFormat()}|${x.repTarget}`)
     .select((x) => ({
-      repTarget: exercise.blueprint.repsPerSet,
+      repTarget: x.first().repTarget,
       numSets: x.count(),
       weight: x.first().weight,
     }))

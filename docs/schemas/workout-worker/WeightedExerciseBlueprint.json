@@ -12,8 +12,9 @@
     "sets": {
       "type": "integer"
     },
-    "repsPerSet": {
-      "type": "integer"
+    "repsConfig": {
+      "$ref": "./RepsConfig.json",
+      "description": "How the rep targets are laid out: one fixed target, a min–max range, or a per-set pyramid."
     },
     "restBetweenSets": {
       "$ref": "./Rest.json"
@@ -37,7 +38,7 @@
     "type",
     "name",
     "sets",
-    "repsPerSet",
+    "repsConfig",
     "restBetweenSets",
     "supersetWithNext",
     "notes",

@@ -62,19 +62,19 @@ function PrepareExerciseEditorPage() {
             WeightedExerciseBlueprint.empty().with({
               name: 'Bench Press',
               sets: 4,
-              repsPerSet: 8,
+              repsConfig: { type: 'fixed', reps: 8 },
               notes: 'Keep shoulder blades retracted and drive feet into the floor',
               progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
             }),
             WeightedExerciseBlueprint.empty().with({
               name: 'Incline Dumbbell Press',
               sets: 3,
-              repsPerSet: 10,
+              repsConfig: { type: 'fixed', reps: 10 },
             }),
             WeightedExerciseBlueprint.empty().with({
               name: 'Tricep Pushdown',
               sets: 3,
-              repsPerSet: 12,
+              repsConfig: { type: 'fixed', reps: 12 },
             }),
           ],
           '',
@@ -99,7 +99,7 @@ function PrepareAiPlannerPage() {
       new WeightedExerciseBlueprint(
         name,
         sets,
-        repsPerSet,
+        { type: 'fixed', reps: repsPerSet },
         new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
         rest,
         false,
@@ -151,7 +151,7 @@ function buildStatsSessionData(dispatch: ReturnType<typeof useDispatch>) {
   const bw = new Weight(80, 'kilograms');
 
   const ex = (name: string, sets: number, repsPerSet: number) =>
-    WeightedExerciseBlueprint.empty().with({ name, sets, repsPerSet });
+    WeightedExerciseBlueprint.empty().with({ name, sets, repsConfig: { type: 'fixed', reps: repsPerSet } });
 
   // Session starts ~7-9am with per-day jitter; sets spaced ~3 min apart
   const makeTime = (daysAgo: number, minuteOffset: number) =>
@@ -276,17 +276,17 @@ function PrepareHomePage() {
                 WeightedExerciseBlueprint.empty().with({
                   name: 'Bench Press',
                   sets: 4,
-                  repsPerSet: 5,
+                  repsConfig: { type: 'fixed', reps: 5 },
                 }),
                 WeightedExerciseBlueprint.empty().with({
                   name: 'Barbell Row',
                   sets: 4,
-                  repsPerSet: 5,
+                  repsConfig: { type: 'fixed', reps: 5 },
                 }),
                 WeightedExerciseBlueprint.empty().with({
                   name: 'Overhead Press',
                   sets: 3,
-                  repsPerSet: 5,
+                  repsConfig: { type: 'fixed', reps: 5 },
                 }),
               ],
               '',
@@ -297,17 +297,17 @@ function PrepareHomePage() {
                 WeightedExerciseBlueprint.empty().with({
                   name: 'Squat',
                   sets: 4,
-                  repsPerSet: 5,
+                  repsConfig: { type: 'fixed', reps: 5 },
                 }),
                 WeightedExerciseBlueprint.empty().with({
                   name: 'Romanian Deadlift',
                   sets: 3,
-                  repsPerSet: 8,
+                  repsConfig: { type: 'fixed', reps: 8 },
                 }),
                 WeightedExerciseBlueprint.empty().with({
                   name: 'Leg Press',
                   sets: 3,
-                  repsPerSet: 8,
+                  repsConfig: { type: 'fixed', reps: 8 },
                 }),
               ],
               '',
@@ -318,17 +318,17 @@ function PrepareHomePage() {
                 WeightedExerciseBlueprint.empty().with({
                   name: 'Incline Dumbbell Press',
                   sets: 3,
-                  repsPerSet: 10,
+                  repsConfig: { type: 'fixed', reps: 10 },
                 }),
                 WeightedExerciseBlueprint.empty().with({
                   name: 'Cable Row',
                   sets: 3,
-                  repsPerSet: 12,
+                  repsConfig: { type: 'fixed', reps: 12 },
                 }),
                 WeightedExerciseBlueprint.empty().with({
                   name: 'Lateral Raises',
                   sets: 3,
-                  repsPerSet: 15,
+                  repsConfig: { type: 'fixed', reps: 15 },
                 }),
               ],
               '',
@@ -339,17 +339,17 @@ function PrepareHomePage() {
                 WeightedExerciseBlueprint.empty().with({
                   name: 'Leg Press',
                   sets: 4,
-                  repsPerSet: 12,
+                  repsConfig: { type: 'fixed', reps: 12 },
                 }),
                 WeightedExerciseBlueprint.empty().with({
                   name: 'Leg Curl',
                   sets: 3,
-                  repsPerSet: 12,
+                  repsConfig: { type: 'fixed', reps: 12 },
                 }),
                 WeightedExerciseBlueprint.empty().with({
                   name: 'Calf Raises',
                   sets: 4,
-                  repsPerSet: 15,
+                  repsConfig: { type: 'fixed', reps: 15 },
                 }),
               ],
               '',
@@ -375,7 +375,7 @@ function PrepareWorkoutPage() {
     let session = Session.freeformSession(LocalDate.now(), new Weight(80, 'kilograms')).withAddedExercise(
       WeightedExerciseBlueprint.empty().with({
         name: 'Squats',
-        repsPerSet: 10,
+        repsConfig: { type: 'fixed', reps: 10 },
         sets: 3,
       }),
       false,
@@ -387,7 +387,7 @@ function PrepareWorkoutPage() {
       .withAddedExercise(
         WeightedExerciseBlueprint.empty().with({
           name: 'Bench Press',
-          repsPerSet: 12,
+          repsConfig: { type: 'fixed', reps: 12 },
           sets: 3,
         }),
         false,
@@ -396,7 +396,7 @@ function PrepareWorkoutPage() {
     session = session.withAddedExercise(
       WeightedExerciseBlueprint.empty().with({
         name: 'Deadlift',
-        repsPerSet: 6,
+        repsConfig: { type: 'fixed', reps: 6 },
         sets: 2,
       }),
       false,

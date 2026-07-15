@@ -203,6 +203,81 @@ describe('RecordedWeightedExercise derived values', () => {
   });
 });
 
+// ─── rep schemes: ranges & pyramids ───────────────────────────────────────────
+
+describe('RecordedWeightedExercise.withCycledRepCount', () => {
+  it('fills an empty set to the top of a rep range', () => {
+    const bp = makeWeightedBlueprint().with({ repsConfig: { type: 'range', min: 10, max: 12 } });
+    const result = RecordedWeightedExercise.empty(bp, 'kilograms').withCycledRepCount(0, tick());
+    expect(result.getSet(0).set?.repsCompleted).toBe(12);
+  });
+
+  it('fills each set to its own target for a pyramid', () => {
+    const bp = makeWeightedBlueprint().with({
+      sets: 3,
+      repsConfig: {
+        type: 'perSet',
+        targets: [
+          { min: 12, max: 12 },
+          { min: 10, max: 10 },
+          { min: 8, max: 8 },
+        ],
+      },
+    });
+    const exercise = RecordedWeightedExercise.empty(bp, 'kilograms');
+    expect(exercise.withCycledRepCount(0, tick()).getSet(0).set?.repsCompleted).toBe(12);
+    expect(exercise.withCycledRepCount(2, tick()).getSet(2).set?.repsCompleted).toBe(8);
+  });
+
+  it('decrements from the top on repeated taps', () => {
+    const bp = makeWeightedBlueprint().with({ repsConfig: { type: 'range', min: 10, max: 12 } });
+    const once = RecordedWeightedExercise.empty(bp, 'kilograms').withCycledRepCount(0, tick());
+    expect(once.withCycledRepCount(0, tick()).getSet(0).set?.repsCompleted).toBe(11);
+  });
+});
+
+describe('RecordedWeightedExercise.isSuccessForProgressiveOverload with rep schemes', () => {
+  it('requires the top of the range on every set', () => {
+    const bp = makeWeightedBlueprint().with({ sets: 2, repsConfig: { type: 'range', min: 10, max: 12 } });
+    const t = tick();
+    const topOnAll = new RecordedWeightedExercise(
+      bp,
+      [filledPotentialSet(12, t), filledPotentialSet(12, t)],
+      undefined,
+    );
+    const oneShort = new RecordedWeightedExercise(
+      bp,
+      [filledPotentialSet(12, t), filledPotentialSet(11, t)],
+      undefined,
+    );
+    expect(topOnAll.isSuccessForProgressiveOverload).toBe(true);
+    expect(oneShort.isSuccessForProgressiveOverload).toBe(false);
+  });
+
+  it("uses each set's own target for a pyramid", () => {
+    const bp = makeWeightedBlueprint().with({
+      sets: 3,
+      repsConfig: {
+        type: 'perSet',
+        targets: [
+          { min: 12, max: 12 },
+          { min: 10, max: 10 },
+          { min: 8, max: 8 },
+        ],
+      },
+    });
+    const t = tick();
+    const hit = new RecordedWeightedExercise(
+      bp,
+      [filledPotentialSet(12, t), filledPotentialSet(10, t), filledPotentialSet(8, t)],
+      undefined,
+    );
+    const miss = hit.withRepCount(2, 7, t);
+    expect(hit.isSuccessForProgressiveOverload).toBe(true);
+    expect(miss.isSuccessForProgressiveOverload).toBe(false);
+  });
+});
+
 // ─── JSON round-trips ─────────────────────────────────────────────────────────
 
 describe('RecordedWeightedExercise JSON', () => {

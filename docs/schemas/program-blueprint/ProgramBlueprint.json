@@ -4,7 +4,7 @@
   "properties": {
     "version": {
       "type": "number",
-      "const": 2
+      "const": 3
     },
     "name": {
       "type": "string",
@@ -32,7 +32,7 @@
       "properties": {
         "version": {
           "type": "number",
-          "const": 2
+          "const": 3
         },
         "name": {
           "type": "string"
@@ -84,8 +84,9 @@
         "sets": {
           "type": "integer"
         },
-        "repsPerSet": {
-          "type": "integer"
+        "repsConfig": {
+          "$ref": "#/definitions/RepsConfig",
+          "description": "How the rep targets are laid out: one fixed target, a min–max range, or a per-set pyramid."
         },
         "restBetweenSets": {
           "$ref": "#/definitions/Rest"
@@ -109,12 +110,103 @@
         "type",
         "name",
         "sets",
-        "repsPerSet",
+        "repsConfig",
         "restBetweenSets",
         "supersetWithNext",
         "notes",
         "link",
         "progressiveOverload"
+      ]
+    },
+    "RepsConfig": {
+      "type": "object",
+      "discriminator": {
+        "propertyName": "type"
+      },
+      "required": [
+        "type"
+      ],
+      "oneOf": [
+        {
+          "$ref": "#/definitions/FixedRepsConfig"
+        },
+        {
+          "$ref": "#/definitions/RangeRepsConfig"
+        },
+        {
+          "$ref": "#/definitions/PerSetRepsConfig"
+        }
+      ]
+    },
+    "FixedRepsConfig": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "fixed"
+        },
+        "reps": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "type",
+        "reps"
+      ]
+    },
+    "RangeRepsConfig": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "range"
+        },
+        "min": {
+          "type": "integer"
+        },
+        "max": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "type",
+        "min",
+        "max"
+      ]
+    },
+    "PerSetRepsConfig": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "perSet"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RepsTarget"
+          },
+          "description": "One target per set; length matches `sets`. It's important to note that while the model allows for max and min to be specified, the UI does not, so it is VERY important that the min and max values are the same when using this mode"
+        }
+      },
+      "required": [
+        "type",
+        "targets"
+      ]
+    },
+    "RepsTarget": {
+      "type": "object",
+      "properties": {
+        "min": {
+          "type": "integer"
+        },
+        "max": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "min",
+        "max"
       ]
     },
     "Rest": {

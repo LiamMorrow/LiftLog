@@ -1,3 +1,4 @@
+import { formatRepsTarget } from '@/models/blueprint-models';
 import { RecordedExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { formatDistance } from '@/utils/distance';
@@ -73,12 +74,17 @@ function filledRuns(exercise: RecordedWeightedExercise, showWeight: boolean): Se
 }
 
 /**
- * A plan is a shape, not a log: every set is the same reps, so the only thing that can vary is the weight, and
- * spelling each one out reads as noise. The whole exercise becomes one line, with a range when the weight steps.
+ * A plan is a shape, not a log, so it collapses to one line: `sets × reps` when every set shares a target,
+ * or the per-set targets spelled out (`12/10/8`) for a pyramid. A rep range shows as `min–max`. The weight,
+ * when shown, becomes a range if it steps between sets.
  */
 function formatPlanned(exercise: RecordedWeightedExercise, showWeight: boolean): string {
   const sets = exercise.potentialSets;
-  const shape = `${sets.length} × ${exercise.blueprint.repsPerSet}`;
+  const blueprint = exercise.blueprint;
+  const shape =
+    blueprint.repsConfig.type === 'perSet'
+      ? blueprint.repsConfig.targets.map(formatRepsTarget).join('/')
+      : `${sets.length} × ${formatRepsTarget(blueprint.repsTargetForSet(0))}`;
 
   const weights = sets.map((set) => set.weight).filter((weight) => !weight.value.isZero());
   if (!showWeight || weights.length === 0) {

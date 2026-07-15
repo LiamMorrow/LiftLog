@@ -18,7 +18,7 @@ function makeBlueprint(name: string, sets = 3, reps = 8): WeightedExerciseBluepr
   return new WeightedExerciseBlueprint(
     name,
     sets,
-    reps,
+    { type: 'fixed', reps },
     new NoProgressiveOverload(),
     {
       maxRest: Duration.ofSeconds(0),

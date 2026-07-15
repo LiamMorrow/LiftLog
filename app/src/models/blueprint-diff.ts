@@ -5,8 +5,11 @@ import {
   CardioTarget,
   cardioTargetEquals,
   ExerciseBlueprint,
+  formatRepsConfig,
   IncreaseStrategy,
   ProgressiveOverload,
+  RepsConfig,
+  repsConfigEquals,
   Rest,
   SessionBlueprint,
   WeightedExerciseBlueprint,
@@ -104,8 +107,8 @@ interface ExerciseRepsChange extends BaseChange {
   type: 'modified';
   exerciseName: string;
   exerciseIndex: number;
-  oldValue: number;
-  newValue: number;
+  oldValue: RepsConfig;
+  newValue: RepsConfig;
 }
 
 interface ExerciseWeightIncreaseChange extends BaseChange {
@@ -425,15 +428,15 @@ function diffWeightedExercises(
     });
   }
 
-  if (oldEx.repsPerSet !== newEx.repsPerSet) {
+  if (!repsConfigEquals(oldEx.repsConfig, newEx.repsConfig)) {
     changes.push({
       id: generateChangeId(),
       kind: 'exerciseReps',
       type: 'modified',
       exerciseName,
       exerciseIndex,
-      oldValue: oldEx.repsPerSet,
-      newValue: newEx.repsPerSet,
+      oldValue: oldEx.repsConfig,
+      newValue: newEx.repsConfig,
     });
   }
 
@@ -896,7 +899,7 @@ export function applySessionBlueprintDiff(original: SessionBlueprint, diff: Sess
           exercise instanceof WeightedExerciseBlueprint ? exercise.with({ sets: c.newValue }) : exercise,
         )
         .with({ kind: 'exerciseReps' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ repsPerSet: c.newValue }) : exercise,
+          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ repsConfig: c.newValue }) : exercise,
         )
         .with({ kind: 'progressiveOverload' }, (c) =>
           exercise instanceof WeightedExerciseBlueprint ? exercise.with({ progressiveOverload: c.newValue }) : exercise,
@@ -1061,8 +1064,8 @@ export function getChangeDescription(t: UseTranslateResult['t'], change: DiffCha
     )
     .with({ kind: 'exerciseReps' }, (c) =>
       t('plan.diff.generic_two_value_change.body', {
-        oldValue: c.oldValue,
-        newValue: c.newValue,
+        oldValue: formatRepsConfig(c.oldValue),
+        newValue: formatRepsConfig(c.newValue),
       }),
     )
     .with({ kind: 'progressiveOverload' }, (c) =>

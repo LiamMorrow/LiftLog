@@ -34,7 +34,7 @@ function makeWeightedBlueprint(name = 'Bench Press', sets = 3, repsPerSet = 10) 
   return new WeightedExerciseBlueprint(
     name,
     sets,
-    repsPerSet,
+    { type: 'fixed', reps: repsPerSet },
     new IncreaseAllEvenlyProgressiveOverload(BigNumber('2.5')),
     Rest.medium,
     false,

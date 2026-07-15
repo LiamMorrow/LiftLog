@@ -18,7 +18,7 @@ function sessionOn(date: LocalDate, id = date.toString()): Session {
   const blueprint = new WeightedExerciseBlueprint(
     'Squat',
     3,
-    5,
+    { type: 'fixed', reps: 5 },
     new IncreaseLowestSetProgressiveOverload(new BigNumber(2.5), 'middle'),
     Rest.long,
     false,

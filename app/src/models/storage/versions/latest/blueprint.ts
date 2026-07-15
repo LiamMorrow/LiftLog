@@ -1,7 +1,7 @@
 import type { LocalDateJSON, DurationJSON, BigNumberJSON } from '@/models/storage/versions/libs';
 
 export interface ProgramBlueprintJSON {
-  version: 2;
+  version: 3;
   /**
    * Name of the workout program; typically matches the plan name.
    */
@@ -11,7 +11,7 @@ export interface ProgramBlueprintJSON {
 }
 
 export interface SessionBlueprintJSON {
-  version: 2;
+  version: 3;
   name: string;
   exercises: ExerciseBlueprintJSON[];
   notes: string;
@@ -72,9 +72,10 @@ export interface WeightedExerciseBlueprintJSON {
    */
   sets: number;
   /**
-   * @asType integer
+   * How the rep targets are laid out: one fixed target, a min–max range, or a
+   * per-set pyramid.
    */
-  repsPerSet: number;
+  repsConfig: RepsConfigJSON;
   restBetweenSets: RestJSON;
   /**
    * When true, this exercise is performed back-to-back with the following one
@@ -89,6 +90,52 @@ export interface WeightedExerciseBlueprintJSON {
   link: string;
   progressiveOverload: ProgressiveOverloadJSON;
 }
+
+export interface RepsTargetJSON {
+  /**
+   * @asType integer
+   */
+  min: number;
+  /**
+   * @asType integer
+   */
+  max: number;
+}
+
+export interface FixedRepsConfigJSON {
+  type: 'fixed';
+  /**
+   * @asType integer
+   */
+  reps: number;
+}
+
+export interface RangeRepsConfigJSON {
+  type: 'range';
+  /**
+   * @asType integer
+   */
+  min: number;
+  /**
+   * @asType integer
+   */
+  max: number;
+}
+
+export interface PerSetRepsConfigJSON {
+  type: 'perSet';
+  /**
+   * One target per set; length matches `sets`.
+   * It's important to note that while the model allows for max and min to be specified, the UI does not,
+   * so it is VERY important that the min and max values are the same when using this mode
+   */
+  targets: RepsTargetJSON[];
+}
+
+/**
+ * @discriminator type
+ */
+export type RepsConfigJSON = FixedRepsConfigJSON | RangeRepsConfigJSON | PerSetRepsConfigJSON;
 
 export interface RestJSON {
   minRest: DurationJSON;
