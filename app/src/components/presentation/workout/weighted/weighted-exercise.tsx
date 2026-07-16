@@ -1,4 +1,5 @@
 import PotentialSetCounter from '@/components/presentation/workout/weighted/potential-set-counter';
+import PowerDialog from '@/components/presentation/foundation/editors/power-dialog';
 import { spacing } from '@/hooks/useAppTheme';
 import { RecordedWeightedExercise } from '@/models/session-models';
 import { useState } from 'react';
@@ -25,8 +26,9 @@ interface WeightedExerciseProps {
 export default function WeightedExercise(props: WeightedExerciseProps) {
   const { updateExercise, timeProvider, resetSetTimer } = props;
   const { recordedExercise } = props;
-  useState(false);
+  const [powerDialogIndex, setPowerDialogIndex] = useState<number | undefined>(undefined);
 
+  const trackPower = recordedExercise.blueprint.trackPower;
   const setToStartNext = recordedExercise.potentialSets.findIndex((x) => !x.set);
 
   return (
@@ -46,6 +48,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             isReadonly={props.isReadonly}
             key={index}
             repsTarget={recordedExercise.blueprint.repsTargetForSet(index)}
+            trackPower={trackPower}
             onTap={() => {
               const previousSet = set.set;
               const newSet = recordedExercise.withCycledRepCount(index, timeProvider()).getSet(index).set;
@@ -54,6 +57,9 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
               // Otherwise, keep the same time
               if (!previousSet || !newSet) {
                 resetSetTimer();
+              }
+              if (trackPower && !previousSet && newSet) {
+                setPowerDialogIndex(index);
               }
             }}
             previousRepCount={
@@ -65,8 +71,14 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
                 )
                 .at(0)?.potentialSets[index]?.set?.repsCompleted
             }
-            onUpdateReps={(reps) => {
-              updateExercise((ex) => ex.withRepCount(index, reps, timeProvider()));
+            onUpdateReps={(reps, power) => {
+              updateExercise((ex) => {
+                let next = ex.withRepCount(index, reps, timeProvider());
+                if (trackPower) {
+                  next = next.withPower(index, reps === undefined ? undefined : power);
+                }
+                return next;
+              });
               resetSetTimer();
             }}
             onUpdateWeight={(w, applyTo) => updateExercise((ex) => ex.withWeight(index, w, applyTo))}
@@ -76,6 +88,20 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           />
         ))}
       </View>
+      <PowerDialog
+        open={powerDialogIndex !== undefined}
+        power={
+          powerDialogIndex !== undefined ? recordedExercise.potentialSets[powerDialogIndex]?.set?.power : undefined
+        }
+        placeholder={recordedExercise.latestRecordedPower}
+        onClose={() => setPowerDialogIndex(undefined)}
+        updatePower={(power) => {
+          const index = powerDialogIndex;
+          if (index !== undefined) {
+            updateExercise((ex) => ex.withPower(index, power));
+          }
+        }}
+      />
     </ExerciseSection>
   );
 }

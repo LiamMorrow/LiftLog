@@ -82,6 +82,11 @@ function FilledChips(props: { exercise: RecordedExercise; showWeight: boolean })
             <WeightFormat color="onSurface" weight={chip.weight} />
           </>
         ) : undefined}
+        {chip.power !== undefined ? (
+          <SurfaceText font="text-2xs" color="onSurface">
+            {chip.power} W
+          </SurfaceText>
+        ) : undefined}
       </Chip>
     ));
   }
@@ -188,6 +193,7 @@ interface WeightAndRepsChipData {
   repsCompleted: number | undefined;
   repTarget: number;
   weight: Weight;
+  power: number | undefined;
 }
 
 interface PotentialSetChipData {
@@ -201,6 +207,7 @@ function getWeightAndRepsChips(exercise: RecordedWeightedExercise): WeightAndRep
     repsCompleted: set.set?.repsCompleted,
     repTarget: exercise.blueprint.repsTargetForSet(index).max,
     weight: set.weight,
+    power: set.set?.power,
   }));
 }
 

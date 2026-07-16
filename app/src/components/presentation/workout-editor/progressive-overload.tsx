@@ -211,6 +211,7 @@ function DummySet(props: { maxReps: number; set: PotentialSet }) {
     <PotentialSetCounter
       isReadonly
       repsTarget={{ min: props.maxReps, max: props.maxReps }}
+      trackPower={false}
       onTap={() => {}}
       onUpdateReps={() => {}}
       onUpdateWeight={() => {}}

@@ -1,4 +1,4 @@
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { PotentialSet } from '@/models/session-models';
 import { T } from '@tolgee/react';
 import { useEffect, useState } from 'react';
@@ -12,7 +12,8 @@ interface PotentialSetAdditionalActionsDialogProps {
   open: boolean;
   set: PotentialSet;
   repTarget: number;
-  updateRepCount: (reps: number | undefined) => void;
+  showPower: boolean;
+  updateRepCount: (reps: number | undefined, power: number | undefined) => void;
   close: () => void;
 }
 
@@ -22,23 +23,33 @@ export default function PotentialSetAdditionalActionsDialog({
   set,
   updateRepCount,
   repTarget,
+  showPower,
 }: PotentialSetAdditionalActionsDialogProps) {
   const { colors } = useAppTheme();
   const originalReps = set?.set?.repsCompleted;
+  const originalPower = set?.set?.power;
 
   const [repCountText, setRepCountText] = useState<string>(originalReps?.toString() ?? '');
+  const [powerText, setPowerText] = useState<string>(originalPower?.toString() ?? '');
   const parsedRepCount = Number(repCountText);
   const isValid = !repCountText || (Number.isInteger(parsedRepCount) && parsedRepCount >= 0);
+  const parsedPower = Number(powerText);
+  const isPowerValid = !powerText || (Number.isInteger(parsedPower) && parsedPower >= 0);
   useEffect(() => {
-    setRepCountText(originalReps?.toString() ?? '');
-  }, [originalReps]);
+    if (open) {
+      setRepCountText(originalReps?.toString() ?? '');
+      setPowerText(originalPower?.toString() ?? '');
+    }
+  }, [open, originalReps, originalPower]);
+
+  const powerValue = () => (powerText && isPowerValid ? parsedPower : undefined);
 
   const save = () => {
-    if (!isValid) {
+    if (!isValid || !isPowerValid) {
       return;
     }
 
-    updateRepCount(repCountText ? parsedRepCount : undefined);
+    updateRepCount(repCountText ? parsedRepCount : undefined, powerValue());
     close();
   };
   return (
@@ -65,10 +76,11 @@ export default function PotentialSetAdditionalActionsDialog({
                   <IconButton
                     key={i}
                     mode="outlined"
+                    disabled={!isPowerValid}
                     icon={() => <Text>{i}</Text>}
                     onPress={() => {
                       setRepCountText(i.toString());
-                      updateRepCount(i);
+                      updateRepCount(i, powerValue());
                       close();
                     }}
                   />
@@ -80,15 +92,28 @@ export default function PotentialSetAdditionalActionsDialog({
                   icon={'close'}
                   onPress={() => {
                     setRepCountText('');
-                    updateRepCount(undefined);
+                    setPowerText('');
+                    updateRepCount(undefined, undefined);
                     close();
                   }}
                 />
               </View>
+              {showPower && (
+                <TextInput
+                  label={<T keyName="exercise.power.label" />}
+                  inputMode="numeric"
+                  value={powerText}
+                  selectTextOnFocus
+                  error={!isPowerValid}
+                  onChangeText={setPowerText}
+                  right={<TextInput.Affix text="W" />}
+                  style={{ marginTop: spacing[2] }}
+                />
+              )}
             </Dialog.Content>
             <Dialog.Actions>
               <Button onPress={close}>{<T keyName="generic.cancel.button" />}</Button>
-              <Button disabled={!isValid} onPress={save}>
+              <Button disabled={!isValid || !isPowerValid} onPress={save}>
                 {<T keyName="generic.save.button" />}
               </Button>
             </Dialog.Actions>
