@@ -7,6 +7,10 @@
     },
     "completionDateTime": {
       "$ref": "./OffsetDateTime.json"
+    },
+    "power": {
+      "type": "integer",
+      "description": "Peak power in whole watts achieved during the set, as reported by equipment with a power readout (e.g. Keiser functional trainers)."
     }
   },
   "required": [

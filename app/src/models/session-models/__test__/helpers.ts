@@ -81,8 +81,13 @@ export function makeSession(
   return new Session(uuid(), new SessionBlueprint('Test', exercises, ''), recorded, date, undefined, undefined);
 }
 
-export function filledPotentialSet(reps: number, time: OffsetDateTime, weight = new Weight(100, 'kilograms')) {
-  return new PotentialSet(new RecordedSet(reps, time), weight);
+export function filledPotentialSet(
+  reps: number,
+  time: OffsetDateTime,
+  weight = new Weight(100, 'kilograms'),
+  power?: number,
+) {
+  return new PotentialSet(new RecordedSet(reps, time, power), weight);
 }
 
 // Helper functions to match the C# test structure

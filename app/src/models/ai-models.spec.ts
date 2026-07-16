@@ -14,6 +14,7 @@ import {
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { AnyVersionAiPlanJSON } from '@/models/storage/versions/any';
+import { WeightedExerciseBlueprintJSON } from '@/models/storage/versions/latest';
 import { toBigNumberJSON, toDurationJSON, toLocalDateJSON } from '@/models/storage/versions/libs';
 import { DeepPartial } from '@/utils/types';
 
@@ -232,6 +233,36 @@ describe('aiPlanFromJSON', () => {
       expect(exercise.link).toBe('https://example.com');
       expect(exercise.progressiveOverload).toBeInstanceOf(IncreaseAllEvenlyProgressiveOverload);
       expect((exercise.progressiveOverload as IncreaseAllEvenlyProgressiveOverload).amount.toNumber()).toBe(5);
+    });
+
+    it('preserves trackPower when streamed in, and defaults to false when absent', () => {
+      const withPower = firstExercise({
+        version: 3,
+        name: 'PPL',
+        blueprint: {
+          sessions: [
+            {
+              exercises: [
+                {
+                  type: 'WeightedExerciseBlueprint',
+                  name: 'Squat',
+                  trackPower: true,
+                } as DeepPartial<WeightedExerciseBlueprintJSON>,
+              ],
+            },
+          ],
+        },
+      }) as WeightedExerciseBlueprint;
+
+      expect(withPower.trackPower).toBe(true);
+
+      const withoutPower = firstExercise({
+        version: 3,
+        name: 'PPL',
+        blueprint: { sessions: [{ exercises: [{ name: 'Bench' }] }] },
+      }) as WeightedExerciseBlueprint;
+
+      expect(withoutPower.trackPower).toBe(false);
     });
   });
 

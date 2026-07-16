@@ -48,6 +48,7 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
           },
           "sets": 3,
           "supersetWithNext": false,
+          "trackPower": false,
           "type": "WeightedExerciseBlueprint",
         },
         "potentialSets": [
@@ -114,6 +115,7 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
           },
           "sets": 3,
           "supersetWithNext": false,
+          "trackPower": false,
           "type": "WeightedExerciseBlueprint",
         },
         "potentialSets": [
