@@ -8,6 +8,7 @@ import { Jiggler } from '@/components/presentation/foundation/jiggler';
 
 const barRadius = spacing[5];
 const trackHeight = 6;
+const pipWidth = 2;
 
 export interface TimerSegment {
   /** Sized in proportion to how long this part of the window lasts. */
@@ -87,22 +88,8 @@ export function TimerPane({ time, status, accent, segments, controls, jiggling, 
           </SurfaceText>
           {controls}
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            gap: spacing[1],
-            paddingBottom: spacing[2],
-          }}
-        >
-          {segments.map((segment, index) => (
-            <ProgressSegment
-              key={index}
-              flex={segment.flex}
-              progress={segment.progress}
-              color={colors[segment.color]}
-              trackColor={colors.outlineVariant}
-            />
-          ))}
+        <View style={{ paddingBottom: spacing[2] }}>
+          <ProgressBar segments={segments} colors={colors} trackColor={colors.outlineVariant} />
         </View>
       </View>
     </View>
@@ -123,44 +110,75 @@ export function formatTimeSpan(ms: number): string {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
-interface ProgressSegmentProps {
-  flex: number;
-  progress: number;
-  color: string;
+interface ProgressBarProps {
+  segments: TimerSegment[];
+  colors: ReturnType<typeof useAppTheme>['colors'];
   trackColor: string;
 }
 
-function ProgressSegment({ flex, progress, color, trackColor }: ProgressSegmentProps) {
-  const fill = useRef(new Animated.Value(0)).current;
+/**
+ * One continuous track. The segments are its colours laid end to end, each sized by its `flex`, and a
+ * single curtain hides whatever the combined progress has not yet reached.
+ */
+function ProgressBar({ segments, colors, trackColor }: ProgressBarProps) {
+  const totalFlex = segments.reduce((sum, segment) => sum + segment.flex, 0);
+  // Segments fill in order, so the filled length is the flex-weighted sum of their individual progress.
+  const progress =
+    totalFlex > 0 ? segments.reduce((sum, segment) => sum + segment.flex * segment.progress, 0) / totalFlex : 0;
+  const cover = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    Animated.timing(fill, {
-      toValue: progress,
+    Animated.timing(cover, {
+      toValue: 1 - progress,
       duration: 200,
       useNativeDriver: true,
     }).start();
-  }, [progress, fill]);
+  }, [progress, cover]);
 
   return (
     <View
       style={{
-        flex,
+        flexDirection: 'row',
         height: trackHeight,
         borderRadius: trackHeight,
         backgroundColor: trackColor,
         overflow: 'hidden',
       }}
     >
+      {segments.map((segment, index) => (
+        <View key={index} style={{ flex: segment.flex, backgroundColor: colors[segment.color] }} />
+      ))}
       <Animated.View
         style={{
-          height: '100%',
-          borderRadius: trackHeight,
-          backgroundColor: color,
-          width: '100%',
-          transform: [{ scaleX: fill }],
-          transformOrigin: 'left',
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          backgroundColor: trackColor,
+          transform: [{ scaleX: cover }],
+          transformOrigin: 'right',
         }}
       />
+      <View
+        style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, flexDirection: 'row' }}
+        pointerEvents="none"
+      >
+        {segments.map((segment, index) => (
+          <View key={index} style={{ flex: segment.flex }}>
+            <View
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                right: 0,
+                width: pipWidth,
+                backgroundColor: colors.surfaceContainerHigh,
+              }}
+            />
+          </View>
+        ))}
+      </View>
     </View>
   );
 }
