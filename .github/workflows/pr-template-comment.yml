@@ -1,0 +1,33 @@
+name: PR Template Comment
+
+on:
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment PR template
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `Thanks for opening a PR! Before this can be reviewed, please make sure you've done the following.
+
+            Please write in your own words. AI-generated summaries tend to be more verbose than necessary and [frustrating to read](https://www.seangoedecke.com/dont-feed-me-slop/).
+
+            - [ ] Described your changes clearly in the PR description in your own words.
+            - [ ] Read the [AI Usage Policy](https://github.com/LiamMorrow/LiftLog/blob/main/CONTRIBUTING.md#ai-usage-policy)
+            - [ ] Attached screenshots of any visual changes.
+            - [ ] Confirmed this PR was raised after an issue/feature request was accepted as wanted for the project (see [Contributing](https://github.com/LiamMorrow/LiftLog/blob/main/CONTRIBUTING.md))
+
+            Tick each box above once done.`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body,
+            });

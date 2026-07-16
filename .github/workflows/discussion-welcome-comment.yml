@@ -1,0 +1,33 @@
+name: Discussion Welcome Comment
+
+on:
+  discussion:
+    types: [created]
+
+permissions:
+  discussions: write
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment on new discussion
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `Thanks for starting a discussion!
+
+            Please write in your own words. AI-generated summaries tend to be more verbose than necessary and [frustrating to read](https://www.seangoedecke.com/dont-feed-me-slop/).
+
+            - [ ] Written in your own words, describing the problem or idea clearly.
+            - [ ] Written in your original language. If you're not comfortable in English, write in your own language and it can be translated if needed.
+            - [ ] Searched existing [discussions](https://github.com/LiamMorrow/LiftLog/discussions) to check this hasn't already been raised.
+
+            See the [Contributing guide](https://github.com/LiamMorrow/LiftLog/blob/main/CONTRIBUTING.md) for more.`;
+            await github.graphql(`
+              mutation($discussionId: ID!, $body: String!) {
+                addDiscussionComment(input: { discussionId: $discussionId, body: $body }) {
+                  comment { id }
+                }
+              }`,
+              { discussionId: context.payload.discussion.node_id, body });
