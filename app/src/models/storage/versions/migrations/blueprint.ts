@@ -24,17 +24,8 @@ export const sessionBlueprintMigrations = createMigrations<InitialSessionBluepri
   }))
   .build<SessionBlueprintJSON>();
 
-export const programBlueprintMigrations = createMigrations<InitialProgramBlueprintJSON>()
-  .add((value) => ({
-    version: 2,
-    lastEdited: value.lastEdited,
-    name: value.name,
-    sessions: value.sessions.map((session) => sessionBlueprintMigrations.migrateUntil(session, 2)),
-  }))
-  .add((value) => ({
-    version: 3,
-    lastEdited: value.lastEdited,
-    name: value.name,
-    sessions: value.sessions.map((session) => sessionBlueprintMigrations.migrateUntil(session, 3)),
-  }))
+export const programBlueprintMigrations = createMigrations<InitialProgramBlueprintJSON>({ pseudoMigrateUntil: 3 })
+  .dependsOn({
+    sessions: sessionBlueprintMigrations,
+  })
   .build<ProgramBlueprintJSON>();

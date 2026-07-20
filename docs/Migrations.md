@@ -31,9 +31,10 @@ export const sessionBlueprintMigrations = createMigrations<InitialSessionBluepri
   `initial/`, the output is pinned to the latest type from `latest/` via
   `build<TFinal>()`.
 
-At runtime you migrate a stored value with `migrate()` (to the latest version) or
-`migrateUntil(value, n)` (to a specific version — see
-[Nested models](#nested-models)).
+At runtime you bring a stored value up to the latest shape with `migrate()`. This
+happens **lazily, on read** — see [When migrations run](#when-migrations-run). A
+model that embeds another versioned model declares it with `dependsOn` — see
+[Nested models](#nested-models).
 
 ---
 
@@ -57,6 +58,25 @@ the whole point — it forces you to add a migration whenever you change a model
 
 ---
 
+## When migrations run
+
+Migrations run **lazily, on read** Every DB payload column is typed as the model's `AnyVersion*`
+union (see [`db/schema.ts`](../app/src/db/schema.ts)), so a freshly decoded row
+could be any persisted version. Code that turns a stored row into a domain model
+migrates it first:
+
+```ts
+Session.fromJSON(sessionMigrations.migrate(row.payload));
+```
+
+Because the payload is typed as the any-version union rather than the latest
+shape, `fromJSON` (which wants the latest shape) **won't compile until you
+migrate** — the type system points you at every read site. Writes always
+serialize the latest shape, so rows drift to newer versions naturally as they are
+re-saved.
+
+---
+
 ## Changing an existing model
 
 This is the common case. Follow these steps:
@@ -67,8 +87,9 @@ This is the common case. Follow these steps:
 3. **Append a new `.add()`** to that chain describing how to transform the
    previous shape into the new one. Set the `version` field to the value
    TypeScript asks for (the builder enforces the correct, incrementing number).
-4. If your model **embeds another model** that has its own chain, migrate the
-   nested value with `migrateUntil` (see below).
+4. If your model **embeds another model** that has its own chain, declare it with
+   `dependsOn` (see [Nested models](#nested-models)) — you don't add a step to the
+   parent when only the embedded child changes.
 5. If the changed type feeds a generated JSON schema (e.g. anything reachable
    from the workout-worker messages, or the program blueprint), regenerate the
    schemas:
@@ -93,24 +114,38 @@ This is the common case. Follow these steps:
 ## Nested models
 
 When a model embeds another model that has its **own** migration chain, don't
-hand-roll the child's migration — delegate to the child chain with
-`migrateUntil(child, n)`, bringing the child up to the version this parent
-version expects:
+hand-roll the child's migration — declare the embedding with `dependsOn`, keyed
+by the field that holds the child. Every declared field is brought up to the
+child's latest version on `migrate()`:
 
 ```ts
-export const programBlueprintMigrations = createMigrations<InitialProgramBlueprintJSON>()
-  .add((value) => ({
-    version: 2,
-    name: value.name,
-    lastEdited: value.lastEdited,
-    // each session blueprint is migrated to v2 by its own chain
-    sessions: value.sessions.map((s) => sessionBlueprintMigrations.migrateUntil(s, 2)),
-  }))
+export const programBlueprintMigrations = createMigrations<InitialProgramBlueprintJSON>({
+  pseudoMigrateUntil: 3,
+})
+  .dependsOn({ sessions: sessionBlueprintMigrations })
   .build<ProgramBlueprintJSON>();
 ```
 
-This keeps every embedded value at a known, consistent version and avoids
-duplicating the child's transformation logic.
+`dependsOn` handles a single embedded child, an array of them, or an optional
+one, and it recurses (a wrapper may depend on another wrapper). The field's
+latest and any-version types are **derived from the child migrator**, so the
+`build<TFinal>()` pin re-verifies automatically when the child's latest shape
+changes — you never touch the parent when only a child bumps.
+
+### `pseudoMigrateUntil` and versions
+
+A pure wrapper has no numbered `.add()` steps, so nothing in its own transform
+stamps a `version`. But existing on-disk rows already carry one (wrappers
+historically bumped in lockstep with their children), and the latest type still
+declares it. `pseudoMigrateUntil` is that legacy version — the wrapper keeps
+stamping it on write so old and new rows agree, and it's contributed to the
+`build<TFinal>()` pin automatically.
+
+The number is bookkeeping only. A wrapper's staleness is decided **per embedded
+leaf**, on each leaf's own chain — not by this scalar — so a child bump is picked
+up even though the wrapper's own version never moves. A value whose version is
+_higher_ than the wrapper understands (data from a newer app version) is
+rejected; that's how untrusted feed items from the future are dropped on ingest.
 
 ---
 
@@ -133,14 +168,17 @@ duplicating the child's transformation logic.
   in `latest/` rather than re-exporting from `initial/`. This keeps `latest` an
   independent description of the current shape and keeps JSON-schema generation
   working.
-- **Use `migrateUntil` for nested models** rather than reimplementing a child's
+- **Use `dependsOn` for nested models** rather than reimplementing a child's
   migration inside its parent.
+- **Migrate on read.** Never pass a raw stored payload to a `fromJSON` — run it
+  through the model's `migrate()` first (the any-version payload type enforces
+  this at compile time).
 
 ---
 
 ## See also
 
 - [`migrator.ts`](../app/src/models/storage/versions/migrations/migrator.ts) —
-  the builder, the `build<TFinal>()` pin, and `migrate`/`migrateUntil`.
+  the builder, `dependsOn`, the `build<TFinal>()` pin, and `migrate`.
 - [Workout Worker](./WorkoutWorker.md) — consumes generated JSON schemas built
   from these types.

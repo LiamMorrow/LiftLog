@@ -18,6 +18,7 @@ import { Logger } from '@/services/logger';
 import { selectLatestExercises } from '../stored-sessions';
 import { programsSchema } from '@/db/schema';
 import { toLocalDateJSON } from '@/models/storage/versions/latest';
+import { programBlueprintMigrations } from '@/models/storage/versions/migrations';
 import { LocalDate } from '@js-joda/core';
 import { toRecord } from '@/utils/reduce';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
@@ -43,7 +44,7 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
             if (row.active) {
               activePlanId = row.id;
             }
-            return ProgramBlueprint.fromJSON(row.payload);
+            return ProgramBlueprint.fromJSON(programBlueprintMigrations.migrate(row.payload));
           },
         ),
         {},

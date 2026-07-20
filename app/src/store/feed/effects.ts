@@ -67,6 +67,7 @@ import { EncryptionService } from '@/services/encryption-service';
 import { Logger } from '@/services/logger';
 import { toRecord } from '@/utils/reduce';
 import { FeedUserJSON } from '@/models/storage/versions/latest';
+import { sessionUserEventMigrations } from '@/models/storage/versions/migrations';
 
 export function applyFeedEffects(addEffect: AddEffectFn) {
   addEffect(
@@ -79,7 +80,9 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
         dispatch(
           patchFeedState({
             identity: identity ? RemoteData.success(FeedIdentity.fromJSON(identity.payload)) : RemoteData.notAsked(),
-            feed: (await db.select().from(feedItemsSchema)).map((x) => SessionUserEvent.fromJSON(x.payload)),
+            feed: (await db.select().from(feedItemsSchema)).map((x) =>
+              SessionUserEvent.fromJSON(sessionUserEventMigrations.migrate(x.payload)),
+            ),
             followRequests: (await db.select().from(feedFollowRequestsSchema)).map((x) =>
               FollowRequestInboxMessage.fromJSON(x.payload),
             ),

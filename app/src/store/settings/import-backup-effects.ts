@@ -110,11 +110,13 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
       });
 
       await migrator.migrate();
-      const workouts = (await drizzleBackupDb.select().from(sessionsSchema)).map((x) => Session.fromJSON(x.payload));
+      const workouts = (await drizzleBackupDb.select().from(sessionsSchema)).map((x) =>
+        Session.fromJSON(sessionMigrations.migrate(x.payload)),
+      );
       const programs = (await drizzleBackupDb.select().from(programsSchema)).reduce(
         toRecord(
           (x) => x.id,
-          (x) => ProgramBlueprint.fromJSON(x.payload),
+          (x) => ProgramBlueprint.fromJSON(programBlueprintMigrations.migrate(x.payload)),
         ),
         {},
       );
@@ -125,7 +127,7 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
         feed = {
           identity: FeedIdentity.fromJSON(feedIdentityDb.payload),
           feedItems: (await drizzleBackupDb.select().from(feedItemsSchema)).map((x) =>
-            SessionUserEvent.fromJSON(x.payload),
+            SessionUserEvent.fromJSON(sessionUserEventMigrations.migrate(x.payload)),
           ),
           followRequests: (await drizzleBackupDb.select().from(feedFollowRequestsSchema)).map((x) =>
             FollowRequestInboxMessage.fromJSON(x.payload),

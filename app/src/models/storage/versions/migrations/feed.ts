@@ -44,17 +44,10 @@ export const followerFeedUserMigrations = createMigrations<FollowerFeedUserJSON>
 
 export const pendingFeedUserMigrations = createMigrations<PendingFeedUserJSON>().build<Latest.PendingFeedUserJSON>();
 
-export const sessionUserEventMigrations = createMigrations<SessionUserEventJSON>()
-  .add((x) => ({
-    ...x,
-    version: 2,
-    session: sessionMigrations.migrateUntil(x.session, 2),
-  }))
-  .add((x) => ({
-    ...x,
-    version: 3,
-    session: sessionMigrations.migrateUntil(x.session, 3),
-  }))
+export const sessionUserEventMigrations = createMigrations<SessionUserEventJSON>({ pseudoMigrateUntil: 3 })
+  .dependsOn({
+    session: sessionMigrations,
+  })
   .build<Latest.SessionUserEventJSON>();
 
 export const removedSessionUserEventMigrations =
@@ -75,43 +68,22 @@ export const userEventMigrations = {
   },
 };
 
-export const sharedProgramBlueprintMigrations = createMigrations<SharedProgramBlueprintJSON>()
-  .add((x) => ({
-    ...x,
-    version: 2,
-    programBlueprint: programBlueprintMigrations.migrateUntil(x.programBlueprint, 2),
-  }))
-  .add((x) => ({
-    ...x,
-    version: 3,
-    programBlueprint: programBlueprintMigrations.migrateUntil(x.programBlueprint, 3),
-  }))
+export const sharedProgramBlueprintMigrations = createMigrations<SharedProgramBlueprintJSON>({ pseudoMigrateUntil: 3 })
+  .dependsOn({
+    programBlueprint: programBlueprintMigrations,
+  })
   .build<Latest.SharedProgramBlueprintJSON>();
 
-export const sharedSessionMigrations = createMigrations<SharedSessionJSON>()
-  .add((x) => ({
-    ...x,
-    version: 2,
-    session: sessionMigrations.migrateUntil(x.session, 2),
-  }))
-  .add((x) => ({
-    ...x,
-    version: 3,
-    session: sessionMigrations.migrateUntil(x.session, 3),
-  }))
+export const sharedSessionMigrations = createMigrations<SharedSessionJSON>({ pseudoMigrateUntil: 3 })
+  .dependsOn({
+    session: sessionMigrations,
+  })
   .build<Latest.SharedSessionJSON>();
 
-export const followedFeedUserMigrations = createMigrations<FollowedFeedUserJSON>()
-  .add((x) => ({
-    ...x,
-    version: 2,
-    currentPlan: x.currentPlan && programBlueprintMigrations.migrateUntil(x.currentPlan, 2),
-  }))
-  .add((x) => ({
-    ...x,
-    version: 3,
-    currentPlan: x.currentPlan && programBlueprintMigrations.migrateUntil(x.currentPlan, 3),
-  }))
+export const followedFeedUserMigrations = createMigrations<FollowedFeedUserJSON>({ pseudoMigrateUntil: 3 })
+  .dependsOn({
+    currentPlan: programBlueprintMigrations,
+  })
   .build<Latest.FollowedFeedUserJSON>();
 
 export const unfollowNotificationMigrations =

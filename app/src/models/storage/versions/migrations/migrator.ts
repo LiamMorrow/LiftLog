@@ -1,4 +1,4 @@
-// oxlint-disable typescript/no-unsafe-return typescript/no-unsafe-assignment
+// oxlint-disable typescript/no-unsafe-return typescript/no-unsafe-assignment typescript/no-unsafe-member-access typescript/no-unsafe-argument
 import { TupleIndices } from '@/utils/tuple';
 
 /**
@@ -10,12 +10,6 @@ import { TupleIndices } from '@/utils/tuple';
  *
  * @typeParam TInput  - Shape of the data coming *in* to this migration
  * @typeParam TOutput - Shape of the data coming *out* of this migration
- *
- * @example
- * const m: Migration<{ version: 1; name: string }, { version: 2; name: string; age: number }> = {
- *   $type: undefined!,
- *   up: (state) => ({ ...state, age: 0, version: 2 }),
- * };
  */
 export type Migration<TInput = unknown, TOutput = unknown> = {
   /** Phantom field — never set at runtime. Carries `TOutput` into the type system. */
@@ -23,11 +17,11 @@ export type Migration<TInput = unknown, TOutput = unknown> = {
   up: (state: TInput) => TOutput;
 };
 
-/**
- * Convenience alias for a {@link Migration} with both type parameters erased to `any`.
- * Used internally where the specific input/output shapes don't matter.
- */
+/** A {@link Migration} with both type parameters erased. */
 type AnyMigration = Migration<any, any>;
+
+/** A {@link Migrator} with every type parameter erased — used to hold declared child dependencies. */
+type AnyMigrator = Migrator<any, any, any>;
 
 /**
  * `true` when `A` is assignable to `B`, else `false`. Wrapped in tuples to
@@ -36,65 +30,80 @@ type AnyMigration = Migration<any, any>;
 type Assignable<A, B> = [A] extends [B] ? true : false;
 
 /**
- * `true` only when `A` and `B` are mutually assignable. Used by {@link MigrationsBuilder.build}
- * to assert that a chain's accumulated output matches the hand-declared latest type.
+ * `true` only when `A` and `B` are mutually assignable. Used by `.build()` to
+ * assert that a chain's accumulated output matches the hand-declared latest type.
  */
 type MutuallyAssignable<A, B> = Assignable<A, B> extends true ? Assignable<B, A> : false;
 
 /**
- * The latest version number a migration tuple produces — its highest 1-based
- * index. Index 0 is the phantom `v0 -> v1` identity step, so the latest version
- * is `length - 1`, computed here by dropping the leading element.
+ * The latest shape of a single dependent field: an array of latest children when the
+ * field holds a list, otherwise a single latest child (preserving a `null`/`undefined`
+ * union so optional embeds stay optional).
  */
-type LatestVersion<TMigrations extends readonly unknown[]> = TMigrations extends readonly [unknown, ...infer TRest]
-  ? TRest['length']
-  : never;
+type DependentFieldLatest<TField, TChild extends AnyMigrator> = TField extends readonly any[]
+  ? TChild['$finalType'][]
+  : TChild['$finalType'] | Extract<TField, undefined | null>;
+
+/** The any-stored-version shape of a single dependent field (mirrors {@link DependentFieldLatest}). */
+type DependentFieldAny<TField, TChild extends AnyMigrator> = TField extends readonly any[]
+  ? TChild['$anyType'][]
+  : TChild['$anyType'] | Extract<TField, undefined | null>;
 
 /**
- * Fluent builder returned by {@link createMigrations} and each subsequent `.add()` call.
+ * The latest shape a wrapper produces: its base shape with every declared dependent field
+ * replaced by its latest child shape. Homomorphic so optional fields keep their `?` modifier.
+ * The `version` literal is contributed at `.build()` from the declared latest type via
+ * {@link VersionOf}, so `pseudoMigrateUntil` stays a runtime concern.
+ */
+type DependentsLatest<TBase, TDeps extends Record<string, AnyMigrator>> = {
+  [K in keyof TBase]: K extends keyof TDeps ? DependentFieldLatest<TBase[K], TDeps[K]> : TBase[K];
+};
+
+/** The `version` slice of a declared latest type, or nothing if it carries no version. */
+type VersionOf<TFinal> = TFinal extends { version: infer V } ? { version: V } : object;
+
+/** The any-stored-version input a wrapper accepts (mirrors {@link DependentsLatest}). */
+type DependentsAny<TBase, TDeps extends Record<string, AnyMigrator>> = {
+  [K in keyof TBase]: K extends keyof TDeps ? DependentFieldAny<TBase[K], TDeps[K]> : TBase[K];
+} & { version?: number };
+
+/**
+ * Fluent builder returned by {@link createMigrations} and each `.add()` call.
  *
- * Each call to `.add()` appends one migration step and returns a new builder whose
- * `TPrevOutput` advances to the output of that step, keeping the accumulated tuple
- * of migrations fully typed at compile time.
- *
- * @typeParam TPrevOutput   - The output shape produced by the most-recently-added migration
- * @typeParam TAccumulated  - The readonly tuple of all migrations added so far
+ * @typeParam TPrevOutput    - The output shape produced by the most-recently-added migration
+ * @typeParam TAccumulated   - The readonly tuple of all migrations added so far
+ * @typeParam TPseudoVersion - The `pseudoMigrateUntil` version literal (for wrappers with no numbered steps)
  */
 type MigrationsBuilder<TPrevOutput, TAccumulated extends readonly [...AnyMigration[], Migration<any, TPrevOutput>]> = {
   /**
-   * Appends a migration that transforms the previous output shape into `TNext`.
-   *
-   * The `version` field is intentionally excluded from both the input and output
-   * signatures — the builder manages version stamping automatically, incrementing
-   * it by 1 for each step.
-   *
-   * @typeParam TNext - The new output shape after this migration runs
-   * @param up        - Pure function mapping the old shape (minus `version`) to the new shape (minus `version`)
-   * @returns A new builder with `TNext` as its `TPrevOutput` and the new migration appended to `TAccumulated`
-   *
-   * @example
-   * createMigrations<{ version: number; name: string }>()
-   *   .add((prev) => ({
-   *     name: prev.name,
-   *     displayName: prev.name.toUpperCase(), // new field
-   *   }))
-   *   .build();
+   * Appends a numbered migration transforming the previous output shape into `TNext`.
+   * The builder stamps `version` automatically (incrementing by 1 per step).
    */
   add<TNext>(
     up: (state: TPrevOutput) => TNext & { version: TAccumulated['length'] },
   ): MigrationsBuilder<TNext, readonly [...TAccumulated, Migration<TPrevOutput, TNext>]>;
 
   /**
-   * Finalises the builder and returns a {@link Migrator} over the accumulated migrations.
+   * Declares the child migrators this model embeds, keyed by the field that holds them.
    *
-   * Optionally pass the hand-declared latest type as `TFinal` to *pin* the chain: the
-   * call fails to compile unless the accumulated output is mutually assignable to `TFinal`.
-   * This is how `latest/` becomes the source of truth — when you change the declared type,
-   * the chain stops compiling until a new `.add(...)` produces the matching shape.
-   * Omitting `TFinal` defaults to the inferred output (back-compatible no-op assertion).
+   * Every declared field is brought up to its child's latest version on `migrate()`, so this
+   * model never needs a numbered step merely because a child's shape changed, and a child bump
+   * is picked up automatically (per leaf) rather than tracked by a single scalar version. A
+   * `dependsOn` builder is terminal — `.build()` pins against the derived latest shape.
    *
-   * @typeParam TFinal - The hand-declared latest type to assert the chain produces
-   * @returns A {@link Migrator} whose `$finalType` is `TFinal`
+   * @example
+   * createMigrations<InitialProgramBlueprintJSON>({ pseudoMigrateUntil: 3 })
+   *   .dependsOn({ sessions: sessionBlueprintMigrations })
+   *   .build<ProgramBlueprintJSON>();
+   */
+  dependsOn<const TDeps extends Record<string, AnyMigrator>>(
+    dependents: TDeps,
+  ): DependentsBuilder<DependentsLatest<TPrevOutput, TDeps>, DependentsAny<TPrevOutput, TDeps>, TAccumulated>;
+
+  /**
+   * Finalises the builder. Pass the hand-declared latest type as `TFinal` to *pin* the
+   * chain: the call fails to compile unless the accumulated output is mutually assignable
+   * to `TFinal`. This is how `latest/` stays the source of truth.
    */
   build<TFinal = TPrevOutput>(
     ...check: MutuallyAssignable<TPrevOutput, NoInfer<TFinal>> extends true
@@ -104,15 +113,30 @@ type MigrationsBuilder<TPrevOutput, TAccumulated extends readonly [...AnyMigrati
           expected: TFinal,
           received: TPrevOutput,
         ]
-  ): Migrator<TFinal, TAccumulated>;
+  ): Migrator<TFinal, TAccumulated[number]['$type'], TAccumulated>;
 };
 
 /**
- * Concrete implementation of {@link MigrationsBuilder}.
+ * Terminal builder returned by {@link MigrationsBuilder.dependsOn}. Only `.build()` remains;
+ * it pins against the dependents-normalised latest shape and produces a migrator whose
+ * accepted input (`$anyType`) is the any-stored-version shape.
  *
- * Not exported — consumers interact through the {@link MigrationsBuilder} interface
- * returned by {@link createMigrations}.
+ * @typeParam TLatest      - The latest shape after dependents are brought to their own latest
+ * @typeParam TAny         - The any-stored-version shape this migrator accepts
+ * @typeParam TAccumulated - The numbered migrations (unchanged by dependsOn)
  */
+type DependentsBuilder<TLatest, TAny, TAccumulated extends readonly [...AnyMigration[], AnyMigration]> = {
+  build<TFinal>(
+    ...check: MutuallyAssignable<TLatest & VersionOf<TFinal>, NoInfer<TFinal>> extends true
+      ? []
+      : [
+          error: 'Final migration output does not match the declared latest type',
+          expected: TFinal,
+          received: TLatest & VersionOf<TFinal>,
+        ]
+  ): Migrator<TFinal, TAny, TAccumulated>;
+};
+
 class MigrationBuilderImpl<
   TPrevOutput,
   TAccumulated extends readonly [...AnyMigration[], AnyMigration],
@@ -128,11 +152,14 @@ class MigrationBuilderImpl<
     }
     return new MigrationBuilderImpl<TNext, readonly [...TAccumulated, Migration<TPrevOutput, TNext>]>([
       ...this.previousValues,
-      {
-        $type: undefined!,
-        up,
-      },
+      { $type: undefined!, up },
     ]);
+  }
+
+  dependsOn<const TDeps extends Record<string, AnyMigrator>>(
+    dependents: TDeps,
+  ): DependentsBuilder<DependentsLatest<TPrevOutput, TDeps>, DependentsAny<TPrevOutput, TDeps>, TAccumulated> {
+    return new DependentsBuilderImpl(this.previousValues, dependents);
   }
 
   build<TFinal = TPrevOutput>(
@@ -143,25 +170,71 @@ class MigrationBuilderImpl<
           expected: TFinal,
           received: TPrevOutput,
         ]
-  ): Migrator<TFinal, TAccumulated> {
+  ): Migrator<TFinal, TAccumulated[number]['$type'], TAccumulated> {
     void check;
-    return new MigratorImpl(this.previousValues as any) as unknown as Migrator<TFinal, TAccumulated>;
+    return new MigratorImpl(this.previousValues, {}) as unknown as Migrator<
+      TFinal,
+      TAccumulated[number]['$type'],
+      TAccumulated
+    >;
   }
 }
 
-class MigratorImpl<TFinal, TMigrations extends readonly [...AnyMigration[], AnyMigration]> implements Migrator<
+class DependentsBuilderImpl<
+  TLatest,
+  TAny,
+  TAccumulated extends readonly [...AnyMigration[], AnyMigration],
+> implements DependentsBuilder<TLatest, TAny, TAccumulated> {
+  constructor(
+    private previousValues: AnyMigration[],
+    private dependents: Record<string, AnyMigrator>,
+  ) {}
+
+  build<TFinal>(
+    ...check: MutuallyAssignable<TLatest & VersionOf<TFinal>, NoInfer<TFinal>> extends true
+      ? []
+      : [
+          error: 'Final migration output does not match the declared latest type',
+          expected: TFinal,
+          received: TLatest & VersionOf<TFinal>,
+        ]
+  ): Migrator<TFinal, TAny, TAccumulated> {
+    void check;
+    return new MigratorImpl(this.previousValues, this.dependents) as unknown as Migrator<TFinal, TAny, TAccumulated>;
+  }
+}
+
+class MigratorImpl<TFinal, TAny, TMigrations extends readonly [...AnyMigration[], AnyMigration]> implements Migrator<
   TFinal,
+  TAny,
   TMigrations
 > {
   $finalType: TFinal = undefined!;
-  $anyType: TMigrations[number]['$type'] = undefined!;
-  readonly latestVersion: LatestVersion<TMigrations>;
+  $anyType: TAny = undefined!;
+  readonly latestVersion: number;
 
-  constructor(private migrations: TMigrations) {
-    this.latestVersion = this.migrations.length as LatestVersion<TMigrations>;
+  constructor(
+    private migrations: AnyMigration[],
+    private dependents: Record<string, AnyMigrator>,
+  ) {
+    this.latestVersion = migrations.length;
   }
-  migrate(value: TMigrations[number]['$type']): TFinal {
-    return this.migrateUntil(value, this.migrations.length as any);
+
+  migrate(value: TAny): TFinal {
+    const migrated: any = this.migrateUntil(value as any, this.migrations.length as any);
+    if (!this.hasDependents()) {
+      return migrated as TFinal;
+    }
+    const result: any = { ...migrated };
+    for (const [field, child] of Object.entries(this.dependents)) {
+      const fieldValue = migrated[field];
+      if (Array.isArray(fieldValue)) {
+        result[field] = fieldValue.map((v) => child.migrate(v));
+      } else if (fieldValue !== null && fieldValue !== undefined) {
+        result[field] = child.migrate(fieldValue);
+      }
+    }
+    return result as TFinal;
   }
 
   migrateUntil<TVersion extends TupleIndices<TMigrations>>(
@@ -187,81 +260,46 @@ class MigratorImpl<TFinal, TMigrations extends readonly [...AnyMigration[], AnyM
     }
     return migratedValue;
   }
+
+  private hasDependents(): boolean {
+    for (const _ in this.dependents) {
+      return true;
+    }
+    return false;
+  }
 }
 
 /**
- * Applies a chain of ordered schema migrations to bring persisted data up to the
- * latest version (or any intermediate version).
- *
- * Instances are not constructed directly — use {@link createMigrations} to build one.
+ * Applies a chain of ordered schema migrations to bring persisted data up to the latest
+ * version (or any intermediate version), and brings embedded child models to their own
+ * latest via {@link Migrator.dependsOn} declarations.
  *
  * Version numbers are 1-based and correspond to tuple positions:
  * - Index 0 → identity no-op (inserted by `createMigrations`)
- * - Index 1 → first `.add()` call → produces version 1
  * - Index N → Nth `.add()` call → produces version N
  *
- * @typeParam TFinal      - The output type of the last migration in the chain
- * @typeParam TMigrations - The full readonly tuple of migrations, used for per-index type lookups
- *
- * @example
- * const migrator = createMigrations<V1>().add(v1ToV2).add(v2ToV3).build();
- *
- * // Bring any persisted value up to the latest version:
- * const latest: V3 = migrator.migrate(stored);
- *
- * // Extract the final type without running anything:
- * type Latest = typeof migrator.$type; // V3
+ * @typeParam TFinal      - The latest output type
+ * @typeParam TAny        - The any-stored-version input type accepted by `migrate`
+ * @typeParam TMigrations - The full readonly tuple of numbered migrations, for per-index lookups
  */
-interface Migrator<TFinal, TMigrations extends readonly [...AnyMigration[], AnyMigration]> {
-  /**
-   * Phantom field — never set at runtime.
-   * Carries `TFinal` so callers can write `typeof migrator.$type` to obtain the
-   * latest version's type without importing it explicitly.
-   *
-   * @example
-   * export type LatestSessionJSON = typeof sessionMigrations.$type;
-   */
+interface Migrator<TFinal, TAny, TMigrations extends readonly [...AnyMigration[], AnyMigration]> {
+  /** Phantom — never set at runtime. Carries the latest type (`typeof migrator.$finalType`). */
   $finalType: TFinal;
-  $anyType: TMigrations[number]['$type'];
-
-  latestVersion: LatestVersion<TMigrations>;
+  /** Phantom — never set at runtime. Carries the any-stored-version input type. */
+  $anyType: TAny;
 
   /**
-   * Migrates `value` through every step, returning the final output type.
-   *
-   * Equivalent to `migrateUntil(value, migrations.length)`.
-   *
-   * @param value - Any intermediate version of the persisted value
-   * @returns The fully-migrated value at the latest version
-   *
-   * @example
-   * const latest = migrator.migrate(JSON.parse(stored));
+   * The highest version this model stamps on disk — its chain length, counting any
+   * `pseudoMigrateUntil` seed steps. Used to reject values from a newer app version.
    */
-  migrate(value: TMigrations[number]['$type']): TFinal;
+  latestVersion: number;
+
+  /** Migrates `value` to the latest version, bringing declared dependents to their latest. */
+  migrate(value: TAny): TFinal;
 
   /**
-   * Migrates `value` only up to (but not past) `maxVersion`.
-   *
-   * The return type is narrowed to the output type of the migration at index
-   * `maxVersion`, giving callers a compile-time guarantee about what shape
-   * they'll receive.
-   *
-   * This is useful when one migrator's output feeds into another as an
-   * intermediate step — for example, when a parent entity embeds a child
-   * entity that has its own independent migration chain.
-   *
-   * @param value      - Any intermediate version of the persisted value
-   * @param maxVersion - Tuple index (1-based) to stop at; constrained to valid indices by `TupleIndices`
-   * @returns The migrated value, typed as the output of migration at `maxVersion`
-   *
-   * @example
-   * // Migrate child entities only to version 1 when building a parent's migration:
-   * .add((parent) => ({
-   *   ...parent,
-   *   children: parent.children.map((c) =>
-   *     childMigrations.migrateUntil(c, 1)
-   *   ),
-   * }))
+   * Migrates `value` only up to (but not past) `maxVersion` of the numbered chain. Dependents
+   * are *not* applied — this is an intermediate accessor over the numbered steps only.
    */
   migrateUntil<TVersion extends TupleIndices<TMigrations>>(
     value: TMigrations[number]['$type'],
@@ -272,50 +310,24 @@ interface Migrator<TFinal, TMigrations extends readonly [...AnyMigration[], AnyM
 /**
  * Entry point for defining a versioned migration chain.
  *
- * Call `.add()` once per schema version bump to describe how to transform data
- * from the previous version's shape into the next.
- * Finish the chain with `.build()` to obtain a {@link Migrator}.
+ * Call `.add()` once per schema version bump, `.dependsOn({ field: childMigrator })` to
+ * embed child models, and `.build()` to obtain a {@link Migrator}.
  *
- * The first migration in the chain is always an identity step (v0 → v1 = `TInitial`),
- * injected automatically. Each subsequent `.add()` call adds one version.
- *
- * @typeParam TInitial - The shape of version-1 data (i.e. the *oldest* persisted format)
- * @returns A {@link MigrationsBuilder} seeded with the identity step
+ * @typeParam TInitial - The shape of version-1 data (the oldest persisted format)
+ * @param opts.pseudoMigrateUntil - For a wrapper with no numbered steps of its own, seeds the
+ *   chain with identity steps that stamp the top-level `version` up to this number, so existing
+ *   rows (which already carry it) keep round-tripping. These come *before* any `.add()` steps
+ *   and only set `version` — the final shape still emerges from the chain, never overridden.
  *
  * @example
- * // Define types for the initial stored version:
- * type V1 = { name: string };
- *
- * const migrator = createMigrations<V1>()
- *   // V1 → V2: add displayName derived from name
- *   .add((v1) => ({
- *     version: 2,
- *     name: v1.name,
- *     displayName: v1.name.toUpperCase(),
- *   }))
- *   // V2 → V3: add age with a default
- *   .add((v2) => ({
- *     version: 3,
- *     name: v2.name,
- *     displayName: v2.displayName,
- *     age: 0,
- *   }))
- *   .build();
- *
- * // Bring any persisted value up to the latest version:
- * const latest = migrator.migrate(storedValue); // typed as V3
- *
- * // Derive the latest type for use elsewhere:
- * export type LatestV = typeof migrator.$type; // V3
+ * const migrator = createMigrations<V1>().add(v1ToV2).add(v2ToV3).build();
  */
-export function createMigrations<TInitial>(): MigrationsBuilder<
-  TInitial,
-  [Migration<unknown, never>, Migration<unknown, TInitial>]
-> {
-  return new MigrationBuilderImpl([
-    {
-      $type: undefined!,
-      up: (x) => x as TInitial,
-    },
-  ]);
+export function createMigrations<TInitial>(opts?: {
+  pseudoMigrateUntil: number;
+}): MigrationsBuilder<TInitial, [Migration<unknown, never>, Migration<unknown, TInitial>]> {
+  const seed: AnyMigration[] = [{ $type: undefined!, up: (x) => x as TInitial }];
+  for (let version = 2; version <= (opts?.pseudoMigrateUntil ?? 1); version++) {
+    seed.push({ $type: undefined!, up: (x) => ({ ...x, version }) });
+  }
+  return new MigrationBuilderImpl(seed);
 }

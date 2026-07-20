@@ -243,7 +243,9 @@ export function aiPlanFromJSON(partialJson: DeepPartial<AnyVersionAiPlanJSON>): 
           version: 3,
           name: partialJson.name ?? '',
           description: partialJson.description ?? '',
-          blueprint: fillBlueprint(partialJson.blueprint),
+          // The any-version plan type no longer couples the outer version to the embedded
+          // blueprint's, so `version === 3` can't narrow it — but a v3 wire plan is latest-shaped.
+          blueprint: fillBlueprint(partialJson.blueprint as DeepPartial<ProgramBlueprintJSON>),
         }
       : (partialJson as AnyVersionAiPlanJSON),
   );

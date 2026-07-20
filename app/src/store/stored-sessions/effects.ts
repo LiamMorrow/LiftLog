@@ -12,6 +12,7 @@ import {
 } from './index';
 import { fetchUpcomingSessions } from '@/store/program';
 import { Session } from '@/models/session-models';
+import { sessionMigrations } from '@/models/storage/versions/migrations';
 import { exercisesSchema, sessionsSchema } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { toRecord } from '@/utils/reduce';
@@ -33,7 +34,7 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
         const completedSessions = (await db.select().from(sessionsSchema)).reduce(
           toRecord(
             (x) => x.id,
-            (row) => Session.fromJSON(row.payload),
+            (row) => Session.fromJSON(sessionMigrations.migrate(row.payload)),
           ),
           {},
         );

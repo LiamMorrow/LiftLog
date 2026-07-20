@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
 import { createMigrations } from './migrator';
 
 // ---------- test domain types ----------
@@ -221,6 +221,168 @@ describe('migrator', () => {
       expect(migrations.migrate(disallowedFinal)).toEqual({
         version: 3,
         baz: 'baz',
+      });
+    });
+  });
+
+  describe('dependsOn()', () => {
+    // ---- leaf children (real numbered chains, first-class versions) ----
+    type WidgetV1 = { size: number };
+    type WidgetV2 = { version: 2; size: number; color: string };
+    type WidgetV3 = { version: 3; size: number; color: string; label: string };
+
+    const widgetMigrations = createMigrations<WidgetV1>()
+      .add<WidgetV2>((v1) => ({ version: 2, size: v1.size, color: 'red' }))
+      .add<WidgetV3>((v2) => ({ version: 3, size: v2.size, color: v2.color, label: '' }))
+      .build();
+
+    type SprocketV1 = { teeth: number };
+    type SprocketV2 = { version: 2; teeth: number; pitch: number };
+
+    const sprocketMigrations = createMigrations<SprocketV1>()
+      .add<SprocketV2>((v1) => ({ version: 2, teeth: v1.teeth, pitch: 1 }))
+      .build();
+
+    // ---- wrappers (no numbered steps of their own; children via dependsOn) ----
+    type GadgetInit = { name: string; widget: WidgetV1 };
+    type GadgetLatest = { version: 3; name: string; widget: WidgetV3 };
+
+    const gadgetMigrations = createMigrations<GadgetInit>({ pseudoMigrateUntil: 3 })
+      .dependsOn({ widget: widgetMigrations })
+      .build<GadgetLatest>();
+
+    type ToolboxInit = { widgets: WidgetV1[] };
+    type ToolboxLatest = { version: 3; widgets: WidgetV3[] };
+
+    const toolboxMigrations = createMigrations<ToolboxInit>({ pseudoMigrateUntil: 3 })
+      .dependsOn({ widgets: widgetMigrations })
+      .build<ToolboxLatest>();
+
+    type KitInit = { primary: WidgetV1 | undefined };
+    type KitLatest = { version: 3; primary: WidgetV3 | undefined };
+
+    const kitMigrations = createMigrations<KitInit>({ pseudoMigrateUntil: 3 })
+      .dependsOn({ primary: widgetMigrations })
+      .build<KitLatest>();
+
+    // wrapper embedding another wrapper — recursion must reach the leaf
+    type CrateInit = { gadget: GadgetInit };
+    type CrateLatest = { version: 3; gadget: GadgetLatest };
+
+    const crateMigrations = createMigrations<CrateInit>({ pseudoMigrateUntil: 3 })
+      .dependsOn({ gadget: gadgetMigrations })
+      .build<CrateLatest>();
+
+    // wrapper with two independent leaf children — the case a scalar/max version can't model
+    type ComboInit = { widget: WidgetV1; sprocket: SprocketV1 };
+    type ComboLatest = { version: 3; widget: WidgetV3; sprocket: SprocketV2 };
+
+    const comboMigrations = createMigrations<ComboInit>({ pseudoMigrateUntil: 3 })
+      .dependsOn({ widget: widgetMigrations, sprocket: sprocketMigrations })
+      .build<ComboLatest>();
+
+    const latestWidget: WidgetV3 = { version: 3, size: 1, color: 'red', label: '' };
+
+    describe('migrate()', () => {
+      it('brings a single embedded child to its latest and stamps the pseudo version', () => {
+        const result = gadgetMigrations.migrate({ name: 'g', widget: { size: 5 } });
+        expect(result).toEqual({
+          version: 3,
+          name: 'g',
+          widget: { version: 3, size: 5, color: 'red', label: '' },
+        });
+      });
+
+      it('migrates each child in an embedded array', () => {
+        const result = toolboxMigrations.migrate({ widgets: [{ size: 1 }, { version: 2, size: 2, color: 'blue' }] });
+        expect(result).toEqual({
+          version: 3,
+          widgets: [
+            { version: 3, size: 1, color: 'red', label: '' },
+            { version: 3, size: 2, color: 'blue', label: '' },
+          ],
+        });
+      });
+
+      it('leaves an absent optional child untouched', () => {
+        const result = kitMigrations.migrate({ primary: undefined });
+        expect(result).toEqual({ version: 3, primary: undefined });
+      });
+
+      it('migrates a present optional child', () => {
+        const result = kitMigrations.migrate({ primary: { size: 9 } });
+        expect(result).toEqual({ version: 3, primary: { version: 3, size: 9, color: 'red', label: '' } });
+      });
+
+      it('migrates two independent embedded children on their own chains', () => {
+        const result = comboMigrations.migrate({ widget: { size: 2 }, sprocket: { teeth: 8 } });
+        expect(result).toEqual({
+          version: 3,
+          widget: { version: 3, size: 2, color: 'red', label: '' },
+          sprocket: { version: 2, teeth: 8, pitch: 1 },
+        });
+      });
+
+      it('recurses through nested wrappers down to the leaf', () => {
+        const result = crateMigrations.migrate({ gadget: { name: 'g', widget: { size: 3 } } });
+        expect(result).toEqual({
+          version: 3,
+          gadget: { version: 3, name: 'g', widget: { version: 3, size: 3, color: 'red', label: '' } },
+        });
+      });
+
+      it('is idempotent on an already-latest value', () => {
+        const once = gadgetMigrations.migrate({ name: 'g', widget: { size: 5 } });
+        expect(gadgetMigrations.migrate(once)).toEqual(once);
+      });
+
+      it('does not mutate the input value', () => {
+        const input = { name: 'g', widget: { size: 5 } };
+        gadgetMigrations.migrate(input);
+        expect(input).toEqual({ name: 'g', widget: { size: 5 } });
+      });
+
+      it('rejects a wrapper value from a newer app version', () => {
+        expect(() => gadgetMigrations.migrate({ version: 4, name: 'g', widget: latestWidget } as never)).toThrow();
+      });
+    });
+
+    describe('typing', () => {
+      it('exposes the latest type as $finalType and accepts any stored version as $anyType', () => {
+        const latest: typeof gadgetMigrations.$finalType = { version: 3, name: 'g', widget: latestWidget };
+        const oldest: typeof gadgetMigrations.$anyType = { name: 'g', widget: { size: 1 } };
+        const midChildOldWrapper: typeof gadgetMigrations.$anyType = {
+          name: 'g',
+          widget: { version: 2, size: 1, color: 'red' },
+        };
+
+        expect(gadgetMigrations.migrate(latest)).toEqual(latest);
+        expect(gadgetMigrations.migrate(oldest).version).toBe(3);
+        expect(gadgetMigrations.migrate(midChildOldWrapper).widget.version).toBe(3);
+      });
+
+      // The type-only `expectTypeOf<T>()` form is used so nothing dereferences the phantom
+      // `$finalType`/`$anyType` at runtime. These are checked by `tsc`/`tsgo` at typecheck time;
+      // a regression in the array-vs-single-vs-optional derivation is a compile error.
+      it('derives an array field as an array of the child type', () => {
+        expectTypeOf<(typeof toolboxMigrations.$finalType)['widgets']>().toEqualTypeOf<WidgetV3[]>();
+        expectTypeOf<(typeof toolboxMigrations.$anyType)['widgets']>().toEqualTypeOf<(typeof widgetMigrations.$anyType)[]>();
+        // an array field must not collapse to a single child
+        expectTypeOf<(typeof toolboxMigrations.$finalType)['widgets']>().not.toEqualTypeOf<WidgetV3>();
+      });
+
+      it('derives a single field as the bare child type', () => {
+        expectTypeOf<(typeof gadgetMigrations.$finalType)['widget']>().toEqualTypeOf<WidgetV3>();
+        expectTypeOf<(typeof gadgetMigrations.$anyType)['widget']>().toEqualTypeOf<typeof widgetMigrations.$anyType>();
+        // a single field must not become an array
+        expectTypeOf<(typeof gadgetMigrations.$finalType)['widget']>().not.toEqualTypeOf<WidgetV3[]>();
+      });
+
+      it('preserves the optional/undefined union on an optional field', () => {
+        expectTypeOf<(typeof kitMigrations.$finalType)['primary']>().toEqualTypeOf<WidgetV3 | undefined>();
+        expectTypeOf<(typeof kitMigrations.$anyType)['primary']>().toEqualTypeOf<
+          (typeof widgetMigrations.$anyType) | undefined
+        >();
       });
     });
   });
