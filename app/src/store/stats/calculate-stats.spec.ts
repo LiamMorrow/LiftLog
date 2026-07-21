@@ -324,4 +324,59 @@ describe('calculateStats', () => {
       expect(result.averageSessionLength.toMinutes()).toBe(44);
     });
   });
+
+  describe('max power statistics', () => {
+    function makePoweredSession(date: LocalDate, powers: (number | undefined)[]): Session {
+      const blueprint = makeBlueprint('Chest Press', powers.length, 10);
+      const sessionBlueprint = makeSessionBlueprint('Keiser Day', [blueprint]);
+      const baseTime = makeOffset(date);
+      const potentialSets = powers.map(
+        (power, i) =>
+          new PotentialSet(new RecordedSet(10, baseTime.plusSeconds(i * 60), power), new Weight(40, 'kilograms')),
+      );
+      const exercise = new RecordedWeightedExercise(blueprint, potentialSets, undefined);
+      return new Session('session-' + date.toString(), sessionBlueprint, [exercise], date, undefined, undefined);
+    }
+
+    const range: LocalDateRange = {
+      from: LocalDate.of(2025, 4, 1),
+      to: LocalDate.of(2025, 4, 30),
+    };
+
+    it('collects best power per session over time', () => {
+      const stats = calculateStats(
+        [
+          makePoweredSession(LocalDate.of(2025, 4, 7), [250, 312, 290]),
+          makePoweredSession(LocalDate.of(2025, 4, 14), [280, 330, undefined]),
+        ],
+        'kilograms',
+        range,
+      );
+
+      const exerciseStats = stats.weightedExerciseStats.find((x) => x.exerciseName === 'Chest Press')!;
+      const power = exerciseStats.maxPowerPerSessionStatistics!;
+      expect(power.statistics.map((x) => x.value)).toEqual([312, 330]);
+      expect(power.maxValue).toBe(330);
+      expect(power.minValue).toBe(312);
+      expect(power.currentValue).toBe(330);
+    });
+
+    it('skips sessions with no power and is undefined when the exercise never has power', () => {
+      const stats = calculateStats(
+        [
+          makePoweredSession(LocalDate.of(2025, 4, 7), [undefined, undefined, undefined]),
+          makePoweredSession(LocalDate.of(2025, 4, 14), [undefined, 300, undefined]),
+          makeSession(LocalDate.of(2025, 4, 21), 'Squat', 100),
+        ],
+        'kilograms',
+        range,
+      );
+
+      const chestPress = stats.weightedExerciseStats.find((x) => x.exerciseName === 'Chest Press')!;
+      expect(chestPress.maxPowerPerSessionStatistics!.statistics.map((x) => x.value)).toEqual([300]);
+
+      const squat = stats.weightedExerciseStats.find((x) => x.exerciseName === 'Squat')!;
+      expect(squat.maxPowerPerSessionStatistics).toBeUndefined();
+    });
+  });
 });

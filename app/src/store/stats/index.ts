@@ -38,6 +38,7 @@ export interface WeightedExerciseStatistics {
   maxLiftedPerSessionStatistics: WeightedStatisticOverTime;
   max1RMPerSessionStatistics: WeightedStatisticOverTime;
   totalVolumeStatistics: WeightedStatisticOverTime;
+  maxPowerPerSessionStatistics: NumericStatisticOverTime | undefined;
   repsStatistics: RepsBreakdownStatistics;
 }
 
@@ -47,6 +48,13 @@ export interface WeightedStatisticOverTime {
   totalValue: Weight;
   maxValue: Weight;
   minValue: Weight;
+}
+
+export interface NumericStatisticOverTime {
+  statistics: TimeTrackedStatistic<number>[];
+  currentValue: number;
+  maxValue: number;
+  minValue: number;
 }
 
 export interface OptionalStatisticOverTime<T> {

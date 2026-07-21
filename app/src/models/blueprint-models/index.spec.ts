@@ -563,3 +563,34 @@ describe('WeightedExerciseBlueprint rep schemes', () => {
     });
   });
 });
+
+describe('WeightedExerciseBlueprint.trackPower', () => {
+  it('defaults to false', () => {
+    expect(WeightedExerciseBlueprint.empty().trackPower).toBe(false);
+  });
+
+  it('defaults to false when absent from JSON', () => {
+    const json = WeightedExerciseBlueprint.empty().toJSON();
+    delete (json as { trackPower?: boolean }).trackPower;
+    expect(WeightedExerciseBlueprint.fromJSON(json).trackPower).toBe(false);
+  });
+
+  it('round-trips through JSON', () => {
+    const blueprint = WeightedExerciseBlueprint.empty().with({ trackPower: true });
+    expect(WeightedExerciseBlueprint.fromJSON(blueprint.toJSON()).trackPower).toBe(true);
+  });
+
+  it('participates in equality', () => {
+    const off = WeightedExerciseBlueprint.empty();
+    const on = off.with({ trackPower: true });
+    expect(off.equals(on)).toBe(false);
+    expect(on.equals(off.with({ trackPower: true }))).toBe(true);
+  });
+
+  it('with() sets and clears the flag', () => {
+    const on = WeightedExerciseBlueprint.empty().with({ trackPower: true });
+    expect(on.trackPower).toBe(true);
+    expect(on.with({ trackPower: false }).trackPower).toBe(false);
+    expect(on.with({ sets: 5 }).trackPower).toBe(true);
+  });
+});

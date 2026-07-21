@@ -20,7 +20,12 @@
       "$ref": "#/definitions/LocalDate"
     }
   },
-  "required": ["version", "name", "sessions", "lastEdited"],
+  "required": [
+    "version",
+    "name",
+    "sessions",
+    "lastEdited"
+  ],
   "definitions": {
     "SessionBlueprint": {
       "type": "object",
@@ -42,14 +47,21 @@
           "type": "string"
         }
       },
-      "required": ["version", "name", "exercises", "notes"]
+      "required": [
+        "version",
+        "name",
+        "exercises",
+        "notes"
+      ]
     },
     "ExerciseBlueprint": {
       "type": "object",
       "discriminator": {
         "propertyName": "type"
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "oneOf": [
         {
           "$ref": "#/definitions/WeightedExerciseBlueprint"
@@ -92,6 +104,10 @@
         },
         "progressiveOverload": {
           "$ref": "#/definitions/ProgressiveOverload"
+        },
+        "trackPower": {
+          "type": "boolean",
+          "description": "When true, the app prompts for and records the peak power (watts) of each completed set, for equipment with a power readout (e.g. Keiser functional trainers)."
         }
       },
       "required": [
@@ -111,7 +127,9 @@
       "discriminator": {
         "propertyName": "type"
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "oneOf": [
         {
           "$ref": "#/definitions/FixedRepsConfig"
@@ -135,7 +153,10 @@
           "type": "integer"
         }
       },
-      "required": ["type", "reps"]
+      "required": [
+        "type",
+        "reps"
+      ]
     },
     "RangeRepsConfig": {
       "type": "object",
@@ -151,7 +172,11 @@
           "type": "integer"
         }
       },
-      "required": ["type", "min", "max"]
+      "required": [
+        "type",
+        "min",
+        "max"
+      ]
     },
     "PerSetRepsConfig": {
       "type": "object",
@@ -168,7 +193,10 @@
           "description": "One target per set; length matches `sets`. It's important to note that while the model allows for max and min to be specified, the UI does not, so it is VERY important that the min and max values are the same when using this mode"
         }
       },
-      "required": ["type", "targets"]
+      "required": [
+        "type",
+        "targets"
+      ]
     },
     "RepsTarget": {
       "type": "object",
@@ -180,7 +208,10 @@
           "type": "integer"
         }
       },
-      "required": ["min", "max"]
+      "required": [
+        "min",
+        "max"
+      ]
     },
     "Rest": {
       "type": "object",
@@ -196,7 +227,11 @@
           "description": "Rest taken after a set where the user failed to hit their target reps."
         }
       },
-      "required": ["minRest", "maxRest", "failureRest"]
+      "required": [
+        "minRest",
+        "maxRest",
+        "failureRest"
+      ]
     },
     "Duration": {
       "type": "string",
@@ -207,7 +242,9 @@
       "discriminator": {
         "propertyName": "type"
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "oneOf": [
         {
           "$ref": "#/definitions/NoProgressiveOverload"
@@ -228,7 +265,9 @@
           "const": "NoProgressiveOverload"
         }
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "description": "Used when the user does not want progressive overload at all. Potentially with bodyweight exercises."
     },
     "IncreaseAllEvenlyProgressiveOverload": {
@@ -242,12 +281,17 @@
           "$ref": "#/definitions/BigNumber"
         }
       },
-      "required": ["type", "amount"],
+      "required": [
+        "type",
+        "amount"
+      ],
       "description": "The standard \"increase every set across the board\" progressive overload. Usually 2.5kg, or 5lb."
     },
     "BigNumber": {
       "type": "string",
-      "examples": ["1.23"],
+      "examples": [
+        "1.23"
+      ],
       "format": "decimal"
     },
     "IncreaseLowestSetProgressiveOverload": {
@@ -262,10 +306,19 @@
         },
         "increaseStrategy": {
           "type": "string",
-          "enum": ["first", "middle", "last", "all"]
+          "enum": [
+            "first",
+            "middle",
+            "last",
+            "all"
+          ]
         }
       },
-      "required": ["type", "amount", "increaseStrategy"],
+      "required": [
+        "type",
+        "amount",
+        "increaseStrategy"
+      ],
       "description": "A more complex progressive overload which allows the user to increase only a single set, or all sets which have the lowest weight.\n\nA user might want to increase the middle weight for exercises where going up across the board would be too much e.g. lateral raises, or other shoulder exercises"
     },
     "CardioExerciseBlueprint": {
@@ -291,7 +344,13 @@
           "type": "string"
         }
       },
-      "required": ["type", "name", "sets", "notes", "link"]
+      "required": [
+        "type",
+        "name",
+        "sets",
+        "notes",
+        "link"
+      ]
     },
     "CardioExerciseSetBlueprint": {
       "type": "object",
@@ -337,7 +396,9 @@
       "discriminator": {
         "propertyName": "type"
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "oneOf": [
         {
           "$ref": "#/definitions/TimeCardioTarget"
@@ -358,7 +419,10 @@
           "$ref": "#/definitions/Duration"
         }
       },
-      "required": ["type", "value"]
+      "required": [
+        "type",
+        "value"
+      ]
     },
     "DistanceCardioTarget": {
       "type": "object",
@@ -371,7 +435,10 @@
           "$ref": "#/definitions/Distance"
         }
       },
-      "required": ["type", "value"]
+      "required": [
+        "type",
+        "value"
+      ]
     },
     "Distance": {
       "type": "object",
@@ -383,11 +450,19 @@
           "$ref": "#/definitions/DistanceUnit"
         }
       },
-      "required": ["value", "unit"]
+      "required": [
+        "value",
+        "unit"
+      ]
     },
     "DistanceUnit": {
       "type": "string",
-      "enum": ["metre", "yard", "mile", "kilometre"]
+      "enum": [
+        "metre",
+        "yard",
+        "mile",
+        "kilometre"
+      ]
     },
     "LocalDate": {
       "type": "string",

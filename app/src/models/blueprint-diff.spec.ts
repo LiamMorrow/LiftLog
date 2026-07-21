@@ -62,6 +62,33 @@ describe('diffSessionBlueprints', () => {
     sets: CardioExerciseSetBlueprint[] = [createCardioSet()],
   ): CardioExerciseBlueprint => new CardioExerciseBlueprint(name, sets, '', '');
 
+  it('detects, labels, and applies a trackPower-only change', () => {
+    const oldExercise = createWeightedExercise('Bench Press');
+    const newExercise = oldExercise.with({ trackPower: true });
+    const original = new SessionBlueprint('Push Day', [oldExercise], '');
+    const modified = new SessionBlueprint('Push Day', [newExercise], '');
+
+    const diff = diffSessionBlueprints(original, modified);
+
+    expect(diff.hasChanges).toBe(true);
+    expect(diff.modifiedExercises).toHaveLength(1);
+    const changes = diff.modifiedExercises[0]!.changes;
+    expect(changes).toHaveLength(1);
+    expect(changes[0]).toEqual(
+      expect.objectContaining({
+        kind: 'exerciseTrackPower',
+        oldValue: false,
+        newValue: true,
+      }),
+    );
+    expect(getChangeLabelKey(changes[0]!)).toEqual({
+      key: 'plan.diff.track_power.label',
+    });
+
+    const result = applySessionBlueprintDiff(original, diff);
+    expect((result.exercises[0] as WeightedExerciseBlueprint).trackPower).toBe(true);
+  });
+
   describe('session-level changes', () => {
     it('should detect session name change', () => {
       const original = new SessionBlueprint('Workout A', [], '');

@@ -156,6 +156,7 @@ function fillWeightedExercise(partial: DeepPartial<WeightedExerciseBlueprintJSON
     notes: partial.notes ?? emptyWeightedExercise.notes,
     link: partial.link ?? emptyWeightedExercise.link,
     progressiveOverload: fillProgressiveOverload(partial.progressiveOverload),
+    trackPower: partial.trackPower ?? emptyWeightedExercise.trackPower,
   };
 }
 

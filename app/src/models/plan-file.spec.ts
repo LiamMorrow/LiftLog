@@ -31,6 +31,7 @@ const validBlueprint: ProgramBlueprintJSON = {
           notes: '',
           link: '',
           progressiveOverload: { type: 'IncreaseAllEvenlyProgressiveOverload', amount: '2.5' as BigNumberJSON },
+          trackPower: false,
         },
       ],
     },

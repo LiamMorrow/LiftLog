@@ -55,6 +55,12 @@ export interface RecordedSetJSON {
    */
   repsCompleted: number;
   completionDateTime: OffsetDateTimeJSON;
+  /**
+   * Peak power in whole watts achieved during the set, as reported by
+   * equipment with a power readout (e.g. Keiser functional trainers).
+   * @asType integer
+   */
+  power?: number | undefined;
 }
 
 export interface PotentialSetJSON {

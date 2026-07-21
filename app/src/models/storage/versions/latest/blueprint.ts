@@ -89,6 +89,12 @@ export interface WeightedExerciseBlueprintJSON {
    */
   link: string;
   progressiveOverload: ProgressiveOverloadJSON;
+  /**
+   * When true, the app prompts for and records the peak power (watts) of
+   * each completed set, for equipment with a power readout
+   * (e.g. Keiser functional trainers).
+   */
+  trackPower?: boolean;
 }
 
 export interface RepsTargetJSON {

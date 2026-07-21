@@ -32,6 +32,10 @@
     },
     "progressiveOverload": {
       "$ref": "./ProgressiveOverload.json"
+    },
+    "trackPower": {
+      "type": "boolean",
+      "description": "When true, the app prompts for and records the peak power (watts) of each completed set, for equipment with a power readout (e.g. Keiser functional trainers)."
     }
   },
   "required": [

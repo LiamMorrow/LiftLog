@@ -139,6 +139,15 @@ interface ExerciseSupersetChange extends BaseChange {
   newValue: boolean;
 }
 
+interface ExerciseTrackPowerChange extends BaseChange {
+  kind: 'exerciseTrackPower';
+  type: 'modified';
+  exerciseName: string;
+  exerciseIndex: number;
+  oldValue: boolean;
+  newValue: boolean;
+}
+
 interface ExerciseNotesChange extends BaseChange {
   kind: 'exerciseNotes';
   type: 'modified';
@@ -228,6 +237,7 @@ type ExerciseFieldChange =
   | ExerciseWeightIncreaseChange
   | ExerciseRestChange
   | ExerciseSupersetChange
+  | ExerciseTrackPowerChange
   | ExerciseNotesChange
   | ExerciseLinkChange
   | ExerciseTargetChange
@@ -474,6 +484,18 @@ function diffWeightedExercises(
       exerciseIndex,
       oldValue: oldEx.supersetWithNext,
       newValue: newEx.supersetWithNext,
+    });
+  }
+
+  if (oldEx.trackPower !== newEx.trackPower) {
+    changes.push({
+      id: generateChangeId(),
+      kind: 'exerciseTrackPower',
+      type: 'modified',
+      exerciseName,
+      exerciseIndex,
+      oldValue: oldEx.trackPower,
+      newValue: newEx.trackPower,
     });
   }
 
@@ -910,6 +932,9 @@ export function applySessionBlueprintDiff(original: SessionBlueprint, diff: Sess
         .with({ kind: 'exerciseSuperset' }, (c) =>
           exercise instanceof WeightedExerciseBlueprint ? exercise.with({ supersetWithNext: c.newValue }) : exercise,
         )
+        .with({ kind: 'exerciseTrackPower' }, (c) =>
+          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ trackPower: c.newValue }) : exercise,
+        )
         .with({ kind: 'exerciseNotes' }, (c) => exercise.with({ notes: c.newValue }))
         .with({ kind: 'exerciseLink' }, (c) => exercise.with({ link: c.newValue }))
         .with({ kind: 'exerciseTarget' }, (c) => {
@@ -1078,6 +1103,9 @@ export function getChangeDescription(t: UseTranslateResult['t'], change: DiffCha
     .with({ kind: 'exerciseSuperset' }, (c) =>
       t(c.newValue ? 'plan.diff.generic_enabled.body' : 'plan.diff.generic_disabled.body'),
     )
+    .with({ kind: 'exerciseTrackPower' }, (c) =>
+      t(c.newValue ? 'plan.diff.generic_enabled.body' : 'plan.diff.generic_disabled.body'),
+    )
     .with({ kind: 'exerciseNotes' }, () => t('plan.diff.generic_updated.body'))
     .with({ kind: 'exerciseLink' }, () => t('plan.diff.generic_updated.body'))
     .with({ kind: 'exerciseTarget' }, () => t('plan.diff.generic_updated.body'))
@@ -1142,6 +1170,9 @@ export function getChangeLabelKey(change: DiffChange): TranslatableString {
     }))
     .with({ kind: 'exerciseSuperset' }, () => ({
       key: 'plan.diff.superset.label',
+    }))
+    .with({ kind: 'exerciseTrackPower' }, () => ({
+      key: 'plan.diff.track_power.label',
     }))
     .with({ kind: 'exerciseNotes' }, () => ({
       key: 'plan.diff.notes.label',

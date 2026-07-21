@@ -122,6 +122,14 @@ export function WeightedExerciseEditor({
               testID="exercise-superset"
               onValueChange={(supersetWithNext) => updateExercise({ supersetWithNext })}
             />,
+            <SegmentedListSwitch
+              key="trackPower"
+              label={t('exercise.track_power.label')}
+              icon={'bolt'}
+              value={exercise.trackPower}
+              testID="exercise-track-power"
+              onValueChange={(trackPower) => updateExercise({ trackPower })}
+            />,
             <SegmentListFormElement
               key={3}
               label={t('exercise.progressive_overload.label')}

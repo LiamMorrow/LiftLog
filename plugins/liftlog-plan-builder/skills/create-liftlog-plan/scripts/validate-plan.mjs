@@ -1131,12 +1131,23 @@ var require_validate_schema = __commonJS({
             errors = vErrors.length;
           }
         }
+        if (data.trackPower !== void 0) {
+          if (typeof data.trackPower !== "boolean") {
+            const err16 = { instancePath: instancePath + "/trackPower", schemaPath: "#/properties/trackPower/type", keyword: "type", params: { type: "boolean" }, message: "must be boolean" };
+            if (vErrors === null) {
+              vErrors = [err16];
+            } else {
+              vErrors.push(err16);
+            }
+            errors++;
+          }
+        }
       } else {
-        const err16 = { instancePath, schemaPath: "#/type", keyword: "type", params: { type: "object" }, message: "must be object" };
+        const err17 = { instancePath, schemaPath: "#/type", keyword: "type", params: { type: "object" }, message: "must be object" };
         if (vErrors === null) {
-          vErrors = [err16];
+          vErrors = [err17];
         } else {
-          vErrors.push(err16);
+          vErrors.push(err17);
         }
         errors++;
       }
