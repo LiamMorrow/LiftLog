@@ -4,7 +4,10 @@ import { useAppSelector } from '@/store';
 import { fetchOverallStats, selectOverallView, WeightedExerciseStatistics } from '@/store/stats';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
-import { View } from 'react-native';
+import { HeaderHeightContext } from 'expo-router/react-navigation';
+import { useContext } from 'react';
+import { Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 
 export default function ExerciseListPage() {
@@ -21,8 +24,13 @@ export default function ExerciseListPage() {
     push(`/stats/expanded-weighted-exercise?exerciseName=${encodeURIComponent(item.exerciseName)}`);
   };
 
+  const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
+  const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView
+      edges={{ bottom: 'additive', left: 'additive', right: 'additive', top: 'off' }}
+      style={{ flex: 1, paddingTop: topInsetHeight }}
+    >
       <Stack.Screen
         options={{
           title: t('stats.weighted_exercise_list.title'),
@@ -32,6 +40,6 @@ export default function ExerciseListPage() {
         value={stats}
         success={(stats) => <WeightedExerciseListSearcher stats={stats} onItemPress={onItemPress} />}
       />
-    </View>
+    </SafeAreaView>
   );
 }
