@@ -71,7 +71,7 @@
     "expo-status-bar": "~57.0.0",
     "linq": "^4.0.3",
     "material-symbols-react-native": "^1.0.3",
-    "protobufjs": "^7.6.4",
+    "protobufjs": "^7.6.5",
     "react": "19.2.3",
     "react-compiler-runtime": "^1.0.0",
     "react-native": "0.86.0",
