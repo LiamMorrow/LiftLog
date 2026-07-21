@@ -27,7 +27,7 @@ export function tickAt(h: number, m: number, s: number = 0): OffsetDateTime {
   return OffsetDateTime.of(2025, 4, 5, h, m, s, 0, ZoneOffset.UTC);
 }
 
-export function makeWeightedBlueprint(name = 'Squat', supersetWithNext = false) {
+export function makeWeightedBlueprint(name = 'Squat', supersetWithNext = false, usesBodyweight = false) {
   return new WeightedExerciseBlueprint(
     name,
     3,
@@ -37,6 +37,7 @@ export function makeWeightedBlueprint(name = 'Squat', supersetWithNext = false) 
     supersetWithNext,
     '',
     '',
+    usesBodyweight,
   );
 }
 
@@ -96,6 +97,7 @@ export function createExerciseBlueprint(index: number, supersetWithNext: boolean
     supersetWithNext,
     '', // notes
     '', // link
+    false, // usesBodyweight
   );
 }
 

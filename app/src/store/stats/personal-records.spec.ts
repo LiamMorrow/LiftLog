@@ -90,6 +90,30 @@ describe('findPersonalRecords', () => {
     expect(records.has('s2')).toBe(true);
   });
 
+  it('folds bodyweight into the estimated 1RM for a bodyweight exercise', () => {
+    // Same +10kg added both sessions, but a heavier bodyweight makes the effective 1RM a record.
+    const blueprint = new WeightedExerciseBlueprint(
+      'Pull Up',
+      3,
+      { type: 'fixed', reps: 5 },
+      new IncreaseLowestSetProgressiveOverload(new BigNumber(2.5), 'middle'),
+      Rest.long,
+      false,
+      '',
+      '',
+      true,
+    );
+    const build = (id: string, date: LocalDate, bodyweightKg: number) => {
+      const set = new RecordedSet(5, OffsetDateTime.parse('2026-01-01T10:00:00Z'));
+      const ex = new RecordedWeightedExercise(blueprint, [new PotentialSet(set, kg(10))], undefined);
+      return new Session(id, new SessionBlueprint('Day', [], ''), [ex], date, new Weight(bodyweightKg, 'kilograms'), undefined);
+    };
+
+    const records = findPersonalRecords([build('s1', day(1), 80), build('s2', day(8), 85)]);
+
+    expect(records.has('s2')).toBe(true);
+  });
+
   it('ignores sessions with no completed sets', () => {
     const records = findPersonalRecords([
       session('s1', day(1), [exercise('Squat', kg(100), 5)]),

@@ -44,7 +44,7 @@ export class Session {
       json.id,
       SessionBlueprint.fromJSON({
         ...json.blueprint,
-        version: 3,
+        version: 4,
         exercises: json.recordedExercises.map((x) => x.blueprint),
       }),
       json.recordedExercises.map(fromRecordedExerciseJSON),
@@ -311,7 +311,7 @@ export class Session {
 
   toJSON(): SessionJSON {
     return {
-      version: 3,
+      version: 4,
       blueprint: this.blueprint.toJSON(),
       bodyweight: this.bodyweight?.toJSON(),
       date: toLocalDateJSON(this.date),
@@ -336,14 +336,7 @@ export class Session {
   get totalWeightLifted(): Weight {
     return this.recordedExercises.reduce(
       (b, ex) =>
-        b.plus(
-          ex instanceof RecordedWeightedExercise
-            ? ex.potentialSets.reduce(
-                (c, set) => c.plus(set.weight.multipliedBy(set.set?.repsCompleted ?? 0)),
-                Weight.NIL,
-              )
-            : Weight.NIL,
-        ),
+        b.plus(ex instanceof RecordedWeightedExercise ? ex.totalWeightLiftedWith(this.bodyweight) : Weight.NIL),
       Weight.NIL,
     );
   }

@@ -105,6 +105,7 @@ function PrepareAiPlannerPage() {
         false,
         '',
         '',
+        false,
       );
     dispatch(
       setChat([

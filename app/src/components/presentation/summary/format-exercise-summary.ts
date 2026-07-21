@@ -14,12 +14,14 @@ import { localeFormatBigNumber } from '@/utils/locale-bignumber';
  */
 export function formatExerciseSummary(
   exercise: RecordedExercise,
-  options: { isFilled: boolean; showWeight: boolean },
+  options: { isFilled: boolean; showWeight: boolean; bodyweightLabel?: string },
 ): string {
   if (exercise instanceof RecordedWeightedExercise) {
+    const usesBodyweight = exercise.blueprint.usesBodyweight;
+    const label = options.bodyweightLabel ?? 'BW';
     return options.isFilled
-      ? formatRuns(filledRuns(exercise, options.showWeight))
-      : formatPlanned(exercise, options.showWeight);
+      ? formatRuns(filledRuns(exercise, options.showWeight, usesBodyweight, label))
+      : formatPlanned(exercise, options.showWeight, usesBodyweight, label);
   }
 
   const sets = options.isFilled
@@ -46,9 +48,11 @@ export function formatSessionVolume(session: Session): string | undefined {
     if (!(exercise instanceof RecordedWeightedExercise)) continue;
 
     for (const potentialSet of exercise.potentialSets) {
-      if (!potentialSet.set || potentialSet.weight.value.isZero()) continue;
+      if (!potentialSet.set) continue;
+      const weight = exercise.effectiveWeight(potentialSet, session.bodyweight);
+      if (weight.value.isZero()) continue;
 
-      const moved = potentialSet.weight.multipliedBy(potentialSet.set.repsCompleted);
+      const moved = weight.multipliedBy(potentialSet.set.repsCompleted);
       total = total ? total.plus(moved) : moved;
     }
   }
@@ -62,15 +66,29 @@ interface SetRun {
   count: number;
 }
 
-function filledRuns(exercise: RecordedWeightedExercise, showWeight: boolean): SetRun[] {
+function filledRuns(
+  exercise: RecordedWeightedExercise,
+  showWeight: boolean,
+  usesBodyweight: boolean,
+  bodyweightLabel: string,
+): SetRun[] {
   return runsOf(
     exercise.potentialSets
       .filter((potentialSet) => potentialSet.set)
       .map((potentialSet) => ({
         label: potentialSet.set!.repsCompleted.toString(),
-        weight: weightOf(potentialSet.weight, showWeight),
+        weight: weightOf(potentialSet.weight, showWeight, usesBodyweight, bodyweightLabel),
       })),
   );
+}
+
+/** The added/assisted load shown against a bodyweight movement: `BW`, `BW +10kg`, `BW -20kg`. */
+function bodyweightWeightLabel(weight: Weight, bodyweightLabel: string): string {
+  if (weight.value.isZero()) {
+    return bodyweightLabel;
+  }
+  const sign = weight.value.isGreaterThan(0) ? '+' : '';
+  return `${bodyweightLabel} ${sign}${weight.shortLocaleFormat()}`;
 }
 
 /**
@@ -78,13 +96,30 @@ function filledRuns(exercise: RecordedWeightedExercise, showWeight: boolean): Se
  * or the per-set targets spelled out (`12/10/8`) for a pyramid. A rep range shows as `min–max`. The weight,
  * when shown, becomes a range if it steps between sets.
  */
-function formatPlanned(exercise: RecordedWeightedExercise, showWeight: boolean): string {
+function formatPlanned(
+  exercise: RecordedWeightedExercise,
+  showWeight: boolean,
+  usesBodyweight: boolean,
+  bodyweightLabel: string,
+): string {
   const sets = exercise.potentialSets;
   const blueprint = exercise.blueprint;
   const shape =
     blueprint.repsConfig.type === 'perSet'
       ? blueprint.repsConfig.targets.map(formatRepsTarget).join('/')
       : `${sets.length} × ${formatRepsTarget(blueprint.repsTargetForSet(0))}`;
+
+  if (usesBodyweight) {
+    if (!showWeight) {
+      return shape;
+    }
+    const heaviest = Weight.max(...sets.map((set) => set.weight));
+    const lightest = Weight.min(...sets.map((set) => set.weight)).convertTo(heaviest.unit);
+    const suffix = heaviest.equals(lightest)
+      ? bodyweightWeightLabel(heaviest, bodyweightLabel)
+      : `${bodyweightLabel} ${signedWeight(lightest)}–${signedWeight(heaviest)}`;
+    return `${shape} @ ${suffix}`;
+  }
 
   const weights = sets.map((set) => set.weight).filter((weight) => !weight.value.isZero());
   if (!showWeight || weights.length === 0) {
@@ -100,8 +135,20 @@ function formatPlanned(exercise: RecordedWeightedExercise, showWeight: boolean):
     : `${shape} @ ${localeFormatBigNumber(lightest.value)}–${heaviest.shortLocaleFormat()}`;
 }
 
-function weightOf(weight: Weight, showWeight: boolean): string {
-  return showWeight && !weight.value.isZero() ? weight.shortLocaleFormat() : '';
+/** A signed weight for a bodyweight range end: `+10kg`, `-20kg`. */
+function signedWeight(weight: Weight): string {
+  const sign = weight.value.isGreaterThan(0) ? '+' : '';
+  return `${sign}${weight.shortLocaleFormat()}`;
+}
+
+function weightOf(weight: Weight, showWeight: boolean, usesBodyweight: boolean, bodyweightLabel: string): string {
+  if (!showWeight) {
+    return '';
+  }
+  if (usesBodyweight) {
+    return bodyweightWeightLabel(weight, bodyweightLabel);
+  }
+  return !weight.value.isZero() ? weight.shortLocaleFormat() : '';
 }
 
 function runsOf(sets: { label: string; weight: string }[]): SetRun[] {

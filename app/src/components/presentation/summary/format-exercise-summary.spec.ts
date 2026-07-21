@@ -105,6 +105,43 @@ describe('formatExerciseSummary', () => {
   });
 });
 
+describe('formatExerciseSummary for bodyweight exercises', () => {
+  function bodyweightExerciseOf(sets: { reps: number | undefined; weight: number }[]) {
+    return new RecordedWeightedExercise(
+      makeWeightedBlueprint('Pull Up', false, true),
+      sets.map(
+        (set) =>
+          new PotentialSet(
+            set.reps === undefined ? undefined : new RecordedSet(set.reps, tick()),
+            new Weight(set.weight, 'kilograms'),
+          ),
+      ),
+      undefined,
+    );
+  }
+
+  it('shows just the bodyweight label when no weight is added', () => {
+    const exercise = bodyweightExerciseOf([
+      { reps: 12, weight: 0 },
+      { reps: 12, weight: 0 },
+    ]);
+
+    expect(formatExerciseSummary(exercise, filled)).toBe('2 × 12 @ BW');
+  });
+
+  it('shows added weight with a plus sign', () => {
+    const exercise = bodyweightExerciseOf([{ reps: 8, weight: 10 }]);
+
+    expect(formatExerciseSummary(exercise, filled)).toBe('8 @ BW +10kg');
+  });
+
+  it('shows assistance as a negative added weight', () => {
+    const exercise = bodyweightExerciseOf([{ reps: 8, weight: -20 }]);
+
+    expect(formatExerciseSummary(exercise, filled)).toBe('8 @ BW -20kg');
+  });
+});
+
 describe('formatSessionVolume', () => {
   it('totals the weight moved', () => {
     const session = sessionOf(

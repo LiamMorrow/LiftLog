@@ -145,6 +145,15 @@ export class RecordedWeightedExercise {
     };
   }
 
+  /**
+   * The load actually moved for a set: the stored weight for a plain exercise, or the
+   * bodyweight plus the stored (added/assisted) weight for a bodyweight exercise. When the
+   * session bodyweight is unknown the bodyweight contribution is treated as zero.
+   */
+  effectiveWeight(set: PotentialSet, bodyweight: Weight | undefined): Weight {
+    return this.blueprint.usesBodyweight ? (bodyweight ?? Weight.NIL).plus(set.weight) : set.weight;
+  }
+
   get maxWeight(): Weight {
     return (
       this.potentialSets.reduce(
@@ -156,9 +165,25 @@ export class RecordedWeightedExercise {
     );
   }
 
+  maxWeightWith(bodyweight: Weight | undefined): Weight {
+    return (
+      this.potentialSets.reduce(
+        (max, set) => {
+          const weight = this.effectiveWeight(set, bodyweight);
+          return !max || weight.isGreaterThan(max) ? weight : max;
+        },
+        undefined as Weight | undefined,
+      ) ?? new Weight(0, 'kilograms')
+    );
+  }
+
   get totalWeightLifted(): Weight {
+    return this.totalWeightLiftedWith(undefined);
+  }
+
+  totalWeightLiftedWith(bodyweight: Weight | undefined): Weight {
     return this.potentialSets.reduce(
-      (accum, set) => accum.plus(set.weight.multipliedBy(set.set?.repsCompleted ?? 0)),
+      (accum, set) => accum.plus(this.effectiveWeight(set, bodyweight).multipliedBy(set.set?.repsCompleted ?? 0)),
       Weight.NIL,
     );
   }

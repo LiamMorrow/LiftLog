@@ -4,7 +4,7 @@
   "properties": {
     "version": {
       "type": "number",
-      "const": 3
+      "const": 4
     },
     "id": {
       "type": "string"

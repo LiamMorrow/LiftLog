@@ -1036,19 +1036,19 @@ var require_validate_schema = __commonJS({
           }
           errors++;
         }
+        if (data.usesBodyweight === void 0) {
+          const err9 = { instancePath, schemaPath: "#/required", keyword: "required", params: { missingProperty: "usesBodyweight" }, message: "must have required property 'usesBodyweight'" };
+          if (vErrors === null) {
+            vErrors = [err9];
+          } else {
+            vErrors.push(err9);
+          }
+          errors++;
+        }
         if (data.type !== void 0) {
           let data0 = data.type;
           if (typeof data0 !== "string") {
-            const err9 = { instancePath: instancePath + "/type", schemaPath: "#/properties/type/type", keyword: "type", params: { type: "string" }, message: "must be string" };
-            if (vErrors === null) {
-              vErrors = [err9];
-            } else {
-              vErrors.push(err9);
-            }
-            errors++;
-          }
-          if ("WeightedExerciseBlueprint" !== data0) {
-            const err10 = { instancePath: instancePath + "/type", schemaPath: "#/properties/type/const", keyword: "const", params: { allowedValue: "WeightedExerciseBlueprint" }, message: "must be equal to constant" };
+            const err10 = { instancePath: instancePath + "/type", schemaPath: "#/properties/type/type", keyword: "type", params: { type: "string" }, message: "must be string" };
             if (vErrors === null) {
               vErrors = [err10];
             } else {
@@ -1056,10 +1056,8 @@ var require_validate_schema = __commonJS({
             }
             errors++;
           }
-        }
-        if (data.name !== void 0) {
-          if (typeof data.name !== "string") {
-            const err11 = { instancePath: instancePath + "/name", schemaPath: "#/properties/name/type", keyword: "type", params: { type: "string" }, message: "must be string" };
+          if ("WeightedExerciseBlueprint" !== data0) {
+            const err11 = { instancePath: instancePath + "/type", schemaPath: "#/properties/type/const", keyword: "const", params: { allowedValue: "WeightedExerciseBlueprint" }, message: "must be equal to constant" };
             if (vErrors === null) {
               vErrors = [err11];
             } else {
@@ -1068,14 +1066,25 @@ var require_validate_schema = __commonJS({
             errors++;
           }
         }
-        if (data.sets !== void 0) {
-          let data2 = data.sets;
-          if (!(typeof data2 == "number" && (!(data2 % 1) && !isNaN(data2)) && isFinite(data2))) {
-            const err12 = { instancePath: instancePath + "/sets", schemaPath: "#/properties/sets/type", keyword: "type", params: { type: "integer" }, message: "must be integer" };
+        if (data.name !== void 0) {
+          if (typeof data.name !== "string") {
+            const err12 = { instancePath: instancePath + "/name", schemaPath: "#/properties/name/type", keyword: "type", params: { type: "string" }, message: "must be string" };
             if (vErrors === null) {
               vErrors = [err12];
             } else {
               vErrors.push(err12);
+            }
+            errors++;
+          }
+        }
+        if (data.sets !== void 0) {
+          let data2 = data.sets;
+          if (!(typeof data2 == "number" && (!(data2 % 1) && !isNaN(data2)) && isFinite(data2))) {
+            const err13 = { instancePath: instancePath + "/sets", schemaPath: "#/properties/sets/type", keyword: "type", params: { type: "integer" }, message: "must be integer" };
+            if (vErrors === null) {
+              vErrors = [err13];
+            } else {
+              vErrors.push(err13);
             }
             errors++;
           }
@@ -1094,18 +1103,7 @@ var require_validate_schema = __commonJS({
         }
         if (data.supersetWithNext !== void 0) {
           if (typeof data.supersetWithNext !== "boolean") {
-            const err13 = { instancePath: instancePath + "/supersetWithNext", schemaPath: "#/properties/supersetWithNext/type", keyword: "type", params: { type: "boolean" }, message: "must be boolean" };
-            if (vErrors === null) {
-              vErrors = [err13];
-            } else {
-              vErrors.push(err13);
-            }
-            errors++;
-          }
-        }
-        if (data.notes !== void 0) {
-          if (typeof data.notes !== "string") {
-            const err14 = { instancePath: instancePath + "/notes", schemaPath: "#/properties/notes/type", keyword: "type", params: { type: "string" }, message: "must be string" };
+            const err14 = { instancePath: instancePath + "/supersetWithNext", schemaPath: "#/properties/supersetWithNext/type", keyword: "type", params: { type: "boolean" }, message: "must be boolean" };
             if (vErrors === null) {
               vErrors = [err14];
             } else {
@@ -1114,13 +1112,24 @@ var require_validate_schema = __commonJS({
             errors++;
           }
         }
-        if (data.link !== void 0) {
-          if (typeof data.link !== "string") {
-            const err15 = { instancePath: instancePath + "/link", schemaPath: "#/properties/link/type", keyword: "type", params: { type: "string" }, message: "must be string" };
+        if (data.notes !== void 0) {
+          if (typeof data.notes !== "string") {
+            const err15 = { instancePath: instancePath + "/notes", schemaPath: "#/properties/notes/type", keyword: "type", params: { type: "string" }, message: "must be string" };
             if (vErrors === null) {
               vErrors = [err15];
             } else {
               vErrors.push(err15);
+            }
+            errors++;
+          }
+        }
+        if (data.link !== void 0) {
+          if (typeof data.link !== "string") {
+            const err16 = { instancePath: instancePath + "/link", schemaPath: "#/properties/link/type", keyword: "type", params: { type: "string" }, message: "must be string" };
+            if (vErrors === null) {
+              vErrors = [err16];
+            } else {
+              vErrors.push(err16);
             }
             errors++;
           }
@@ -1131,12 +1140,23 @@ var require_validate_schema = __commonJS({
             errors = vErrors.length;
           }
         }
+        if (data.usesBodyweight !== void 0) {
+          if (typeof data.usesBodyweight !== "boolean") {
+            const err17 = { instancePath: instancePath + "/usesBodyweight", schemaPath: "#/properties/usesBodyweight/type", keyword: "type", params: { type: "boolean" }, message: "must be boolean" };
+            if (vErrors === null) {
+              vErrors = [err17];
+            } else {
+              vErrors.push(err17);
+            }
+            errors++;
+          }
+        }
       } else {
-        const err16 = { instancePath, schemaPath: "#/type", keyword: "type", params: { type: "object" }, message: "must be object" };
+        const err18 = { instancePath, schemaPath: "#/type", keyword: "type", params: { type: "object" }, message: "must be object" };
         if (vErrors === null) {
-          vErrors = [err16];
+          vErrors = [err18];
         } else {
-          vErrors.push(err16);
+          vErrors.push(err18);
         }
         errors++;
       }
@@ -1812,8 +1832,8 @@ var require_validate_schema = __commonJS({
             }
             errors++;
           }
-          if (3 !== data0) {
-            const err5 = { instancePath: instancePath + "/version", schemaPath: "#/properties/version/const", keyword: "const", params: { allowedValue: 3 }, message: "must be equal to constant" };
+          if (4 !== data0) {
+            const err5 = { instancePath: instancePath + "/version", schemaPath: "#/properties/version/const", keyword: "const", params: { allowedValue: 4 }, message: "must be equal to constant" };
             if (vErrors === null) {
               vErrors = [err5];
             } else {

@@ -15,10 +15,10 @@ import { Duration, OffsetDateTime, ZoneId } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
 
-/** Epley: 1RM = weight * (1 + reps/30). */
-export function calculateOneRepMax(ps: PotentialSet): Weight {
+/** Epley: 1RM = weight * (1 + reps/30). `weight` is the effective load, folding in bodyweight. */
+export function calculateOneRepMax(ps: PotentialSet, weight: Weight): Weight {
   const reps = ps.set!.repsCompleted;
-  return ps.weight.multipliedBy(new BigNumber(1).plus(new BigNumber(reps).div(30)));
+  return weight.multipliedBy(new BigNumber(1).plus(new BigNumber(reps).div(30)));
 }
 
 export function calculateStats(
@@ -140,7 +140,7 @@ export function calculateStats(
       // Max weight lifted for this exercise in this session
       const maxWeight = ex.potentialSets
         .filter((ps) => ps.set)
-        .map((ps) => ps.weight)
+        .map((ps) => ex.effectiveWeight(ps, session.bodyweight))
         .reduce((a, b) => (a === null ? b : a.isGreaterThan(b) ? a : b), null as null | Weight);
       if (!maxWeight) {
         continue;
@@ -150,7 +150,7 @@ export function calculateStats(
       const max1RM = ex.potentialSets
         .filter((ps) => ps.set)
         .filter((ps) => ps.set!.repsCompleted)
-        .map(calculateOneRepMax)
+        .map((ps) => calculateOneRepMax(ps, ex.effectiveWeight(ps, session.bodyweight)))
         .reduce((a, b) => (a === null ? b : a.isGreaterThan(b) ? a : b), null as null | Weight);
       if (!max1RM) {
         continue;
@@ -183,7 +183,10 @@ export function calculateStats(
         dateTime: lastSet.set!.completionDateTime,
         value: ex.potentialSets
           .filter((x) => x.set)
-          .reduce((accum, set) => set.weight.multipliedBy(set.set!.repsCompleted).plus(accum), Weight.NIL),
+          .reduce(
+            (accum, set) => ex.effectiveWeight(set, session.bodyweight).multipliedBy(set.set!.repsCompleted).plus(accum),
+            Weight.NIL,
+          ),
       });
     }
   }
@@ -243,7 +246,7 @@ export function calculateStats(
       }
       const maxWeight = ex.potentialSets
         .filter((ps) => ps.set)
-        .map((ps) => ps.weight)
+        .map((ps) => ex.effectiveWeight(ps, session.bodyweight))
         .reduce((a, b) => (a.isGreaterThan(b) ? a : b), Weight.NIL);
       if (!heaviestLift || maxWeight.isGreaterThan(heaviestLift.weight)) {
         heaviestLift = {

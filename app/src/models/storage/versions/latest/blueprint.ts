@@ -11,7 +11,7 @@ export interface ProgramBlueprintJSON {
 }
 
 export interface SessionBlueprintJSON {
-  version: 3;
+  version: 4;
   name: string;
   exercises: ExerciseBlueprintJSON[];
   notes: string;
@@ -89,6 +89,12 @@ export interface WeightedExerciseBlueprintJSON {
    */
   link: string;
   progressiveOverload: ProgressiveOverloadJSON;
+  /**
+   * When true, the movement's base load is the lifter's own bodyweight (pull-ups, dips),
+   * and each set's stored weight is the *added* load on top of it - positive when weighted,
+   * negative when assisted.
+   */
+  usesBodyweight: boolean;
 }
 
 export interface RepsTargetJSON {

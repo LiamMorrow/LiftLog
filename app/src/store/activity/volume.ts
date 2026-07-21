@@ -12,7 +12,9 @@ export function sessionVolume(session: Session): number {
       if (!potentialSet.set) {
         continue;
       }
-      total += potentialSet.weight.convertTo('kilograms').value.toNumber() * potentialSet.set.repsCompleted;
+      total +=
+        exercise.effectiveWeight(potentialSet, session.bodyweight).convertTo('kilograms').value.toNumber() *
+        potentialSet.set.repsCompleted;
     }
   }
   return total;

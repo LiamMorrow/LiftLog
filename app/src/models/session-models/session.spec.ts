@@ -853,6 +853,26 @@ describe('Session derived values', () => {
     expect(session.totalWeightLifted).toEqual(new Weight(500, 'kilograms'));
   });
 
+  it('totalWeightLifted folds the session bodyweight into a bodyweight exercise', () => {
+    const t = tick();
+    const bp = makeWeightedBlueprint('Pull Up', false, true);
+    const exercise = new RecordedWeightedExercise(
+      bp,
+      [new PotentialSet(new RecordedSet(5, t), new Weight(10, 'kilograms'))],
+      undefined,
+    );
+    const session = new Session(
+      uuid(),
+      new SessionBlueprint('Test', [bp], ''),
+      [exercise],
+      LocalDate.of(2025, 4, 5),
+      new Weight(80, 'kilograms'),
+      undefined,
+    );
+    // (80 + 10) × 5
+    expect(session.totalWeightLifted).toEqual(new Weight(450, 'kilograms'));
+  });
+
   it('isComplete is true only when every exercise is complete', () => {
     const incomplete = makeSession([makeWeightedBlueprint()]);
     expect(incomplete.isComplete).toBe(false);

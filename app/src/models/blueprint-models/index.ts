@@ -123,7 +123,7 @@ export class SessionBlueprint {
 
   toJSON(): SessionBlueprintJSON {
     return {
-      version: 3,
+      version: 4,
       name: this.name,
       exercises: this.exercises.map((exercise) => exercise.toJSON()),
       notes: this.notes,
@@ -570,6 +570,7 @@ export class WeightedExerciseBlueprint {
     readonly supersetWithNext: boolean,
     readonly notes: string,
     readonly link: string,
+    readonly usesBodyweight: boolean = false,
   ) {}
 
   static empty() {
@@ -582,6 +583,7 @@ export class WeightedExerciseBlueprint {
       false,
       '',
       '',
+      false,
     );
   }
 
@@ -595,6 +597,7 @@ export class WeightedExerciseBlueprint {
       json.supersetWithNext,
       json.notes,
       json.link,
+      json.usesBodyweight,
     );
   }
 
@@ -652,7 +655,8 @@ export class WeightedExerciseBlueprint {
       this.restBetweenSets.failureRest.equals(other.restBetweenSets.failureRest) &&
       this.supersetWithNext === other.supersetWithNext &&
       this.notes === other.notes &&
-      this.link === other.link
+      this.link === other.link &&
+      this.usesBodyweight === other.usesBodyweight
     );
   }
 
@@ -667,6 +671,7 @@ export class WeightedExerciseBlueprint {
       supersetWithNext: this.supersetWithNext,
       notes: this.notes,
       link: this.link,
+      usesBodyweight: this.usesBodyweight,
     };
   }
 
@@ -680,6 +685,7 @@ export class WeightedExerciseBlueprint {
       other.supersetWithNext ?? this.supersetWithNext,
       other.notes ?? this.notes,
       other.link ?? this.link,
+      'usesBodyweight' in other ? (other.usesBodyweight ?? this.usesBodyweight) : this.usesBodyweight,
     );
   }
 }
@@ -784,6 +790,7 @@ export const EmptyExerciseBlueprint = new WeightedExerciseBlueprint(
   false,
   '',
   '',
+  false,
 );
 
 export function restEquals(a: Rest | undefined, b: Rest | undefined): boolean {

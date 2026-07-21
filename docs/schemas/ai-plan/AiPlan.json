@@ -58,7 +58,7 @@
       "properties": {
         "version": {
           "type": "number",
-          "const": 3
+          "const": 4
         },
         "name": {
           "type": "string"
@@ -130,6 +130,10 @@
         },
         "progressiveOverload": {
           "$ref": "#/definitions/ProgressiveOverload"
+        },
+        "usesBodyweight": {
+          "type": "boolean",
+          "description": "When true, the movement's base load is the lifter's own bodyweight (pull-ups, dips), and each set's stored weight is the *added* load on top of it - positive when weighted, negative when assisted."
         }
       },
       "required": [
@@ -141,7 +145,8 @@
         "supersetWithNext",
         "notes",
         "link",
-        "progressiveOverload"
+        "progressiveOverload",
+        "usesBodyweight"
       ]
     },
     "RepsConfig": {

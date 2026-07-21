@@ -203,6 +203,59 @@ describe('RecordedWeightedExercise derived values', () => {
   });
 });
 
+// ─── bodyweight fold-in ────────────────────────────────────────────────────────
+
+describe('RecordedWeightedExercise bodyweight fold-in', () => {
+  const bodyweight = new Weight(80, 'kilograms');
+
+  function bodyweightExercise(addedKg: number, reps = 5) {
+    return new RecordedWeightedExercise(
+      makeWeightedBlueprint('Pull Up', false, true),
+      [new PotentialSet(new RecordedSet(reps, tick()), new Weight(addedKg, 'kilograms'))],
+      undefined,
+    );
+  }
+
+  it('effectiveWeight adds the bodyweight to the stored added load', () => {
+    const ex = bodyweightExercise(10);
+    expect(ex.effectiveWeight(ex.potentialSets[0]!, bodyweight)).toEqual(new Weight(90, 'kilograms'));
+  });
+
+  it('effectiveWeight subtracts assistance from the bodyweight', () => {
+    const ex = bodyweightExercise(-20);
+    expect(ex.effectiveWeight(ex.potentialSets[0]!, bodyweight)).toEqual(new Weight(60, 'kilograms'));
+  });
+
+  it('effectiveWeight falls back to only the added weight when bodyweight is unknown', () => {
+    const ex = bodyweightExercise(10);
+    expect(ex.effectiveWeight(ex.potentialSets[0]!, undefined)).toEqual(new Weight(10, 'kilograms'));
+  });
+
+  it('effectiveWeight ignores the bodyweight for a plain weighted exercise', () => {
+    const ex = new RecordedWeightedExercise(
+      makeWeightedBlueprint('Row'),
+      [new PotentialSet(new RecordedSet(5, tick()), new Weight(10, 'kilograms'))],
+      undefined,
+    );
+    expect(ex.effectiveWeight(ex.potentialSets[0]!, bodyweight)).toEqual(new Weight(10, 'kilograms'));
+  });
+
+  it('totalWeightLiftedWith folds the bodyweight into every set', () => {
+    const ex = bodyweightExercise(10, 5); // (80 + 10) × 5
+    expect(ex.totalWeightLiftedWith(bodyweight)).toEqual(new Weight(450, 'kilograms'));
+  });
+
+  it('maxWeightWith reports the heaviest effective load', () => {
+    const ex = bodyweightExercise(10);
+    expect(ex.maxWeightWith(bodyweight)).toEqual(new Weight(90, 'kilograms'));
+  });
+
+  it('the zero-arg totalWeightLifted counts only the added weight', () => {
+    const ex = bodyweightExercise(10, 5); // 10 × 5, no bodyweight folded in
+    expect(ex.totalWeightLifted).toEqual(new Weight(50, 'kilograms'));
+  });
+});
+
 // ─── rep schemes: ranges & pyramids ───────────────────────────────────────────
 
 describe('RecordedWeightedExercise.withCycledRepCount', () => {

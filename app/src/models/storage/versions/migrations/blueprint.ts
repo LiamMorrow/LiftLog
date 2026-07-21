@@ -6,6 +6,7 @@ import { ProgramBlueprintJSON, SessionBlueprintJSON } from '@/models/storage/ver
 import { createMigrations } from './migrator';
 import { addProgressiveOverloadToExercise } from '@/models/storage/versions/migrations/steps/add-progressive-overload';
 import { repsPerSetToRepsConfig } from '@/models/storage/versions/migrations/steps/reps-per-set-to-reps-config';
+import { addUsesBodyweight } from '@/models/storage/versions/migrations/steps/add-uses-bodyweight';
 
 export const sessionBlueprintMigrations = createMigrations<InitialSessionBlueprintJSON>()
   .add((value) => ({
@@ -19,6 +20,12 @@ export const sessionBlueprintMigrations = createMigrations<InitialSessionBluepri
   .add((value) => ({
     version: 3 as const,
     exercises: value.exercises.map((x) => (x.type === 'WeightedExerciseBlueprint' ? repsPerSetToRepsConfig(x) : x)),
+    name: value.name,
+    notes: value.notes,
+  }))
+  .add((value) => ({
+    version: 4 as const,
+    exercises: value.exercises.map((x) => (x.type === 'WeightedExerciseBlueprint' ? addUsesBodyweight(x) : x)),
     name: value.name,
     notes: value.notes,
   }))

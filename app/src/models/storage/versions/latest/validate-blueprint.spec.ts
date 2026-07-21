@@ -9,7 +9,7 @@ const validBlueprint: ProgramBlueprintJSON = {
   lastEdited: '2024-01-01' as LocalDateJSON,
   sessions: [
     {
-      version: 3,
+      version: 4,
       name: 'Day 1',
       notes: '',
       exercises: [
@@ -27,6 +27,7 @@ const validBlueprint: ProgramBlueprintJSON = {
           notes: '',
           link: '',
           progressiveOverload: { type: 'IncreaseAllEvenlyProgressiveOverload', amount: '2.5' as BigNumberJSON },
+          usesBodyweight: false,
         },
       ],
     },

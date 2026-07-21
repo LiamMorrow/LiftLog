@@ -22,6 +22,7 @@ interface PotentialSetCounterProps {
   previousRepCount: number | undefined;
   toStartNext: boolean;
   isReadonly: boolean;
+  usesBodyweight: boolean;
 
   onTap: () => void;
   onUpdateWeight: (weight: Weight, applyTo: WeightAppliesTo) => void;
@@ -145,7 +146,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
               disabled={props.isReadonly}
             >
               <Text style={{ color: colors.onSurface, ...font['text-sm'] }}>
-                <WeightFormat weight={props.set.weight} />
+                <WeightFormat weight={props.set.weight} usesBodyweight={props.usesBodyweight} />
               </Text>
             </TouchableRipple>
           </View>

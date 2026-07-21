@@ -97,7 +97,7 @@ describe('real migrations', () => {
     it('migrates a weighted exercise from v1 to latest: repsPerSet → repsConfig, weightIncrease → progressiveOverload', () => {
       const result = sessionBlueprintMigrations.migrate(initialSessionBlueprint());
       const weighted = result.exercises[0]!;
-      expect(result.version).toBe(3);
+      expect(result.version).toBe(4);
       expect(weighted).toMatchObject({
         type: 'WeightedExerciseBlueprint',
         sets: 3,
@@ -131,7 +131,7 @@ describe('real migrations', () => {
       const result = programBlueprintMigrations.migrate(initialProgramBlueprint());
       expect(result.version).toBe(3);
       expect(result.name).toBe('PPL');
-      expect(result.sessions.every((s) => s.version === 3)).toBe(true);
+      expect(result.sessions.every((s) => s.version === 4)).toBe(true);
     });
 
     it('accepts embedded session blueprints at mixed versions and brings them all to latest', () => {
@@ -146,7 +146,7 @@ describe('real migrations', () => {
       });
 
       expect(result.sessions).toHaveLength(3);
-      expect(result.sessions.every((s) => s.version === 3)).toBe(true);
+      expect(result.sessions.every((s) => s.version === 4)).toBe(true);
       // every embedded session ends up identical to migrating it directly, regardless of the version it came in at
       const expected = sessionBlueprintMigrations.migrate(initialSessionBlueprint());
       for (const session of result.sessions) {
@@ -154,11 +154,11 @@ describe('real migrations', () => {
       }
     });
 
-    it('keeps the program version at 3 even though the child blueprint bumped to 3', () => {
+    it('keeps the program version at 3 even though the child blueprint bumped to 4', () => {
       // the wrapper stamps its own legacy pseudo-version; the child carries its own
       const result = programBlueprintMigrations.migrate(initialProgramBlueprint());
       expect(result.version).toBe(3);
-      expect(result.sessions[0]!.version).toBe(3);
+      expect(result.sessions[0]!.version).toBe(4);
     });
 
     it('is idempotent', () => {
@@ -181,7 +181,7 @@ describe('real migrations', () => {
   describe('sessionMigrations (started with an embedded blueprint, then moved away from it)', () => {
     it('strips the exercises off the stored blueprint', () => {
       const result = sessionMigrations.migrate(initialSession());
-      expect(result.version).toBe(3);
+      expect(result.version).toBe(4);
       expect(result.blueprint).toEqual({ name: 'Push Day', notes: 'session notes' });
       expect('exercises' in result.blueprint).toBe(false);
     });
@@ -215,7 +215,7 @@ describe('real migrations', () => {
       expect(result.name).toBe('Strength');
       expect(result.description).toBe('get strong');
       expect(result.blueprint.version).toBe(3);
-      expect(result.blueprint.sessions.every((s) => s.version === 3)).toBe(true);
+      expect(result.blueprint.sessions.every((s) => s.version === 4)).toBe(true);
     });
   });
 
@@ -223,7 +223,7 @@ describe('real migrations', () => {
     it('sessionUserEvent brings its embedded session to latest', () => {
       const result = sessionUserEventMigrations.migrate(initialSessionUserEvent());
       expect(result.version).toBe(3);
-      expect(result.session.version).toBe(3);
+      expect(result.session.version).toBe(4);
       expect(result.session.blueprint).toEqual({ name: 'Push Day', notes: 'session notes' });
     });
 
@@ -231,7 +231,7 @@ describe('real migrations', () => {
       const shared: InitialSharedSessionJSON = { type: 'SharedSession', session: initialSession() };
       const result = sharedSessionMigrations.migrate(shared);
       expect(result.version).toBe(3);
-      expect(result.session.version).toBe(3);
+      expect(result.session.version).toBe(4);
     });
 
     it('sharedProgramBlueprint brings its embedded program to latest', () => {
@@ -242,14 +242,14 @@ describe('real migrations', () => {
       const result = sharedProgramBlueprintMigrations.migrate(shared);
       expect(result.version).toBe(3);
       expect(result.programBlueprint.version).toBe(3);
-      expect(result.programBlueprint.sessions.every((s) => s.version === 3)).toBe(true);
+      expect(result.programBlueprint.sessions.every((s) => s.version === 4)).toBe(true);
     });
 
     it('followedFeedUser brings its currentPlan to latest', () => {
       const result = followedFeedUserMigrations.migrate(initialFollowedFeedUser(initialProgramBlueprint()));
       expect(result.version).toBe(3);
       expect(result.currentPlan?.version).toBe(3);
-      expect(result.currentPlan?.sessions.every((s) => s.version === 3)).toBe(true);
+      expect(result.currentPlan?.sessions.every((s) => s.version === 4)).toBe(true);
     });
 
     it('followedFeedUser leaves an absent currentPlan absent', () => {
@@ -301,7 +301,7 @@ describe('real migrations', () => {
       const result = userEventMigrations.migrate(initialSessionUserEvent());
       expect(result.type).toBe('SessionUserEvent');
       if (result.type === 'SessionUserEvent') {
-        expect(result.session.version).toBe(3);
+        expect(result.session.version).toBe(4);
       }
     });
 
@@ -331,7 +331,7 @@ describe('real migrations', () => {
 
     it('migrates a session with no recorded exercises', () => {
       const result = sessionMigrations.migrate({ ...initialSession(), recordedExercises: [] });
-      expect(result.version).toBe(3);
+      expect(result.version).toBe(4);
       expect(result.recordedExercises).toEqual([]);
       expect(result.blueprint).toEqual({ name: 'Push Day', notes: 'session notes' });
     });

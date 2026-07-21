@@ -79,7 +79,7 @@ function FilledChips(props: { exercise: RecordedExercise; showWeight: boolean })
             <SurfaceText font="text-2xs" color="onSurface">
               @
             </SurfaceText>
-            <WeightFormat color="onSurface" weight={chip.weight} />
+            <WeightFormat color="onSurface" weight={chip.weight} usesBodyweight={chip.usesBodyweight} />
           </>
         ) : undefined}
       </Chip>
@@ -126,7 +126,7 @@ function PlannedChips(props: { exercise: RecordedExercise; showWeight: boolean }
             <SurfaceText color="onSurface" font="text-2xs">
               @
             </SurfaceText>
-            <WeightFormat color="onSurface" weight={chip.weight} />
+            <WeightFormat color="onSurface" weight={chip.weight} usesBodyweight={chip.usesBodyweight} />
           </>
         ) : undefined}
       </Chip>
@@ -188,12 +188,14 @@ interface WeightAndRepsChipData {
   repsCompleted: number | undefined;
   repTarget: number;
   weight: Weight;
+  usesBodyweight: boolean;
 }
 
 interface PotentialSetChipData {
   repTarget: string;
   numSets: number;
   weight: Weight;
+  usesBodyweight: boolean;
 }
 
 function getWeightAndRepsChips(exercise: RecordedWeightedExercise): WeightAndRepsChipData[] {
@@ -201,6 +203,7 @@ function getWeightAndRepsChips(exercise: RecordedWeightedExercise): WeightAndRep
     repsCompleted: set.set?.repsCompleted,
     repTarget: exercise.blueprint.repsTargetForSet(index).max,
     weight: set.weight,
+    usesBodyweight: exercise.blueprint.usesBodyweight,
   }));
 }
 
@@ -216,6 +219,7 @@ function getPlannedChipData(exercise: RecordedWeightedExercise): PotentialSetChi
       repTarget: x.first().repTarget,
       numSets: x.count(),
       weight: x.first().weight,
+      usesBodyweight: exercise.blueprint.usesBodyweight,
     }))
     .toArray();
 }

@@ -14,7 +14,7 @@ function makeOffset(date: LocalDate, hour = 10, minute = 0): OffsetDateTime {
   return LocalTime.of(hour, minute).atDate(date).atOffset(ZoneOffset.UTC);
 }
 
-function makeBlueprint(name: string, sets = 3, reps = 8): WeightedExerciseBlueprint {
+function makeBlueprint(name: string, sets = 3, reps = 8, usesBodyweight = false): WeightedExerciseBlueprint {
   return new WeightedExerciseBlueprint(
     name,
     sets,
@@ -28,6 +28,7 @@ function makeBlueprint(name: string, sets = 3, reps = 8): WeightedExerciseBluepr
     false,
     '',
     '',
+    usesBodyweight,
   );
 }
 
@@ -63,8 +64,9 @@ function makeSession(
   reps = 8,
   sets = 3,
   bodyweightKg?: number,
+  usesBodyweight = false,
 ): Session {
-  const blueprint = makeBlueprint(exerciseName, sets, reps);
+  const blueprint = makeBlueprint(exerciseName, sets, reps, usesBodyweight);
   const sessionBlueprint = makeSessionBlueprint('Test Session', [blueprint]);
   const baseTime = makeOffset(date);
   const exercise = makeCompletedExercise(blueprint, weightKg, reps, baseTime);
@@ -264,6 +266,54 @@ describe('calculateStats', () => {
       const result = calculateStats([session], 'kilograms', makeRange(date, date));
 
       expect(result.bodyweightStats.statistics).toHaveLength(0);
+    });
+  });
+
+  describe('calculateStats — bodyweight exercises', () => {
+    it('folds the session bodyweight into max weight, 1RM and volume', () => {
+      const date = LocalDate.of(2024, 8, 1);
+      // bodyweight 80kg + 10kg added, 3 sets × 5 reps → effective load 90kg
+      const session = makeSession(date, 'Pull Up', 10, 5, 3, 80, true);
+
+      const result = calculateStats([session], 'kilograms', makeRange(date.minusDays(7), date));
+      const pullup = result.weightedExerciseStats.find((s) => s.exerciseName === 'Pull Up')!;
+
+      expect(pullup.maxLiftedPerSessionStatistics.maxValue.value.toNumber()).toBe(90);
+      expect(pullup.max1RMPerSessionStatistics.maxValue.value.toNumber()).toBeCloseTo(90 * (1 + 5 / 30), 2);
+      expect(pullup.totalVolumeStatistics.statistics[0]!.value.value.toNumber()).toBe(90 * 5 * 3);
+    });
+
+    it('folds the bodyweight into the heaviest lift', () => {
+      const date = LocalDate.of(2024, 8, 1);
+      // bodyweight 80kg + 25kg added → 105kg effective, heavier than the plain 100kg squat
+      const dip = makeSession(date, 'Dip', 25, 5, 3, 80, true);
+      const squat = makeSession(date.plusDays(1), 'Squat', 100, 5, 3, 80);
+
+      const result = calculateStats([dip, squat], 'kilograms', makeRange(date, date.plusDays(1)));
+
+      expect(result.heaviestLift?.exerciseName).toBe('Dip');
+      expect(result.heaviestLift?.weight.value.toNumber()).toBe(105);
+    });
+
+    it('counts assistance as a negative added weight', () => {
+      const date = LocalDate.of(2024, 8, 1);
+      // bodyweight 80kg − 20kg assisted → 60kg effective
+      const session = makeSession(date, 'Pull Up', -20, 5, 3, 80, true);
+
+      const result = calculateStats([session], 'kilograms', makeRange(date.minusDays(7), date));
+      const pullup = result.weightedExerciseStats.find((s) => s.exerciseName === 'Pull Up')!;
+
+      expect(pullup.maxLiftedPerSessionStatistics.maxValue.value.toNumber()).toBe(60);
+    });
+
+    it('falls back to only the added weight when no bodyweight is recorded', () => {
+      const date = LocalDate.of(2024, 8, 1);
+      const session = makeSession(date, 'Pull Up', 10, 5, 3, undefined, true);
+
+      const result = calculateStats([session], 'kilograms', makeRange(date.minusDays(7), date));
+      const pullup = result.weightedExerciseStats.find((s) => s.exerciseName === 'Pull Up')!;
+
+      expect(pullup.maxLiftedPerSessionStatistics.maxValue.value.toNumber()).toBe(10);
     });
   });
 

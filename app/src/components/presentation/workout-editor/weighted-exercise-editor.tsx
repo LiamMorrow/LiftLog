@@ -122,6 +122,14 @@ export function WeightedExerciseEditor({
               testID="exercise-superset"
               onValueChange={(supersetWithNext) => updateExercise({ supersetWithNext })}
             />,
+            <SegmentedListSwitch
+              key={4}
+              label={t('exercise.uses_bodyweight.label')}
+              icon={'directionsRun'}
+              value={exercise.usesBodyweight}
+              testID="exercise-uses-bodyweight"
+              onValueChange={(usesBodyweight) => updateExercise({ usesBodyweight })}
+            />,
             <SegmentListFormElement
               key={3}
               label={t('exercise.progressive_overload.label')}

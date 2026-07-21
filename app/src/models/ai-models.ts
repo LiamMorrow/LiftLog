@@ -156,6 +156,7 @@ function fillWeightedExercise(partial: DeepPartial<WeightedExerciseBlueprintJSON
     notes: partial.notes ?? emptyWeightedExercise.notes,
     link: partial.link ?? emptyWeightedExercise.link,
     progressiveOverload: fillProgressiveOverload(partial.progressiveOverload),
+    usesBodyweight: partial.usesBodyweight ?? emptyWeightedExercise.usesBodyweight,
   };
 }
 
@@ -211,7 +212,7 @@ function fillExercise(partial: DeepPartial<ExerciseBlueprintJSON> = {}): Exercis
 
 function fillSession(partial: DeepPartial<SessionBlueprintJSON> = {}): SessionBlueprintJSON {
   return {
-    version: 3,
+    version: 4,
     name: partial.name ?? emptySessionBlueprint.name,
     exercises: (partial.exercises ?? []).map(fillExercise),
     notes: partial.notes ?? emptySessionBlueprint.notes,

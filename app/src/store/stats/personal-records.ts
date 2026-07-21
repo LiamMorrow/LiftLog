@@ -23,7 +23,7 @@ function bestOneRepMax(session: Session): Map<string, PersonalRecord> {
       if (!potentialSet.set?.repsCompleted) {
         continue;
       }
-      const oneRepMax = calculateOneRepMax(potentialSet);
+      const oneRepMax = calculateOneRepMax(potentialSet, exercise.effectiveWeight(potentialSet, session.bodyweight));
       const current = best.get(key);
       if (!current || oneRepMax.isGreaterThan(current.oneRepMax)) {
         best.set(key, { exerciseName: exercise.blueprint.name, oneRepMax });
