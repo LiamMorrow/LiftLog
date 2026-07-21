@@ -15,8 +15,8 @@ const baseSample: BuiltInExerciseJSON[] = [
 ];
 
 describe('resolveCatalog', () => {
-  it('takes name from the id and joins the overlay instructions, merging muscles from the base', () => {
-    const catalog = resolveCatalog(baseSample, { Squat: { instructions: ['Stand up', 'Sit down'] } });
+  it('takes name from the id and the instructions from the overlay, merging muscles from the base', () => {
+    const catalog = resolveCatalog(baseSample, { Squat: { instructions: 'Stand up\nSit down' } });
     expect(catalog['Squat']).toMatchObject({
       name: 'Squat',
       instructions: 'Stand up\nSit down',
@@ -26,14 +26,14 @@ describe('resolveCatalog', () => {
 
   it('overlays a translated name and instructions, keyed by the English name', () => {
     const catalog = resolveCatalog(baseSample, {
-      Squat: { name: 'Приседания', instructions: ['Встать', 'Сесть'] },
+      Squat: { name: 'Приседания', instructions: 'Встать\nСесть' },
     });
     expect(catalog['Squat']!.name).toBe('Приседания');
     expect(catalog['Squat']!.instructions).toBe('Встать\nСесть');
   });
 
   it('falls back to the id name when an overlay omits the name', () => {
-    const catalog = resolveCatalog(baseSample, { Squat: { instructions: ['Встать'] } });
+    const catalog = resolveCatalog(baseSample, { Squat: { instructions: 'Встать' } });
     expect(catalog['Squat']!.name).toBe('Squat');
     expect(catalog['Squat']!.instructions).toBe('Встать');
   });

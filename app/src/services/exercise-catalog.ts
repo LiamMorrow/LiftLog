@@ -15,11 +15,11 @@ export interface BuiltInExerciseJSON {
   category: string;
 }
 
-// A locale overlay, keyed by English name, holding the translated free-text fields. English (en.json)
-// is itself an overlay carrying the instructions; its name matches the id, so it omits `name`.
+// A locale overlay, keyed by English name, holding the translated free-text fields. Instructions are a
+// single newline-separated string. English (en.json) is itself an overlay carrying these fields.
 export interface ExerciseTranslation {
   name?: string;
-  instructions?: string[];
+  instructions?: string;
 }
 export type ExerciseTranslationMap = Record<string, ExerciseTranslation | undefined>;
 
@@ -34,7 +34,7 @@ function builtInToDescriptor(
     mechanic: json.mechanic,
     equipment: json.equipment,
     category: json.category,
-    instructions: (translation?.instructions ?? []).join('\n'),
+    instructions: translation?.instructions ?? '',
     muscles: json.primaryMuscles.concat(json.secondaryMuscles),
   };
 }

@@ -9,7 +9,7 @@ translated free-text fields:
 
 ```json
 {
-  "3/4 Sit-Up": { "name": "…", "instructions": ["…", "…"] }
+  "3/4 Sit-Up": { "name": "…", "instructions": "…\n…" }
 }
 ```
 
