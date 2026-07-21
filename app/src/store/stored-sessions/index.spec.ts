@@ -10,6 +10,7 @@ import {
   selectRecentlyCompletedExercises,
   selectMuscles,
   selectExerciseById,
+  selectExercises,
   getSessionReferenceTime,
   storedSessionsReducer,
   addStoredSession,
@@ -18,7 +19,10 @@ import {
   deleteStoredSession,
   updateExercise,
   deleteExercise,
+  restoreExercise,
   setExercises,
+  setBuiltInExercises,
+  setHiddenBuiltInIds,
 } from '@/store/stored-sessions';
 import {
   CardioExerciseBlueprint,
@@ -201,6 +205,47 @@ describe('storedSessions reducer', () => {
 
     state = storedSessionsReducer(state, setExercises({ '3': squat }));
     expect(Object.keys(state.savedExercises)).toEqual(['3']);
+  });
+
+  it('merges built-in and saved exercises, with saved overriding by id and sorted by name', () => {
+    const state = reduce(
+      setBuiltInExercises({
+        Squat: exerciseDescriptor({ name: 'Squat' }),
+        Bench: exerciseDescriptor({ name: 'Bench' }),
+      }),
+      updateExercise({ id: 'Squat', exercise: exerciseDescriptor({ name: 'Back Squat' }) }),
+      updateExercise({ id: 'uuid-1', exercise: exerciseDescriptor({ name: 'Deadlift' }) }),
+    );
+
+    const merged = selectExercises({ storedSessions: state });
+    expect(Object.values(merged).map((e) => e.name)).toEqual(['Back Squat', 'Bench', 'Deadlift']);
+    expect(merged['Squat']!.name).toBe('Back Squat');
+  });
+
+  it('deleting a built-in tombstones it, and restore brings it back', () => {
+    let state = reduce(setBuiltInExercises({ Squat: exerciseDescriptor({ name: 'Squat' }) }));
+
+    state = storedSessionsReducer(state, deleteExercise('Squat'));
+    expect(state.hiddenBuiltInIds).toEqual(['Squat']);
+    expect(selectExercises({ storedSessions: state })['Squat']).toBeUndefined();
+
+    state = storedSessionsReducer(state, restoreExercise('Squat'));
+    expect(state.hiddenBuiltInIds).toEqual([]);
+    expect(selectExercises({ storedSessions: state })['Squat']).toBeDefined();
+  });
+
+  it('editing a hidden built-in un-hides it', () => {
+    let state = reduce(
+      setBuiltInExercises({ Squat: exerciseDescriptor({ name: 'Squat' }) }),
+      setHiddenBuiltInIds(['Squat']),
+    );
+
+    state = storedSessionsReducer(
+      state,
+      updateExercise({ id: 'Squat', exercise: exerciseDescriptor({ name: 'Squat v2' }) }),
+    );
+    expect(state.hiddenBuiltInIds).toEqual([]);
+    expect(selectExercises({ storedSessions: state })['Squat']!.name).toBe('Squat v2');
   });
 });
 

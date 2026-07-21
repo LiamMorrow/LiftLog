@@ -2,6 +2,7 @@ import { AccordionItem } from '@/components/presentation/foundation/accordion-it
 import ExerciseMuscleSelector from '@/components/presentation/workout-editor/exercise-muscle-selector';
 import { spacing } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
+import { translateExerciseMeta } from '@/utils/exercise-meta';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { Searchbar, Card } from 'react-native-paper';
@@ -20,7 +21,8 @@ export default function ExerciseSearchAndFilters({
 }) {
   const { t } = useTranslate();
   const [filtersExpanded, setFiltersExpanded] = useState(false);
-  const selectedFiltersSubtitle = muscleFilters.join(', ') || 'No filters applied';
+  const selectedFiltersSubtitle =
+    muscleFilters.map((m) => translateExerciseMeta(t, 'muscle', m)).join(', ') || 'No filters applied';
 
   return (
     <View style={{ gap: spacing[2] }}>

@@ -16,7 +16,12 @@ interface StoredSessionState {
   isHydrated: boolean;
   sessions: Record<string, Session>;
   latestExercises: Record<string, RecordedExercise | undefined>; // KeyedExerciseBlueprint -> RecordedExercise
+  // Read-only catalog resolved for the current locale, keyed by the exercise's English name.
+  builtInExercises: Record<string, ExerciseDescriptor>;
+  // User-created exercises and copy-on-write edits of built-ins.
   savedExercises: Record<string, ExerciseDescriptor>;
+  // Built-in ids the user deleted, hidden from the merged list.
+  hiddenBuiltInIds: string[];
   filteredExerciseIds: string[];
   earliestSession: Session | undefined;
 }
@@ -25,10 +30,22 @@ const initialState: StoredSessionState = {
   isHydrated: false,
   sessions: {},
   latestExercises: {},
+  builtInExercises: {},
   savedExercises: {},
+  hiddenBuiltInIds: [],
   filteredExerciseIds: [],
   earliestSession: undefined,
 };
+
+function mergeExercises(
+  builtIn: Record<string, ExerciseDescriptor>,
+  saved: Record<string, ExerciseDescriptor>,
+  hidden: string[],
+): Record<string, ExerciseDescriptor> {
+  const merged: Record<string, ExerciseDescriptor> = { ...builtIn, ...saved };
+  hidden.forEach((id) => delete merged[id]);
+  return Object.fromEntries(Object.entries(merged).sort((a, b) => a[1].name.localeCompare(b[1].name)));
+}
 
 const storedSessionsSlice = createSlice({
   name: 'storedSessions',
@@ -81,12 +98,29 @@ const storedSessionsSlice = createSlice({
     },
     updateExercise(state, action: PayloadAction<{ id: string; exercise: ExerciseDescriptor }>) {
       state.savedExercises[action.payload.id] = action.payload.exercise;
+      state.hiddenBuiltInIds = state.hiddenBuiltInIds.filter((x) => x !== action.payload.id);
     },
     deleteExercise(state, action: PayloadAction<string>) {
-      delete state.savedExercises[action.payload];
+      if (state.builtInExercises[action.payload]) {
+        // Deleting a built-in tombstones it (its override row, if any, is kept for undo).
+        if (!state.hiddenBuiltInIds.includes(action.payload)) {
+          state.hiddenBuiltInIds.push(action.payload);
+        }
+      } else {
+        delete state.savedExercises[action.payload];
+      }
+    },
+    restoreExercise(state, action: PayloadAction<string>) {
+      state.hiddenBuiltInIds = state.hiddenBuiltInIds.filter((x) => x !== action.payload);
     },
     setExercises(state, action: PayloadAction<Record<string, ExerciseDescriptor>>) {
       state.savedExercises = action.payload;
+    },
+    setBuiltInExercises(state, action: PayloadAction<Record<string, ExerciseDescriptor>>) {
+      state.builtInExercises = action.payload;
+    },
+    setHiddenBuiltInIds(state, action: PayloadAction<string[]>) {
+      state.hiddenBuiltInIds = action.payload;
     },
     setFilteredExerciseIds(state, action: PayloadAction<string[]>) {
       state.filteredExerciseIds = action.payload;
@@ -114,13 +148,14 @@ const storedSessionsSlice = createSlice({
           .toArray(),
     ),
 
-    selectExercises: (state: StoredSessionState) => state.savedExercises,
-    selectExerciseById: createSelector(
-      [(state: StoredSessionState) => state.savedExercises, (_, id: string) => id],
-      (exercises, id) => exercises[id],
+    selectExercises: createSelector(
+      [
+        (state: StoredSessionState) => state.builtInExercises,
+        (state: StoredSessionState) => state.savedExercises,
+        (state: StoredSessionState) => state.hiddenBuiltInIds,
+      ],
+      mergeExercises,
     ),
-
-    selectExerciseIds: (state: StoredSessionState) => Object.keys(state.savedExercises),
   },
 });
 
@@ -160,12 +195,19 @@ export const {
   deleteStoredSession,
   updateExercise,
   deleteExercise,
+  restoreExercise,
   setExercises,
+  setBuiltInExercises,
+  setHiddenBuiltInIds,
   setFilteredExerciseIds,
 } = storedSessionsSlice.actions;
 
-export const { selectSessions, selectSession, selectExercises, selectLatestExercises, selectExerciseById } =
-  storedSessionsSlice.selectors;
+export const { selectSessions, selectSession, selectExercises, selectLatestExercises } = storedSessionsSlice.selectors;
+
+export const selectExerciseById = createSelector(
+  [selectExercises, (_, id: string) => id],
+  (exercises, id) => exercises[id],
+);
 
 const selectLatestOrderedRecordedExercises = createSelector(
   [storedSessionsSlice.selectors.selectSessions, (_, maxRecordsPerExercise: number) => maxRecordsPerExercise],

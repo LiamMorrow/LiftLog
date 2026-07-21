@@ -4,23 +4,27 @@ import {
   deleteExercise,
   deleteStoredSession,
   initializeStoredSessionsStateSlice,
+  restoreExercise,
+  setBuiltInExercises,
   setExercises,
+  setHiddenBuiltInIds,
   setIsHydrated,
   setStoredSessions,
   updateExercise,
   upsertStoredSessions,
 } from './index';
 import { fetchUpcomingSessions } from '@/store/program';
+import { setPreferredLanguage } from '@/store/settings';
 import { Session } from '@/models/session-models';
 import { sessionMigrations } from '@/models/storage/versions/migrations';
 import { exercisesSchema, sessionsSchema } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { toRecord } from '@/utils/reduce';
-import { ExerciseDescriptor, fromExerciseDescriptorJSON, toExerciseDescriptorJSON } from '@/models/exercise-models';
+import { fromExerciseDescriptorJSON, toExerciseDescriptorJSON } from '@/models/exercise-models';
+import { loadBuiltInExercises } from '@/services/exercise-catalog';
 
-// We keep track of added builting exerciseIds (which are the exercise name for builtins)
-// Then we make sure builtins don't get re-added if they are deleted
-const addedBuiltInExerciseIdsStorageKey = 'AddedBuiltInExerciseIdList';
+// Built-ins the user deleted, so they stay hidden across restarts and locale switches.
+const hiddenBuiltInExerciseIdsStorageKey = 'HiddenBuiltInExerciseIdList';
 export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
   // Dispatched AFTER settings, so we can safely access settings
   addEffect(
@@ -41,10 +45,6 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
         dispatch(setStoredSessions(completedSessions));
       });
 
-      const { exercises: builtInExerciseList } = await import('../../../assets/exercises.json');
-      const builtinExercisesAddedInThePast = JSON.parse(
-        (await keyValueStore.getItem(addedBuiltInExerciseIdsStorageKey)) ?? '[]',
-      ) as string[];
       const savedExercises = (await db.select().from(exercisesSchema)).reduce(
         toRecord(
           (x) => x.id,
@@ -52,43 +52,28 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
         ),
         {},
       );
-      const builtInExercisesNotAlreadyAdded = builtInExerciseList
-        .filter((x) => !builtinExercisesAddedInThePast.includes(x.name))
-        .reduce(
-          (a, b) => {
-            a[b.name] = {
-              name: b.name,
-              force: b.force,
-              level: b.level,
-              mechanic: b.mechanic,
-              equipment: b.equipment,
-              category: b.category,
-              instructions: b.instructions.join('\n'),
-              muscles: b.primaryMuscles.concat(b.secondaryMuscles),
-            };
-            return a;
-          },
-          {} as Record<string, ExerciseDescriptor>,
-        );
+      dispatch(setExercises(savedExercises));
 
-      const currentExercises = Object.entries({
-        ...builtInExercisesNotAlreadyAdded,
-        ...savedExercises,
-      }).sort((a, b) => a[1].name.localeCompare(b[1].name));
+      const builtInExercises = await loadBuiltInExercises(getState().settings.preferredLanguage);
+      dispatch(setBuiltInExercises(builtInExercises));
 
-      Object.entries(builtInExercisesNotAlreadyAdded).forEach(([id, ex]) => {
-        dispatch(updateExercise({ id, exercise: ex }));
-      });
-
-      dispatch(setExercises(Object.fromEntries(currentExercises)));
-
-      const newBuiltIns: string[] = builtinExercisesAddedInThePast.concat(Object.keys(builtInExercisesNotAlreadyAdded));
-      await keyValueStore.setItem(addedBuiltInExerciseIdsStorageKey, JSON.stringify(newBuiltIns));
+      const hiddenBuiltInIds = JSON.parse(
+        (await keyValueStore.getItem(hiddenBuiltInExerciseIdsStorageKey)) ?? '[]',
+      ) as string[];
+      dispatch(setHiddenBuiltInIds(hiddenBuiltInIds));
 
       dispatch(setIsHydrated(true));
       dispatch(fetchUpcomingSessions());
     },
   );
+
+  // Re-resolve the built-in catalog when the language changes (startup load is handled above).
+  addEffect(setPreferredLanguage, async (action, { getState, dispatch }) => {
+    if (!getState().storedSessions.isHydrated) {
+      return;
+    }
+    dispatch(setBuiltInExercises(await loadBuiltInExercises(action.payload)));
+  });
 
   addEffect(addStoredSession, async (a, { getState, extra: { healthExportService, logger } }) => {
     const workout = a.payload;
@@ -157,8 +142,23 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
     });
   });
 
-  addEffect(deleteExercise, async (action, { extra: { db } }) => {
-    await db.delete(exercisesSchema).where(eq(exercisesSchema.id, action.payload));
+  addEffect(deleteExercise, async (action, { stateAfterReduce, extra: { db, keyValueStore } }) => {
+    if (stateAfterReduce.storedSessions.builtInExercises[action.payload]) {
+      // Built-ins are tombstoned rather than removed; their override row (if any) is kept for undo.
+      await keyValueStore.setItem(
+        hiddenBuiltInExerciseIdsStorageKey,
+        JSON.stringify(stateAfterReduce.storedSessions.hiddenBuiltInIds),
+      );
+    } else {
+      await db.delete(exercisesSchema).where(eq(exercisesSchema.id, action.payload));
+    }
+  });
+
+  addEffect(restoreExercise, async (_, { stateAfterReduce, extra: { keyValueStore } }) => {
+    await keyValueStore.setItem(
+      hiddenBuiltInExerciseIdsStorageKey,
+      JSON.stringify(stateAfterReduce.storedSessions.hiddenBuiltInIds),
+    );
   });
 
   addEffect(updateExercise, async (action, { extra: { db } }) => {

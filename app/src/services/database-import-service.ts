@@ -15,6 +15,10 @@ import {
   migrateNilWeightUnits,
   migrateNilWeightUnitsDataMigration,
 } from '@/services/data-migrations/migrate-nil-weight-units';
+import {
+  dedupeBuiltInExercises,
+  dedupeBuiltInExercisesDataMigration,
+} from '@/services/data-migrations/dedupe-builtin-exercises';
 
 export interface DatabaseImporter {
   importOldData(): Promise<void>;
@@ -49,6 +53,9 @@ export class DatabaseImportService implements DatabaseImporter {
     }
     if (!dataMigrationsRun.includes(migrateNilWeightUnitsDataMigration)) {
       await migrateNilWeightUnits(this.db, this.preferenceService);
+    }
+    if (!dataMigrationsRun.includes(dedupeBuiltInExercisesDataMigration)) {
+      await dedupeBuiltInExercises(this.db, this.keyValueStore);
     }
 
     console.info('Imported old data to DB in ' + (performance.now() - now) + 'ms');
