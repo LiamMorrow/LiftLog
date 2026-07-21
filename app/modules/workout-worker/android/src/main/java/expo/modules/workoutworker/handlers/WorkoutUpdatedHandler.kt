@@ -72,7 +72,7 @@ class WorkoutUpdatedHandler(
         val messageTemplate: String =
             translations.workoutPersistentNotificationFinishedMessage
         val message = messageTemplate.replace(
-            "\$WEIGHT$", formatWeight(event.totalWeightLifted)
+            "\$WEIGHT$", formatWeight(event.totalWeightLifted, truncateDecimals = true)
         ).replace(
             "\$TIME$", formatDuration(Duration.parseIsoString(event.workoutDuration))
         )
@@ -309,8 +309,8 @@ class WorkoutUpdatedHandler(
         }
     }
 
-    private fun formatWeight(weight: Weight): String {
-        val weightValue = weight.value
+    private fun formatWeight(weight: Weight, truncateDecimals: Boolean = false): String {
+        val weightValue = if (truncateDecimals) weight.value.toBigInteger().toString() else weight.value.toString()
         val shortUnit = when (weight.unit) {
             WeightUnit.kilograms -> "kg"
             WeightUnit.pounds -> "lbs"
