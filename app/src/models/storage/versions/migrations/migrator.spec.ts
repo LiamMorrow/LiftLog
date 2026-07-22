@@ -366,7 +366,9 @@ describe('migrator', () => {
       // a regression in the array-vs-single-vs-optional derivation is a compile error.
       it('derives an array field as an array of the child type', () => {
         expectTypeOf<(typeof toolboxMigrations.$finalType)['widgets']>().toEqualTypeOf<WidgetV3[]>();
-        expectTypeOf<(typeof toolboxMigrations.$anyType)['widgets']>().toEqualTypeOf<(typeof widgetMigrations.$anyType)[]>();
+        expectTypeOf<(typeof toolboxMigrations.$anyType)['widgets']>().toEqualTypeOf<
+          (typeof widgetMigrations.$anyType)[]
+        >();
         // an array field must not collapse to a single child
         expectTypeOf<(typeof toolboxMigrations.$finalType)['widgets']>().not.toEqualTypeOf<WidgetV3>();
       });
@@ -381,7 +383,7 @@ describe('migrator', () => {
       it('preserves the optional/undefined union on an optional field', () => {
         expectTypeOf<(typeof kitMigrations.$finalType)['primary']>().toEqualTypeOf<WidgetV3 | undefined>();
         expectTypeOf<(typeof kitMigrations.$anyType)['primary']>().toEqualTypeOf<
-          (typeof widgetMigrations.$anyType) | undefined
+          typeof widgetMigrations.$anyType | undefined
         >();
       });
     });

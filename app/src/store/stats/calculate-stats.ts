@@ -184,7 +184,8 @@ export function calculateStats(
         value: ex.potentialSets
           .filter((x) => x.set)
           .reduce(
-            (accum, set) => ex.effectiveWeight(set, session.bodyweight).multipliedBy(set.set!.repsCompleted).plus(accum),
+            (accum, set) =>
+              ex.effectiveWeight(set, session.bodyweight).multipliedBy(set.set!.repsCompleted).plus(accum),
             Weight.NIL,
           ),
       });

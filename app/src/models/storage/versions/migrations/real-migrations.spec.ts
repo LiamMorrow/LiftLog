@@ -13,7 +13,14 @@ import {
   SharedProgramBlueprintJSON as InitialSharedProgramBlueprintJSON,
   FollowedFeedUserJSON as InitialFollowedFeedUserJSON,
 } from '@/models/storage/versions/initial';
-import { AesKeyJSON, BigNumberJSON, DurationJSON, InstantJSON, LocalDateJSON, RsaPublicKeyJSON } from '@/models/storage/versions/libs';
+import {
+  AesKeyJSON,
+  BigNumberJSON,
+  DurationJSON,
+  InstantJSON,
+  LocalDateJSON,
+  RsaPublicKeyJSON,
+} from '@/models/storage/versions/libs';
 import { WeightJSON, WeightUnitJSON } from '@/models/storage/versions/libs/weight';
 import { programBlueprintMigrations, sessionBlueprintMigrations } from './blueprint';
 import { sessionMigrations } from './session';
@@ -35,7 +42,9 @@ const instant = (v: string) => v as InstantJSON;
 const wt = (value: string, unit: WeightUnitJSON = 'kilograms'): WeightJSON => ({ unit, value: bn(value) });
 
 // ---------- initial (v1) fixtures ----------
-function initialWeighted(overrides: Partial<InitialWeightedExerciseBlueprintJSON> = {}): InitialWeightedExerciseBlueprintJSON {
+function initialWeighted(
+  overrides: Partial<InitialWeightedExerciseBlueprintJSON> = {},
+): InitialWeightedExerciseBlueprintJSON {
   return {
     type: 'WeightedExerciseBlueprint',
     name: 'Bench Press',

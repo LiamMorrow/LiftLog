@@ -106,7 +106,14 @@ describe('findPersonalRecords', () => {
     const build = (id: string, date: LocalDate, bodyweightKg: number) => {
       const set = new RecordedSet(5, OffsetDateTime.parse('2026-01-01T10:00:00Z'));
       const ex = new RecordedWeightedExercise(blueprint, [new PotentialSet(set, kg(10))], undefined);
-      return new Session(id, new SessionBlueprint('Day', [], ''), [ex], date, new Weight(bodyweightKg, 'kilograms'), undefined);
+      return new Session(
+        id,
+        new SessionBlueprint('Day', [], ''),
+        [ex],
+        date,
+        new Weight(bodyweightKg, 'kilograms'),
+        undefined,
+      );
     };
 
     const records = findPersonalRecords([build('s1', day(1), 80), build('s2', day(8), 85)]);

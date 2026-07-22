@@ -28,7 +28,11 @@ export function ExerciseSummaryLine({ exercise, isFilled, showWeight, color = 'o
         {exercise.blueprint.name}
       </SurfaceText>
       <SurfaceText color="onSurfaceVariant" style={{ maxWidth: SETS_MAX_WIDTH, textAlign: 'right' }}>
-        {formatExerciseSummary(exercise, { isFilled, showWeight, bodyweightLabel: t('exercise.short_bodyweight.label') })}
+        {formatExerciseSummary(exercise, {
+          isFilled,
+          showWeight,
+          bodyweightLabel: t('exercise.short_bodyweight.label'),
+        })}
       </SurfaceText>
     </View>
   );
