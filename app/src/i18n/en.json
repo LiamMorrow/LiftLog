@@ -277,6 +277,7 @@
   "plan.diff.notes.label": "Notes",
   "plan.diff.reps.label": "Reps",
   "plan.diff.rest.label": "Rest",
+  "plan.diff.bodyweight.label": "Bodyweight",
   "plan.diff.session_name.label": "Session name",
   "plan.diff.session_notes.body": "Session notes changed",
   "plan.diff.session_notes.label": "Session notes",

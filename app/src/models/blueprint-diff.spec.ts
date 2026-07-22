@@ -258,6 +258,35 @@ describe('diffSessionBlueprints', () => {
       });
     });
 
+    it('should detect bodyweight change', () => {
+      const base = new WeightedExerciseBlueprint(
+        'Pull Up',
+        3,
+        { type: 'fixed', reps: 10 },
+        new NoProgressiveOverload(),
+        Rest.medium,
+        false,
+        '',
+        '',
+        false,
+      );
+      const original = new SessionBlueprint('Workout', [base], '');
+      const modified = new SessionBlueprint('Workout', [base.with({ usesBodyweight: true })], '');
+
+      const diff = diffSessionBlueprints(original, modified);
+
+      expect(diff.modifiedExercises).toHaveLength(1);
+      expect(diff.modifiedExercises[0]!.changes).toHaveLength(1);
+      expect(diff.modifiedExercises[0]!.changes[0]).toMatchObject({
+        kind: 'exerciseBodyweight',
+        oldValue: false,
+        newValue: true,
+      });
+
+      const applied = applySessionBlueprintDiff(original, diff);
+      expect((applied.exercises[0] as WeightedExerciseBlueprint).usesBodyweight).toBe(true);
+    });
+
     it('should detect multiple field changes on same exercise', () => {
       const original = new SessionBlueprint('Workout', [createWeightedExercise('Squat', 3, 10)], '');
       const modified = new SessionBlueprint('Workout', [createWeightedExercise('Squat', 5, 8)], '');
