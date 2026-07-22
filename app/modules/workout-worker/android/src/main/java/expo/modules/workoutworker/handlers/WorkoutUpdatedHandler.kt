@@ -19,6 +19,7 @@ import com.limajuice.liftlog.WeightUnit
 import com.limajuice.liftlog.WorkoutMessage
 import com.limajuice.liftlog.WorkoutUpdatedEvent
 import expo.modules.workoutworker.utils.RepeatingTimerAction
+import expo.modules.workoutworker.utils.RestWindow
 import expo.modules.workoutworker.utils.WorkoutNotificationManager
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
@@ -77,7 +78,7 @@ class WorkoutUpdatedHandler(
             "\$TIME$", formatDuration(Duration.parseIsoString(event.workoutDuration))
         )
 
-        val notifBuilder = notificationManager.createWorkoutNotificationBuilder()
+        val notifBuilder = notificationManager.createWorkoutNotificationBuilder(promote = false)
             .setContentText(message)
         notificationManager.notifyPersistent(notifBuilder.build())
     }
@@ -152,22 +153,33 @@ class WorkoutUpdatedHandler(
                 currentExerciseMessage == "" -> message
                 else -> "$currentExerciseMessage\n$message"
             }
-            var notifBuilder =
+            // The pill counts down within the current rest window - first toward the minimum rest,
+            // then between minimum and maximum - and the small icon marks which window it's in.
+            val window = RestWindow.of(now, timePartiallyEndSecs, timeEndSecs)
+            val windowRemaining = when (window) {
+                RestWindow.RESTING -> timePartiallyEndSecs - now
+                RestWindow.READY -> timeEndSecs - now
+                RestWindow.DONE -> 0L
+            }
+            val criticalText =
+                if (windowRemaining > 0) formatDuration(windowRemaining.toDuration(SECONDS)) else ""
+            val notifBuilder =
                 notificationManager.createWorkoutNotificationBuilder()
-                    .setContentText(contentText).setSubText(
+                    .setSmallIcon(window.icon)
+                    .setContentText(contentText)
+                    .setShortCriticalText(criticalText)
+                    .setSubText(
                         "${formatDuration(progress.toDuration(SECONDS))}/${
-                            formatDuration(
-                                progressMax.toDuration(
-                                    SECONDS
-                                )
-                            )
+                            formatDuration(progressMax.toDuration(SECONDS))
                         }"
                     )
-            if (progress < progressMax) {
-                notifBuilder = notifBuilder.setProgress(
-                    progressMax.toInt(), progress.toInt(), false
-                )
-            }
+                    .setStyle(
+                        notificationManager.timerProgressStyle(
+                            progress = progress.toInt(),
+                            max = fullProgressMax.toInt(),
+                            partialThreshold = partialProgressMax.toInt().takeIf { it > 0 },
+                        )
+                    )
 
             notificationManager.notifyPersistent(notifBuilder.build())
         }
@@ -220,13 +232,18 @@ class WorkoutUpdatedHandler(
                 else -> formatDuration((targetSecs - elapsedSecs).toDuration(SECONDS))
             }
 
-            var notifBuilder =
+            val notifBuilder =
                 notificationManager.createWorkoutNotificationBuilder()
                     .setContentText(currentExerciseMessage)
+                    .setShortCriticalText(timeMessage)
                     .setSubText(timeMessage)
-            if (targetSecs != null && !reached) {
-                notifBuilder = notifBuilder.setProgress(targetSecs.toInt(), elapsedSecs.toInt(), false)
-            }
+                    .setStyle(
+                        notificationManager.timerProgressStyle(
+                            progress = elapsedSecs.toInt(),
+                            max = (targetSecs ?: 0L).toInt(),
+                            indeterminate = targetSecs == null || reached,
+                        )
+                    )
 
             notificationManager.notifyPersistent(notifBuilder.build())
         }

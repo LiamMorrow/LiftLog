@@ -81,6 +81,7 @@ android {
 }
 
 dependencies {
+    implementation "androidx.core:core:1.18.0"
     implementation "com.squareup.moshi:moshi:1.15.2"
     implementation "com.squareup.moshi:moshi-adapters:1.15.2"
     implementation "com.squareup.moshi:moshi-kotlin:1.15.2"
