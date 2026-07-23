@@ -58,6 +58,9 @@ class WorkoutNotificationManager(private val context: Context) {
     fun createWorkoutNotificationBuilder(promote: Boolean = true): NotificationCompat.Builder {
         return NotificationCompat.Builder(context, PERSISTENT_CHANNEL_ID)
             .setContentTitle("LiftLog")
+            // Without this the notification defaults to VISIBILITY_PRIVATE and gets redacted to a
+            // blank outline on a secure lock screen when "show sensitive content" is off.
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setForegroundServiceBehavior(FOREGROUND_SERVICE_IMMEDIATE)
             .setContentIntent(context.getLaunchAppAtWorkoutPagePendingIntent())
             .setDeleteIntent(context.getLiveUpdateDeleteIntent())
@@ -96,6 +99,7 @@ class WorkoutNotificationManager(private val context: Context) {
 
     fun createRestNotificationBuilder(): NotificationCompat.Builder {
         return NotificationCompat.Builder(context, REST_CHANNEL_ID)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setForegroundServiceBehavior(FOREGROUND_SERVICE_IMMEDIATE)
             .setContentIntent(context.getLaunchAppAtWorkoutPagePendingIntent())
             .setSmallIcon(R.drawable.fitness_center_24px)
