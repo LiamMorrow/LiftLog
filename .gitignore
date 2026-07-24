@@ -390,3 +390,5 @@ LiftLog.Ui/wwwroot/app-utils.js
 tests/LiftLog.Tests.Api/appsettings.Development.json
 
 temp/
+
+CLAUDE.local.md
