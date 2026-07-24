@@ -1,7 +1,7 @@
 import CardActions from '@/components/presentation/foundation/card-actions';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
 import { HistoryActivityCalendar } from '@/components/smart/history-activity-calendar';
 import { HistoryPrBadges } from '@/components/smart/pr-badges';
 import { WhoElseTrainedCard } from '@/components/smart/who-else-trained-card';
@@ -29,7 +29,7 @@ import { View } from 'react-native';
 import { LegendList } from '@legendapp/list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Card, Tooltip } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { SharedSession } from '@/models/feed-models';

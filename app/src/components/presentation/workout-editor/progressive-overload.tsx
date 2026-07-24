@@ -1,5 +1,4 @@
-import SelectPicker from '@/components/presentation/foundation/select-picker';
-import { SelectPickerOption } from '@/components/presentation/foundation/select-picker-props';
+import SelectPicker, { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
 import {
   IncreaseAllEvenlyProgressiveOverload,
   IncreaseLowestSetProgressiveOverload,
@@ -13,7 +12,7 @@ import { match } from 'ts-pattern';
 import { DecimalEditor } from '@/components/presentation/foundation/editors/decimal-editor';
 import { Dialog, Divider, Text } from 'react-native-paper';
 import { spacing } from '@/hooks/useAppTheme';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { useState } from 'react';
 import { PotentialSet, RecordedSet, RecordedWeightedExercise } from '@/models/session-models';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
@@ -22,7 +21,7 @@ import BigNumber from 'bignumber.js';
 import { Portal } from 'react-native-paper';
 import { OffsetDateTime } from '@js-joda/core';
 import { Weight } from '@/models/weight';
-import Icon from '@/components/presentation/foundation/gesture-wrappers/icon';
+import Icon from '@/components/presentation/foundation/icon';
 
 interface Props {
   value: ProgressiveOverload;

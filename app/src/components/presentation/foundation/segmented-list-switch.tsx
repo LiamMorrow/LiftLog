@@ -1,4 +1,4 @@
-import { Switch } from '@/components/presentation/foundation/gesture-wrappers/switch';
+import { Switch } from '@/components/presentation/foundation/switch';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 

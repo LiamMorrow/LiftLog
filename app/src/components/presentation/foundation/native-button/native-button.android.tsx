@@ -1,4 +1,4 @@
-import { NativeButtonProps, NativeButtonVariant } from '@/components/presentation/foundation/native-button-props';
+import { NativeButtonProps, NativeButtonVariant } from './native-button-props';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Button, FilledTonalButton, Host, Icon, OutlinedButton, Row, Text, TextButton } from '@expo/ui/jetpack-compose';
 

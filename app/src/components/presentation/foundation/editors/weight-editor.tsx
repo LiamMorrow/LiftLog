@@ -4,7 +4,7 @@ import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
 import { Text, TextInput, Tooltip, useTheme } from 'react-native-paper';
 import { shortFormatWeightUnit, Weight, WeightUnit } from '@/models/weight';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';

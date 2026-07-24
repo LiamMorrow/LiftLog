@@ -12,7 +12,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
 import { Card, Icon } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 
 export default function FeedSharePage() {

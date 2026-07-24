@@ -4,14 +4,13 @@ import { RecordedExercise, RecordedWeightedExercise } from '@/models/session-mod
 import { ReactNode, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { Tooltip } from 'react-native-paper';
-import Menu from '@/components/presentation/foundation/menu';
-import { MenuItem } from '@/components/presentation/foundation/menu-props';
+import Menu, { MenuItem } from '@/components/presentation/foundation/menu';
 import { useTranslate } from '@tolgee/react';
 import PreviousExerciseViewer from '@/components/presentation/workout/weighted/previous-exercise-viewer';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import ExerciseNotesDisplay from '@/components/presentation/workout/exercise-notes-display';
 import RecordedExerciseNotesEditor from '@/components/presentation/workout/recorded-exercise-notes-editor';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
 import { useRouter } from 'expo-router';
 import { Updater } from '@/utils/types';
 

@@ -1,4 +1,4 @@
-import { SwitchProps } from '@/components/presentation/foundation/gesture-wrappers/switch-props';
+import { SwitchProps } from './switch-props';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { Host, Switch as NativeSwitch } from '@expo/ui/jetpack-compose';
 

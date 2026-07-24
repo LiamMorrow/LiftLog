@@ -1,6 +1,6 @@
 import DurationEditor from '@/components/presentation/foundation/editors/duration-editor';
 import EditableIncrementer from '@/components/presentation/foundation/editors/editable-incrementer';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { FormRow } from '@/components/presentation/foundation/form-row';
 import RestFormat from '@/components/presentation/foundation/rest-format';
 import SelectPicker from '@/components/presentation/foundation/select-picker';

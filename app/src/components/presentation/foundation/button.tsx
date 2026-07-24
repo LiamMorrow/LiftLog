@@ -1,15 +1,14 @@
-import { GesturePressableProps } from '@/components/presentation/foundation/gesture-wrappers/pressable-props';
+import { GesturePressableProps } from '@/components/presentation/foundation/pressable-props';
+import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { isNotNullOrUndefined } from '@/utils/null';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 // oxlint-disable-next-line no-restricted-imports
-import { TouchableRippleProps, TouchableRipple as NativeTouchableRipple } from 'react-native-paper';
+import { Button as NativeButton, ButtonProps as PaperButtonProps } from 'react-native-paper';
 
-export default function TouchableRipple({
-  onPress,
-  onLongPress,
-  disabled,
-  ...rest
-}: GesturePressableProps<TouchableRippleProps>) {
+export type ButtonProps = {
+  icon?: AppIconSource;
+} & Omit<PaperButtonProps, 'icon'>;
+export default function Button({ onPress, onLongPress, disabled, ...rest }: GesturePressableProps<ButtonProps>) {
   const tap = Gesture.Tap()
     .runOnJS(true)
     .onStart(() => !disabled && onPress?.());
@@ -21,10 +20,9 @@ export default function TouchableRipple({
   const gesture = Gesture.Race(...[tap, longPress].filter(isNotNullOrUndefined));
   return (
     <GestureDetector gesture={gesture}>
-      <NativeTouchableRipple
+      <NativeButton
         disabled={disabled}
         onPress={onPress ? () => {} : undefined!}
-        // Disable long press since we should be using Holdable for this
         onLongPress={onLongPress || onPress ? () => {} : undefined!}
         {...rest}
       />

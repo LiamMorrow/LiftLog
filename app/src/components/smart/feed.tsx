@@ -31,7 +31,7 @@ import { T, useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { Card } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { LegendList, LegendListRef } from '@legendapp/list';
 import { useEffect, useRef } from 'react';

@@ -4,7 +4,7 @@ import { useTranslate } from '@tolgee/react';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useDispatch } from 'react-redux';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { restartChat } from '@/store/ai-planner';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';

@@ -1,5 +1,5 @@
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
-import Icon from '@/components/presentation/foundation/gesture-wrappers/icon';
+import Icon from '@/components/presentation/foundation/icon';
 import { ColorChoice, useAppTheme } from '@/hooks/useAppTheme';
 import { View } from 'react-native';
 

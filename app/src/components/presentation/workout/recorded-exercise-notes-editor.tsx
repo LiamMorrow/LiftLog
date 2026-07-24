@@ -1,4 +1,4 @@
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { T } from '@tolgee/react';
 import { useEffect, useState } from 'react';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';

@@ -3,7 +3,7 @@ import { T } from '@tolgee/react';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
 import { Dialog, Portal } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 
 type ConfirmationDialogWithoutAdditionalActionProps = {
   open: boolean;

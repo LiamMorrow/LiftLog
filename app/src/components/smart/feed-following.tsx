@@ -17,7 +17,7 @@ import { View } from 'react-native';
 import { Card } from 'react-native-paper';
 import Menu from '@/components/presentation/foundation/menu';
 import { useDispatch } from 'react-redux';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
 import { LegendList } from '@legendapp/list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

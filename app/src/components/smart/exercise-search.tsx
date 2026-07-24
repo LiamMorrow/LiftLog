@@ -1,4 +1,4 @@
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
 import { spacing } from '@/hooks/useAppTheme';
 import { ExerciseDescriptor } from '@/models/exercise-models';

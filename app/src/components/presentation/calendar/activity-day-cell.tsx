@@ -1,5 +1,5 @@
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
-import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { ActivityCell } from '@/store/activity';

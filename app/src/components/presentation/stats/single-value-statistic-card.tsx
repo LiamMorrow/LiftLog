@@ -1,5 +1,5 @@
-import Icon from '@/components/presentation/foundation/gesture-wrappers/icon';
-import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
+import Icon from '@/components/presentation/foundation/icon';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';

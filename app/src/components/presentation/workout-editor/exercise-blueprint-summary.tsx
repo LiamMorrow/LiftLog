@@ -3,8 +3,8 @@ import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { View } from 'react-native';
 import Menu from '@/components/presentation/foundation/menu';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
-import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
+import IconButton from '@/components/presentation/foundation/icon-button';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { useTranslate } from '@tolgee/react';
 import {
   CardioExerciseBlueprint,

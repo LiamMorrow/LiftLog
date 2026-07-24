@@ -1,5 +1,5 @@
 import { IntegerEditor } from '@/components/presentation/foundation/editors/integer-editor';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { useAppTheme, font, spacing, rounding } from '@/hooks/useAppTheme';
 import { View } from 'react-native';

@@ -1,7 +1,6 @@
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
-import SelectPicker from '@/components/presentation/foundation/select-picker';
-import { SelectPickerOption } from '@/components/presentation/foundation/select-picker-props';
+import SelectPicker, { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
 import ThemeChooser from '@/components/presentation/foundation/editors/theme-chooser';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { supportedLanguages } from '@/services/tolgee';

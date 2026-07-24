@@ -1,6 +1,6 @@
 import { ActivityCalendar } from '@/components/presentation/calendar/activity-calendar';
 import { ActivityLegend } from '@/components/presentation/calendar/activity-legend';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';

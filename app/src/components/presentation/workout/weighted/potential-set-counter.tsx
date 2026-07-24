@@ -10,10 +10,10 @@ import { useAppTheme, spacing, font, rounding } from '@/hooks/useAppTheme';
 import FocusRing from '@/components/presentation/foundation/focus-ring';
 import { T } from '@tolgee/react';
 import Holdable from '@/components/presentation/foundation/holdable';
-import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { Weight } from '@/models/weight';
 import PotentialSetAdditionalActionsDialog from '@/components/presentation/workout/weighted/potential-sets-addition-actions-dialog';
-import Icon from '@/components/presentation/foundation/gesture-wrappers/icon';
+import Icon from '@/components/presentation/foundation/icon';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;

@@ -6,7 +6,7 @@ import { translateExerciseMeta } from '@/utils/exercise-meta';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { Searchbar, Card } from 'react-native-paper';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
 
 export default function ExerciseSearchAndFilters({
   searchText,

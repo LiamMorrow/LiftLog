@@ -5,7 +5,7 @@ import { RecordedExercise } from '@/models/session-models';
 import { T } from '@tolgee/react';
 import { View } from 'react-native';
 import { Portal, Dialog } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 
 function PreviousExerciseContent(props: { previousRecordedExercises: RecordedExercise[] }) {
   return (

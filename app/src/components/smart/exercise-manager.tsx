@@ -5,7 +5,7 @@ import { Platform, View } from 'react-native';
 import { Icon, List, TextInput } from 'react-native-paper';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import AddIcon from '@expo/material-symbols/add.xml';
-import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { AccordionItem } from '@/components/presentation/foundation/accordion-item';
 import { useScroll } from '@/hooks/useScrollListener';
 import {

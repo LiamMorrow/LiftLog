@@ -1,7 +1,6 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
-import SelectPicker from '@/components/presentation/foundation/select-picker';
-import { SelectPickerOption } from '@/components/presentation/foundation/select-picker-props';
+import SelectPicker, { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
 import { supportedLanguages } from '@/services/tolgee';
 import { RootState, useAppSelector } from '@/store';
 import { setFirstDayOfWeek, setPreferredLanguage, setUseImperialUnits } from '@/store/settings';

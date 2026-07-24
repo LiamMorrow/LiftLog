@@ -11,7 +11,7 @@ import { showSnackbar } from '@/store/app';
 import { T } from '@tolgee/react';
 import { Animated, View } from 'react-native';
 import { Card, Text } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { uuid } from '@/utils/uuid';
 import { useRouter } from 'expo-router';

@@ -1,4 +1,4 @@
-import { MenuProps } from '@/components/presentation/foundation/menu-props';
+import { MenuProps } from './menu-props';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { Button, Host, Menu as NativeMenu } from '@expo/ui/swift-ui';
 import { disabled, frame } from '@expo/ui/swift-ui/modifiers';

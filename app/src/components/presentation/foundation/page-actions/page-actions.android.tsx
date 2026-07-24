@@ -1,5 +1,5 @@
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { PageAction, PageActionsProps } from '@/components/presentation/foundation/page-actions-props';
+import { PageAction, PageActionsProps } from './page-actions-props';
 import {
   Button,
   ExtendedFloatingActionButton,
@@ -11,7 +11,7 @@ import {
   Text,
   TextButton,
 } from '@expo/ui/jetpack-compose';
-import { PageActionsAccessory } from '@/components/presentation/foundation/page-actions-accessory';
+import { PageActionsAccessory } from './page-actions-accessory';
 import { View } from 'react-native';
 
 const contentPadding = { start: 24, top: 16, end: 24, bottom: 16 };

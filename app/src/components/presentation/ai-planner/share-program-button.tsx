@@ -1,6 +1,6 @@
 import { useTranslate } from '@tolgee/react';
 import { useDispatch } from 'react-redux';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
 import { Tooltip } from 'react-native-paper';
 import { useAppSelector } from '@/store';
 import { addMessage } from '@/store/ai-planner';

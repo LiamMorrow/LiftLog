@@ -1,14 +1,23 @@
-import { GesturePressableProps } from '@/components/presentation/foundation/gesture-wrappers/pressable-props';
+import { GesturePressableProps } from '@/components/presentation/foundation/pressable-props';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { isNotNullOrUndefined } from '@/utils/null';
+import { I18nManager } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 // oxlint-disable-next-line no-restricted-imports
-import { Button as NativeButton, ButtonProps as PaperButtonProps } from 'react-native-paper';
+import { IconButton as NativeIconButton, IconButtonProps } from 'react-native-paper';
 
-export type ButtonProps = {
-  icon?: AppIconSource;
-} & Omit<PaperButtonProps, 'icon'>;
-export default function Button({ onPress, onLongPress, disabled, ...rest }: GesturePressableProps<ButtonProps>) {
+type ICProps = {
+  icon: AppIconSource;
+} & Omit<IconButtonProps, 'icon'>;
+
+export default function IconButton({
+  onPress,
+  onLongPress,
+  disabled,
+  mirrored,
+  style,
+  ...rest
+}: GesturePressableProps<ICProps> & { mirrored?: boolean }) {
   const tap = Gesture.Tap()
     .runOnJS(true)
     .onStart(() => !disabled && onPress?.());
@@ -20,10 +29,11 @@ export default function Button({ onPress, onLongPress, disabled, ...rest }: Gest
   const gesture = Gesture.Race(...[tap, longPress].filter(isNotNullOrUndefined));
   return (
     <GestureDetector gesture={gesture}>
-      <NativeButton
+      <NativeIconButton
         disabled={disabled}
         onPress={onPress ? () => {} : undefined!}
         onLongPress={onLongPress || onPress ? () => {} : undefined!}
+        style={[style, mirrored ? (I18nManager.isRTL ? { transform: [{ scaleX: -1 }] } : {}) : {}]}
         {...rest}
       />
     </GestureDetector>

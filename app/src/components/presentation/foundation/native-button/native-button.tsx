@@ -1,4 +1,4 @@
-import { NativeButtonProps, NativeButtonVariant } from '@/components/presentation/foundation/native-button-props';
+import { NativeButtonProps, NativeButtonVariant } from './native-button-props';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { Button, Host } from '@expo/ui/swift-ui';
 import { buttonStyle, controlSize, disabled as disabledModifier, tint } from '@expo/ui/swift-ui/modifiers';

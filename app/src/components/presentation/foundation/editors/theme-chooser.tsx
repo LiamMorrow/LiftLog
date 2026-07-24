@@ -1,5 +1,5 @@
 import FocusRing, { ANIMATION_DURATION } from '@/components/presentation/foundation/focus-ring';
-import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { ColorSchemeSeed } from '@/store/settings';
 import { sleep } from '@/utils/sleep';
@@ -9,7 +9,7 @@ import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { List } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
 
 interface ThemeChooserProps {

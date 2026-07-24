@@ -8,7 +8,7 @@ import { View } from 'react-native';
 import { match } from 'ts-pattern';
 import { Dialog } from 'react-native-paper';
 import { Portal } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import SegmentedPicker from '@/components/presentation/foundation/segmented-picker';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 

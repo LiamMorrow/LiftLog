@@ -1,11 +1,11 @@
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { font, rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { T } from '@tolgee/react';
 import { ReactNode, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { Portal, Dialog, Text } from 'react-native-paper';
-import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 
 const emptyDisplay = '-';
 

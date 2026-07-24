@@ -1,4 +1,4 @@
-import { MenuItem } from '@/components/presentation/foundation/menu-props';
+import { MenuItem } from '@/components/presentation/foundation/menu';
 import { ReactNode } from 'react';
 
 export interface PageMenuProps {

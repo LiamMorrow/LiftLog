@@ -1,4 +1,4 @@
-import { Switch } from '@/components/presentation/foundation/gesture-wrappers/switch';
+import { Switch } from '@/components/presentation/foundation/switch';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';
 import { List, ListItemProps } from 'react-native-paper';

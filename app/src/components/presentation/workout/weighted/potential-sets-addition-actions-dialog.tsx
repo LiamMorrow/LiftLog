@@ -4,9 +4,9 @@ import { T } from '@tolgee/react';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
 import { Dialog, Portal, Text, TextInput } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 
 interface PotentialSetAdditionalActionsDialogProps {
   open: boolean;

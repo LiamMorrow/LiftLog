@@ -1,5 +1,4 @@
-import SelectPicker from '@/components/presentation/foundation/select-picker';
-import { SelectPickerOption } from '@/components/presentation/foundation/select-picker-props';
+import SelectPicker, { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
 import { isLocalDateRangeEqual, LocalDateRange } from '@/models/time-models';
 import { convert, LocalDate, nativeJs, Period } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';

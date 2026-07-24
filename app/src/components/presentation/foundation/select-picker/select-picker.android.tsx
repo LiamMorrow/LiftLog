@@ -2,7 +2,7 @@ import {
   isSelectPickerValueEqual,
   SelectPickerProps,
   SelectPickerValue,
-} from '@/components/presentation/foundation/select-picker-props';
+} from './select-picker-props';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { DropdownMenu, DropdownMenuItem, Host, Text, TextButton } from '@expo/ui/jetpack-compose';
 import { useState } from 'react';

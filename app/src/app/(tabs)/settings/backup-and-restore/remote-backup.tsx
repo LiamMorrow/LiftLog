@@ -13,7 +13,7 @@ import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { Linking, View } from 'react-native';
 import { Card, HelperText, TextInput } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 
 export default function RemoteBackupPage() {

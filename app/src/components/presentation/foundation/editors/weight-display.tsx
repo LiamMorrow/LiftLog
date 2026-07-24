@@ -4,7 +4,7 @@ import { font } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { Weight } from '@/models/weight';
 
 type WeightDisplayProps = {

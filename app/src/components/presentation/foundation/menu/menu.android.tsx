@@ -1,5 +1,5 @@
-import Icon from '@/components/presentation/foundation/gesture-wrappers/icon';
-import { MenuProps } from '@/components/presentation/foundation/menu-props';
+import Icon from '@/components/presentation/foundation/icon';
+import { MenuProps } from './menu-props';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { DropdownMenu, DropdownMenuItem, Host, Spacer, Text } from '@expo/ui/jetpack-compose';
 import { useState } from 'react';

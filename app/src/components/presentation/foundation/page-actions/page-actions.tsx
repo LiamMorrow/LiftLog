@@ -1,5 +1,5 @@
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { PageAction, PageActionsProps } from '@/components/presentation/foundation/page-actions-props';
+import { PageAction, PageActionsProps } from './page-actions-props';
 import { Button, HStack, Host } from '@expo/ui/swift-ui';
 import {
   Animation,
@@ -12,7 +12,7 @@ import {
   shadow,
 } from '@expo/ui/swift-ui/modifiers';
 import { floatingShadowModifier } from '@/components/presentation/foundation/floating-shadow';
-import { PageActionsAccessory } from '@/components/presentation/foundation/page-actions-accessory';
+import { PageActionsAccessory } from './page-actions-accessory';
 import { View } from 'react-native';
 
 // iOS draws a commit and a recurring action the same way, so `primaryKind` is unused here:

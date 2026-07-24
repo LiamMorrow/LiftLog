@@ -1,4 +1,4 @@
-import { PageMenuProps } from '@/components/presentation/foundation/page-menu-props';
+import { PageMenuProps } from './page-menu-props';
 import { Stack } from 'expo-router';
 
 export default function PageMenu({ items, actions }: PageMenuProps) {

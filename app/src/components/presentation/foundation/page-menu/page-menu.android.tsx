@@ -1,5 +1,5 @@
 import Menu from '@/components/presentation/foundation/menu';
-import { PageMenuProps } from '@/components/presentation/foundation/page-menu-props';
+import { PageMenuProps } from './page-menu-props';
 import { Stack } from 'expo-router';
 import { Appbar } from 'react-native-paper';
 

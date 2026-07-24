@@ -1,4 +1,4 @@
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { SegmentedList } from '@/components/presentation/foundation/segmented-list';
 import { TitledSection } from '@/components/presentation/stats/titled-section';
 import { WeightedExerciseStatSummary } from '@/components/presentation/stats/weighted-exercise-stat-summary';

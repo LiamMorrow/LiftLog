@@ -1,7 +1,7 @@
 import {
   SegmentedPickerProps,
   SegmentedPickerValue,
-} from '@/components/presentation/foundation/segmented-picker-props';
+} from './segmented-picker-props';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { Host, Label, Picker } from '@expo/ui/swift-ui';
 import { accessibilityIdentifier, disabled as disabledModifier, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';

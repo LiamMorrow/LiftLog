@@ -1,6 +1,6 @@
 import { FloatingEmoji, FloatingEmojiLayer } from '@/components/presentation/feed/floating-emoji';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
-import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { REACTION_EMOJIS, ReactionEmoji } from '@/models/feed-models';
 import { useAppSelector } from '@/store';

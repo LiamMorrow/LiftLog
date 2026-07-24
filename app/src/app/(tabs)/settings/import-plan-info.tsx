@@ -1,5 +1,5 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { importPlanFromPicker } from '@/store/program';

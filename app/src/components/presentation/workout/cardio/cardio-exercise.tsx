@@ -7,7 +7,7 @@ import { Duration, OffsetDateTime } from '@js-joda/core';
 import { useEffect, useState } from 'react';
 
 import { View } from 'react-native';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Text } from 'react-native-paper';
 import Menu from '@/components/presentation/foundation/menu';

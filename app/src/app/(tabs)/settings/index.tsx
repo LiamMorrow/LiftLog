@@ -5,7 +5,7 @@ import { Link, Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Linking, Platform } from 'react-native';
 import { Text, Dialog, Icon, List, Portal } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import * as Application from 'expo-application';
 import { useDispatch } from 'react-redux';
 import { copyLogs } from '@/store/app';

@@ -7,7 +7,7 @@ import { Dimensions, FlatList, I18nManager, Platform, View } from 'react-native'
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
 import { Appbar, TextInput, Tooltip } from 'react-native-paper';
 import { useAppSelector } from '@/store';
 import {
