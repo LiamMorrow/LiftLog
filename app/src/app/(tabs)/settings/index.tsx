@@ -4,11 +4,13 @@ import { T, useTranslate } from '@tolgee/react';
 import { Link, Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Linking, Platform } from 'react-native';
-import { Text, Dialog, Icon, List, Portal } from 'react-native-paper';
+import { Text, Badge, Dialog, Icon, List, Portal } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import * as Application from 'expo-application';
 import { useDispatch } from 'react-redux';
 import { copyLogs } from '@/store/app';
+import { useAppSelector } from '@/store';
+import { selectHasUnseenWhatsNew } from '@/store/settings';
 
 export default function Settings() {
   const { t } = useTranslate();
@@ -16,6 +18,7 @@ export default function Settings() {
   const { push } = useRouter();
   const [appInfoOpen, setAppInfoOpen] = useState(false);
   const dispatch = useDispatch();
+  const hasUnseenWhatsNew = useAppSelector(selectHasUnseenWhatsNew);
 
   const openUrl = (url: string) => {
     void Linking.canOpenURL(url).then(() => Linking.openURL(url));
@@ -110,6 +113,13 @@ export default function Settings() {
           title={t('settings.translation.title')}
           description={t('settings.translation.subtitle')}
           left={(props) => <List.Icon icon={'translate'} {...props} />}
+        ></List.Item>
+        <List.Item
+          onPress={() => push('/settings/whats-new')}
+          title={t('whats_new.title')}
+          description={t('whats_new.subtitle')}
+          left={(props) => <List.Icon icon={'campaign'} {...props} />}
+          right={(props) => (hasUnseenWhatsNew ? <Badge {...props} size={10} style={{ alignSelf: 'center' }} /> : null)}
         ></List.Item>
         <List.Item
           onPress={() => setAppInfoOpen(true)}

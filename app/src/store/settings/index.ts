@@ -1,4 +1,6 @@
 import { LiftLog } from '@/gen/proto';
+import { whatsNewEntries, WhatsNewEntry } from '@/models/whats-new';
+import type { RootState } from '@/store';
 import { BackupData, FeedBackupData } from '@/models/backup';
 import { RemoteData } from '@/models/remote';
 import { WeightUnit } from '@/models/weight';
@@ -22,6 +24,7 @@ interface SettingsState {
   showBodyweight: boolean;
   showTips: boolean;
   tipToShow: number;
+  lastSeenWhatsNewId: number;
   showFeed: boolean;
   restNotifications: boolean;
   restTimersEnabled: boolean;
@@ -52,6 +55,7 @@ const initialState: SettingsState = {
   showBodyweight: true,
   showTips: true,
   tipToShow: 1,
+  lastSeenWhatsNewId: 0,
   showFeed: true,
   restNotifications: true,
   restTimersEnabled: true,
@@ -92,6 +96,9 @@ const settingsSlice = createSlice({
     },
     setTipToShow(state, action: PayloadAction<number>) {
       state.tipToShow = action.payload;
+    },
+    setLastSeenWhatsNewId(state, action: PayloadAction<number>) {
+      state.lastSeenWhatsNewId = action.payload;
     },
     setShowFeed(state, action: PayloadAction<boolean>) {
       state.showFeed = action.payload;
@@ -176,6 +183,7 @@ export const {
   setShowBodyweight,
   setShowTips,
   setTipToShow,
+  setLastSeenWhatsNewId,
   setShowFeed,
   setRestNotifications,
   setRestTimersEnabled,
@@ -196,5 +204,13 @@ export const {
 } = settingsSlice.actions;
 
 export const { selectPreferredWeightUnit } = settingsSlice.selectors;
+
+export const selectApplicableWhatsNew = (state: RootState): WhatsNewEntry[] =>
+  whatsNewEntries.filter((entry) => entry.condition?.(state) ?? true);
+
+export const selectUnseenWhatsNew = (state: RootState): WhatsNewEntry[] =>
+  selectApplicableWhatsNew(state).filter((entry) => entry.id > state.settings.lastSeenWhatsNewId);
+
+export const selectHasUnseenWhatsNew = (state: RootState): boolean => selectUnseenWhatsNew(state).length > 0;
 
 export const settingsReducer = settingsSlice.reducer;

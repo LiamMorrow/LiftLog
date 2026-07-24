@@ -1,8 +1,4 @@
-import {
-  isSelectPickerValueEqual,
-  SelectPickerProps,
-  SelectPickerValue,
-} from './select-picker-props';
+import { isSelectPickerValueEqual, SelectPickerProps, SelectPickerValue } from './select-picker-props';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { Host, Picker } from '@expo/ui';
 

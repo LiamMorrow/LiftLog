@@ -1,4 +1,5 @@
 import Button from '@/components/presentation/foundation/button';
+import { Pager } from '@/components/presentation/foundation/pager';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
 import SelectPicker, { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
 import ThemeChooser from '@/components/presentation/foundation/editors/theme-chooser';
@@ -8,6 +9,7 @@ import { useAppSelector } from '@/store';
 import {
   setColorSchemeSeed,
   setFirstDayOfWeek,
+  setLastSeenWhatsNewId,
   setPreferredLanguage,
   setRestNotifications,
   setShowFeed,
@@ -15,6 +17,7 @@ import {
   setUseImperialUnits,
   setWelcomeWizardCompleted,
 } from '@/store/settings';
+import { latestWhatsNewId } from '@/models/whats-new';
 import { getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
@@ -89,6 +92,7 @@ export function WelcomeWizard() {
       setCurrentPage(currentPage + 1);
     } else {
       dispatch(setWelcomeWizardCompleted(true));
+      dispatch(setLastSeenWhatsNewId(latestWhatsNewId));
       if (notificationsEnabled) {
         await requestPermissionsAsync();
       }
@@ -215,32 +219,18 @@ export function WelcomeWizard() {
     </View>
   );
 
-  const renderPage = () => {
-    switch (currentPage) {
-      case 0:
-        return renderCrashReportsPage();
-      case 1:
-        return renderLocalizationPage();
-      case 2:
-        return renderNotificationsAndFeedPage();
-      default:
-        return null;
-    }
-  };
   return (
     !welcomeWizardCompleted && (
       <Portal>
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface }}>
           <View style={[styles.container]}>
-            {renderPage()}
+            <Pager fill page={currentPage} onPageChange={setCurrentPage}>
+              {renderCrashReportsPage()}
+              {renderLocalizationPage()}
+              {renderNotificationsAndFeedPage()}
+            </Pager>
 
             <View style={styles.footer}>
-              <View style={styles.pageIndicator}>
-                {Array.from({ length: totalPages }).map((_, index) => (
-                  <View key={index} style={[styles.dot, currentPage === index && styles.activeDot]} />
-                ))}
-              </View>
-
               <View style={styles.buttonRow}>
                 <Button mode="text" onPress={handlePrevious} disabled={currentPage === 0} style={styles.button}>
                   {t('generic.previous.button')}
@@ -296,23 +286,6 @@ const styles = StyleSheet.create({
   footer: {
     padding: spacing.pageHorizontalMargin,
     paddingBottom: spacing[8],
-    marginTop: 'auto',
-  },
-  pageIndicator: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: spacing[4],
-    gap: spacing[2],
-  },
-  dot: {
-    width: spacing[2],
-    height: spacing[2],
-    borderRadius: spacing[1],
-    backgroundColor: 'rgba(128, 128, 128, 0.3)',
-  },
-  activeDot: {
-    backgroundColor: 'rgba(128, 128, 128, 0.8)',
-    width: spacing[6],
   },
   buttonRow: {
     flexDirection: 'row',

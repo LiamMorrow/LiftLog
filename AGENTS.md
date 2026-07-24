@@ -57,6 +57,25 @@ Regenerate with `npm run json-schema`; don't hand-edit.
 
 Run typecheck and lint before considering a change done.
 
+## Announcing features ("What's New")
+
+New features are easy to ship and hard to surface — a capability like Health Connect sync or plan
+import/share is valuable but invisible if users never stumble onto it. The **What's New** banner (home
+screen) plus the Settings → What's New screen exist to close that gap. Entries live in
+`app/src/models/whats-new.ts` (append-only, monotonic `id`; the highest `id` drives the unread state).
+
+**Add an entry sparingly.** Only announce a feature that either **needs enabling/opt-in** to be useful,
+or is significant enough that it **would belong in the welcome wizard**. Do _not_ announce incremental
+improvements that users discover naturally along the app's hot paths (e.g. a new per-exercise option) —
+those don't need a banner.
+
+Give an entry a `condition` predicate when it should disappear once adopted (e.g. hide the health-sync
+card once the user has enabled health export).
+
+For an opt-in feature, also consider surfacing the toggle in the **welcome wizard**
+(`components/smart/welcome-wizard.tsx`) — fresh installs never see the banner (it starts all-seen), so
+the wizard is how new users get the chance to enable it.
+
 ## Conventions
 
 - Use **named exports** for new files (`export function Foo`), not default exports — even though older

@@ -10,6 +10,7 @@ import {
   setIsHydrated,
   setKeepScreenAwakeDuringWorkout,
   setLastBackup,
+  setLastSeenWhatsNewId,
   setNotesExpandedByDefault,
   setPreferredLanguage,
   setProToken,
@@ -48,6 +49,7 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
         showBodyweight,
         showTips,
         tipToShow,
+        lastSeenWhatsNewId,
         showFeed,
         restNotifications,
         restTimersEnabled,
@@ -70,6 +72,7 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
         preferenceService.getShowBodyweight(),
         preferenceService.getShowTips(),
         preferenceService.getTipToShow(),
+        preferenceService.getLastSeenWhatsNewId(),
         preferenceService.getShowFeed(),
         preferenceService.getRestNotifications(),
         preferenceService.getRestTimersEnabled(),
@@ -93,6 +96,7 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
       dispatch(setShowBodyweight(showBodyweight));
       dispatch(setShowTips(showTips));
       dispatch(setTipToShow(tipToShow));
+      dispatch(setLastSeenWhatsNewId(lastSeenWhatsNewId));
       dispatch(setShowFeed(showFeed));
       dispatch(setRestNotifications(restNotifications));
       dispatch(setRestTimersEnabled(restTimersEnabled));
@@ -179,6 +183,11 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
   addEffect(setTipToShow, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
     if (stateAfterReduce.settings.isHydrated) {
       await preferenceService.setTipToShow(action.payload);
+    }
+  });
+  addEffect(setLastSeenWhatsNewId, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setLastSeenWhatsNewId(action.payload);
     }
   });
   addEffect(setShowFeed, async (action, { stateAfterReduce, extra: { preferenceService } }) => {

@@ -1,7 +1,4 @@
-import {
-  SegmentedPickerProps,
-  SegmentedPickerValue,
-} from './segmented-picker-props';
+import { SegmentedPickerProps, SegmentedPickerValue } from './segmented-picker-props';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Host, Icon, Row, Text, ToggleButton } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth, testID as testIDModifier, weight } from '@expo/ui/jetpack-compose/modifiers';

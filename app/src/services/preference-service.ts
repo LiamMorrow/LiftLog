@@ -106,6 +106,16 @@ export class PreferenceService {
     return isNaN(parsed) ? 1 : parsed;
   }
 
+  async setLastSeenWhatsNewId(lastSeenWhatsNewId: number): Promise<void> {
+    await this.keyValueStore.setItem('lastSeenWhatsNewId', lastSeenWhatsNewId.toString());
+  }
+
+  async getLastSeenWhatsNewId(): Promise<number> {
+    const value = await this.keyValueStore.getItem('lastSeenWhatsNewId');
+    const parsed = parseInt(value ?? '', 10);
+    return isNaN(parsed) ? 0 : parsed;
+  }
+
   async setShowFeed(showFeed: boolean): Promise<void> {
     await this.keyValueStore.setItem('showFeed', toBooleanString(showFeed));
   }

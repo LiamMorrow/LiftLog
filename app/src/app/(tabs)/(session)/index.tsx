@@ -30,6 +30,7 @@ import { Card, Icon as PaperIcon, Text, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { WelcomeWizard } from '@/components/smart/welcome-wizard';
+import { WhatsNewBanner } from '@/components/smart/whats-new-banner';
 import { SharedSession } from '@/models/feed-models';
 import { CurrentWorkoutReplacer } from '@/components/smart/current-workout-replacer';
 
@@ -64,6 +65,7 @@ function ListUpcomingWorkouts({
   return (
     <View style={{ flex: 1, gap: spacing[2], paddingTop: spacing[4] }}>
       <WelcomeWizard />
+      <WhatsNewBanner />
       {currentSession && (
         <>
           <SectionHeader
