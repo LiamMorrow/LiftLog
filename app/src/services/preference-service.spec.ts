@@ -279,9 +279,9 @@ describe('PreferenceService — remoteBackupSettings', () => {
 describe('PreferenceService — last backup bookkeeping', () => {
   it('lastSuccessfulRemoteBackupHash defaults to undefined and round-trips', async () => {
     expect(await makeService().service.getLastSuccessfulRemoteBackupHash()).toBeUndefined();
-    expect(await makeService({ lastSuccessfulRemoteBackupHash: 'abc' }).service.getLastSuccessfulRemoteBackupHash()).toBe(
-      'abc',
-    );
+    expect(
+      await makeService({ lastSuccessfulRemoteBackupHash: 'abc' }).service.getLastSuccessfulRemoteBackupHash(),
+    ).toBe('abc');
     const { service, store } = makeService();
     await service.setLastSuccessfulRemoteBackupHash('h');
     expect(store.setItem).toHaveBeenCalledWith('lastSuccessfulRemoteBackupHash', 'h');

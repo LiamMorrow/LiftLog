@@ -6,12 +6,7 @@ vi.mock('react-native-purchases', () => ({
 
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { applySettingsEffects } from '@/store/settings/effects';
-import {
-  setColorSchemeSeed,
-  setExportToHealthAggregator,
-  setProToken,
-  settingsReducer,
-} from '@/store/settings';
+import { setColorSchemeSeed, setExportToHealthAggregator, setProToken, settingsReducer } from '@/store/settings';
 
 describe('settings slice — generated preference actions', () => {
   it('applies a generated setter through the matcher reducer', () => {
