@@ -326,5 +326,6 @@
   "workout.workout.label": "Harjoitus",
   "workout.workout_lowercase.label": "Harjoitus",
   "workout.rest_timers.label": "Lepoajastimet",
-  "workout.rest_timers.subtitle": "Ajasta lepo sarjojen välillä automaattisesti. Tämän poistaminen käytöstä piilottaa kaikki lepoajastimet ja poistaa lepoajan ilmoitukset käytöstä"
+  "workout.rest_timers.subtitle": "Ajasta lepo sarjojen välillä automaattisesti. Tämän poistaminen käytöstä piilottaa kaikki lepoajastimet ja poistaa lepoajan ilmoitukset käytöstä",
+  "ai.share_program.button": "Jaa harjoitusohjelman"
 }
