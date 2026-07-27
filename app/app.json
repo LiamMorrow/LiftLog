@@ -34,6 +34,7 @@
       "./plugins/android-signing.js",
       "./plugins/android-gradle-properties.js",
       "./plugins/android-react-native-feature-flags.js",
+      "./plugins/android-nav-bar-contrast.js",
       [
         "expo-notifications",
         {
