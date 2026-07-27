@@ -2,80 +2,29 @@ import { LiftLog } from '@/gen/proto';
 import { whatsNewEntries, WhatsNewEntry } from '@/models/whats-new';
 import type { RootState } from '@/store';
 import { BackupData, FeedBackupData } from '@/models/backup';
-import { RemoteData } from '@/models/remote';
 import { WeightUnit } from '@/models/weight';
-import { DayOfWeek, Instant } from '@js-joda/core';
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SQLiteDatabase } from 'expo-sqlite';
+import {
+  isPreferenceAction,
+  LastBackup,
+  preferenceKeys,
+  preferenceRegistry,
+  preferenceSetters,
+  PrefKey,
+  PrefValue,
+  RemoteBackupSettings,
+} from './registry';
 
-export type ColorSchemeSeed = 'default' | `#${string}`;
+export type { ColorSchemeSeed } from './codecs';
+export type { RemoteBackupSettings, LastBackup };
 
-type LastBackup = {
-  lastSuccessfulRemoteBackupHash: string;
-  lastBackupTime: Instant;
-  settings: RemoteBackupSettings;
-};
-
-interface SettingsState {
-  firstDayOfWeek: DayOfWeek;
-  isHydrated: boolean;
-  proToken: string | undefined;
-  useImperialUnits: boolean;
-  showBodyweight: boolean;
-  showTips: boolean;
-  tipToShow: number;
-  lastSeenWhatsNewId: number;
-  showFeed: boolean;
-  restNotifications: boolean;
-  restTimersEnabled: boolean;
-  crashReportsEnabled: boolean;
-  showPostWorkoutSummary: boolean;
-  welcomeWizardCompleted: boolean;
-  remoteBackupSettings: RemoteBackupSettings;
-  lastBackup: RemoteData<LastBackup, string>;
-  backupReminder: boolean;
-  colorSchemeSeed: ColorSchemeSeed;
-  trueBlackDarkTheme: boolean;
-  preferredLanguage: string | undefined;
-  notesExpandedByDefault: boolean;
-  keepScreenAwakeDuringWorkout: boolean;
-  exportToHealthAggregator: boolean;
-}
-
-interface RemoteBackupSettings {
-  endpoint: string;
-  apiKey: string;
-  includeFeedAccount: boolean;
-}
+type PreferenceState = { [K in PrefKey]: PrefValue<K> };
+type SettingsState = PreferenceState & { isHydrated: boolean };
 
 const initialState: SettingsState = {
+  ...(Object.fromEntries(preferenceKeys.map((key) => [key, preferenceRegistry[key].default])) as PreferenceState),
   isHydrated: false,
-  firstDayOfWeek: DayOfWeek.SUNDAY,
-  useImperialUnits: false,
-  showBodyweight: true,
-  showTips: true,
-  tipToShow: 1,
-  lastSeenWhatsNewId: 0,
-  showFeed: true,
-  restNotifications: true,
-  restTimersEnabled: true,
-  crashReportsEnabled: true,
-  showPostWorkoutSummary: false,
-  trueBlackDarkTheme: false,
-  welcomeWizardCompleted: false,
-  proToken: undefined,
-  remoteBackupSettings: {
-    endpoint: '',
-    apiKey: '',
-    includeFeedAccount: false,
-  },
-  lastBackup: RemoteData.notAsked(),
-  backupReminder: true,
-  colorSchemeSeed: 'default',
-  preferredLanguage: undefined,
-  notesExpandedByDefault: false,
-  keepScreenAwakeDuringWorkout: false,
-  exportToHealthAggregator: false,
 };
 
 const settingsSlice = createSlice({
@@ -85,72 +34,13 @@ const settingsSlice = createSlice({
     setIsHydrated(state, action: PayloadAction<boolean>) {
       state.isHydrated = action.payload;
     },
-    setUseImperialUnits(state, action: PayloadAction<boolean>) {
-      state.useImperialUnits = action.payload;
-    },
-    setShowBodyweight(state, action: PayloadAction<boolean>) {
-      state.showBodyweight = action.payload;
-    },
-    setShowTips(state, action: PayloadAction<boolean>) {
-      state.showTips = action.payload;
-    },
-    setTipToShow(state, action: PayloadAction<number>) {
-      state.tipToShow = action.payload;
-    },
-    setLastSeenWhatsNewId(state, action: PayloadAction<number>) {
-      state.lastSeenWhatsNewId = action.payload;
-    },
-    setShowFeed(state, action: PayloadAction<boolean>) {
-      state.showFeed = action.payload;
-    },
-    setRestNotifications(state, action: PayloadAction<boolean>) {
-      state.restNotifications = action.payload;
-    },
-    setRestTimersEnabled(state, action: PayloadAction<boolean>) {
-      state.restTimersEnabled = action.payload;
-    },
-    setCrashReportsEnabled(state, action: PayloadAction<boolean>) {
-      state.crashReportsEnabled = action.payload;
-    },
-    setWelcomeWizardCompleted(state, action: PayloadAction<boolean>) {
-      state.welcomeWizardCompleted = action.payload;
-    },
-    setNotesExpandedByDefault(state, action: PayloadAction<boolean>) {
-      state.notesExpandedByDefault = action.payload;
-    },
-    setKeepScreenAwakeDuringWorkout(state, action: PayloadAction<boolean>) {
-      state.keepScreenAwakeDuringWorkout = action.payload;
-    },
-    setShowPostWorkoutSummary(state, action: PayloadAction<boolean>) {
-      state.showPostWorkoutSummary = action.payload;
-    },
-    setTrueBlackDarkTheme(state, action: PayloadAction<boolean>) {
-      state.trueBlackDarkTheme = action.payload;
-    },
-    setRemoteBackupSettings(state, action: PayloadAction<RemoteBackupSettings>) {
-      state.remoteBackupSettings = action.payload;
-    },
-    setProToken(state, action: PayloadAction<string | undefined>) {
-      state.proToken = action.payload;
-    },
-    setLastBackup(state, action: PayloadAction<RemoteData<LastBackup, string>>) {
-      state.lastBackup = action.payload;
-    },
-    setBackupReminder(state, action: PayloadAction<boolean>) {
-      state.backupReminder = action.payload;
-    },
-    setColorSchemeSeed(state, action: PayloadAction<ColorSchemeSeed>) {
-      state.colorSchemeSeed = action.payload;
-    },
-    setFirstDayOfWeek(state, action: PayloadAction<DayOfWeek>) {
-      state.firstDayOfWeek = action.payload;
-    },
-    setPreferredLanguage(state, action: PayloadAction<string | undefined>) {
-      state.preferredLanguage = action.payload;
-    },
-    setExportToHealthAggregator(state, action: PayloadAction<boolean>) {
-      state.exportToHealthAggregator = action.payload;
-    },
+  },
+  extraReducers: (builder) => {
+    // Every generated setter carries its key in `meta`, so one matcher applies
+    // them all — no per-key reducer.
+    builder.addMatcher(isPreferenceAction, (state, action) => {
+      (state as Record<PrefKey, unknown>)[action.meta.prefKey] = action.payload;
+    });
   },
   selectors: {
     selectPreferredWeightUnit: (state): WeightUnit => (state.useImperialUnits ? 'pounds' : 'kilograms'),
@@ -177,8 +67,9 @@ export const executeRemoteBackup = createAction<{
 
 export const remoteBackupSucceeded = createAction('remoteBackupSucceeded');
 
+export const { setIsHydrated } = settingsSlice.actions;
+
 export const {
-  setIsHydrated,
   setUseImperialUnits,
   setShowBodyweight,
   setShowTips,
@@ -201,7 +92,7 @@ export const {
   setExportToHealthAggregator,
   setShowPostWorkoutSummary,
   setTrueBlackDarkTheme,
-} = settingsSlice.actions;
+} = preferenceSetters;
 
 export const { selectPreferredWeightUnit } = settingsSlice.selectors;
 

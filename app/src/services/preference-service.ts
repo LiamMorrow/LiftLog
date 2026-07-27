@@ -1,29 +1,51 @@
 import { KeyValueStore } from '@/services/key-value-store';
-import { ColorSchemeSeed } from '@/store/settings';
-import { DayOfWeek, Instant } from '@js-joda/core';
-import { match, P } from 'ts-pattern';
+import { boolCodec, instantCodec } from '@/store/settings/codecs';
+import {
+  PrefDescriptor,
+  preferenceRegistry,
+  PrefKey,
+  PrefValue,
+  RemoteBackupSettings,
+} from '@/store/settings/registry';
+import { Instant } from '@js-joda/core';
 
-export interface RemoteBackupSettings {
-  endpoint: string;
-  apiKey: string;
-  includeFeedAccount: boolean;
-}
-
-function toBooleanString(val: boolean | undefined) {
-  return val ? 'True' : 'False';
-}
-
-function fromBooleanString(val: string | undefined, defaultValue: boolean): boolean {
-  if (val === undefined || val === null) return defaultValue;
-  return val === 'True';
-}
+export type { RemoteBackupSettings } from '@/store/settings/registry';
 
 export class PreferenceService {
   constructor(private keyValueStore: KeyValueStore) {}
 
-  async getProToken(): Promise<string | undefined> {
-    const token = await this.keyValueStore.getItem('proToken');
-    return token;
+  async getPreference<K extends PrefKey>(key: K): Promise<PrefValue<K>> {
+    const descriptor = preferenceRegistry[key] as PrefDescriptor<PrefValue<K>>;
+    const storageKey = descriptor.storageKey ?? key;
+    if (!descriptor.codec) {
+      return descriptor.default;
+    }
+    const raw = descriptor.sync
+      ? this.keyValueStore.getItemSync(storageKey)
+      : await this.keyValueStore.getItem(storageKey);
+    return descriptor.codec.deserialize(raw) ?? descriptor.default;
+  }
+
+  async setPreference<K extends PrefKey>(key: K, value: PrefValue<K>): Promise<void> {
+    const descriptor = preferenceRegistry[key] as PrefDescriptor<PrefValue<K>>;
+    if (!descriptor.codec) {
+      return;
+    }
+    const storageKey = descriptor.storageKey ?? key;
+    const serialized = descriptor.codec.serialize(value);
+    if (serialized === undefined) {
+      await this.keyValueStore.removeItem(storageKey);
+    } else {
+      await this.keyValueStore.setItem(storageKey, serialized);
+    }
+  }
+
+  getUseImperialUnits(): Promise<boolean> {
+    return this.getPreference('useImperialUnits');
+  }
+
+  getProToken(): Promise<string | undefined> {
+    return this.getPreference('proToken');
   }
 
   async setProToken(token?: string): Promise<void> {
@@ -33,98 +55,24 @@ export class PreferenceService {
     if (token) await this.keyValueStore.setItem('proToken', token);
   }
 
-  async getUseImperialUnits(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('useImperialUnits');
-    return fromBooleanString(value, false);
+  // Sync so it can be read before the store exists (Tolgee bootstrap). Rewrites
+  // the legacy `zh_Hans` value to the current `zh-hans` code on read.
+  getPreferredLanguage(): string | undefined {
+    const lang = this.keyValueStore.getItemSync('preferredLanguage');
+    if (lang === 'zh_Hans') {
+      void this.keyValueStore.setItem('preferredLanguage', 'zh-hans');
+      return 'zh-hans';
+    }
+    return lang;
   }
 
-  async setUseImperialUnits(useImperialUnits: boolean): Promise<void> {
-    await this.keyValueStore.setItem('useImperialUnits', toBooleanString(useImperialUnits));
+  setPreferredLanguage(lang: string | undefined): Promise<void> {
+    return lang
+      ? this.keyValueStore.setItem('preferredLanguage', lang)
+      : this.keyValueStore.removeItem('preferredLanguage');
   }
 
-  async getRestNotifications(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('restNotifications');
-    return fromBooleanString(value, true);
-  }
-
-  async setRestNotifications(restNotifications: boolean): Promise<void> {
-    await this.keyValueStore.setItem('restNotifications', toBooleanString(restNotifications));
-  }
-
-  async getRestTimersEnabled(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('restTimersEnabled');
-    return fromBooleanString(value, true);
-  }
-
-  async setRestTimersEnabled(restTimersEnabled: boolean): Promise<void> {
-    await this.keyValueStore.setItem('restTimersEnabled', toBooleanString(restTimersEnabled));
-  }
-
-  async getCrashReportsEnabled(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('crashReportsEnabled');
-    return fromBooleanString(value, true);
-  }
-
-  async setCrashReportsEnabled(crashReportsEnabled: boolean): Promise<void> {
-    await this.keyValueStore.setItem('crashReportsEnabled', toBooleanString(crashReportsEnabled));
-  }
-
-  async getWelcomeWizardCompleted(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('welcomeWizardCompleted');
-    return fromBooleanString(value, false);
-  }
-
-  async setWelcomeWizardCompleted(welcomeWizardCompleted: boolean): Promise<void> {
-    await this.keyValueStore.setItem('welcomeWizardCompleted', toBooleanString(welcomeWizardCompleted));
-  }
-
-  async setShowBodyweight(showBodyweight: boolean): Promise<void> {
-    await this.keyValueStore.setItem('showBodyweight', toBooleanString(showBodyweight));
-  }
-
-  async getShowBodyweight(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('showBodyweight');
-    return fromBooleanString(value, true);
-  }
-
-  async setShowTips(showTips: boolean): Promise<void> {
-    await this.keyValueStore.setItem('showTips', toBooleanString(showTips));
-  }
-
-  async getShowTips(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('showTips');
-    return fromBooleanString(value, true);
-  }
-
-  async setTipToShow(tipToShow: number): Promise<void> {
-    await this.keyValueStore.setItem('tipToShow', tipToShow.toString());
-  }
-
-  async getTipToShow(): Promise<number> {
-    const value = await this.keyValueStore.getItem('tipToShow');
-    const parsed = parseInt(value ?? '', 10);
-    return isNaN(parsed) ? 1 : parsed;
-  }
-
-  async setLastSeenWhatsNewId(lastSeenWhatsNewId: number): Promise<void> {
-    await this.keyValueStore.setItem('lastSeenWhatsNewId', lastSeenWhatsNewId.toString());
-  }
-
-  async getLastSeenWhatsNewId(): Promise<number> {
-    const value = await this.keyValueStore.getItem('lastSeenWhatsNewId');
-    const parsed = parseInt(value ?? '', 10);
-    return isNaN(parsed) ? 0 : parsed;
-  }
-
-  async setShowFeed(showFeed: boolean): Promise<void> {
-    await this.keyValueStore.setItem('showFeed', toBooleanString(showFeed));
-  }
-
-  async getShowFeed(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('showFeed');
-    return fromBooleanString(value, true);
-  }
-
+  // One field spread across three storage keys.
   async getRemoteBackupSettings(): Promise<RemoteBackupSettings> {
     const [endpoint, apiKey, includeFeedAccount] = await Promise.all([
       this.keyValueStore.getItem('remoteBackupSettings.Endpoint'),
@@ -134,7 +82,7 @@ export class PreferenceService {
     return {
       endpoint: endpoint ?? '',
       apiKey: apiKey ?? '',
-      includeFeedAccount: fromBooleanString(includeFeedAccount, false),
+      includeFeedAccount: boolCodec.deserialize(includeFeedAccount) ?? false,
     };
   }
 
@@ -143,129 +91,30 @@ export class PreferenceService {
     await this.keyValueStore.setItem('remoteBackupSettings.ApiKey', settings.apiKey);
     await this.keyValueStore.setItem(
       'remoteBackupSettings.IncludeFeedAccount',
-      toBooleanString(settings.includeFeedAccount),
+      boolCodec.serialize(settings.includeFeedAccount)!,
     );
   }
 
-  async setLastSuccessfulRemoteBackupHash(hash: string): Promise<void> {
-    await this.keyValueStore.setItem('lastSuccessfulRemoteBackupHash', hash);
+  setLastSuccessfulRemoteBackupHash(hash: string): Promise<void> {
+    return this.keyValueStore.setItem('lastSuccessfulRemoteBackupHash', hash);
   }
 
   async getLastSuccessfulRemoteBackupHash(): Promise<string | undefined> {
     return (await this.keyValueStore.getItem('lastSuccessfulRemoteBackupHash')) ?? undefined;
   }
 
-  async setLastBackupTime(time: Instant): Promise<void> {
-    await this.keyValueStore.setItem('lastBackupTime', time.toString());
+  setLastBackupTime(time: Instant): Promise<void> {
+    return this.keyValueStore.setItem('lastBackupTime', instantCodec.serialize(time)!);
   }
 
   async getLastBackupTime(): Promise<Instant> {
     const value = await this.keyValueStore.getItem('lastBackupTime');
-    if (value) {
-      try {
-        const date = Instant.parse(value);
-        return date;
-      } catch {}
+    const parsed = instantCodec.deserialize(value);
+    if (parsed) {
+      return parsed;
     }
     const now = Instant.now();
     await this.setLastBackupTime(now);
     return now;
-  }
-
-  async setBackupReminder(showReminder: boolean): Promise<void> {
-    await this.keyValueStore.setItem('backupReminder', toBooleanString(showReminder));
-  }
-
-  async getBackupReminder(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('backupReminder');
-    return fromBooleanString(value, true);
-  }
-
-  async getNotesExpandedByDefault(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('notesExpandedByDefault');
-    return fromBooleanString(value, true);
-  }
-
-  async setNotesExpandedByDefault(value: boolean): Promise<void> {
-    await this.keyValueStore.setItem('notesExpandedByDefault', toBooleanString(value));
-  }
-
-  async getKeepScreenAwakeDuringWorkout(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('keepScreenAwakeDuringWorkout');
-    return fromBooleanString(value, true);
-  }
-
-  async setKeepScreenAwakeDuringWorkout(value: boolean): Promise<void> {
-    await this.keyValueStore.setItem('keepScreenAwakeDuringWorkout', toBooleanString(value));
-  }
-
-  async getExportToHealthAggregator(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('exportToHealthAggregator');
-    return fromBooleanString(value, false);
-  }
-
-  async setExportToHealthAggregator(value: boolean): Promise<void> {
-    await this.keyValueStore.setItem('exportToHealthAggregator', toBooleanString(value));
-  }
-
-  async getShowPostWorkoutSummary(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('showPostWorkoutSummary');
-    return fromBooleanString(value, false);
-  }
-
-  async setShowPostWorkoutSummary(value: boolean): Promise<void> {
-    await this.keyValueStore.setItem('showPostWorkoutSummary', toBooleanString(value));
-  }
-  async getTrueBlackDarkTheme(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('trueBlackDarkTheme');
-    return fromBooleanString(value, false);
-  }
-
-  async setTrueBlackDarkTheme(value: boolean): Promise<void> {
-    await this.keyValueStore.setItem('trueBlackDarkTheme', toBooleanString(value));
-  }
-
-  async setColorSchemeSeed(payload: ColorSchemeSeed): Promise<void> {
-    await this.keyValueStore.setItem('colorSchemeSeed', payload);
-  }
-
-  async getColorSchemeSeed(): Promise<ColorSchemeSeed> {
-    const value = await this.keyValueStore.getItem('colorSchemeSeed');
-    return match(value)
-      .returnType<ColorSchemeSeed>()
-      .with(P.string.regex(/^#[0-9a-fA-F]{6}$/), (v) => v as ColorSchemeSeed)
-      .otherwise(() => 'default');
-  }
-
-  async setFirstDayOfWeek(firstDayOfWeek: DayOfWeek): Promise<void> {
-    await this.keyValueStore.setItem('firstDayOfWeek', firstDayOfWeek.name());
-  }
-
-  async getFirstDayOfWeek(): Promise<DayOfWeek> {
-    const value = await this.keyValueStore.getItem('firstDayOfWeek');
-    return match(value?.toLowerCase())
-      .with('sunday', () => DayOfWeek.SUNDAY)
-      .with('monday', () => DayOfWeek.MONDAY)
-      .with('tuesday', () => DayOfWeek.TUESDAY)
-      .with('wednesday', () => DayOfWeek.WEDNESDAY)
-      .with('thursday', () => DayOfWeek.THURSDAY)
-      .with('friday', () => DayOfWeek.FRIDAY)
-      .with('saturday', () => DayOfWeek.SATURDAY)
-      .otherwise(() => DayOfWeek.SUNDAY);
-  }
-
-  getPreferredLanguage() {
-    const lang = this.keyValueStore.getItemSync('preferredLanguage');
-    if (lang === 'zh_Hans') {
-      void this.keyValueStore.setItem('preferredLanguage', 'zh-hans');
-      return 'zh-hans';
-    }
-    return this.keyValueStore.getItemSync('preferredLanguage');
-  }
-
-  setPreferredLanguage(lang: string | undefined) {
-    return lang
-      ? this.keyValueStore.setItem('preferredLanguage', lang)
-      : this.keyValueStore.removeItem('preferredLanguage');
   }
 }

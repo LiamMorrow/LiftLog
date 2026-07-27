@@ -32,28 +32,26 @@ mirrors the change to disk.
 Writes go to a temp file and are then moved over the target, so a crash mid-write can't leave a
 half-written (or worse, half-overwritten) value.
 
-Everything in the store is a string (or `Uint8Array`); `PreferenceService` owns the encoding and the
-default:
+Everything in the store is a string (or `Uint8Array`). Preferences are described declaratively in a
+**registry** (`app/src/store/settings/registry.ts`); each entry pairs a `default` with a **codec**
+(`app/src/store/settings/codecs.ts`) that owns the on-disk encoding:
 
 ```ts
-async getRestTimersEnabled(): Promise<boolean> {
-  const value = await this.keyValueStore.getItem('restTimersEnabled');
-  return fromBooleanString(value, true); // 'True' / 'False', defaults to true when unset
-}
+restTimersEnabled: pref({ default: true, codec: boolCodec }), // 'True' / 'False', default true when unset
 ```
+
+`PreferenceService` is a thin facade over the registry: `getPreference(key)` / `setPreference(key, value)`
+read and write via the codec, and a few bespoke methods remain for keys with special storage
+(`getPreferredLanguage`, the remote-backup cluster).
 
 ### Adding a preference
 
-The `add-preference` skill walks this end to end (including the settings UI and the traps).
-
-1. Add a `get…`/`set…` pair to `PreferenceService`. The getter must supply a default for the
-   never-written case — that default *is* the migration story for this layer.
-2. Add the field + action to the settings slice (`app/src/store/settings/index.ts`).
-3. In `app/src/store/settings/effects.ts`:
-   - read it in the `initializeSettingsStateSlice` `Promise.all` block and dispatch it;
-   - add an `addEffect(setYourThing, …)` that writes it back, **guarded on
-     `stateAfterReduce.settings.isHydrated`** so the hydration dispatches don't immediately rewrite
-     what they just read.
+The `add-setting-or-preference` skill walks this end to end. In short: add one entry to
+`preferenceRegistry` (`{ default, codec }`), then re-export the generated `set<Name>` action from
+`app/src/store/settings/index.ts` and add the settings UI. The state field, default, action, hydration,
+and `isHydrated`-guarded write-back are all derived from the registry entry — no `PreferenceService`
+method or per-key effect. Keys with special needs use the `persist: false` / `hydrate: 'manual'` /
+`sync` escape hatches on the descriptor.
 
 ### Reading synchronously
 
