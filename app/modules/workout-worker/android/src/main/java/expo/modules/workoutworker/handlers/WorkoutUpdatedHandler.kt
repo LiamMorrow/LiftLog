@@ -156,10 +156,6 @@ class WorkoutUpdatedHandler(
                 now in timePartiallyEndSecs..timeEndSecs -> translations.workoutPersistentNotificationStartSoonMessage
                 else -> translations.workoutPersistentNotificationStartNowMessage
             }
-            val contentText = when {
-                currentExerciseMessage == "" -> message
-                else -> "$currentExerciseMessage\n$message"
-            }
             // The pill counts down within the current rest window - first toward the minimum rest,
             // then between minimum and maximum - and the small icon marks which window it's in.
             val window = RestWindow.of(now, timePartiallyEndSecs, timeEndSecs)
@@ -174,7 +170,7 @@ class WorkoutUpdatedHandler(
                 notificationManager.createWorkoutNotificationBuilder()
                     .apply { if (currentExerciseMessage.isNotEmpty()) setContentTitle(currentExerciseMessage) }
                     .setSmallIcon(window.icon)
-                    .setContentText(contentText)
+                    .setContentText(message)
                     .setShortCriticalText(criticalText)
                     .setSubText(
                         "${formatDuration(progress.toDuration(SECONDS))}/${
@@ -243,7 +239,7 @@ class WorkoutUpdatedHandler(
             val notifBuilder =
                 notificationManager.createWorkoutNotificationBuilder()
                     .apply { if (currentExerciseMessage.isNotEmpty()) setContentTitle(currentExerciseMessage) }
-                    .setContentText(currentExerciseMessage)
+                    .setContentText(translations.workoutPersistentNotificationInProgressMessage)
                     .setShortCriticalText(timeMessage)
                     .setSubText(timeMessage)
                     .setStyle(
