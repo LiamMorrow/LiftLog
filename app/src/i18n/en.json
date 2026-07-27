@@ -380,6 +380,8 @@
   "settings.show_tips.subtitle": "Show tips on how to use the app",
   "settings.support.title": "Support",
   "settings.system_default.label": "System default",
+  "settings.theme.custom.preview": "Preview",
+  "settings.theme.custom.title": "Custom color",
   "settings.theme.title": "Theme",
   "settings.translation.subtitle": "Submit translations for parts of the app!",
   "settings.translation.title": "Suggest a translation",

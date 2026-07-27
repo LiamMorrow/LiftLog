@@ -84,6 +84,10 @@ the wizard is how new users get the chance to enable it.
   Android) using a platform-split file convention: `foo.tsx` + `foo.android.tsx` + shared `foo-props.ts`.
   For native `Host`s, seed theming with `colors.seedColor` (not `colors.primary`), let native components
   own their slot colors, and use `@expo/material-symbols` XML icons inside Compose.
+- The **React Compiler** is enabled, so it auto-memoizes render output — don't reach for `useMemo`,
+  `useCallback`, or `React.memo` by default. Write plain values, functions, and inline objects; only add
+  manual memoization for a proven need the compiler can't cover (e.g. a stable identity a non-React API
+  depends on, or a genuinely expensive computation). Don't bulk-convert existing memoized files.
 - Comments explain non-obvious code for a future reader — don't narrate the diff.
 - Backend (C#): format with CSharpier (`dotnet csharpier .`) before committing.
 
