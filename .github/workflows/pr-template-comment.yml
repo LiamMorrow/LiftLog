@@ -15,16 +15,16 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const body = `Thanks for opening a PR! Before this can be reviewed, please make sure you've done the following.
+            const body = `Thanks for opening a PR!
 
-            Please write in your own words. AI-generated summaries tend to be more verbose than necessary and [frustrating to read](https://www.seangoedecke.com/dont-feed-me-slop/).
+            A few things that help this get reviewed:
 
-            - [ ] Described your changes clearly in the PR description in your own words.
-            - [ ] Read the [AI Usage Policy](https://github.com/LiamMorrow/LiftLog/blob/main/CONTRIBUTING.md#ai-usage-policy)
-            - [ ] Attached screenshots of any visual changes.
-            - [ ] Confirmed this PR was raised after an issue/feature request was accepted as wanted for the project (see [Contributing](https://github.com/LiamMorrow/LiftLog/blob/main/CONTRIBUTING.md))
+            - Describe your changes clearly in the PR description, in your own words. AI-generated summaries tend to be more verbose than necessary and [frustrating to read](https://www.seangoedecke.com/dont-feed-me-slop/).
+            - Read the [AI Usage Policy](https://github.com/LiamMorrow/LiftLog/blob/main/CONTRIBUTING.md#ai-usage-policy).
+            - Attach screenshots of any visual changes.
+            - Make sure this PR follows an issue/feature request that's already been accepted as wanted (see [Contributing](https://github.com/LiamMorrow/LiftLog/blob/main/CONTRIBUTING.md)).
 
-            Tick each box above once done.`;
+            PRs that clearly don't follow these likely won't get reviewed in a reasonable timeframe.`;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
