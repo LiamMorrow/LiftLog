@@ -19,9 +19,11 @@ jobs:
 
             Please write in your own words. AI-generated summaries tend to be more verbose than necessary and [frustrating to read](https://www.seangoedecke.com/dont-feed-me-slop/).
 
-            - [ ] Written in your own words, describing the problem or idea clearly.
-            - [ ] Written in your original language. If you're not comfortable in English, write in your own language and it can be translated if needed.
-            - [ ] Searched existing [discussions](https://github.com/LiamMorrow/LiftLog/discussions) to check this hasn't already been raised.
+            A few things that help:
+
+            - Written in your own words, describing the problem or idea clearly.
+            - Written in your original language. If you're not comfortable in English, write in your own language and it can be translated if needed.
+            - Search existing [discussions](https://github.com/LiamMorrow/LiftLog/discussions) to check this hasn't already been raised.
 
             See the [Contributing guide](https://github.com/LiamMorrow/LiftLog/blob/main/CONTRIBUTING.md) for more.`;
             await github.graphql(`
