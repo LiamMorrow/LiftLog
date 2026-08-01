@@ -127,7 +127,7 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
     if (stateAfterReduce.settings.isHydrated) {
       await preferenceService.setPreferredLanguage(action.payload);
     }
-    const languageCode = action.payload ?? detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code));
+    const languageCode = action.payload ?? detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code)) ?? 'en';
     const languageSettings = supportedLanguages.find((x) => x.code === languageCode);
     await tolgee.changeLanguage(languageCode);
     I18nManager.forceRTL(!!languageSettings?.isRTL);

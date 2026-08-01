@@ -1,8 +1,10 @@
 import { PreferenceService } from '@/services/preference-service';
 import { detectLanguage, LanguageDetectorMiddleware, TolgeePlugin } from '@tolgee/react';
 
-export function detectLanguageFromDateLocale(availableLanguages: string[]) {
-  return detectLanguage(Intl.DateTimeFormat().resolvedOptions().locale, availableLanguages);
+// Tolgee's types claim `detectLanguage` returns a string, but it returns undefined for a locale with
+// no exact or two-letter match.
+export function detectLanguageFromDateLocale(availableLanguages: string[]): string | undefined {
+  return detectLanguage(Intl.DateTimeFormat().resolvedOptions().locale, availableLanguages) as string | undefined;
 }
 
 export const detectLanguageOrPreferred = (preferenceService: PreferenceService, availableLanguages: string[]) => {

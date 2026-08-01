@@ -1,5 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { BuiltInExerciseJSON, loadBuiltInExercises, resolveCatalog } from '@/services/exercise-catalog';
+
+const detector = vi.hoisted(() => ({ detected: undefined as string | undefined }));
+vi.mock('@/utils/language-detector', () => ({
+  detectLanguageFromDateLocale: () => detector.detected,
+}));
 
 const baseSample: BuiltInExerciseJSON[] = [
   {
@@ -58,6 +63,19 @@ describe('loadBuiltInExercises', () => {
   it('best-effort matches a region variant to the base language file', async () => {
     const [russian, regionVariant] = await Promise.all([loadBuiltInExercises('ru'), loadBuiltInExercises('ru-RU')]);
     expect(regionVariant['Barbell Squat']!.name).toBe(russian['Barbell Squat']!.name);
+  });
+
+  it('falls back to English when no preference is set and the system locale is unsupported', async () => {
+    detector.detected = undefined;
+    const [english, systemDefault] = await Promise.all([loadBuiltInExercises('en'), loadBuiltInExercises(undefined)]);
+    expect(systemDefault['Barbell Squat']!.name).toBe(english['Barbell Squat']!.name);
+    expect(systemDefault['Barbell Squat']!.instructions.length).toBeGreaterThan(0);
+  });
+
+  it('uses the detected system locale when no preference is set', async () => {
+    detector.detected = 'ru';
+    const [russian, systemDefault] = await Promise.all([loadBuiltInExercises('ru'), loadBuiltInExercises(undefined)]);
+    expect(systemDefault['Barbell Squat']!.name).toBe(russian['Barbell Squat']!.name);
   });
 
   it('falls back to English for a locale whose overlay is still empty', async () => {

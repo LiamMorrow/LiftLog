@@ -87,7 +87,10 @@ async function loadEnglishOverlay(): Promise<ExerciseTranslationMap> {
 const baseLanguage = (locale: string) => locale.toLowerCase().split('-')[0]!;
 
 // Best-effort: an exact match, then a shared base language (so "ru-RU" or "ru" both hit the "ru" file).
-function matchLoader(locale: string): string | undefined {
+function matchLoader(locale: string | undefined): string | undefined {
+  if (!locale) {
+    return undefined;
+  }
   const lower = locale.toLowerCase();
   if (localeLoaders[lower]) {
     return lower;
@@ -96,9 +99,10 @@ function matchLoader(locale: string): string | undefined {
   return Object.keys(localeLoaders).find((code) => baseLanguage(code) === base);
 }
 
-// An unset preference means "system default", so resolve the same locale the UI displays.
-function resolveLocale(preferredLanguage: string | undefined): string {
-  return preferredLanguage ?? detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code)) ?? 'en';
+// An unset preference means "system default", so resolve the same locale the UI displays. An
+// unsupported system locale resolves to nothing, leaving the English overlay on its own.
+function resolveLocale(preferredLanguage: string | undefined): string | undefined {
+  return preferredLanguage ?? detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code));
 }
 
 async function loadTranslations(preferredLanguage: string | undefined): Promise<ExerciseTranslationMap> {
