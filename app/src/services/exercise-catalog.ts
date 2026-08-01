@@ -98,7 +98,7 @@ function matchLoader(locale: string): string | undefined {
 
 // An unset preference means "system default", so resolve the same locale the UI displays.
 function resolveLocale(preferredLanguage: string | undefined): string {
-  return preferredLanguage ?? detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code));
+  return preferredLanguage ?? detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code)) ?? 'en';
 }
 
 async function loadTranslations(preferredLanguage: string | undefined): Promise<ExerciseTranslationMap> {
