@@ -164,9 +164,12 @@ function updateDerivatives(state: WritableDraft<StoredSessionState>, session: Se
     state.earliestSession = session;
   }
   session.recordedExercises.forEach((exercise) => {
+    if (!exercise.latestTime) {
+      return;
+    }
     const key = KeyedExerciseBlueprint.fromExerciseBlueprint(exercise.blueprint).toString();
     const latestExercise = state.latestExercises[key];
-    if (!latestExercise || latestExercise.latestTime?.isBefore(exercise.latestTime ?? OffsetDateTime.MIN)) {
+    if (!latestExercise?.latestTime || latestExercise.latestTime.isBefore(exercise.latestTime)) {
       state.latestExercises[key] = exercise;
     }
   });

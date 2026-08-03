@@ -76,6 +76,16 @@ function createSessionWithCompletionTime(sessionDate: LocalDate, completionTime:
   return new Session(uuid(), blueprint, [recordedExercise], sessionDate, undefined, undefined);
 }
 
+/** Shares an exercise blueprint (and so a latestExercises key) with `createSessionWithCompletionTime`. */
+function createAbandonedSession(sessionDate: LocalDate, name: string) {
+  const template = createSessionWithCompletionTime(sessionDate, OffsetDateTime.now(), name);
+  const exercise = template.recordedExercises[0] as RecordedWeightedExercise;
+
+  return template.with({
+    recordedExercises: [exercise.with({ potentialSets: [new PotentialSet(undefined, new Weight(0, 'kilograms'))] })],
+  });
+}
+
 describe('stored sessions sorting', () => {
   it('sorts sessions in a month by the actual completion time, not only the date', () => {
     const sameDay = LocalDate.of(2026, 4, 10);
@@ -178,6 +188,20 @@ describe('storedSessions reducer', () => {
 
     expect(state.sessions[first.id]).toBeUndefined();
     expect(state.sessions[replacement.id]).toBe(replacement);
+  });
+
+  it('a completed exercise supersedes an earlier abandoned one with the same blueprint', () => {
+    const abandoned = createAbandonedSession(LocalDate.of(2026, 4, 3), 'Squat');
+    const completed = createSessionWithCompletionTime(
+      LocalDate.of(2026, 4, 10),
+      OffsetDateTime.of(2026, 4, 10, 10, 0, 0, 0, ZoneOffset.UTC),
+      'Squat',
+    );
+
+    const state = reduce(addStoredSession(abandoned), addStoredSession(completed));
+
+    const latest = Object.values(state.latestExercises)[0] as RecordedWeightedExercise;
+    expect(latest.potentialSets[0]!.weight.value.toNumber()).toBe(100);
   });
 
   it('deleteStoredSession removes the session and recalculates latest exercises', () => {
