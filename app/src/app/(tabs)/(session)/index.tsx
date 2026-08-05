@@ -19,7 +19,6 @@ import { useAppSelector, useAppSelectorWhenFocusedWithArg } from '@/store';
 import { selectCurrentSession, setCurrentSession } from '@/store/current-session';
 import { encryptAndShare, publishUnpublishedSessions } from '@/store/feed';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
-import { setEditingSession } from '@/store/session-editor';
 import { executeRemoteBackup } from '@/store/settings';
 import { LocalDate } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
@@ -121,7 +120,6 @@ function ListUpcomingWorkouts({
         renderItemActions={(session) => {
           const sessionPlanIndex = plan.sessions.findIndex((x) => x.equals(session.blueprint));
           const handleEditPress = () => {
-            dispatch(setEditingSession(session.blueprint));
             push(`/settings/manage-workouts/${planId}/manage-session/${sessionPlanIndex}`, { withAnchor: true });
           };
           return (

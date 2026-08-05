@@ -12,7 +12,6 @@ import programReducer from './program';
 import appReducer from './app';
 import feedReducer from './feed';
 import { storedSessionsReducer } from './stored-sessions';
-import { sessionEditorReducer } from './session-editor';
 import { statsReducer } from '@/store/stats';
 import { createServices, Services } from '@/services';
 import { aiPlannerReducer } from '@/store/ai-planner';
@@ -26,7 +25,6 @@ const rootReducer = combineReducers({
   program: programReducer,
   feed: feedReducer,
   app: appReducer,
-  sessionEditor: sessionEditorReducer,
   storedSessions: storedSessionsReducer,
   stats: statsReducer,
 });

@@ -4,7 +4,9 @@ import { Duration } from '@js-joda/core';
 import {
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
+  ProgramBlueprint,
   ProgressionRule,
+  SessionBlueprint,
   normalizeExerciseName,
   progressionEquals,
   RepsConfig,
@@ -12,6 +14,7 @@ import {
   cardioTargetEquals,
 } from '@/models/blueprint-models';
 import { RecordedWeightedExercise } from '@/models/session-models';
+import { LocalDate } from '@js-joda/core';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -503,6 +506,93 @@ describe('WeightedExerciseBlueprint rep schemes', () => {
     it('clamps to a minimum of 1 set', () => {
       expect(fixed.withSets(0).plannedSets).toHaveLength(1);
       expect(fixed.withSets(-5).plannedSets).toHaveLength(1);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // SessionBlueprint
+  // ---------------------------------------------------------------------------
+
+  describe('SessionBlueprint', () => {
+    const squat = WeightedExerciseBlueprint.empty().with({ name: 'Squat' });
+    const bench = WeightedExerciseBlueprint.empty().with({ name: 'Bench' });
+    const session = new SessionBlueprint('Workout A', [squat, bench], '');
+    const names = (s: SessionBlueprint) => s.exercises.map((x) => x.name);
+
+    it('adds an exercise to the end', () => {
+      const deadlift = WeightedExerciseBlueprint.empty().with({ name: 'Deadlift' });
+      expect(names(session.withAddedExercise(deadlift))).toEqual(['Squat', 'Bench', 'Deadlift']);
+      expect(names(session)).toEqual(['Squat', 'Bench']);
+    });
+
+    it('removes an exercise by value', () => {
+      expect(names(session.withoutExercise(WeightedExerciseBlueprint.empty().with({ name: 'Squat' })))).toEqual([
+        'Bench',
+      ]);
+    });
+
+    it('replaces the exercise at an index', () => {
+      const press = WeightedExerciseBlueprint.empty().with({ name: 'Overhead Press' });
+      expect(names(session.withExercise(1, press))).toEqual(['Squat', 'Overhead Press']);
+    });
+
+    it('leaves the session alone for an index that is out of range', () => {
+      const press = WeightedExerciseBlueprint.empty().with({ name: 'Overhead Press' });
+      expect(session.withExercise(5, press)).toBe(session);
+      expect(session.withExercise(-1, press)).toBe(session);
+    });
+
+    it('moves an exercise up and down', () => {
+      expect(names(session.withExerciseMovedDown(squat))).toEqual(['Bench', 'Squat']);
+      expect(names(session.withExerciseMovedUp(bench))).toEqual(['Bench', 'Squat']);
+    });
+
+    it('leaves the session alone when the move would fall off either end', () => {
+      expect(session.withExerciseMovedUp(squat)).toBe(session);
+      expect(session.withExerciseMovedDown(bench)).toBe(session);
+    });
+
+    it('leaves the session alone when the exercise is not in it', () => {
+      const missing = WeightedExerciseBlueprint.empty().with({ name: 'Nowhere' });
+      expect(session.withExerciseMovedUp(missing)).toBe(session);
+      expect(session.withExerciseMovedDown(missing)).toBe(session);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // ProgramBlueprint
+  // ---------------------------------------------------------------------------
+
+  describe('ProgramBlueprint', () => {
+    const workoutA = new SessionBlueprint('Workout A', [], '');
+    const workoutB = new SessionBlueprint('Workout B', [], '');
+    const program = new ProgramBlueprint('Plan', [workoutA, workoutB], LocalDate.of(2026, 8, 6));
+    const names = (p: ProgramBlueprint) => p.sessions.map((x) => x.name);
+
+    it('updates the workout at an index, leaving the others alone', () => {
+      const updated = program.withSession(1, (session) => session.withName('Leg Day'));
+
+      expect(names(updated)).toEqual(['Workout A', 'Leg Day']);
+      expect(names(program)).toEqual(['Workout A', 'Workout B']);
+    });
+
+    it('leaves the plan alone when the workout index does not exist', () => {
+      expect(program.withSession(7, (session) => session.withName('Nowhere'))).toBe(program);
+      expect(program.withSession(-1, (session) => session.withName('Nowhere'))).toBe(program);
+    });
+
+    it('adds and removes workouts', () => {
+      const workoutC = new SessionBlueprint('Workout C', [], '');
+
+      expect(names(program.withAddedSession(workoutC))).toEqual(['Workout A', 'Workout B', 'Workout C']);
+      expect(names(program.withoutSession(new SessionBlueprint('Workout A', [], '')))).toEqual(['Workout B']);
+    });
+
+    it('moves a workout up and down', () => {
+      expect(names(program.withSessionMovedDown(workoutA))).toEqual(['Workout B', 'Workout A']);
+      expect(names(program.withSessionMovedUp(workoutB))).toEqual(['Workout B', 'Workout A']);
+      expect(program.withSessionMovedUp(workoutA)).toBe(program);
+      expect(program.withSessionMovedDown(workoutB)).toBe(program);
     });
   });
 });

@@ -132,9 +132,7 @@ describe('getImportForFitNotes', () => {
   });
 
   it('skips rows that set distance or time without a complete weight+reps pair', () => {
-    const backup = getImportForFitNotes(
-      csvImportFixtureBytes('fitnotes-android-export-lbs-edge-cases.csv'),
-    );
+    const backup = getImportForFitNotes(csvImportFixtureBytes('fitnotes-android-export-lbs-edge-cases.csv'));
     expect(backup.workouts.map((s) => s.date.toString())).toEqual(['2026-08-04', '2026-08-05']);
     expect(backup.workouts[0]!.recordedExercises).toHaveLength(5);
     expect(backup.workouts[1]!.recordedExercises).toHaveLength(3);

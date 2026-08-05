@@ -30,7 +30,7 @@ describe('getPlanDiff', () => {
   it('returns undefined when the session blueprint already matches the plan', () => {
     const session = makeSession([makeWeightedBlueprint({ name: 'Squat' })]);
     const program = programWith([session.blueprint]);
-    expect(getPlanDiff(program, session)).toBeUndefined();
+    expect(getPlanDiff(program, session, 'plan-id')).toBeUndefined();
   });
 
   it('returns a diff against the same-named session in the plan', () => {
@@ -38,7 +38,7 @@ describe('getPlanDiff', () => {
     const edited = original.withAddedExercise(makeWeightedBlueprint({ name: 'Bench' }), false);
     const program = programWith([original.blueprint]);
 
-    const result = getPlanDiff(program, edited)!;
+    const result = getPlanDiff(program, edited, 'plan-id')!;
 
     expect(result.type).toBe('diff');
     if (result.type === 'diff') {
@@ -53,9 +53,17 @@ describe('getPlanDiff', () => {
       makeSession([makeWeightedBlueprint({ name: 'Row' })]).withName('Cardio Day').blueprint,
     ]);
 
-    const result = getPlanDiff(program, session)!;
+    const result = getPlanDiff(program, session, 'plan-id')!;
 
     expect(result.type).toBe('add');
+  });
+
+  it('records which plan the diff was computed against', () => {
+    const original = makeSession([makeWeightedBlueprint({ name: 'Squat' })]);
+    const edited = original.withAddedExercise(makeWeightedBlueprint({ name: 'Bench' }), false);
+
+    expect(getPlanDiff(programWith([original.blueprint]), edited, 'plan-id')?.programId).toBe('plan-id');
+    expect(getPlanDiff(programWith([]), edited, 'plan-id')?.programId).toBe('plan-id');
   });
 });
 

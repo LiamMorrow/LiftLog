@@ -1,4 +1,3 @@
-import { ProgramBlueprint } from '@/models/blueprint-models';
 import {
   parseProgramBlueprintFile,
   PLAN_FILE_EXTENSION,
@@ -24,11 +23,10 @@ function toFileName(name: string): string {
 
 export function applyProgramImportExportEffects(addEffect: AddEffectFn) {
   addEffect(exportPlan, async ({ payload: { programId } }, { getState, extra: { fileExportService } }) => {
-    const pojo = getState().program.savedPrograms[programId];
-    if (!pojo) {
+    const blueprint = getState().program.savedPrograms[programId];
+    if (!blueprint) {
       return;
     }
-    const blueprint = ProgramBlueprint.fromPOJO(pojo);
     await fileExportService.exportBytes(
       toFileName(blueprint.name),
       serializeProgramBlueprint(blueprint),

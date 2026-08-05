@@ -6,11 +6,9 @@ import { PageActions } from '@/components/presentation/foundation/page-actions';
 import AddIcon from '@expo/material-symbols/add.xml';
 import ManageWorkoutCardContent from '@/components/smart/manage-workout-card-content';
 import { spacing } from '@/hooks/useAppTheme';
-import { SessionBlueprint } from '@/models/blueprint-models';
 import { EmptySession } from '@/models/session-models';
 import { useAppSelectorWithArg } from '@/store';
 import { addProgramSession, selectProgram, setSavedPlanName } from '@/store/program';
-import { setEditingSession } from '@/store/session-editor';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Card, TextInput } from 'react-native-paper';
@@ -22,8 +20,7 @@ export default function ManageWorkouts() {
   const program = useAppSelectorWithArg(selectProgram, programId);
   const { t } = useTranslate();
   const dispatch = useDispatch();
-  const selectSession = (sessionBlueprint: SessionBlueprint, index: number) => {
-    dispatch(setEditingSession(sessionBlueprint));
+  const selectSession = (index: number) => {
     push(`/settings/manage-workouts/${programId}/manage-session/${index}`);
   };
 
@@ -36,8 +33,8 @@ export default function ManageWorkouts() {
         programId,
         sessionBlueprint: newSession,
       }),
-      selectSession(newSession, program.sessions.length),
     );
+    selectSession(program.sessions.length);
   };
   const floatingBottomContainer = (
     <PageActions
@@ -73,7 +70,7 @@ export default function ManageWorkouts() {
       <CardList
         items={program.sessions}
         cardType="contained"
-        onPress={selectSession}
+        onPress={(_, i) => selectSession(i)}
         renderItemContent={(session) => (
           <Card.Content>
             <ManageWorkoutCardContent sessionBlueprint={session} programId={programId} />

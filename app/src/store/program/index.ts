@@ -1,16 +1,34 @@
 import { applySessionBlueprintDiff, PlanDiff } from '@/models/blueprint-diff';
-import { ProgramBlueprint, ProgramBlueprintPOJO, SessionBlueprint } from '@/models/blueprint-models';
+import { ProgramBlueprint, SessionBlueprint } from '@/models/blueprint-models';
 import { RemoteData } from '@/models/remote';
 import { EmptySession, Session } from '@/models/session-models';
 import { createAction, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import Enumerable from 'linq';
+
+/** Addresses one workout of one plan, which is how the workout editor screens identify what they edit. */
+export type ProgramSessionLocation = {
+  programId: string;
+  sessionIndex: number;
+};
+
+function updateProgramIn(
+  state: { savedPrograms: { [programId: string]: unknown } },
+  programId: string,
+  update: (program: ProgramBlueprint) => ProgramBlueprint,
+) {
+  const program = state.savedPrograms[programId] as ProgramBlueprint | undefined;
+  if (!program) {
+    return;
+  }
+  state.savedPrograms[programId] = update(program);
+}
 
 interface ProgramState {
   readonly isHydrated: boolean;
   readonly activePlanId: string;
   readonly upcomingSessions: RemoteData<readonly Session[]>;
   readonly savedPrograms: {
-    readonly [programId: string]: ProgramBlueprintPOJO;
+    readonly [programId: string]: ProgramBlueprint;
   };
   /** A plan parsed from an imported file, awaiting the user's confirmation to save. */
   readonly pendingImport?: ProgramBlueprint;
@@ -42,25 +60,36 @@ const programSlice = createSlice({
         sessionBlueprints: SessionBlueprint[];
       }>,
     ) {
-      if (state.savedPrograms[action.payload.programId]) {
-        state.savedPrograms[action.payload.programId] = {
-          ...state.savedPrograms[action.payload.programId]!,
-          sessions: action.payload.sessionBlueprints,
-        };
-      }
+      updateProgramIn(state, action.payload.programId, (program) =>
+        program.withSessions(action.payload.sessionBlueprints),
+      );
+    },
+
+    /** Applies an arbitrary edit to a plan, addressed by id so it cannot land on the wrong one. */
+    updateProgram(
+      state,
+      action: PayloadAction<{
+        programId: string;
+        update: (program: ProgramBlueprint) => ProgramBlueprint;
+      }>,
+    ) {
+      updateProgramIn(state, action.payload.programId, action.payload.update);
     },
 
     applyDiffToPlan(state, action: PayloadAction<PlanDiff>) {
-      if (action.payload.type === 'add') {
-        state.savedPrograms[state.activePlanId]!.sessions.push(
-          applySessionBlueprintDiff(EmptySession.blueprint, action.payload.diff),
-        );
-      } else if (action.payload.type === 'diff') {
-        state.savedPrograms[state.activePlanId]!.sessions[action.payload.sessionIndex] = applySessionBlueprintDiff(
-          state.savedPrograms[state.activePlanId]!.sessions[action.payload.sessionIndex] as SessionBlueprint,
-          action.payload.diff,
-        );
-      }
+      updateProgramIn(state, action.payload.programId, (program) => {
+        if (action.payload.type === 'add') {
+          return program.withAddedSession(applySessionBlueprintDiff(EmptySession.blueprint, action.payload.diff));
+        }
+        // The plan can have been edited between the diff being computed and the user confirming it, so
+        // trust the name over the index it was found at.
+        const { originalSession } = action.payload.diff;
+        const index =
+          program.sessions[action.payload.sessionIndex]?.name === originalSession.name
+            ? action.payload.sessionIndex
+            : program.sessions.findIndex((s) => s.name === originalSession.name);
+        return program.withSession(index, (session) => applySessionBlueprintDiff(session, action.payload.diff));
+      });
     },
 
     setProgramSession(
@@ -71,10 +100,9 @@ const programSlice = createSlice({
         sessionBlueprint: SessionBlueprint;
       }>,
     ) {
-      const program = state.savedPrograms[action.payload.programId];
-      if (program && action.payload.sessionIndex >= 0 && action.payload.sessionIndex < program.sessions.length) {
-        program.sessions[action.payload.sessionIndex] = action.payload.sessionBlueprint;
-      }
+      updateProgramIn(state, action.payload.programId, (program) =>
+        program.withSession(action.payload.sessionIndex, () => action.payload.sessionBlueprint),
+      );
     },
 
     addProgramSession(
@@ -84,10 +112,9 @@ const programSlice = createSlice({
         sessionBlueprint: SessionBlueprint;
       }>,
     ) {
-      const program = state.savedPrograms[action.payload.programId];
-      if (program) {
-        program.sessions.push(action.payload.sessionBlueprint);
-      }
+      updateProgramIn(state, action.payload.programId, (program) =>
+        program.withAddedSession(action.payload.sessionBlueprint),
+      );
     },
 
     deleteSavedPlan(state, action: PayloadAction<{ programId: string }>) {
@@ -96,21 +123,15 @@ const programSlice = createSlice({
     },
 
     setSavedPlanName(state, action: PayloadAction<{ programId: string; name: string }>) {
-      const program = state.savedPrograms[action.payload.programId];
-      if (program) {
-        state.savedPrograms[action.payload.programId] = {
-          ...program,
-          name: action.payload.name,
-        };
-      }
+      updateProgramIn(state, action.payload.programId, (program) => program.withName(action.payload.name));
     },
 
     setSavedPlans(state, action: PayloadAction<{ [programId: string]: ProgramBlueprint }>) {
-      state.savedPrograms = Object.fromEntries(Object.entries(action.payload).map(([x, y]) => [x, y.toPOJO()]));
+      state.savedPrograms = action.payload;
     },
 
     upsertSavedPlans(state, action: PayloadAction<{ [programId: string]: ProgramBlueprint }>) {
-      Object.entries(action.payload).forEach(([id, program]) => (state.savedPrograms[id] = program.toPOJO()));
+      Object.entries(action.payload).forEach(([id, program]) => (state.savedPrograms[id] = program));
     },
 
     moveSessionBlueprintUpInProgram(
@@ -120,15 +141,9 @@ const programSlice = createSlice({
         sessionBlueprint: SessionBlueprint;
       }>,
     ) {
-      const program = state.savedPrograms[action.payload.programId];
-      if (program) {
-        const index = program.sessions.findIndex((s) => action.payload.sessionBlueprint.equals(s as SessionBlueprint));
-        if (index > 0) {
-          const sessions = [...program.sessions];
-          [sessions[index - 1], sessions[index]] = [sessions[index]!, sessions[index - 1]!];
-          program.sessions = sessions;
-        }
-      }
+      updateProgramIn(state, action.payload.programId, (program) =>
+        program.withSessionMovedUp(action.payload.sessionBlueprint),
+      );
     },
 
     moveSessionBlueprintDownInProgram(
@@ -138,15 +153,9 @@ const programSlice = createSlice({
         sessionBlueprint: SessionBlueprint;
       }>,
     ) {
-      const program = state.savedPrograms[action.payload.programId];
-      if (program) {
-        const index = program.sessions.findIndex((s) => action.payload.sessionBlueprint.equals(s as SessionBlueprint));
-        if (index >= 0 && index < program.sessions.length - 1) {
-          const sessions = [...program.sessions];
-          [sessions[index], sessions[index + 1]] = [sessions[index + 1]!, sessions[index]!];
-          program.sessions = sessions;
-        }
-      }
+      updateProgramIn(state, action.payload.programId, (program) =>
+        program.withSessionMovedDown(action.payload.sessionBlueprint),
+      );
     },
 
     setActivePlan(state, action: PayloadAction<{ activePlanId: string }>) {
@@ -160,15 +169,9 @@ const programSlice = createSlice({
         sessionBlueprint: SessionBlueprint;
       }>,
     ) {
-      const program = state.savedPrograms[action.payload.programId];
-      if (program) {
-        const index = program.sessions.findIndex((session) =>
-          action.payload.sessionBlueprint.equals(session as SessionBlueprint),
-        );
-        if (index >= 0) {
-          program.sessions.splice(index, 1);
-        }
-      }
+      updateProgramIn(state, action.payload.programId, (program) =>
+        program.withoutSession(action.payload.sessionBlueprint),
+      );
     },
 
     savePlan(
@@ -178,7 +181,7 @@ const programSlice = createSlice({
         programBlueprint: ProgramBlueprint;
       }>,
     ) {
-      state.savedPrograms[action.payload.programId] = action.payload.programBlueprint.toPOJO();
+      state.savedPrograms[action.payload.programId] = action.payload.programBlueprint;
     },
 
     setPendingImport(state, action: PayloadAction<{ programBlueprint: ProgramBlueprint }>) {
@@ -190,34 +193,33 @@ const programSlice = createSlice({
     },
   },
   selectors: {
-    selectActiveProgram: createSelector(
-      (state: ProgramState) => state.savedPrograms[state.activePlanId]!,
-      ProgramBlueprint.fromPOJO,
-    ),
+    selectActiveProgram: (state: ProgramState) => state.savedPrograms[state.activePlanId]!,
 
     selectAllPrograms: createSelector(
       (state: ProgramState) => state.savedPrograms,
       (programMap) =>
         Enumerable.from(Object.entries(programMap))
-          .select(([id, val]) => ({
+          .select(([id, program]) => ({
             id,
-            program: ProgramBlueprint.fromPOJO(val),
+            program,
           }))
           .orderBy((x) => x.program.name)
           .toArray(),
     ),
-    selectProgram: createSelector(
-      [(state: ProgramState) => state.savedPrograms, (_, id: string) => id],
-      (programs, id) => ProgramBlueprint.fromPOJO(programs[id]!),
-    ),
+    selectProgram: (state: ProgramState, id: string) => state.savedPrograms[id]!,
     selectPendingImport: (state: ProgramState) => state.pendingImport,
+    selectProgramSession: (state: ProgramState, location: ProgramSessionLocation) =>
+      state.savedPrograms[location.programId]?.sessions[location.sessionIndex],
+    selectProgramSessionExercise: (state: ProgramState, location: ProgramSessionLocation & { exerciseIndex: number }) =>
+      state.savedPrograms[location.programId]?.sessions[location.sessionIndex]?.exercises[location.exerciseIndex],
     /**
-     * Finds a unique name for a new workout in the current active plan.
+     * Finds a unique name for a new workout in the given plan.
      * Will be Workout {Number} where number is the first non conflicting number after sessions.length
      */
     selectNewWorkoutName: createSelector(
-      (state: ProgramState) => state.savedPrograms[state.activePlanId]?.sessions || [],
-      (sessions) => {
+      [(state: ProgramState) => state.savedPrograms, (_: ProgramState, programId: string) => programId],
+      (savedPrograms, programId) => {
+        const sessions = savedPrograms[programId]?.sessions ?? [];
         const existingNames = sessions.map((session) => session.name);
         let counter = sessions.length + 1;
         let proposedName = `Workout ${counter}`;
@@ -238,6 +240,7 @@ export const {
   setUpcomingSessions,
   applyDiffToPlan,
   addProgramSession,
+  updateProgram,
   deleteSavedPlan,
   moveSessionBlueprintDownInProgram,
   moveSessionBlueprintUpInProgram,
@@ -253,8 +256,15 @@ export const {
   clearPendingImport,
 } = programSlice.actions;
 
-export const { selectActiveProgram, selectProgram, selectAllPrograms, selectNewWorkoutName, selectPendingImport } =
-  programSlice.selectors;
+export const {
+  selectActiveProgram,
+  selectProgram,
+  selectAllPrograms,
+  selectNewWorkoutName,
+  selectPendingImport,
+  selectProgramSession,
+  selectProgramSessionExercise,
+} = programSlice.selectors;
 
 export const fetchUpcomingSessions = createAction('fetchUpcomingSessions');
 export const initializeProgramStateSlice = createAction('initializeProgramStateSlice');

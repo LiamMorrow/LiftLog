@@ -253,14 +253,21 @@ export interface ExerciseModification {
   changes: ExerciseFieldChange[];
 }
 
+/**
+ * A pending change to a plan. It is computed when a workout finishes but only applied once the user
+ * confirms it, so it carries the plan it was computed against — by the time it is applied, a
+ * different plan may be active, or the workout may have moved within its plan.
+ */
 export type PlanDiff =
   | {
       type: 'diff';
+      programId: string;
       sessionIndex: number;
       diff: SessionBlueprintDiff;
     }
   | {
       type: 'add';
+      programId: string;
       diff: SessionBlueprintDiff;
     };
 

@@ -11,76 +11,50 @@ import AddIcon from '@expo/material-symbols/add.xml';
 import CopyExerciseDialog from '@/components/smart/copy-exercise-dialog';
 import { spacing } from '@/hooks/useAppTheme';
 import { WeightedExerciseBlueprint, Rest, SessionBlueprint, ExerciseBlueprint } from '@/models/blueprint-models';
-import { RootState, useAppSelector } from '@/store';
-import { setProgramSession } from '@/store/program';
-import {
-  addExercise,
-  moveExerciseDown,
-  moveExerciseUp,
-  removeExercise,
-  selectCurrentlyEditingSession,
-  setEditingExerciseIndex,
-  setEditingSessionName,
-  setEditingSessionNotes,
-} from '@/store/session-editor';
+import { useAppSelector } from '@/store';
+import { ProgramSessionLocation, selectProgramSession, updateProgram } from '@/store/program';
 import { T, useTranslate } from '@tolgee/react';
-import { Redirect, Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Card, TextInput } from 'react-native-paper';
-import { useDispatch, useStore } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export default function ManageWorkouts() {
   const { sessionIndex: sessionIndexStr, programId } = useLocalSearchParams<{
     sessionIndex: string;
     programId: string;
   }>();
-  const sessionIndex = Number(sessionIndexStr);
-  const session = useAppSelector(selectCurrentlyEditingSession);
+  const location = { programId, sessionIndex: Number(sessionIndexStr) };
+  const session = useAppSelector((x) => selectProgramSession(x, location));
   if (!session) {
     return <Redirect href={'/'} />;
   }
-  return <SessionEditor session={session} sessionIndex={sessionIndex} programId={programId} />;
+  return <SessionEditor session={session} location={location} />;
 }
 
-function SessionEditor({
-  session,
-  programId,
-  sessionIndex,
-}: {
-  session: SessionBlueprint;
-  programId: string;
-  sessionIndex: number;
-}) {
+function SessionEditor({ session, location }: { session: SessionBlueprint; location: ProgramSessionLocation }) {
   const dispatch = useDispatch();
-  const { getState } = useStore<RootState>();
-  const [selectedExercise, setSelectedExercise] = useState<ExerciseBlueprint | undefined>(undefined);
-  const [isRemoveOpen, setIsRemoveOpen] = useState(false);
-  const exerciseCount = useAppSelector((x) => x.sessionEditor.sessionBlueprint?.exercises?.length ?? 0);
-  const { push } = useRouter();
-  const openExerciseEditor = (exerciseIndex: number | undefined) => {
-    dispatch(setEditingExerciseIndex(exerciseIndex));
-
-    push(`/settings/manage-workouts/${programId}/manage-session/${sessionIndex}/exercise`);
-  };
-  const { t } = useTranslate();
-  const saveSession = () => {
-    // We need to get it again, as we likely dispatched, but the 'session' var will not have updated yet
-    const currentSession = selectCurrentlyEditingSession(getState());
-    if (!currentSession) return;
+  const updateSession = (update: (session: SessionBlueprint) => SessionBlueprint) => {
     dispatch(
-      setProgramSession({
-        programId,
-        sessionIndex,
-        sessionBlueprint: currentSession,
+      updateProgram({
+        programId: location.programId,
+        update: (program) => program.withSession(location.sessionIndex, update),
       }),
     );
   };
-  useFocusEffect(() => {
-    saveSession();
-  });
+  const [selectedExercise, setSelectedExercise] = useState<ExerciseBlueprint | undefined>(undefined);
+  const [isRemoveOpen, setIsRemoveOpen] = useState(false);
+  const { push } = useRouter();
+  const openExerciseEditor = (exerciseIndex: number) => {
+    push({
+      pathname: '/settings/manage-workouts/[programId]/manage-session/[sessionIndex]/exercise',
+      params: { ...location, exerciseIndex },
+    });
+  };
+  const { t } = useTranslate();
   const beginAddExercise = () => {
-    dispatch(
-      addExercise(
+    updateSession((s) =>
+      s.withAddedExercise(
         WeightedExerciseBlueprint.empty().with({
           name: `Exercise ${session.exercises.length + 1}`,
           repsConfig: { type: 'fixed', reps: 10 },
@@ -92,15 +66,13 @@ function SessionEditor({
         }),
       ),
     );
-    openExerciseEditor(exerciseCount);
+    openExerciseEditor(session.exercises.length);
   };
   const setName = (name: string) => {
-    dispatch(setEditingSessionName(name));
-    saveSession();
+    updateSession((s) => s.withName(name));
   };
   const setNotes = (notes: string) => {
-    dispatch(setEditingSessionNotes(notes));
-    saveSession();
+    updateSession((s) => s.withNotes(notes));
   };
 
   const floatingBottomContainer = (
@@ -139,8 +111,8 @@ function SessionEditor({
             renderItem={(blueprint, index) => (
               <ExerciseItem
                 blueprint={blueprint}
-                sessionIndex={sessionIndex}
-                programId={programId}
+                location={location}
+                updateSession={updateSession}
                 beginEdit={() => {
                   openExerciseEditor(index);
                 }}
@@ -148,7 +120,6 @@ function SessionEditor({
                   setSelectedExercise(blueprint);
                   setIsRemoveOpen(true);
                 }}
-                saveSession={saveSession}
               />
             )}
           />
@@ -160,8 +131,7 @@ function SessionEditor({
           const selected = selectedExercise;
           setSelectedExercise(undefined);
           setIsRemoveOpen(false);
-          if (selected) dispatch(removeExercise(selected));
-          saveSession();
+          if (selected) updateSession((s) => s.withoutExercise(selected));
         }}
         onCancel={() => setIsRemoveOpen(false)}
         open={!!selectedExercise && isRemoveOpen}
@@ -182,27 +152,22 @@ function ExerciseItem({
   blueprint,
   beginEdit,
   beginRemove,
-  sessionIndex,
-  programId,
-  saveSession,
+  location,
+  updateSession,
 }: {
   blueprint: ExerciseBlueprint;
   beginEdit: () => void;
   beginRemove: () => void;
-  sessionIndex: number;
-  programId: string;
-  saveSession: () => void;
+  location: ProgramSessionLocation;
+  updateSession: (update: (session: SessionBlueprint) => SessionBlueprint) => void;
 }) {
-  const dispatch = useDispatch();
   const [copyDialogOpen, setCopyDialogOpen] = useState(false);
 
   const moveDown = () => {
-    dispatch(moveExerciseDown(blueprint));
-    saveSession();
+    updateSession((s) => s.withExerciseMovedDown(blueprint));
   };
   const moveUp = () => {
-    dispatch(moveExerciseUp(blueprint));
-    saveSession();
+    updateSession((s) => s.withExerciseMovedUp(blueprint));
   };
 
   return (
@@ -219,8 +184,8 @@ function ExerciseItem({
         visible={copyDialogOpen}
         onDismiss={() => setCopyDialogOpen(false)}
         exerciseBlueprint={blueprint}
-        currentSessionIndex={sessionIndex}
-        programId={programId}
+        currentSessionIndex={location.sessionIndex}
+        programId={location.programId}
       />
     </>
   );

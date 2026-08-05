@@ -12,7 +12,7 @@ import {
   SessionBlueprintDiff,
 } from '@/models/blueprint-diff';
 import { EmptySession } from '@/models/session-models';
-import { useAppSelector } from '@/store';
+import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { setCurrentPlanDiff } from '@/store/current-session';
 import { applyDiffToPlan, fetchUpcomingSessions, selectNewWorkoutName } from '@/store/program';
 import { useTranslate } from '@tolgee/react';
@@ -56,7 +56,7 @@ export function SessionDiffSaveEditor() {
   const { dismiss } = useRouter();
   const currentPlanDiff = useAppSelector((x) => x.currentSession.currentPlanDiff);
   const [selectedDiff, setSelectedDiff] = useState<SessionBlueprintDiff>();
-  const newWorkoutName = useAppSelector(selectNewWorkoutName);
+  const newWorkoutName = useAppSelectorWithArg(selectNewWorkoutName, currentPlanDiff?.programId ?? '');
 
   // Track whether user has opted to create a new workout instead of updating existing
   const [isCreatingNewWorkout, setIsCreatingNewWorkout] = useState(false);
@@ -100,10 +100,12 @@ export function SessionDiffSaveEditor() {
   };
 
   const save = () => {
-    if (selectedDiff) {
+    if (selectedDiff && currentPlanDiff) {
       dispatch(
         applyDiffToPlan(
-          saveAsNewWorkout ? { type: 'add', diff: selectedDiff } : { ...currentPlanDiff, diff: selectedDiff },
+          saveAsNewWorkout
+            ? { type: 'add', programId: currentPlanDiff.programId, diff: selectedDiff }
+            : { ...currentPlanDiff, diff: selectedDiff },
         ),
       );
     }

@@ -12,8 +12,9 @@ export function useFinishWorkout(target: SessionTarget) {
   const dispatch = useDispatch();
   const session = useAppSelectorWithArg(selectCurrentSession, target);
   const program = useAppSelector(selectActiveProgram);
+  const programId = useAppSelector((x) => x.program.activePlanId);
   return (): boolean => {
-    const diff = session ? getPlanDiff(program, session) : undefined;
+    const diff = session ? getPlanDiff(program, session, programId) : undefined;
     if (diff) {
       dispatch(setCurrentPlanDiff(diff));
     }

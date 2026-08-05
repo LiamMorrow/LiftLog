@@ -21,13 +21,6 @@ import {
 } from '../storage/versions/latest';
 import { RecordedWeightedExercise } from '@/models/session-models';
 
-export interface ProgramBlueprintPOJO {
-  type: 'ProgramBlueprint';
-  readonly name: string;
-  readonly sessions: SessionBlueprint[];
-  lastEdited: LocalDate;
-}
-
 export class ProgramBlueprint {
   constructor(
     readonly name: string,
@@ -41,10 +34,6 @@ export class ProgramBlueprint {
       json.sessions.map(SessionBlueprint.fromJSON),
       fromLocalDateJSON(json.lastEdited),
     );
-  }
-
-  static fromPOJO(pojo: Omit<ProgramBlueprintPOJO, 'type'>): ProgramBlueprint {
-    return new ProgramBlueprint(pojo.name, pojo.sessions, pojo.lastEdited);
   }
 
   equals(other: ProgramBlueprint | undefined) {
@@ -63,15 +52,6 @@ export class ProgramBlueprint {
     );
   }
 
-  toPOJO(): ProgramBlueprintPOJO {
-    return {
-      type: 'ProgramBlueprint',
-      name: this.name,
-      sessions: this.sessions,
-      lastEdited: this.lastEdited,
-    };
-  }
-
   toJSON(): ProgramBlueprintJSON {
     return {
       version: 3,
@@ -87,6 +67,46 @@ export class ProgramBlueprint {
       other.sessions ?? this.sessions,
       other.lastEdited ?? this.lastEdited,
     );
+  }
+
+  withName(name: string): ProgramBlueprint {
+    return this.with({ name });
+  }
+
+  withSessions(sessions: SessionBlueprint[]): ProgramBlueprint {
+    return this.with({ sessions });
+  }
+
+  withSession(sessionIndex: number, update: (session: SessionBlueprint) => SessionBlueprint): ProgramBlueprint {
+    const session = this.sessions[sessionIndex];
+    if (!session) {
+      return this;
+    }
+    return this.with({ sessions: this.sessions.with(sessionIndex, update(session)) });
+  }
+
+  withAddedSession(session: SessionBlueprint): ProgramBlueprint {
+    return this.with({ sessions: [...this.sessions, session] });
+  }
+
+  withoutSession(session: SessionBlueprint): ProgramBlueprint {
+    return this.with({ sessions: this.sessions.filter((x) => !session.equals(x)) });
+  }
+
+  withSessionMovedUp(session: SessionBlueprint): ProgramBlueprint {
+    const index = this.sessions.findIndex((x) => session.equals(x));
+    return index > 0 ? this.withSessionsSwapped(index - 1, index) : this;
+  }
+
+  withSessionMovedDown(session: SessionBlueprint): ProgramBlueprint {
+    const index = this.sessions.findIndex((x) => session.equals(x));
+    return index >= 0 && index < this.sessions.length - 1 ? this.withSessionsSwapped(index, index + 1) : this;
+  }
+
+  private withSessionsSwapped(first: number, second: number): ProgramBlueprint {
+    const sessions = [...this.sessions];
+    [sessions[first], sessions[second]] = [sessions[second]!, sessions[first]!];
+    return this.with({ sessions });
   }
 }
 
@@ -128,6 +148,45 @@ export class SessionBlueprint {
 
   with(other: Partial<SessionBlueprint>): SessionBlueprint {
     return new SessionBlueprint(other.name ?? this.name, other.exercises ?? this.exercises, other.notes ?? this.notes);
+  }
+
+  withName(name: string): SessionBlueprint {
+    return this.with({ name });
+  }
+
+  withNotes(notes: string): SessionBlueprint {
+    return this.with({ notes });
+  }
+
+  withAddedExercise(exercise: ExerciseBlueprint): SessionBlueprint {
+    return this.with({ exercises: [...this.exercises, exercise] });
+  }
+
+  withoutExercise(exercise: ExerciseBlueprint): SessionBlueprint {
+    return this.with({ exercises: this.exercises.filter((x) => !exercise.equals(x)) });
+  }
+
+  withExercise(exerciseIndex: number, exercise: ExerciseBlueprint): SessionBlueprint {
+    if (exerciseIndex < 0 || exerciseIndex >= this.exercises.length) {
+      return this;
+    }
+    return this.with({ exercises: this.exercises.with(exerciseIndex, exercise) });
+  }
+
+  withExerciseMovedUp(exercise: ExerciseBlueprint): SessionBlueprint {
+    const index = this.exercises.findIndex((x) => exercise.equals(x));
+    return index > 0 ? this.withExercisesSwapped(index - 1, index) : this;
+  }
+
+  withExerciseMovedDown(exercise: ExerciseBlueprint): SessionBlueprint {
+    const index = this.exercises.findIndex((x) => exercise.equals(x));
+    return index >= 0 && index < this.exercises.length - 1 ? this.withExercisesSwapped(index, index + 1) : this;
+  }
+
+  private withExercisesSwapped(first: number, second: number): SessionBlueprint {
+    const exercises = [...this.exercises];
+    [exercises[first], exercises[second]] = [exercises[second]!, exercises[first]!];
+    return this.with({ exercises });
   }
 }
 

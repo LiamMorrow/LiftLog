@@ -4,7 +4,6 @@ import { Session, RecordedWeightedExercise, RecordedSet, RestTimer } from '@/mod
 import { Weight } from '@/models/weight';
 import { setCurrentSession } from '@/store/current-session';
 import { useAppSelector } from '@/store';
-import { setEditingExerciseIndex, setEditingSession } from '@/store/session-editor';
 import { Duration, LocalDate, LocalTime, OffsetDateTime, ZoneOffset } from '@js-joda/core';
 import { Redirect, useLocalSearchParams } from 'expo-router';
 import { useDispatch } from 'react-redux';
@@ -12,7 +11,7 @@ import BigNumber from 'bignumber.js';
 import { setChat, ChatMessage } from '@/store/ai-planner';
 import { AiPlan } from '@/models/ai-models';
 import { setStatsIsDirty, fetchOverallStats } from '@/store/stats';
-import { setSavedPlans } from '@/store/program';
+import { savePlan, setSavedPlans } from '@/store/program';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { upsertStoredSessions, setStoredSessions } from '@/store/stored-sessions';
 import { setColorSchemeSeed, setRestNotifications, setWelcomeWizardCompleted } from '@/store/settings';
@@ -51,36 +50,49 @@ function PrepareExerciseEditorPage() {
   const dispatch = useDispatch();
   useMountEffect(() => {
     dispatch(
-      setEditingSession(
-        new SessionBlueprint(
-          'Push Day',
+      savePlan({
+        programId: activePlanId,
+        programBlueprint: new ProgramBlueprint(
+          'Push Program',
           [
-            WeightedExerciseBlueprint.empty().with({
-              name: 'Bench Press',
-              sets: 4,
-              repsConfig: { type: 'fixed', reps: 8 },
-              notes: 'Keep shoulder blades retracted and drive feet into the floor',
-              progression: [ProgressionRule.load(BigNumber(2.5))],
-            }),
-            WeightedExerciseBlueprint.empty().with({
-              name: 'Incline Dumbbell Press',
-              sets: 3,
-              repsConfig: { type: 'fixed', reps: 10 },
-            }),
-            WeightedExerciseBlueprint.empty().with({
-              name: 'Tricep Pushdown',
-              sets: 3,
-              repsConfig: { type: 'fixed', reps: 12 },
-            }),
+            new SessionBlueprint(
+              'Push Day',
+              [
+                WeightedExerciseBlueprint.empty().with({
+                  name: 'Bench Press',
+                  sets: 4,
+                  repsConfig: { type: 'fixed', reps: 8 },
+                  notes: 'Keep shoulder blades retracted and drive feet into the floor',
+                  progression: [ProgressionRule.load(BigNumber(2.5))],
+                }),
+                WeightedExerciseBlueprint.empty().with({
+                  name: 'Incline Dumbbell Press',
+                  sets: 3,
+                  repsConfig: { type: 'fixed', reps: 10 },
+                }),
+                WeightedExerciseBlueprint.empty().with({
+                  name: 'Tricep Pushdown',
+                  sets: 3,
+                  repsConfig: { type: 'fixed', reps: 12 },
+                }),
+              ],
+              '',
+            ),
           ],
-          '',
+          LocalDate.now(),
         ),
-      ),
+      }),
     );
-    dispatch(setEditingExerciseIndex(0));
   });
 
-  return <Redirect href={`/settings/manage-workouts/${activePlanId}/manage-session/0/exercise`} />;
+  return (
+    <Redirect
+      href={{
+        pathname: '/settings/manage-workouts/[programId]/manage-session/[sessionIndex]/exercise',
+        params: { programId: activePlanId, sessionIndex: 0, exerciseIndex: 0 },
+      }}
+    />
+  );
 }
 
 function PrepareAiPlannerPage() {
