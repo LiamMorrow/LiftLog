@@ -1,6 +1,6 @@
 import { Duration, LocalDate } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
-import { match, P } from 'ts-pattern';
+import { match } from 'ts-pattern';
 import {
   CardioExerciseBlueprintJSON,
   CardioExerciseSetBlueprintJSON,
@@ -282,6 +282,17 @@ export class CardioExerciseBlueprint {
       json.link,
     );
   }
+
+  /** See {@link MovementKey}. */
+  movementKey(): MovementKey {
+    return movementKeyFor(this.name, this.type);
+  }
+
+  /** See {@link ProgressionKey}. Distance and time work are separate lineages. */
+  progressionKey(): ProgressionKey {
+    return `${this.name}_${this.type}_${this.sets[0]?.target.type ?? 'distance'}` as ProgressionKey;
+  }
+
   equals(other: ExerciseBlueprint | undefined) {
     if (!other) {
       return false;
@@ -601,6 +612,16 @@ export class WeightedExerciseBlueprint {
     );
   }
 
+  /** See {@link MovementKey}. */
+  movementKey(): MovementKey {
+    return movementKeyFor(this.name, this.type);
+  }
+
+  /** See {@link ProgressionKey}. The rep scheme is what separates one lineage from another. */
+  progressionKey(): ProgressionKey {
+    return `${this.name}_${this.type}_${this.sets}_${repsConfigKey(this.repsConfig)}` as ProgressionKey;
+  }
+
   repsTargetForSet(index: number): RepsTarget {
     return match(this.repsConfig)
       .with({ type: 'fixed' }, (c) => ({ min: c.reps, max: c.reps }))
@@ -690,56 +711,60 @@ export class WeightedExerciseBlueprint {
   }
 }
 
-export class KeyedExerciseBlueprint {
-  private constructor(
-    readonly name: string,
-    private readonly differentiator: string,
-  ) {}
+/*
+ * Two exercises can be "the same" in two different ways, and the answer differs depending on which
+ * question is being asked. Both keys are produced by methods on the blueprint (and mirrored on the
+ * recorded exercise), so whichever one you have in hand offers both side by side.
+ *
+ *   movementKey()    — is this the same *movement*, for aggregating history?
+ *   progressionKey() — is this the same *programmed slot*, so last session's numbers load into today's?
+ *
+ * They are branded so that a map keyed by one cannot be indexed by the other.
+ */
 
-  static fromExerciseBlueprint(e: ExerciseBlueprint): KeyedExerciseBlueprint {
-    return new KeyedExerciseBlueprint(
-      e.name,
-      match(e)
-        .with(P.instanceOf(WeightedExerciseBlueprint), (ex) => `${ex.sets}_${repsConfigKey(ex.repsConfig)}`)
-        .with(P.instanceOf(CardioExerciseBlueprint), (t) => t.sets[0]?.target.type ?? 'distance')
-        .exhaustive(),
-    );
-  }
+/**
+ * Identifies a movement across everything the user has ever logged. Blind to how the exercise is
+ * programmed, and deliberately fuzzy about spelling — `Cable Flye`, `cable flies` and `Cable Flys`
+ * all key alike — because stats, personal records and "recently completed" want one row per
+ * movement however the user typed it that day.
+ *
+ * Weighted and cardio are separate movements even under the same name: a rowing machine and a barbell
+ * row share a word and nothing else, and their numbers are not comparable.
+ */
+export type MovementKey = string & { readonly __brand: 'MovementKey' };
 
-  toString() {
-    return `${this.name}_${this.differentiator}`;
+/**
+ * Identifies one exercise slot in a program, so that its weights and rep targets carry from session
+ * to session. Sensitive to the rep scheme, which is what lets a plan run Squats 5x5 on two days as a
+ * single progressing lineage while Squats 3x8 on a third day climbs on its own. Split by type for the
+ * same reason as {@link MovementKey}.
+ */
+export type ProgressionKey = string & { readonly __brand: 'ProgressionKey' };
+
+/**
+ * The fuzzy half of {@link MovementKey}, for the callers that compare names alone — a stat row, a saved
+ * exercise descriptor, neither of which knows whether it is weighted or cardio.
+ */
+export function normalizeExerciseName(name: string): string {
+  if (!name) {
+    return '';
   }
+  const lowerName = name.toLowerCase().trim().replace(/flies/g, 'flys').replace(/flyes/g, 'flys');
+  const withoutPlural = lowerName.endsWith('es')
+    ? lowerName.slice(0, -2)
+    : lowerName.endsWith('s')
+      ? lowerName.slice(0, -1)
+      : lowerName;
+
+  return withoutPlural;
 }
 
-export type NormalizedNameKey = string;
-
-export class NormalizedName {
-  constructor(readonly name: string) {}
-  static fromExerciseBlueprint(e: ExerciseBlueprint): NormalizedName {
-    return new NormalizedName(e.name);
-  }
-
-  toString(): NormalizedNameKey {
-    return NormalizedName.normalizeName(this.name);
-  }
-
-  equals(other: NormalizedName) {
-    return other.toString() === this.toString();
-  }
-
-  private static normalizeName(name?: string): string {
-    if (!name) {
-      return '';
-    }
-    const lowerName = name.toLowerCase().trim().replace(/flies/g, 'flys').replace(/flyes/g, 'flys');
-    const withoutPlural = lowerName.endsWith('es')
-      ? lowerName.slice(0, -2)
-      : lowerName.endsWith('s')
-        ? lowerName.slice(0, -1)
-        : lowerName;
-
-    return withoutPlural;
-  }
+/**
+ * For callers holding a name and a type but no blueprint — a route param, say. Prefer
+ * `blueprint.movementKey()` wherever a blueprint is available.
+ */
+export function movementKeyFor(name: string, type: ExerciseBlueprint['type']): MovementKey {
+  return `${normalizeExerciseName(name)}|${type}` as MovementKey;
 }
 
 export interface Rest {

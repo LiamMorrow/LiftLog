@@ -1,7 +1,7 @@
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { dataMigrationsSchema, exercisesSchema, sessionsSchema } from '@/db/schema';
 import Enumerable from 'linq';
-import { NormalizedName } from '@/models/blueprint-models';
+import { normalizeExerciseName } from '@/models/blueprint-models';
 import { fromRecordedExerciseJSON } from '@/models/session-models';
 import { ExerciseDescriptorJSON } from '@/models/storage/versions/initial';
 import { uuid } from '@/utils/uuid';
@@ -15,13 +15,13 @@ export async function importExercisesFromWorkouts(db: ExpoSQLiteDatabase) {
     const existingExerciseNames = new Set(
       (await tx.select().from(exercisesSchema))
         .map((row) => exerciseDescriptorMigrations.migrate(row.payload))
-        .map((x) => new NormalizedName(x.name).toString()),
+        .map((x) => normalizeExerciseName(x.name)),
     );
     const uniqueExercisesNotInList = Enumerable.from(workouts)
       .selectMany((x) => x.recordedExercises)
       .select(fromRecordedExerciseJSON)
-      .where((x) => !existingExerciseNames.has(NormalizedName.fromExerciseBlueprint(x.blueprint).toString()))
-      .distinct((x) => NormalizedName.fromExerciseBlueprint(x.blueprint).toString());
+      .where((x) => !existingExerciseNames.has(normalizeExerciseName(x.blueprint.name)))
+      .distinct((x) => x.blueprint.movementKey());
 
     const newExercises = uniqueExercisesNotInList
       .select(

@@ -1,5 +1,5 @@
-import { NormalizedName } from '@/models/blueprint-models';
 import { PotentialSet, RecordedCardioExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
+import { MovementKey } from '@/models/blueprint-models';
 import { LocalDateRange } from '@/models/time-models';
 import { Weight, WeightUnit } from '@/models/weight';
 import {
@@ -116,12 +116,12 @@ export function calculateStats(
     repsStatistics: RepsBreakdownStatistics;
     latestTime: OffsetDateTime;
   }
-  const exerciseStatsMap = new Map<string, ExerciseStatAcc>();
+  const exerciseStatsMap = new Map<MovementKey, ExerciseStatAcc>();
 
   for (const session of sessionsWithExercises) {
     for (const ex of session.recordedExercises) {
       const blueprint = ex.blueprint;
-      const key = NormalizedName.fromExerciseBlueprint(blueprint).toString();
+      const key = blueprint.movementKey();
       if (!ex.isStarted) continue;
       if (!exerciseStatsMap.has(key)) {
         exerciseStatsMap.set(key, {
@@ -218,24 +218,6 @@ export function calculateStats(
     averageSessionLength = sessionDurations
       .reduce((a, b) => a.plus(b), Duration.ZERO)
       .dividedBy(sessionDurations.length);
-  }
-
-  // --- Exercise most time spent ---
-  const exerciseTimeMap = new Map<string, { exerciseName: string; timeSpent: Duration }>();
-  for (const session of sessionsWithExercises) {
-    for (const ex of session.recordedExercises) {
-      const key = ex.blueprint.name.trim().toLowerCase();
-      const timeSpent = ex.duration;
-      if (timeSpent) {
-        if (!exerciseTimeMap.has(key)) {
-          exerciseTimeMap.set(key, {
-            exerciseName: ex.blueprint.name,
-            timeSpent: Duration.ZERO,
-          });
-        }
-        exerciseTimeMap.get(key)!.timeSpent = exerciseTimeMap.get(key)!.timeSpent.plus(timeSpent);
-      }
-    }
   }
 
   // --- Heaviest lift ---

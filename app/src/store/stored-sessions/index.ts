@@ -1,10 +1,5 @@
 import { RecordedExercise, Session } from '@/models/session-models';
-import {
-  NormalizedName,
-  NormalizedNameKey,
-  ExerciseBlueprint,
-  KeyedExerciseBlueprint,
-} from '@/models/blueprint-models';
+import { ExerciseBlueprint, MovementKey, ProgressionKey } from '@/models/blueprint-models';
 import { LocalDate, OffsetDateTime, YearMonth, ZoneId } from '@js-joda/core';
 import { createAction, createSelector, createSlice, PayloadAction, WritableDraft } from '@reduxjs/toolkit';
 import Enumerable from 'linq';
@@ -15,7 +10,7 @@ import { findPersonalRecords } from '@/store/stats/personal-records';
 interface StoredSessionState {
   isHydrated: boolean;
   sessions: Record<string, Session>;
-  latestExercises: Record<string, RecordedExercise | undefined>; // KeyedExerciseBlueprint -> RecordedExercise
+  latestExercises: Record<ProgressionKey, RecordedExercise | undefined>;
   // Read-only catalog resolved for the current locale, keyed by the exercise's English name.
   builtInExercises: Record<string, ExerciseDescriptor>;
   // User-created exercises and copy-on-write edits of built-ins.
@@ -81,11 +76,7 @@ const storedSessionsSlice = createSlice({
       if (!deletedSession) return;
 
       // Collect the exercise keys that were in the deleted session
-      const affectedKeys = new Set(
-        deletedSession.recordedExercises.map((e) =>
-          KeyedExerciseBlueprint.fromExerciseBlueprint(e.blueprint as ExerciseBlueprint).toString(),
-        ),
-      );
+      const affectedKeys = new Set(deletedSession.recordedExercises.map((e) => e.progressionKey()));
 
       // For each affected key, clear and recalculate from remaining sessions
       affectedKeys.forEach((key) => {
@@ -167,7 +158,7 @@ function updateDerivatives(state: WritableDraft<StoredSessionState>, session: Se
     if (!exercise.latestTime) {
       return;
     }
-    const key = KeyedExerciseBlueprint.fromExerciseBlueprint(exercise.blueprint).toString();
+    const key = exercise.progressionKey();
     const latestExercise = state.latestExercises[key];
     if (!latestExercise?.latestTime || latestExercise.latestTime.isBefore(exercise.latestTime)) {
       state.latestExercises[key] = exercise;
@@ -214,10 +205,10 @@ export const selectExerciseById = createSelector(
 
 const selectLatestOrderedRecordedExercises = createSelector(
   [storedSessionsSlice.selectors.selectSessions, (_, maxRecordsPerExercise: number) => maxRecordsPerExercise],
-  (sessions, maxRecordsPerExercise): Record<NormalizedNameKey, RecordedExercise[]> => {
+  (sessions, maxRecordsPerExercise): Record<MovementKey, RecordedExercise[]> => {
     return Enumerable.from(sessions)
       .selectMany((x) => x.recordedExercises.filter((x) => x.isStarted))
-      .groupBy((x) => NormalizedName.fromExerciseBlueprint(x.blueprint).toString())
+      .groupBy((x) => x.movementKey())
       .toObject(
         (x) => x.key(),
         (x) =>
@@ -232,11 +223,7 @@ const selectLatestOrderedRecordedExercises = createSelector(
 export const selectRecentlyCompletedExercises = createSelector(
   selectLatestOrderedRecordedExercises,
   (recentlyCompletedExercises) =>
-    (blueprint: ExerciseBlueprint): RecordedExercise[] =>
-      (recentlyCompletedExercises[NormalizedName.fromExerciseBlueprint(blueprint).toString()] ?? []).filter(
-        // A cardio and weighted exercise can share a name; their records aren't comparable
-        (x) => x.blueprint.type === blueprint.type,
-      ),
+    (blueprint: ExerciseBlueprint): RecordedExercise[] => recentlyCompletedExercises[blueprint.movementKey()] ?? [],
 );
 
 export const selectPreviousComparableSession = createSelector(

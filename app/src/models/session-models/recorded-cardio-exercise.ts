@@ -3,6 +3,8 @@ import {
   CardioExerciseSetBlueprint,
   Distance,
   fromDistanceJSON,
+  MovementKey,
+  ProgressionKey,
   toDistanceJSON,
 } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
@@ -211,6 +213,16 @@ export class RecordedCardioExercise {
       blueprint.sets.map((x) => RecordedCardioExerciseSet.empty(x)),
       undefined,
     );
+  }
+
+  /** See {@link MovementKey}. */
+  movementKey(): MovementKey {
+    return this.blueprint.movementKey();
+  }
+
+  /** See {@link ProgressionKey}. */
+  progressionKey(): ProgressionKey {
+    return this.blueprint.progressionKey();
   }
 
   get currentSetIndex() {
