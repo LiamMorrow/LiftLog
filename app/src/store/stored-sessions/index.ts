@@ -1,5 +1,5 @@
 import { RecordedExercise, Session } from '@/models/session-models';
-import { ExerciseBlueprint, MovementKey, ProgressionKey } from '@/models/blueprint-models';
+import { MovementKey, ProgressionKey } from '@/models/blueprint-models';
 import { LocalDate, OffsetDateTime, YearMonth, ZoneId } from '@js-joda/core';
 import { createAction, createSelector, createSlice, PayloadAction, WritableDraft } from '@reduxjs/toolkit';
 import Enumerable from 'linq';
@@ -204,26 +204,25 @@ export const selectExerciseById = createSelector(
 );
 
 const selectLatestOrderedRecordedExercises = createSelector(
-  [storedSessionsSlice.selectors.selectSessions, (_, maxRecordsPerExercise: number) => maxRecordsPerExercise],
-  (sessions, maxRecordsPerExercise): Record<MovementKey, RecordedExercise[]> => {
+  [storedSessionsSlice.selectors.selectSessions],
+  (sessions): Record<MovementKey, RecordedExercise[]> => {
     return Enumerable.from(sessions)
       .selectMany((x) => x.recordedExercises.filter((x) => x.isStarted))
       .groupBy((x) => x.movementKey())
       .toObject(
         (x) => x.key(),
-        (x) =>
-          x
-            .orderByDescending((x) => x.latestTime, TemporalComparer)
-            .take(maxRecordsPerExercise)
-            .toArray(),
+        (x) => x.orderByDescending((x) => x.latestTime, TemporalComparer).toArray(),
       );
   },
 );
 
+const noRecordedExercises: RecordedExercise[] = [];
+
 export const selectRecentlyCompletedExercises = createSelector(
   selectLatestOrderedRecordedExercises,
   (recentlyCompletedExercises) =>
-    (blueprint: ExerciseBlueprint): RecordedExercise[] => recentlyCompletedExercises[blueprint.movementKey()] ?? [],
+    (exercise: MovementKey): RecordedExercise[] =>
+      recentlyCompletedExercises[exercise] ?? noRecordedExercises,
 );
 
 export const selectPreviousComparableSession = createSelector(

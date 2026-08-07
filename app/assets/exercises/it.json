@@ -1,34 +1,34 @@
 {
-    "3/4 Sit-Up": {
-        "name": "Sit-Up a 3/4",
-        "instructions": "Sdraiati a terra di schiena, con i piedi ben poggiati e le ginocchia piegate.\nPosiziona le mani dietro o ai lati della testa. Questa sarà la posizione iniziale.\nPiegati all'altezza dei fianchi per portare il tuo petto verso le ginocchia.\nAll'apice della contrazione, il tuo torso dovrebbe essere perpendicolare al pavimento. Inverti il movimento, ma fermati a ¾ della discesa.\nRipeti per il numero di ripetizioni raccomandato."
-    },
-    "90/90 Hamstring": {
-        "name": "Stretching Ischiocrurale 90/90",
-        "instructions": "Sdraiati sulla schiena, con una gamba estesa lungo il pavimento.\nPorta su l'altra gamba e piega il ginocchio a 90 gradi. Se necessario, tienila con le mani. Questa sarà la tua posizione di partenza.\nEstendi la gamba verso l'alto, facendo una breve pausa all'apice. Ritorna alla posizione iniziale.\nRipeti per 10-20 ripetizioni, poi passa all'altra gamba."
-    },
-    "Ab Crunch Machine": {
-        "name": "Macchina per addominali",
-        "instructions": "Seleziona una resistenza leggera e siediti sulla macchina poneno i piedi sotto i cuscinetti e afferrando le maniglie in alto. Le tue braccia dovrebbero essere piegate a un angolo di 90 gradi mentre i tuoi tricipiti poggiano sui cuscinetti. Questa sarà la posizione iniziale.\nContemporaneamente, inizia ad alzare le gambe mentre pieghi il tuo torso superiore. Espira mentre esegui questo movimento. Nota: Assicurati di eseguire un movimento lento e controllato. Concentrati sull'utilizzo degli addominali per muovere il peso, mentre rilassi gambe e piedi.\nDopo una breve pausa, ritorna lentamente alla posizione iniziale mentre inspiri.\nRipeti il movimento per il numero di ripetizioni prescritto."
-    },
-    "Ab Roller": {
-        "name": "Rullo per Addominali",
-        "instructions": "Inginocchiati e tieni il rullo con entrambe le mani.\nOra posizione il rullo sul pavimento di fronte a te, distribuendo il peso su entrambe le mani e le ginocchia (come un piegamento in ginocchio). Questa sarà la posizione iniziale.\nLentamente, spingi il rullo in avanti estendendo il corpo verso una posizione dritta. Nota: Vai giù finché riesci senza toccare il pavimento con il corpo. Inspire durante questa porzione del movimento.\nDopo una pausa in posizione estesa, comincia a tirarti indietro verso la posizione iniziale mentre espiri. Nota: Procedi lentamente e mantieni sempre gli addominali contratti."
-    },
-    "Adductor": {
-        "name": "Adduttore",
-        "instructions": "Sdraiati faccia a terra con una gamba su un foam roller.\nRuota la gamba in modo che il foam roller tocchi l'interno della tua coscia. Sposta sul foam roller quanto più peso riesci,\nMentre cerchi di rilassare i muscoli dell'interno coscia, rotola il foam roller dall'anca al ginochio, mantenendo i punti di tensione per 10-30 secondi. Ripeti con l'altra gamba."
-    },
-    "Adductor/Groin": {
-        "name": "Adduttore/Inguine",
-        "instructions": "Sdraiati sulla schiena con i piedi alzati verso il soffitto.\nFai tenere al tuo partner i tuoi piedi o caviglie. Adduci le gambe il più che puoi. Questa sarà la tua posizione iniziale.\nCerca di avvicinare le gambe tra loro per 10 o più secondi, mentre il tuo partner ti impedisce di farlo.\nOra, rilassa i muscoli delle gambe mentre il tuo partner separa le tue gambe quanto più ti è possibile. Assicurati di comunicare con il tuo partner per evitare overstretching o infortuni."
-    },
-    "Advanced Kettlebell Windmill": {
-        "name": "Kettlebell Windmill Avanzato",
-        "instructions": "Pulisci un kettlebell e portalo sopra la testa con un braccio.\nMantenendo il braccio del kettlebell esteso e bloccato, spingi all'infuori il sedere nella direzione del braccio stesso. Mantieni il braccio libero dietro la schiena e gira i piedi a un angolo di 45 gradi dal braccio con il kettlebell.\nAbbassati quanto più riesci.\nPausa brevemente e inverti il movimento fino a tornare alla posizione iniziale."
-    },
-    "Air Bike": {
-        "name": "Air Bike",
-        "instructions": "Stenditi sul pavimento con la parte lombare premuta a terra. Per questo esercizio, dovrai mettere le mani ai lati della testa. Presta però attenzione a non affaticare il collo mentre esegui l'esercizio. Ora solleva le spalle ed entra in una posizione di crunch.\nSolleva le ginocchia finché non sono perpendicolari al pavimento, con la parte inferiore delle gambe parallela al pavimento. Questa sarà la posizione iniziale.\nOra, simultaneamente, fai un lento movimento di pedalaggio scalciando in avanti la gamba destra mentre riporti indietro la gamba sinistra. Porta il tuo gomito destro vicino al ginocchio sinistro piegandoti di lato, espirando.\nTorna alla posizione iniziale inspirando.\nPiegati nel lato opposto mentre pedali e porta il gomito sinistro al ginocchio destro mentre espiri.\nContinua ad alternarti in questa maniera finché non hai completato le tue ripetizioni per ogni lato."
-    }
+  "3/4 Sit-Up": {
+    "name": "Sit-Up a 3/4",
+    "instructions": "Sdraiati a terra di schiena, con i piedi ben poggiati e le ginocchia piegate.\nPosiziona le mani dietro o ai lati della testa. Questa sarà la posizione iniziale.\nPiegati all'altezza dei fianchi per portare il tuo petto verso le ginocchia.\nAll'apice della contrazione, il tuo torso dovrebbe essere perpendicolare al pavimento. Inverti il movimento, ma fermati a ¾ della discesa.\nRipeti per il numero di ripetizioni raccomandato."
+  },
+  "90/90 Hamstring": {
+    "name": "Stretching Ischiocrurale 90/90",
+    "instructions": "Sdraiati sulla schiena, con una gamba estesa lungo il pavimento.\nPorta su l'altra gamba e piega il ginocchio a 90 gradi. Se necessario, tienila con le mani. Questa sarà la tua posizione di partenza.\nEstendi la gamba verso l'alto, facendo una breve pausa all'apice. Ritorna alla posizione iniziale.\nRipeti per 10-20 ripetizioni, poi passa all'altra gamba."
+  },
+  "Ab Crunch Machine": {
+    "name": "Macchina per addominali",
+    "instructions": "Seleziona una resistenza leggera e siediti sulla macchina poneno i piedi sotto i cuscinetti e afferrando le maniglie in alto. Le tue braccia dovrebbero essere piegate a un angolo di 90 gradi mentre i tuoi tricipiti poggiano sui cuscinetti. Questa sarà la posizione iniziale.\nContemporaneamente, inizia ad alzare le gambe mentre pieghi il tuo torso superiore. Espira mentre esegui questo movimento. Nota: Assicurati di eseguire un movimento lento e controllato. Concentrati sull'utilizzo degli addominali per muovere il peso, mentre rilassi gambe e piedi.\nDopo una breve pausa, ritorna lentamente alla posizione iniziale mentre inspiri.\nRipeti il movimento per il numero di ripetizioni prescritto."
+  },
+  "Ab Roller": {
+    "name": "Rullo per Addominali",
+    "instructions": "Inginocchiati e tieni il rullo con entrambe le mani.\nOra posizione il rullo sul pavimento di fronte a te, distribuendo il peso su entrambe le mani e le ginocchia (come un piegamento in ginocchio). Questa sarà la posizione iniziale.\nLentamente, spingi il rullo in avanti estendendo il corpo verso una posizione dritta. Nota: Vai giù finché riesci senza toccare il pavimento con il corpo. Inspire durante questa porzione del movimento.\nDopo una pausa in posizione estesa, comincia a tirarti indietro verso la posizione iniziale mentre espiri. Nota: Procedi lentamente e mantieni sempre gli addominali contratti."
+  },
+  "Adductor": {
+    "name": "Adduttore",
+    "instructions": "Sdraiati faccia a terra con una gamba su un foam roller.\nRuota la gamba in modo che il foam roller tocchi l'interno della tua coscia. Sposta sul foam roller quanto più peso riesci,\nMentre cerchi di rilassare i muscoli dell'interno coscia, rotola il foam roller dall'anca al ginochio, mantenendo i punti di tensione per 10-30 secondi. Ripeti con l'altra gamba."
+  },
+  "Adductor/Groin": {
+    "name": "Adduttore/Inguine",
+    "instructions": "Sdraiati sulla schiena con i piedi alzati verso il soffitto.\nFai tenere al tuo partner i tuoi piedi o caviglie. Adduci le gambe il più che puoi. Questa sarà la tua posizione iniziale.\nCerca di avvicinare le gambe tra loro per 10 o più secondi, mentre il tuo partner ti impedisce di farlo.\nOra, rilassa i muscoli delle gambe mentre il tuo partner separa le tue gambe quanto più ti è possibile. Assicurati di comunicare con il tuo partner per evitare overstretching o infortuni."
+  },
+  "Advanced Kettlebell Windmill": {
+    "name": "Kettlebell Windmill Avanzato",
+    "instructions": "Pulisci un kettlebell e portalo sopra la testa con un braccio.\nMantenendo il braccio del kettlebell esteso e bloccato, spingi all'infuori il sedere nella direzione del braccio stesso. Mantieni il braccio libero dietro la schiena e gira i piedi a un angolo di 45 gradi dal braccio con il kettlebell.\nAbbassati quanto più riesci.\nPausa brevemente e inverti il movimento fino a tornare alla posizione iniziale."
+  },
+  "Air Bike": {
+    "name": "Air Bike",
+    "instructions": "Stenditi sul pavimento con la parte lombare premuta a terra. Per questo esercizio, dovrai mettere le mani ai lati della testa. Presta però attenzione a non affaticare il collo mentre esegui l'esercizio. Ora solleva le spalle ed entra in una posizione di crunch.\nSolleva le ginocchia finché non sono perpendicolari al pavimento, con la parte inferiore delle gambe parallela al pavimento. Questa sarà la posizione iniziale.\nOra, simultaneamente, fai un lento movimento di pedalaggio scalciando in avanti la gamba destra mentre riporti indietro la gamba sinistra. Porta il tuo gomito destro vicino al ginocchio sinistro piegandoti di lato, espirando.\nTorna alla posizione iniziale inspirando.\nPiegati nel lato opposto mentre pedali e porta il gomito sinistro al ginocchio destro mentre espiri.\nContinua ad alternarti in questa maniera finché non hai completato le tue ripetizioni per ogni lato."
+  }
 }
