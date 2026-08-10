@@ -77,7 +77,7 @@ class ExportedSetCsvRow {
             set.weight.value,
             shortFormatWeightUnit(set.weight.unit),
             set.set!.repsCompleted,
-            exercise.blueprint.repsTargetForSet(index).max,
+            exercise.repsTargetForSet(index).max,
             exercise.notes ?? '',
           ),
       );

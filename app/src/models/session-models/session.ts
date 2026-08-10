@@ -493,7 +493,7 @@ export class Session {
 
       const lastSet = exercise.lastRecordedSet;
       const targetMin = lastSet?.set
-        ? exercise.blueprint.repsTargetForSet(exercise.potentialSets.indexOf(lastSet)).min
+        ? exercise.repsTargetForSet(exercise.potentialSets.indexOf(lastSet)).min
         : undefined;
       const rest =
         targetMin === undefined ? Duration.ZERO : lastSet!.set!.repsCompleted >= targetMin ? minRest : failureRest;

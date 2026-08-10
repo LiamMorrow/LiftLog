@@ -44,7 +44,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           <PotentialSetCounter
             isReadonly={props.isReadonly}
             key={index}
-            repsTarget={recordedExercise.blueprint.repsTargetForSet(index)}
+            repsTarget={recordedExercise.repsTargetForSet(index)}
             onTap={() => {
               const previousSet = set.set;
               const newSet = recordedExercise.withCycledRepCount(index, timeProvider()).getSet(index).set;

@@ -1,4 +1,4 @@
-import { MovementKey, ProgressionKey, WeightedExerciseBlueprint } from '@/models/blueprint-models';
+import { MovementKey, ProgressionKey, RepsTarget, WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
 import { RecordedExercise } from '@/models/session-models/recorded-exercise';
 
@@ -41,6 +41,10 @@ export class RecordedWeightedExercise {
   /** See {@link ProgressionKey}. */
   progressionKey(): ProgressionKey {
     return this.blueprint.progressionKey();
+  }
+
+  repsTargetForSet(index: number): RepsTarget {
+    return this.blueprint.repsTargetForSet(index);
   }
 
   static empty(b: WeightedExerciseBlueprint, unit: WeightUnit): RecordedWeightedExercise {
@@ -103,7 +107,7 @@ export class RecordedWeightedExercise {
       s.with({
         set: match(s.set)
           .returnType<RecordedSet | undefined>()
-          .with(undefined, () => new RecordedSet(this.blueprint.repsTargetForSet(setIndex).max, time))
+          .with(undefined, () => new RecordedSet(this.repsTargetForSet(setIndex).max, time))
           .with({ repsCompleted: 0 }, () => undefined)
           .otherwise((x) =>
             x.with({
@@ -240,9 +244,7 @@ export class RecordedWeightedExercise {
   /// An exercise is considered a success if ALL sets are successful
   /// </summary>
   get isSuccessForProgressiveOverload(): boolean {
-    return this.potentialSets.every(
-      (x, index) => x.set && x.set.repsCompleted >= this.blueprint.repsTargetForSet(index).max,
-    );
+    return this.potentialSets.every((x, index) => x.set && x.set.repsCompleted >= this.repsTargetForSet(index).max);
   }
 }
 

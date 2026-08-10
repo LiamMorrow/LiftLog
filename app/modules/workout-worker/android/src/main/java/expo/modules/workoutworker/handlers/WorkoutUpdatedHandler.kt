@@ -11,7 +11,6 @@ import com.limajuice.liftlog.RangeRepsConfig
 import com.limajuice.liftlog.RecordedCardioExercise
 import com.limajuice.liftlog.RecordedCardioExerciseSet
 import com.limajuice.liftlog.RecordedWeightedExercise
-import com.limajuice.liftlog.RepsConfig
 import com.limajuice.liftlog.TimeCardioTarget
 import com.limajuice.liftlog.Translations
 import com.limajuice.liftlog.Weight
@@ -291,10 +290,7 @@ class WorkoutUpdatedHandler(
     // a few characters: the upcoming reps for a weighted set, or the target for a cardio set.
     private fun getCurrentExerciseCriticalText(event: WorkoutUpdatedEvent): String {
         return when (val currentExercise = event.currentExerciseDetails?.exercise) {
-            is RecordedWeightedExercise -> {
-                val nextSetIndex = currentExercise.potentialSets.indexOfFirst { it.set == null }.takeIf { it >= 0 } ?: 0
-                formatRepsConfig(currentExercise.blueprint.repsConfig, nextSetIndex)
-            }
+            is RecordedWeightedExercise -> targetFor(currentExercise, nextSetIndexOf(currentExercise))
             is RecordedCardioExercise -> getCardioTarget(event)
             else -> ""
         }
@@ -306,15 +302,17 @@ class WorkoutUpdatedHandler(
             event.currentExerciseDetails?.exercise
         val messageTemplate = translations.workoutPersistentNotificationCurrentExerciseMessage
 
+        // Deliberately null once every set is filled, so a finished exercise stops advertising a weight.
         val weightedExercise = event.currentExerciseDetails?.exercise as? RecordedWeightedExercise?
-        val nextSetIndex = weightedExercise?.potentialSets?.indexOfFirst { it.set == null }?.takeIf { it >= 0 }
-        val nextSet = nextSetIndex?.let { weightedExercise.potentialSets.getOrNull(it) }
+        val nextSet = weightedExercise?.potentialSets
+            ?.indexOfFirst { it.set == null }?.takeIf { it >= 0 }
+            ?.let { weightedExercise.potentialSets.getOrNull(it) }
 
         return when {
             event.currentExerciseDetails == null -> ""
             currentExercise is RecordedWeightedExercise -> messageTemplate.replace(
                 "\$EXERCISE_DESCRIPTOR$", "${currentExercise.blueprint.name} - ${
-                    formatRepsConfig(currentExercise.blueprint.repsConfig, nextSetIndex ?: 0)
+                    targetFor(currentExercise, nextSetIndexOf(currentExercise))
                 }${
                     if (nextSet?.weight != null) "x${formatWeight(nextSet.weight)}" else ""
                 }"
@@ -332,16 +330,21 @@ class WorkoutUpdatedHandler(
         return if (min == max) "$max" else "$min-$max"
     }
 
-    private fun formatRepsConfig(repsConfig: RepsConfig, setIndex: Int): String {
-        return when (repsConfig) {
-            is FixedRepsConfig -> "${repsConfig.reps}"
+    // Mirrors WeightedExerciseBlueprint.repsTargetForSet on the JS side, including its fall back to
+    // the last target when the index runs past a short per-set list.
+    private fun targetFor(exercise: RecordedWeightedExercise, setIndex: Int): String {
+        return when (val repsConfig = exercise.blueprint.repsConfig) {
+            is FixedRepsConfig -> formatRepsTarget(repsConfig.reps, repsConfig.reps)
             is RangeRepsConfig -> formatRepsTarget(repsConfig.min, repsConfig.max)
-            is PerSetRepsConfig -> {
-                val target = repsConfig.targets.getOrNull(setIndex) ?: repsConfig.targets.lastOrNull()
-                target?.let { formatRepsTarget(it.min, it.max) } ?: ""
-            }
+            is PerSetRepsConfig ->
+                (repsConfig.targets.getOrNull(setIndex) ?: repsConfig.targets.lastOrNull())
+                    ?.let { formatRepsTarget(it.min, it.max) } ?: ""
             else -> ""
         }
+    }
+
+    private fun nextSetIndexOf(exercise: RecordedWeightedExercise): Int {
+        return exercise.potentialSets.indexOfFirst { it.set == null }.takeIf { it >= 0 } ?: 0
     }
 
     private fun formatWeight(weight: Weight, truncateDecimals: Boolean = false): String {

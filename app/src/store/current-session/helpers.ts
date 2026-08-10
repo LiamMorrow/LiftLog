@@ -95,7 +95,7 @@ function getRestWindow(lastExercise: RecordedExercise) {
     return { partialRest: Duration.ZERO, fullRest: Duration.ZERO };
   }
 
-  const targetMin = lastExercise.blueprint.repsTargetForSet(lastExercise.potentialSets.indexOf(lastSet)).min;
+  const targetMin = lastExercise.repsTargetForSet(lastExercise.potentialSets.indexOf(lastSet)).min;
   return lastSet.set.repsCompleted >= targetMin
     ? { partialRest: minRest, fullRest: maxRest }
     : { partialRest: failureRest, fullRest: failureRest };
