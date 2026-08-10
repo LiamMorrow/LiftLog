@@ -12,8 +12,9 @@ import {
   WeightedExerciseBlueprint,
   cardioTargetEquals,
 } from '@/models/blueprint-models';
-import { PotentialSet, RecordedWeightedExercise } from '@/models/session-models';
+import { RecordedWeightedExercise } from '@/models/session-models';
 import { Weight } from '@/models/weight';
+import { emptyPotentialSet } from '@/models/session-models/__test__/helpers';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -35,7 +36,7 @@ function exerciseWithWeights(...weights: number[]): RecordedWeightedExercise {
   const blueprint = WeightedExerciseBlueprint.empty().with({
     sets: weights.length,
   });
-  const potentialSets = weights.map((w) => new PotentialSet(undefined, kg(w)));
+  const potentialSets = weights.map((w) => emptyPotentialSet(kg(w)));
   return new RecordedWeightedExercise(blueprint, potentialSets, undefined);
 }
 

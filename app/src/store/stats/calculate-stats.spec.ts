@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { Session, PotentialSet, RecordedWeightedExercise, RecordedSet } from '@/models/session-models';
+import { Session, RecordedWeightedExercise } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { NoProgressiveOverload, SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { LocalDate, LocalTime, OffsetDateTime, ZoneOffset, Duration } from '@js-joda/core';
 import { LocalDateRange } from '@/models/time-models';
 import { calculateStats } from '@/store/stats/calculate-stats';
+import { emptyPotentialSet, filledPotentialSet, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -15,21 +16,18 @@ function makeOffset(date: LocalDate, hour = 10, minute = 0): OffsetDateTime {
 }
 
 function makeBlueprint(name: string, sets = 3, reps = 8, usesBodyweight = false): WeightedExerciseBlueprint {
-  return new WeightedExerciseBlueprint(
+  return makeWeightedBlueprint({
     name,
     sets,
-    { type: 'fixed', reps },
-    new NoProgressiveOverload(),
-    {
+    repsConfig: { type: 'fixed', reps },
+    progressiveOverload: new NoProgressiveOverload(),
+    restBetweenSets: {
       maxRest: Duration.ofSeconds(0),
       minRest: Duration.ofSeconds(90),
       failureRest: Duration.ofSeconds(180),
     },
-    false,
-    '',
-    '',
     usesBodyweight,
-  );
+  });
 }
 
 function makeSessionBlueprint(name: string, exercises: WeightedExerciseBlueprint[] = []): SessionBlueprint {
@@ -46,10 +44,8 @@ function makeCompletedExercise(
   repsPerSet: number,
   baseTime: OffsetDateTime,
 ): RecordedWeightedExercise {
-  const potentialSets = Array.from(
-    { length: blueprint.sets },
-    (_, i) =>
-      new PotentialSet(new RecordedSet(repsPerSet, baseTime.plusSeconds(i * 60)), new Weight(weightKg, 'kilograms')),
+  const potentialSets = Array.from({ length: blueprint.sets }, (_, i) =>
+    filledPotentialSet(repsPerSet, baseTime.plusSeconds(i * 60), new Weight(weightKg, 'kilograms')),
   );
   return new RecordedWeightedExercise(blueprint, potentialSets, undefined);
 }
@@ -180,9 +176,9 @@ describe('calculateStats', () => {
 
       // 2 sets @ 8 reps, 1 set @ 6 reps
       const potentialSets = [
-        new PotentialSet(new RecordedSet(8, baseTime), new Weight(60, 'kilograms')),
-        new PotentialSet(new RecordedSet(8, baseTime.plusSeconds(60)), new Weight(60, 'kilograms')),
-        new PotentialSet(new RecordedSet(6, baseTime.plusSeconds(120)), new Weight(60, 'kilograms')),
+        filledPotentialSet(8, baseTime, new Weight(60, 'kilograms')),
+        filledPotentialSet(8, baseTime.plusSeconds(60), new Weight(60, 'kilograms')),
+        filledPotentialSet(6, baseTime.plusSeconds(120), new Weight(60, 'kilograms')),
       ];
       const exercise = new RecordedWeightedExercise(blueprint, potentialSets, undefined);
       const session = new Session('id', sessionBlueprint, [exercise], date, undefined, undefined);
@@ -337,10 +333,7 @@ describe('calculateStats', () => {
       const date = LocalDate.of(2024, 7, 1);
       const blueprint = makeBlueprint('Press', 2, 5);
       const sessionBlueprint = makeSessionBlueprint('S', [blueprint]);
-      const noSets = [
-        new PotentialSet(undefined, new Weight(60, 'kilograms')),
-        new PotentialSet(undefined, new Weight(60, 'kilograms')),
-      ];
+      const noSets = [emptyPotentialSet(60), emptyPotentialSet(60)];
       const exercise = new RecordedWeightedExercise(blueprint, noSets, undefined);
       const session = new Session('id', sessionBlueprint, [exercise], date, undefined, undefined);
 
@@ -358,8 +351,8 @@ describe('calculateStats', () => {
         const start = makeOffset(d, 10, startMinute);
         const end = makeOffset(d, 10, endMinute);
         const sets = [
-          new PotentialSet(new RecordedSet(5, start), new Weight(100, 'kilograms')),
-          new PotentialSet(new RecordedSet(5, end), new Weight(100, 'kilograms')),
+          filledPotentialSet(5, start, new Weight(100, 'kilograms')),
+          filledPotentialSet(5, end, new Weight(100, 'kilograms')),
         ];
         const ex = new RecordedWeightedExercise(blueprint, sets, undefined);
         return new Session(id, sessionBlueprint, [ex], d, undefined, undefined);

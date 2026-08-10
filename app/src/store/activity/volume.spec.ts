@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { levelFor, sessionVolume, volumeScaleOf } from '@/store/activity/volume';
 import { SessionBlueprint } from '@/models/blueprint-models';
-import { PotentialSet, RecordedSet, RecordedWeightedExercise, Session } from '@/models/session-models';
-import { makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
+import { RecordedWeightedExercise, Session } from '@/models/session-models';
+import { filledPotentialSet, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
 import { Weight } from '@/models/weight';
 import { LocalDate, OffsetDateTime } from '@js-joda/core';
 
 function sessionWith(usesBodyweight: boolean, addedKg: number, reps: number, bodyweight: Weight | undefined): Session {
-  const blueprint = makeWeightedBlueprint('Pull Up', false, usesBodyweight);
+  const blueprint = makeWeightedBlueprint({ name: 'Pull Up', usesBodyweight });
   const time = OffsetDateTime.parse('2025-01-01T10:00:00Z');
-  const sets = [new PotentialSet(new RecordedSet(reps, time), new Weight(addedKg, 'kilograms'))];
+  const sets = [filledPotentialSet(reps, time, new Weight(addedKg, 'kilograms'))];
   const exercise = new RecordedWeightedExercise(blueprint, sets, undefined);
   return new Session(
     'id',

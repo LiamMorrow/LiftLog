@@ -22,19 +22,16 @@ import {
 } from './blueprint-diff';
 import { IncreaseLowestSetProgressiveOverload, NoProgressiveOverload, ProgressiveOverload } from './blueprint-models';
 import { UseTranslateResult } from '@tolgee/react';
+import { makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
 
 describe('diffSessionBlueprints', () => {
   const createWeightedExercise = (name: string, sets = 3, reps = 10): WeightedExerciseBlueprint =>
-    new WeightedExerciseBlueprint(
+    makeWeightedBlueprint({
       name,
       sets,
-      { type: 'fixed', reps },
-      new IncreaseAllEvenlyProgressiveOverload(new BigNumber('2.5')),
-      Rest.medium,
-      false,
-      '',
-      '',
-    );
+      repsConfig: { type: 'fixed', reps },
+      progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(new BigNumber('2.5')),
+    });
 
   const createCardioSet = (
     durationMinutes = 30,
@@ -217,32 +214,24 @@ describe('diffSessionBlueprints', () => {
       const original = new SessionBlueprint(
         'Workout',
         [
-          new WeightedExerciseBlueprint(
-            'Squat',
-            3,
-            { type: 'fixed', reps: 10 },
-            new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-            Rest.short,
-            false,
-            '',
-            '',
-          ),
+          makeWeightedBlueprint({
+            name: 'Squat',
+            repsConfig: { type: 'fixed', reps: 10 },
+            progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+            restBetweenSets: Rest.short,
+          }),
         ],
         '',
       );
       const modified = new SessionBlueprint(
         'Workout',
         [
-          new WeightedExerciseBlueprint(
-            'Squat',
-            3,
-            { type: 'fixed', reps: 10 },
-            new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-            Rest.long,
-            false,
-            '',
-            '',
-          ),
+          makeWeightedBlueprint({
+            name: 'Squat',
+            repsConfig: { type: 'fixed', reps: 10 },
+            progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+            restBetweenSets: Rest.long,
+          }),
         ],
         '',
       );
@@ -259,17 +248,11 @@ describe('diffSessionBlueprints', () => {
     });
 
     it('should detect bodyweight change', () => {
-      const base = new WeightedExerciseBlueprint(
-        'Pull Up',
-        3,
-        { type: 'fixed', reps: 10 },
-        new NoProgressiveOverload(),
-        Rest.medium,
-        false,
-        '',
-        '',
-        false,
-      );
+      const base = makeWeightedBlueprint({
+        name: 'Pull Up',
+        repsConfig: { type: 'fixed', reps: 10 },
+        progressiveOverload: new NoProgressiveOverload(),
+      });
       const original = new SessionBlueprint('Workout', [base], '');
       const modified = new SessionBlueprint('Workout', [base.with({ usesBodyweight: true })], '');
 
@@ -474,16 +457,12 @@ describe('diffSessionBlueprints', () => {
 
 describe('applySessionBlueprintDiff', () => {
   const createWeightedExercise = (name: string, sets = 3, reps = 10): WeightedExerciseBlueprint =>
-    new WeightedExerciseBlueprint(
+    makeWeightedBlueprint({
       name,
       sets,
-      { type: 'fixed', reps },
-      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-      Rest.medium,
-      false,
-      '',
-      '',
-    );
+      repsConfig: { type: 'fixed', reps },
+      progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+    });
 
   it('should apply selected session name change', () => {
     const original = new SessionBlueprint('Workout A', [], '');
@@ -625,16 +604,11 @@ describe('applySessionBlueprintDiff', () => {
 
 describe('getChangeDescription', () => {
   const createWeightedExercise = (name: string): WeightedExerciseBlueprint =>
-    new WeightedExerciseBlueprint(
+    makeWeightedBlueprint({
       name,
-      3,
-      { type: 'fixed', reps: 10 },
-      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-      Rest.medium,
-      false,
-      '',
-      '',
-    );
+      repsConfig: { type: 'fixed', reps: 10 },
+      progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+    });
 
   it('should return translation key for session name change', () => {
     const original = new SessionBlueprint('Workout A', [], '');
@@ -674,16 +648,12 @@ describe('getChangeDescription', () => {
     const modified = new SessionBlueprint(
       'Workout',
       [
-        new WeightedExerciseBlueprint(
-          'Squat',
-          5,
-          { type: 'fixed', reps: 10 },
-          new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-          Rest.medium,
-          false,
-          '',
-          '',
-        ),
+        makeWeightedBlueprint({
+          name: 'Squat',
+          sets: 5,
+          repsConfig: { type: 'fixed', reps: 10 },
+          progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+        }),
       ],
       '',
     );
@@ -709,16 +679,13 @@ describe('getChangeDescription', () => {
 
 describe('filterDiff', () => {
   const weighted = (name: string, sets = 3, reps = 10, notes = ''): WeightedExerciseBlueprint =>
-    new WeightedExerciseBlueprint(
+    makeWeightedBlueprint({
       name,
       sets,
-      { type: 'fixed', reps },
-      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-      Rest.medium,
-      false,
+      repsConfig: { type: 'fixed', reps },
+      progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
       notes,
-      '',
-    );
+    });
 
   it('keeps only the selected changes and recomputes hasChanges', () => {
     const original = new SessionBlueprint('Workout', [weighted('Squat', 3, 10)], 'old notes');
@@ -755,16 +722,11 @@ describe('filterDiff', () => {
 
 describe('applySessionBlueprintDiff additional branches', () => {
   const weighted = (name: string): WeightedExerciseBlueprint =>
-    new WeightedExerciseBlueprint(
+    makeWeightedBlueprint({
       name,
-      3,
-      { type: 'fixed', reps: 10 },
-      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-      Rest.medium,
-      false,
-      '',
-      '',
-    );
+      repsConfig: { type: 'fixed', reps: 10 },
+      progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+    });
   const cardioSet = (durationMinutes: number, trackDuration = true): CardioExerciseSetBlueprint =>
     new CardioExerciseSetBlueprint(
       { type: 'time', value: Duration.ofMinutes(durationMinutes) },
@@ -813,16 +775,16 @@ describe('applySessionBlueprintDiff additional branches', () => {
     const modified = new SessionBlueprint(
       'W2',
       [
-        new WeightedExerciseBlueprint(
-          'Squat',
-          5,
-          { type: 'fixed', reps: 8 },
-          new NoProgressiveOverload(),
-          Rest.long,
-          true,
-          'note',
-          'link',
-        ),
+        makeWeightedBlueprint({
+          name: 'Squat',
+          sets: 5,
+          repsConfig: { type: 'fixed', reps: 8 },
+          progressiveOverload: new NoProgressiveOverload(),
+          restBetweenSets: Rest.long,
+          supersetWithNext: true,
+          notes: 'note',
+          link: 'link',
+        }),
       ],
       'notes2',
     );
@@ -844,16 +806,14 @@ describe('change label and description mapping', () => {
     notes = '',
     link = '',
   ): WeightedExerciseBlueprint =>
-    new WeightedExerciseBlueprint(
+    makeWeightedBlueprint({
       name,
-      3,
-      { type: 'fixed', reps: 10 },
-      overload,
-      Rest.medium,
+      repsConfig: { type: 'fixed', reps: 10 },
+      progressiveOverload: overload,
       supersetWithNext,
       notes,
       link,
-    );
+    });
 
   it('produces a non-empty label key and description for every change kind', () => {
     const original = new SessionBlueprint('Workout', [weighted('Squat'), weighted('Bench')], 'notes');

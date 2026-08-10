@@ -252,6 +252,11 @@ export class RecordedSet {
     readonly completionDateTime: OffsetDateTime,
   ) {}
 
+  /** Build a recorded set from named fields. See {@link PotentialSet.of}. */
+  static of(init: { repsCompleted: number; completionDateTime: OffsetDateTime }): RecordedSet {
+    return new RecordedSet(init.repsCompleted, init.completionDateTime);
+  }
+
   static fromJSON(json: RecordedSetJSON): RecordedSet {
     return new RecordedSet(json.repsCompleted, fromOffsetDateTimeJSON(json.completionDateTime));
   }
@@ -287,6 +292,15 @@ export class PotentialSet {
     readonly set: RecordedSet | undefined,
     readonly weight: Weight,
   ) {}
+
+  /**
+   * Build a set from named fields. Preferred over the positional constructor everywhere outside
+   * this file — `new PotentialSet(undefined, weight)` leads with the argument that is usually
+   * absent, and the shape of a set is the part of the model most likely to move.
+   */
+  static of(init: { set?: RecordedSet | undefined; weight: Weight }): PotentialSet {
+    return new PotentialSet(init.set, init.weight);
+  }
 
   static fromJSON(json: PotentialSetJSON): PotentialSet {
     return new PotentialSet(json.set ? RecordedSet.fromJSON(json.set) : undefined, Weight.fromJSON(json.weight));

@@ -5,7 +5,12 @@ import {
   RecordedSet,
   RecordedWeightedExercise,
 } from '@/models/session-models/recorded-weighted-exercise';
-import { filledPotentialSet, makeWeightedBlueprint, tick } from '@/models/session-models/__test__/helpers';
+import {
+  emptyPotentialSet,
+  filledPotentialSet,
+  makeWeightedBlueprint,
+  tick,
+} from '@/models/session-models/__test__/helpers';
 import { IndexOutOfBoundsError } from '@/utils/index-out-of-bounds';
 
 describe('RecordedWeightedExercise.withWeight', () => {
@@ -19,8 +24,8 @@ describe('RecordedWeightedExercise.withWeight', () => {
       makeWeightedBlueprint(),
       [
         filledPotentialSet(10, t), // set 0 – completed
-        new PotentialSet(undefined, light), // set 1 – uncompleted
-        new PotentialSet(undefined, light), // set 2 – uncompleted
+        emptyPotentialSet(light), // set 1 – uncompleted
+        emptyPotentialSet(light), // set 2 – uncompleted
       ],
       undefined,
     );
@@ -69,7 +74,7 @@ describe('RecordedWeightedExercise.withNothingCompleted', () => {
     const bp = makeWeightedBlueprint();
     const t = tick();
     const weight = new Weight(80, 'kilograms');
-    const exercise = new RecordedWeightedExercise(bp, [new PotentialSet(new RecordedSet(10, t), weight)], undefined);
+    const exercise = new RecordedWeightedExercise(bp, [filledPotentialSet(10, t, weight)], undefined);
 
     const result = exercise.withNothingCompleted();
     expect(result.potentialSets[0]!.weight).toEqual(weight);
@@ -80,7 +85,7 @@ describe('RecordedWeightedExercise.withNothingCompleted', () => {
 
 describe('RecordedWeightedExercise.getSet', () => {
   it('returns the set at the index', () => {
-    const set = new PotentialSet(undefined, new Weight(60, 'kilograms'));
+    const set = emptyPotentialSet(60);
     const exercise = new RecordedWeightedExercise(makeWeightedBlueprint(), [set], undefined);
     expect(exercise.getSet(0)).toBe(set);
   });
@@ -96,15 +101,11 @@ describe('RecordedWeightedExercise.getSet', () => {
 describe('RecordedWeightedExercise.withRepCount', () => {
   it('records a set with the given reps', () => {
     const t = tick();
-    const exercise = new RecordedWeightedExercise(
-      makeWeightedBlueprint(),
-      [new PotentialSet(undefined, new Weight(60, 'kilograms'))],
-      undefined,
-    );
+    const exercise = new RecordedWeightedExercise(makeWeightedBlueprint(), [emptyPotentialSet(60)], undefined);
 
     const result = exercise.withRepCount(0, 8, t);
 
-    expect(result.potentialSets[0]!.set).toEqual(new RecordedSet(8, t));
+    expect(result.potentialSets[0]!.set).toEqual(RecordedSet.of({ repsCompleted: 8, completionDateTime: t }));
   });
 
   it('clears the set when reps is undefined', () => {
@@ -152,7 +153,7 @@ describe('RecordedWeightedExercise derived values', () => {
     const t = tick();
     const exercise = new RecordedWeightedExercise(
       makeWeightedBlueprint(),
-      [filledPotentialSet(10, t), new PotentialSet(undefined, new Weight(60, 'kilograms'))],
+      [filledPotentialSet(10, t), emptyPotentialSet(60)],
       undefined,
     );
     expect(exercise.currentSetIndex).toBe(1);
@@ -163,9 +164,9 @@ describe('RecordedWeightedExercise derived values', () => {
     const exercise = new RecordedWeightedExercise(
       makeWeightedBlueprint(),
       [
-        new PotentialSet(new RecordedSet(5, t), new Weight(100, 'kilograms')),
-        new PotentialSet(new RecordedSet(3, t), new Weight(50, 'kilograms')),
-        new PotentialSet(undefined, new Weight(50, 'kilograms')),
+        filledPotentialSet(5, t, new Weight(100, 'kilograms')),
+        filledPotentialSet(3, t, new Weight(50, 'kilograms')),
+        emptyPotentialSet(50),
       ],
       undefined,
     );
@@ -210,8 +211,8 @@ describe('RecordedWeightedExercise bodyweight fold-in', () => {
 
   function bodyweightExercise(addedKg: number, reps = 5) {
     return new RecordedWeightedExercise(
-      makeWeightedBlueprint('Pull Up', false, true),
-      [new PotentialSet(new RecordedSet(reps, tick()), new Weight(addedKg, 'kilograms'))],
+      makeWeightedBlueprint({ name: 'Pull Up', usesBodyweight: true }),
+      [filledPotentialSet(reps, tick(), new Weight(addedKg, 'kilograms'))],
       undefined,
     );
   }
@@ -233,8 +234,8 @@ describe('RecordedWeightedExercise bodyweight fold-in', () => {
 
   it('effectiveWeight ignores the bodyweight for a plain weighted exercise', () => {
     const ex = new RecordedWeightedExercise(
-      makeWeightedBlueprint('Row'),
-      [new PotentialSet(new RecordedSet(5, tick()), new Weight(10, 'kilograms'))],
+      makeWeightedBlueprint({ name: 'Row' }),
+      [filledPotentialSet(5, tick(), new Weight(10, 'kilograms'))],
       undefined,
     );
     expect(ex.effectiveWeight(ex.potentialSets[0]!, bodyweight)).toEqual(new Weight(10, 'kilograms'));
@@ -338,7 +339,7 @@ describe('RecordedWeightedExercise JSON', () => {
     const t = tick();
     const exercise = new RecordedWeightedExercise(
       makeWeightedBlueprint(),
-      [filledPotentialSet(10, t), new PotentialSet(undefined, new Weight(60, 'kilograms'))],
+      [filledPotentialSet(10, t), emptyPotentialSet(60)],
       'a note',
     );
 
@@ -349,18 +350,18 @@ describe('RecordedWeightedExercise JSON', () => {
 
   it('RecordedSet round-trips and compares by value', () => {
     const t = tick();
-    const set = new RecordedSet(7, t);
+    const set = RecordedSet.of({ repsCompleted: 7, completionDateTime: t });
     const restored = RecordedSet.fromJSON(set.toJSON());
     expect(restored.equals(set)).toBe(true);
     expect(set.equals(undefined)).toBe(false);
     expect(set.equals(set)).toBe(true);
-    expect(set.equals(new RecordedSet(8, t))).toBe(false);
+    expect(set.equals(RecordedSet.of({ repsCompleted: 8, completionDateTime: t }))).toBe(false);
   });
 
   it('PotentialSet round-trips and compares by value', () => {
     const t = tick();
     const filled = filledPotentialSet(10, t);
-    const empty = new PotentialSet(undefined, new Weight(60, 'kilograms'));
+    const empty = emptyPotentialSet(60);
     expect(PotentialSet.fromJSON(filled.toJSON()).equals(filled)).toBe(true);
     expect(PotentialSet.fromJSON(empty.toJSON()).equals(empty)).toBe(true);
     expect(filled.equals(undefined)).toBe(false);

@@ -96,17 +96,13 @@ function PrepareAiPlannerPage() {
       failureRest: Duration.ofSeconds(300),
     };
     const ex = (name: string, sets: number, repsPerSet: number) =>
-      new WeightedExerciseBlueprint(
+      WeightedExerciseBlueprint.of({
         name,
         sets,
-        { type: 'fixed', reps: repsPerSet },
-        new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-        rest,
-        false,
-        '',
-        '',
-        false,
-      );
+        repsConfig: { type: 'fixed', reps: repsPerSet },
+        progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+        restBetweenSets: rest,
+      });
     dispatch(
       setChat([
         {
@@ -179,7 +175,7 @@ function buildStatsSessionData(dispatch: ReturnType<typeof useDispatch>) {
       updated = updated.withSet(i, (ps) =>
         ps.with({
           weight: new Weight(weightKg, 'kilograms'),
-          set: new RecordedSet(reps, makeTime(daysAgo, exStartMinute + i * 3)),
+          set: RecordedSet.of({ repsCompleted: reps, completionDateTime: makeTime(daysAgo, exStartMinute + i * 3) }),
         }),
       );
     }

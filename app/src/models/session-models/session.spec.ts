@@ -1,23 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Duration, LocalDate, OffsetDateTime, ZoneOffset } from '@js-joda/core';
-import BigNumber from 'bignumber.js';
 import { v4 as uuid } from 'uuid';
-import {
-  WeightedExerciseBlueprint,
-  Rest,
-  SessionBlueprint,
-  CardioExerciseBlueprint,
-  IncreaseAllEvenlyProgressiveOverload,
-} from '@/models/blueprint-models';
+import { SessionBlueprint, CardioExerciseBlueprint } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { Session } from '@/models/session-models/session';
 import { RestTimer } from '@/models/session-models/rest-timer';
 import { RecordedCardioExercise } from '@/models/session-models/recorded-cardio-exercise';
-import {
-  PotentialSet,
-  RecordedSet,
-  RecordedWeightedExercise,
-} from '@/models/session-models/recorded-weighted-exercise';
+import { RecordedWeightedExercise } from '@/models/session-models/recorded-weighted-exercise';
 import {
   tick,
   tickAt,
@@ -29,6 +18,7 @@ import {
   createExerciseBlueprint,
   createSessionBlueprint,
   createSession,
+  emptyPotentialSet,
 } from './__test__/helpers';
 
 describe('Session supersets', () => {
@@ -256,11 +246,7 @@ describe('Session.withUpdatedDate', () => {
 
     const exercise = new RecordedWeightedExercise(
       bp,
-      [
-        filledPotentialSet(10, t1),
-        filledPotentialSet(10, t2),
-        new PotentialSet(undefined, new Weight(100, 'kilograms')),
-      ],
+      [filledPotentialSet(10, t1), filledPotentialSet(10, t2), emptyPotentialSet(100)],
       undefined,
     );
 
@@ -296,11 +282,7 @@ describe('Session.withUpdatedDate', () => {
 
     const exercise = new RecordedWeightedExercise(
       bp,
-      [
-        filledPotentialSet(10, beforeMidnight),
-        filledPotentialSet(10, afterMidnight),
-        new PotentialSet(undefined, new Weight(100, 'kilograms')),
-      ],
+      [filledPotentialSet(10, beforeMidnight), filledPotentialSet(10, afterMidnight), emptyPotentialSet(100)],
       undefined,
     );
 
@@ -370,11 +352,7 @@ describe('Session.withCycledExerciseReps', () => {
     const t = tick();
     const exercise = new RecordedWeightedExercise(
       bp,
-      [
-        new PotentialSet(new RecordedSet(0, t), new Weight(100, 'kilograms')),
-        new PotentialSet(undefined, new Weight(100, 'kilograms')),
-        new PotentialSet(undefined, new Weight(100, 'kilograms')),
-      ],
+      [filledPotentialSet(0, t, new Weight(100, 'kilograms')), emptyPotentialSet(100), emptyPotentialSet(100)],
       undefined,
     );
     const session = new Session(
@@ -420,8 +398,8 @@ describe('Session.withCycledExerciseReps', () => {
 
 describe('Session.withAddedExercise', () => {
   it('appends the exercise to both recordedExercises and blueprint', () => {
-    const session = makeSession([makeWeightedBlueprint('Squat')]);
-    const newBp = makeWeightedBlueprint('Bench');
+    const session = makeSession([makeWeightedBlueprint({ name: 'Squat' })]);
+    const newBp = makeWeightedBlueprint({ name: 'Bench' });
     const updated = session.withAddedExercise(newBp, false);
 
     expect(updated.recordedExercises).toHaveLength(2);
@@ -445,7 +423,7 @@ describe('Session.withAddedExercise', () => {
 
   it('does not mutate the original session', () => {
     const session = makeSession([makeWeightedBlueprint()]);
-    session.withAddedExercise(makeWeightedBlueprint('Bench'), false);
+    session.withAddedExercise(makeWeightedBlueprint({ name: 'Bench' }), false);
     expect(session.recordedExercises).toHaveLength(1);
   });
 });
@@ -486,11 +464,7 @@ describe('Session.withEditedExercise', () => {
       const t = tick();
       const exercise = new RecordedWeightedExercise(
         bp,
-        [
-          filledPotentialSet(10, t),
-          filledPotentialSet(8, t.plusSeconds(30)),
-          new PotentialSet(undefined, new Weight(100, 'kilograms')),
-        ],
+        [filledPotentialSet(10, t), filledPotentialSet(8, t.plusSeconds(30)), emptyPotentialSet(100)],
         undefined,
       );
       const session = new Session(
@@ -510,15 +484,11 @@ describe('Session.withEditedExercise', () => {
 
   describe('same type: weighted → weighted', () => {
     it('updates the blueprint without touching existing set data', () => {
-      const bp = makeWeightedBlueprint('Squat');
+      const bp = makeWeightedBlueprint({ name: 'Squat' });
       const t = tick();
       const exercise = new RecordedWeightedExercise(
         bp,
-        [
-          filledPotentialSet(10, t),
-          filledPotentialSet(9, t.plusSeconds(60)),
-          new PotentialSet(undefined, new Weight(100, 'kilograms')),
-        ],
+        [filledPotentialSet(10, t), filledPotentialSet(9, t.plusSeconds(60)), emptyPotentialSet(100)],
         undefined,
       );
       const session = new Session(
@@ -530,7 +500,7 @@ describe('Session.withEditedExercise', () => {
         undefined,
       );
 
-      const editedBp = makeWeightedBlueprint('Squat (edited)'); // same set count (3)
+      const editedBp = makeWeightedBlueprint({ name: 'Squat (edited)' }); // same set count (3)
       const updated = session.withEditedExercise(0, editedBp, false);
       const updatedExercise = updated.recordedExercises[0]! as RecordedWeightedExercise;
 
@@ -540,7 +510,7 @@ describe('Session.withEditedExercise', () => {
     });
 
     it('truncates potentialSets when set count decreases', () => {
-      const bp = makeWeightedBlueprint('Squat'); // 3 sets
+      const bp = makeWeightedBlueprint({ name: 'Squat' }); // 3 sets
       const t = tick();
       const exercise = new RecordedWeightedExercise(
         bp,
@@ -560,35 +530,17 @@ describe('Session.withEditedExercise', () => {
         undefined,
       );
 
-      const fewerSetsBp = new WeightedExerciseBlueprint(
-        'Squat',
-        2,
-        { type: 'fixed', reps: 10 },
-        new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-        Rest.medium,
-        false,
-        '',
-        '',
-      );
+      const fewerSetsBp = makeWeightedBlueprint({ name: 'Squat', sets: 2 });
       const updated = session.withEditedExercise(0, fewerSetsBp, false);
       expect((updated.recordedExercises[0]! as RecordedWeightedExercise).potentialSets).toHaveLength(2);
     });
 
     it('fills new slots with maxWeight when set count increases', () => {
-      const bp = new WeightedExerciseBlueprint(
-        'Squat',
-        2,
-        { type: 'fixed', reps: 10 },
-        new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-        Rest.medium,
-        false,
-        '',
-        '',
-      );
+      const bp = makeWeightedBlueprint({ name: 'Squat', sets: 2 });
       const heavyWeight = new Weight(140, 'kilograms');
       const exercise = new RecordedWeightedExercise(
         bp,
-        [new PotentialSet(undefined, heavyWeight), new PotentialSet(undefined, new Weight(100, 'kilograms'))],
+        [emptyPotentialSet(heavyWeight), emptyPotentialSet(100)],
         undefined,
       );
       const session = new Session(
@@ -600,16 +552,7 @@ describe('Session.withEditedExercise', () => {
         undefined,
       );
 
-      const moreSets = new WeightedExerciseBlueprint(
-        'Squat',
-        4,
-        { type: 'fixed', reps: 10 },
-        new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-        Rest.medium,
-        false,
-        '',
-        '',
-      );
+      const moreSets = makeWeightedBlueprint({ name: 'Squat', sets: 4 });
       const updated = session.withEditedExercise(0, moreSets, false);
       const sets = (updated.recordedExercises[0]! as RecordedWeightedExercise).potentialSets;
 
@@ -704,11 +647,11 @@ describe('Session.withEditedExercise', () => {
   });
 
   it('only modifies the targeted exercise index, leaving others untouched', () => {
-    const bp0 = makeWeightedBlueprint('Squat');
-    const bp1 = makeWeightedBlueprint('Bench');
+    const bp0 = makeWeightedBlueprint({ name: 'Squat' });
+    const bp1 = makeWeightedBlueprint({ name: 'Bench' });
     const session = makeSession([bp0, bp1]);
 
-    const editedBp = makeWeightedBlueprint('Deadlift');
+    const editedBp = makeWeightedBlueprint({ name: 'Deadlift' });
     const updated = session.withEditedExercise(0, editedBp, false);
 
     expect(updated.recordedExercises[1]!.blueprint.name).toBe('Bench');
@@ -735,7 +678,7 @@ describe('Session.getEmptySession', () => {
 describe('Session.withNoNilWeights', () => {
   it('replaces nil weight units with the fallback unit', () => {
     const bp = makeWeightedBlueprint();
-    const exercise = new RecordedWeightedExercise(bp, [new PotentialSet(undefined, new Weight(0, 'nil'))], undefined);
+    const exercise = new RecordedWeightedExercise(bp, [emptyPotentialSet(new Weight(0, 'nil'))], undefined);
     const session = new Session(
       uuid(),
       new SessionBlueprint('Test', [bp], ''),
@@ -774,7 +717,7 @@ describe('Session.equals', () => {
 
   it('is false when the exercise count differs', () => {
     const session = makeSession([makeWeightedBlueprint()]);
-    expect(session.equals(session.withAddedExercise(makeWeightedBlueprint('Bench'), false))).toBe(false);
+    expect(session.equals(session.withAddedExercise(makeWeightedBlueprint({ name: 'Bench' }), false))).toBe(false);
   });
 });
 
@@ -801,7 +744,7 @@ describe('Session structural mutations', () => {
   });
 
   it('withRemovedExercise removes from both recordedExercises and the blueprint', () => {
-    const session = makeSession([makeWeightedBlueprint('Squat'), makeWeightedBlueprint('Bench')]);
+    const session = makeSession([makeWeightedBlueprint({ name: 'Squat' }), makeWeightedBlueprint({ name: 'Bench' })]);
 
     const result = session.withRemovedExercise(0);
 
@@ -820,8 +763,8 @@ describe('Session structural mutations', () => {
 
 describe('Session derived values', () => {
   function twoExercisesStartedAt(t1: OffsetDateTime, t2: OffsetDateTime) {
-    const bp0 = makeWeightedBlueprint('Squat');
-    const bp1 = makeWeightedBlueprint('Bench');
+    const bp0 = makeWeightedBlueprint({ name: 'Squat' });
+    const bp1 = makeWeightedBlueprint({ name: 'Bench' });
     const ex0 = new RecordedWeightedExercise(bp0, [filledPotentialSet(10, t1)], undefined);
     const ex1 = new RecordedWeightedExercise(bp1, [filledPotentialSet(10, t2)], undefined);
     return new Session(
@@ -839,7 +782,7 @@ describe('Session derived values', () => {
     const bp = makeWeightedBlueprint();
     const exercise = new RecordedWeightedExercise(
       bp,
-      [new PotentialSet(new RecordedSet(5, t), new Weight(100, 'kilograms'))],
+      [filledPotentialSet(5, t, new Weight(100, 'kilograms'))],
       undefined,
     );
     const session = new Session(
@@ -855,10 +798,10 @@ describe('Session derived values', () => {
 
   it('totalWeightLifted folds the session bodyweight into a bodyweight exercise', () => {
     const t = tick();
-    const bp = makeWeightedBlueprint('Pull Up', false, true);
+    const bp = makeWeightedBlueprint({ name: 'Pull Up', usesBodyweight: true });
     const exercise = new RecordedWeightedExercise(
       bp,
-      [new PotentialSet(new RecordedSet(5, t), new Weight(10, 'kilograms'))],
+      [filledPotentialSet(5, t, new Weight(10, 'kilograms'))],
       undefined,
     );
     const session = new Session(
@@ -907,11 +850,7 @@ describe('Session.restTimerEndTime', () => {
     const restTimer = restTimerStartTime ? new RestTimer(restTimerStartTime) : undefined;
     const bp = makeWeightedBlueprint();
     const t = tick();
-    const exercise = new RecordedWeightedExercise(
-      bp,
-      [filledPotentialSet(reps, t), new PotentialSet(undefined, new Weight(100, 'kilograms'))],
-      undefined,
-    );
+    const exercise = new RecordedWeightedExercise(bp, [filledPotentialSet(reps, t), emptyPotentialSet(100)], undefined);
     return new Session(
       uuid(),
       new SessionBlueprint('Test', [bp], ''),

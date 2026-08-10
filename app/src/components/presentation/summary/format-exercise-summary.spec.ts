@@ -14,12 +14,12 @@ const filled = { isFilled: true, showWeight: true };
 function exerciseOf(sets: { reps: number | undefined; weight: number }[]) {
   return new RecordedWeightedExercise(
     makeWeightedBlueprint(),
-    sets.map(
-      (set) =>
-        new PotentialSet(
-          set.reps === undefined ? undefined : new RecordedSet(set.reps, tick()),
-          new Weight(set.weight, 'kilograms'),
-        ),
+    sets.map((set) =>
+      PotentialSet.of({
+        set:
+          set.reps === undefined ? undefined : RecordedSet.of({ repsCompleted: set.reps, completionDateTime: tick() }),
+        weight: new Weight(set.weight, 'kilograms'),
+      }),
     ),
     undefined,
   );
@@ -108,13 +108,15 @@ describe('formatExerciseSummary', () => {
 describe('formatExerciseSummary for bodyweight exercises', () => {
   function bodyweightExerciseOf(sets: { reps: number | undefined; weight: number }[]) {
     return new RecordedWeightedExercise(
-      makeWeightedBlueprint('Pull Up', false, true),
-      sets.map(
-        (set) =>
-          new PotentialSet(
-            set.reps === undefined ? undefined : new RecordedSet(set.reps, tick()),
-            new Weight(set.weight, 'kilograms'),
-          ),
+      makeWeightedBlueprint({ name: 'Pull Up', usesBodyweight: true }),
+      sets.map((set) =>
+        PotentialSet.of({
+          set:
+            set.reps === undefined
+              ? undefined
+              : RecordedSet.of({ repsCompleted: set.reps, completionDateTime: tick() }),
+          weight: new Weight(set.weight, 'kilograms'),
+        }),
       ),
       undefined,
     );

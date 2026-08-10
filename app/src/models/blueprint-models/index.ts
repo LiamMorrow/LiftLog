@@ -569,6 +569,22 @@ function resizeRepsTargets(targets: RepsTarget[], length: number): RepsTarget[] 
   return [...targets, ...Array.from({ length: length - targets.length }, () => ({ ...last }))];
 }
 
+/**
+ * Every field of a weighted blueprint, each optional and each named. See
+ * {@link WeightedExerciseBlueprint.of}.
+ */
+export interface WeightedExerciseBlueprintInit {
+  name?: string;
+  sets?: number;
+  repsConfig?: RepsConfig;
+  progressiveOverload?: ProgressiveOverload;
+  restBetweenSets?: Rest;
+  supersetWithNext?: boolean;
+  notes?: string;
+  link?: string;
+  usesBodyweight?: boolean;
+}
+
 export class WeightedExerciseBlueprint {
   readonly type = 'WeightedExerciseBlueprint';
 
@@ -584,18 +600,28 @@ export class WeightedExerciseBlueprint {
     readonly usesBodyweight: boolean = false,
   ) {}
 
-  static empty() {
+  /**
+   * Build a blueprint from named fields, defaulting the rest. Preferred over the positional
+   * constructor everywhere outside this file: nine positional arguments — four of them booleans and
+   * strings in a row — read as noise at the call site and have to be re-counted whenever the shape
+   * moves.
+   */
+  static of(init: WeightedExerciseBlueprintInit = {}): WeightedExerciseBlueprint {
     return new WeightedExerciseBlueprint(
-      '',
-      3,
-      { type: 'fixed', reps: 10 },
-      new NoProgressiveOverload(),
-      Rest.medium,
-      false,
-      '',
-      '',
-      false,
+      init.name ?? '',
+      init.sets ?? 3,
+      init.repsConfig ?? { type: 'fixed', reps: 10 },
+      init.progressiveOverload ?? new NoProgressiveOverload(),
+      init.restBetweenSets ?? Rest.medium,
+      init.supersetWithNext ?? false,
+      init.notes ?? '',
+      init.link ?? '',
+      init.usesBodyweight ?? false,
     );
+  }
+
+  static empty() {
+    return WeightedExerciseBlueprint.of();
   }
 
   static fromJSON(json: WeightedExerciseBlueprintJSON): WeightedExerciseBlueprint {
@@ -806,17 +832,7 @@ export const Rest = {
     };
   },
 } as const;
-export const EmptyExerciseBlueprint = new WeightedExerciseBlueprint(
-  '',
-  3,
-  { type: 'fixed', reps: 10 },
-  new NoProgressiveOverload(),
-  Rest.medium,
-  false,
-  '',
-  '',
-  false,
-);
+export const EmptyExerciseBlueprint = WeightedExerciseBlueprint.of();
 
 export function restEquals(a: Rest | undefined, b: Rest | undefined): boolean {
   if (!a || !b) return a === b;

@@ -151,7 +151,7 @@ function ProgressiveOverloadExample(props: { value: ProgressiveOverload }) {
   )
     .withAllSets((s) =>
       s.with({
-        set: new RecordedSet(8, OffsetDateTime.MIN),
+        set: RecordedSet.of({ repsCompleted: 8, completionDateTime: OffsetDateTime.MIN }),
         weight: new Weight(BigNumber(10).plus(props.value.weightIncrement), unit),
       }),
     )

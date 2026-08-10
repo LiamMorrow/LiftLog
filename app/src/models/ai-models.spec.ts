@@ -16,6 +16,7 @@ import {
 import { AnyVersionAiPlanJSON } from '@/models/storage/versions/any';
 import { toBigNumberJSON, toDurationJSON, toLocalDateJSON } from '@/models/storage/versions/libs';
 import { DeepPartial } from '@/utils/types';
+import { makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
 
 function parse(json: DeepPartial<AnyVersionAiPlanJSON>) {
   return aiPlanFromJSON(json);
@@ -35,16 +36,16 @@ describe('aiPlanFromJSON', () => {
   });
 
   it('passes a complete plan through untouched (only re-stamping lastEdited)', () => {
-    const weighted = new WeightedExerciseBlueprint(
-      'Squat',
-      5,
-      { type: 'fixed', reps: 5 },
-      new IncreaseLowestSetProgressiveOverload(new BigNumber(2.5), 'middle'),
-      Rest.long,
-      true,
-      'Brace hard',
-      'https://example.com/squat',
-    );
+    const weighted = makeWeightedBlueprint({
+      name: 'Squat',
+      sets: 5,
+      repsConfig: { type: 'fixed', reps: 5 },
+      progressiveOverload: new IncreaseLowestSetProgressiveOverload(new BigNumber(2.5), 'middle'),
+      restBetweenSets: Rest.long,
+      supersetWithNext: true,
+      notes: 'Brace hard',
+      link: 'https://example.com/squat',
+    });
     const cardio = new CardioExerciseBlueprint(
       'Row',
       [
