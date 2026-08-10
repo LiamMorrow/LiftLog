@@ -204,24 +204,28 @@ export function calculateStats(
     }
   }
 
-  const exerciseStats: WeightedExerciseStatistics[] = Array.from(exerciseStatsMap.values()).map((ex) => {
-    const maxLiftedPerSessionStatistics = toStatisticOverTime(ex.maxWeightStatistics, loadOps);
-    const max1RMPerSessionStatistics = toStatisticOverTime(ex.max1RMStatistics, loadOps);
-    return {
-      exerciseName: ex.exerciseName,
-      setsPerWeek:
-        Object.values(ex.repsStatistics.breakdown).reduce((accum, entry) => accum + entry.numberOfSets, 0) / totalWeeks,
-      primary: ex.primary,
-      series: {
-        load: maxLiftedPerSessionStatistics,
-        reps: toStatisticOverTime(ex.maxRepsStatistics, repsOps),
-      },
-      maxLiftedPerSessionStatistics,
-      max1RMPerSessionStatistics,
-      totalVolumeStatistics: toStatisticOverTime(ex.totalVolumeStatistics, loadOps),
-      repsStatistics: ex.repsStatistics,
-    } satisfies WeightedExerciseStatistics;
-  });
+  // Most recently performed first, so what the user is training now heads the list.
+  const exerciseStats: WeightedExerciseStatistics[] = Array.from(exerciseStatsMap.values())
+    .sort((a, b) => (a.latestTime.isEqual(b.latestTime) ? 0 : a.latestTime.isAfter(b.latestTime) ? -1 : 1))
+    .map((ex) => {
+      const maxLiftedPerSessionStatistics = toStatisticOverTime(ex.maxWeightStatistics, loadOps);
+      const max1RMPerSessionStatistics = toStatisticOverTime(ex.max1RMStatistics, loadOps);
+      return {
+        exerciseName: ex.exerciseName,
+        setsPerWeek:
+          Object.values(ex.repsStatistics.breakdown).reduce((accum, entry) => accum + entry.numberOfSets, 0) /
+          totalWeeks,
+        primary: ex.primary,
+        series: {
+          load: maxLiftedPerSessionStatistics,
+          reps: toStatisticOverTime(ex.maxRepsStatistics, repsOps),
+        },
+        maxLiftedPerSessionStatistics,
+        max1RMPerSessionStatistics,
+        totalVolumeStatistics: toStatisticOverTime(ex.totalVolumeStatistics, loadOps),
+        repsStatistics: ex.repsStatistics,
+      } satisfies WeightedExerciseStatistics;
+    });
 
   // --- Average session length ---
   const sessionDurations: Duration[] = [];

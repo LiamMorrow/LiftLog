@@ -281,6 +281,21 @@ describe('calculateStats', () => {
       expect(ohp!.repsStatistics.breakdown[6]?.numberOfSets).toBe(1);
     });
 
+    it('lists the most recently performed exercise first', () => {
+      const date = LocalDate.of(2024, 5, 1);
+      const result = calculateStats(
+        [
+          makeSession(date, 'Bench Press', 80, 8, 3),
+          makeSession(date.plusDays(14), 'Deadlift', 140, 5, 3),
+          makeSession(date.plusDays(7), 'Squat', 100, 5, 3),
+        ],
+        'kilograms',
+        makeRange(date, date.plusDays(14)),
+      );
+
+      expect(result.weightedExerciseStats.map((x) => x.exerciseName)).toEqual(['Deadlift', 'Squat', 'Bench Press']);
+    });
+
     it('groups same exercise names under one stat entry', () => {
       const date = LocalDate.of(2024, 5, 1);
       const s1 = makeSession(date, 'Bench Press', 80, 8, 3);
