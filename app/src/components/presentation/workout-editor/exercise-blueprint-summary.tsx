@@ -119,7 +119,7 @@ function WeightedExerciseBlueprintSummary({ blueprint }: { blueprint: WeightedEx
             <>
               <SurfaceText color="primary">{blueprint.sets}</SurfaceText> {pluralize(blueprint.sets, 'set')} of{' '}
               <SurfaceText color="primary">
-                {c.min}–{c.max}
+                {c.min}-{c.max}
               </SurfaceText>{' '}
               reps
             </>

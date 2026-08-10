@@ -19,8 +19,8 @@ ingest/version-rejection). This skill is the fast path for the common case.
 
 ## Directory layout (what each folder is)
 
-- `initial/` - the **oldest** persisted shape of every model. The *input* to every chain. **Frozen** -
-  never edit or remove an existing interface; you may only *add* a new one for a brand-new model.
+- `initial/` - the **oldest** persisted shape of every model. The _input_ to every chain. **Frozen** -
+  never edit or remove an existing interface; you may only _add_ a new one for a brand-new model.
 - `latest/` - the **current** shape, hand-declared and the **source of truth**. Yours to edit freely.
   Self-contained: duplicate the definition here, never re-export from `initial/`.
 - `migrations/` - the chains, one file per domain (`blueprint.ts`, `session.ts`, `feed.ts`,
@@ -41,7 +41,7 @@ ingest/version-rejection). This skill is the fast path for the common case.
    from the `.add()` (see `steps/add-uses-bodyweight.ts`, imported into `blueprint.ts`).
 5. If the model **embeds another versioned model**, do **not** hand-migrate the child - the parent uses
    `dependsOn({ field: childMigrations })` and re-verifies automatically. Only touch the parent when the
-   parent's *own* fields change.
+   parent's _own_ fields change.
 6. If the changed type feeds a generated JSON schema (anything reachable from workout-worker messages or
    the program blueprint), regenerate and **commit** the artifacts:
    ```bash

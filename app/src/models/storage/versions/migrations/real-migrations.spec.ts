@@ -102,6 +102,59 @@ function initialSession(): InitialSessionJSON {
 }
 
 describe('real migrations', () => {
+  describe('the two chains agree on a weighted blueprint', () => {
+    function bothChains(exercise: InitialWeightedExerciseBlueprintJSON) {
+      const viaBlueprintChain = sessionBlueprintMigrations.migrate({
+        name: 'Push Day',
+        notes: 'session notes',
+        exercises: [exercise],
+      }).exercises[0];
+
+      const recorded = sessionMigrations.migrate({
+        ...initialSession(),
+        recordedExercises: [
+          {
+            type: 'RecordedWeightedExercise',
+            blueprint: exercise,
+            potentialSets: [{ set: undefined, weight: wt('60') }],
+            notes: '',
+          },
+        ],
+      }).recordedExercises[0];
+
+      if (recorded?.type !== 'RecordedWeightedExercise') {
+        throw new Error('expected a recorded weighted exercise');
+      }
+      return { viaBlueprintChain, viaSessionChain: recorded.blueprint };
+    }
+
+    it.each([
+      ['a plain exercise', initialWeighted()],
+      ['a single-set exercise', initialWeighted({ sets: 1, repsPerSet: 12 })],
+      ['one with no progressive overload', initialWeighted({ weightIncreaseOnSuccess: bn('0') })],
+      ['one with a superset', initialWeighted({ supersetWithNext: true, notes: 'notes', link: 'https://x.test' })],
+    ])('%s ends up byte-identical from either chain', (_label, exercise) => {
+      const { viaBlueprintChain, viaSessionChain } = bothChains(exercise);
+      expect(viaSessionChain).toEqual(viaBlueprintChain);
+    });
+
+    it('agrees when each chain is resumed from part-way through', () => {
+      const partwayBlueprint = sessionBlueprintMigrations.migrateUntil(
+        { name: 'Push Day', notes: 'session notes', exercises: [initialWeighted()] },
+        2,
+      );
+      const finished = sessionBlueprintMigrations.migrate(partwayBlueprint).exercises[0];
+
+      const partwaySession = sessionMigrations.migrateUntil(initialSession(), 2);
+      const recorded = sessionMigrations.migrate(partwaySession).recordedExercises[0];
+
+      expect(recorded?.type).toBe('RecordedWeightedExercise');
+      if (recorded?.type === 'RecordedWeightedExercise') {
+        expect(recorded.blueprint).toEqual(finished);
+      }
+    });
+  });
+
   describe('sessionBlueprintMigrations (leaf)', () => {
     it('migrates a weighted exercise from v1 to latest: repsPerSet → repsConfig, weightIncrease → progressiveOverload', () => {
       const result = sessionBlueprintMigrations.migrate(initialSessionBlueprint());

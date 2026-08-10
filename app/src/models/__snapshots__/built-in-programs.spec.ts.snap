@@ -1,0 +1,964 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`built-in-programs > 0d0e0860-0555-4b43-bd93-350edd49c6bd migrates to a stable weighted shape 1`] = `
+[
+  {
+    "name": "Pushups",
+    "progressionKey": "Pushups_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Dips",
+    "progressionKey": "Dips_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Handstand Pushups",
+    "progressionKey": "Handstand Pushups_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Pullups",
+    "progressionKey": "Pullups_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Chinups",
+    "progressionKey": "Chinups_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Inverted Rows",
+    "progressionKey": "Inverted Rows_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Squats",
+    "progressionKey": "Squats_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Lunges",
+    "progressionKey": "Lunges_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Calf Raises",
+    "progressionKey": "Calf Raises_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+]
+`;
+
+exports[`built-in-programs > 590a285b-f883-4536-a1ce-cdc9e2d90399 migrates to a stable weighted shape 1`] = `[]`;
+
+exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a stable weighted shape 1`] = `
+[
+  {
+    "name": "Pushups",
+    "progressionKey": "Pushups_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Dips",
+    "progressionKey": "Dips_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Handstand Pushups",
+    "progressionKey": "Handstand Pushups_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Planche Pushups",
+    "progressionKey": "Planche Pushups_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Pullups",
+    "progressionKey": "Pullups_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Chinups",
+    "progressionKey": "Chinups_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Inverted Rows",
+    "progressionKey": "Inverted Rows_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Muscle Ups",
+    "progressionKey": "Muscle Ups_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Squats",
+    "progressionKey": "Squats_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Lunges",
+    "progressionKey": "Lunges_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Calf Raises",
+    "progressionKey": "Calf Raises_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Pistol Squats",
+    "progressionKey": "Pistol Squats_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "type": "NoProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+]
+`;
+
+exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a stable weighted shape 1`] = `
+[
+  {
+    "name": "Bench Press",
+    "progressionKey": "Bench Press_WeightedExerciseBlueprint_3_5",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Barbell Row",
+    "progressionKey": "Barbell Row_WeightedExerciseBlueprint_3_5",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Overhead Press",
+    "progressionKey": "Overhead Press_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Lat Pulldown",
+    "progressionKey": "Lat Pulldown_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Barbell Curl",
+    "progressionKey": "Barbell Curl_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Tricep Extension",
+    "progressionKey": "Tricep Extension_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Cable Fly",
+    "progressionKey": "Cable Fly_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Squat",
+    "progressionKey": "Squat_WeightedExerciseBlueprint_3_5",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Deadlift",
+    "progressionKey": "Deadlift_WeightedExerciseBlueprint_3_5",
+    "progressiveOverload": {
+      "amount": "5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Leg Press",
+    "progressionKey": "Leg Press_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Leg Curl",
+    "progressionKey": "Leg Curl_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Calf Raise",
+    "progressionKey": "Calf Raise_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Incline Bench Press",
+    "progressionKey": "Incline Bench Press_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Cable Row",
+    "progressionKey": "Cable Row_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Dumbbell Fly",
+    "progressionKey": "Dumbbell Fly_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Lat Pulldown",
+    "progressionKey": "Lat Pulldown_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Dumbbell Curl",
+    "progressionKey": "Dumbbell Curl_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Skullcrusher",
+    "progressionKey": "Skullcrusher_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Front Squat",
+    "progressionKey": "Front Squat_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Romanian Deadlift",
+    "progressionKey": "Romanian Deadlift_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Leg Extension",
+    "progressionKey": "Leg Extension_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Leg Curl",
+    "progressionKey": "Leg Curl_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Calf Raise",
+    "progressionKey": "Calf Raise_WeightedExerciseBlueprint_3_10",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 10,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+]
+`;
+
+exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a stable weighted shape 1`] = `
+[
+  {
+    "name": "Bench Press",
+    "progressionKey": "Bench Press_WeightedExerciseBlueprint_4_8",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 8,
+      "type": "fixed",
+    },
+    "sets": 4,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Overhead Press",
+    "progressionKey": "Overhead Press_WeightedExerciseBlueprint_4_8",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 8,
+      "type": "fixed",
+    },
+    "sets": 4,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Tricep Extension",
+    "progressionKey": "Tricep Extension_WeightedExerciseBlueprint_4_8",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 8,
+      "type": "fixed",
+    },
+    "sets": 4,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Cable Fly",
+    "progressionKey": "Cable Fly_WeightedExerciseBlueprint_4_8",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 8,
+      "type": "fixed",
+    },
+    "sets": 4,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Deadlift",
+    "progressionKey": "Deadlift_WeightedExerciseBlueprint_4_8",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 8,
+      "type": "fixed",
+    },
+    "sets": 4,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Barbell Row",
+    "progressionKey": "Barbell Row_WeightedExerciseBlueprint_4_8",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 8,
+      "type": "fixed",
+    },
+    "sets": 4,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Lat Pulldown",
+    "progressionKey": "Lat Pulldown_WeightedExerciseBlueprint_4_8",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 8,
+      "type": "fixed",
+    },
+    "sets": 4,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Barbell Curl",
+    "progressionKey": "Barbell Curl_WeightedExerciseBlueprint_4_8",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 8,
+      "type": "fixed",
+    },
+    "sets": 4,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Squat",
+    "progressionKey": "Squat_WeightedExerciseBlueprint_4_8",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 8,
+      "type": "fixed",
+    },
+    "sets": 4,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Lunges",
+    "progressionKey": "Lunges_WeightedExerciseBlueprint_4_8",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 8,
+      "type": "fixed",
+    },
+    "sets": 4,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Leg Extension",
+    "progressionKey": "Leg Extension_WeightedExerciseBlueprint_4_8",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 8,
+      "type": "fixed",
+    },
+    "sets": 4,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Leg Curl",
+    "progressionKey": "Leg Curl_WeightedExerciseBlueprint_4_8",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 8,
+      "type": "fixed",
+    },
+    "sets": 4,
+    "usesBodyweight": false,
+  },
+]
+`;
+
+exports[`built-in-programs > a303c855-9ed7-4ff8-ae60-11e9a573193e migrates to a stable weighted shape 1`] = `
+[
+  {
+    "name": "Squat",
+    "progressionKey": "Squat_WeightedExerciseBlueprint_3_5",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Bench Press",
+    "progressionKey": "Bench Press_WeightedExerciseBlueprint_3_5",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Deadlift",
+    "progressionKey": "Deadlift_WeightedExerciseBlueprint_1_5",
+    "progressiveOverload": {
+      "amount": "5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 1,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Squat",
+    "progressionKey": "Squat_WeightedExerciseBlueprint_3_5",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Overhead Press",
+    "progressionKey": "Overhead Press_WeightedExerciseBlueprint_3_5",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 3,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Deadlift",
+    "progressionKey": "Deadlift_WeightedExerciseBlueprint_1_5",
+    "progressiveOverload": {
+      "amount": "5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 1,
+    "usesBodyweight": false,
+  },
+]
+`;
+
+exports[`built-in-programs > ac80c322-3c0f-42ba-b837-cd998adee25a migrates to a stable weighted shape 1`] = `
+[
+  {
+    "name": "Squat",
+    "progressionKey": "Squat_WeightedExerciseBlueprint_5_5",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 5,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Bench Press",
+    "progressionKey": "Bench Press_WeightedExerciseBlueprint_5_5",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 5,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Barbell Row",
+    "progressionKey": "Barbell Row_WeightedExerciseBlueprint_5_5",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 5,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Squat",
+    "progressionKey": "Squat_WeightedExerciseBlueprint_5_5",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 5,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Overhead Press",
+    "progressionKey": "Overhead Press_WeightedExerciseBlueprint_5_5",
+    "progressiveOverload": {
+      "amount": "2.5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 5,
+    "usesBodyweight": false,
+  },
+  {
+    "name": "Deadlift",
+    "progressionKey": "Deadlift_WeightedExerciseBlueprint_1_5",
+    "progressiveOverload": {
+      "amount": "5",
+      "type": "IncreaseAllEvenlyProgressiveOverload",
+    },
+    "repsConfig": {
+      "reps": 5,
+      "type": "fixed",
+    },
+    "sets": 1,
+    "usesBodyweight": false,
+  },
+]
+`;

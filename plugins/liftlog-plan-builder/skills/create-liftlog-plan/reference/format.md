@@ -7,10 +7,10 @@ A `.liftlogplan` file is a single JSON object. `ProgramBlueprint.json` in this d
 Read these first. They are the reason most generated plans fail to import.
 
 1. **Every field is required.** There are no optional fields anywhere in this format. `notes` and `link` must be present even when empty - use `""`.
-2. **`"version": 2`** goes on the root object *and* on every session. It is not the plan's own version number; it is the format's.
+2. **`"version": 2`** goes on the root object _and_ on every session. It is not the plan's own version number; it is the format's.
 3. **Weights and distances are strings, not numbers.** `"amount": "2.5"`, never `"amount": 2.5`.
 4. **Rests and times are ISO-8601 durations.** `"PT3M"` is three minutes, `"PT90S"` is ninety seconds, `"PT1M30S"` also works. A bare `"90"` or `90` is invalid.
-5. **`sets` means two different things.** On a weighted exercise it is a whole number (`"sets": 3`). On a cardio exercise it is an *array* of set objects.
+5. **`sets` means two different things.** On a weighted exercise it is a whole number (`"sets": 3`). On a cardio exercise it is an _array_ of set objects.
 6. **`type` values are case-sensitive**, and the casing is not consistent across the format. Exercises and progressive overloads use PascalCase (`"WeightedExerciseBlueprint"`); cardio targets use lowercase (`"time"`, `"distance"`). Copy them exactly as written below.
 
 ## Root
@@ -24,12 +24,12 @@ Read these first. They are the reason most generated plans fail to import.
 }
 ```
 
-| Field | Type | Notes |
-| --- | --- | --- |
-| `version` | number | Always `2`. |
-| `name` | string | The plan name, as it appears in the app. |
-| `lastEdited` | string | Date as `YYYY-MM-DD`. Use today's date. |
-| `sessions` | array | One per training day. |
+| Field        | Type   | Notes                                    |
+| ------------ | ------ | ---------------------------------------- |
+| `version`    | number | Always `2`.                              |
+| `name`       | string | The plan name, as it appears in the app. |
+| `lastEdited` | string | Date as `YYYY-MM-DD`. Use today's date.  |
+| `sessions`   | array  | One per training day.                    |
 
 ## Session
 
@@ -42,12 +42,12 @@ Read these first. They are the reason most generated plans fail to import.
 }
 ```
 
-| Field | Type | Notes |
-| --- | --- | --- |
-| `version` | number | Always `2`. Yes, here too. |
-| `name` | string | e.g. `"Push"`, `"Upper A"`, `"Leg Day"`. |
-| `notes` | string | `""` if there's nothing to say. |
-| `exercises` | array | Weighted and cardio exercises can be mixed freely. |
+| Field       | Type   | Notes                                              |
+| ----------- | ------ | -------------------------------------------------- |
+| `version`   | number | Always `2`. Yes, here too.                         |
+| `name`      | string | e.g. `"Push"`, `"Upper A"`, `"Leg Day"`.           |
+| `notes`     | string | `""` if there's nothing to say.                    |
+| `exercises` | array  | Weighted and cardio exercises can be mixed freely. |
 
 ## Weighted exercise
 
@@ -65,26 +65,26 @@ Read these first. They are the reason most generated plans fail to import.
 }
 ```
 
-| Field | Type | Notes |
-| --- | --- | --- |
-| `type` | string | Exactly `"WeightedExerciseBlueprint"`. |
-| `name` | string | The exercise name. |
-| `sets` | integer | Number of sets. |
-| `repsPerSet` | integer | Target reps in each set. |
-| `restBetweenSets` | object | See below. |
-| `supersetWithNext` | boolean | See supersets below. |
-| `notes` | string | Cues or instructions. `""` if none. |
-| `link` | string | A URL explaining the movement. **Leave as `""` unless the user gave you a specific link** - do not invent or guess URLs. |
-| `progressiveOverload` | object | See below. |
+| Field                 | Type    | Notes                                                                                                                    |
+| --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `type`                | string  | Exactly `"WeightedExerciseBlueprint"`.                                                                                   |
+| `name`                | string  | The exercise name.                                                                                                       |
+| `sets`                | integer | Number of sets.                                                                                                          |
+| `repsPerSet`          | integer | Target reps in each set.                                                                                                 |
+| `restBetweenSets`     | object  | See below.                                                                                                               |
+| `supersetWithNext`    | boolean | See supersets below.                                                                                                     |
+| `notes`               | string  | Cues or instructions. `""` if none.                                                                                      |
+| `link`                | string  | A URL explaining the movement. **Leave as `""` unless the user gave you a specific link** - do not invent or guess URLs. |
+| `progressiveOverload` | object  | See below.                                                                                                               |
 
 ### Rest
 
 All three are required ISO-8601 durations.
 
-| Field | Meaning |
-| --- | --- |
-| `minRest` | The shortest acceptable rest. |
-| `maxRest` | The longest. |
+| Field         | Meaning                                                                                 |
+| ------------- | --------------------------------------------------------------------------------------- |
+| `minRest`     | The shortest acceptable rest.                                                           |
+| `maxRest`     | The longest.                                                                            |
 | `failureRest` | Rest after a set where they missed the target reps - normally the longest of the three. |
 
 Pick rests from the effort of the lift: heavy compounds 3–5 minutes, accessories 60–90 seconds.
@@ -100,17 +100,20 @@ One of three shapes. Pick per exercise.
 ```json
 { "type": "NoProgressiveOverload" }
 ```
+
 The weight never goes up automatically. Use for bodyweight work, or when the user doesn't want it.
 
 ```json
 { "type": "IncreaseAllEvenlyProgressiveOverload", "amount": "2.5" }
 ```
+
 The normal one: after a successful session, every set goes up by `amount`. Use `"2.5"` kg or `"5"` lb for most lifts; `"5"` kg / `"10"` lb is reasonable for squats and deadlifts.
 
 ```json
 { "type": "IncreaseLowestSetProgressiveOverload", "amount": "1.25", "increaseStrategy": "middle" }
 ```
-Only raises *some* sets - for lifts where adding weight across the board is too big a jump (lateral raises, most shoulder and arm isolation work). `increaseStrategy` must be one of `"first"`, `"middle"`, `"last"`, `"all"` - which of the lowest-weight sets to bump.
+
+Only raises _some_ sets - for lifts where adding weight across the board is too big a jump (lateral raises, most shoulder and arm isolation work). `increaseStrategy` must be one of `"first"`, `"middle"`, `"last"`, `"all"` - which of the lowest-weight sets to bump.
 
 ## Cardio exercise
 

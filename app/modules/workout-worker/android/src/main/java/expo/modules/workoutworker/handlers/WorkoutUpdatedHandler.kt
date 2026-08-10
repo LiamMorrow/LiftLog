@@ -329,7 +329,7 @@ class WorkoutUpdatedHandler(
     }
 
     private fun formatRepsTarget(min: Long, max: Long): String {
-        return if (min == max) "$max" else "$min–$max"
+        return if (min == max) "$max" else "$min-$max"
     }
 
     private fun formatRepsConfig(repsConfig: RepsConfig, setIndex: Int): String {

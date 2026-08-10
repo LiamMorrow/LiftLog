@@ -518,13 +518,13 @@ export type RepsConfig =
 export type RepsType = RepsConfig['type'];
 
 export function formatRepsTarget(target: RepsTarget): string {
-  return target.min === target.max ? `${target.max}` : `${target.min}–${target.max}`;
+  return target.min === target.max ? `${target.max}` : `${target.min}-${target.max}`;
 }
 
 export function formatRepsConfig(config: RepsConfig): string {
   return match(config)
     .with({ type: 'fixed' }, (c) => `${c.reps}`)
-    .with({ type: 'range' }, (c) => `${c.min}–${c.max}`)
+    .with({ type: 'range' }, (c) => `${c.min}-${c.max}`)
     .with({ type: 'perSet' }, (c) => c.targets.map(formatRepsTarget).join(', '))
     .exhaustive();
 }

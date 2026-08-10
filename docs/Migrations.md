@@ -157,6 +157,14 @@ rejected; that's how untrusted feed items from the future are dropped on ingest.
 - **Never touch an existing migration.** Each `.add()` step transforms real data
   already on users' devices. Editing one rewrites history and corrupts
   migration of older data. Migrations are append-only.
+- **Step files never import from `latest/`.** A step in
+  [`migrations/steps/`](../app/src/models/storage/versions/migrations/steps)
+  describes a transform between two _historical_ shapes. Pinning either end of it
+  to a type that keeps moving makes an append-only migration silently rewrite
+  itself - and deleting a field from `latest/` breaks a step that has been frozen
+  for years. Declare the shapes the step reads and writes locally, in the step
+  file, even when they currently duplicate a `latest/` type. Importing from
+  `initial/` is fine: that folder is frozen by the same rule.
 - **Never edit existing `initial/` interface definitions.** They describe the
   oldest data that still exists in the wild and must stay frozen. You may _add_
   new interfaces to `initial/` (for a new model), but never modify or remove an

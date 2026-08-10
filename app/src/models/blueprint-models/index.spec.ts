@@ -8,6 +8,7 @@ import {
   IncreaseLowestSetProgressiveOverload,
   NoProgressiveOverload,
   normalizeExerciseName,
+  RepsConfig,
   WeightedExerciseBlueprint,
   cardioTargetEquals,
 } from '@/models/blueprint-models';
@@ -400,6 +401,88 @@ describe('blueprint models', () => {
       });
       const blueprint = new CardioExerciseBlueprint('Run', [set], '', '');
       expect(blueprint.progressionKey()).toContain('distance');
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // progressionKey - frozen table
+  // ---------------------------------------------------------------------------
+
+  describe('progressionKey - exact strings', () => {
+    const cases: [label: string, config: RepsConfig, sets: number, key: string][] = [
+      ['fixed', { type: 'fixed', reps: 5 }, 3, 'Squat_WeightedExerciseBlueprint_3_5'],
+      ['range', { type: 'range', min: 8, max: 12 }, 4, 'Squat_WeightedExerciseBlueprint_4_8-12'],
+      [
+        'uniform perSet',
+        {
+          type: 'perSet',
+          targets: [
+            { min: 5, max: 5 },
+            { min: 5, max: 5 },
+            { min: 5, max: 5 },
+          ],
+        },
+        3,
+        'Squat_WeightedExerciseBlueprint_3_5,5,5',
+      ],
+      [
+        'non-uniform perSet',
+        {
+          type: 'perSet',
+          targets: [
+            { min: 12, max: 12 },
+            { min: 10, max: 10 },
+            { min: 8, max: 8 },
+          ],
+        },
+        3,
+        'Squat_WeightedExerciseBlueprint_3_12,10,8',
+      ],
+      [
+        'perSet with a band',
+        {
+          type: 'perSet',
+          targets: [
+            { min: 8, max: 12 },
+            { min: 6, max: 10 },
+          ],
+        },
+        2,
+        'Squat_WeightedExerciseBlueprint_2_8-12,6-10',
+      ],
+    ];
+
+    it.each(cases)('%s', (_label, repsConfig, sets, key) => {
+      expect(WeightedExerciseBlueprint.empty().with({ name: 'Squat', sets, repsConfig }).progressionKey()).toBe(key);
+    });
+
+    it('bands in a perSet key use the same separator as a range key', () => {
+      const range = WeightedExerciseBlueprint.empty().with({
+        name: 'Squat',
+        sets: 1,
+        repsConfig: { type: 'range', min: 8, max: 12 },
+      });
+      const perSet = range.with({ repsConfig: { type: 'perSet', targets: [{ min: 8, max: 12 }] } });
+      expect(perSet.progressionKey()).toBe(range.progressionKey());
+    });
+
+    it('a uniform perSet keys apart from the equivalent fixed config', () => {
+      const fixed = WeightedExerciseBlueprint.empty().with({
+        name: 'Squat',
+        sets: 3,
+        repsConfig: { type: 'fixed', reps: 5 },
+      });
+      const perSet = fixed.with({
+        repsConfig: {
+          type: 'perSet',
+          targets: [
+            { min: 5, max: 5 },
+            { min: 5, max: 5 },
+            { min: 5, max: 5 },
+          ],
+        },
+      });
+      expect(perSet.progressionKey()).not.toBe(fixed.progressionKey());
     });
   });
 
