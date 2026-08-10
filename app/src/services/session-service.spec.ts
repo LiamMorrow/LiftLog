@@ -2,8 +2,9 @@ import { describe, it, expect } from 'vitest';
 import Enumerable from 'linq';
 import { SessionService } from '@/services/session-service';
 import { ProgressRepository } from '@/services/progress-repository';
-import { SessionBlueprint } from '@/models/blueprint-models';
-import { Session } from '@/models/session-models';
+import { SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
+import { RecordedWeightedExercise, Session } from '@/models/session-models';
+import { makeRecordedExercise, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
 import type { RootState } from '@/store';
 
 function makeState(overrides?: { workoutSession?: Session; orderedSessions?: Session[] }): RootState {
@@ -100,5 +101,47 @@ describe('SessionService.getUpcomingSessions', () => {
     const plan = [bp('A'), bp('B')];
     const upcoming = await collect(makeService(makeState()).getUpcomingSessions(plan, {}), 6);
     expect(new Set(upcoming.map((s) => s.id)).size).toBe(upcoming.length);
+  });
+});
+
+describe('SessionService rep targets', () => {
+  async function upcoming(blueprint: WeightedExerciseBlueprint, latest?: RecordedWeightedExercise) {
+    const service = makeService(makeState());
+    const [session] = await collect(
+      service.getUpcomingSessions(
+        [new SessionBlueprint('Day', [blueprint], '')],
+        latest ? { [blueprint.progressionKey()]: latest } : {},
+      ),
+      1,
+    );
+    return session!.recordedExercises[0] as RecordedWeightedExercise;
+  }
+
+  it('seeds targets from the blueprint when the exercise has no history', async () => {
+    const blueprint = makeWeightedBlueprint({ sets: 2, repsConfig: { type: 'range', min: 8, max: 12 } });
+
+    expect((await upcoming(blueprint)).potentialSets.map((s) => s.target)).toEqual([
+      { min: 8, max: 12 },
+      { min: 8, max: 12 },
+    ]);
+  });
+
+  it('carries last session’s targets forward alongside its weights', async () => {
+    const blueprint = makeWeightedBlueprint({ sets: 2, loadBasis: 'none' });
+    const lastWeek = makeRecordedExercise(blueprint, [10, 10]).withAllSets((s) =>
+      s.with({ target: { min: 15, max: 15 } }),
+    );
+
+    expect((await upcoming(blueprint, lastWeek)).potentialSets.map((s) => s.target)).toEqual([
+      { min: 15, max: 15 },
+      { min: 15, max: 15 },
+    ]);
+  });
+
+  it('starts the new session with nothing recorded', async () => {
+    const blueprint = makeWeightedBlueprint({ sets: 2 });
+    const lastWeek = makeRecordedExercise(blueprint, [10, 10]);
+
+    expect((await upcoming(blueprint, lastWeek)).potentialSets.every((s) => s.set === undefined)).toBe(true);
   });
 });

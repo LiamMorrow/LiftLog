@@ -62,9 +62,7 @@ export class Session {
           (we) =>
             new RecordedWeightedExercise(
               we,
-              Array.from({ length: we.plannedSets.length }).map(
-                () => new PotentialSet(undefined, new Weight(0, defaultWeightUnit)),
-              ),
+              we.plannedSets.map((s) => new PotentialSet(undefined, new Weight(0, defaultWeightUnit), s.reps)),
               undefined,
             ),
         )
@@ -153,13 +151,15 @@ export class Session {
           exerciseIndex,
           weightedExistingExercise.with({
             blueprint: newBlueprint as WeightedExerciseBlueprint,
-            potentialSets: Enumerable.range(0, (newBlueprint as WeightedExerciseBlueprint).plannedSets.length)
-              .select(
-                (index) =>
-                  weightedExistingExercise.potentialSets.at(index) ??
-                  new PotentialSet(undefined, weightedExistingExercise.maxWeight),
-              )
-              .toArray(),
+            // A set you already logged was chasing the target it was chasing, so only unrecorded
+            // sets take the edited blueprint's targets.
+            potentialSets: (newBlueprint as WeightedExerciseBlueprint).plannedSets.map((planned, index) => {
+              const existing = weightedExistingExercise.potentialSets.at(index);
+              if (!existing) {
+                return new PotentialSet(undefined, weightedExistingExercise.maxWeight, planned.reps);
+              }
+              return existing.set ? existing : existing.with({ target: planned.reps });
+            }),
           }),
         );
       }

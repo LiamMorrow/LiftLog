@@ -74,8 +74,8 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
             },
             "target": {
               "reps": {
-                "max": 0,
-                "min": 0,
+                "max": 10,
+                "min": 10,
               },
             },
             "weight": {
@@ -90,8 +90,8 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
             },
             "target": {
               "reps": {
-                "max": 0,
-                "min": 0,
+                "max": 10,
+                "min": 10,
               },
             },
             "weight": {
@@ -106,8 +106,8 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
             },
             "target": {
               "reps": {
-                "max": 0,
-                "min": 0,
+                "max": 10,
+                "min": 10,
               },
             },
             "weight": {
@@ -174,8 +174,8 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
             },
             "target": {
               "reps": {
-                "max": 0,
-                "min": 0,
+                "max": 10,
+                "min": 10,
               },
             },
             "weight": {
@@ -190,8 +190,8 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
             },
             "target": {
               "reps": {
-                "max": 0,
-                "min": 0,
+                "max": 10,
+                "min": 10,
               },
             },
             "weight": {
@@ -206,8 +206,8 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
             },
             "target": {
               "reps": {
-                "max": 0,
-                "min": 0,
+                "max": 10,
+                "min": 10,
               },
             },
             "weight": {

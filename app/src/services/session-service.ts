@@ -93,12 +93,11 @@ export class SessionService {
       const potentialSets: PotentialSet[] = match(weightedLastExercise)
         .returnType<PotentialSet[]>()
         .with(undefined, () =>
-          Array.from(
-            { length: e.plannedSets.length },
-            () => new PotentialSet(undefined, new Weight(0, $this.getDefaultWeightUnit())),
-          ),
+          e.plannedSets.map((s) => new PotentialSet(undefined, new Weight(0, $this.getDefaultWeightUnit()), s.reps)),
         )
-        .otherwise((x) => x.potentialSets.map((x) => new PotentialSet(undefined, x.weight)));
+        // The target carries forward alongside the weight, so an exercise whose progress is reps
+        // starts where it left off rather than back at whatever the plan said.
+        .otherwise((x) => x.potentialSets.map((ps) => new PotentialSet(undefined, ps.weight, ps.target)));
       let newExercise = new RecordedWeightedExercise(e, potentialSets, undefined);
       if (weightedLastExercise?.isSuccessForProgressiveOverload) {
         newExercise = newExercise.blueprint.progressiveOverload.applyProgressiveOverload(newExercise);

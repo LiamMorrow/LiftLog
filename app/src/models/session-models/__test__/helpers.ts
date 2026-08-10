@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import { v4 as uuid } from 'uuid';
 import {
   WeightedExerciseBlueprint,
+  RepsTarget,
   WeightedExerciseBlueprintInit,
   SessionBlueprint,
   CardioExerciseBlueprint,
@@ -81,13 +82,41 @@ export function makeSession(
   return new Session(uuid(), new SessionBlueprint('Test', exercises, ''), recorded, date, undefined, undefined);
 }
 
-export function filledPotentialSet(reps: number, time: OffsetDateTime, weight = new Weight(100, 'kilograms')) {
-  return PotentialSet.of({ set: RecordedSet.of({ repsCompleted: reps, completionDateTime: time }), weight });
+export function filledPotentialSet(
+  reps: number,
+  time: OffsetDateTime,
+  weight = new Weight(100, 'kilograms'),
+  target: RepsTarget = { min: 10, max: 10 },
+) {
+  return PotentialSet.of({ set: RecordedSet.of({ repsCompleted: reps, completionDateTime: time }), weight, target });
 }
 
 /** A set loaded but not yet logged — the state every set starts a session in. */
-export function emptyPotentialSet(weight: Weight | number = 100) {
-  return PotentialSet.of({ weight: typeof weight === 'number' ? new Weight(weight, 'kilograms') : weight });
+export function emptyPotentialSet(weight: Weight | number = 100, target: RepsTarget = { min: 10, max: 10 }) {
+  return PotentialSet.of({
+    weight: typeof weight === 'number' ? new Weight(weight, 'kilograms') : weight,
+    target,
+  });
+}
+
+/**
+ * An exercise with the given reps logged against its blueprint's targets, the way the app seeds a
+ * session. Pass `undefined` for a set that was never filled out.
+ */
+export function makeRecordedExercise(
+  blueprint: WeightedExerciseBlueprint,
+  reps: (number | undefined)[],
+  weight = new Weight(100, 'kilograms'),
+  at: (index: number) => OffsetDateTime = () => tick(),
+) {
+  return new RecordedWeightedExercise(
+    blueprint,
+    reps.map((r, index) => {
+      const target = blueprint.repsTargetForSet(index);
+      return r === undefined ? emptyPotentialSet(weight, target) : filledPotentialSet(r, at(index), weight, target);
+    }),
+    undefined,
+  );
 }
 
 // Helper functions to match the C# test structure
@@ -102,13 +131,15 @@ export function createSessionBlueprint(exercises: WeightedExerciseBlueprint[]): 
 export function createSession(sessionBlueprint: SessionBlueprint, fillSets: number[] = []): Session {
   const recordedExercises = (sessionBlueprint.exercises as WeightedExerciseBlueprint[]).map(
     (exerciseBlueprint, exerciseIndex) => {
-      const potentialSets = Array.from({ length: exerciseBlueprint.plannedSets.length }).map((_, setIndex) =>
+      const potentialSets = exerciseBlueprint.plannedSets.map((planned, setIndex) =>
         fillSets.includes(exerciseIndex)
           ? filledPotentialSet(
-              exerciseBlueprint.repsTargetForSet(setIndex).max,
+              planned.reps.max,
               tick().plusSeconds(exerciseIndex * 60 + setIndex * 10),
+              new Weight(100, 'kilograms'),
+              planned.reps,
             )
-          : emptyPotentialSet(),
+          : emptyPotentialSet(100, planned.reps),
       );
 
       return new RecordedWeightedExercise(

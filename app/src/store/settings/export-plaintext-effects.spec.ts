@@ -5,7 +5,12 @@ import { SessionBlueprint, CardioExerciseBlueprint, CardioExerciseSetBlueprint }
 import { Weight } from '@/models/weight';
 import { Session } from '@/models/session-models/session';
 import { RecordedWeightedExercise } from '@/models/session-models/recorded-weighted-exercise';
-import { emptyPotentialSet, filledPotentialSet, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
+import {
+  emptyPotentialSet,
+  filledPotentialSet,
+  makeRecordedExercise,
+  makeWeightedBlueprint,
+} from '@/models/session-models/__test__/helpers';
 import { RecordedCardioExercise } from '@/models/session-models/recorded-cardio-exercise';
 import { exportPlainText } from '@/store/settings';
 import Enumerable from 'linq';
@@ -25,11 +30,11 @@ function makeBenchBlueprint(name = 'Bench Press', sets = 3, repsPerSet = 10) {
 
 function makeWeightedExercise(name = 'Bench Press', sets = 3, weightKg = 100, reps = 10): RecordedWeightedExercise {
   const bp = makeBenchBlueprint(name, sets, reps);
-  const weight = new Weight(weightKg, 'kilograms');
-  return new RecordedWeightedExercise(
+  return makeRecordedExercise(
     bp,
-    Array.from({ length: sets }, (_, i) => filledPotentialSet(reps, t.plusSeconds(i * 60), weight)),
-    undefined,
+    Array.from({ length: sets }, () => reps),
+    new Weight(weightKg, 'kilograms'),
+    (i) => t.plusSeconds(i * 60),
   );
 }
 

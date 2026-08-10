@@ -43,16 +43,15 @@ export class RecordedWeightedExercise {
     return this.blueprint.progressionKey();
   }
 
+  /** The performance's own target wins; the blueprint only seeds it when the exercise is created. */
   repsTargetForSet(index: number): RepsTarget {
-    return this.blueprint.repsTargetForSet(index);
+    return this.potentialSets[index]?.target ?? this.blueprint.repsTargetForSet(index);
   }
 
   static empty(b: WeightedExerciseBlueprint, unit: WeightUnit): RecordedWeightedExercise {
     return new RecordedWeightedExercise(
       b,
-      Enumerable.range(0, b.plannedSets.length)
-        .select(() => new PotentialSet(undefined, new Weight(0, unit)))
-        .toArray(),
+      b.plannedSets.map((s) => new PotentialSet(undefined, new Weight(0, unit), s.reps)),
       undefined,
     );
   }

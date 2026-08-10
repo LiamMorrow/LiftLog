@@ -10,6 +10,7 @@ import {
   filledPotentialSet,
   makeCardioBlueprint,
   makeSession,
+  makeRecordedExercise,
   makeWeightedBlueprint,
   tick,
 } from '@/models/session-models/__test__/helpers';
@@ -156,11 +157,7 @@ describe('getTimerInfo', () => {
       },
     });
     // Set 0 stays open so a next exercise exists; the most recent completion is set 2 (target 8).
-    const exercise = new RecordedWeightedExercise(
-      bp,
-      [emptyPotentialSet(100), filledPotentialSet(10, tick()), filledPotentialSet(lastSetReps, tick())],
-      undefined,
-    );
+    const exercise = makeRecordedExercise(bp, [undefined, 10, lastSetReps]);
     return new Session(
       uuid(),
       new SessionBlueprint('Test', [bp], ''),

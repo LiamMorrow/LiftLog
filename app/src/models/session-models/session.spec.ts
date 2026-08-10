@@ -10,6 +10,7 @@ import { RecordedWeightedExercise } from '@/models/session-models/recorded-weigh
 import {
   tick,
   tickAt,
+  makeRecordedExercise,
   makeWeightedBlueprint,
   makeCardioBlueprint,
   makeCardioSetBlueprint,
@@ -563,6 +564,28 @@ describe('Session.withEditedExercise', () => {
       // New slots should be uncompleted
       expect(sets[2]!.set).toBeUndefined();
       expect(sets[3]!.set).toBeUndefined();
+    });
+
+    it('re-seeds targets on unrecorded sets and leaves recorded ones alone', () => {
+      const bp = makeWeightedBlueprint({ name: 'Squat', sets: 3 });
+      const exercise = makeRecordedExercise(bp, [10, undefined, undefined]);
+      const session = new Session(
+        uuid(),
+        new SessionBlueprint('Test', [bp], ''),
+        [exercise],
+        LocalDate.of(2025, 4, 5),
+        undefined,
+        undefined,
+      );
+
+      const retuned = makeWeightedBlueprint({ name: 'Squat', sets: 3, repsConfig: { type: 'fixed', reps: 15 } });
+      const sets = (session.withEditedExercise(0, retuned, false).recordedExercises[0]! as RecordedWeightedExercise)
+        .potentialSets;
+
+      // A set you already logged was chasing the target it was chasing.
+      expect(sets[0]!.target).toEqual({ min: 10, max: 10 });
+      expect(sets[1]!.target).toEqual({ min: 15, max: 15 });
+      expect(sets[2]!.target).toEqual({ min: 15, max: 15 });
     });
   });
 

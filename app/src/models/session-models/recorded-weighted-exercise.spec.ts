@@ -8,6 +8,7 @@ import {
 import {
   emptyPotentialSet,
   filledPotentialSet,
+  makeRecordedExercise,
   makeWeightedBlueprint,
   tick,
 } from '@/models/session-models/__test__/helpers';
@@ -293,17 +294,8 @@ describe('RecordedWeightedExercise.withCycledRepCount', () => {
 describe('RecordedWeightedExercise.isSuccessForProgressiveOverload with rep schemes', () => {
   it('requires the top of the range on every set', () => {
     const bp = makeWeightedBlueprint().with({ sets: 2, repsConfig: { type: 'range', min: 10, max: 12 } });
-    const t = tick();
-    const topOnAll = new RecordedWeightedExercise(
-      bp,
-      [filledPotentialSet(12, t), filledPotentialSet(12, t)],
-      undefined,
-    );
-    const oneShort = new RecordedWeightedExercise(
-      bp,
-      [filledPotentialSet(12, t), filledPotentialSet(11, t)],
-      undefined,
-    );
+    const topOnAll = makeRecordedExercise(bp, [12, 12]);
+    const oneShort = makeRecordedExercise(bp, [12, 11]);
     expect(topOnAll.isSuccessForProgressiveOverload).toBe(true);
     expect(oneShort.isSuccessForProgressiveOverload).toBe(false);
   });
@@ -321,11 +313,7 @@ describe('RecordedWeightedExercise.isSuccessForProgressiveOverload with rep sche
       },
     });
     const t = tick();
-    const hit = new RecordedWeightedExercise(
-      bp,
-      [filledPotentialSet(12, t), filledPotentialSet(10, t), filledPotentialSet(8, t)],
-      undefined,
-    );
+    const hit = makeRecordedExercise(bp, [12, 10, 8]);
     const miss = hit.withRepCount(2, 7, t);
     expect(hit.isSuccessForProgressiveOverload).toBe(true);
     expect(miss.isSuccessForProgressiveOverload).toBe(false);
