@@ -203,7 +203,7 @@ function getWeightAndRepsChips(exercise: RecordedWeightedExercise): WeightAndRep
     repsCompleted: set.set?.repsCompleted,
     repTarget: exercise.repsTargetForSet(index).max,
     weight: set.weight,
-    usesBodyweight: exercise.blueprint.usesBodyweight,
+    usesBodyweight: exercise.blueprint.loadBasis === 'bodyweight',
   }));
 }
 
@@ -219,7 +219,7 @@ function getPlannedChipData(exercise: RecordedWeightedExercise): PotentialSetChi
       repTarget: x.first().repTarget,
       numSets: x.count(),
       weight: x.first().weight,
-      usesBodyweight: exercise.blueprint.usesBodyweight,
+      usesBodyweight: exercise.blueprint.loadBasis === 'bodyweight',
     }))
     .toArray();
 }

@@ -26,7 +26,7 @@ function makeBlueprint(name: string, sets = 3, reps = 8, usesBodyweight = false)
       minRest: Duration.ofSeconds(90),
       failureRest: Duration.ofSeconds(180),
     },
-    usesBodyweight,
+    loadBasis: usesBodyweight ? 'bodyweight' : 'external',
   });
 }
 
@@ -44,7 +44,7 @@ function makeCompletedExercise(
   repsPerSet: number,
   baseTime: OffsetDateTime,
 ): RecordedWeightedExercise {
-  const potentialSets = Array.from({ length: blueprint.sets }, (_, i) =>
+  const potentialSets = Array.from({ length: blueprint.plannedSets.length }, (_, i) =>
     filledPotentialSet(repsPerSet, baseTime.plusSeconds(i * 60), new Weight(weightKg, 'kilograms')),
   );
   return new RecordedWeightedExercise(blueprint, potentialSets, undefined);

@@ -424,7 +424,7 @@ describe('blueprint models', () => {
           ],
         },
         3,
-        'Squat_WeightedExerciseBlueprint_3_5,5,5',
+        'Squat_WeightedExerciseBlueprint_3_5',
       ],
       [
         'non-uniform perSet',
@@ -467,7 +467,8 @@ describe('blueprint models', () => {
       expect(perSet.progressionKey()).toBe(range.progressionKey());
     });
 
-    it('a uniform perSet keys apart from the equivalent fixed config', () => {
+    it('a uniform perSet and the equivalent fixed config are one ladder', () => {
+      // They are the same prescription authored two ways, so they progress together.
       const fixed = WeightedExerciseBlueprint.empty().with({
         name: 'Squat',
         sets: 3,
@@ -483,7 +484,14 @@ describe('blueprint models', () => {
           ],
         },
       });
-      expect(perSet.progressionKey()).not.toBe(fixed.progressionKey());
+      expect(perSet.progressionKey()).toBe(fixed.progressionKey());
+    });
+
+    it('an exercise that tracks no load keys without its rep scheme', () => {
+      const crunch = WeightedExerciseBlueprint.of({ name: 'Crunch', sets: 3, loadBasis: 'none' });
+      expect(crunch.progressionKey()).toBe('Crunch_WeightedExerciseBlueprint_3');
+      expect(crunch.with({ repsConfig: { type: 'fixed', reps: 25 } }).progressionKey()).toBe(crunch.progressionKey());
+      expect(crunch.withSets(4).progressionKey()).not.toBe(crunch.progressionKey());
     });
   });
 
@@ -564,115 +572,75 @@ describe('WeightedExerciseBlueprint rep schemes', () => {
     expect(WeightedExerciseBlueprint.fromJSON(pyramid.toJSON()).equals(pyramid)).toBe(true);
   });
 
-  describe('withRepsConfigType', () => {
-    it('fixed → range seeds min and max from the fixed reps', () => {
-      expect(fixed.withRepsConfigType('range').repsConfig).toEqual({ type: 'range', min: 10, max: 10 });
+  describe('with', () => {
+    const targets = (b: WeightedExerciseBlueprint) => b.plannedSets.map((s) => s.reps);
+
+    it('spreads a fixed config across the current set count', () => {
+      expect(targets(fixed.with({ repsConfig: { type: 'fixed', reps: 8 } }))).toEqual(
+        Array.from({ length: 3 }, () => ({ min: 8, max: 8 })),
+      );
     });
 
-    it('fixed → perSet fills every set with the fixed reps', () => {
-      expect(fixed.withRepsConfigType('perSet').repsConfig).toEqual({
-        type: 'perSet',
-        targets: [
-          { min: 10, max: 10 },
-          { min: 10, max: 10 },
-          { min: 10, max: 10 },
-        ],
-      });
+    it('spreads a range across every set', () => {
+      expect(targets(fixed.with({ repsConfig: { type: 'range', min: 8, max: 12 } }))).toEqual(
+        Array.from({ length: 3 }, () => ({ min: 8, max: 12 })),
+      );
     });
 
-    it('range → fixed uses the range min', () => {
-      expect(range.withRepsConfigType('fixed').repsConfig).toEqual({ type: 'fixed', reps: 10 });
+    it('resizes to a new set count while keeping the existing targets', () => {
+      expect(targets(pyramid.with({ sets: 5 }))).toEqual([
+        { min: 12, max: 12 },
+        { min: 10, max: 10 },
+        { min: 8, max: 8 },
+        { min: 8, max: 8 },
+        { min: 8, max: 8 },
+      ]);
     });
 
-    it('range → perSet fills every set with the range max', () => {
-      expect(range.withRepsConfigType('perSet').repsConfig).toEqual({
-        type: 'perSet',
-        targets: [
-          { min: 12, max: 12 },
-          { min: 12, max: 12 },
-          { min: 12, max: 12 },
-        ],
-      });
+    it('applies a set count and a rep layout together', () => {
+      expect(targets(pyramid.with({ sets: 2, repsConfig: { type: 'fixed', reps: 6 } }))).toEqual([
+        { min: 6, max: 6 },
+        { min: 6, max: 6 },
+      ]);
     });
 
-    it('perSet → fixed uses set 0 min', () => {
-      expect(pyramid.withRepsConfigType('fixed').repsConfig).toEqual({ type: 'fixed', reps: 12 });
-    });
-
-    it('perSet → range uses set 0 min and max', () => {
-      expect(pyramid.withRepsConfigType('range').repsConfig).toEqual({ type: 'range', min: 12, max: 12 });
-    });
-
-    it('perSet targets length tracks the current set count', () => {
-      const fiveSets = fixed.with({ sets: 5 });
-      expect(fiveSets.withRepsConfigType('perSet').repsConfig).toEqual({
-        type: 'perSet',
-        targets: Array.from({ length: 5 }, () => ({ min: 10, max: 10 })),
-      });
-    });
-
-    it('returns a new blueprint instance leaving the original unchanged', () => {
-      const updated = fixed.withRepsConfigType('range');
+    it('leaves the original unchanged', () => {
+      const updated = fixed.with({ repsConfig: { type: 'range', min: 8, max: 12 } });
       expect(updated).not.toBe(fixed);
-      expect(updated).toBeInstanceOf(WeightedExerciseBlueprint);
-      expect(fixed.repsConfig).toEqual({ type: 'fixed', reps: 10 });
+      expect(targets(fixed)).toEqual(Array.from({ length: 3 }, () => ({ min: 10, max: 10 })));
     });
   });
 
   describe('withSets', () => {
-    it('updates sets and leaves a fixed repsConfig untouched', () => {
-      const updated = fixed.withSets(5);
-      expect(updated.sets).toBe(5);
-      expect(updated.repsConfig).toEqual({ type: 'fixed', reps: 10 });
+    it('grows by repeating the last target', () => {
+      expect(pyramid.withSets(5).plannedSets.map((s) => s.reps)).toEqual([
+        { min: 12, max: 12 },
+        { min: 10, max: 10 },
+        { min: 8, max: 8 },
+        { min: 8, max: 8 },
+        { min: 8, max: 8 },
+      ]);
     });
 
-    it('updates sets and leaves a range repsConfig untouched', () => {
-      const updated = range.withSets(5);
-      expect(updated.sets).toBe(5);
-      expect(updated.repsConfig).toEqual({ type: 'range', min: 10, max: 12 });
+    it('shrinks by truncating', () => {
+      expect(pyramid.withSets(2).plannedSets.map((s) => s.reps)).toEqual([
+        { min: 12, max: 12 },
+        { min: 10, max: 10 },
+      ]);
     });
 
-    it('grows a perSet repsConfig by repeating the last target', () => {
-      const updated = pyramid.withSets(5);
-      expect(updated.sets).toBe(5);
-      expect(updated.repsConfig).toEqual({
-        type: 'perSet',
-        targets: [
-          { min: 12, max: 12 },
-          { min: 10, max: 10 },
-          { min: 8, max: 8 },
-          { min: 8, max: 8 },
-          { min: 8, max: 8 },
-        ],
-      });
-    });
-
-    it('shrinks a perSet repsConfig by truncating targets', () => {
-      const updated = pyramid.withSets(2);
-      expect(updated.sets).toBe(2);
-      expect(updated.repsConfig).toEqual({
-        type: 'perSet',
-        targets: [
-          { min: 12, max: 12 },
-          { min: 10, max: 10 },
-        ],
-      });
-    });
-
-    it('leaves a perSet repsConfig untouched when the count is unchanged', () => {
-      const updated = pyramid.withSets(3);
-      expect(updated.repsConfig).toEqual(pyramid.repsConfig);
+    it('leaves the list untouched when the count is unchanged', () => {
+      expect(pyramid.withSets(3).plannedSets).toEqual(pyramid.plannedSets);
     });
 
     it('returns a new blueprint instance leaving the original unchanged', () => {
-      const updated = pyramid.withSets(5);
-      expect(updated).not.toBe(pyramid);
-      expect(pyramid.sets).toBe(3);
+      expect(pyramid.withSets(5)).not.toBe(pyramid);
+      expect(pyramid.plannedSets).toHaveLength(3);
     });
 
     it('clamps to a minimum of 1 set', () => {
-      expect(fixed.withSets(0).sets).toBe(1);
-      expect(fixed.withSets(-5).sets).toBe(1);
+      expect(fixed.withSets(0).plannedSets).toHaveLength(1);
+      expect(fixed.withSets(-5).plannedSets).toHaveLength(1);
     });
   });
 });

@@ -1,4 +1,4 @@
-import { formatRepsTarget } from '@/models/blueprint-models';
+import { formatRepsTarget, uniformTarget } from '@/models/blueprint-models';
 import { RecordedExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { formatDistance } from '@/utils/distance';
@@ -17,7 +17,7 @@ export function formatExerciseSummary(
   options: { isFilled: boolean; showWeight: boolean; bodyweightLabel?: string },
 ): string {
   if (exercise instanceof RecordedWeightedExercise) {
-    const usesBodyweight = exercise.blueprint.usesBodyweight;
+    const usesBodyweight = exercise.blueprint.loadBasis === 'bodyweight';
     const label = options.bodyweightLabel ?? 'BW';
     return options.isFilled
       ? formatRuns(filledRuns(exercise, options.showWeight, usesBodyweight, label))
@@ -105,8 +105,8 @@ function formatPlanned(
   const sets = exercise.potentialSets;
   const blueprint = exercise.blueprint;
   const shape =
-    blueprint.repsConfig.type === 'perSet'
-      ? blueprint.repsConfig.targets.map(formatRepsTarget).join('/')
+    uniformTarget(blueprint.plannedSets) === undefined
+      ? blueprint.plannedSets.map((s) => formatRepsTarget(s.reps)).join('/')
       : `${sets.length} × ${formatRepsTarget(blueprint.repsTargetForSet(0))}`;
 
   if (usesBodyweight) {

@@ -13,7 +13,7 @@ import {
   ExerciseBlueprintJSON,
   ProgramBlueprintJSON,
   ProgressiveOverloadJSON,
-  RepsConfigJSON,
+  PlannedSetJSON,
   RestJSON,
   SessionBlueprintJSON,
   toLocalDateJSON,
@@ -102,7 +102,7 @@ const emptyWeightedExercise = WeightedExerciseBlueprint.empty().toJSON();
 const emptyCardioExercise = CardioExerciseBlueprint.empty().toJSON();
 const emptyCardioSet = emptyCardioExercise.sets[0]!;
 const defaultIncreaseAmount = '2.5' as BigNumberJSON;
-const defaultReps = emptyWeightedExercise.repsConfig.type === 'fixed' ? emptyWeightedExercise.repsConfig.reps : 10;
+const defaultRepsTarget = emptyWeightedExercise.plannedSets[0]?.reps ?? { min: 10, max: 10 };
 
 function fillRest(partial: DeepPartial<RestJSON> = {}): RestJSON {
   const { restBetweenSets } = emptyWeightedExercise;
@@ -131,32 +131,33 @@ function fillProgressiveOverload(partial: DeepPartial<ProgressiveOverloadJSON> =
   }
 }
 
-function fillRepsConfig(partial: DeepPartial<RepsConfigJSON> = {}): RepsConfigJSON {
-  switch (partial.type) {
-    case 'range':
-      return { type: 'range', min: partial.min ?? 8, max: partial.max ?? 12 };
-    case 'perSet':
-      return {
-        type: 'perSet',
-        targets: (partial.targets ?? []).map((t) => ({ min: t?.min ?? defaultReps, max: t?.max ?? defaultReps })),
-      };
-    default:
-      return { type: 'fixed', reps: (partial as { reps?: number }).reps ?? defaultReps };
+/**
+ * The model emits a list of planned sets. An empty or absent list would render a tile with no sets
+ * at all, so it falls back to the default prescription rather than to nothing.
+ */
+function fillPlannedSets(partial: DeepPartial<PlannedSetJSON>[] | undefined): PlannedSetJSON[] {
+  if (!partial?.length) {
+    return emptyWeightedExercise.plannedSets.map((s) => ({ reps: { ...s.reps } }));
   }
+  return partial.map((set) => ({
+    reps: {
+      min: set?.reps?.min ?? set?.reps?.max ?? defaultRepsTarget.min,
+      max: set?.reps?.max ?? set?.reps?.min ?? defaultRepsTarget.max,
+    },
+  }));
 }
 
 function fillWeightedExercise(partial: DeepPartial<WeightedExerciseBlueprintJSON> = {}): WeightedExerciseBlueprintJSON {
   return {
     type: 'WeightedExerciseBlueprint',
     name: partial.name ?? emptyWeightedExercise.name,
-    sets: partial.sets ?? emptyWeightedExercise.sets,
-    repsConfig: fillRepsConfig(partial.repsConfig),
+    plannedSets: fillPlannedSets(partial.plannedSets),
     restBetweenSets: fillRest(partial.restBetweenSets),
     supersetWithNext: partial.supersetWithNext ?? emptyWeightedExercise.supersetWithNext,
     notes: partial.notes ?? emptyWeightedExercise.notes,
     link: partial.link ?? emptyWeightedExercise.link,
     progressiveOverload: fillProgressiveOverload(partial.progressiveOverload),
-    usesBodyweight: partial.usesBodyweight ?? emptyWeightedExercise.usesBodyweight,
+    loadBasis: partial.loadBasis ?? emptyWeightedExercise.loadBasis,
   };
 }
 
@@ -212,7 +213,7 @@ function fillExercise(partial: DeepPartial<ExerciseBlueprintJSON> = {}): Exercis
 
 function fillSession(partial: DeepPartial<SessionBlueprintJSON> = {}): SessionBlueprintJSON {
   return {
-    version: 4,
+    version: 5,
     name: partial.name ?? emptySessionBlueprint.name,
     exercises: (partial.exercises ?? []).map(fillExercise),
     notes: partial.notes ?? emptySessionBlueprint.notes,

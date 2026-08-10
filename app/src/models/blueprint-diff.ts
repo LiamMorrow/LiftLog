@@ -5,11 +5,12 @@ import {
   CardioTarget,
   cardioTargetEquals,
   ExerciseBlueprint,
-  formatRepsConfig,
   IncreaseStrategy,
+  LoadBasis,
   ProgressiveOverload,
-  RepsConfig,
-  repsConfigEquals,
+  formatPlannedSets,
+  PlannedSet,
+  plannedSetsEqual,
   Rest,
   SessionBlueprint,
   WeightedExerciseBlueprint,
@@ -93,22 +94,14 @@ interface ExerciseNameChange extends BaseChange {
   newValue: string;
 }
 
-interface ExerciseSetsChange extends BaseChange {
-  kind: 'exerciseSets';
+/** Set count and rep targets are one list, so they change together. */
+interface ExercisePlannedSetsChange extends BaseChange {
+  kind: 'exercisePlannedSets';
   type: 'modified';
   exerciseName: string;
   exerciseIndex: number;
-  oldValue: number;
-  newValue: number;
-}
-
-interface ExerciseRepsChange extends BaseChange {
-  kind: 'exerciseReps';
-  type: 'modified';
-  exerciseName: string;
-  exerciseIndex: number;
-  oldValue: RepsConfig;
-  newValue: RepsConfig;
+  oldValue: PlannedSet[];
+  newValue: PlannedSet[];
 }
 
 interface ExerciseWeightIncreaseChange extends BaseChange {
@@ -139,13 +132,13 @@ interface ExerciseSupersetChange extends BaseChange {
   newValue: boolean;
 }
 
-interface ExerciseBodyweightChange extends BaseChange {
-  kind: 'exerciseBodyweight';
+interface ExerciseLoadBasisChange extends BaseChange {
+  kind: 'exerciseLoadBasis';
   type: 'modified';
   exerciseName: string;
   exerciseIndex: number;
-  oldValue: boolean;
-  newValue: boolean;
+  oldValue: LoadBasis;
+  newValue: LoadBasis;
 }
 
 interface ExerciseNotesChange extends BaseChange {
@@ -232,12 +225,11 @@ interface ExerciseTypeChange extends BaseChange {
 
 type ExerciseFieldChange =
   | ExerciseNameChange
-  | ExerciseSetsChange
-  | ExerciseRepsChange
+  | ExercisePlannedSetsChange
   | ExerciseWeightIncreaseChange
   | ExerciseRestChange
   | ExerciseSupersetChange
-  | ExerciseBodyweightChange
+  | ExerciseLoadBasisChange
   | ExerciseNotesChange
   | ExerciseLinkChange
   | ExerciseTargetChange
@@ -426,27 +418,15 @@ function diffWeightedExercises(
     });
   }
 
-  if (oldEx.sets !== newEx.sets) {
+  if (!plannedSetsEqual(oldEx.plannedSets, newEx.plannedSets)) {
     changes.push({
       id: generateChangeId(),
-      kind: 'exerciseSets',
+      kind: 'exercisePlannedSets',
       type: 'modified',
       exerciseName,
       exerciseIndex,
-      oldValue: oldEx.sets,
-      newValue: newEx.sets,
-    });
-  }
-
-  if (!repsConfigEquals(oldEx.repsConfig, newEx.repsConfig)) {
-    changes.push({
-      id: generateChangeId(),
-      kind: 'exerciseReps',
-      type: 'modified',
-      exerciseName,
-      exerciseIndex,
-      oldValue: oldEx.repsConfig,
-      newValue: newEx.repsConfig,
+      oldValue: oldEx.plannedSets,
+      newValue: newEx.plannedSets,
     });
   }
 
@@ -487,15 +467,15 @@ function diffWeightedExercises(
     });
   }
 
-  if (oldEx.usesBodyweight !== newEx.usesBodyweight) {
+  if (oldEx.loadBasis !== newEx.loadBasis) {
     changes.push({
       id: generateChangeId(),
-      kind: 'exerciseBodyweight',
+      kind: 'exerciseLoadBasis',
       type: 'modified',
       exerciseName,
       exerciseIndex,
-      oldValue: oldEx.usesBodyweight,
-      newValue: newEx.usesBodyweight,
+      oldValue: oldEx.loadBasis,
+      newValue: newEx.loadBasis,
     });
   }
 
@@ -917,11 +897,8 @@ export function applySessionBlueprintDiff(original: SessionBlueprint, diff: Sess
     for (const change of mod.changes) {
       exercise = match(change)
         .with({ kind: 'exerciseName' }, (c) => exercise.with({ name: c.newValue }))
-        .with({ kind: 'exerciseSets' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ sets: c.newValue }) : exercise,
-        )
-        .with({ kind: 'exerciseReps' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ repsConfig: c.newValue }) : exercise,
+        .with({ kind: 'exercisePlannedSets' }, (c) =>
+          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ plannedSets: c.newValue }) : exercise,
         )
         .with({ kind: 'progressiveOverload' }, (c) =>
           exercise instanceof WeightedExerciseBlueprint ? exercise.with({ progressiveOverload: c.newValue }) : exercise,
@@ -932,8 +909,8 @@ export function applySessionBlueprintDiff(original: SessionBlueprint, diff: Sess
         .with({ kind: 'exerciseSuperset' }, (c) =>
           exercise instanceof WeightedExerciseBlueprint ? exercise.with({ supersetWithNext: c.newValue }) : exercise,
         )
-        .with({ kind: 'exerciseBodyweight' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ usesBodyweight: c.newValue }) : exercise,
+        .with({ kind: 'exerciseLoadBasis' }, (c) =>
+          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ loadBasis: c.newValue }) : exercise,
         )
         .with({ kind: 'exerciseNotes' }, (c) => exercise.with({ notes: c.newValue }))
         .with({ kind: 'exerciseLink' }, (c) => exercise.with({ link: c.newValue }))
@@ -1081,16 +1058,10 @@ export function getChangeDescription(t: UseTranslateResult['t'], change: DiffCha
         newValue: c.newValue,
       }),
     )
-    .with({ kind: 'exerciseSets' }, (c) =>
+    .with({ kind: 'exercisePlannedSets' }, (c) =>
       t('plan.diff.generic_two_value_change.body', {
-        oldValue: c.oldValue,
-        newValue: c.newValue,
-      }),
-    )
-    .with({ kind: 'exerciseReps' }, (c) =>
-      t('plan.diff.generic_two_value_change.body', {
-        oldValue: formatRepsConfig(c.oldValue),
-        newValue: formatRepsConfig(c.newValue),
+        oldValue: formatPlannedSets(c.oldValue),
+        newValue: formatPlannedSets(c.newValue),
       }),
     )
     .with({ kind: 'progressiveOverload' }, (c) =>
@@ -1103,8 +1074,8 @@ export function getChangeDescription(t: UseTranslateResult['t'], change: DiffCha
     .with({ kind: 'exerciseSuperset' }, (c) =>
       t(c.newValue ? 'plan.diff.generic_enabled.body' : 'plan.diff.generic_disabled.body'),
     )
-    .with({ kind: 'exerciseBodyweight' }, (c) =>
-      t(c.newValue ? 'plan.diff.generic_enabled.body' : 'plan.diff.generic_disabled.body'),
+    .with({ kind: 'exerciseLoadBasis' }, (c) =>
+      t('plan.diff.generic_two_value_change.body', { oldValue: c.oldValue, newValue: c.newValue }),
     )
     .with({ kind: 'exerciseNotes' }, () => t('plan.diff.generic_updated.body'))
     .with({ kind: 'exerciseLink' }, () => t('plan.diff.generic_updated.body'))
@@ -1156,11 +1127,8 @@ export function getChangeLabelKey(change: DiffChange): TranslatableString {
     .with({ kind: 'exerciseName' }, () => ({
       key: 'plan.diff.name.label',
     }))
-    .with({ kind: 'exerciseSets' }, () => ({
+    .with({ kind: 'exercisePlannedSets' }, () => ({
       key: 'plan.diff.sets.label',
-    }))
-    .with({ kind: 'exerciseReps' }, () => ({
-      key: 'plan.diff.reps.label',
     }))
     .with({ kind: 'progressiveOverload' }, () => ({
       key: 'plan.diff.progressive_overload.label',
@@ -1171,8 +1139,8 @@ export function getChangeLabelKey(change: DiffChange): TranslatableString {
     .with({ kind: 'exerciseSuperset' }, () => ({
       key: 'plan.diff.superset.label',
     }))
-    .with({ kind: 'exerciseBodyweight' }, () => ({
-      key: 'plan.diff.bodyweight.label',
+    .with({ kind: 'exerciseLoadBasis' }, () => ({
+      key: 'plan.diff.load_basis.label',
     }))
     .with({ kind: 'exerciseNotes' }, () => ({
       key: 'plan.diff.notes.label',

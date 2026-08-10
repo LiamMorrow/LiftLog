@@ -7,7 +7,7 @@ import { Weight } from '@/models/weight';
 export interface QuantityAxis<T> {
   /** The value to plot, in whatever unit this axis displays. */
   toNumber(value: T): number;
-  /** How the quantity reads on its own — a bar top, a stat tile. */
+  /** How the quantity reads on its own, for a bar top or a stat tile. */
   format(value: T): string;
   /** How an already-plotted number reads, on a focused tooltip. */
   formatNumber(value: number): string;

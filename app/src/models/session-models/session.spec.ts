@@ -798,7 +798,7 @@ describe('Session derived values', () => {
 
   it('totalWeightLifted folds the session bodyweight into a bodyweight exercise', () => {
     const t = tick();
-    const bp = makeWeightedBlueprint({ name: 'Pull Up', usesBodyweight: true });
+    const bp = makeWeightedBlueprint({ name: 'Pull Up', loadBasis: 'bodyweight' });
     const exercise = new RecordedWeightedExercise(
       bp,
       [filledPotentialSet(5, t, new Weight(10, 'kilograms'))],

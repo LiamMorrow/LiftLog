@@ -211,7 +211,7 @@ describe('RecordedWeightedExercise bodyweight fold-in', () => {
 
   function bodyweightExercise(addedKg: number, reps = 5) {
     return new RecordedWeightedExercise(
-      makeWeightedBlueprint({ name: 'Pull Up', usesBodyweight: true }),
+      makeWeightedBlueprint({ name: 'Pull Up', loadBasis: 'bodyweight' }),
       [filledPotentialSet(reps, tick(), new Weight(addedKg, 'kilograms'))],
       undefined,
     );

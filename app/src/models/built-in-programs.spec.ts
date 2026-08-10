@@ -15,9 +15,8 @@ describe('built-in-programs', () => {
     expect(
       weighted.map((exercise) => ({
         name: exercise.name,
-        sets: exercise.sets,
-        repsConfig: exercise.repsConfig,
-        usesBodyweight: exercise.usesBodyweight,
+        plannedSets: exercise.plannedSets,
+        loadBasis: exercise.loadBasis,
         progressiveOverload: exercise.progressiveOverload.toJSON(),
         progressionKey: exercise.progressionKey(),
       })),

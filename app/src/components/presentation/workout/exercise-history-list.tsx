@@ -70,7 +70,7 @@ function WeightedSets(props: { exercise: RecordedWeightedExercise }) {
           size="compact"
           set={set}
           repsTarget={exercise.repsTargetForSet(index)}
-          usesBodyweight={exercise.blueprint.usesBodyweight}
+          usesBodyweight={exercise.blueprint.loadBasis === 'bodyweight'}
         />
       ))}
     </View>

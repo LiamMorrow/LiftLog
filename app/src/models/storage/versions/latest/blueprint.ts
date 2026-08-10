@@ -11,7 +11,7 @@ export interface ProgramBlueprintJSON {
 }
 
 export interface SessionBlueprintJSON {
-  version: 4;
+  version: 5;
   name: string;
   exercises: ExerciseBlueprintJSON[];
   notes: string;
@@ -67,15 +67,8 @@ export interface CardioExerciseBlueprintJSON {
 export interface WeightedExerciseBlueprintJSON {
   type: 'WeightedExerciseBlueprint';
   name: string;
-  /**
-   * @asType integer
-   */
-  sets: number;
-  /**
-   * How the rep targets are laid out: one fixed target, a min–max range, or a
-   * per-set pyramid.
-   */
-  repsConfig: RepsConfigJSON;
+  /** What the plan asks for, one entry per set. */
+  plannedSets: PlannedSetJSON[];
   restBetweenSets: RestJSON;
   /**
    * When true, this exercise is performed back-to-back with the following one
@@ -90,13 +83,20 @@ export interface WeightedExerciseBlueprintJSON {
   link: string;
   progressiveOverload: ProgressiveOverloadJSON;
   /**
-   * When true, the movement's base load is the lifter's own bodyweight (pull-ups, dips),
-   * and each set's stored weight is the *added* load on top of it - positive when weighted,
-   * negative when assisted.
+   * Where this movement's load comes from: the whole stored weight (`external`), what is added on
+   * top of the lifter (`bodyweight`), or nothing at all (`none`, e.g. crunches).
    */
-  usesBodyweight: boolean;
+  loadBasis: LoadBasisJSON;
 }
 
+export type LoadBasisJSON = 'none' | 'external' | 'bodyweight';
+
+/** What the plan asks for on one set. */
+export interface PlannedSetJSON {
+  reps: RepsTargetJSON;
+}
+
+/** Always a band; `min === max` is a point target. */
 export interface RepsTargetJSON {
   /**
    * @asType integer
@@ -107,41 +107,6 @@ export interface RepsTargetJSON {
    */
   max: number;
 }
-
-export interface FixedRepsConfigJSON {
-  type: 'fixed';
-  /**
-   * @asType integer
-   */
-  reps: number;
-}
-
-export interface RangeRepsConfigJSON {
-  type: 'range';
-  /**
-   * @asType integer
-   */
-  min: number;
-  /**
-   * @asType integer
-   */
-  max: number;
-}
-
-export interface PerSetRepsConfigJSON {
-  type: 'perSet';
-  /**
-   * One target per set; length matches `sets`.
-   * It's important to note that while the model allows for max and min to be specified, the UI does not,
-   * so it is VERY important that the min and max values are the same when using this mode
-   */
-  targets: RepsTargetJSON[];
-}
-
-/**
- * @discriminator type
- */
-export type RepsConfigJSON = FixedRepsConfigJSON | RangeRepsConfigJSON | PerSetRepsConfigJSON;
 
 export interface RestJSON {
   minRest: DurationJSON;

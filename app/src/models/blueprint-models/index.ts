@@ -123,7 +123,7 @@ export class SessionBlueprint {
 
   toJSON(): SessionBlueprintJSON {
     return {
-      version: 4,
+      version: 5,
       name: this.name,
       exercises: this.exercises.map((exercise) => exercise.toJSON()),
       notes: this.notes,
@@ -499,17 +499,25 @@ function fromProgressiveOverloadJSON(json: ProgressiveOverloadJSON): Progressive
     .exhaustive();
 }
 
+/** Always a band; `min === max` is a point target. */
 export interface RepsTarget {
   min: number;
   max: number;
 }
 
+/** What the plan asks for on one set. */
+export interface PlannedSet {
+  reps: RepsTarget;
+}
+
 /**
- * How a weighted exercise's rep targets are laid out.
- * - `fixed`: every set shares one target.
- * - `range`: every set shares a min–max band.
- * - `perSet`: each set has its own target (a pyramid); `targets` length matches `sets`.
+ * Where a movement's load comes from: the whole stored weight (`external`), what is added on top of
+ * the lifter (`bodyweight`), or nothing at all (`none`).
  */
+export const LoadBases = ['none', 'external', 'bodyweight'] as const;
+export type LoadBasis = (typeof LoadBases)[number];
+
+/** How the editor lays rep targets out before projecting them onto a {@link PlannedSet} list. */
 export type RepsConfig =
   | { type: 'fixed'; reps: number }
   | { type: 'range'; min: number; max: number }
@@ -521,52 +529,23 @@ export function formatRepsTarget(target: RepsTarget): string {
   return target.min === target.max ? `${target.max}` : `${target.min}-${target.max}`;
 }
 
-export function formatRepsConfig(config: RepsConfig): string {
-  return match(config)
-    .with({ type: 'fixed' }, (c) => `${c.reps}`)
-    .with({ type: 'range' }, (c) => `${c.min}-${c.max}`)
-    .with({ type: 'perSet' }, (c) => c.targets.map(formatRepsTarget).join(', '))
-    .exhaustive();
+/** How a whole list of planned sets reads: `10`, `8-12`, or `12, 10, 8` for a pyramid. */
+export function formatPlannedSets(plannedSets: PlannedSet[]): string {
+  const uniform = uniformTarget(plannedSets);
+  return uniform ? formatRepsTarget(uniform) : plannedSets.map((s) => formatRepsTarget(s.reps)).join(', ');
 }
 
-function cloneRepsConfig(config: RepsConfig): RepsConfig {
-  return match(config)
-    .with({ type: 'fixed' }, (c) => ({ type: 'fixed' as const, reps: c.reps }))
-    .with({ type: 'range' }, (c) => ({ type: 'range' as const, min: c.min, max: c.max }))
-    .with({ type: 'perSet' }, (c) => ({
-      type: 'perSet' as const,
-      targets: c.targets.map((t) => ({ min: t.min, max: t.max })),
-    }))
-    .exhaustive();
-}
-
-export function repsConfigEquals(a: RepsConfig, b: RepsConfig): boolean {
-  return match([a, b] as const)
-    .with([{ type: 'fixed' }, { type: 'fixed' }], ([x, y]) => x.reps === y.reps)
-    .with([{ type: 'range' }, { type: 'range' }], ([x, y]) => x.min === y.min && x.max === y.max)
-    .with([{ type: 'perSet' }, { type: 'perSet' }], ([x, y]) => {
-      return (
-        x.targets.length === y.targets.length &&
-        x.targets.every((t, i) => t.min === y.targets[i]!.min && t.max === y.targets[i]!.max)
-      );
-    })
-    .otherwise(() => false);
-}
-
-function repsConfigKey(config: RepsConfig): string {
-  return match(config)
-    .with({ type: 'fixed' }, (c) => `${c.reps}`)
-    .with({ type: 'range' }, (c) => `${c.min}-${c.max}`)
-    .with({ type: 'perSet' }, (c) => c.targets.map(formatRepsTarget).join(','))
-    .exhaustive();
-}
-
-function resizeRepsTargets(targets: RepsTarget[], length: number): RepsTarget[] {
-  if (targets.length >= length) {
-    return targets.slice(0, length);
+/** The target every set shares, or undefined when they differ. */
+export function uniformTarget(plannedSets: PlannedSet[]): RepsTarget | undefined {
+  const first = plannedSets[0]?.reps;
+  if (!first) {
+    return undefined;
   }
-  const last = targets.at(-1) ?? { min: 10, max: 10 };
-  return [...targets, ...Array.from({ length: length - targets.length }, () => ({ ...last }))];
+  return plannedSets.every((s) => s.reps.min === first.min && s.reps.max === first.max) ? first : undefined;
+}
+
+export function plannedSetsEqual(a: PlannedSet[], b: PlannedSet[]): boolean {
+  return a.length === b.length && a.every((s, i) => s.reps.min === b[i]!.reps.min && s.reps.max === b[i]!.reps.max);
 }
 
 /**
@@ -575,14 +554,16 @@ function resizeRepsTargets(targets: RepsTarget[], length: number): RepsTarget[] 
  */
 export interface WeightedExerciseBlueprintInit {
   name?: string;
-  sets?: number;
-  repsConfig?: RepsConfig;
+  plannedSets?: PlannedSet[];
   progressiveOverload?: ProgressiveOverload;
   restBetweenSets?: Rest;
   supersetWithNext?: boolean;
   notes?: string;
   link?: string;
-  usesBodyweight?: boolean;
+  loadBasis?: LoadBasis;
+  /** Authoring shorthand for `plannedSets`, projected through {@link plannedSetsOf}. */
+  sets?: number;
+  repsConfig?: RepsConfig;
 }
 
 export class WeightedExerciseBlueprint {
@@ -590,33 +571,26 @@ export class WeightedExerciseBlueprint {
 
   constructor(
     readonly name: string,
-    readonly sets: number,
-    readonly repsConfig: RepsConfig,
+    readonly plannedSets: PlannedSet[],
     readonly progressiveOverload: ProgressiveOverload,
     readonly restBetweenSets: Rest,
     readonly supersetWithNext: boolean,
     readonly notes: string,
     readonly link: string,
-    readonly usesBodyweight: boolean = false,
+    readonly loadBasis: LoadBasis = 'external',
   ) {}
 
-  /**
-   * Build a blueprint from named fields, defaulting the rest. Preferred over the positional
-   * constructor everywhere outside this file: nine positional arguments — four of them booleans and
-   * strings in a row — read as noise at the call site and have to be re-counted whenever the shape
-   * moves.
-   */
+  /** Build a blueprint from named fields; preferred over the constructor's eight positional arguments. */
   static of(init: WeightedExerciseBlueprintInit = {}): WeightedExerciseBlueprint {
     return new WeightedExerciseBlueprint(
       init.name ?? '',
-      init.sets ?? 3,
-      init.repsConfig ?? { type: 'fixed', reps: 10 },
+      init.plannedSets ?? plannedSetsOf(init.sets ?? 3, init.repsConfig ?? { type: 'fixed', reps: 10 }),
       init.progressiveOverload ?? new NoProgressiveOverload(),
       init.restBetweenSets ?? Rest.medium,
       init.supersetWithNext ?? false,
       init.notes ?? '',
       init.link ?? '',
-      init.usesBodyweight ?? false,
+      init.loadBasis ?? 'external',
     );
   }
 
@@ -627,14 +601,13 @@ export class WeightedExerciseBlueprint {
   static fromJSON(json: WeightedExerciseBlueprintJSON): WeightedExerciseBlueprint {
     return new WeightedExerciseBlueprint(
       json.name,
-      json.sets,
-      cloneRepsConfig(json.repsConfig),
+      json.plannedSets.map((s) => ({ reps: { min: s.reps.min, max: s.reps.max } })),
       fromProgressiveOverloadJSON(json.progressiveOverload),
       Rest.fromJSON(json.restBetweenSets),
       json.supersetWithNext,
       json.notes,
       json.link,
-      json.usesBodyweight,
+      json.loadBasis,
     );
   }
 
@@ -643,42 +616,32 @@ export class WeightedExerciseBlueprint {
     return movementKeyFor(this.name, this.type);
   }
 
-  /** See {@link ProgressionKey}. The rep scheme is what separates one lineage from another. */
+  /**
+   * See {@link ProgressionKey}. Where reps are what advances, the rep scheme is only the ladder's
+   * starting rung, so it is left out to keep a lineage that has climbed past it intact.
+   */
   progressionKey(): ProgressionKey {
-    return `${this.name}_${this.type}_${this.sets}_${repsConfigKey(this.repsConfig)}` as ProgressionKey;
+    const base = `${this.name}_${this.type}_${this.plannedSets.length}`;
+    return (this.loadBasis === 'none' ? base : `${base}_${plannedSetsKey(this.plannedSets)}`) as ProgressionKey;
   }
 
   repsTargetForSet(index: number): RepsTarget {
-    return match(this.repsConfig)
-      .with({ type: 'fixed' }, (c) => ({ min: c.reps, max: c.reps }))
-      .with({ type: 'range' }, (c) => ({ min: c.min, max: c.max }))
-      .with({ type: 'perSet' }, (c) => c.targets[index] ?? c.targets.at(-1) ?? { min: 0, max: 0 })
-      .exhaustive();
+    const target = this.plannedSets[index]?.reps ?? this.plannedSets.at(-1)?.reps ?? { min: 0, max: 0 };
+    return { min: target.min, max: target.max };
   }
 
   withSets(value: number): WeightedExerciseBlueprint {
     const sets = Math.max(value, 1);
+    if (sets <= this.plannedSets.length) {
+      return this.with({ plannedSets: this.plannedSets.slice(0, sets) });
+    }
+    const last = this.plannedSets.at(-1)?.reps ?? { min: 10, max: 10 };
     return this.with({
-      sets,
-      repsConfig:
-        this.repsConfig.type === 'perSet'
-          ? { type: 'perSet', targets: resizeRepsTargets(this.repsConfig.targets, sets) }
-          : this.repsConfig,
+      plannedSets: [
+        ...this.plannedSets,
+        ...Array.from({ length: sets - this.plannedSets.length }, () => ({ reps: { ...last } })),
+      ],
     });
-  }
-
-  withRepsConfigType(type: RepsType): WeightedExerciseBlueprint {
-    const target = this.repsTargetForSet(0);
-    const repsConfig = match(type)
-      .returnType<RepsConfig>()
-      .with('fixed', () => ({ type: 'fixed', reps: target.min }))
-      .with('range', () => ({ type: 'range', min: target.min, max: target.max }))
-      .with('perSet', () => ({
-        type: 'perSet',
-        targets: Array.from({ length: this.sets }, () => ({ min: target.max, max: target.max })),
-      }))
-      .exhaustive();
-    return this.with({ repsConfig });
   }
 
   equals(other: ExerciseBlueprint | undefined) {
@@ -694,8 +657,7 @@ export class WeightedExerciseBlueprint {
 
     return (
       this.name === other.name &&
-      this.sets === other.sets &&
-      repsConfigEquals(this.repsConfig, other.repsConfig) &&
+      plannedSetsEqual(this.plannedSets, other.plannedSets) &&
       this.progressiveOverload.equals(other.progressiveOverload) &&
       this.restBetweenSets.minRest.equals(other.restBetweenSets.minRest) &&
       this.restBetweenSets.maxRest.equals(other.restBetweenSets.maxRest) &&
@@ -703,7 +665,7 @@ export class WeightedExerciseBlueprint {
       this.supersetWithNext === other.supersetWithNext &&
       this.notes === other.notes &&
       this.link === other.link &&
-      this.usesBodyweight === other.usesBodyweight
+      this.loadBasis === other.loadBasis
     );
   }
 
@@ -711,30 +673,60 @@ export class WeightedExerciseBlueprint {
     return {
       type: 'WeightedExerciseBlueprint',
       name: this.name,
-      sets: this.sets,
-      repsConfig: cloneRepsConfig(this.repsConfig),
+      plannedSets: this.plannedSets.map((s) => ({ reps: { min: s.reps.min, max: s.reps.max } })),
       progressiveOverload: this.progressiveOverload.toJSON(),
       restBetweenSets: Rest.toJSON(this.restBetweenSets),
       supersetWithNext: this.supersetWithNext,
       notes: this.notes,
       link: this.link,
-      usesBodyweight: this.usesBodyweight,
+      loadBasis: this.loadBasis,
     };
   }
 
-  with(other: Partial<WeightedExerciseBlueprint>): WeightedExerciseBlueprint {
+  with(other: WeightedExerciseBlueprintInit): WeightedExerciseBlueprint {
     return new WeightedExerciseBlueprint(
       other.name ?? this.name,
-      other.sets ?? this.sets,
-      other.repsConfig ?? this.repsConfig,
+      other.plannedSets ??
+        (other.sets !== undefined || other.repsConfig !== undefined
+          ? plannedSetsOf(other.sets ?? this.plannedSets.length, other.repsConfig ?? targetsAsRepsConfig(this))
+          : this.plannedSets),
       other.progressiveOverload ?? this.progressiveOverload,
       other.restBetweenSets ?? this.restBetweenSets,
       other.supersetWithNext ?? this.supersetWithNext,
       other.notes ?? this.notes,
       other.link ?? this.link,
-      'usesBodyweight' in other ? (other.usesBodyweight ?? this.usesBodyweight) : this.usesBodyweight,
+      other.loadBasis ?? this.loadBasis,
     );
   }
+}
+
+/** Project an authoring layout onto the list of sets it describes. */
+export function plannedSetsOf(sets: number, repsConfig: RepsConfig): PlannedSet[] {
+  const targetAt = match(repsConfig)
+    .returnType<(index: number) => RepsTarget>()
+    .with({ type: 'fixed' }, (c) => () => ({ min: c.reps, max: c.reps }))
+    .with({ type: 'range' }, (c) => () => ({ min: c.min, max: c.max }))
+    .with({ type: 'perSet' }, (c) => (index: number) => c.targets[index] ?? c.targets.at(-1) ?? { min: 0, max: 0 })
+    .exhaustive();
+  return Array.from({ length: Math.max(sets, 0) }, (_, index) => {
+    const { min, max } = targetAt(index);
+    return { reps: { min, max } };
+  });
+}
+
+/** Existing targets in the form `with({ sets })` can resize without changing them. */
+function targetsAsRepsConfig(blueprint: WeightedExerciseBlueprint): RepsConfig {
+  return { type: 'perSet', targets: blueprint.plannedSets.map((s) => ({ ...s.reps })) };
+}
+
+/** The rep-scheme half of a load-based {@link ProgressionKey}, collapsing equal targets to one. */
+function plannedSetsKey(plannedSets: PlannedSet[]): string {
+  const targets = plannedSets.map((s) => s.reps);
+  const first = targets[0];
+  if (first && targets.every((t) => t.min === first.min && t.max === first.max)) {
+    return formatRepsTarget(first);
+  }
+  return targets.map(formatRepsTarget).join(',');
 }
 
 /*

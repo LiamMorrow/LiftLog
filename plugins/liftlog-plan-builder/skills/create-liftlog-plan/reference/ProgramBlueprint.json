@@ -32,7 +32,7 @@
       "properties": {
         "version": {
           "type": "number",
-          "const": 4
+          "const": 5
         },
         "name": {
           "type": "string"
@@ -81,12 +81,12 @@
         "name": {
           "type": "string"
         },
-        "sets": {
-          "type": "integer"
-        },
-        "repsConfig": {
-          "$ref": "#/definitions/RepsConfig",
-          "description": "How the rep targets are laid out: one fixed target, a min–max range, or a per-set pyramid."
+        "plannedSets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PlannedSet"
+          },
+          "description": "What the plan asks for, one entry per set. A list rather than a count plus a shared config: \"fixed / range / per set\" is an authoring convenience, and display collapses equal targets back to \"4 × 10\" for free."
         },
         "restBetweenSets": {
           "$ref": "#/definitions/Rest"
@@ -105,99 +105,34 @@
         "progressiveOverload": {
           "$ref": "#/definitions/ProgressiveOverload"
         },
-        "usesBodyweight": {
-          "type": "boolean",
-          "description": "When true, the movement's base load is the lifter's own bodyweight (pull-ups, dips), and each set's stored weight is the *added* load on top of it - positive when weighted, negative when assisted."
+        "loadBasis": {
+          "$ref": "#/definitions/LoadBasis",
+          "description": "Where this movement's load comes from, and whether it has one at all.\n\n- `external` - a plain weighted movement; the stored weight is the whole load.\n- `bodyweight` - the base load is the lifter's own bodyweight (pull-ups, dips) and each set's   stored weight is the *added* load on top of it: positive when weighted, negative when assisted.\n- `none` - the exercise does not track a load at all (crunches). Nothing renders a weight,   nothing sums a volume, nothing computes a 1RM, because there is no value to render."
         }
       },
       "required": [
         "type",
         "name",
-        "sets",
-        "repsConfig",
+        "plannedSets",
         "restBetweenSets",
         "supersetWithNext",
         "notes",
         "link",
         "progressiveOverload",
-        "usesBodyweight"
+        "loadBasis"
       ]
     },
-    "RepsConfig": {
-      "type": "object",
-      "discriminator": {
-        "propertyName": "type"
-      },
-      "required": [
-        "type"
-      ],
-      "oneOf": [
-        {
-          "$ref": "#/definitions/FixedRepsConfig"
-        },
-        {
-          "$ref": "#/definitions/RangeRepsConfig"
-        },
-        {
-          "$ref": "#/definitions/PerSetRepsConfig"
-        }
-      ]
-    },
-    "FixedRepsConfig": {
+    "PlannedSet": {
       "type": "object",
       "properties": {
-        "type": {
-          "type": "string",
-          "const": "fixed"
-        },
         "reps": {
-          "type": "integer"
+          "$ref": "#/definitions/RepsTarget"
         }
       },
       "required": [
-        "type",
         "reps"
-      ]
-    },
-    "RangeRepsConfig": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "const": "range"
-        },
-        "min": {
-          "type": "integer"
-        },
-        "max": {
-          "type": "integer"
-        }
-      },
-      "required": [
-        "type",
-        "min",
-        "max"
-      ]
-    },
-    "PerSetRepsConfig": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "const": "perSet"
-        },
-        "targets": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/RepsTarget"
-          },
-          "description": "One target per set; length matches `sets`. It's important to note that while the model allows for max and min to be specified, the UI does not, so it is VERY important that the min and max values are the same when using this mode"
-        }
-      },
-      "required": [
-        "type",
-        "targets"
-      ]
+      ],
+      "description": "What the plan asks for on one set."
     },
     "RepsTarget": {
       "type": "object",
@@ -212,7 +147,8 @@
       "required": [
         "min",
         "max"
-      ]
+      ],
+      "description": "Always a band; `min === max` is a point target."
     },
     "Rest": {
       "type": "object",
@@ -321,6 +257,14 @@
         "increaseStrategy"
       ],
       "description": "A more complex progressive overload which allows the user to increase only a single set, or all sets which have the lowest weight.\n\nA user might want to increase the middle weight for exercises where going up across the board would be too much e.g. lateral raises, or other shoulder exercises"
+    },
+    "LoadBasis": {
+      "type": "string",
+      "enum": [
+        "none",
+        "external",
+        "bodyweight"
+      ]
     },
     "CardioExerciseBlueprint": {
       "type": "object",

@@ -11,7 +11,14 @@ import {
 } from '@/components/presentation/workout-editor/progressive-overload';
 import { SharedFieldsEditor } from '@/components/presentation/workout-editor/shared-fields-editor';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { ExerciseBlueprint, RepsConfig, RepsType, WeightedExerciseBlueprint } from '@/models/blueprint-models';
+import {
+  ExerciseBlueprint,
+  LoadBasis,
+  RepsConfig,
+  RepsType,
+  uniformTarget,
+  WeightedExerciseBlueprint,
+} from '@/models/blueprint-models';
 import { useAppSelector } from '@/store';
 import { ExtractType } from '@/utils/extract-type';
 import { useTranslate } from '@tolgee/react';
@@ -30,17 +37,21 @@ export function WeightedExerciseEditor({
   const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
   const [restDialogOpen, setRestDialogOpen] = useState(false);
 
-  const mode = exercise.repsConfig.type;
+  // Only the targets persist, so a uniform list cannot say whether it was authored as fixed or as a
+  // range; the chosen mode lives here for as long as the editor is open.
+  const [mode, setMode] = useState<RepsType>(() => initialMode(exercise));
+  const repsConfig = repsConfigFor(exercise, mode);
 
-  const setSets = (value: number) => {
-    updateExercise(exercise.withSets(value));
+  const setRepsConfig = (next: RepsConfig) => {
+    updateExercise(exercise.with({ sets: exercise.plannedSets.length, repsConfig: next }));
   };
 
-  const setMode = (next: RepsType) => {
+  const changeMode = (next: RepsType) => {
     if (next === mode) {
       return;
     }
-    updateExercise(exercise.withRepsConfigType(next));
+    setMode(next);
+    setRepsConfig(seedRepsConfig(exercise, next));
   };
 
   return (
@@ -52,7 +63,7 @@ export function WeightedExerciseEditor({
           { value: 'range', label: 'Range', testID: 'reps-mode-range' },
           { value: 'perSet', label: 'Per set', testID: 'reps-mode-per-set' },
         ]}
-        onChange={setMode}
+        onChange={changeMode}
       />
 
       <View
@@ -67,26 +78,17 @@ export function WeightedExerciseEditor({
         <View style={{ flex: 1 }}>
           <FixedIncrementer
             label={t('exercise.sets.label')}
-            onValueChange={setSets}
-            value={exercise.sets}
+            onValueChange={(value) => updateExercise(exercise.withSets(value))}
+            value={exercise.plannedSets.length}
             testID="exercise-sets"
           />
         </View>
-        {mode === 'perSet' ? (
-          <PerSetRepsEditor
-            repsConfig={exercise.repsConfig}
-            setRepsConfig={(repsConfig) => updateExercise(exercise.with({ repsConfig }))}
-          />
-        ) : mode === 'range' ? (
-          <RangeRepsEditor
-            repsConfig={exercise.repsConfig}
-            setRepsConfig={(repsConfig) => updateExercise(exercise.with({ repsConfig }))}
-          />
+        {repsConfig.type === 'perSet' ? (
+          <PerSetRepsEditor repsConfig={repsConfig} setRepsConfig={setRepsConfig} />
+        ) : repsConfig.type === 'range' ? (
+          <RangeRepsEditor repsConfig={repsConfig} setRepsConfig={setRepsConfig} />
         ) : (
-          <FixedRepsEditor
-            repsConfig={exercise.repsConfig}
-            setRepsConfig={(repsConfig) => updateExercise(exercise.with({ repsConfig }))}
-          />
+          <FixedRepsEditor repsConfig={repsConfig} setRepsConfig={setRepsConfig} />
         )}
       </View>
 
@@ -122,13 +124,29 @@ export function WeightedExerciseEditor({
               testID="exercise-superset"
               onValueChange={(supersetWithNext) => updateExercise({ supersetWithNext })}
             />,
-            <SegmentedListSwitch
+            <SegmentListFormElement
               key={4}
-              label={t('exercise.uses_bodyweight.label')}
+              label={t('exercise.load_basis.label')}
               icon={'directionsRun'}
-              value={exercise.usesBodyweight}
-              testID="exercise-uses-bodyweight"
-              onValueChange={(usesBodyweight) => updateExercise({ usesBodyweight })}
+              line2={
+                <SegmentedPicker
+                  value={exercise.loadBasis}
+                  options={[
+                    {
+                      value: 'external',
+                      label: t('exercise.load_basis.external.label'),
+                      testID: 'load-basis-external',
+                    },
+                    {
+                      value: 'bodyweight',
+                      label: t('exercise.load_basis.bodyweight.label'),
+                      testID: 'load-basis-bodyweight',
+                    },
+                    { value: 'none', label: t('exercise.load_basis.none.label'), testID: 'load-basis-none' },
+                  ]}
+                  onChange={(loadBasis: LoadBasis) => updateExercise({ loadBasis })}
+                />
+              }
             />,
             <SegmentListFormElement
               key={3}
@@ -238,4 +256,32 @@ function PerSetRepsEditor({
       ))}
     </View>
   );
+}
+
+/** The layout the stored targets most likely came from, used to seed the editor's mode. */
+function initialMode(exercise: WeightedExerciseBlueprint): RepsType {
+  const uniform = uniformTarget(exercise.plannedSets);
+  if (!uniform) {
+    return 'perSet';
+  }
+  return uniform.min === uniform.max ? 'fixed' : 'range';
+}
+
+function repsConfigFor(exercise: WeightedExerciseBlueprint, mode: RepsType): RepsConfig {
+  const targets = exercise.plannedSets.map((s) => ({ ...s.reps }));
+  const first = targets[0] ?? { min: 10, max: 10 };
+  return mode === 'perSet'
+    ? { type: 'perSet', targets }
+    : mode === 'range'
+      ? { type: 'range', min: first.min, max: first.max }
+      : { type: 'fixed', reps: first.max };
+}
+
+function seedRepsConfig(exercise: WeightedExerciseBlueprint, mode: RepsType): RepsConfig {
+  const target = exercise.repsTargetForSet(0);
+  return mode === 'perSet'
+    ? { type: 'perSet', targets: exercise.plannedSets.map(() => ({ min: target.max, max: target.max })) }
+    : mode === 'range'
+      ? { type: 'range', min: target.min, max: target.max }
+      : { type: 'fixed', reps: target.min };
 }

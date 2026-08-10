@@ -89,7 +89,7 @@ describe('findPersonalRecords', () => {
       repsConfig: { type: 'fixed', reps: 5 },
       progressiveOverload: new IncreaseLowestSetProgressiveOverload(new BigNumber(2.5), 'middle'),
       restBetweenSets: Rest.long,
-      usesBodyweight: true,
+      loadBasis: 'bodyweight',
     });
     const build = (id: string, date: LocalDate, bodyweightKg: number) => {
       const time = OffsetDateTime.parse('2026-01-01T10:00:00Z');

@@ -108,7 +108,7 @@ describe('formatExerciseSummary', () => {
 describe('formatExerciseSummary for bodyweight exercises', () => {
   function bodyweightExerciseOf(sets: { reps: number | undefined; weight: number }[]) {
     return new RecordedWeightedExercise(
-      makeWeightedBlueprint({ name: 'Pull Up', usesBodyweight: true }),
+      makeWeightedBlueprint({ name: 'Pull Up', loadBasis: 'bodyweight' }),
       sets.map((set) =>
         PotentialSet.of({
           set:

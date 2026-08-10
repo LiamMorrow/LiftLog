@@ -331,16 +331,11 @@ class WorkoutUpdatedHandler(
     }
 
     // Mirrors WeightedExerciseBlueprint.repsTargetForSet on the JS side, including its fall back to
-    // the last target when the index runs past a short per-set list.
+    // the last target when the index runs past the planned list.
     private fun targetFor(exercise: RecordedWeightedExercise, setIndex: Int): String {
-        return when (val repsConfig = exercise.blueprint.repsConfig) {
-            is FixedRepsConfig -> formatRepsTarget(repsConfig.reps, repsConfig.reps)
-            is RangeRepsConfig -> formatRepsTarget(repsConfig.min, repsConfig.max)
-            is PerSetRepsConfig ->
-                (repsConfig.targets.getOrNull(setIndex) ?: repsConfig.targets.lastOrNull())
-                    ?.let { formatRepsTarget(it.min, it.max) } ?: ""
-            else -> ""
-        }
+        val plannedSets = exercise.blueprint.plannedSets
+        val target = (plannedSets.getOrNull(setIndex) ?: plannedSets.lastOrNull())?.reps ?: return ""
+        return formatRepsTarget(target.min, target.max)
     }
 
     private fun nextSetIndexOf(exercise: RecordedWeightedExercise): Int {

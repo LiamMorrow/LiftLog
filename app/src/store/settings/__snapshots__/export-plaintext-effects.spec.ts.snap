@@ -31,25 +31,40 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
       {
         "blueprint": {
           "link": "",
+          "loadBasis": "external",
           "name": "Bench Press",
           "notes": "",
+          "plannedSets": [
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+          ],
           "progressiveOverload": {
             "amount": "2.5",
             "type": "IncreaseAllEvenlyProgressiveOverload",
-          },
-          "repsConfig": {
-            "reps": 10,
-            "type": "fixed",
           },
           "restBetweenSets": {
             "failureRest": "PT5M",
             "maxRest": "PT3M",
             "minRest": "PT1M30S",
           },
-          "sets": 3,
           "supersetWithNext": false,
           "type": "WeightedExerciseBlueprint",
-          "usesBodyweight": false,
         },
         "potentialSets": [
           {
@@ -98,25 +113,40 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
       {
         "blueprint": {
           "link": "",
+          "loadBasis": "external",
           "name": "Squat",
           "notes": "",
+          "plannedSets": [
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+          ],
           "progressiveOverload": {
             "amount": "2.5",
             "type": "IncreaseAllEvenlyProgressiveOverload",
-          },
-          "repsConfig": {
-            "reps": 10,
-            "type": "fixed",
           },
           "restBetweenSets": {
             "failureRest": "PT5M",
             "maxRest": "PT3M",
             "minRest": "PT1M30S",
           },
-          "sets": 3,
           "supersetWithNext": false,
           "type": "WeightedExerciseBlueprint",
-          "usesBodyweight": false,
         },
         "potentialSets": [
           {

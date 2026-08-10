@@ -94,7 +94,7 @@ export class SessionService {
         .returnType<PotentialSet[]>()
         .with(undefined, () =>
           Array.from(
-            { length: e.sets },
+            { length: e.plannedSets.length },
             () => new PotentialSet(undefined, new Weight(0, $this.getDefaultWeightUnit())),
           ),
         )

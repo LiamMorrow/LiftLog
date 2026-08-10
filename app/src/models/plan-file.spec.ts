@@ -13,15 +13,14 @@ const validBlueprint: ProgramBlueprintJSON = {
   lastEdited: '2024-01-01' as LocalDateJSON,
   sessions: [
     {
-      version: 4,
+      version: 5,
       name: 'Day 1',
       notes: '',
       exercises: [
         {
           type: 'WeightedExerciseBlueprint',
           name: 'Squat',
-          sets: 3,
-          repsConfig: { type: 'fixed', reps: 5 },
+          plannedSets: [{ reps: { min: 5, max: 5 } }, { reps: { min: 5, max: 5 } }, { reps: { min: 5, max: 5 } }],
           restBetweenSets: {
             minRest: 'PT1M' as DurationJSON,
             maxRest: 'PT3M' as DurationJSON,
@@ -31,7 +30,7 @@ const validBlueprint: ProgramBlueprintJSON = {
           notes: '',
           link: '',
           progressiveOverload: { type: 'IncreaseAllEvenlyProgressiveOverload', amount: '2.5' as BigNumberJSON },
-          usesBodyweight: false,
+          loadBasis: 'external',
         },
       ],
     },
@@ -88,6 +87,57 @@ describe('plan-file', () => {
     if (result.ok) {
       expect(result.blueprint.name).toBe('Legacy Plan');
       expect(result.blueprint.sessions[0]!.exercises[0]!.name).toBe('Bench');
+    }
+  });
+
+  it('migrates a v4 plan file, spreading its rep config across planned sets', () => {
+    const v4 = {
+      version: 3,
+      name: 'Pyramid Plan',
+      lastEdited: '2025-01-01' as LocalDateJSON,
+      sessions: [
+        {
+          version: 4,
+          name: 'Day 1',
+          notes: '',
+          exercises: [
+            {
+              type: 'WeightedExerciseBlueprint',
+              name: 'Curl',
+              sets: 3,
+              repsConfig: {
+                type: 'perSet',
+                targets: [
+                  { min: 12, max: 12 },
+                  { min: 10, max: 10 },
+                ],
+              },
+              restBetweenSets: {
+                minRest: 'PT1M' as DurationJSON,
+                maxRest: 'PT3M' as DurationJSON,
+                failureRest: 'PT5M' as DurationJSON,
+              },
+              supersetWithNext: false,
+              notes: '',
+              link: '',
+              progressiveOverload: { type: 'NoProgressiveOverload' },
+              usesBodyweight: true,
+            },
+          ],
+        },
+      ],
+    };
+
+    const result = parseProgramBlueprintFile(encode(v4));
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      const exercise = result.blueprint.sessions[0]!.exercises[0]!;
+      expect(exercise.toJSON()).toMatchObject({
+        name: 'Curl',
+        loadBasis: 'bodyweight',
+        plannedSets: [{ reps: { min: 12, max: 12 } }, { reps: { min: 10, max: 10 } }, { reps: { min: 10, max: 10 } }],
+      });
     }
   });
 

@@ -159,8 +159,7 @@ describe('aiPlanFromJSON', () => {
 
       const empty = WeightedExerciseBlueprint.empty();
       expect(exercise.name).toBe('Bench');
-      expect(exercise.sets).toBe(empty.sets);
-      expect(exercise.repsConfig).toEqual(empty.repsConfig);
+      expect(exercise.plannedSets).toEqual(empty.plannedSets);
       expect(exercise.supersetWithNext).toBe(false);
       expect(exercise.notes).toBe('');
       expect(exercise.link).toBe('');
@@ -204,8 +203,7 @@ describe('aiPlanFromJSON', () => {
                 {
                   type: 'WeightedExerciseBlueprint',
                   name: 'Squat',
-                  sets: 5,
-                  repsConfig: { type: 'fixed', reps: 5 },
+                  plannedSets: Array.from({ length: 5 }, () => ({ reps: { min: 5, max: 5 } })),
                   supersetWithNext: true,
                   notes: 'Go deep',
                   link: 'https://example.com',
@@ -226,8 +224,7 @@ describe('aiPlanFromJSON', () => {
       }) as WeightedExerciseBlueprint;
 
       expect(exercise.name).toBe('Squat');
-      expect(exercise.sets).toBe(5);
-      expect(exercise.repsConfig).toEqual({ type: 'fixed', reps: 5 });
+      expect(exercise.plannedSets).toEqual(Array.from({ length: 5 }, () => ({ reps: { min: 5, max: 5 } })));
       expect(exercise.supersetWithNext).toBe(true);
       expect(exercise.notes).toBe('Go deep');
       expect(exercise.link).toBe('https://example.com');

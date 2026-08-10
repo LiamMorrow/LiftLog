@@ -102,7 +102,7 @@ export function createSessionBlueprint(exercises: WeightedExerciseBlueprint[]): 
 export function createSession(sessionBlueprint: SessionBlueprint, fillSets: number[] = []): Session {
   const recordedExercises = (sessionBlueprint.exercises as WeightedExerciseBlueprint[]).map(
     (exerciseBlueprint, exerciseIndex) => {
-      const potentialSets = Array.from({ length: exerciseBlueprint.sets }).map((_, setIndex) =>
+      const potentialSets = Array.from({ length: exerciseBlueprint.plannedSets.length }).map((_, setIndex) =>
         fillSets.includes(exerciseIndex)
           ? filledPotentialSet(
               exerciseBlueprint.repsTargetForSet(setIndex).max,

@@ -26,9 +26,3 @@ export const repsOps: QuantityOps<number> = {
   isGreaterThan: (a, b) => a > b,
   equals: (a, b) => a === b,
 };
-
-export function opsFor(axis: 'load'): QuantityOps<Weight>;
-export function opsFor(axis: 'reps'): QuantityOps<number>;
-export function opsFor(axis: StatAxis): QuantityOps<Weight> | QuantityOps<number> {
-  return axis === 'load' ? loadOps : repsOps;
-}

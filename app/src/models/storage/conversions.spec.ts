@@ -42,13 +42,9 @@ describe('conversions', () => {
   );
 
   /*
-   * A real export from the original C# app, run through the whole session chain. It is the only
-   * end-to-end evidence in the suite that a migration works on data that was not written by a
-   * fixture, so it is worth asserting more of than a session count.
-   *
-   * What it cannot prove, and what per-step fixtures therefore have to cover: it holds no `range` or
-   * `perSet` rep configs, no bodyweight exercises, no supersets, no cardio, no `kilograms` or
-   * `pounds` weights, and no exercise whose recorded set count disagrees with its blueprint.
+   * A real export from the original C# app, and the suite's only end-to-end evidence that migrations
+   * work on data no fixture wrote. It holds no `range` or `perSet` configs, bodyweight exercises,
+   * supersets, cardio, `kilograms`/`pounds` weights, or set-count mismatches - per-step fixtures cover those.
    */
   describe('a backup from the original liftlog', () => {
     const sessions = fromSessionHistoryDao(
@@ -89,7 +85,7 @@ describe('conversions', () => {
       expect(sets.reduce((total, s) => total + (s.set?.repsCompleted ?? 0), 0)).toBe(15062);
     });
 
-    /** Assisted work is stored as a negative load, so a migration that clamps or drops a sign loses it. */
+    /** Assisted work is stored as a negative load, so a dropped sign loses it. */
     it('preserves zero and negative loads', () => {
       expect(sets.filter((s) => s.weight.value.isZero()).length).toBe(201);
       expect(sets.filter((s) => s.weight.value.isNegative()).length).toBe(75);

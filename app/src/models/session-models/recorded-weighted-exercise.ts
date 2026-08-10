@@ -50,7 +50,7 @@ export class RecordedWeightedExercise {
   static empty(b: WeightedExerciseBlueprint, unit: WeightUnit): RecordedWeightedExercise {
     return new RecordedWeightedExercise(
       b,
-      Enumerable.range(0, b.sets)
+      Enumerable.range(0, b.plannedSets.length)
         .select(() => new PotentialSet(undefined, new Weight(0, unit)))
         .toArray(),
       undefined,
@@ -165,7 +165,7 @@ export class RecordedWeightedExercise {
    * session bodyweight is unknown the bodyweight contribution is treated as zero.
    */
   effectiveWeight(set: PotentialSet, bodyweight: Weight | undefined): Weight {
-    return this.blueprint.usesBodyweight ? (bodyweight ?? Weight.NIL).plus(set.weight) : set.weight;
+    return this.blueprint.loadBasis === 'bodyweight' ? (bodyweight ?? Weight.NIL).plus(set.weight) : set.weight;
   }
 
   get maxWeight(): Weight {
@@ -295,11 +295,7 @@ export class PotentialSet {
     readonly weight: Weight,
   ) {}
 
-  /**
-   * Build a set from named fields. Preferred over the positional constructor everywhere outside
-   * this file — `new PotentialSet(undefined, weight)` leads with the argument that is usually
-   * absent, and the shape of a set is the part of the model most likely to move.
-   */
+  /** Build a set from named fields; preferred over the constructor, which leads with the absent one. */
   static of(init: { set?: RecordedSet | undefined; weight: Weight }): PotentialSet {
     return new PotentialSet(init.set, init.weight);
   }

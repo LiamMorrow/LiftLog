@@ -7,7 +7,7 @@ import { Weight } from '@/models/weight';
 import { LocalDate, OffsetDateTime } from '@js-joda/core';
 
 function sessionWith(usesBodyweight: boolean, addedKg: number, reps: number, bodyweight: Weight | undefined): Session {
-  const blueprint = makeWeightedBlueprint({ name: 'Pull Up', usesBodyweight });
+  const blueprint = makeWeightedBlueprint({ name: 'Pull Up', loadBasis: usesBodyweight ? 'bodyweight' : 'external' });
   const time = OffsetDateTime.parse('2025-01-01T10:00:00Z');
   const sets = [filledPotentialSet(reps, time, new Weight(addedKg, 'kilograms'))];
   const exercise = new RecordedWeightedExercise(blueprint, sets, undefined);

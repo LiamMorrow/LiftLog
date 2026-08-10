@@ -9,15 +9,14 @@ const validBlueprint: ProgramBlueprintJSON = {
   lastEdited: '2024-01-01' as LocalDateJSON,
   sessions: [
     {
-      version: 4,
+      version: 5,
       name: 'Day 1',
       notes: '',
       exercises: [
         {
           type: 'WeightedExerciseBlueprint',
           name: 'Squat',
-          sets: 3,
-          repsConfig: { type: 'fixed', reps: 5 },
+          plannedSets: [{ reps: { min: 5, max: 5 } }, { reps: { min: 5, max: 5 } }, { reps: { min: 5, max: 5 } }],
           restBetweenSets: {
             minRest: 'PT1M' as DurationJSON,
             maxRest: 'PT3M' as DurationJSON,
@@ -27,7 +26,7 @@ const validBlueprint: ProgramBlueprintJSON = {
           notes: '',
           link: '',
           progressiveOverload: { type: 'IncreaseAllEvenlyProgressiveOverload', amount: '2.5' as BigNumberJSON },
-          usesBodyweight: false,
+          loadBasis: 'external',
         },
       ],
     },

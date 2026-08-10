@@ -44,7 +44,7 @@ export class Session {
       json.id,
       SessionBlueprint.fromJSON({
         ...json.blueprint,
-        version: 4,
+        version: 5,
         exercises: json.recordedExercises.map((x) => x.blueprint),
       }),
       json.recordedExercises.map(fromRecordedExerciseJSON),
@@ -62,7 +62,9 @@ export class Session {
           (we) =>
             new RecordedWeightedExercise(
               we,
-              Array.from({ length: we.sets }).map(() => new PotentialSet(undefined, new Weight(0, defaultWeightUnit))),
+              Array.from({ length: we.plannedSets.length }).map(
+                () => new PotentialSet(undefined, new Weight(0, defaultWeightUnit)),
+              ),
               undefined,
             ),
         )
@@ -151,7 +153,7 @@ export class Session {
           exerciseIndex,
           weightedExistingExercise.with({
             blueprint: newBlueprint as WeightedExerciseBlueprint,
-            potentialSets: Enumerable.range(0, (newBlueprint as WeightedExerciseBlueprint).sets)
+            potentialSets: Enumerable.range(0, (newBlueprint as WeightedExerciseBlueprint).plannedSets.length)
               .select(
                 (index) =>
                   weightedExistingExercise.potentialSets.at(index) ??
@@ -311,7 +313,7 @@ export class Session {
 
   toJSON(): SessionJSON {
     return {
-      version: 4,
+      version: 5,
       blueprint: this.blueprint.toJSON(),
       bodyweight: this.bodyweight?.toJSON(),
       date: toLocalDateJSON(this.date),
