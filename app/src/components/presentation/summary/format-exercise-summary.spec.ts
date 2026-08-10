@@ -5,7 +5,7 @@ import { SessionBlueprint } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { LocalDate } from '@js-joda/core';
 import { v4 as uuid } from 'uuid';
-import { makeWeightedBlueprint, tick } from '@/models/session-models/__test__/helpers';
+import { makeRecordedExercise, makeWeightedBlueprint, tick } from '@/models/session-models/__test__/helpers';
 
 vi.mock('expo-localization', () => ({ getLocales: () => [{ decimalSeparator: '.' }] }));
 
@@ -160,5 +160,21 @@ describe('formatSessionVolume', () => {
     const session = sessionOf(exerciseOf([{ reps: 10, weight: 0 }]));
 
     expect(formatSessionVolume(session)).toBeUndefined();
+  });
+});
+
+describe('formatExerciseSummary for exercises that track no load', () => {
+  const crunch = makeWeightedBlueprint({ name: 'Crunch', sets: 3, loadBasis: 'none' });
+
+  it('says nothing about weight when logged', () => {
+    const exercise = makeRecordedExercise(crunch, [20, 20, 20], new Weight(999, 'kilograms'));
+
+    expect(formatExerciseSummary(exercise, filled)).toBe('3 × 20');
+  });
+
+  it('says nothing about weight when planned', () => {
+    const exercise = makeRecordedExercise(crunch, [undefined, undefined, undefined], new Weight(999, 'kilograms'));
+
+    expect(formatExerciseSummary(exercise, { isFilled: false, showWeight: true })).toBe('3 × 10');
   });
 });

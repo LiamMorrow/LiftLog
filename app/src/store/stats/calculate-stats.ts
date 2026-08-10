@@ -176,6 +176,8 @@ export function calculateStats(
       const lastSet = ex.lastRecordedSet!;
       if (exerciseStats.latestTime.isBefore(lastSet.set!.completionDateTime)) {
         exerciseStats.latestTime = lastSet.set!.completionDateTime;
+        // How the exercise is programmed now, not how it was the first time it was logged.
+        exerciseStats.primary = primaryAxisFor(blueprint);
       }
       exerciseStats.maxWeightStatistics.push({
         dateTime: lastSet.set!.completionDateTime,
@@ -307,6 +309,6 @@ function toStatisticOverTime<T>(unsortedStats: TimeTrackedStatistic<T>[], ops: Q
  * Which axis an exercise's progress is read on. Externally loaded, weight style exercises (squats)
  * return 'load'
  */
-function primaryAxisFor(_blueprint: ExerciseBlueprint): StatAxis {
-  return 'load';
+function primaryAxisFor(blueprint: ExerciseBlueprint): StatAxis {
+  return blueprint.type === 'WeightedExerciseBlueprint' && blueprint.loadBasis === 'none' ? 'reps' : 'load';
 }

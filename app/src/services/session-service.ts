@@ -99,7 +99,9 @@ export class SessionService {
         // starts where it left off rather than back at whatever the plan said.
         .otherwise((x) => x.potentialSets.map((ps) => new PotentialSet(undefined, ps.weight, ps.target)));
       let newExercise = new RecordedWeightedExercise(e, potentialSets, undefined);
-      if (weightedLastExercise?.isSuccessForProgressiveOverload) {
+      // A rule the exercise kept from before its load was turned off would otherwise climb a weight
+      // nothing displays.
+      if (newExercise.tracksLoad && weightedLastExercise?.isSuccessForProgressiveOverload) {
         newExercise = newExercise.blueprint.progressiveOverload.applyProgressiveOverload(newExercise);
       }
 

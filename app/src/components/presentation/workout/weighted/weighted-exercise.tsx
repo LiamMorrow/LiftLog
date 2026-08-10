@@ -67,7 +67,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             onUpdateWeight={(w, applyTo) => updateExercise((ex) => ex.withWeight(index, w, applyTo))}
             set={set}
             toStartNext={props.toStartNext && setToStartNext === index && !props.isReadonly}
-            usesBodyweight={recordedExercise.blueprint.loadBasis === 'bodyweight'}
+            loadBasis={recordedExercise.blueprint.loadBasis}
             weightIncrement={recordedExercise.blueprint.progressiveOverload.weightIncrement}
           />
         ))}

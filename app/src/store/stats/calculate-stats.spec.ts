@@ -5,7 +5,12 @@ import { NoProgressiveOverload, SessionBlueprint, WeightedExerciseBlueprint } fr
 import { LocalDate, LocalTime, OffsetDateTime, ZoneOffset, Duration } from '@js-joda/core';
 import { LocalDateRange } from '@/models/time-models';
 import { calculateStats } from '@/store/stats/calculate-stats';
-import { emptyPotentialSet, filledPotentialSet, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
+import {
+  emptyPotentialSet,
+  filledPotentialSet,
+  makeRecordedExercise,
+  makeWeightedBlueprint,
+} from '@/models/session-models/__test__/helpers';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -189,8 +194,52 @@ describe('calculateStats', () => {
       expect(crunch.series.reps.maxValue).toBe(20);
       expect(crunch.series.reps.currentValue).toBe(20);
       expect(crunch.series.load.maxValue.value.toNumber()).toBe(20);
-      // Nothing on a blueprint can yet say an exercise tracks no load, so load still leads.
       expect(crunch.primary).toBe('load');
+    });
+
+    it('reads an exercise that tracks no load on its reps', () => {
+      const date = LocalDate.of(2024, 4, 1);
+      const blueprint = makeBlueprint('Crunch', 3, 10).with({ loadBasis: 'none' });
+      const exercise = makeRecordedExercise(blueprint, [20, 20, 20], new Weight(999, 'kilograms'));
+      const session = new Session(
+        'id',
+        makeSessionBlueprint('Core', [blueprint]),
+        [exercise],
+        date,
+        undefined,
+        undefined,
+      );
+
+      const crunch = calculateStats([session], 'kilograms', makeRange(date, date)).weightedExerciseStats[0]!;
+
+      expect(crunch.primary).toBe('reps');
+      expect(crunch.series.reps.maxValue).toBe(20);
+      // The stored weight contributes nothing, so there is no volume to plot.
+      expect(crunch.totalVolumeStatistics.totalValue.value.toNumber()).toBe(0);
+    });
+
+    it('reads a movement on how it is programmed now, not how it started', () => {
+      const d1 = LocalDate.of(2024, 4, 1);
+      const d2 = d1.plusDays(7);
+      const loaded = makeBlueprint('Crunch', 3, 10);
+      const unloaded = loaded.with({ loadBasis: 'none' });
+      const session = (id: string, date: LocalDate, blueprint: WeightedExerciseBlueprint) =>
+        new Session(
+          id,
+          makeSessionBlueprint('Core', [blueprint]),
+          [makeRecordedExercise(blueprint, [20, 20, 20], new Weight(60, 'kilograms'))],
+          date,
+          undefined,
+          undefined,
+        );
+
+      const stats = calculateStats(
+        [session('s1', d1, loaded), session('s2', d2, unloaded)],
+        'kilograms',
+        makeRange(d1, d2),
+      );
+
+      expect(stats.weightedExerciseStats[0]!.primary).toBe('reps');
     });
 
     it('aggregates a reps series without giving it a unit', () => {

@@ -18,10 +18,12 @@ export function formatExerciseSummary(
 ): string {
   if (exercise instanceof RecordedWeightedExercise) {
     const usesBodyweight = exercise.blueprint.loadBasis === 'bodyweight';
+    // An exercise with no load has nothing to say about one.
+    const showWeight = options.showWeight && exercise.tracksLoad;
     const label = options.bodyweightLabel ?? 'BW';
     return options.isFilled
-      ? formatRuns(filledRuns(exercise, options.showWeight, usesBodyweight, label))
-      : formatPlanned(exercise, options.showWeight, usesBodyweight, label);
+      ? formatRuns(filledRuns(exercise, showWeight, usesBodyweight, label))
+      : formatPlanned(exercise, showWeight, usesBodyweight, label);
   }
 
   const sets = options.isFilled

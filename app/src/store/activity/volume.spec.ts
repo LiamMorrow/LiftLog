@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { levelFor, sessionVolume, volumeScaleOf } from '@/store/activity/volume';
 import { SessionBlueprint } from '@/models/blueprint-models';
 import { RecordedWeightedExercise, Session } from '@/models/session-models';
-import { filledPotentialSet, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
+import {
+  filledPotentialSet,
+  makeRecordedExercise,
+  makeWeightedBlueprint,
+} from '@/models/session-models/__test__/helpers';
 import { Weight } from '@/models/weight';
 import { LocalDate, OffsetDateTime } from '@js-joda/core';
 
@@ -95,5 +99,22 @@ describe('levelFor', () => {
   it('falls back to the middle level when there is no spread to grade against', () => {
     expect(levelFor(5000, { lo: 5000, hi: 5000 })).toBe(3);
     expect(levelFor(0, { lo: 0, hi: 0 })).toBe(3);
+  });
+});
+
+describe('sessionVolume for an exercise that tracks no load', () => {
+  it('contributes nothing, however much weight is stored against it', () => {
+    const blueprint = makeWeightedBlueprint({ name: 'Crunch', loadBasis: 'none' });
+    const exercise = makeRecordedExercise(blueprint, [20, 20, 20], new Weight(999, 'kilograms'));
+    const session = new Session(
+      'id',
+      new SessionBlueprint('Core', [blueprint], ''),
+      [exercise],
+      LocalDate.of(2025, 1, 1),
+      new Weight(80, 'kilograms'),
+      undefined,
+    );
+
+    expect(sessionVolume(session)).toBe(0);
   });
 });

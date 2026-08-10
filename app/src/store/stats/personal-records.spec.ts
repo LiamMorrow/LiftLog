@@ -5,7 +5,11 @@ import { findPersonalRecords } from '@/store/stats/personal-records';
 import { RecordedWeightedExercise, Session } from '@/models/session-models';
 import { IncreaseLowestSetProgressiveOverload, Rest, SessionBlueprint } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
-import { filledPotentialSet, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
+import {
+  filledPotentialSet,
+  makeRecordedExercise,
+  makeWeightedBlueprint,
+} from '@/models/session-models/__test__/helpers';
 
 function exercise(name: string, weight: Weight, reps: number) {
   const blueprint = makeWeightedBlueprint({
@@ -118,5 +122,24 @@ describe('findPersonalRecords', () => {
 
     expect(records.has('s2')).toBe(false);
     expect(records.has('s3')).toBe(true);
+  });
+});
+
+describe('findPersonalRecords for exercises that track no load', () => {
+  it('awards no records, because a 1RM needs a load', () => {
+    const blueprint = makeWeightedBlueprint({ name: 'Crunch', loadBasis: 'none' });
+    const build = (id: string, date: LocalDate, reps: number) =>
+      new Session(
+        id,
+        new SessionBlueprint('Core', [blueprint], ''),
+        [makeRecordedExercise(blueprint, [reps])],
+        date,
+        undefined,
+        undefined,
+      );
+
+    const records = findPersonalRecords([build('s1', day(1), 20), build('s2', day(8), 30)]);
+
+    expect([...records.values()].flat()).toEqual([]);
   });
 });

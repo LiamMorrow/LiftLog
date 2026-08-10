@@ -158,12 +158,20 @@ export class RecordedWeightedExercise {
     };
   }
 
+  /** False for a movement that tracks no load, so nothing sums a volume or computes a 1RM for it. */
+  get tracksLoad(): boolean {
+    return this.blueprint.loadBasis !== 'none';
+  }
+
   /**
    * The load actually moved for a set: the stored weight for a plain exercise, or the
    * bodyweight plus the stored (added/assisted) weight for a bodyweight exercise. When the
    * session bodyweight is unknown the bodyweight contribution is treated as zero.
    */
   effectiveWeight(set: PotentialSet, bodyweight: Weight | undefined): Weight {
+    if (!this.tracksLoad) {
+      return Weight.NIL;
+    }
     return this.blueprint.loadBasis === 'bodyweight' ? (bodyweight ?? Weight.NIL).plus(set.weight) : set.weight;
   }
 

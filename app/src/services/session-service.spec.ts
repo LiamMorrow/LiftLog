@@ -5,6 +5,7 @@ import { ProgressRepository } from '@/services/progress-repository';
 import { SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { RecordedWeightedExercise, Session } from '@/models/session-models';
 import { makeRecordedExercise, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
+import { Weight } from '@/models/weight';
 import type { RootState } from '@/store';
 
 function makeState(overrides?: { workoutSession?: Session; orderedSessions?: Session[] }): RootState {
@@ -136,6 +137,16 @@ describe('SessionService rep targets', () => {
       { min: 15, max: 15 },
       { min: 15, max: 15 },
     ]);
+  });
+
+  it('does not progress the load of an exercise that tracks none', async () => {
+    const blueprint = makeWeightedBlueprint({ sets: 2, loadBasis: 'none' });
+    const lastWeek = makeRecordedExercise(blueprint, [10, 10], new Weight(60, 'kilograms'));
+
+    const weights = (await upcoming(blueprint, lastWeek)).potentialSets.map((s) => s.weight.value.toNumber());
+
+    expect(lastWeek.isSuccessForProgressiveOverload).toBe(true);
+    expect(weights).toEqual([60, 60]);
   });
 
   it('starts the new session with nothing recorded', async () => {

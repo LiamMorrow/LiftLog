@@ -148,23 +148,28 @@ export function WeightedExerciseEditor({
                 />
               }
             />,
-            <SegmentListFormElement
-              key={3}
-              label={t('exercise.progressive_overload.label')}
-              icon={'trendingUp'}
-              right={
-                <ProgressiveOverloadSelect
-                  value={exercise.progressiveOverload}
-                  onChange={(progressiveOverload) => updateExercise({ progressiveOverload })}
-                />
-              }
-              line2={
-                <ProgressiveOverloadValuesEditor
-                  value={exercise.progressiveOverload}
-                  onChange={(progressiveOverload) => updateExercise({ progressiveOverload })}
-                />
-              }
-            />,
+            // Progressive overload only moves weight, so it has nothing to act on without a load.
+            ...(exercise.loadBasis === 'none'
+              ? []
+              : [
+                  <SegmentListFormElement
+                    key={3}
+                    label={t('exercise.progressive_overload.label')}
+                    icon={'trendingUp'}
+                    right={
+                      <ProgressiveOverloadSelect
+                        value={exercise.progressiveOverload}
+                        onChange={(progressiveOverload) => updateExercise({ progressiveOverload })}
+                      />
+                    }
+                    line2={
+                      <ProgressiveOverloadValuesEditor
+                        value={exercise.progressiveOverload}
+                        onChange={(progressiveOverload) => updateExercise({ progressiveOverload })}
+                      />
+                    }
+                  />,
+                ]),
           ]}
           renderItem={(i) => i}
         />
