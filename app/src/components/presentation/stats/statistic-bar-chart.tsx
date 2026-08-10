@@ -1,5 +1,5 @@
-import { WeightedStatisticOverTime } from '@/store/stats';
-import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
+import { StatisticOverTime } from '@/store/stats';
+import { QuantityAxis } from '@/components/presentation/stats/quantity-axis';
 import { BarChart, barDataItem } from 'react-native-gifted-charts';
 import { View } from 'react-native';
 import { useAppTheme } from '@/hooks/useAppTheme';
@@ -8,19 +8,21 @@ import { verticalBarChartProps } from '@/components/presentation/stats/line-grap
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { Text } from 'react-native-paper';
 
-export function WeightBarChart({
+export function StatisticBarChart<T>({
   statistics: { statistics, maxValue, minValue },
+  axis,
 }: {
-  statistics: WeightedStatisticOverTime;
+  statistics: StatisticOverTime<T>;
+  axis: QuantityAxis<T>;
 }) {
   const formatDate = useFormatDate();
-  const weightUnit = usePreferredWeightUnit();
   const { colors } = useAppTheme();
   const charWidth = 5;
+  const min = axis.toNumber(minValue);
   const points: barDataItem[] = statistics.map((stat): barDataItem => {
-    const topLabelText = stat.value.shortLocaleFormat(0);
+    const topLabelText = axis.format(stat.value);
     return {
-      value: stat.value.convertTo(weightUnit).value.toNumber(),
+      value: axis.toNumber(stat.value),
       barWidth: charWidth * (topLabelText.length + 3),
       topLabelComponent: () => (
         <Text style={{ width: 200, textAlign: 'center', pointerEvents: 'none' }}>{topLabelText}</Text>
@@ -37,15 +39,15 @@ export function WeightBarChart({
     <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
       <BarChart
         {...verticalBarChartProps(colors, width)}
-        negativeStepValue={minValue.value.lt(0) ? -0.2 * minValue.convertTo(weightUnit).value.toNumber() : undefined!}
+        negativeStepValue={min < 0 ? -0.2 * min : undefined!}
         overflowTop={30}
         frontColor={colors.primary + 'CC'}
         data={points}
         noOfSections={4}
         height={100}
-        noOfSectionsBelowXAxis={minValue.value.lt(0) ? 5 : 0}
+        noOfSectionsBelowXAxis={min < 0 ? 5 : 0}
         showReferenceLine1
-        referenceLine1Position={maxValue.convertTo(weightUnit).value.toNumber()}
+        referenceLine1Position={axis.toNumber(maxValue)}
       />
     </View>
   );

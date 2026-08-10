@@ -168,6 +168,48 @@ describe('calculateStats', () => {
       expect(bench!.max1RMPerSessionStatistics.maxValue.value.toNumber()).toBeCloseTo(expected1RM, 2);
     });
 
+    it('tracks the best set on both axes, and says which one leads', () => {
+      const date = LocalDate.of(2024, 4, 1);
+      const blueprint = makeBlueprint('Crunch', 3, 10);
+      const sessionBlueprint = makeSessionBlueprint('Core', [blueprint]);
+      const baseTime = makeOffset(date);
+      const exercise = new RecordedWeightedExercise(
+        blueprint,
+        [
+          filledPotentialSet(12, baseTime, new Weight(20, 'kilograms')),
+          filledPotentialSet(20, baseTime.plusSeconds(60), new Weight(20, 'kilograms')),
+          filledPotentialSet(15, baseTime.plusSeconds(120), new Weight(20, 'kilograms')),
+        ],
+        undefined,
+      );
+      const session = new Session('id', sessionBlueprint, [exercise], date, undefined, undefined);
+
+      const crunch = calculateStats([session], 'kilograms', makeRange(date, date)).weightedExerciseStats[0]!;
+
+      expect(crunch.series.reps.maxValue).toBe(20);
+      expect(crunch.series.reps.currentValue).toBe(20);
+      expect(crunch.series.load.maxValue.value.toNumber()).toBe(20);
+      // Nothing on a blueprint can yet say an exercise tracks no load, so load still leads.
+      expect(crunch.primary).toBe('load');
+    });
+
+    it('aggregates a reps series without giving it a unit', () => {
+      const d1 = LocalDate.of(2024, 4, 1);
+      const d2 = d1.plusDays(7);
+      const result = calculateStats(
+        [makeSession(d1, 'Squat', 100, 5, 3), makeSession(d2, 'Squat', 100, 8, 3)],
+        'kilograms',
+        makeRange(d1, d2),
+      );
+
+      const reps = result.weightedExerciseStats[0]!.series.reps;
+      expect(reps.statistics.map((x) => x.value)).toEqual([5, 8]);
+      expect(reps.minValue).toBe(5);
+      expect(reps.maxValue).toBe(8);
+      expect(reps.totalValue).toBe(13);
+      expect(reps.currentValue).toBe(8);
+    });
+
     it('accumulates reps breakdown correctly', () => {
       const date = LocalDate.of(2024, 4, 1);
       const blueprint = makeBlueprint('OHP', 3, 8);

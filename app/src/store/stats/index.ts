@@ -4,6 +4,9 @@ import { Weight } from '@/models/weight';
 import { LocalDateRange } from '@/models/time-models';
 import { RemoteData } from '@/models/remote';
 import { normalizeExerciseName } from '@/models/blueprint-models';
+import { StatAxis } from '@/store/stats/quantity';
+
+export type { StatAxis };
 
 interface StatsState {
   isDirty: boolean;
@@ -32,22 +35,41 @@ export interface RepsBreakdownStatistics {
   >;
 }
 
+/**
+ * The best single set of each session, on each axis. Both are always populated — a barbell lift has
+ * a rep count and a rep-based exercise has a (zero) load — and {@link WeightedExerciseStatistics.primary}
+ * says which one this exercise's progress is actually read on.
+ */
+export interface ExerciseSeries {
+  load: StatisticOverTime<Weight>;
+  reps: StatisticOverTime<number>;
+}
+
 export interface WeightedExerciseStatistics {
   exerciseName: string;
   setsPerWeek: number;
+  /** Which axis leads: what this exercise is tracked on, and therefore how its chart is labelled. */
+  primary: StatAxis;
+  series: ExerciseSeries;
   maxLiftedPerSessionStatistics: WeightedStatisticOverTime;
+  /**
+   * Derived metrics declare their inputs: both of these need a load *and* a rep count, so an
+   * exercise that tracks no load simply has nothing to offer here.
+   */
   max1RMPerSessionStatistics: WeightedStatisticOverTime;
   totalVolumeStatistics: WeightedStatisticOverTime;
   repsStatistics: RepsBreakdownStatistics;
 }
 
-export interface WeightedStatisticOverTime {
-  statistics: TimeTrackedStatistic<Weight>[];
-  currentValue: Weight;
-  totalValue: Weight;
-  maxValue: Weight;
-  minValue: Weight;
+export interface StatisticOverTime<T> {
+  statistics: TimeTrackedStatistic<T>[];
+  currentValue: T;
+  totalValue: T;
+  maxValue: T;
+  minValue: T;
 }
+
+export type WeightedStatisticOverTime = StatisticOverTime<Weight>;
 
 export interface OptionalStatisticOverTime<T> {
   title: string;

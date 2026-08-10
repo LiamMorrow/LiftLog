@@ -1,5 +1,5 @@
-import { WeightedStatisticOverTime } from '@/store/stats';
-import { usePreferredWeightSuffix, usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
+import { StatisticOverTime } from '@/store/stats';
+import { QuantityAxis } from '@/components/presentation/stats/quantity-axis';
 import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 import { View } from 'react-native';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
@@ -8,16 +8,19 @@ import { lineGraphProps } from '@/components/presentation/stats/line-graph-props
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { Text } from 'react-native-paper';
 
-export function WeightLineChart({
+export function StatisticLineChart<T>({
   statistics: { statistics, maxValue, minValue },
+  axis,
 }: {
-  statistics: WeightedStatisticOverTime;
+  statistics: StatisticOverTime<T>;
+  axis: QuantityAxis<T>;
 }) {
   const formatDate = useFormatDate();
-  const weightUnit = usePreferredWeightUnit();
   const { colors } = useAppTheme();
+  const max = axis.toNumber(maxValue);
+  const min = axis.toNumber(minValue);
   const points: lineDataItem[] = statistics.map((stat): lineDataItem => {
-    const value = stat.value.convertTo(weightUnit).value.toNumber();
+    const value = axis.toNumber(stat.value);
     const label = formatDate(stat.dateTime.toLocalDate(), {
       day: 'numeric',
       month: 'short',
@@ -25,7 +28,9 @@ export function WeightLineChart({
     return {
       value,
       label,
-      focusedDataPointLabelComponent: () => <FocusedDatapointLabelComponent value={value} label={label} />,
+      focusedDataPointLabelComponent: () => (
+        <FocusedDatapointLabelComponent value={axis.formatNumber(value)} label={label} />
+      ),
     };
   });
   const [width, setWidth] = useState(0);
@@ -38,13 +43,13 @@ export function WeightLineChart({
     <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
       <LineChart
         {...lineGraphProps(colors, width, points.length)}
-        negativeStepValue={minValue.value.lt(0) ? -0.2 * minValue.convertTo(weightUnit).value.toNumber() : undefined!}
+        negativeStepValue={min < 0 ? -0.2 * min : undefined!}
         showFractionalValues={false}
         dataPointLabelWidth={70}
         showReferenceLine1
         areaChart={areaChart}
         delayBeforeUnFocus={10_000}
-        referenceLine1Position={maxValue.convertTo(weightUnit).value.toNumber()}
+        referenceLine1Position={max}
         dataSet={[
           {
             data: points,
@@ -61,17 +66,16 @@ export function WeightLineChart({
         showDataPointLabelOnFocus
         noOfSections={4}
         height={100}
-        mostNegativeValue={minValue.value.lt(0) ? minValue.convertTo(weightUnit).value.toNumber() : undefined!}
-        yAxisOffset={Math.floor(minValue.convertTo(weightUnit).value.toNumber()) - 10}
-        noOfSectionsBelowXAxis={minValue.value.lt(0) ? 5 : 0}
+        mostNegativeValue={min < 0 ? min : undefined!}
+        yAxisOffset={Math.floor(min) - 10}
+        noOfSectionsBelowXAxis={min < 0 ? 5 : 0}
       />
     </View>
   );
 }
 
-function FocusedDatapointLabelComponent(props: { value: number; label: string }) {
+function FocusedDatapointLabelComponent(props: { value: string; label: string }) {
   const { colors } = useAppTheme();
-  const weightSuffix = usePreferredWeightSuffix();
   return (
     <View
       style={{
@@ -85,10 +89,7 @@ function FocusedDatapointLabelComponent(props: { value: number; label: string })
       }}
     >
       <Text>{props.label}</Text>
-      <Text>
-        {props.value.toFixed(0)}
-        {weightSuffix}
-      </Text>
+      <Text>{props.value}</Text>
     </View>
   );
 }

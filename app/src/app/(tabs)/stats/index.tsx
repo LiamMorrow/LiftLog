@@ -6,7 +6,8 @@ import SingleValueStatisticCard from '@/components/presentation/stats/single-val
 import { SingleValueStatisticsGrid } from '@/components/presentation/stats/single-value-statistics-grid';
 import { TimePeriodSelector } from '@/components/presentation/stats/time-period-selector';
 import { TitledSection } from '@/components/presentation/stats/titled-section';
-import { WeightLineChart } from '@/components/presentation/stats/weight-line-chart';
+import { StatisticLineChart } from '@/components/presentation/stats/statistic-line-chart';
+import { useLoadAxis } from '@/components/presentation/stats/quantity-axis';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Weight } from '@/models/weight';
 import { useAppSelector } from '@/store';
@@ -55,6 +56,7 @@ function LoadedStats({ stats }: { stats: GranularStatisticView }) {
 function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
+  const loadAxis = useLoadAxis();
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
   const [showBodyweightGraph, setShowBodyweightGraph] = useState(false);
   const canShowBodyweightGraph = showBodyweight && stats.bodyweightStats.statistics.length > 0;
@@ -110,7 +112,7 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
             }}
           >
             <Card.Content>
-              <WeightLineChart statistics={stats.bodyweightStats} />
+              <StatisticLineChart statistics={stats.bodyweightStats} axis={loadAxis} />
             </Card.Content>
           </Card>
         </TitledSection>
