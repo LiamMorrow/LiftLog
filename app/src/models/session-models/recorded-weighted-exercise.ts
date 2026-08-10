@@ -293,15 +293,20 @@ export class PotentialSet {
   constructor(
     readonly set: RecordedSet | undefined,
     readonly weight: Weight,
+    /** The target this set is chasing, carried on the performance rather than re-read from the plan. */
+    readonly target: RepsTarget = { min: 0, max: 0 },
   ) {}
 
   /** Build a set from named fields; preferred over the constructor, which leads with the absent one. */
-  static of(init: { set?: RecordedSet | undefined; weight: Weight }): PotentialSet {
-    return new PotentialSet(init.set, init.weight);
+  static of(init: { set?: RecordedSet | undefined; weight: Weight; target?: RepsTarget }): PotentialSet {
+    return new PotentialSet(init.set, init.weight, init.target);
   }
 
   static fromJSON(json: PotentialSetJSON): PotentialSet {
-    return new PotentialSet(json.set ? RecordedSet.fromJSON(json.set) : undefined, Weight.fromJSON(json.weight));
+    return new PotentialSet(json.set ? RecordedSet.fromJSON(json.set) : undefined, Weight.fromJSON(json.weight), {
+      min: json.target.reps.min,
+      max: json.target.reps.max,
+    });
   }
 
   equals(other: PotentialSet | undefined): boolean {
@@ -311,15 +316,25 @@ export class PotentialSet {
     if (other === this) {
       return true;
     }
-    return (this.set?.equals(other.set) ?? other.set === undefined) && this.weight.equals(other.weight);
+    return (
+      (this.set?.equals(other.set) ?? other.set === undefined) &&
+      this.weight.equals(other.weight) &&
+      this.target.min === other.target.min &&
+      this.target.max === other.target.max
+    );
   }
 
   with(other: Partial<PotentialSet>): PotentialSet {
-    return new PotentialSet('set' in other ? other.set : this.set, 'weight' in other ? other.weight! : this.weight);
+    return new PotentialSet(
+      'set' in other ? other.set : this.set,
+      'weight' in other ? other.weight! : this.weight,
+      other.target ?? this.target,
+    );
   }
 
   toJSON(): PotentialSetJSON {
     return {
+      target: { reps: { min: this.target.min, max: this.target.max } },
       set: this.set?.toJSON(),
       weight: this.weight.toJSON(),
     };

@@ -1,5 +1,6 @@
 import type { BigNumberJSON, DurationJSON, LocalDateJSON, OffsetDateTimeJSON } from '@/models/storage/versions/libs';
 import type {
+  PlannedSetJSON,
   WeightedExerciseBlueprintJSON,
   CardioExerciseBlueprintJSON,
   DistanceJSON,
@@ -8,7 +9,7 @@ import type {
 import type { WeightJSON } from '@/models/storage/versions/libs/weight';
 
 export interface SessionJSON {
-  version: 5;
+  version: 6;
   id: string;
   blueprint: { name: string; notes: string };
   recordedExercises: RecordedExerciseJSON[];
@@ -49,15 +50,17 @@ export interface RecordedWeightedExerciseJSON {
   notes?: string | undefined;
 }
 
+export interface PotentialSetJSON {
+  /** The target this session is chasing for the set, seeded from the blueprint and then its own. */
+  target: PlannedSetJSON;
+  set?: RecordedSetJSON | undefined;
+  weight: WeightJSON;
+}
+
 export interface RecordedSetJSON {
   /**
    * @asType integer
    */
   repsCompleted: number;
   completionDateTime: OffsetDateTimeJSON;
-}
-
-export interface PotentialSetJSON {
-  set?: RecordedSetJSON | undefined;
-  weight: WeightJSON;
 }

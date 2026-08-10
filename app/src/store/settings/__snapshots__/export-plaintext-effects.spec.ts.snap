@@ -72,6 +72,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
               "completionDateTime": "2024-01-15T10:00:00Z",
               "repsCompleted": 10,
             },
+            "target": {
+              "reps": {
+                "max": 0,
+                "min": 0,
+              },
+            },
             "weight": {
               "unit": "kilograms",
               "value": "100",
@@ -82,6 +88,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
               "completionDateTime": "2024-01-15T10:01:00Z",
               "repsCompleted": 10,
             },
+            "target": {
+              "reps": {
+                "max": 0,
+                "min": 0,
+              },
+            },
             "weight": {
               "unit": "kilograms",
               "value": "100",
@@ -91,6 +103,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
             "set": {
               "completionDateTime": "2024-01-15T10:02:00Z",
               "repsCompleted": 10,
+            },
+            "target": {
+              "reps": {
+                "max": 0,
+                "min": 0,
+              },
             },
             "weight": {
               "unit": "kilograms",
@@ -154,6 +172,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
               "completionDateTime": "2024-01-15T10:00:00Z",
               "repsCompleted": 10,
             },
+            "target": {
+              "reps": {
+                "max": 0,
+                "min": 0,
+              },
+            },
             "weight": {
               "unit": "kilograms",
               "value": "100",
@@ -164,6 +188,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
               "completionDateTime": "2024-01-15T10:01:00Z",
               "repsCompleted": 10,
             },
+            "target": {
+              "reps": {
+                "max": 0,
+                "min": 0,
+              },
+            },
             "weight": {
               "unit": "kilograms",
               "value": "100",
@@ -173,6 +203,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
             "set": {
               "completionDateTime": "2024-01-15T10:02:00Z",
               "repsCompleted": 10,
+            },
+            "target": {
+              "reps": {
+                "max": 0,
+                "min": 0,
+              },
             },
             "weight": {
               "unit": "kilograms",

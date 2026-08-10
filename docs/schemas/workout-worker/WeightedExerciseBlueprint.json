@@ -14,7 +14,7 @@
       "items": {
         "$ref": "./PlannedSet.json"
       },
-      "description": "What the plan asks for, one entry per set. A list rather than a count plus a shared config: \"fixed / range / per set\" is an authoring convenience, and display collapses equal targets back to \"4 × 10\" for free."
+      "description": "What the plan asks for, one entry per set."
     },
     "restBetweenSets": {
       "$ref": "./Rest.json"
@@ -35,7 +35,7 @@
     },
     "loadBasis": {
       "$ref": "./LoadBasis.json",
-      "description": "Where this movement's load comes from, and whether it has one at all.\n\n- `external` - a plain weighted movement; the stored weight is the whole load.\n- `bodyweight` - the base load is the lifter's own bodyweight (pull-ups, dips) and each set's   stored weight is the *added* load on top of it: positive when weighted, negative when assisted.\n- `none` - the exercise does not track a load at all (crunches). Nothing renders a weight,   nothing sums a volume, nothing computes a 1RM, because there is no value to render."
+      "description": "Where this movement's load comes from: the whole stored weight (`external`), what is added on top of the lifter (`bodyweight`), or nothing at all (`none`, e.g. crunches)."
     }
   },
   "required": [

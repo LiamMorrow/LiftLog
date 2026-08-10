@@ -5,9 +5,6 @@ import android.annotation.SuppressLint
 import android.app.Notification
 import android.util.Log
 import com.limajuice.liftlog.DistanceCardioTarget
-import com.limajuice.liftlog.FixedRepsConfig
-import com.limajuice.liftlog.PerSetRepsConfig
-import com.limajuice.liftlog.RangeRepsConfig
 import com.limajuice.liftlog.RecordedCardioExercise
 import com.limajuice.liftlog.RecordedCardioExerciseSet
 import com.limajuice.liftlog.RecordedWeightedExercise

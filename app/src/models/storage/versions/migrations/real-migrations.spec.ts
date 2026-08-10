@@ -243,7 +243,7 @@ describe('real migrations', () => {
   describe('sessionMigrations (started with an embedded blueprint, then moved away from it)', () => {
     it('strips the exercises off the stored blueprint', () => {
       const result = sessionMigrations.migrate(initialSession());
-      expect(result.version).toBe(5);
+      expect(result.version).toBe(6);
       expect(result.blueprint).toEqual({ name: 'Push Day', notes: 'session notes' });
       expect('exercises' in result.blueprint).toBe(false);
     });
@@ -261,6 +261,26 @@ describe('real migrations', () => {
         expect(recorded.blueprint).toHaveProperty('progressiveOverload');
         expect('repsPerSet' in recorded.blueprint).toBe(false);
       }
+    });
+
+    it('leaves a recorded cardio exercise in the same session untouched', () => {
+      const result = sessionMigrations.migrate(initialSession());
+      expect(result.recordedExercises[1]).toEqual({
+        type: 'RecordedCardioExercise',
+        blueprint: initialCardio(),
+        sets: [],
+        notes: '',
+      });
+    });
+
+    it('gives every recorded set the target it was chasing', () => {
+      const recorded = sessionMigrations.migrate(initialSession()).recordedExercises[0];
+      if (recorded?.type !== 'RecordedWeightedExercise') {
+        throw new Error('expected a recorded weighted exercise');
+      }
+      expect(recorded.potentialSets).toEqual([
+        { target: { reps: { min: 5, max: 5 } }, set: undefined, weight: wt('60') },
+      ]);
     });
 
     it('is idempotent', () => {
@@ -289,7 +309,7 @@ describe('real migrations', () => {
     it('sessionUserEvent brings its embedded session to latest', () => {
       const result = sessionUserEventMigrations.migrate(initialSessionUserEvent());
       expect(result.version).toBe(3);
-      expect(result.session.version).toBe(5);
+      expect(result.session.version).toBe(6);
       expect(result.session.blueprint).toEqual({ name: 'Push Day', notes: 'session notes' });
     });
 
@@ -297,7 +317,7 @@ describe('real migrations', () => {
       const shared: InitialSharedSessionJSON = { type: 'SharedSession', session: initialSession() };
       const result = sharedSessionMigrations.migrate(shared);
       expect(result.version).toBe(3);
-      expect(result.session.version).toBe(5);
+      expect(result.session.version).toBe(6);
     });
 
     it('sharedProgramBlueprint brings its embedded program to latest', () => {
@@ -367,7 +387,7 @@ describe('real migrations', () => {
       const result = userEventMigrations.migrate(initialSessionUserEvent());
       expect(result.type).toBe('SessionUserEvent');
       if (result.type === 'SessionUserEvent') {
-        expect(result.session.version).toBe(5);
+        expect(result.session.version).toBe(6);
       }
     });
 
@@ -397,7 +417,7 @@ describe('real migrations', () => {
 
     it('migrates a session with no recorded exercises', () => {
       const result = sessionMigrations.migrate({ ...initialSession(), recordedExercises: [] });
-      expect(result.version).toBe(5);
+      expect(result.version).toBe(6);
       expect(result.recordedExercises).toEqual([]);
       expect(result.blueprint).toEqual({ name: 'Push Day', notes: 'session notes' });
     });

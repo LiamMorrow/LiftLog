@@ -313,7 +313,7 @@ export class Session {
 
   toJSON(): SessionJSON {
     return {
-      version: 5,
+      version: 6,
       blueprint: this.blueprint.toJSON(),
       bodyweight: this.bodyweight?.toJSON(),
       date: toLocalDateJSON(this.date),
