@@ -82,19 +82,20 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
 
   addEffect(
     importBackupData,
-    async ({ payload: dao }, { dispatch, extra: { tolgee, db, databaseMigrationService } }) => {
-      dispatch(upsertStoredSessions(dao.workouts));
-      dispatch(upsertSavedPlans(dao.programs));
+    async ({ payload }, { dispatch, extra: { tolgee, db, databaseMigrationService } }) => {
+      const { workouts, programs, feed, successMessage } = payload;
+      dispatch(upsertStoredSessions(workouts));
+      dispatch(upsertSavedPlans(programs));
       dispatch(
         showSnackbar({
-          text: tolgee.t('Restore complete!'),
+          text: successMessage ?? tolgee.t('Restore complete!'),
         }),
       );
       // Let the data migration re-run on next launch so imported nil-unit weights get coalesced
       await db.delete(dataMigrationsSchema).where(eq(dataMigrationsSchema.id, migrateNilWeightUnitsDataMigration));
       await databaseMigrationService.migrate();
-      if (dao.feed) {
-        dispatch(beginFeedImport(dao.feed));
+      if (feed) {
+        dispatch(beginFeedImport(feed));
       }
     },
   );

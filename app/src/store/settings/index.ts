@@ -54,11 +54,22 @@ export const importDataSql = createAction<{ db: SQLiteDatabase }>('importDataSql
 export const importDataProto = createAction<{
   dao: LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2;
 }>('importDataProto');
-export const importBackupData = createAction<BackupData>('importBackupData');
+export type ImportBackupDataPayload = BackupData & {
+  /** When set, used instead of the default restore success snackbar. */
+  successMessage?: string;
+};
+export const importBackupData = createAction<ImportBackupDataPayload>('importBackupData');
 export const beginFeedImport = createAction<FeedBackupData>('beginFeedImport');
 export const exportData = createAction<{ includeFeed: boolean }>('exportData');
 
 export const exportPlainText = createAction<{ format: PlaintextExportFormat }>('exportPlainText');
+
+/** Formats supported by Settings → Import from other apps. */
+export type ExternalImportFormat = 'CSV' | 'StrongLifts';
+
+/** Pick a third-party export file and merge history via importBackupData. */
+export const importFromExternal = createAction<{ format: ExternalImportFormat }>('importFromExternal');
+
 
 export const executeRemoteBackup = createAction<{
   settings?: RemoteBackupSettings;

@@ -392,3 +392,6 @@ tests/LiftLog.Tests.Api/appsettings.Development.json
 temp/
 
 CLAUDE.local.md
+.kilo/
+run-ios-17e-dev.sh
+/tests/csv-import-test-files

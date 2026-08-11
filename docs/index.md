@@ -22,6 +22,8 @@ work to find the docs relevant to your area, and update it whenever you add, rem
   exported, and the Claude skill that authors plan files against the schema.
 - [PlaintextExport.md](./PlaintextExport.md) — CSV/JSON export of workout data, including which fields
   are included. Explicitly *not* a backup mechanism; LiftLog cannot read these files back.
+- [CsvImport.md](./CsvImport.md) — Import from other apps: third-party CSV history (FitNotes-style
+  and StrongLifts-style) merged via `importBackupData`; separate from plaintext export.
 - [RemoteBackup.md](./RemoteBackup.md) — the automatic remote backup: the app-side settings, the HTTPS
   requirement, and the contract a self-hosted backup endpoint must satisfy.
 

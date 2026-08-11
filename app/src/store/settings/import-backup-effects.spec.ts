@@ -93,6 +93,27 @@ describe('import-backup-effects', () => {
     expect(testBed.getDispatchedAction(beginFeedImport).payload).toBe(mockFeed);
   });
 
+  it('uses optional successMessage instead of restore copy', async () => {
+    const testBed = createAddEffectTestBed({
+      services: {
+        tolgee: { t: (s: string) => s },
+        db: { delete: () => ({ where: () => Promise.resolve() }) } as never,
+        databaseMigrationService: { migrate: vi.fn() } as never,
+      },
+    });
+    addImportBackupEffects(testBed.addEffect);
+
+    await testBed.dispatchHandled(
+      importBackupData({
+        workouts: [],
+        programs: {},
+        successMessage: 'Imported 3 workout(s)',
+      }),
+    );
+
+    expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe('Imported 3 workout(s)');
+  });
+
   it('does not dispatch beginFeedImport when feed is absent', async () => {
     const testBed = createAddEffectTestBed({
       services: {
