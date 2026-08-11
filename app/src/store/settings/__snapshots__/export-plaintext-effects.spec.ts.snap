@@ -31,7 +31,6 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
       {
         "blueprint": {
           "link": "",
-          "loadBasis": "external",
           "name": "Bench Press",
           "notes": "",
           "plannedSets": [
@@ -64,6 +63,7 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
               "trigger": "allSetsMetTarget",
             },
           ],
+          "resistance": "external",
           "restBetweenSets": {
             "failureRest": "PT5M",
             "maxRest": "PT3M",
@@ -137,7 +137,6 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
       {
         "blueprint": {
           "link": "",
-          "loadBasis": "external",
           "name": "Squat",
           "notes": "",
           "plannedSets": [
@@ -170,6 +169,7 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
               "trigger": "allSetsMetTarget",
             },
           ],
+          "resistance": "external",
           "restBetweenSets": {
             "failureRest": "PT5M",
             "maxRest": "PT3M",

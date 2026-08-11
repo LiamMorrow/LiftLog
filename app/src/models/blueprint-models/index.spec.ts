@@ -301,7 +301,7 @@ describe('blueprint models', () => {
     });
 
     it('an exercise that tracks no load keys without its rep scheme', () => {
-      const crunch = WeightedExerciseBlueprint.of({ name: 'Crunch', sets: 3, loadBasis: 'none' });
+      const crunch = WeightedExerciseBlueprint.of({ name: 'Crunch', sets: 3, resistance: 'none' });
       expect(crunch.progressionKey()).toBe('Crunch_WeightedExerciseBlueprint_3');
       expect(crunch.with({ repsConfig: { type: 'fixed', reps: 25 } }).progressionKey()).toBe(crunch.progressionKey());
       expect(crunch.withSets(4).progressionKey()).not.toBe(crunch.progressionKey());
@@ -341,7 +341,7 @@ describe('blueprint models', () => {
     const squat = (init = {}) => WeightedExerciseBlueprint.of({ name: 'Squat', sets: 3, ...init });
 
     it.each([
-      ['no load to advance on', { loadBasis: 'none' as const }, true],
+      ['no load to advance on', { resistance: 'none' as const }, true],
       ['a rule that moves reps', { progression: [ProgressionRule.of({ axis: 'reps', step: bn(1) })] }, true],
       [
         'a ladder that reaches reps',

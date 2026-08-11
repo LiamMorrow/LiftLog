@@ -16,7 +16,7 @@ describe('built-in-programs', () => {
       weighted.map((exercise) => ({
         name: exercise.name,
         plannedSets: exercise.plannedSets,
-        loadBasis: exercise.loadBasis,
+        resistance: exercise.resistance,
         progression: exercise.progression.map((rule) => rule.toJSON()),
         progressionKey: exercise.progressionKey(),
       })),

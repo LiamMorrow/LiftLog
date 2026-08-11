@@ -16,7 +16,7 @@ function weighted(progressiveOverload: ProgressiveOverload) {
     type: 'WeightedExerciseBlueprint' as const,
     name: 'Squat',
     plannedSets: [{ reps: { min: 5, max: 5 } }],
-    loadBasis: 'external' as const,
+    resistance: 'external' as const,
     progressiveOverload,
     supersetWithNext: false,
     notes: '',

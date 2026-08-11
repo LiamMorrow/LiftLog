@@ -3,7 +3,6 @@
 exports[`built-in-programs > 0d0e0860-0555-4b43-bd93-350edd49c6bd migrates to a stable weighted shape 1`] = `
 [
   {
-    "loadBasis": "external",
     "name": "Pushups",
     "plannedSets": [
       {
@@ -27,9 +26,9 @@ exports[`built-in-programs > 0d0e0860-0555-4b43-bd93-350edd49c6bd migrates to a 
     ],
     "progression": [],
     "progressionKey": "Pushups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Dips",
     "plannedSets": [
       {
@@ -53,9 +52,9 @@ exports[`built-in-programs > 0d0e0860-0555-4b43-bd93-350edd49c6bd migrates to a 
     ],
     "progression": [],
     "progressionKey": "Dips_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Handstand Pushups",
     "plannedSets": [
       {
@@ -79,9 +78,9 @@ exports[`built-in-programs > 0d0e0860-0555-4b43-bd93-350edd49c6bd migrates to a 
     ],
     "progression": [],
     "progressionKey": "Handstand Pushups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Pullups",
     "plannedSets": [
       {
@@ -105,9 +104,9 @@ exports[`built-in-programs > 0d0e0860-0555-4b43-bd93-350edd49c6bd migrates to a 
     ],
     "progression": [],
     "progressionKey": "Pullups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Chinups",
     "plannedSets": [
       {
@@ -131,9 +130,9 @@ exports[`built-in-programs > 0d0e0860-0555-4b43-bd93-350edd49c6bd migrates to a 
     ],
     "progression": [],
     "progressionKey": "Chinups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Inverted Rows",
     "plannedSets": [
       {
@@ -157,9 +156,9 @@ exports[`built-in-programs > 0d0e0860-0555-4b43-bd93-350edd49c6bd migrates to a 
     ],
     "progression": [],
     "progressionKey": "Inverted Rows_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Squats",
     "plannedSets": [
       {
@@ -183,9 +182,9 @@ exports[`built-in-programs > 0d0e0860-0555-4b43-bd93-350edd49c6bd migrates to a 
     ],
     "progression": [],
     "progressionKey": "Squats_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Lunges",
     "plannedSets": [
       {
@@ -209,9 +208,9 @@ exports[`built-in-programs > 0d0e0860-0555-4b43-bd93-350edd49c6bd migrates to a 
     ],
     "progression": [],
     "progressionKey": "Lunges_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Calf Raises",
     "plannedSets": [
       {
@@ -235,6 +234,7 @@ exports[`built-in-programs > 0d0e0860-0555-4b43-bd93-350edd49c6bd migrates to a 
     ],
     "progression": [],
     "progressionKey": "Calf Raises_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
 ]
 `;
@@ -244,7 +244,6 @@ exports[`built-in-programs > 590a285b-f883-4536-a1ce-cdc9e2d90399 migrates to a 
 exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a stable weighted shape 1`] = `
 [
   {
-    "loadBasis": "external",
     "name": "Pushups",
     "plannedSets": [
       {
@@ -268,9 +267,9 @@ exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a 
     ],
     "progression": [],
     "progressionKey": "Pushups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Dips",
     "plannedSets": [
       {
@@ -294,9 +293,9 @@ exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a 
     ],
     "progression": [],
     "progressionKey": "Dips_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Handstand Pushups",
     "plannedSets": [
       {
@@ -320,9 +319,9 @@ exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a 
     ],
     "progression": [],
     "progressionKey": "Handstand Pushups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Planche Pushups",
     "plannedSets": [
       {
@@ -346,9 +345,9 @@ exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a 
     ],
     "progression": [],
     "progressionKey": "Planche Pushups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Pullups",
     "plannedSets": [
       {
@@ -372,9 +371,9 @@ exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a 
     ],
     "progression": [],
     "progressionKey": "Pullups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Chinups",
     "plannedSets": [
       {
@@ -398,9 +397,9 @@ exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a 
     ],
     "progression": [],
     "progressionKey": "Chinups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Inverted Rows",
     "plannedSets": [
       {
@@ -424,9 +423,9 @@ exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a 
     ],
     "progression": [],
     "progressionKey": "Inverted Rows_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Muscle Ups",
     "plannedSets": [
       {
@@ -450,9 +449,9 @@ exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a 
     ],
     "progression": [],
     "progressionKey": "Muscle Ups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Squats",
     "plannedSets": [
       {
@@ -476,9 +475,9 @@ exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a 
     ],
     "progression": [],
     "progressionKey": "Squats_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Lunges",
     "plannedSets": [
       {
@@ -502,9 +501,9 @@ exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a 
     ],
     "progression": [],
     "progressionKey": "Lunges_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Calf Raises",
     "plannedSets": [
       {
@@ -528,9 +527,9 @@ exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a 
     ],
     "progression": [],
     "progressionKey": "Calf Raises_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Pistol Squats",
     "plannedSets": [
       {
@@ -554,6 +553,7 @@ exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a 
     ],
     "progression": [],
     "progressionKey": "Pistol Squats_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
 ]
 `;
@@ -561,7 +561,6 @@ exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a 
 exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a stable weighted shape 1`] = `
 [
   {
-    "loadBasis": "external",
     "name": "Bench Press",
     "plannedSets": [
       {
@@ -594,9 +593,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Bench Press_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Barbell Row",
     "plannedSets": [
       {
@@ -629,9 +628,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Barbell Row_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Overhead Press",
     "plannedSets": [
       {
@@ -664,9 +663,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Overhead Press_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Lat Pulldown",
     "plannedSets": [
       {
@@ -699,9 +698,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Lat Pulldown_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Barbell Curl",
     "plannedSets": [
       {
@@ -734,9 +733,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Barbell Curl_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Tricep Extension",
     "plannedSets": [
       {
@@ -769,9 +768,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Tricep Extension_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Cable Fly",
     "plannedSets": [
       {
@@ -804,9 +803,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Cable Fly_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Squat",
     "plannedSets": [
       {
@@ -839,9 +838,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Squat_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Deadlift",
     "plannedSets": [
       {
@@ -874,9 +873,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Deadlift_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Leg Press",
     "plannedSets": [
       {
@@ -909,9 +908,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Leg Press_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Leg Curl",
     "plannedSets": [
       {
@@ -944,9 +943,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Leg Curl_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Calf Raise",
     "plannedSets": [
       {
@@ -979,9 +978,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Calf Raise_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Incline Bench Press",
     "plannedSets": [
       {
@@ -1014,9 +1013,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Incline Bench Press_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Cable Row",
     "plannedSets": [
       {
@@ -1049,9 +1048,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Cable Row_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Dumbbell Fly",
     "plannedSets": [
       {
@@ -1084,9 +1083,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Dumbbell Fly_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Lat Pulldown",
     "plannedSets": [
       {
@@ -1119,9 +1118,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Lat Pulldown_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Dumbbell Curl",
     "plannedSets": [
       {
@@ -1154,9 +1153,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Dumbbell Curl_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Skullcrusher",
     "plannedSets": [
       {
@@ -1189,9 +1188,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Skullcrusher_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Front Squat",
     "plannedSets": [
       {
@@ -1224,9 +1223,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Front Squat_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Romanian Deadlift",
     "plannedSets": [
       {
@@ -1259,9 +1258,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Romanian Deadlift_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Leg Extension",
     "plannedSets": [
       {
@@ -1294,9 +1293,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Leg Extension_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Leg Curl",
     "plannedSets": [
       {
@@ -1329,9 +1328,9 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Leg Curl_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Calf Raise",
     "plannedSets": [
       {
@@ -1364,6 +1363,7 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
       },
     ],
     "progressionKey": "Calf Raise_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
   },
 ]
 `;
@@ -1371,7 +1371,6 @@ exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a 
 exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a stable weighted shape 1`] = `
 [
   {
-    "loadBasis": "external",
     "name": "Bench Press",
     "plannedSets": [
       {
@@ -1410,9 +1409,9 @@ exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a 
       },
     ],
     "progressionKey": "Bench Press_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Overhead Press",
     "plannedSets": [
       {
@@ -1451,9 +1450,9 @@ exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a 
       },
     ],
     "progressionKey": "Overhead Press_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Tricep Extension",
     "plannedSets": [
       {
@@ -1492,9 +1491,9 @@ exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a 
       },
     ],
     "progressionKey": "Tricep Extension_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Cable Fly",
     "plannedSets": [
       {
@@ -1533,9 +1532,9 @@ exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a 
       },
     ],
     "progressionKey": "Cable Fly_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Deadlift",
     "plannedSets": [
       {
@@ -1574,9 +1573,9 @@ exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a 
       },
     ],
     "progressionKey": "Deadlift_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Barbell Row",
     "plannedSets": [
       {
@@ -1615,9 +1614,9 @@ exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a 
       },
     ],
     "progressionKey": "Barbell Row_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Lat Pulldown",
     "plannedSets": [
       {
@@ -1656,9 +1655,9 @@ exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a 
       },
     ],
     "progressionKey": "Lat Pulldown_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Barbell Curl",
     "plannedSets": [
       {
@@ -1697,9 +1696,9 @@ exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a 
       },
     ],
     "progressionKey": "Barbell Curl_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Squat",
     "plannedSets": [
       {
@@ -1738,9 +1737,9 @@ exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a 
       },
     ],
     "progressionKey": "Squat_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Lunges",
     "plannedSets": [
       {
@@ -1779,9 +1778,9 @@ exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a 
       },
     ],
     "progressionKey": "Lunges_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Leg Extension",
     "plannedSets": [
       {
@@ -1820,9 +1819,9 @@ exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a 
       },
     ],
     "progressionKey": "Leg Extension_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Leg Curl",
     "plannedSets": [
       {
@@ -1861,6 +1860,7 @@ exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a 
       },
     ],
     "progressionKey": "Leg Curl_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
   },
 ]
 `;
@@ -1868,7 +1868,6 @@ exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a 
 exports[`built-in-programs > a303c855-9ed7-4ff8-ae60-11e9a573193e migrates to a stable weighted shape 1`] = `
 [
   {
-    "loadBasis": "external",
     "name": "Squat",
     "plannedSets": [
       {
@@ -1901,9 +1900,9 @@ exports[`built-in-programs > a303c855-9ed7-4ff8-ae60-11e9a573193e migrates to a 
       },
     ],
     "progressionKey": "Squat_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Bench Press",
     "plannedSets": [
       {
@@ -1936,9 +1935,9 @@ exports[`built-in-programs > a303c855-9ed7-4ff8-ae60-11e9a573193e migrates to a 
       },
     ],
     "progressionKey": "Bench Press_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Deadlift",
     "plannedSets": [
       {
@@ -1959,9 +1958,9 @@ exports[`built-in-programs > a303c855-9ed7-4ff8-ae60-11e9a573193e migrates to a 
       },
     ],
     "progressionKey": "Deadlift_WeightedExerciseBlueprint_1_5",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Squat",
     "plannedSets": [
       {
@@ -1994,9 +1993,9 @@ exports[`built-in-programs > a303c855-9ed7-4ff8-ae60-11e9a573193e migrates to a 
       },
     ],
     "progressionKey": "Squat_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Overhead Press",
     "plannedSets": [
       {
@@ -2029,9 +2028,9 @@ exports[`built-in-programs > a303c855-9ed7-4ff8-ae60-11e9a573193e migrates to a 
       },
     ],
     "progressionKey": "Overhead Press_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Deadlift",
     "plannedSets": [
       {
@@ -2052,6 +2051,7 @@ exports[`built-in-programs > a303c855-9ed7-4ff8-ae60-11e9a573193e migrates to a 
       },
     ],
     "progressionKey": "Deadlift_WeightedExerciseBlueprint_1_5",
+    "resistance": "external",
   },
 ]
 `;
@@ -2059,7 +2059,6 @@ exports[`built-in-programs > a303c855-9ed7-4ff8-ae60-11e9a573193e migrates to a 
 exports[`built-in-programs > ac80c322-3c0f-42ba-b837-cd998adee25a migrates to a stable weighted shape 1`] = `
 [
   {
-    "loadBasis": "external",
     "name": "Squat",
     "plannedSets": [
       {
@@ -2104,9 +2103,9 @@ exports[`built-in-programs > ac80c322-3c0f-42ba-b837-cd998adee25a migrates to a 
       },
     ],
     "progressionKey": "Squat_WeightedExerciseBlueprint_5_5",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Bench Press",
     "plannedSets": [
       {
@@ -2151,9 +2150,9 @@ exports[`built-in-programs > ac80c322-3c0f-42ba-b837-cd998adee25a migrates to a 
       },
     ],
     "progressionKey": "Bench Press_WeightedExerciseBlueprint_5_5",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Barbell Row",
     "plannedSets": [
       {
@@ -2198,9 +2197,9 @@ exports[`built-in-programs > ac80c322-3c0f-42ba-b837-cd998adee25a migrates to a 
       },
     ],
     "progressionKey": "Barbell Row_WeightedExerciseBlueprint_5_5",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Squat",
     "plannedSets": [
       {
@@ -2245,9 +2244,9 @@ exports[`built-in-programs > ac80c322-3c0f-42ba-b837-cd998adee25a migrates to a 
       },
     ],
     "progressionKey": "Squat_WeightedExerciseBlueprint_5_5",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Overhead Press",
     "plannedSets": [
       {
@@ -2292,9 +2291,9 @@ exports[`built-in-programs > ac80c322-3c0f-42ba-b837-cd998adee25a migrates to a 
       },
     ],
     "progressionKey": "Overhead Press_WeightedExerciseBlueprint_5_5",
+    "resistance": "external",
   },
   {
-    "loadBasis": "external",
     "name": "Deadlift",
     "plannedSets": [
       {
@@ -2315,6 +2314,7 @@ exports[`built-in-programs > ac80c322-3c0f-42ba-b837-cd998adee25a migrates to a 
       },
     ],
     "progressionKey": "Deadlift_WeightedExerciseBlueprint_1_5",
+    "resistance": "external",
   },
 ]
 `;

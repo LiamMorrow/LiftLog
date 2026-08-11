@@ -87,10 +87,10 @@ export interface WeightedExerciseBlueprintJSON {
    * Where this movement's load comes from: the whole stored weight (`external`), what is added on
    * top of the lifter (`bodyweight`), or nothing at all (`none`, e.g. crunches).
    */
-  loadBasis: LoadBasisJSON;
+  resistance: ResistanceJSON;
 }
 
-export type LoadBasisJSON = 'none' | 'external' | 'bodyweight';
+export type ResistanceJSON = 'none' | 'external' | 'bodyweight';
 
 /** What the plan asks for on one set. */
 export interface PlannedSetJSON {

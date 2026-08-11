@@ -832,8 +832,8 @@ var require_validate_schema = __commonJS({
           }
           errors++;
         }
-        if (data.loadBasis === void 0) {
-          const err8 = { instancePath, schemaPath: "#/required", keyword: "required", params: { missingProperty: "loadBasis" }, message: "must have required property 'loadBasis'" };
+        if (data.resistance === void 0) {
+          const err8 = { instancePath, schemaPath: "#/required", keyword: "required", params: { missingProperty: "resistance" }, message: "must have required property 'resistance'" };
           if (vErrors === null) {
             vErrors = [err8];
           } else {
@@ -952,10 +952,10 @@ var require_validate_schema = __commonJS({
             errors++;
           }
         }
-        if (data.loadBasis !== void 0) {
-          let data10 = data.loadBasis;
+        if (data.resistance !== void 0) {
+          let data10 = data.resistance;
           if (typeof data10 !== "string") {
-            const err17 = { instancePath: instancePath + "/loadBasis", schemaPath: "#/definitions/LoadBasis/type", keyword: "type", params: { type: "string" }, message: "must be string" };
+            const err17 = { instancePath: instancePath + "/resistance", schemaPath: "#/definitions/Resistance/type", keyword: "type", params: { type: "string" }, message: "must be string" };
             if (vErrors === null) {
               vErrors = [err17];
             } else {
@@ -964,7 +964,7 @@ var require_validate_schema = __commonJS({
             errors++;
           }
           if (!(data10 === "none" || data10 === "external" || data10 === "bodyweight")) {
-            const err18 = { instancePath: instancePath + "/loadBasis", schemaPath: "#/definitions/LoadBasis/enum", keyword: "enum", params: { allowedValues: schema29.enum }, message: "must be equal to one of the allowed values" };
+            const err18 = { instancePath: instancePath + "/resistance", schemaPath: "#/definitions/Resistance/enum", keyword: "enum", params: { allowedValues: schema29.enum }, message: "must be equal to one of the allowed values" };
             if (vErrors === null) {
               vErrors = [err18];
             } else {

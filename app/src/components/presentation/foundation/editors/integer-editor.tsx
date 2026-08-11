@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TextStyle } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import { TextInput, TextInputProps } from 'react-native-paper';
 
 interface IntegerEditorProps {
   value: number;
@@ -10,8 +10,8 @@ interface IntegerEditorProps {
   testID?: string;
 }
 
-export function IntegerEditor(props: IntegerEditorProps) {
-  const { value, onChange } = props;
+export function IntegerEditor(props: IntegerEditorProps & Partial<Omit<TextInputProps, keyof IntegerEditorProps>>) {
+  const { value, onChange, noUnderline, style, testID, ...rest } = props;
   const [text, setText] = useState(props.value.toString());
   const [editorValue, setEditorValue] = useState(value);
 
@@ -38,22 +38,23 @@ export function IntegerEditor(props: IntegerEditorProps) {
   }, [value, editorValue]);
   return (
     <TextInput
-      testID={props.testID}
+      testID={testID}
       value={text}
       inputMode={'numeric'}
       keyboardType={'numeric'}
       onChangeText={handleTextChange}
-      underlineStyle={props.noUnderline ? { display: 'none' } : {}}
+      underlineStyle={noUnderline ? { display: 'none' } : {}}
       selectTextOnFocus
-      style={[props.style]}
+      style={[style]}
       // oxlint-disable-next-line typescript/no-non-null-asserted-optional-chain
-      textColor={props.style?.color! as string}
+      textColor={style?.color! as string}
       onBlur={() => {
         if (text === '') {
           setText('0');
         }
         onChange(editorValue);
       }}
+      {...rest}
     />
   );
 }

@@ -28,7 +28,7 @@ const validBlueprint: ProgramBlueprintJSON = {
           progression: [
             { axis: 'load', step: '2.5' as BigNumberJSON, scope: { type: 'allSets' }, trigger: 'allSetsMetTarget' },
           ],
-          loadBasis: 'external',
+          resistance: 'external',
         },
       ],
     },

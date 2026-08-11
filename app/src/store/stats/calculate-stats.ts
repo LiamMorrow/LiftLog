@@ -314,5 +314,5 @@ function toStatisticOverTime<T>(unsortedStats: TimeTrackedStatistic<T>[], ops: Q
  * return 'load'
  */
 function primaryAxisFor(blueprint: ExerciseBlueprint): StatAxis {
-  return blueprint.type === 'WeightedExerciseBlueprint' && blueprint.loadBasis === 'none' ? 'reps' : 'load';
+  return blueprint.type === 'WeightedExerciseBlueprint' && blueprint.resistance === 'none' ? 'reps' : 'load';
 }

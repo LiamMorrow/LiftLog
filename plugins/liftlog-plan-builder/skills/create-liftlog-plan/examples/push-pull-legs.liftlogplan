@@ -1,18 +1,21 @@
 {
-  "version": 2,
+  "version": 3,
   "name": "Push Pull Legs",
   "lastEdited": "2026-07-12",
   "sessions": [
     {
-      "version": 2,
+      "version": 6,
       "name": "Push",
       "notes": "Chest, shoulders and triceps. Leave one or two reps in reserve on the first working set.",
       "exercises": [
         {
           "type": "WeightedExerciseBlueprint",
           "name": "Barbell Bench Press",
-          "sets": 3,
-          "repsPerSet": 5,
+          "plannedSets": [
+            { "reps": { "min": 5, "max": 5 } },
+            { "reps": { "min": 5, "max": 5 } },
+            { "reps": { "min": 5, "max": 5 } }
+          ],
           "restBetweenSets": {
             "minRest": "PT3M",
             "maxRest": "PT5M",
@@ -21,16 +24,24 @@
           "supersetWithNext": false,
           "notes": "Squeeze the bar and keep your shoulder blades retracted.",
           "link": "",
-          "progressiveOverload": {
-            "type": "IncreaseAllEvenlyProgressiveOverload",
-            "amount": "2.5"
-          }
+          "resistance": "external",
+          "progression": [
+            {
+              "axis": "load",
+              "step": "2.5",
+              "scope": { "type": "allSets" },
+              "trigger": "allSetsMetTarget"
+            }
+          ]
         },
         {
           "type": "WeightedExerciseBlueprint",
           "name": "Overhead Press",
-          "sets": 3,
-          "repsPerSet": 8,
+          "plannedSets": [
+            { "reps": { "min": 8, "max": 8 } },
+            { "reps": { "min": 8, "max": 8 } },
+            { "reps": { "min": 8, "max": 8 } }
+          ],
           "restBetweenSets": {
             "minRest": "PT2M",
             "maxRest": "PT3M",
@@ -39,16 +50,24 @@
           "supersetWithNext": false,
           "notes": "",
           "link": "",
-          "progressiveOverload": {
-            "type": "IncreaseAllEvenlyProgressiveOverload",
-            "amount": "2.5"
-          }
+          "resistance": "external",
+          "progression": [
+            {
+              "axis": "load",
+              "step": "2.5",
+              "scope": { "type": "allSets" },
+              "trigger": "allSetsMetTarget"
+            }
+          ]
         },
         {
           "type": "WeightedExerciseBlueprint",
           "name": "Lateral Raise",
-          "sets": 3,
-          "repsPerSet": 12,
+          "plannedSets": [
+            { "reps": { "min": 10, "max": 12 } },
+            { "reps": { "min": 10, "max": 12 } },
+            { "reps": { "min": 10, "max": 12 } }
+          ],
           "restBetweenSets": {
             "minRest": "PT1M",
             "maxRest": "PT90S",
@@ -57,17 +76,24 @@
           "supersetWithNext": true,
           "notes": "Superset with the triceps pushdown that follows.",
           "link": "",
-          "progressiveOverload": {
-            "type": "IncreaseLowestSetProgressiveOverload",
-            "amount": "1.25",
-            "increaseStrategy": "middle"
-          }
+          "resistance": "external",
+          "progression": [
+            {
+              "axis": "load",
+              "step": "1.25",
+              "scope": { "type": "lowestSets", "pick": "middle" },
+              "trigger": "allSetsMetTarget"
+            }
+          ]
         },
         {
           "type": "WeightedExerciseBlueprint",
           "name": "Triceps Pushdown",
-          "sets": 3,
-          "repsPerSet": 12,
+          "plannedSets": [
+            { "reps": { "min": 12, "max": 12 } },
+            { "reps": { "min": 12, "max": 12 } },
+            { "reps": { "min": 12, "max": 12 } }
+          ],
           "restBetweenSets": {
             "minRest": "PT1M",
             "maxRest": "PT90S",
@@ -76,24 +102,27 @@
           "supersetWithNext": false,
           "notes": "",
           "link": "",
-          "progressiveOverload": {
-            "type": "IncreaseLowestSetProgressiveOverload",
-            "amount": "2.5",
-            "increaseStrategy": "all"
-          }
+          "resistance": "external",
+          "progression": [
+            {
+              "axis": "load",
+              "step": "2.5",
+              "scope": { "type": "lowestSets", "pick": "all" },
+              "trigger": "allSetsMetTarget"
+            }
+          ]
         }
       ]
     },
     {
-      "version": 2,
+      "version": 6,
       "name": "Pull",
       "notes": "Back and biceps.",
       "exercises": [
         {
           "type": "WeightedExerciseBlueprint",
           "name": "Deadlift",
-          "sets": 1,
-          "repsPerSet": 5,
+          "plannedSets": [{ "reps": { "min": 5, "max": 5 } }],
           "restBetweenSets": {
             "minRest": "PT3M",
             "maxRest": "PT5M",
@@ -102,33 +131,58 @@
           "supersetWithNext": false,
           "notes": "One heavy top set. Reset between reps.",
           "link": "",
-          "progressiveOverload": {
-            "type": "IncreaseAllEvenlyProgressiveOverload",
-            "amount": "5"
-          }
+          "resistance": "external",
+          "progression": [
+            {
+              "axis": "load",
+              "step": "5",
+              "scope": { "type": "allSets" },
+              "trigger": "allSetsMetTarget"
+            }
+          ]
         },
         {
           "type": "WeightedExerciseBlueprint",
           "name": "Pull Up",
-          "sets": 3,
-          "repsPerSet": 8,
+          "plannedSets": [
+            { "reps": { "min": 6, "max": 6 } },
+            { "reps": { "min": 6, "max": 6 } },
+            { "reps": { "min": 6, "max": 6 } }
+          ],
           "restBetweenSets": {
             "minRest": "PT2M",
             "maxRest": "PT3M",
             "failureRest": "PT3M"
           },
           "supersetWithNext": false,
-          "notes": "Add weight once you can hit eight clean reps on every set.",
+          "notes": "Climb to eight reps on every set, then start adding weight in the belt and drop back to six.",
           "link": "",
-          "progressiveOverload": {
-            "type": "NoProgressiveOverload"
-          }
+          "resistance": "bodyweight",
+          "progression": [
+            {
+              "axis": "reps",
+              "step": "1",
+              "scope": { "type": "allSets" },
+              "ceiling": "8",
+              "onCeiling": "reset",
+              "trigger": "allSetsMetTarget"
+            },
+            {
+              "axis": "load",
+              "step": "2.5",
+              "scope": { "type": "allSets" },
+              "trigger": "allSetsMetTarget"
+            }
+          ]
         },
         {
           "type": "WeightedExerciseBlueprint",
           "name": "Barbell Row",
-          "sets": 3,
-          "repsPerSet": 10,
+          "plannedSets": [
+            { "reps": { "min": 10, "max": 10 } },
+            { "reps": { "min": 10, "max": 10 } },
+            { "reps": { "min": 10, "max": 10 } }
+          ],
           "restBetweenSets": {
             "minRest": "PT2M",
             "maxRest": "PT3M",
@@ -137,16 +191,24 @@
           "supersetWithNext": false,
           "notes": "",
           "link": "",
-          "progressiveOverload": {
-            "type": "IncreaseAllEvenlyProgressiveOverload",
-            "amount": "2.5"
-          }
+          "resistance": "external",
+          "progression": [
+            {
+              "axis": "load",
+              "step": "2.5",
+              "scope": { "type": "allSets" },
+              "trigger": "allSetsMetTarget"
+            }
+          ]
         },
         {
           "type": "WeightedExerciseBlueprint",
           "name": "Barbell Curl",
-          "sets": 3,
-          "repsPerSet": 12,
+          "plannedSets": [
+            { "reps": { "min": 12, "max": 12 } },
+            { "reps": { "min": 12, "max": 12 } },
+            { "reps": { "min": 12, "max": 12 } }
+          ],
           "restBetweenSets": {
             "minRest": "PT1M",
             "maxRest": "PT90S",
@@ -155,24 +217,31 @@
           "supersetWithNext": false,
           "notes": "",
           "link": "",
-          "progressiveOverload": {
-            "type": "IncreaseLowestSetProgressiveOverload",
-            "amount": "1.25",
-            "increaseStrategy": "first"
-          }
+          "resistance": "external",
+          "progression": [
+            {
+              "axis": "load",
+              "step": "1.25",
+              "scope": { "type": "lowestSets", "pick": "first" },
+              "trigger": "allSetsMetTarget"
+            }
+          ]
         }
       ]
     },
     {
-      "version": 2,
+      "version": 6,
       "name": "Legs",
       "notes": "",
       "exercises": [
         {
           "type": "WeightedExerciseBlueprint",
           "name": "Back Squat",
-          "sets": 3,
-          "repsPerSet": 5,
+          "plannedSets": [
+            { "reps": { "min": 5, "max": 5 } },
+            { "reps": { "min": 5, "max": 5 } },
+            { "reps": { "min": 5, "max": 5 } }
+          ],
           "restBetweenSets": {
             "minRest": "PT3M",
             "maxRest": "PT5M",
@@ -181,16 +250,24 @@
           "supersetWithNext": false,
           "notes": "Depth before weight.",
           "link": "",
-          "progressiveOverload": {
-            "type": "IncreaseAllEvenlyProgressiveOverload",
-            "amount": "5"
-          }
+          "resistance": "external",
+          "progression": [
+            {
+              "axis": "load",
+              "step": "5",
+              "scope": { "type": "allSets" },
+              "trigger": "allSetsMetTarget"
+            }
+          ]
         },
         {
           "type": "WeightedExerciseBlueprint",
           "name": "Romanian Deadlift",
-          "sets": 3,
-          "repsPerSet": 10,
+          "plannedSets": [
+            { "reps": { "min": 10, "max": 10 } },
+            { "reps": { "min": 10, "max": 10 } },
+            { "reps": { "min": 10, "max": 10 } }
+          ],
           "restBetweenSets": {
             "minRest": "PT2M",
             "maxRest": "PT3M",
@@ -199,16 +276,25 @@
           "supersetWithNext": false,
           "notes": "",
           "link": "",
-          "progressiveOverload": {
-            "type": "IncreaseAllEvenlyProgressiveOverload",
-            "amount": "2.5"
-          }
+          "resistance": "external",
+          "progression": [
+            {
+              "axis": "load",
+              "step": "2.5",
+              "scope": { "type": "allSets" },
+              "trigger": "allSetsMetTarget"
+            }
+          ]
         },
         {
           "type": "WeightedExerciseBlueprint",
           "name": "Standing Calf Raise",
-          "sets": 4,
-          "repsPerSet": 15,
+          "plannedSets": [
+            { "reps": { "min": 15, "max": 15 } },
+            { "reps": { "min": 15, "max": 15 } },
+            { "reps": { "min": 15, "max": 15 } },
+            { "reps": { "min": 15, "max": 15 } }
+          ],
           "restBetweenSets": {
             "minRest": "PT1M",
             "maxRest": "PT90S",
@@ -217,10 +303,15 @@
           "supersetWithNext": false,
           "notes": "",
           "link": "",
-          "progressiveOverload": {
-            "type": "IncreaseAllEvenlyProgressiveOverload",
-            "amount": "2.5"
-          }
+          "resistance": "external",
+          "progression": [
+            {
+              "axis": "load",
+              "step": "2.5",
+              "scope": { "type": "allSets" },
+              "trigger": "allSetsMetTarget"
+            }
+          ]
         }
       ]
     }

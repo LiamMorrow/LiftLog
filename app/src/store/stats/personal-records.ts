@@ -12,7 +12,7 @@ function bestOneRepMax(session: Session): Map<MovementKey, PersonalRecord> {
   const best = new Map<MovementKey, PersonalRecord>();
 
   for (const exercise of session.recordedExercises) {
-    if (exercise.type !== 'RecordedWeightedExercise' || !exercise.isStarted || !exercise.tracksLoad) {
+    if (exercise.type !== 'RecordedWeightedExercise' || !exercise.isStarted || !exercise.tracksResistance) {
       continue;
     }
 

@@ -83,8 +83,10 @@ describe('repsConfigToPlannedSets', () => {
   it.each([
     ['bodyweight', true, 'bodyweight'],
     ['external', false, 'external'],
-  ])('maps a %s exercise onto its load basis', (_label, usesBodyweight, loadBasis) => {
-    expect(repsConfigToPlannedSets(weighted(3, { type: 'fixed', reps: 5 }, usesBodyweight)).loadBasis).toBe(loadBasis);
+  ])('maps a %s exercise onto its load basis', (_label, usesBodyweight, resistance) => {
+    expect(repsConfigToPlannedSets(weighted(3, { type: 'fixed', reps: 5 }, usesBodyweight)).resistance).toBe(
+      resistance,
+    );
   });
 
   it('drops the fields it replaces and keeps the rest', () => {

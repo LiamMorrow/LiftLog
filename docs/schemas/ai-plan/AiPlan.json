@@ -135,8 +135,8 @@
           },
           "description": "Ordered; the first rule that can still move, moves. Empty means no automatic progression."
         },
-        "loadBasis": {
-          "$ref": "#/definitions/LoadBasis",
+        "resistance": {
+          "$ref": "#/definitions/Resistance",
           "description": "Where this movement's load comes from: the whole stored weight (`external`), what is added on top of the lifter (`bodyweight`), or nothing at all (`none`, e.g. crunches)."
         }
       },
@@ -149,7 +149,7 @@
         "notes",
         "link",
         "progression",
-        "loadBasis"
+        "resistance"
       ]
     },
     "PlannedSet": {
@@ -310,7 +310,7 @@
       "const": "allSetsMetTarget",
       "description": "What has to happen for a rule to fire."
     },
-    "LoadBasis": {
+    "Resistance": {
       "type": "string",
       "enum": [
         "none",

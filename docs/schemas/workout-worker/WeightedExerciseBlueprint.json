@@ -37,8 +37,8 @@
       },
       "description": "Ordered; the first rule that can still move, moves. Empty means no automatic progression."
     },
-    "loadBasis": {
-      "$ref": "./LoadBasis.json",
+    "resistance": {
+      "$ref": "./Resistance.json",
       "description": "Where this movement's load comes from: the whole stored weight (`external`), what is added on top of the lifter (`bodyweight`), or nothing at all (`none`, e.g. crunches)."
     }
   },
@@ -51,6 +51,6 @@
     "notes",
     "link",
     "progression",
-    "loadBasis"
+    "resistance"
   ]
 }

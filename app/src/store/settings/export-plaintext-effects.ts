@@ -75,8 +75,8 @@ class ExportedSetCsvRow {
             set.set!.completionDateTime.toString(),
             exercise.blueprint.name,
             // An exercise with no load has no weight to report.
-            exercise.tracksLoad ? set.weight.value : '',
-            exercise.tracksLoad ? shortFormatWeightUnit(set.weight.unit) : '',
+            exercise.tracksResistance ? set.weight.value : '',
+            exercise.tracksResistance ? shortFormatWeightUnit(set.weight.unit) : '',
             set.set!.repsCompleted,
             exercise.repsTargetForSet(index).max,
             exercise.notes ?? '',

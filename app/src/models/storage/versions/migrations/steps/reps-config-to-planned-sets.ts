@@ -12,7 +12,7 @@ interface PlannedSet {
   reps: RepsTarget;
 }
 
-type LoadBasis = 'none' | 'external' | 'bodyweight';
+type Resistance = 'none' | 'external' | 'bodyweight';
 
 interface Input {
   sets: number;
@@ -22,14 +22,14 @@ interface Input {
 
 /**
  * Replaces `sets` + `repsConfig` with a plain list of planned sets, and `usesBodyweight` with a
- * three-way `loadBasis`.
+ * three-way `resistance`.
  */
 export function repsConfigToPlannedSets<T extends Input>(ex: T) {
   const { sets, repsConfig, usesBodyweight, ...rest } = ex;
   return {
     ...rest,
     plannedSets: plannedSetsFor(sets, repsConfig),
-    loadBasis: (usesBodyweight ? 'bodyweight' : 'external') as LoadBasis,
+    resistance: (usesBodyweight ? 'bodyweight' : 'external') as Resistance,
   };
 }
 

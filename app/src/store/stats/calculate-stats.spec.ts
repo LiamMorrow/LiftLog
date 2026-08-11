@@ -31,7 +31,7 @@ function makeBlueprint(name: string, sets = 3, reps = 8, usesBodyweight = false)
       minRest: Duration.ofSeconds(90),
       failureRest: Duration.ofSeconds(180),
     },
-    loadBasis: usesBodyweight ? 'bodyweight' : 'external',
+    resistance: usesBodyweight ? 'bodyweight' : 'external',
   });
 }
 
@@ -199,7 +199,7 @@ describe('calculateStats', () => {
 
     it('reads an exercise that tracks no load on its reps', () => {
       const date = LocalDate.of(2024, 4, 1);
-      const blueprint = makeBlueprint('Crunch', 3, 10).with({ loadBasis: 'none' });
+      const blueprint = makeBlueprint('Crunch', 3, 10).with({ resistance: 'none' });
       const exercise = makeRecordedExercise(blueprint, [20, 20, 20], new Weight(999, 'kilograms'));
       const session = new Session(
         'id',
@@ -222,7 +222,7 @@ describe('calculateStats', () => {
       const d1 = LocalDate.of(2024, 4, 1);
       const d2 = d1.plusDays(7);
       const loaded = makeBlueprint('Crunch', 3, 10);
-      const unloaded = loaded.with({ loadBasis: 'none' });
+      const unloaded = loaded.with({ resistance: 'none' });
       const session = (id: string, date: LocalDate, blueprint: WeightedExerciseBlueprint) =>
         new Session(
           id,

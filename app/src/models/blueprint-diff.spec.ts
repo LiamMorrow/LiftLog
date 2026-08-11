@@ -253,20 +253,20 @@ describe('diffSessionBlueprints', () => {
         progression: [],
       });
       const original = new SessionBlueprint('Workout', [base], '');
-      const modified = new SessionBlueprint('Workout', [base.with({ loadBasis: 'bodyweight' })], '');
+      const modified = new SessionBlueprint('Workout', [base.with({ resistance: 'bodyweight' })], '');
 
       const diff = diffSessionBlueprints(original, modified);
 
       expect(diff.modifiedExercises).toHaveLength(1);
       expect(diff.modifiedExercises[0]!.changes).toHaveLength(1);
       expect(diff.modifiedExercises[0]!.changes[0]).toMatchObject({
-        kind: 'exerciseLoadBasis',
+        kind: 'exerciseResistance',
         oldValue: 'external',
         newValue: 'bodyweight',
       });
 
       const applied = applySessionBlueprintDiff(original, diff);
-      expect((applied.exercises[0] as WeightedExerciseBlueprint).loadBasis).toBe('bodyweight');
+      expect((applied.exercises[0] as WeightedExerciseBlueprint).resistance).toBe('bodyweight');
     });
 
     it('should detect multiple field changes on same exercise', () => {

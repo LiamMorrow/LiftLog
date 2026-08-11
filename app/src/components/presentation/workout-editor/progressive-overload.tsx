@@ -1,18 +1,26 @@
 import SelectPicker, { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
 import {
   applyProgression,
+  defaultCeilingFor,
   IncreaseStrategy,
+  Resistance,
+  ProgressionAxis,
   ProgressionRule,
+  SetScope,
+  unreachableFrom,
   WeightedExerciseBlueprint,
-  weightIncrementFor,
+  withAddedRule,
 } from '@/models/blueprint-models';
 import { useTranslate } from '@tolgee/react';
 import { ScrollView, View } from 'react-native';
-import { match } from 'ts-pattern';
 import { DecimalEditor } from '@/components/presentation/foundation/editors/decimal-editor';
+import { IntegerEditor } from '@/components/presentation/foundation/editors/integer-editor';
 import { Dialog, Divider, Text } from 'react-native-paper';
-import { spacing } from '@/hooks/useAppTheme';
+import { AppThemeColors, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import Button from '@/components/presentation/foundation/button';
+import IconButton from '@/components/presentation/foundation/icon-button';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
+import { Switch } from '@/components/presentation/foundation/switch';
 import { useState } from 'react';
 import { PotentialSet, RecordedSet, RecordedWeightedExercise } from '@/models/session-models';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
@@ -24,185 +32,323 @@ import { Weight } from '@/models/weight';
 import Icon from '@/components/presentation/foundation/icon';
 
 interface Props {
-  value: ProgressionRule[];
+  /** The whole blueprint, so the worked example can run the rules against this exercise's own sets. */
+  exercise: WeightedExerciseBlueprint;
   onChange: (v: ProgressionRule[]) => void;
 }
 
-/**
- * The three arrangements the editor offers today, projected on and off the rule list. The list can
- * hold more than this shape can name, so the picker reads what it can and leaves the rest alone.
- */
-type OverloadShape = 'none' | 'allEvenly' | 'lowestSet';
+/** The scope picker flattens the two shapes into one list, since only `lowestSets` carries a pick. */
+type ScopeChoice = 'allSets' | IncreaseStrategy;
 
-function shapeOf(progression: ProgressionRule[]): OverloadShape {
-  const rule = progression.find((r) => r.axis === 'load');
-  if (!rule) {
-    return 'none';
-  }
-  return rule.scope.type === 'lowestSets' ? 'lowestSet' : 'allEvenly';
+function scopeChoiceOf(scope: SetScope): ScopeChoice {
+  return scope.type === 'allSets' ? 'allSets' : scope.pick;
 }
 
-function loadRule(progression: ProgressionRule[]): ProgressionRule | undefined {
-  return progression.find((r) => r.axis === 'load');
+function scopeOf(choice: ScopeChoice): SetScope {
+  return choice === 'allSets' ? { type: 'allSets' } : { type: 'lowestSets', pick: choice };
 }
 
-function withShape(progression: ProgressionRule[], shape: OverloadShape): ProgressionRule[] {
-  const step = loadRule(progression)?.step ?? weightIncrementFor(progression);
-  return match(shape)
-    .returnType<ProgressionRule[]>()
-    .with('none', () => [])
-    .with('allEvenly', () => [ProgressionRule.load(step)])
-    .with('lowestSet', () => [ProgressionRule.load(step, { type: 'lowestSets', pick: 'all' })])
-    .exhaustive();
+function defaultRule(axis: ProgressionAxis): ProgressionRule {
+  return axis === 'load'
+    ? ProgressionRule.load(BigNumber(2.5))
+    : ProgressionRule.of({ axis: 'reps', step: BigNumber(1) });
 }
 
-function withLoadRule(progression: ProgressionRule[], update: (rule: ProgressionRule) => ProgressionRule) {
-  return progression.map((rule) => (rule.axis === 'load' ? update(rule) : rule));
-}
-
-export function ProgressiveOverloadSelect(props: Props) {
+export function ProgressionRulesEditor(props: Props) {
   const { t } = useTranslate();
-  const values: SelectPickerOption<OverloadShape>[] = [
-    {
-      value: 'none',
-      label: t('exercise.progressive_overload.no.label'),
-    },
-    {
-      value: 'allEvenly',
-      label: t('exercise.progressive_overload.increase_all_evenly.label'),
-    },
-    {
-      value: 'lowestSet',
-      label: t('exercise.progressive_overload.increase_lowest_set.label'),
-    },
-  ];
+  const { colors } = useAppTheme();
+  const rules = props.exercise.progression;
+  const canMoveLoad = props.exercise.resistance !== 'none';
+
+  const replaceRule = (index: number, rule: ProgressionRule) =>
+    props.onChange(rules.map((existing, i) => (i === index ? rule : existing)));
+
+  const removeRule = (index: number) => props.onChange(rules.filter((_, i) => i !== index));
+
+  const swapRules = (index: number, other: number) =>
+    props.onChange(rules.map((rule, i) => (i === index ? rules[other]! : i === other ? rules[index]! : rule)));
+
+  const addRule = () => props.onChange(withAddedRule(props.exercise));
+
+  const deadFrom = unreachableFrom(rules, canMoveLoad);
+  const defaultCeiling = defaultCeilingFor(props.exercise);
+
   return (
-    <SelectPicker
-      value={shapeOf(props.value)}
-      onChange={(shape) => props.onChange(withShape(props.value, shape))}
-      options={values}
-    />
+    <View style={{ gap: spacing[2] }} testID="progression-rules">
+      {rules.length === 0 && (
+        <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
+          {t('exercise.progression.none.body')}
+        </Text>
+      )}
+      {rules.map((rule, index) => (
+        <View key={index} style={deadFrom !== undefined && index >= deadFrom ? { opacity: 0.5 } : undefined}>
+          {index > 0 && <Divider style={{ marginBlock: spacing[2] }} />}
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text variant="labelLarge" style={{ flex: 1, color: colors.onSurfaceVariant }}>
+              {t('exercise.progression.rule.title', { position: index + 1 })}
+              {deadFrom !== undefined && index >= deadFrom && ` · ${t('exercise.progression.rule.never_runs.label')}`}
+            </Text>
+            {rules.length > 1 && (
+              <>
+                <IconButton
+                  icon="arrowUpward"
+                  size={18}
+                  disabled={index === 0}
+                  accessibilityLabel={t('exercise.progression.rule.move_up.label')}
+                  onPress={() => swapRules(index, index - 1)}
+                />
+                <IconButton
+                  icon="arrowDownward"
+                  size={18}
+                  disabled={index === rules.length - 1}
+                  accessibilityLabel={t('exercise.progression.rule.move_down.label')}
+                  onPress={() => swapRules(index, index + 1)}
+                />
+              </>
+            )}
+            <IconButton
+              icon="delete"
+              size={18}
+              accessibilityLabel={t('exercise.progression.rule.remove.label')}
+              testID={`progression-remove-${index}`}
+              onPress={() => removeRule(index)}
+            />
+          </View>
+          <RuleEditor
+            rule={rule}
+            canMoveLoad={canMoveLoad}
+            hasLaterRule={index < rules.length - 1}
+            defaultCeiling={defaultCeiling}
+            onChange={(next) => replaceRule(index, next)}
+          />
+          {deadFrom === index + 1 && (
+            <Text variant="bodySmall" style={{ color: colors.error, marginBlockStart: spacing[2] }}>
+              {rule.axis === 'load'
+                ? t('exercise.progression.blocks_later.load.body')
+                : t('exercise.progression.blocks_later.reps.body')}
+            </Text>
+          )}
+        </View>
+      ))}
+      {rules.length > 0 && <Divider style={{ marginBlockStart: spacing[2] }} />}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
+        <Button style={{ flex: 1 }} icon="add" testID="progression-add-rule" onPress={addRule}>
+          {t('exercise.progression.add_rule.label')}
+        </Button>
+        {rules.length > 0 && <ProgressionExample exercise={props.exercise} />}
+      </View>
+    </View>
   );
 }
 
-export function ProgressiveOverloadValuesEditor(props: Props) {
-  const shape = shapeOf(props.value);
+function RuleEditor(props: {
+  rule: ProgressionRule;
+  canMoveLoad: boolean;
+  hasLaterRule: boolean;
+  defaultCeiling: BigNumber;
+  onChange: (rule: ProgressionRule) => void;
+}) {
+  const { t } = useTranslate();
+  const { colors } = useAppTheme();
+  const { rule } = props;
+
+  const axisOptions: SelectPickerOption<ProgressionAxis>[] = [
+    { value: 'load', label: t('exercise.progression.axis.load.label') },
+    { value: 'reps', label: t('exercise.progression.axis.reps.label') },
+  ];
+
+  const scopeOptions: SelectPickerOption<ScopeChoice>[] = [
+    { value: 'allSets', label: t('exercise.progression.scope.all_sets.label') },
+    { value: 'all', label: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.all.label') },
+    { value: 'first', label: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.first.label') },
+    { value: 'middle', label: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.middle.label') },
+    { value: 'last', label: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.last.label') },
+  ];
+
   return (
-    <View style={{ gap: spacing[2] }}>
-      {match(shape)
-        .with('none', () => undefined)
-        .with('allEvenly', () => <IncreaseAllEvenlyValues {...props} />)
-        .with('lowestSet', () => <IncreaseLowestSetValues {...props} />)
-        .exhaustive()}
-      {shape !== 'none' && (
+    <View>
+      {/*
+       * Always offered, even where the exercise carries no load to move. Turning the load off leaves
+       * any load rule behind it inert, and hiding the axis would leave a rule on screen doing nothing
+       * with no way to say what it should do instead.
+       */}
+      <Row label={t('exercise.progression.axis.label')}>
+        <SelectPicker
+          value={rule.axis}
+          options={axisOptions}
+          onChange={(axis) =>
+            props.onChange(axisFor(rule, axis, props.hasLaterRule ? props.defaultCeiling : undefined))
+          }
+        />
+      </Row>
+      {rule.axis === 'load' && !props.canMoveLoad && (
+        <Text variant="bodySmall" style={{ color: colors.error }}>
+          {t('exercise.progression.axis.no_load.body')}
+        </Text>
+      )}
+
+      <Row
+        label={
+          rule.axis === 'reps'
+            ? t('exercise.progression.step.reps.label')
+            : t('exercise.progressive_overload.increase_all_evenly.amount.label')
+        }
+      >
+        {rule.axis === 'reps' ? (
+          <IntegerEditor
+            {...numberInputStyle(colors)}
+            value={rule.step.toNumber()}
+            onChange={(step) => props.onChange(rule.with({ step: BigNumber(step) }))}
+          />
+        ) : (
+          <DecimalEditor
+            {...numberInputStyle(colors)}
+            value={rule.step}
+            onChange={(step) => props.onChange(rule.with({ step }))}
+          />
+        )}
+      </Row>
+
+      <Row label={t('exercise.progression.scope.label')}>
+        <SelectPicker
+          value={scopeChoiceOf(rule.scope)}
+          options={scopeOptions}
+          onChange={(choice) => props.onChange(rule.with({ scope: scopeOf(choice) }))}
+        />
+      </Row>
+
+      {rule.axis === 'reps' && (
         <>
-          <Divider />
-          <ProgressiveOverloadExample value={props.value} />
+          <SwitchRow
+            value={rule.ceiling !== undefined}
+            label={t('exercise.progression.ceiling.title')}
+            description={t('exercise.progression.ceiling.body')}
+            onValueChange={(on) => props.onChange(rule.with({ ceiling: on ? props.defaultCeiling : undefined }))}
+          />
+          {rule.ceiling !== undefined && (
+            <Row label={t('exercise.progression.ceiling.label')}>
+              <IntegerEditor
+                {...numberInputStyle(colors)}
+                value={rule.ceiling.toNumber()}
+                onChange={(ceiling) => props.onChange(rule.with({ ceiling: BigNumber(ceiling) }))}
+              />
+            </Row>
+          )}
+          {/* Only means anything with somewhere to hand over to; on its own it would never fire. */}
+          {rule.ceiling !== undefined && props.hasLaterRule && (
+            <SwitchRow
+              value={rule.onCeiling === 'reset'}
+              label={t('exercise.progression.reset.title')}
+              description={t('exercise.progression.reset.body')}
+              onValueChange={(on) => props.onChange(rule.with({ onCeiling: on ? 'reset' : undefined }))}
+            />
+          )}
         </>
       )}
     </View>
   );
 }
 
-function StepEditor(props: Props & { label: string }) {
-  return (
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text>{props.label}</Text>
-      <DecimalEditor
-        underlineColor="transparent"
-        style={{ flex: 1, textAlign: 'right' }}
-        value={loadRule(props.value)?.step ?? BigNumber(0)}
-        onChange={(step) => props.onChange(withLoadRule(props.value, (rule) => rule.with({ step })))}
-      />
-    </View>
-  );
+/** Reads as a value on the right of its row, like the pickers beside it, rather than as a filled field. */
+function numberInputStyle(colors: AppThemeColors) {
+  return {
+    dense: true,
+    textColor: colors.primary,
+    underlineStyle: { display: 'none' as const },
+    style: { flex: 1, textAlign: 'right' as const, backgroundColor: 'transparent' },
+  };
 }
 
-function IncreaseAllEvenlyValues(props: Props) {
-  const { t } = useTranslate();
-  return <StepEditor {...props} label={t('exercise.progressive_overload.increase_all_evenly.amount.label')} />;
-}
-
-function IncreaseLowestSetValues(props: Props) {
-  const { t } = useTranslate();
-  const scope = loadRule(props.value)?.scope;
-  const increaseStrategyOptions: SelectPickerOption<IncreaseStrategy>[] = [
-    {
-      label: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.all.label'),
-      value: 'all',
-    },
-    {
-      label: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.first.label'),
-      value: 'first',
-    },
-    {
-      label: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.middle.label'),
-      value: 'middle',
-    },
-    {
-      label: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.last.label'),
-      value: 'last',
-    },
-  ];
+function SwitchRow(props: { label: string; description: string; value: boolean; onValueChange: (v: boolean) => void }) {
+  const { colors } = useAppTheme();
   return (
-    <View style={{ gap: spacing[1] }}>
-      <StepEditor {...props} label={t('exercise.progressive_overload.increase_lowest_set.amount.label')} />
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Text>{t('exercise.progressive_overload.increase_lowest_set.increase_strategy.label')}</Text>
-        <SelectPicker
-          value={scope?.type === 'lowestSets' ? scope.pick : 'all'}
-          onChange={(pick) =>
-            props.onChange(withLoadRule(props.value, (rule) => rule.with({ scope: { type: 'lowestSets', pick } })))
-          }
-          options={increaseStrategyOptions}
-        />
+    <TouchableRipple onPress={() => props.onValueChange(!props.value)}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[4], paddingBlock: spacing[2] }}>
+        <View style={{ flex: 1, gap: spacing[0.5] }}>
+          <Text>{props.label}</Text>
+          <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
+            {props.description}
+          </Text>
+        </View>
+        <Switch value={props.value} onValueChange={props.onValueChange} />
       </View>
+    </TouchableRipple>
+  );
+}
+
+/**
+ * Switching axis re-seeds the step, since a step is in its axis's own unit and 2.5 reps is not what
+ * anyone meant by 2.5 kg. A ceiling is measured in reps, so it goes when the rule starts moving load,
+ * and comes back when a rule with something behind it starts moving reps: unbounded there, it would
+ * never hand over.
+ */
+function axisFor(rule: ProgressionRule, axis: ProgressionAxis, handOverAt: BigNumber | undefined): ProgressionRule {
+  if (axis === rule.axis) {
+    return rule;
+  }
+  const ceiling = axis === 'reps' ? handOverAt : undefined;
+  return rule.with({
+    axis,
+    step: defaultRule(axis).step,
+    ceiling,
+    onCeiling: ceiling && 'reset',
+  });
+}
+
+function Row(props: { label: string; children: React.ReactNode }) {
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: spacing[4],
+        minHeight: spacing[11],
+      }}
+    >
+      <Text style={{ flexShrink: 1 }}>{props.label}</Text>
+      {props.children}
     </View>
   );
 }
 
-function ProgressiveOverloadExample(props: { value: ProgressionRule[] }) {
+function ProgressionExample(props: { exercise: WeightedExerciseBlueprint }) {
   const { t } = useTranslate();
   const [exampleOpen, setExampleOpen] = useState(false);
   const unit = usePreferredWeightUnit();
-  const exampleExercise = RecordedWeightedExercise.empty(
-    WeightedExerciseBlueprint.of({ plannedSets: Array.from({ length: 3 }, () => ({ reps: { min: 8, max: 8 } })) }),
-    unit,
-  )
-    .withAllSets((s) =>
-      s.with({
-        set: RecordedSet.of({ repsCompleted: 8, completionDateTime: OffsetDateTime.MIN }),
-        weight: new Weight(BigNumber(10).plus(weightIncrementFor(props.value)), unit),
-      }),
-    )
-    .withSet(0, (s) => s.with({ weight: new Weight(10, unit) }))
-    .withSet(1, (s) => s.with({ weight: new Weight(10, unit) }));
-  const applied1 = applyProgression(props.value, exampleExercise);
-  const applied2 = applyProgression(props.value, applied1);
-  const applied3 = applyProgression(props.value, applied2);
-  if (!props.value.length) {
-    return undefined;
-  }
+  const resistance = props.exercise.resistance;
+  const start = new Weight(resistance === 'none' ? 0 : 10, unit);
+  const exampleExercise = hitTargets(
+    RecordedWeightedExercise.empty(props.exercise, unit).withAllSets((s) => s.with({ weight: start })),
+  );
+
+  // Four rungs: where it starts, then what three more successful sessions do to it.
+  const rungs = [1, 2, 3].reduce<RecordedWeightedExercise[]>(
+    (all) => [...all, hitTargets(applyProgression(props.exercise.progression, all[all.length - 1]!))],
+    [exampleExercise],
+  );
+
   return (
     <>
-      <Button onPress={() => setExampleOpen(true)}>{t('exercise.progressive_overload.example.label')}</Button>
+      <Button style={{ flex: 1 }} onPress={() => setExampleOpen(true)}>
+        {t('exercise.progressive_overload.example.label')}
+      </Button>
       <Portal>
         <Dialog visible={exampleOpen} onDismiss={() => setExampleOpen(false)}>
           <Dialog.Title>{t('exercise.progressive_overload.example.label')}</Dialog.Title>
           <Dialog.Content style={{ height: 400 }}>
             <ScrollView contentContainerStyle={{ gap: spacing[4], alignItems: 'center' }} style={{ flex: 1 }}>
-              {[exampleExercise, applied1, applied2, applied3].map((step, stepIndex) => (
-                <View key={stepIndex} style={{ gap: spacing[4], alignItems: 'center' }}>
-                  {stepIndex > 0 && <Icon source={'arrowDownward'} size={24} />}
-                  <View style={{ flexDirection: 'row', gap: spacing[2] }}>
-                    {step.potentialSets.map((x, i) => (
-                      <DummySet key={i} set={x} maxReps={8} />
+              {rungs.map((rung, index) => (
+                <View key={index} style={{ gap: spacing[4], alignItems: 'center' }}>
+                  {index > 0 && <Icon source={'arrowDownward'} size={24} />}
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing[2] }}>
+                    {rung.potentialSets.map((set, setIndex) => (
+                      <DummySet
+                        key={setIndex}
+                        set={set}
+                        resistance={resistance}
+                        repsTarget={rung.repsTargetForSet(setIndex)}
+                      />
                     ))}
                   </View>
                 </View>
@@ -218,12 +364,31 @@ function ProgressiveOverloadExample(props: { value: ProgressionRule[] }) {
   );
 }
 
-function DummySet(props: { maxReps: number; set: PotentialSet }) {
+/**
+ * Logs every set at its own target. The rules only advance a rung that was met, so a rung showing
+ * anything else would be showing a session that earns nothing.
+ */
+function hitTargets(exercise: RecordedWeightedExercise): RecordedWeightedExercise {
+  return exercise.potentialSets.reduce(
+    (ex, _, index) =>
+      ex.withSet(index, (s) =>
+        s.with({
+          set: RecordedSet.of({
+            repsCompleted: ex.repsTargetForSet(index).max,
+            completionDateTime: OffsetDateTime.MIN,
+          }),
+        }),
+      ),
+    exercise,
+  );
+}
+
+function DummySet(props: { set: PotentialSet; resistance: Resistance; repsTarget: { min: number; max: number } }) {
   return (
     <PotentialSetCounter
       isReadonly
-      loadBasis="external"
-      repsTarget={{ min: props.maxReps, max: props.maxReps }}
+      resistance={props.resistance}
+      repsTarget={props.repsTarget}
       onTap={() => {}}
       onUpdateReps={() => {}}
       onUpdateWeight={() => {}}

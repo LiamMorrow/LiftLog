@@ -163,7 +163,7 @@ describe('real migrations', () => {
       expect(weighted).toMatchObject({
         type: 'WeightedExerciseBlueprint',
         plannedSets: [{ reps: { min: 5, max: 5 } }, { reps: { min: 5, max: 5 } }, { reps: { min: 5, max: 5 } }],
-        loadBasis: 'external',
+        resistance: 'external',
         progression: [{ axis: 'load', step: '2.5', scope: { type: 'allSets' }, trigger: 'allSetsMetTarget' }],
       });
       expect('repsPerSet' in weighted).toBe(false);

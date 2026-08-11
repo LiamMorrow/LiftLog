@@ -93,7 +93,7 @@ describe('findPersonalRecords', () => {
       repsConfig: { type: 'fixed', reps: 5 },
       progression: [ProgressionRule.load(new BigNumber(2.5), { type: 'lowestSets', pick: 'middle' })],
       restBetweenSets: Rest.long,
-      loadBasis: 'bodyweight',
+      resistance: 'bodyweight',
     });
     const build = (id: string, date: LocalDate, bodyweightKg: number) => {
       const time = OffsetDateTime.parse('2026-01-01T10:00:00Z');
@@ -127,7 +127,7 @@ describe('findPersonalRecords', () => {
 
 describe('findPersonalRecords for exercises that track no load', () => {
   it('awards no records, because a 1RM needs a load', () => {
-    const blueprint = makeWeightedBlueprint({ name: 'Crunch', loadBasis: 'none' });
+    const blueprint = makeWeightedBlueprint({ name: 'Crunch', resistance: 'none' });
     const build = (id: string, date: LocalDate, reps: number) =>
       new Session(
         id,

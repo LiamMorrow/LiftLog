@@ -1,5 +1,5 @@
 import { PotentialSet } from '@/models/session-models';
-import { formatRepsTarget, LoadBasis, RepsTarget } from '@/models/blueprint-models';
+import { formatRepsTarget, Resistance, RepsTarget } from '@/models/blueprint-models';
 import { ReactNode } from 'react';
 import { Text, View } from 'react-native';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
@@ -12,7 +12,7 @@ export type PotentialSetSize = 'default' | 'compact';
 interface PotentialSetDisplayProps {
   set: PotentialSet;
   repsTarget: RepsTarget;
-  loadBasis: LoadBasis;
+  resistance: Resistance;
   previousRepCount?: number | undefined;
   size?: PotentialSetSize;
 
@@ -52,7 +52,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
   const size = metrics[props.size ?? 'default'];
   const repCountValue = props.set.set?.repsCompleted;
   const isFilled = repCountValue !== undefined;
-  const showsWeight = props.loadBasis !== 'none';
+  const showsWeight = props.resistance !== 'none';
 
   return (
     <View
@@ -126,7 +126,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
             }}
           >
             <Text style={{ color: colors.onSurface, ...size.weightFont }}>
-              <WeightFormat weight={props.set.weight} usesBodyweight={props.loadBasis === 'bodyweight'} />
+              <WeightFormat weight={props.set.weight} usesBodyweight={props.resistance === 'bodyweight'} />
             </Text>
           </Pressable>
         </View>

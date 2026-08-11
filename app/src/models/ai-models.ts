@@ -155,7 +155,7 @@ function fillWeightedExercise(partial: DeepPartial<WeightedExerciseBlueprintJSON
     notes: partial.notes ?? emptyWeightedExercise.notes,
     link: partial.link ?? emptyWeightedExercise.link,
     progression: fillProgression(partial.progression),
-    loadBasis: partial.loadBasis ?? emptyWeightedExercise.loadBasis,
+    resistance: partial.resistance ?? emptyWeightedExercise.resistance,
   };
 }
 

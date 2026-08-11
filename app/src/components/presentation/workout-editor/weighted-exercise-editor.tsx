@@ -2,18 +2,16 @@ import FixedIncrementer from '@/components/presentation/foundation/editors/fixed
 import { FormRow } from '@/components/presentation/foundation/form-row';
 import RestFormat from '@/components/presentation/foundation/rest-format';
 import SegmentedPicker from '@/components/presentation/foundation/segmented-picker';
+import SelectPicker from '@/components/presentation/foundation/select-picker';
 import { SegmentedList, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
 import { RestEditorDialog } from '@/components/presentation/workout-editor/rest-editor-dialog';
-import {
-  ProgressiveOverloadSelect,
-  ProgressiveOverloadValuesEditor,
-} from '@/components/presentation/workout-editor/progressive-overload';
+import { ProgressionRulesEditor } from '@/components/presentation/workout-editor/progressive-overload';
 import { SharedFieldsEditor } from '@/components/presentation/workout-editor/shared-fields-editor';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import {
   ExerciseBlueprint,
-  LoadBasis,
+  Resistance,
   RepsConfig,
   RepsType,
   uniformTarget,
@@ -21,9 +19,28 @@ import {
 } from '@/models/blueprint-models';
 import { useAppSelector } from '@/store';
 import { ExtractType } from '@/utils/extract-type';
-import { useTranslate } from '@tolgee/react';
+import { TranslationKey, useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
+import { Text } from 'react-native-paper';
+
+/**
+ * What each choice actually changes, since "resistance" names the field without saying what picking one
+ * does to the set counter or to the stats built off it.
+ */
+const resistanceOptions = [
+  {
+    value: 'external',
+    label: 'exercise.resistance.external.label',
+    body: 'exercise.resistance.external.body',
+  },
+  {
+    value: 'bodyweight',
+    label: 'exercise.resistance.bodyweight.label',
+    body: 'exercise.resistance.bodyweight.body',
+  },
+  { value: 'none', label: 'exercise.resistance.none.label', body: 'exercise.resistance.none.body' },
+] as const satisfies { value: Resistance; label: TranslationKey; body: TranslationKey }[];
 
 export function WeightedExerciseEditor({
   exercise,
@@ -126,50 +143,33 @@ export function WeightedExerciseEditor({
             />,
             <SegmentListFormElement
               key={4}
-              label={t('exercise.load_basis.label')}
+              label={t('exercise.resistance.label')}
               icon={'directionsRun'}
+              right={
+                <SelectPicker
+                  testID="load-basis"
+                  value={exercise.resistance}
+                  options={resistanceOptions.map(({ value, label }) => ({ value, label: t(label) }))}
+                  onChange={(resistance: Resistance) => updateExercise({ resistance })}
+                />
+              }
               line2={
-                <SegmentedPicker
-                  value={exercise.loadBasis}
-                  options={[
-                    {
-                      value: 'external',
-                      label: t('exercise.load_basis.external.label'),
-                      testID: 'load-basis-external',
-                    },
-                    {
-                      value: 'bodyweight',
-                      label: t('exercise.load_basis.bodyweight.label'),
-                      testID: 'load-basis-bodyweight',
-                    },
-                    { value: 'none', label: t('exercise.load_basis.none.label'), testID: 'load-basis-none' },
-                  ]}
-                  onChange={(loadBasis: LoadBasis) => updateExercise({ loadBasis })}
+                <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginBlockStart: spacing[2] }}>
+                  {t(resistanceOptions.find((option) => option.value === exercise.resistance)!.body)}
+                </Text>
+              }
+            />,
+            <SegmentListFormElement
+              key={3}
+              label={t('exercise.progressive_overload.label')}
+              icon={'trendingUp'}
+              line2={
+                <ProgressionRulesEditor
+                  exercise={exercise}
+                  onChange={(progression) => updateExercise({ progression })}
                 />
               }
             />,
-            // Progressive overload only moves weight, so it has nothing to act on without a load.
-            ...(exercise.loadBasis === 'none'
-              ? []
-              : [
-                  <SegmentListFormElement
-                    key={3}
-                    label={t('exercise.progressive_overload.label')}
-                    icon={'trendingUp'}
-                    right={
-                      <ProgressiveOverloadSelect
-                        value={exercise.progression}
-                        onChange={(progression) => updateExercise({ progression })}
-                      />
-                    }
-                    line2={
-                      <ProgressiveOverloadValuesEditor
-                        value={exercise.progression}
-                        onChange={(progression) => updateExercise({ progression })}
-                      />
-                    }
-                  />,
-                ]),
           ]}
           renderItem={(i) => i}
         />

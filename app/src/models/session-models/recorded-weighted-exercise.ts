@@ -159,8 +159,8 @@ export class RecordedWeightedExercise {
   }
 
   /** False for a movement that tracks no load, so nothing sums a volume or computes a 1RM for it. */
-  get tracksLoad(): boolean {
-    return this.blueprint.loadBasis !== 'none';
+  get tracksResistance(): boolean {
+    return this.blueprint.resistance !== 'none';
   }
 
   /**
@@ -169,10 +169,10 @@ export class RecordedWeightedExercise {
    * session bodyweight is unknown the bodyweight contribution is treated as zero.
    */
   effectiveWeight(set: PotentialSet, bodyweight: Weight | undefined): Weight {
-    if (!this.tracksLoad) {
+    if (!this.tracksResistance) {
       return Weight.NIL;
     }
-    return this.blueprint.loadBasis === 'bodyweight' ? (bodyweight ?? Weight.NIL).plus(set.weight) : set.weight;
+    return this.blueprint.resistance === 'bodyweight' ? (bodyweight ?? Weight.NIL).plus(set.weight) : set.weight;
   }
 
   get maxWeight(): Weight {

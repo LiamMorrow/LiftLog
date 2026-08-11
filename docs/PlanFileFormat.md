@@ -54,13 +54,13 @@ Nothing about the format is Claude-specific. To use ChatGPT, Gemini, or anything
 >
 > Rules that are easy to get wrong:
 >
-> - Every field in the schema is required. There are no optional fields. Empty strings for `notes` and `link`.
-> - `"version": 2` on the root object and on every session.
-> - Weights and distances are decimal **strings**: `"2.5"`, not `2.5`.
+> - Treat every field in the schema as required, apart from the handful marked optional. Empty strings for `notes` and `link`.
+> - `"version": 3` on the root object, `"version": 6` on every session.
+> - Weights, distances and progression steps are decimal **strings**: `"2.5"`, not `2.5`. Rep counts are plain integers.
 > - Rests and cardio times are ISO-8601 durations: `"PT3M"`, `"PT90S"`.
-> - `sets` is a whole number on a weighted exercise, but an array of set objects on a cardio exercise.
+> - A weighted exercise has no set count: one entry in `plannedSets` is one set. Cardio uses `sets`, an array of set objects.
 > - Supersets are a flag on the preceding exercise: `"supersetWithNext": true`.
-> - `type` values are case-sensitive. Exercises and progressive overloads are PascalCase (`"WeightedExerciseBlueprint"`); cardio targets are lowercase (`"time"`, `"distance"`).
+> - `type` values are case-sensitive. Exercise types are PascalCase (`"WeightedExerciseBlueprint"`); cardio targets, progression scopes and resistance are lowercase or camelCase (`"time"`, `"allSets"`, `"bodyweight"`).
 >
 > [describe the training you want here]
 
@@ -72,25 +72,36 @@ A plan file is one JSON object: a name, a date, and a list of sessions. Each ses
 
 ```json
 {
-  "version": 2,
+  "version": 3,
   "name": "Push Pull Legs",
   "lastEdited": "2026-07-12",
   "sessions": [
     {
-      "version": 2,
+      "version": 6,
       "name": "Push",
       "notes": "Chest, shoulders and triceps.",
       "exercises": [
         {
           "type": "WeightedExerciseBlueprint",
           "name": "Barbell Bench Press",
-          "sets": 3,
-          "repsPerSet": 5,
+          "plannedSets": [
+            { "reps": { "min": 5, "max": 5 } },
+            { "reps": { "min": 5, "max": 5 } },
+            { "reps": { "min": 5, "max": 5 } }
+          ],
           "restBetweenSets": { "minRest": "PT3M", "maxRest": "PT5M", "failureRest": "PT5M" },
           "supersetWithNext": false,
           "notes": "",
           "link": "",
-          "progressiveOverload": { "type": "IncreaseAllEvenlyProgressiveOverload", "amount": "2.5" }
+          "resistance": "external",
+          "progression": [
+            {
+              "axis": "load",
+              "step": "2.5",
+              "scope": { "type": "allSets" },
+              "trigger": "allSetsMetTarget"
+            }
+          ]
         }
       ]
     }
@@ -104,23 +115,30 @@ Complete examples live in [`plugins/liftlog-plan-builder/skills/create-liftlog-p
 
 An exercise is either a `WeightedExerciseBlueprint` or a `CardioExerciseBlueprint`, chosen by its `type`. The two can be mixed within a session.
 
-**Weighted exercises** have a set count, a rep target, rest times, and a progressive overload rule. `restBetweenSets` needs all three of `minRest`, `maxRest`, and `failureRest` (the last being the rest taken after missing a rep target). `link` is a URL explaining the movement, and should stay `""` unless you have a real one.
+**Weighted exercises** have a list of planned sets, rest times, a resistance, and a list of progression rules. `plannedSets` holds one entry per set, each with that set's rep target as a `min`/`max` band - `min === max` is a plain "five reps". `restBetweenSets` needs all three of `minRest`, `maxRest`, and `failureRest` (the last being the rest taken after missing a rep target). `link` is a URL explaining the movement, and should stay `""` unless you have a real one.
+
+`resistance` says where the load comes from: `external` for barbells, dumbbells and machines (the logged weight is the weight lifted), `bodyweight` for pull ups and dips (the logged weight is what is added on top of the lifter), or `none` for movements like crunches, where there is no weight at all and reps are the whole story.
 
 `supersetWithNext` is how supersets are expressed: there is no superset group. Setting it to `true` means "perform this back-to-back with the next exercise in the list, without resting".
 
-**Cardio exercises** have no rest and no progressive overload. Their `sets` is an array - one entry per interval - and each entry has a `target` (either a time or a distance) plus six `track*` booleans controlling which fields the app shows you while logging.
+**Cardio exercises** have no resistance and no progression. Their `sets` is an array - one entry per interval - and each entry has a `target` (either a time or a distance) plus six `track*` booleans controlling which fields the app shows you while logging, and optionally its own `restBetweenSets`.
 
-### Progressive overload
+### Progression
 
-Each weighted exercise carries one of three rules:
+`progression` is an ordered list of rules. After a session where every set met its target, the first rule that still has room to move is applied - and only that one. An empty list means the exercise never moves on its own.
 
-| `type`                                 | Effect                                                                                                                                                                |
-| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `NoProgressiveOverload`                | Weight never increases automatically. Suits bodyweight work.                                                                                                          |
-| `IncreaseAllEvenlyProgressiveOverload` | After a successful session, every set goes up by `amount`. The usual choice - 2.5 kg or 5 lb.                                                                         |
-| `IncreaseLowestSetProgressiveOverload` | Raises only the lowest-weight sets, chosen by `increaseStrategy` (`first`, `middle`, `last`, or `all`). For lifts where a full jump is too much, like lateral raises. |
+| Field       | Effect                                                                                                                             |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `axis`      | What the rule moves: `load` or `reps`.                                                                                             |
+| `step`      | How much to add, as a decimal string. Unitless - `"2.5"` is the same pair of small plates in a kilo gym and a pound gym.            |
+| `scope`     | `{ "type": "allSets" }`, or `{ "type": "lowestSets", "pick": … }` with `first`, `middle`, `last` or `all` to raise only the lowest. |
+| `trigger`   | Always `allSetsMetTarget`.                                                                                                         |
+| `ceiling`   | Optional, reps only. Where the rule stops, handing over to the next one.                                                            |
+| `onCeiling` | Optional, reps only. `reset` drops the reps back to the plan's when a later rule takes over.                                        |
 
-`amount` is a decimal string, in whatever unit the app is set to.
+Only a reps rule takes a ceiling, so a load rule never runs out of room and must come last - anything after it can never fire. Reps to a ceiling followed by weight is double progression: the reps climb, then the weight goes up and the reps start again.
+
+See [Progression](./Progression.md) for how the rules behave in the app.
 
 ## Validating a plan
 
@@ -136,7 +154,7 @@ It lists every problem at once, with the path to the offending field:
 My Plan.liftlogplan is not a valid LiftLog plan:
 
   plan/sessions/0/exercises/0/restBetweenSets/minRest must match format "duration"
-  plan/sessions/1/exercises/0/progressiveOverload/amount must be string
+  plan/sessions/1/exercises/0/progression/0/step must be string
 ```
 
 This is worth doing, because the app itself will only tell you _"That file isn't a valid workout plan"_ - it cannot tell you which field is wrong.

@@ -6,7 +6,7 @@ import {
   cardioTargetEquals,
   ExerciseBlueprint,
   IncreaseStrategy,
-  LoadBasis,
+  Resistance,
   ProgressionRule,
   progressionEquals,
   formatPlannedSets,
@@ -133,13 +133,13 @@ interface ExerciseSupersetChange extends BaseChange {
   newValue: boolean;
 }
 
-interface ExerciseLoadBasisChange extends BaseChange {
-  kind: 'exerciseLoadBasis';
+interface ExerciseResistanceChange extends BaseChange {
+  kind: 'exerciseResistance';
   type: 'modified';
   exerciseName: string;
   exerciseIndex: number;
-  oldValue: LoadBasis;
-  newValue: LoadBasis;
+  oldValue: Resistance;
+  newValue: Resistance;
 }
 
 interface ExerciseNotesChange extends BaseChange {
@@ -230,7 +230,7 @@ type ExerciseFieldChange =
   | ExerciseProgressionChange
   | ExerciseRestChange
   | ExerciseSupersetChange
-  | ExerciseLoadBasisChange
+  | ExerciseResistanceChange
   | ExerciseNotesChange
   | ExerciseLinkChange
   | ExerciseTargetChange
@@ -468,15 +468,15 @@ function diffWeightedExercises(
     });
   }
 
-  if (oldEx.loadBasis !== newEx.loadBasis) {
+  if (oldEx.resistance !== newEx.resistance) {
     changes.push({
       id: generateChangeId(),
-      kind: 'exerciseLoadBasis',
+      kind: 'exerciseResistance',
       type: 'modified',
       exerciseName,
       exerciseIndex,
-      oldValue: oldEx.loadBasis,
-      newValue: newEx.loadBasis,
+      oldValue: oldEx.resistance,
+      newValue: newEx.resistance,
     });
   }
 
@@ -910,8 +910,8 @@ export function applySessionBlueprintDiff(original: SessionBlueprint, diff: Sess
         .with({ kind: 'exerciseSuperset' }, (c) =>
           exercise instanceof WeightedExerciseBlueprint ? exercise.with({ supersetWithNext: c.newValue }) : exercise,
         )
-        .with({ kind: 'exerciseLoadBasis' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ loadBasis: c.newValue }) : exercise,
+        .with({ kind: 'exerciseResistance' }, (c) =>
+          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ resistance: c.newValue }) : exercise,
         )
         .with({ kind: 'exerciseNotes' }, (c) => exercise.with({ notes: c.newValue }))
         .with({ kind: 'exerciseLink' }, (c) => exercise.with({ link: c.newValue }))
@@ -1075,7 +1075,7 @@ export function getChangeDescription(t: UseTranslateResult['t'], change: DiffCha
     .with({ kind: 'exerciseSuperset' }, (c) =>
       t(c.newValue ? 'plan.diff.generic_enabled.body' : 'plan.diff.generic_disabled.body'),
     )
-    .with({ kind: 'exerciseLoadBasis' }, (c) =>
+    .with({ kind: 'exerciseResistance' }, (c) =>
       t('plan.diff.generic_two_value_change.body', { oldValue: c.oldValue, newValue: c.newValue }),
     )
     .with({ kind: 'exerciseNotes' }, () => t('plan.diff.generic_updated.body'))
@@ -1140,8 +1140,8 @@ export function getChangeLabelKey(change: DiffChange): TranslatableString {
     .with({ kind: 'exerciseSuperset' }, () => ({
       key: 'plan.diff.superset.label',
     }))
-    .with({ kind: 'exerciseLoadBasis' }, () => ({
-      key: 'plan.diff.load_basis.label',
+    .with({ kind: 'exerciseResistance' }, () => ({
+      key: 'plan.diff.resistance.label',
     }))
     .with({ kind: 'exerciseNotes' }, () => ({
       key: 'plan.diff.notes.label',
@@ -1182,12 +1182,20 @@ function stringifyProgression(t: UseTranslateResult['t'], progression: Progressi
 
 function stringifyProgressionRule(t: UseTranslateResult['t'], rule: ProgressionRule): string {
   const amount = localeFormatBigNumber(rule.step);
-  return rule.scope.type === 'allSets'
-    ? t('plan.diff.progressive_overload_increase_all_evenly.label', { amount })
-    : t('plan.diff.progressive_overload_increase_lowest_set.label', {
-        amount,
-        strategy: stringifyIncreaseStrategy(t, rule.scope.pick),
-      });
+  const axis = t(
+    rule.axis === 'reps' ? 'exercise.progression.axis.reps.label' : 'exercise.progression.axis.load.label',
+  );
+  const move =
+    rule.scope.type === 'allSets'
+      ? t('plan.diff.progression_rule_all_sets.label', { amount, axis })
+      : t('plan.diff.progression_rule_lowest_sets.label', {
+          amount,
+          axis,
+          strategy: stringifyIncreaseStrategy(t, rule.scope.pick),
+        });
+  return rule.ceiling === undefined
+    ? move
+    : t('plan.diff.progression_rule_ceiling.label', { move, ceiling: localeFormatBigNumber(rule.ceiling) });
 }
 
 function stringifyIncreaseStrategy(t: UseTranslateResult['t'], strategy: IncreaseStrategy) {

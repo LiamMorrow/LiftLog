@@ -433,7 +433,7 @@ export class ProgressionRule {
   /** The exercise with this rule's move made, or `undefined` when the rule has nothing left to move. */
   applyTo(exercise: RecordedWeightedExercise): RecordedWeightedExercise | undefined {
     // A load rule kept from before the load was turned off would climb a weight nothing displays.
-    if (this.axis === 'load' && !exercise.tracksLoad) {
+    if (this.axis === 'load' && !exercise.tracksResistance) {
       return undefined;
     }
     const indices = this.indicesToMove(exercise);
@@ -570,6 +570,67 @@ export function applyProgression(
 }
 
 /**
+ * Whether a rule can always find room to move, and so never hands over to the one behind it. Only a
+ * ceiling bounds a rule, and a ceiling counts reps, which leaves a load rule terminal by construction.
+ * A load rule on an exercise carrying no load is the opposite: it never moves at all, so it does hand
+ * over.
+ */
+function isTerminal(rule: ProgressionRule, tracksResistance: boolean): boolean {
+  return rule.axis === 'load' ? tracksResistance : rule.ceiling === undefined;
+}
+
+/**
+ * The index from which the rules can never run, or `undefined` while every rule is reachable. Nothing
+ * behind a terminal rule is ever consulted, so a chain authored that way silently does less than it
+ * reads as doing.
+ */
+export function unreachableFrom(progression: ProgressionRule[], tracksResistance: boolean): number | undefined {
+  const blocker = progression.findIndex((rule) => isTerminal(rule, tracksResistance));
+  return blocker >= 0 && blocker < progression.length - 1 ? blocker + 1 : undefined;
+}
+
+/** How far a reps rule climbs before handing over, when nobody has said otherwise. */
+const LADDER_SPAN = 4;
+
+/** The rung a reps rule should stop at, given where the plan starts it. */
+export function defaultCeilingFor(exercise: WeightedExerciseBlueprint): BigNumber {
+  const start = exercise.plannedSets.reduce((highest, set) => Math.max(highest, set.reps.max), 0);
+  return new BigNumber(start + LADDER_SPAN);
+}
+
+/**
+ * The chain after adding a rule, arranged so the new rule can actually run.
+ *
+ * A load rule is terminal, so a new rule goes in front of it rather than behind it. A reps rule with
+ * nothing to hand over at gets a ceiling on the way, since the only reason to put a rule behind one is
+ * to have it take over. Both land on the same shape: reps climb a few rungs, the bar goes up, the reps
+ * start again.
+ */
+export function withAddedRule(exercise: WeightedExerciseBlueprint): ProgressionRule[] {
+  const progression = exercise.progression;
+  const tracksResistance = exercise.resistance !== 'none';
+  const ceiling = defaultCeilingFor(exercise);
+  const ladderRung = () => ProgressionRule.of({ axis: 'reps', step: new BigNumber(1), ceiling, onCeiling: 'reset' });
+  const fresh = () =>
+    tracksResistance
+      ? ProgressionRule.load(new BigNumber(2.5))
+      : ProgressionRule.of({ axis: 'reps', step: new BigNumber(1) });
+
+  const last = progression[progression.length - 1];
+  if (!last) {
+    return [fresh()];
+  }
+  // An inert load rule - one on an exercise carrying no load - hands over like anything else.
+  if (last.axis === 'load' && tracksResistance) {
+    return [...progression.slice(0, -1), ladderRung(), last];
+  }
+  if (last.axis === 'reps' && last.ceiling === undefined) {
+    return [...progression.slice(0, -1), last.with({ ceiling, onCeiling: 'reset' }), fresh()];
+  }
+  return [...progression, fresh()];
+}
+
+/**
  * How much the weight stepper in the set counter moves per tap. Falls back to a pair of the smallest
  * plates, which is what an exercise that progresses on something else still wants offered.
  */
@@ -594,7 +655,7 @@ export interface PlannedSet {
  * the lifter (`bodyweight`), or nothing at all (`none`).
  */
 export const LoadBases = ['none', 'external', 'bodyweight'] as const;
-export type LoadBasis = (typeof LoadBases)[number];
+export type Resistance = (typeof LoadBases)[number];
 
 /** How the editor lays rep targets out before projecting them onto a {@link PlannedSet} list. */
 export type RepsConfig =
@@ -639,7 +700,7 @@ export interface WeightedExerciseBlueprintInit {
   supersetWithNext?: boolean;
   notes?: string;
   link?: string;
-  loadBasis?: LoadBasis;
+  resistance?: Resistance;
   /** Authoring shorthand for `plannedSets`, projected through {@link plannedSetsOf}. */
   sets?: number;
   repsConfig?: RepsConfig;
@@ -656,7 +717,7 @@ export class WeightedExerciseBlueprint {
     readonly supersetWithNext: boolean,
     readonly notes: string,
     readonly link: string,
-    readonly loadBasis: LoadBasis = 'external',
+    readonly resistance: Resistance = 'external',
   ) {}
 
   /** Build a blueprint from named fields; preferred over the constructor's eight positional arguments. */
@@ -669,7 +730,7 @@ export class WeightedExerciseBlueprint {
       init.supersetWithNext ?? false,
       init.notes ?? '',
       init.link ?? '',
-      init.loadBasis ?? 'external',
+      init.resistance ?? 'external',
     );
   }
 
@@ -686,7 +747,7 @@ export class WeightedExerciseBlueprint {
       json.supersetWithNext,
       json.notes,
       json.link,
-      json.loadBasis,
+      json.resistance,
     );
   }
 
@@ -710,7 +771,7 @@ export class WeightedExerciseBlueprint {
    * re-seeded, because otherwise the next session would undo whatever the rule just did.
    */
   get repsAreProgressed(): boolean {
-    return this.loadBasis === 'none' || this.progression.some((rule) => rule.axis === 'reps');
+    return this.resistance === 'none' || this.progression.some((rule) => rule.axis === 'reps');
   }
 
   /** See {@link ProgressionKey} and {@link repsAreProgressed}. */
@@ -759,7 +820,7 @@ export class WeightedExerciseBlueprint {
       this.supersetWithNext === other.supersetWithNext &&
       this.notes === other.notes &&
       this.link === other.link &&
-      this.loadBasis === other.loadBasis
+      this.resistance === other.resistance
     );
   }
 
@@ -773,7 +834,7 @@ export class WeightedExerciseBlueprint {
       supersetWithNext: this.supersetWithNext,
       notes: this.notes,
       link: this.link,
-      loadBasis: this.loadBasis,
+      resistance: this.resistance,
     };
   }
 
@@ -789,7 +850,7 @@ export class WeightedExerciseBlueprint {
       other.supersetWithNext ?? this.supersetWithNext,
       other.notes ?? this.notes,
       other.link ?? this.link,
-      other.loadBasis ?? this.loadBasis,
+      other.resistance ?? this.resistance,
     );
   }
 }

@@ -129,7 +129,7 @@ describe('SessionService rep targets', () => {
   });
 
   it('carries last session’s targets forward alongside its weights', async () => {
-    const blueprint = makeWeightedBlueprint({ sets: 2, loadBasis: 'none' });
+    const blueprint = makeWeightedBlueprint({ sets: 2, resistance: 'none' });
     const lastWeek = makeRecordedExercise(blueprint, [10, 10]).withAllSets((s) =>
       s.with({ target: { min: 15, max: 15 } }),
     );
@@ -141,7 +141,7 @@ describe('SessionService rep targets', () => {
   });
 
   it('does not progress the load of an exercise that tracks none', async () => {
-    const blueprint = makeWeightedBlueprint({ sets: 2, loadBasis: 'none' });
+    const blueprint = makeWeightedBlueprint({ sets: 2, resistance: 'none' });
     const lastWeek = makeRecordedExercise(blueprint, [10, 10], new Weight(60, 'kilograms'));
 
     const weights = (await upcoming(blueprint, lastWeek)).potentialSets.map((s) => s.weight.value.toNumber());
@@ -275,7 +275,7 @@ describe('SessionService progressive overload', () => {
   });
 
   it('progresses a bodyweight exercise, which carries load on top of the lifter', async () => {
-    const blueprint = makeWeightedBlueprint({ sets: 2, loadBasis: 'bodyweight' });
+    const blueprint = makeWeightedBlueprint({ sets: 2, resistance: 'bodyweight' });
     const lastWeek = makeRecordedExercise(blueprint, [10, 10], new Weight(10, 'kilograms'));
 
     expect(await upcomingWeights(blueprint, lastWeek)).toEqual([12.5, 12.5]);

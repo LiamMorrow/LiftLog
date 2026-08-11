@@ -32,7 +32,7 @@ const validBlueprint: ProgramBlueprintJSON = {
           progression: [
             { axis: 'load', step: '2.5' as BigNumberJSON, scope: { type: 'allSets' }, trigger: 'allSetsMetTarget' },
           ],
-          loadBasis: 'external',
+          resistance: 'external',
         },
       ],
     },
@@ -137,7 +137,7 @@ describe('plan-file', () => {
       const exercise = result.blueprint.sessions[0]!.exercises[0]!;
       expect(exercise.toJSON()).toMatchObject({
         name: 'Curl',
-        loadBasis: 'bodyweight',
+        resistance: 'bodyweight',
         plannedSets: [{ reps: { min: 12, max: 12 } }, { reps: { min: 10, max: 10 } }, { reps: { min: 10, max: 10 } }],
       });
     }
