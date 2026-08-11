@@ -37,7 +37,7 @@ function bestOneRepMax(session: Session): Map<MovementKey, PersonalRecord> {
 /**
  * Records per session, walking oldest to newest with a running best per exercise.
  *
- * A record only counts if the exercise was seen in an *earlier* session — otherwise the first time anyone
+ * A record only counts if the exercise was seen in an *earlier* session - otherwise the first time anyone
  * lifts anything is a PR, and a user with a single event in your feed gets a badge on everything they do.
  */
 export function findPersonalRecords(sessionsOldestFirst: Session[]): Map<string, PersonalRecord[]> {

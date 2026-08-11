@@ -84,7 +84,7 @@ function makeFileExportService(): MockedObject<FileExportService> {
 
 describe('export-plaintext-effects', () => {
   // ─── CSV export ───────────────────────────────────────────────────────────────
-  describe('addExportPlaintextEffects — CSV', () => {
+  describe('addExportPlaintextEffects - CSV', () => {
     it('calls exportBytes with a .csv filename and text/csv content type', async () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
@@ -248,7 +248,7 @@ describe('export-plaintext-effects', () => {
 
   // ─── JSON export ──────────────────────────────────────────────────────────────
 
-  describe('addExportPlaintextEffects — JSON', () => {
+  describe('addExportPlaintextEffects - JSON', () => {
     it('calls exportBytes with a .json filename and application/json content type', async () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
@@ -346,7 +346,7 @@ describe('export-plaintext-effects', () => {
 
   // ─── Shared behaviour ─────────────────────────────────────────────────────────
 
-  describe('addExportPlaintextEffects — shared', () => {
+  describe('addExportPlaintextEffects - shared', () => {
     it('does not dispatch any actions', async () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({

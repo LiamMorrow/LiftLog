@@ -9,10 +9,10 @@ const docsSchemasPath = join(__dirname, '../../docs/schemas/');
 const planBuilderSkillDir = join(__dirname, '../../plugins/liftlog-plan-builder/skills/create-liftlog-plan');
 // Create schemas for storage
 
-// Create schema for workout-worker — one file per definition
+// Create schema for workout-worker - one file per definition
 createSplitSchemas(join(modelsDir, 'workout-worker-messages.ts'), join(docsSchemasPath, 'workout-worker'));
 
-// Create schema for the AI plan generator — a single self-contained file
+// Create schema for the AI plan generator - a single self-contained file
 // rooted at AiPlan, with referenced types under `definitions`.
 createSingleSchema(
   join(modelsDir, 'storage/versions/latest/ai-plan.ts'),

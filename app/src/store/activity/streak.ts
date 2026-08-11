@@ -61,7 +61,7 @@ function lowerMedian(ascending: number[]): number {
 }
 
 /**
- * Weeks, not days. A daily streak punishes rest days, which are part of training — someone running a 4-day
+ * Weeks, not days. A daily streak punishes rest days, which are part of training - someone running a 4-day
  * split perfectly would see "broken" every week. And a plan gives us no cadence to measure against
  * (ProgramBlueprint is just a rotation, with no days-per-week), so the bar comes from the user's own
  * trailing behaviour instead.
@@ -114,7 +114,7 @@ export function calculateStreak(sessions: Session[], firstDayOfWeek: DayOfWeek, 
 
   const remainingThisWeek = Math.max(0, target - currentWeekCount);
 
-  // The current week can never break a streak — it isn't over yet.
+  // The current week can never break a streak - it isn't over yet.
   const state: StreakState =
     currentWeekCount >= target && (weeks > 0 || currentWeekCount > 0) ? 'secured' : weeks > 0 ? 'in_progress' : 'none';
 

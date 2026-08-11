@@ -16,7 +16,7 @@ interface PotentialSetDisplayProps {
   previousRepCount?: number | undefined;
   size?: PotentialSetSize;
 
-  /** Omit to render a static tile — a tile with no handler mounts no gesture detector at all. */
+  /** Omit to render a static tile - a tile with no handler mounts no gesture detector at all. */
   onPressReps?: () => void;
   onPressWeight?: () => void;
 }

@@ -12,7 +12,7 @@ export interface Codec<T> {
   serialize(value: T): string | undefined;
 }
 
-// Booleans persist as 'True'/'False' — the casing is historical, don't change it.
+// Booleans persist as 'True'/'False' - the casing is historical, don't change it.
 export const boolCodec: Codec<boolean> = {
   deserialize: (raw) => (raw === undefined ? undefined : raw === 'True'),
   serialize: (value) => (value ? 'True' : 'False'),

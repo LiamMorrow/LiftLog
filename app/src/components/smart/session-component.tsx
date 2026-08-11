@@ -233,7 +233,7 @@ export default function SessionComponent(props: {
 
   const showRestTimer =
     restTimersEnabled && props.target === 'workoutSession' && nextExercise && restBetweenSets && session.restTimer;
-  // Only a weighted set can be failed — cardio has no rep count to fall short of.
+  // Only a weighted set can be failed - cardio has no rep count to fall short of.
   const lastSetFailed =
     lastRecordedSet?.set &&
     lastExercise instanceof RecordedWeightedExercise &&

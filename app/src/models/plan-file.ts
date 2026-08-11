@@ -16,7 +16,7 @@ export function serializeProgramBlueprint(blueprint: ProgramBlueprint): Uint8Arr
 /**
  * Parses the bytes of a `.liftlogplan` file into a {@link ProgramBlueprint}.
  * Any historical version is upgraded to the latest before it is validated
- * against the latest schema — validation is the final trust gate.
+ * against the latest schema - validation is the final trust gate.
  */
 export function parseProgramBlueprintFile(bytes: Uint8Array): ParsedPlanFile {
   let parsed: unknown;

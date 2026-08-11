@@ -716,16 +716,16 @@ export class WeightedExerciseBlueprint {
  * question is being asked. Both keys are produced by methods on the blueprint (and mirrored on the
  * recorded exercise), so whichever one you have in hand offers both side by side.
  *
- *   movementKey()    — is this the same *movement*, for aggregating history?
- *   progressionKey() — is this the same *programmed slot*, so last session's numbers load into today's?
+ *   movementKey()    - is this the same *movement*, for aggregating history?
+ *   progressionKey() - is this the same *programmed slot*, so last session's numbers load into today's?
  *
  * They are branded so that a map keyed by one cannot be indexed by the other.
  */
 
 /**
  * Identifies a movement across everything the user has ever logged. Blind to how the exercise is
- * programmed, and deliberately fuzzy about spelling — `Cable Flye`, `cable flies` and `Cable Flys`
- * all key alike — because stats, personal records and "recently completed" want one row per
+ * programmed, and deliberately fuzzy about spelling - `Cable Flye`, `cable flies` and `Cable Flys`
+ * all key alike - because stats, personal records and "recently completed" want one row per
  * movement however the user typed it that day.
  *
  * Weighted and cardio are separate movements even under the same name: a rowing machine and a barbell
@@ -742,7 +742,7 @@ export type MovementKey = string & { readonly __brand: 'MovementKey' };
 export type ProgressionKey = string & { readonly __brand: 'ProgressionKey' };
 
 /**
- * The fuzzy half of {@link MovementKey}, for the callers that compare names alone — a stat row, a saved
+ * The fuzzy half of {@link MovementKey}, for the callers that compare names alone - a stat row, a saved
  * exercise descriptor, neither of which knows whether it is weighted or cardio.
  */
 export function normalizeExerciseName(name: string): string {
@@ -760,7 +760,7 @@ export function normalizeExerciseName(name: string): string {
 }
 
 /**
- * For callers holding a name and a type but no blueprint — a route param, say. Prefer
+ * For callers holding a name and a type but no blueprint - a route param, say. Prefer
  * `blueprint.movementKey()` wherever a blueprint is available.
  */
 export function movementKeyFor(name: string, type: ExerciseBlueprint['type']): MovementKey {

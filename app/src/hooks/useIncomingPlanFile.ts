@@ -9,7 +9,7 @@ export function isFileUri(url: string): boolean {
 }
 
 /**
- * Ingests a `.liftlogplan` file the OS handed us — either the URL the app was
+ * Ingests a `.liftlogplan` file the OS handed us - either the URL the app was
  * launched with, or one received while already running. HTTPS app links and the
  * `liftlog://` scheme are left for expo-router; we only handle file/content URIs.
  */

@@ -88,18 +88,18 @@ describe('blueprint models', () => {
   });
 
   // ---------------------------------------------------------------------------
-  // IncreaseLowestSetProgressiveOverload — shared setup
+  // IncreaseLowestSetProgressiveOverload - shared setup
   // ---------------------------------------------------------------------------
 
   /**
-   * Sets: [60, 80, 60, 70, 60]  — indices 0, 2, 4 are the lowest (60 kg).
+   * Sets: [60, 80, 60, 70, 60]  - indices 0, 2, 4 are the lowest (60 kg).
    * Useful for testing which of the lowest sets is selected.
    */
   function mixedExercise() {
     return exerciseWithWeights(60, 80, 60, 70, 60);
   }
 
-  describe('IncreaseLowestSetProgressiveOverload — strategy: all', () => {
+  describe('IncreaseLowestSetProgressiveOverload - strategy: all', () => {
     it('increases every set that matches the lowest weight', () => {
       const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'all').applyProgressiveOverload(mixedExercise());
 
@@ -122,9 +122,9 @@ describe('blueprint models', () => {
     });
   });
 
-  describe('IncreaseLowestSetProgressiveOverload — strategy: first', () => {
+  describe('IncreaseLowestSetProgressiveOverload - strategy: first', () => {
     it('increases only the first set matching the lowest weight', () => {
-      // lowest sets are at indices 0, 2, 4 — first is index 0
+      // lowest sets are at indices 0, 2, 4 - first is index 0
       const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'first').applyProgressiveOverload(mixedExercise());
 
       const weights = result.potentialSets.map((s) => s.weight.value);
@@ -139,9 +139,9 @@ describe('blueprint models', () => {
     });
   });
 
-  describe('IncreaseLowestSetProgressiveOverload — strategy: last', () => {
+  describe('IncreaseLowestSetProgressiveOverload - strategy: last', () => {
     it('increases only the last set matching the lowest weight', () => {
-      // lowest sets are at indices 0, 2, 4 — last is index 4
+      // lowest sets are at indices 0, 2, 4 - last is index 4
       const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'last').applyProgressiveOverload(mixedExercise());
 
       const weights = result.potentialSets.map((s) => s.weight.value);
@@ -155,9 +155,9 @@ describe('blueprint models', () => {
     });
   });
 
-  describe('IncreaseLowestSetProgressiveOverload — strategy: middle', () => {
+  describe('IncreaseLowestSetProgressiveOverload - strategy: middle', () => {
     it('picks the lowest set closest to the centre of all sets', () => {
-      // Sets: [60, 80, 60, 70, 60] — length 5, midpoint = 2.0
+      // Sets: [60, 80, 60, 70, 60] - length 5, midpoint = 2.0
       // Lowest indices: 0, 2, 4. Distances from 2.0: 2, 0, 2 → index 2 wins
       const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'middle').applyProgressiveOverload(
         mixedExercise(),
@@ -168,8 +168,8 @@ describe('blueprint models', () => {
     });
 
     it('breaks a tie towards the first equidistant candidate', () => {
-      // Sets: [60, 80, 60] — length 3, midpoint = 1.0
-      // Lowest indices: 0, 2. Distances: 1, 1 — tie → reduce keeps the first (index 0)
+      // Sets: [60, 80, 60] - length 3, midpoint = 1.0
+      // Lowest indices: 0, 2. Distances: 1, 1 - tie → reduce keeps the first (index 0)
       const ex = exerciseWithWeights(60, 80, 60);
       const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'middle').applyProgressiveOverload(ex);
 
@@ -178,7 +178,7 @@ describe('blueprint models', () => {
     });
 
     it('handles a single lowest set with no tie possible', () => {
-      // Sets: [60, 80, 80] — only one lowest set at index 0
+      // Sets: [60, 80, 80] - only one lowest set at index 0
       const ex = exerciseWithWeights(60, 80, 80);
       const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'middle').applyProgressiveOverload(ex);
 
@@ -187,7 +187,7 @@ describe('blueprint models', () => {
     });
 
     it('selects the single lowest set closest to the centre in an asymmetric layout', () => {
-      // Sets: [80, 80, 80, 60, 60] — length 5, midpoint = 2.0
+      // Sets: [80, 80, 80, 60, 60] - length 5, midpoint = 2.0
       // Lowest indices: 3, 4. Distances: 1, 2 → index 3 wins
       const ex = exerciseWithWeights(80, 80, 80, 60, 60);
       const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'middle').applyProgressiveOverload(ex);
@@ -208,7 +208,7 @@ describe('blueprint models', () => {
     });
   });
 
-  describe('IncreaseLowestSetProgressiveOverload — empty / single set edge cases', () => {
+  describe('IncreaseLowestSetProgressiveOverload - empty / single set edge cases', () => {
     it('returns exercise unchanged when there are no sets', () => {
       const blueprint = WeightedExerciseBlueprint.empty().with({ sets: 0 });
       const ex = new RecordedWeightedExercise(blueprint, [], undefined);

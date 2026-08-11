@@ -237,7 +237,7 @@ export class RecordedCardioExercise {
     return this.sets.every((x) => x.isCompletelyFilled);
   }
 
-  /** The set whose rest is owed — cardio carries its rest per set, not per exercise. */
+  /** The set whose rest is owed - cardio carries its rest per set, not per exercise. */
   get lastCompletedSet(): RecordedCardioExerciseSet | undefined {
     return this.sets.reduce<RecordedCardioExerciseSet | undefined>((latest, set) => {
       if (!set.completionDateTime) return latest;

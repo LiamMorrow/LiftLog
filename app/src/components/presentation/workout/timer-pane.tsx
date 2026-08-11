@@ -35,7 +35,7 @@ export function TimerPane({ time, status, accent, segments, controls, jiggling, 
   const isLandscape = width > height;
 
   return (
-    // The bar clips its glass to the radius, and a clipping layer cannot cast a shadow — so the lift
+    // The bar clips its glass to the radius, and a clipping layer cannot cast a shadow - so the lift
     // has to come from a wrapper. Android separates itself with a hairline instead.
     <View
       style={[

@@ -89,7 +89,7 @@ function makeRange(from: LocalDate, to: LocalDate): LocalDateRange {
 // ---------------------------------------------------------------------------
 
 describe('calculateStats', () => {
-  describe('calculateStats — empty input', () => {
+  describe('calculateStats - empty input', () => {
     it('returns zeroed result for empty session list', () => {
       const today = LocalDate.now();
       const result = calculateStats([], 'kilograms', makeRange(today, today));
@@ -102,7 +102,7 @@ describe('calculateStats', () => {
     });
   });
 
-  describe('calculateStats — workoutsPerWeek / setsPerWeek', () => {
+  describe('calculateStats - workoutsPerWeek / setsPerWeek', () => {
     it('calculates correct rates for a 14-day range with 2 sessions of 3 sets each', () => {
       const from = LocalDate.of(2024, 1, 1);
       const to = LocalDate.of(2024, 1, 14); // exactly 2 weeks
@@ -134,7 +134,7 @@ describe('calculateStats', () => {
     });
   });
 
-  describe('calculateStats — heaviestLift', () => {
+  describe('calculateStats - heaviestLift', () => {
     it('returns the heaviest single set weight across all sessions', () => {
       const date = LocalDate.of(2024, 3, 1);
       const s1 = makeSession(date, 'Deadlift', 150);
@@ -154,7 +154,7 @@ describe('calculateStats', () => {
     });
   });
 
-  describe('calculateStats — exercise stats', () => {
+  describe('calculateStats - exercise stats', () => {
     it('tracks max weight and 1RM per exercise', () => {
       const date = LocalDate.of(2024, 4, 1);
       // 3 sets @ 100kg x 5 reps
@@ -244,7 +244,7 @@ describe('calculateStats', () => {
     });
   });
 
-  describe('calculateStats — bodyweight stats', () => {
+  describe('calculateStats - bodyweight stats', () => {
     it('tracks bodyweight over time', () => {
       const d1 = LocalDate.of(2024, 2, 1);
       const d2 = LocalDate.of(2024, 2, 8);
@@ -269,7 +269,7 @@ describe('calculateStats', () => {
     });
   });
 
-  describe('calculateStats — bodyweight exercises', () => {
+  describe('calculateStats - bodyweight exercises', () => {
     it('folds the session bodyweight into max weight, 1RM and volume', () => {
       const date = LocalDate.of(2024, 8, 1);
       // bodyweight 80kg + 10kg added, 3 sets × 5 reps → effective load 90kg
@@ -317,7 +317,7 @@ describe('calculateStats', () => {
     });
   });
 
-  describe('calculateStats — unit conversion', () => {
+  describe('calculateStats - unit conversion', () => {
     it('converts maxWeightLiftedInAWorkout to the preferred unit', () => {
       const date = LocalDate.of(2024, 6, 1);
       const session = makeSession(date, 'Deadlift', 100); // 100kg
@@ -330,7 +330,7 @@ describe('calculateStats', () => {
     });
   });
 
-  describe('calculateStats — averageSessionLength', () => {
+  describe('calculateStats - averageSessionLength', () => {
     it('returns zero duration when no sessions have computable durations', () => {
       // Sessions only have a duration if at least one exercise has timestamps.
       // An exercise with no completed sets has no timestamps → session.duration is undefined.
