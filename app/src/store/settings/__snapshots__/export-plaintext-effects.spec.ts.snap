@@ -54,10 +54,16 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
               },
             },
           ],
-          "progressiveOverload": {
-            "amount": "2.5",
-            "type": "IncreaseAllEvenlyProgressiveOverload",
-          },
+          "progression": [
+            {
+              "axis": "load",
+              "scope": {
+                "type": "allSets",
+              },
+              "step": "2.5",
+              "trigger": "allSetsMetTarget",
+            },
+          ],
           "restBetweenSets": {
             "failureRest": "PT5M",
             "maxRest": "PT3M",
@@ -154,10 +160,16 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
               },
             },
           ],
-          "progressiveOverload": {
-            "amount": "2.5",
-            "type": "IncreaseAllEvenlyProgressiveOverload",
-          },
+          "progression": [
+            {
+              "axis": "load",
+              "scope": {
+                "type": "allSets",
+              },
+              "step": "2.5",
+              "trigger": "allSetsMetTarget",
+            },
+          ],
           "restBetweenSets": {
             "failureRest": "PT5M",
             "maxRest": "PT3M",

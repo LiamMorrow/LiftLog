@@ -13,7 +13,7 @@ const validBlueprint: ProgramBlueprintJSON = {
   lastEdited: '2024-01-01' as LocalDateJSON,
   sessions: [
     {
-      version: 5,
+      version: 6,
       name: 'Day 1',
       notes: '',
       exercises: [
@@ -29,7 +29,9 @@ const validBlueprint: ProgramBlueprintJSON = {
           supersetWithNext: false,
           notes: '',
           link: '',
-          progressiveOverload: { type: 'IncreaseAllEvenlyProgressiveOverload', amount: '2.5' as BigNumberJSON },
+          progression: [
+            { axis: 'load', step: '2.5' as BigNumberJSON, scope: { type: 'allSets' }, trigger: 'allSetsMetTarget' },
+          ],
           loadBasis: 'external',
         },
       ],

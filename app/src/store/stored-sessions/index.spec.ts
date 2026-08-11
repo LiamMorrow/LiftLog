@@ -28,7 +28,6 @@ import {
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
   movementKeyFor,
-  NoProgressiveOverload,
   SessionBlueprint,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
@@ -51,7 +50,7 @@ function createSessionWithCompletionTime(sessionDate: LocalDate, completionTime:
         name: `${name} Exercise`,
         sets: 1,
         repsConfig: { type: 'fixed', reps: 5 },
-        progressiveOverload: new NoProgressiveOverload(),
+        progression: [],
       }),
     ],
     '',
@@ -336,7 +335,7 @@ describe('storedSessions selectors', () => {
     const weightedBlueprint = makeWeightedBlueprint({
       name: 'New Exercise',
       repsConfig: { type: 'fixed', reps: 10 },
-      progressiveOverload: new NoProgressiveOverload(),
+      progression: [],
     });
 
     expect(lookup(weightedBlueprint.movementKey())).toEqual([]);
@@ -377,7 +376,7 @@ describe('getSessionReferenceTime', () => {
           name: 'Squat',
           sets: 1,
           repsConfig: { type: 'fixed', reps: 5 },
-          progressiveOverload: new NoProgressiveOverload(),
+          progression: [],
         }),
       ],
       '',

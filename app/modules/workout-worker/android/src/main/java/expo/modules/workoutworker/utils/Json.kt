@@ -1,13 +1,12 @@
 package expo.modules.workoutworker.utils
 
+import com.limajuice.liftlog.AllSetsScope
 import com.limajuice.liftlog.CardioExerciseBlueprint
 import com.limajuice.liftlog.CardioTarget
 import com.limajuice.liftlog.DistanceCardioTarget
 import com.limajuice.liftlog.FinishWorkoutCommand
-import com.limajuice.liftlog.IncreaseAllEvenlyProgressiveOverload
-import com.limajuice.liftlog.IncreaseLowestSetProgressiveOverload
-import com.limajuice.liftlog.NoProgressiveOverload
-import com.limajuice.liftlog.ProgressiveOverload
+import com.limajuice.liftlog.LowestSetsScope
+import com.limajuice.liftlog.SetScope
 import com.limajuice.liftlog.RecordedCardioExercise
 import com.limajuice.liftlog.RecordedExercise
 import com.limajuice.liftlog.RecordedWeightedExercise
@@ -65,10 +64,9 @@ object Json {
                 .withSubtype(TimeCardioTarget::class.java, "time")
         )
         .add(
-            PolymorphicJsonAdapterFactory.of(ProgressiveOverload::class.java, "type")
-                .withSubtype(NoProgressiveOverload::class.java, "NoProgressiveOverload")
-                .withSubtype(IncreaseAllEvenlyProgressiveOverload::class.java, "IncreaseAllEvenlyProgressiveOverload")
-                .withSubtype(IncreaseLowestSetProgressiveOverload::class.java, "IncreaseLowestSetProgressiveOverload")
+            PolymorphicJsonAdapterFactory.of(SetScope::class.java, "type")
+                .withSubtype(AllSetsScope::class.java, "allSets")
+                .withSubtype(LowestSetsScope::class.java, "lowestSets")
         )
         .add(Instant::class.java, InstantAdapter())
         .add(BigDecimal::class.java, BigDecimalAdapter())

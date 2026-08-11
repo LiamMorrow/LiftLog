@@ -1,9 +1,5 @@
 import { useMountEffect } from '@/hooks/useMountEffect';
-import {
-  IncreaseAllEvenlyProgressiveOverload,
-  SessionBlueprint,
-  WeightedExerciseBlueprint,
-} from '@/models/blueprint-models';
+import { ProgressionRule, SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { Session, RecordedWeightedExercise, RecordedSet, RestTimer } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { setCurrentSession } from '@/store/current-session';
@@ -64,7 +60,7 @@ function PrepareExerciseEditorPage() {
               sets: 4,
               repsConfig: { type: 'fixed', reps: 8 },
               notes: 'Keep shoulder blades retracted and drive feet into the floor',
-              progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+              progression: [ProgressionRule.load(BigNumber(2.5))],
             }),
             WeightedExerciseBlueprint.empty().with({
               name: 'Incline Dumbbell Press',
@@ -100,7 +96,7 @@ function PrepareAiPlannerPage() {
         name,
         sets,
         repsConfig: { type: 'fixed', reps: repsPerSet },
-        progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+        progression: [ProgressionRule.load(BigNumber(2.5))],
         restBetweenSets: rest,
       });
     dispatch(

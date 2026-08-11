@@ -12,7 +12,7 @@ import {
   DurationJSON,
   ExerciseBlueprintJSON,
   ProgramBlueprintJSON,
-  ProgressiveOverloadJSON,
+  ProgressionRuleJSON,
   PlannedSetJSON,
   RestJSON,
   SessionBlueprintJSON,
@@ -113,22 +113,20 @@ function fillRest(partial: DeepPartial<RestJSON> = {}): RestJSON {
   };
 }
 
-function fillProgressiveOverload(partial: DeepPartial<ProgressiveOverloadJSON> = {}): ProgressiveOverloadJSON {
-  switch (partial.type) {
-    case 'IncreaseAllEvenlyProgressiveOverload':
-      return {
-        type: partial.type,
-        amount: partial.amount ?? defaultIncreaseAmount,
-      };
-    case 'IncreaseLowestSetProgressiveOverload':
-      return {
-        type: partial.type,
-        amount: partial.amount ?? defaultIncreaseAmount,
-        increaseStrategy: partial.increaseStrategy ?? 'all',
-      };
-    default:
-      return { type: 'NoProgressiveOverload' };
-  }
+/**
+ * An absent list means no automatic progression, which is the safe reading of a model that simply
+ * didn't mention it - a rule invented here would move somebody's weights unasked.
+ */
+function fillProgression(partial: DeepPartial<ProgressionRuleJSON>[] | undefined): ProgressionRuleJSON[] {
+  return (partial ?? []).map((rule) => ({
+    axis: rule?.axis ?? 'load',
+    step: rule?.step ?? defaultIncreaseAmount,
+    scope:
+      rule?.scope?.type === 'lowestSets' ? { type: 'lowestSets', pick: rule.scope.pick ?? 'all' } : { type: 'allSets' },
+    ...(rule?.ceiling === undefined ? {} : { ceiling: rule.ceiling }),
+    ...(rule?.onCeiling === undefined ? {} : { onCeiling: rule.onCeiling }),
+    trigger: rule?.trigger ?? 'allSetsMetTarget',
+  }));
 }
 
 /**
@@ -156,7 +154,7 @@ function fillWeightedExercise(partial: DeepPartial<WeightedExerciseBlueprintJSON
     supersetWithNext: partial.supersetWithNext ?? emptyWeightedExercise.supersetWithNext,
     notes: partial.notes ?? emptyWeightedExercise.notes,
     link: partial.link ?? emptyWeightedExercise.link,
-    progressiveOverload: fillProgressiveOverload(partial.progressiveOverload),
+    progression: fillProgression(partial.progression),
     loadBasis: partial.loadBasis ?? emptyWeightedExercise.loadBasis,
   };
 }
@@ -213,7 +211,7 @@ function fillExercise(partial: DeepPartial<ExerciseBlueprintJSON> = {}): Exercis
 
 function fillSession(partial: DeepPartial<SessionBlueprintJSON> = {}): SessionBlueprintJSON {
   return {
-    version: 5,
+    version: 6,
     name: partial.name ?? emptySessionBlueprint.name,
     exercises: (partial.exercises ?? []).map(fillExercise),
     notes: partial.notes ?? emptySessionBlueprint.notes,

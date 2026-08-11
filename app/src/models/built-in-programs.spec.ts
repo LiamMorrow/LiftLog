@@ -17,7 +17,7 @@ describe('built-in-programs', () => {
         name: exercise.name,
         plannedSets: exercise.plannedSets,
         loadBasis: exercise.loadBasis,
-        progressiveOverload: exercise.progressiveOverload.toJSON(),
+        progression: exercise.progression.map((rule) => rule.toJSON()),
         progressionKey: exercise.progressionKey(),
       })),
     ).toMatchSnapshot();

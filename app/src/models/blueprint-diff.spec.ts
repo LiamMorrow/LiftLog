@@ -8,7 +8,7 @@ vi.mock('expo-localization', () => ({
 import {
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
-  IncreaseAllEvenlyProgressiveOverload,
+  ProgressionRule,
   Rest,
   SessionBlueprint,
   WeightedExerciseBlueprint,
@@ -20,7 +20,6 @@ import {
   getChangeDescription,
   getChangeLabelKey,
 } from './blueprint-diff';
-import { IncreaseLowestSetProgressiveOverload, NoProgressiveOverload, ProgressiveOverload } from './blueprint-models';
 import { UseTranslateResult } from '@tolgee/react';
 import { makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
 
@@ -30,7 +29,7 @@ describe('diffSessionBlueprints', () => {
       name,
       sets,
       repsConfig: { type: 'fixed', reps },
-      progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(new BigNumber('2.5')),
+      progression: [ProgressionRule.load(new BigNumber('2.5'))],
     });
 
   const createCardioSet = (
@@ -217,7 +216,7 @@ describe('diffSessionBlueprints', () => {
           makeWeightedBlueprint({
             name: 'Squat',
             repsConfig: { type: 'fixed', reps: 10 },
-            progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+            progression: [ProgressionRule.load(BigNumber(2.5))],
             restBetweenSets: Rest.short,
           }),
         ],
@@ -229,7 +228,7 @@ describe('diffSessionBlueprints', () => {
           makeWeightedBlueprint({
             name: 'Squat',
             repsConfig: { type: 'fixed', reps: 10 },
-            progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+            progression: [ProgressionRule.load(BigNumber(2.5))],
             restBetweenSets: Rest.long,
           }),
         ],
@@ -251,7 +250,7 @@ describe('diffSessionBlueprints', () => {
       const base = makeWeightedBlueprint({
         name: 'Pull Up',
         repsConfig: { type: 'fixed', reps: 10 },
-        progressiveOverload: new NoProgressiveOverload(),
+        progression: [],
       });
       const original = new SessionBlueprint('Workout', [base], '');
       const modified = new SessionBlueprint('Workout', [base.with({ loadBasis: 'bodyweight' })], '');
@@ -460,7 +459,7 @@ describe('applySessionBlueprintDiff', () => {
       name,
       sets,
       repsConfig: { type: 'fixed', reps },
-      progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+      progression: [ProgressionRule.load(BigNumber(2.5))],
     });
 
   it('should apply selected session name change', () => {
@@ -605,7 +604,7 @@ describe('getChangeDescription', () => {
     makeWeightedBlueprint({
       name,
       repsConfig: { type: 'fixed', reps: 10 },
-      progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+      progression: [ProgressionRule.load(BigNumber(2.5))],
     });
 
   it('should return translation key for session name change', () => {
@@ -650,7 +649,7 @@ describe('getChangeDescription', () => {
           name: 'Squat',
           sets: 5,
           repsConfig: { type: 'fixed', reps: 10 },
-          progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+          progression: [ProgressionRule.load(BigNumber(2.5))],
         }),
       ],
       '',
@@ -681,7 +680,7 @@ describe('filterDiff', () => {
       name,
       sets,
       repsConfig: { type: 'fixed', reps },
-      progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+      progression: [ProgressionRule.load(BigNumber(2.5))],
       notes,
     });
 
@@ -723,7 +722,7 @@ describe('applySessionBlueprintDiff additional branches', () => {
     makeWeightedBlueprint({
       name,
       repsConfig: { type: 'fixed', reps: 10 },
-      progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+      progression: [ProgressionRule.load(BigNumber(2.5))],
     });
   const cardioSet = (durationMinutes: number, trackDuration = true): CardioExerciseSetBlueprint =>
     new CardioExerciseSetBlueprint(
@@ -777,7 +776,7 @@ describe('applySessionBlueprintDiff additional branches', () => {
           name: 'Squat',
           sets: 5,
           repsConfig: { type: 'fixed', reps: 8 },
-          progressiveOverload: new NoProgressiveOverload(),
+          progression: [],
           restBetweenSets: Rest.long,
           supersetWithNext: true,
           notes: 'note',
@@ -799,7 +798,7 @@ describe('change label and description mapping', () => {
   const t: UseTranslateResult['t'] = (key, params?) => ({ key, params }) as unknown as string;
   const weighted = (
     name: string,
-    overload: ProgressiveOverload = new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+    progression: ProgressionRule[] = [ProgressionRule.load(BigNumber(2.5))],
     supersetWithNext = false,
     notes = '',
     link = '',
@@ -807,7 +806,7 @@ describe('change label and description mapping', () => {
     makeWeightedBlueprint({
       name,
       repsConfig: { type: 'fixed', reps: 10 },
-      progressiveOverload: overload,
+      progression,
       supersetWithNext,
       notes,
       link,
@@ -819,7 +818,13 @@ describe('change label and description mapping', () => {
       'Renamed',
       [
         weighted('Bench'), // reordered
-        weighted('Squat', new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'last'), true, 'new note', 'new link'),
+        weighted(
+          'Squat',
+          [ProgressionRule.load(BigNumber(5), { type: 'lowestSets', pick: 'last' })],
+          true,
+          'new note',
+          'new link',
+        ),
         weighted('Deadlift'), // added
       ],
       'new notes',
@@ -836,25 +841,25 @@ describe('change label and description mapping', () => {
     }
   });
 
-  it('describes each progressive overload strategy', () => {
-    const cases = [
-      new NoProgressiveOverload(),
-      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-      new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'all'),
-      new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'first'),
-      new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'middle'),
-      new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'last'),
+  it('describes every progression arrangement, including a multi-rule ladder', () => {
+    const cases: ProgressionRule[][] = [
+      [],
+      [ProgressionRule.load(BigNumber(2.5))],
+      [ProgressionRule.load(BigNumber(5), { type: 'lowestSets', pick: 'all' })],
+      [ProgressionRule.load(BigNumber(5), { type: 'lowestSets', pick: 'first' })],
+      [ProgressionRule.load(BigNumber(5), { type: 'lowestSets', pick: 'middle' })],
+      [ProgressionRule.load(BigNumber(5), { type: 'lowestSets', pick: 'last' })],
+      [
+        ProgressionRule.of({ axis: 'reps', step: BigNumber(1), ceiling: BigNumber(12), onCeiling: 'reset' }),
+        ProgressionRule.load(BigNumber(2.5)),
+      ],
     ];
 
-    for (const overload of cases) {
-      const original = new SessionBlueprint(
-        'W',
-        [weighted('Squat', new IncreaseAllEvenlyProgressiveOverload(BigNumber(1)))],
-        '',
-      );
-      const modified = new SessionBlueprint('W', [weighted('Squat', overload)], '');
+    for (const progression of cases) {
+      const original = new SessionBlueprint('W', [weighted('Squat', [ProgressionRule.load(BigNumber(1))])], '');
+      const modified = new SessionBlueprint('W', [weighted('Squat', progression)], '');
       const diff = diffSessionBlueprints(original, modified);
-      const change = diff.modifiedExercises[0]!.changes.find((c) => c.kind === 'progressiveOverload')!;
+      const change = diff.modifiedExercises[0]!.changes.find((c) => c.kind === 'progression')!;
       const description = getChangeDescription(t, change) as unknown as { key: string };
       expect(description.key).toBeTruthy();
     }

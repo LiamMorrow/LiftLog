@@ -158,14 +158,14 @@ export function WeightedExerciseEditor({
                     icon={'trendingUp'}
                     right={
                       <ProgressiveOverloadSelect
-                        value={exercise.progressiveOverload}
-                        onChange={(progressiveOverload) => updateExercise({ progressiveOverload })}
+                        value={exercise.progression}
+                        onChange={(progression) => updateExercise({ progression })}
                       />
                     }
                     line2={
                       <ProgressiveOverloadValuesEditor
-                        value={exercise.progressiveOverload}
-                        onChange={(progressiveOverload) => updateExercise({ progressiveOverload })}
+                        value={exercise.progression}
+                        onChange={(progression) => updateExercise({ progression })}
                       />
                     }
                   />,

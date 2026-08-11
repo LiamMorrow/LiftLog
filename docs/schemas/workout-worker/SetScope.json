@@ -9,13 +9,11 @@
   ],
   "oneOf": [
     {
-      "$ref": "./NoProgressiveOverload.json"
+      "$ref": "./AllSetsScope.json"
     },
     {
-      "$ref": "./IncreaseAllEvenlyProgressiveOverload.json"
-    },
-    {
-      "$ref": "./IncreaseLowestSetProgressiveOverload.json"
+      "$ref": "./LowestSetsScope.json"
     }
-  ]
+  ],
+  "description": "Which sets a rule moves."
 }

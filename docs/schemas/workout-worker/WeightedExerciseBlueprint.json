@@ -30,8 +30,12 @@
       "type": "string",
       "description": "A url to some explanation of how to do this. We should not fill this unless the user has explicitly given us a link to fill"
     },
-    "progressiveOverload": {
-      "$ref": "./ProgressiveOverload.json"
+    "progression": {
+      "type": "array",
+      "items": {
+        "$ref": "./ProgressionRule.json"
+      },
+      "description": "Ordered; the first rule that can still move, moves. Empty means no automatic progression."
     },
     "loadBasis": {
       "$ref": "./LoadBasis.json",
@@ -46,7 +50,7 @@
     "supersetWithNext",
     "notes",
     "link",
-    "progressiveOverload",
+    "progression",
     "loadBasis"
   ]
 }

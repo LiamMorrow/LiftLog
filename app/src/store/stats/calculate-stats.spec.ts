@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { Session, RecordedWeightedExercise } from '@/models/session-models';
 import { Weight } from '@/models/weight';
-import { NoProgressiveOverload, SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
+import { SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { LocalDate, LocalTime, OffsetDateTime, ZoneOffset, Duration } from '@js-joda/core';
 import { LocalDateRange } from '@/models/time-models';
 import { calculateStats } from '@/store/stats/calculate-stats';
@@ -25,7 +25,7 @@ function makeBlueprint(name: string, sets = 3, reps = 8, usesBodyweight = false)
     name,
     sets,
     repsConfig: { type: 'fixed', reps },
-    progressiveOverload: new NoProgressiveOverload(),
+    progression: [],
     restBetweenSets: {
       maxRest: Duration.ofSeconds(0),
       minRest: Duration.ofSeconds(90),

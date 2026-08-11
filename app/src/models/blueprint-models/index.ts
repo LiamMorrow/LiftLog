@@ -7,11 +7,8 @@ import {
   CardioTargetJSON,
   DistanceJSON,
   ExerciseBlueprintJSON,
-  IncreaseAllEvenlyProgressiveOverloadJSON,
-  IncreaseLowestSetProgressiveOverloadJSON,
-  NoProgressiveOverloadJSON,
   ProgramBlueprintJSON,
-  ProgressiveOverloadJSON,
+  ProgressionRuleJSON,
   RestJSON,
   SessionBlueprintJSON,
   WeightedExerciseBlueprintJSON,
@@ -23,7 +20,6 @@ import {
   toLocalDateJSON,
 } from '../storage/versions/latest';
 import { RecordedWeightedExercise } from '@/models/session-models';
-import { assertUnreachable } from '@/utils/assert-unreachable';
 
 export interface ProgramBlueprintPOJO {
   type: 'ProgramBlueprint';
@@ -123,7 +119,7 @@ export class SessionBlueprint {
 
   toJSON(): SessionBlueprintJSON {
     return {
-      version: 5,
+      version: 6,
       name: this.name,
       exercises: this.exercises.map((exercise) => exercise.toJSON()),
       notes: this.notes,
@@ -332,171 +328,254 @@ export class CardioExerciseBlueprint {
   }
 }
 
-export class NoProgressiveOverload {
-  readonly type = 'NoProgressiveOverload';
-
-  toJSON(): NoProgressiveOverloadJSON {
-    return { type: 'NoProgressiveOverload' };
-  }
-
-  static fromJSON(_json: NoProgressiveOverloadJSON): NoProgressiveOverload {
-    return new NoProgressiveOverload();
-  }
-
-  toType(type: ProgressiveOverload['type']) {
-    return match(type)
-      .with('NoProgressiveOverload', () => this)
-      .with('IncreaseAllEvenlyProgressiveOverload', () => new IncreaseAllEvenlyProgressiveOverload(BigNumber('2.5')))
-      .with(
-        'IncreaseLowestSetProgressiveOverload',
-        () => new IncreaseLowestSetProgressiveOverload(BigNumber('2.5'), 'all'),
-      )
-      .exhaustive();
-  }
-
-  equals(other: ProgressiveOverload): boolean {
-    return this.type === other.type;
-  }
-
-  applyProgressiveOverload(exercise: RecordedWeightedExercise): RecordedWeightedExercise {
-    return exercise;
-  }
-
-  get weightIncrement(): BigNumber {
-    return new BigNumber(2.5);
-  }
-}
-
-export class IncreaseAllEvenlyProgressiveOverload {
-  readonly type = 'IncreaseAllEvenlyProgressiveOverload';
-  constructor(readonly amount: BigNumber) {}
-
-  toJSON(): IncreaseAllEvenlyProgressiveOverloadJSON {
-    return {
-      type: 'IncreaseAllEvenlyProgressiveOverload',
-      amount: toBigNumberJSON(this.amount),
-    };
-  }
-  static fromJSON(json: IncreaseAllEvenlyProgressiveOverloadJSON): IncreaseAllEvenlyProgressiveOverload {
-    return new IncreaseAllEvenlyProgressiveOverload(fromBigNumberJSON(json.amount));
-  }
-  toType(type: ProgressiveOverload['type']) {
-    return match(type)
-      .with('NoProgressiveOverload', () => new NoProgressiveOverload())
-      .with('IncreaseAllEvenlyProgressiveOverload', () => this)
-      .with('IncreaseLowestSetProgressiveOverload', () => new IncreaseLowestSetProgressiveOverload(this.amount, 'all'))
-      .exhaustive();
-  }
-
-  with(other: Partial<IncreaseAllEvenlyProgressiveOverload>) {
-    return new IncreaseAllEvenlyProgressiveOverload(other.amount ?? this.amount);
-  }
-
-  equals(other: ProgressiveOverload): boolean {
-    return this.type === other.type && this.amount.isEqualTo(other.amount);
-  }
-  applyProgressiveOverload(exercise: RecordedWeightedExercise): RecordedWeightedExercise {
-    return exercise.withAllSets((s) => s.with({ weight: s.weight.plus(this.amount) }));
-  }
-  get weightIncrement(): BigNumber {
-    return this.amount.isZero() ? new BigNumber(2.5) : this.amount;
-  }
-}
+/** Which number a rule moves. */
+export type ProgressionAxis = 'reps' | 'load';
 
 export type IncreaseStrategy = 'first' | 'middle' | 'last' | 'all';
 
-export class IncreaseLowestSetProgressiveOverload {
-  readonly type = 'IncreaseLowestSetProgressiveOverload';
+/**
+ * Which sets a rule moves. `lowestSets` ranks by the rule's own axis, so a reps rule picks the sets
+ * with the smallest target rather than the smallest weight.
+ */
+export type SetScope = { type: 'allSets' } | { type: 'lowestSets'; pick: IncreaseStrategy };
+
+/** What has to happen for a rule to fire. */
+export type SuccessRule = 'allSetsMetTarget';
+
+export interface ProgressionRuleInit {
+  axis?: ProgressionAxis;
+  step?: BigNumber;
+  scope?: SetScope;
+  ceiling?: BigNumber | undefined;
+  onCeiling?: 'reset' | undefined;
+  trigger?: SuccessRule;
+}
+
+/**
+ * One step of automatic progression. An exercise carries an ordered list of these, and
+ * {@link applyProgression} gives the move to the first rule that can still make one.
+ *
+ * `step` and `ceiling` are in the axis's own unit - whole reps, or plate increments in whatever unit
+ * the lifter works in - and deliberately not a {@link Weight}. 2.5 in a kilogram gym and 5 in a pound
+ * gym are the same step rather than conversions of one another, and a blueprint has no unit to be
+ * expressed in: the unit is chosen per weight and carried forward through the lineage.
+ */
+export class ProgressionRule {
+  readonly type = 'ProgressionRule';
   constructor(
-    readonly amount: BigNumber,
-    readonly increaseStrategy: IncreaseStrategy,
+    readonly axis: ProgressionAxis,
+    readonly step: BigNumber,
+    readonly scope: SetScope = { type: 'allSets' },
+    readonly ceiling?: BigNumber,
+    readonly onCeiling?: 'reset',
+    readonly trigger: SuccessRule = 'allSetsMetTarget',
   ) {}
 
-  toJSON(): IncreaseLowestSetProgressiveOverloadJSON {
+  static of(init: ProgressionRuleInit & { axis: ProgressionAxis; step: BigNumber }): ProgressionRule {
+    return new ProgressionRule(init.axis, init.step, init.scope, init.ceiling, init.onCeiling, init.trigger);
+  }
+
+  /** The rule almost every plan wants: put more on the bar once every set hit its target. */
+  static load(step: BigNumber, scope: SetScope = { type: 'allSets' }): ProgressionRule {
+    return new ProgressionRule('load', step, scope);
+  }
+
+  static fromJSON(json: ProgressionRuleJSON): ProgressionRule {
+    return new ProgressionRule(
+      json.axis,
+      fromBigNumberJSON(json.step),
+      json.scope.type === 'allSets' ? { type: 'allSets' } : { type: 'lowestSets', pick: json.scope.pick },
+      json.ceiling === undefined ? undefined : fromBigNumberJSON(json.ceiling),
+      json.onCeiling,
+      json.trigger,
+    );
+  }
+
+  toJSON(): ProgressionRuleJSON {
     return {
-      type: 'IncreaseLowestSetProgressiveOverload',
-      amount: toBigNumberJSON(this.amount),
-      increaseStrategy: this.increaseStrategy,
+      axis: this.axis,
+      step: toBigNumberJSON(this.step),
+      scope: this.scope.type === 'allSets' ? { type: 'allSets' } : { type: 'lowestSets', pick: this.scope.pick },
+      ...(this.ceiling === undefined ? {} : { ceiling: toBigNumberJSON(this.ceiling) }),
+      ...(this.onCeiling === undefined ? {} : { onCeiling: this.onCeiling }),
+      trigger: this.trigger,
     };
   }
-  static fromJSON(json: IncreaseLowestSetProgressiveOverloadJSON): IncreaseLowestSetProgressiveOverload {
-    return new IncreaseLowestSetProgressiveOverload(fromBigNumberJSON(json.amount), json.increaseStrategy);
-  }
 
-  with(other: Partial<IncreaseLowestSetProgressiveOverload>) {
-    return new IncreaseLowestSetProgressiveOverload(
-      other.amount ?? this.amount,
-      other.increaseStrategy ?? this.increaseStrategy,
+  with(other: ProgressionRuleInit): ProgressionRule {
+    return new ProgressionRule(
+      other.axis ?? this.axis,
+      other.step ?? this.step,
+      other.scope ?? this.scope,
+      'ceiling' in other ? other.ceiling : this.ceiling,
+      'onCeiling' in other ? other.onCeiling : this.onCeiling,
+      other.trigger ?? this.trigger,
     );
   }
 
-  toType(type: ProgressiveOverload['type']) {
-    return match(type)
-      .with('NoProgressiveOverload', () => new NoProgressiveOverload())
-      .with('IncreaseAllEvenlyProgressiveOverload', () => new IncreaseAllEvenlyProgressiveOverload(this.amount))
-      .with('IncreaseLowestSetProgressiveOverload', () => this)
-      .exhaustive();
-  }
-
-  equals(other: ProgressiveOverload): boolean {
+  equals(other: ProgressionRule | undefined): boolean {
+    if (!other) {
+      return false;
+    }
+    if (other === this) {
+      return true;
+    }
     return (
-      this.type === other.type &&
-      this.amount.isEqualTo(other.amount) &&
-      this.increaseStrategy === other.increaseStrategy
+      this.axis === other.axis &&
+      this.step.isEqualTo(other.step) &&
+      setScopeEquals(this.scope, other.scope) &&
+      (this.ceiling?.isEqualTo(other.ceiling ?? NaN) ?? other.ceiling === undefined) &&
+      this.onCeiling === other.onCeiling &&
+      this.trigger === other.trigger
     );
   }
 
-  applyProgressiveOverload(exercise: RecordedWeightedExercise): RecordedWeightedExercise {
-    const lowestSet = [...exercise.potentialSets].sort((a, b) => (a.weight.isGreaterThan(b.weight) ? 1 : -1))[0];
-    if (!lowestSet) {
+  /** The exercise with this rule's move made, or `undefined` when the rule has nothing left to move. */
+  applyTo(exercise: RecordedWeightedExercise): RecordedWeightedExercise | undefined {
+    // A load rule kept from before the load was turned off would climb a weight nothing displays.
+    if (this.axis === 'load' && !exercise.tracksLoad) {
+      return undefined;
+    }
+    const indices = this.indicesToMove(exercise);
+    if (!indices.length) {
+      return undefined;
+    }
+    return this.axis === 'load' ? this.moveLoad(exercise, indices) : this.moveReps(exercise, indices);
+  }
+
+  /** Undoes this rule's climb, putting the axis back to what the plan asks for. */
+  resetOn(exercise: RecordedWeightedExercise): RecordedWeightedExercise {
+    // Only reps have a planned value to return to; the plan never prescribes a load.
+    if (this.axis !== 'reps') {
       return exercise;
     }
-    if (this.increaseStrategy === 'all') {
-      // find all sets which have the same weight as lowest set and increase their weight by amount
-      return exercise.potentialSets.reduce(
-        (ex, set, index) =>
-          set.weight.equals(lowestSet.weight)
-            ? ex.withSet(index, (s) => s.with({ weight: s.weight.plus(this.amount) }))
-            : ex,
-        exercise,
-      );
-    } else if (this.increaseStrategy === 'middle') {
-      const matchingIndices = exercise.potentialSets
-        .map((set, index) => ({ set, index }))
-        .filter(({ set }) => set.weight.equals(lowestSet.weight))
-        .map(({ index }) => index);
-      const middleOfAll = (exercise.potentialSets.length - 1) / 2;
-      const middleIndex =
-        matchingIndices.reduce((closest, index) =>
-          Math.abs(index - middleOfAll) < Math.abs(closest - middleOfAll) ? index : closest,
-        ) ?? 0;
-      return exercise.withSet(middleIndex, (s) => s.with({ weight: s.weight.plus(this.amount) }));
-    } else if (this.increaseStrategy === 'first') {
-      const index = exercise.potentialSets.findIndex((a) => a.weight.equals(lowestSet.weight));
-      return exercise.withSet(index, (s) => s.with({ weight: s.weight.plus(this.amount) }));
-    } else if (this.increaseStrategy === 'last') {
-      const index = exercise.potentialSets.findLastIndex((a) => a.weight.equals(lowestSet.weight));
-      return exercise.withSet(index, (s) => s.with({ weight: s.weight.plus(this.amount) }));
-    }
-    assertUnreachable(this.increaseStrategy);
+    return exercise.potentialSets.reduce(
+      (ex, _, index) => ex.withSet(index, (s) => s.with({ target: exercise.blueprint.repsTargetForSet(index) })),
+      exercise,
+    );
   }
 
-  get weightIncrement(): BigNumber {
-    return this.amount.isZero() ? new BigNumber(2.5) : this.amount;
+  private moveLoad(exercise: RecordedWeightedExercise, indices: number[]): RecordedWeightedExercise {
+    return indices.reduce(
+      (ex, index) => ex.withSet(index, (s) => s.with({ weight: s.weight.plus(this.step) })),
+      exercise,
+    );
+  }
+
+  /**
+   * The band climbs as a whole, stopping when its top reaches the ceiling. Both ends move by the same
+   * amount even on the last rung, so a range keeps its width rather than closing up against the cap.
+   */
+  private moveReps(exercise: RecordedWeightedExercise, indices: number[]): RecordedWeightedExercise | undefined {
+    const moved = indices.flatMap((index) => {
+      const { min, max } = exercise.repsTargetForSet(index);
+      const step = this.stepUpTo(max);
+      return step === 0 ? [] : [{ index, target: { min: min + step, max: max + step } }];
+    });
+    if (!moved.length) {
+      return undefined;
+    }
+    return moved.reduce((ex, { index, target }) => ex.withSet(index, (s) => s.with({ target })), exercise);
+  }
+
+  /**
+   * How far reps may actually climb from `from`: the whole step, or whatever the ceiling leaves.
+   *
+   * Whole reps only - a target is an integer on the wire, and half a repetition is not a thing to ask
+   * anyone for. A rule with nowhere left to go returns zero, which is what hands the move on to the
+   * next rule in the list.
+   */
+  private stepUpTo(from: number): number {
+    const step = Math.floor(this.step.toNumber());
+    const reachable =
+      this.ceiling === undefined ? from + step : Math.min(from + step, Math.floor(this.ceiling.toNumber()));
+    return Math.max(reachable - from, 0);
+  }
+
+  private indicesToMove(exercise: RecordedWeightedExercise): number[] {
+    const sets = exercise.potentialSets;
+    if (this.scope.type === 'allSets') {
+      return sets.map((_, index) => index);
+    }
+    // Ranked by the rule's own axis: a reps rule that sorted by load would pick a set at random.
+    const matching =
+      this.axis === 'load'
+        ? lowestByWeight(exercise)
+        : lowestByNumber(sets.map((_, i) => exercise.repsTargetForSet(i).max));
+    return pickFrom(matching, this.scope.pick, sets.length);
   }
 }
 
-export type ProgressiveOverload =
-  | NoProgressiveOverload
-  | IncreaseAllEvenlyProgressiveOverload
-  | IncreaseLowestSetProgressiveOverload;
+function lowestByWeight(exercise: RecordedWeightedExercise): number[] {
+  const sets = exercise.potentialSets;
+  const lowest = [...sets].sort((a, b) => (a.weight.isGreaterThan(b.weight) ? 1 : -1))[0];
+  if (!lowest) {
+    return [];
+  }
+  return sets.flatMap((set, index) => (set.weight.equals(lowest.weight) ? [index] : []));
+}
 
-function fromProgressiveOverloadJSON(json: ProgressiveOverloadJSON): ProgressiveOverload {
-  return match(json)
-    .with({ type: 'NoProgressiveOverload' }, NoProgressiveOverload.fromJSON)
-    .with({ type: 'IncreaseAllEvenlyProgressiveOverload' }, IncreaseAllEvenlyProgressiveOverload.fromJSON)
-    .with({ type: 'IncreaseLowestSetProgressiveOverload' }, IncreaseLowestSetProgressiveOverload.fromJSON)
+function lowestByNumber(values: number[]): number[] {
+  const lowest = Math.min(...values);
+  return values.flatMap((value, index) => (value === lowest ? [index] : []));
+}
+
+/** `middle` measures from the centre of *all* sets, not the centre of the matching ones. */
+function pickFrom(matching: number[], pick: IncreaseStrategy, setCount: number): number[] {
+  if (!matching.length) {
+    return [];
+  }
+  return match(pick)
+    .returnType<number[]>()
+    .with('all', () => matching)
+    .with('first', () => matching.slice(0, 1))
+    .with('last', () => matching.slice(-1))
+    .with('middle', () => {
+      const centre = (setCount - 1) / 2;
+      // A tie keeps the earlier candidate.
+      return [
+        matching.reduce((closest, index) => (Math.abs(index - centre) < Math.abs(closest - centre) ? index : closest)),
+      ];
+    })
     .exhaustive();
+}
+
+function setScopeEquals(a: SetScope, b: SetScope): boolean {
+  return a.type === 'allSets' ? b.type === 'allSets' : b.type === 'lowestSets' && a.pick === b.pick;
+}
+
+export function progressionEquals(a: ProgressionRule[], b: ProgressionRule[]): boolean {
+  return a.length === b.length && a.every((rule, index) => rule.equals(b[index]));
+}
+
+/**
+ * Ordered: the first rule that can still move is the one that moves. Every rule ahead of it has run
+ * out of room, so any of those asking to `reset` gets put back to the plan on the way past - that
+ * handoff is what makes double progression a ladder rather than a one-way climb.
+ */
+export function applyProgression(
+  progression: ProgressionRule[],
+  exercise: RecordedWeightedExercise,
+): RecordedWeightedExercise {
+  for (const [index, rule] of progression.entries()) {
+    const moved = rule.applyTo(exercise);
+    if (moved) {
+      return progression
+        .slice(0, index)
+        .filter((exhausted) => exhausted.onCeiling === 'reset')
+        .reduce((ex, exhausted) => exhausted.resetOn(ex), moved);
+    }
+  }
+  return exercise;
+}
+
+/**
+ * How much the weight stepper in the set counter moves per tap. Falls back to a pair of the smallest
+ * plates, which is what an exercise that progresses on something else still wants offered.
+ */
+export function weightIncrementFor(progression: ProgressionRule[]): BigNumber {
+  const step = progression.find((rule) => rule.axis === 'load')?.step;
+  return step && !step.isZero() ? step : new BigNumber(2.5);
 }
 
 /** Always a band; `min === max` is a point target. */
@@ -555,7 +634,7 @@ export function plannedSetsEqual(a: PlannedSet[], b: PlannedSet[]): boolean {
 export interface WeightedExerciseBlueprintInit {
   name?: string;
   plannedSets?: PlannedSet[];
-  progressiveOverload?: ProgressiveOverload;
+  progression?: ProgressionRule[];
   restBetweenSets?: Rest;
   supersetWithNext?: boolean;
   notes?: string;
@@ -572,7 +651,7 @@ export class WeightedExerciseBlueprint {
   constructor(
     readonly name: string,
     readonly plannedSets: PlannedSet[],
-    readonly progressiveOverload: ProgressiveOverload,
+    readonly progression: ProgressionRule[],
     readonly restBetweenSets: Rest,
     readonly supersetWithNext: boolean,
     readonly notes: string,
@@ -585,7 +664,7 @@ export class WeightedExerciseBlueprint {
     return new WeightedExerciseBlueprint(
       init.name ?? '',
       init.plannedSets ?? plannedSetsOf(init.sets ?? 3, init.repsConfig ?? { type: 'fixed', reps: 10 }),
-      init.progressiveOverload ?? new NoProgressiveOverload(),
+      init.progression ?? [],
       init.restBetweenSets ?? Rest.medium,
       init.supersetWithNext ?? false,
       init.notes ?? '',
@@ -602,7 +681,7 @@ export class WeightedExerciseBlueprint {
     return new WeightedExerciseBlueprint(
       json.name,
       json.plannedSets.map((s) => ({ reps: { min: s.reps.min, max: s.reps.max } })),
-      fromProgressiveOverloadJSON(json.progressiveOverload),
+      json.progression.map(ProgressionRule.fromJSON),
       Rest.fromJSON(json.restBetweenSets),
       json.supersetWithNext,
       json.notes,
@@ -611,18 +690,33 @@ export class WeightedExerciseBlueprint {
     );
   }
 
+  /** See {@link weightIncrementFor}. */
+  get weightIncrement(): BigNumber {
+    return weightIncrementFor(this.progression);
+  }
+
   /** See {@link MovementKey}. */
   movementKey(): MovementKey {
     return movementKeyFor(this.name, this.type);
   }
 
   /**
-   * See {@link ProgressionKey}. Where reps are what advances, the rep scheme is only the ladder's
-   * starting rung, so it is left out to keep a lineage that has climbed past it intact.
+   * Whether reps are something this exercise advances on, rather than a fixed prescription: either it
+   * carries no load and so has nothing else to advance on, or a rule moves them outright.
+   *
+   * Two things hang off this. The rep scheme drops out of {@link progressionKey}, because where reps
+   * climb the plan's numbers are only the ladder's first rung and splitting on them would strand a
+   * lineage that had climbed past it. And the target carries session to session instead of being
+   * re-seeded, because otherwise the next session would undo whatever the rule just did.
    */
+  get repsAreProgressed(): boolean {
+    return this.loadBasis === 'none' || this.progression.some((rule) => rule.axis === 'reps');
+  }
+
+  /** See {@link ProgressionKey} and {@link repsAreProgressed}. */
   progressionKey(): ProgressionKey {
     const base = `${this.name}_${this.type}_${this.plannedSets.length}`;
-    return (this.loadBasis === 'none' ? base : `${base}_${plannedSetsKey(this.plannedSets)}`) as ProgressionKey;
+    return (this.repsAreProgressed ? base : `${base}_${plannedSetsKey(this.plannedSets)}`) as ProgressionKey;
   }
 
   repsTargetForSet(index: number): RepsTarget {
@@ -658,7 +752,7 @@ export class WeightedExerciseBlueprint {
     return (
       this.name === other.name &&
       plannedSetsEqual(this.plannedSets, other.plannedSets) &&
-      this.progressiveOverload.equals(other.progressiveOverload) &&
+      progressionEquals(this.progression, other.progression) &&
       this.restBetweenSets.minRest.equals(other.restBetweenSets.minRest) &&
       this.restBetweenSets.maxRest.equals(other.restBetweenSets.maxRest) &&
       this.restBetweenSets.failureRest.equals(other.restBetweenSets.failureRest) &&
@@ -674,7 +768,7 @@ export class WeightedExerciseBlueprint {
       type: 'WeightedExerciseBlueprint',
       name: this.name,
       plannedSets: this.plannedSets.map((s) => ({ reps: { min: s.reps.min, max: s.reps.max } })),
-      progressiveOverload: this.progressiveOverload.toJSON(),
+      progression: this.progression.map((rule) => rule.toJSON()),
       restBetweenSets: Rest.toJSON(this.restBetweenSets),
       supersetWithNext: this.supersetWithNext,
       notes: this.notes,
@@ -690,7 +784,7 @@ export class WeightedExerciseBlueprint {
         (other.sets !== undefined || other.repsConfig !== undefined
           ? plannedSetsOf(other.sets ?? this.plannedSets.length, other.repsConfig ?? targetsAsRepsConfig(this))
           : this.plannedSets),
-      other.progressiveOverload ?? this.progressiveOverload,
+      other.progression ?? this.progression,
       other.restBetweenSets ?? this.restBetweenSets,
       other.supersetWithNext ?? this.supersetWithNext,
       other.notes ?? this.notes,

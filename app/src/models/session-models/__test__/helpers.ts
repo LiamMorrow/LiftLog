@@ -8,7 +8,7 @@ import {
   SessionBlueprint,
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
-  IncreaseAllEvenlyProgressiveOverload,
+  ProgressionRule,
 } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { Session } from '@/models/session-models/session';
@@ -36,7 +36,7 @@ export function tickAt(h: number, m: number, s: number = 0): OffsetDateTime {
 export function makeWeightedBlueprint(init: WeightedExerciseBlueprintInit = {}) {
   return WeightedExerciseBlueprint.of({
     name: 'Squat',
-    progressiveOverload: new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+    progression: [ProgressionRule.load(BigNumber(2.5))],
     ...init,
   });
 }

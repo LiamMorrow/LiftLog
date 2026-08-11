@@ -4,6 +4,7 @@ import { repsPerSetToRepsConfig } from '@/models/storage/versions/migrations/ste
 import { addUsesBodyweight } from '@/models/storage/versions/migrations/steps/add-uses-bodyweight';
 import { repsConfigToPlannedSets } from '@/models/storage/versions/migrations/steps/reps-config-to-planned-sets';
 import { addSetTargets } from '@/models/storage/versions/migrations/steps/add-set-targets';
+import { progressiveOverloadToRules } from '@/models/storage/versions/migrations/steps/progressive-overload-to-rules';
 import { SessionJSON as InitialSessionJSON } from '@/models/storage/versions/initial';
 import { SessionJSON } from '@/models/storage/versions/latest/session';
 import { omit } from '@/utils/omit';
@@ -63,6 +64,18 @@ export const sessionMigrations = createMigrations<InitialSessionJSON>()
     version: 6,
     recordedExercises: session.recordedExercises.map((ex) =>
       ex.type === 'RecordedCardioExercise' ? ex : addSetTargets(ex),
+    ),
+  }))
+  .add((session) => ({
+    ...session,
+    version: 7,
+    recordedExercises: session.recordedExercises.map((ex) =>
+      ex.type === 'RecordedCardioExercise'
+        ? ex
+        : {
+            ...ex,
+            blueprint: progressiveOverloadToRules(ex.blueprint),
+          },
     ),
   }))
   .build<SessionJSON>();

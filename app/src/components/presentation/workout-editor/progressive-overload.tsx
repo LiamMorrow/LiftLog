@@ -1,10 +1,10 @@
 import SelectPicker, { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
 import {
-  IncreaseAllEvenlyProgressiveOverload,
-  IncreaseLowestSetProgressiveOverload,
+  applyProgression,
   IncreaseStrategy,
-  ProgressiveOverload,
+  ProgressionRule,
   WeightedExerciseBlueprint,
+  weightIncrementFor,
 } from '@/models/blueprint-models';
 import { useTranslate } from '@tolgee/react';
 import { ScrollView, View } from 'react-native';
@@ -24,50 +24,77 @@ import { Weight } from '@/models/weight';
 import Icon from '@/components/presentation/foundation/icon';
 
 interface Props {
-  value: ProgressiveOverload;
-  onChange: (v: ProgressiveOverload) => void;
+  value: ProgressionRule[];
+  onChange: (v: ProgressionRule[]) => void;
+}
+
+/**
+ * The three arrangements the editor offers today, projected on and off the rule list. The list can
+ * hold more than this shape can name, so the picker reads what it can and leaves the rest alone.
+ */
+type OverloadShape = 'none' | 'allEvenly' | 'lowestSet';
+
+function shapeOf(progression: ProgressionRule[]): OverloadShape {
+  const rule = progression.find((r) => r.axis === 'load');
+  if (!rule) {
+    return 'none';
+  }
+  return rule.scope.type === 'lowestSets' ? 'lowestSet' : 'allEvenly';
+}
+
+function loadRule(progression: ProgressionRule[]): ProgressionRule | undefined {
+  return progression.find((r) => r.axis === 'load');
+}
+
+function withShape(progression: ProgressionRule[], shape: OverloadShape): ProgressionRule[] {
+  const step = loadRule(progression)?.step ?? weightIncrementFor(progression);
+  return match(shape)
+    .returnType<ProgressionRule[]>()
+    .with('none', () => [])
+    .with('allEvenly', () => [ProgressionRule.load(step)])
+    .with('lowestSet', () => [ProgressionRule.load(step, { type: 'lowestSets', pick: 'all' })])
+    .exhaustive();
+}
+
+function withLoadRule(progression: ProgressionRule[], update: (rule: ProgressionRule) => ProgressionRule) {
+  return progression.map((rule) => (rule.axis === 'load' ? update(rule) : rule));
 }
 
 export function ProgressiveOverloadSelect(props: Props) {
   const { t } = useTranslate();
-  const values: SelectPickerOption<ProgressiveOverload['type']>[] = [
+  const values: SelectPickerOption<OverloadShape>[] = [
     {
-      value: 'NoProgressiveOverload',
+      value: 'none',
       label: t('exercise.progressive_overload.no.label'),
     },
     {
-      value: 'IncreaseAllEvenlyProgressiveOverload',
+      value: 'allEvenly',
       label: t('exercise.progressive_overload.increase_all_evenly.label'),
     },
     {
-      value: 'IncreaseLowestSetProgressiveOverload',
+      value: 'lowestSet',
       label: t('exercise.progressive_overload.increase_lowest_set.label'),
     },
   ];
   return (
     <SelectPicker
-      value={props.value.type}
-      onChange={(value) => {
-        props.onChange(props.value.toType(value));
-      }}
+      value={shapeOf(props.value)}
+      onChange={(shape) => props.onChange(withShape(props.value, shape))}
       options={values}
     />
   );
 }
 
 export function ProgressiveOverloadValuesEditor(props: Props) {
+  const shape = shapeOf(props.value);
   return (
     <View style={{ gap: spacing[2] }}>
-      {match(props.value)
-        .with({ type: 'NoProgressiveOverload' }, () => undefined)
-        .with({ type: 'IncreaseAllEvenlyProgressiveOverload' }, (x) => (
-          <IncreaseAllEvenlyValues value={x} onChange={props.onChange} />
-        ))
-        .with({ type: 'IncreaseLowestSetProgressiveOverload' }, (x) => (
-          <IncreaseLowestSetValues value={x} onChange={props.onChange} />
-        ))
+      {match(shape)
+        .with('none', () => undefined)
+        .with('allEvenly', () => <IncreaseAllEvenlyValues {...props} />)
+        .with('lowestSet', () => <IncreaseLowestSetValues {...props} />)
         .exhaustive()}
-      {props.value.type !== 'NoProgressiveOverload' && (
+      {shape !== 'none' && (
         <>
           <Divider />
           <ProgressiveOverloadExample value={props.value} />
@@ -77,23 +104,28 @@ export function ProgressiveOverloadValuesEditor(props: Props) {
   );
 }
 
-function IncreaseAllEvenlyValues(props: Props & { value: IncreaseAllEvenlyProgressiveOverload }) {
-  const { t } = useTranslate();
+function StepEditor(props: Props & { label: string }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text>{t('exercise.progressive_overload.increase_all_evenly.amount.label')}</Text>
+      <Text>{props.label}</Text>
       <DecimalEditor
         underlineColor="transparent"
         style={{ flex: 1, textAlign: 'right' }}
-        value={props.value.amount}
-        onChange={(amount) => props.onChange(props.value.with({ amount }))}
+        value={loadRule(props.value)?.step ?? BigNumber(0)}
+        onChange={(step) => props.onChange(withLoadRule(props.value, (rule) => rule.with({ step })))}
       />
     </View>
   );
 }
 
-function IncreaseLowestSetValues(props: Props & { value: IncreaseLowestSetProgressiveOverload }) {
+function IncreaseAllEvenlyValues(props: Props) {
   const { t } = useTranslate();
+  return <StepEditor {...props} label={t('exercise.progressive_overload.increase_all_evenly.amount.label')} />;
+}
+
+function IncreaseLowestSetValues(props: Props) {
+  const { t } = useTranslate();
+  const scope = loadRule(props.value)?.scope;
   const increaseStrategyOptions: SelectPickerOption<IncreaseStrategy>[] = [
     {
       label: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.all.label'),
@@ -114,15 +146,7 @@ function IncreaseLowestSetValues(props: Props & { value: IncreaseLowestSetProgre
   ];
   return (
     <View style={{ gap: spacing[1] }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text>{t('exercise.progressive_overload.increase_lowest_set.amount.label')}</Text>
-        <DecimalEditor
-          underlineColor="transparent"
-          style={{ flex: 1, textAlign: 'right' }}
-          value={props.value.amount}
-          onChange={(amount) => props.onChange(props.value.with({ amount }))}
-        />
-      </View>
+      <StepEditor {...props} label={t('exercise.progressive_overload.increase_lowest_set.amount.label')} />
       <View
         style={{
           flexDirection: 'row',
@@ -132,8 +156,10 @@ function IncreaseLowestSetValues(props: Props & { value: IncreaseLowestSetProgre
       >
         <Text>{t('exercise.progressive_overload.increase_lowest_set.increase_strategy.label')}</Text>
         <SelectPicker
-          value={props.value.increaseStrategy}
-          onChange={(increaseStrategy) => props.onChange(props.value.with({ increaseStrategy }))}
+          value={scope?.type === 'lowestSets' ? scope.pick : 'all'}
+          onChange={(pick) =>
+            props.onChange(withLoadRule(props.value, (rule) => rule.with({ scope: { type: 'lowestSets', pick } })))
+          }
           options={increaseStrategyOptions}
         />
       </View>
@@ -141,26 +167,26 @@ function IncreaseLowestSetValues(props: Props & { value: IncreaseLowestSetProgre
   );
 }
 
-function ProgressiveOverloadExample(props: { value: ProgressiveOverload }) {
+function ProgressiveOverloadExample(props: { value: ProgressionRule[] }) {
   const { t } = useTranslate();
   const [exampleOpen, setExampleOpen] = useState(false);
   const unit = usePreferredWeightUnit();
   const exampleExercise = RecordedWeightedExercise.empty(
-    WeightedExerciseBlueprint.empty().with({ repsConfig: { type: 'fixed', reps: 8 }, sets: 3 }),
+    WeightedExerciseBlueprint.of({ plannedSets: Array.from({ length: 3 }, () => ({ reps: { min: 8, max: 8 } })) }),
     unit,
   )
     .withAllSets((s) =>
       s.with({
         set: RecordedSet.of({ repsCompleted: 8, completionDateTime: OffsetDateTime.MIN }),
-        weight: new Weight(BigNumber(10).plus(props.value.weightIncrement), unit),
+        weight: new Weight(BigNumber(10).plus(weightIncrementFor(props.value)), unit),
       }),
     )
     .withSet(0, (s) => s.with({ weight: new Weight(10, unit) }))
     .withSet(1, (s) => s.with({ weight: new Weight(10, unit) }));
-  const appliedProgressiveOverload1 = props.value.applyProgressiveOverload(exampleExercise);
-  const appliedProgressiveOverload2 = props.value.applyProgressiveOverload(appliedProgressiveOverload1);
-  const appliedProgressiveOverload3 = props.value.applyProgressiveOverload(appliedProgressiveOverload2);
-  if (props.value.type === 'NoProgressiveOverload') {
+  const applied1 = applyProgression(props.value, exampleExercise);
+  const applied2 = applyProgression(props.value, applied1);
+  const applied3 = applyProgression(props.value, applied2);
+  if (!props.value.length) {
     return undefined;
   }
   return (
@@ -171,29 +197,16 @@ function ProgressiveOverloadExample(props: { value: ProgressiveOverload }) {
           <Dialog.Title>{t('exercise.progressive_overload.example.label')}</Dialog.Title>
           <Dialog.Content style={{ height: 400 }}>
             <ScrollView contentContainerStyle={{ gap: spacing[4], alignItems: 'center' }} style={{ flex: 1 }}>
-              <View style={{ flexDirection: 'row', gap: spacing[2] }}>
-                {exampleExercise.potentialSets.map((x, i) => (
-                  <DummySet key={i} set={x} maxReps={8} />
-                ))}
-              </View>
-              <Icon source={'arrowDownward'} size={24} />
-              <View style={{ flexDirection: 'row', gap: spacing[2] }}>
-                {appliedProgressiveOverload1.potentialSets.map((x, i) => (
-                  <DummySet key={i} set={x} maxReps={8} />
-                ))}
-              </View>
-              <Icon source={'arrowDownward'} size={24} />
-              <View style={{ flexDirection: 'row', gap: spacing[2] }}>
-                {appliedProgressiveOverload2.potentialSets.map((x, i) => (
-                  <DummySet key={i} set={x} maxReps={8} />
-                ))}
-              </View>
-              <Icon source={'arrowDownward'} size={24} />
-              <View style={{ flexDirection: 'row', gap: spacing[2] }}>
-                {appliedProgressiveOverload3.potentialSets.map((x, i) => (
-                  <DummySet key={i} set={x} maxReps={8} />
-                ))}
-              </View>
+              {[exampleExercise, applied1, applied2, applied3].map((step, stepIndex) => (
+                <View key={stepIndex} style={{ gap: spacing[4], alignItems: 'center' }}>
+                  {stepIndex > 0 && <Icon source={'arrowDownward'} size={24} />}
+                  <View style={{ flexDirection: 'row', gap: spacing[2] }}>
+                    {step.potentialSets.map((x, i) => (
+                      <DummySet key={i} set={x} maxReps={8} />
+                    ))}
+                  </View>
+                </View>
+              ))}
             </ScrollView>
           </Dialog.Content>
           <Dialog.Actions>

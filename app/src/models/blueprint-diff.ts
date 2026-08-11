@@ -7,7 +7,8 @@ import {
   ExerciseBlueprint,
   IncreaseStrategy,
   LoadBasis,
-  ProgressiveOverload,
+  ProgressionRule,
+  progressionEquals,
   formatPlannedSets,
   PlannedSet,
   plannedSetsEqual,
@@ -104,13 +105,13 @@ interface ExercisePlannedSetsChange extends BaseChange {
   newValue: PlannedSet[];
 }
 
-interface ExerciseWeightIncreaseChange extends BaseChange {
-  kind: 'progressiveOverload';
+interface ExerciseProgressionChange extends BaseChange {
+  kind: 'progression';
   type: 'modified';
   exerciseName: string;
   exerciseIndex: number;
-  oldValue: ProgressiveOverload;
-  newValue: ProgressiveOverload;
+  oldValue: ProgressionRule[];
+  newValue: ProgressionRule[];
 }
 
 /** Grouped rest settings change */
@@ -226,7 +227,7 @@ interface ExerciseTypeChange extends BaseChange {
 type ExerciseFieldChange =
   | ExerciseNameChange
   | ExercisePlannedSetsChange
-  | ExerciseWeightIncreaseChange
+  | ExerciseProgressionChange
   | ExerciseRestChange
   | ExerciseSupersetChange
   | ExerciseLoadBasisChange
@@ -430,15 +431,15 @@ function diffWeightedExercises(
     });
   }
 
-  if (!oldEx.progressiveOverload.equals(newEx.progressiveOverload)) {
+  if (!progressionEquals(oldEx.progression, newEx.progression)) {
     changes.push({
       id: generateChangeId(),
-      kind: 'progressiveOverload',
+      kind: 'progression',
       type: 'modified',
       exerciseName,
       exerciseIndex,
-      oldValue: oldEx.progressiveOverload,
-      newValue: newEx.progressiveOverload,
+      oldValue: oldEx.progression,
+      newValue: newEx.progression,
     });
   }
 
@@ -900,8 +901,8 @@ export function applySessionBlueprintDiff(original: SessionBlueprint, diff: Sess
         .with({ kind: 'exercisePlannedSets' }, (c) =>
           exercise instanceof WeightedExerciseBlueprint ? exercise.with({ plannedSets: c.newValue }) : exercise,
         )
-        .with({ kind: 'progressiveOverload' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ progressiveOverload: c.newValue }) : exercise,
+        .with({ kind: 'progression' }, (c) =>
+          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ progression: c.newValue }) : exercise,
         )
         .with({ kind: 'exerciseRest' }, (c) =>
           exercise instanceof WeightedExerciseBlueprint ? exercise.with({ restBetweenSets: c.newValue }) : exercise,
@@ -1064,10 +1065,10 @@ export function getChangeDescription(t: UseTranslateResult['t'], change: DiffCha
         newValue: formatPlannedSets(c.newValue),
       }),
     )
-    .with({ kind: 'progressiveOverload' }, (c) =>
+    .with({ kind: 'progression' }, (c) =>
       t('plan.diff.generic_two_value_change.body', {
-        oldValue: stringifyProgressiveOverload(t, c.oldValue),
-        newValue: stringifyProgressiveOverload(t, c.newValue),
+        oldValue: stringifyProgression(t, c.oldValue),
+        newValue: stringifyProgression(t, c.newValue),
       }),
     )
     .with({ kind: 'exerciseRest' }, () => t('plan.diff.generic_updated.body'))
@@ -1130,7 +1131,7 @@ export function getChangeLabelKey(change: DiffChange): TranslatableString {
     .with({ kind: 'exercisePlannedSets' }, () => ({
       key: 'plan.diff.sets.label',
     }))
-    .with({ kind: 'progressiveOverload' }, () => ({
+    .with({ kind: 'progression' }, () => ({
       key: 'plan.diff.progressive_overload.label',
     }))
     .with({ kind: 'exerciseRest' }, () => ({
@@ -1172,22 +1173,21 @@ export function getChangeLabelKey(change: DiffChange): TranslatableString {
     .exhaustive();
 }
 
-function stringifyProgressiveOverload(t: UseTranslateResult['t'], progressiveOverload: ProgressiveOverload): string {
-  return match(progressiveOverload)
-    .returnType<string>()
-    .with({ type: 'NoProgressiveOverload' }, () => t('exercise.progressive_overload.no.label'))
-    .with({ type: 'IncreaseAllEvenlyProgressiveOverload' }, (x) =>
-      t('plan.diff.progressive_overload_increase_all_evenly.label', {
-        amount: localeFormatBigNumber(x.amount),
-      }),
-    )
-    .with({ type: 'IncreaseLowestSetProgressiveOverload' }, (x) =>
-      t('plan.diff.progressive_overload_increase_lowest_set.label', {
-        amount: localeFormatBigNumber(x.amount),
-        strategy: stringifyIncreaseStrategy(t, x.increaseStrategy),
-      }),
-    )
-    .exhaustive();
+function stringifyProgression(t: UseTranslateResult['t'], progression: ProgressionRule[]): string {
+  if (!progression.length) {
+    return t('exercise.progressive_overload.no.label');
+  }
+  return progression.map((rule) => stringifyProgressionRule(t, rule)).join(', ');
+}
+
+function stringifyProgressionRule(t: UseTranslateResult['t'], rule: ProgressionRule): string {
+  const amount = localeFormatBigNumber(rule.step);
+  return rule.scope.type === 'allSets'
+    ? t('plan.diff.progressive_overload_increase_all_evenly.label', { amount })
+    : t('plan.diff.progressive_overload_increase_lowest_set.label', {
+        amount,
+        strategy: stringifyIncreaseStrategy(t, rule.scope.pick),
+      });
 }
 
 function stringifyIncreaseStrategy(t: UseTranslateResult['t'], strategy: IncreaseStrategy) {

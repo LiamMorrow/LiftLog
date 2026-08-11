@@ -5,10 +5,8 @@ import { aiPlanFromJSON } from '@/models/ai-models';
 import {
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
-  IncreaseAllEvenlyProgressiveOverload,
-  IncreaseLowestSetProgressiveOverload,
-  NoProgressiveOverload,
   ProgramBlueprint,
+  ProgressionRule,
   Rest,
   SessionBlueprint,
   WeightedExerciseBlueprint,
@@ -40,7 +38,7 @@ describe('aiPlanFromJSON', () => {
       name: 'Squat',
       sets: 5,
       repsConfig: { type: 'fixed', reps: 5 },
-      progressiveOverload: new IncreaseLowestSetProgressiveOverload(new BigNumber(2.5), 'middle'),
+      progression: [ProgressionRule.load(new BigNumber(2.5), { type: 'lowestSets', pick: 'middle' })],
       restBetweenSets: Rest.long,
       supersetWithNext: true,
       notes: 'Brace hard',
@@ -163,7 +161,7 @@ describe('aiPlanFromJSON', () => {
       expect(exercise.supersetWithNext).toBe(false);
       expect(exercise.notes).toBe('');
       expect(exercise.link).toBe('');
-      expect(exercise.progressiveOverload).toBeInstanceOf(NoProgressiveOverload);
+      expect(exercise.progression).toEqual([]);
       expect(exercise.restBetweenSets.minRest.equals(Rest.medium.minRest)).toBe(true);
     });
 
@@ -212,10 +210,14 @@ describe('aiPlanFromJSON', () => {
                     maxRest: toDurationJSON(Duration.ofSeconds(180)),
                     failureRest: toDurationJSON(Duration.ofSeconds(300)),
                   },
-                  progressiveOverload: {
-                    type: 'IncreaseAllEvenlyProgressiveOverload',
-                    amount: toBigNumberJSON(new BigNumber(5)),
-                  },
+                  progression: [
+                    {
+                      axis: 'load',
+                      step: toBigNumberJSON(new BigNumber(5)),
+                      scope: { type: 'allSets' },
+                      trigger: 'allSetsMetTarget',
+                    },
+                  ],
                 },
               ],
             },
@@ -228,61 +230,52 @@ describe('aiPlanFromJSON', () => {
       expect(exercise.supersetWithNext).toBe(true);
       expect(exercise.notes).toBe('Go deep');
       expect(exercise.link).toBe('https://example.com');
-      expect(exercise.progressiveOverload).toBeInstanceOf(IncreaseAllEvenlyProgressiveOverload);
-      expect((exercise.progressiveOverload as IncreaseAllEvenlyProgressiveOverload).amount.toNumber()).toBe(5);
+      expect(exercise.progression).toHaveLength(1);
+      expect(exercise.progression[0]!.step.toNumber()).toBe(5);
+      expect(exercise.progression[0]!.scope).toEqual({ type: 'allSets' });
     });
   });
 
-  describe('progressive overload', () => {
-    it('defaults the amount when only the type streamed in', () => {
-      const exercise = firstExercise({
+  describe('progression rules', () => {
+    function exerciseWithProgression(progression: unknown) {
+      return firstExercise({
         version: 3,
         name: 'PPL',
         blueprint: {
-          sessions: [
-            {
-              exercises: [
-                {
-                  type: 'WeightedExerciseBlueprint',
-                  progressiveOverload: {
-                    type: 'IncreaseAllEvenlyProgressiveOverload',
-                  },
-                },
-              ],
-            },
-          ],
+          sessions: [{ exercises: [{ type: 'WeightedExerciseBlueprint', progression }] }],
         },
-      }) as WeightedExerciseBlueprint;
+      } as DeepPartial<AnyVersionAiPlanJSON>) as WeightedExerciseBlueprint;
+    }
 
-      const po = exercise.progressiveOverload as IncreaseAllEvenlyProgressiveOverload;
-      expect(po).toBeInstanceOf(IncreaseAllEvenlyProgressiveOverload);
-      expect(po.amount.toNumber()).toBe(2.5);
+    it('defaults the step when only the axis streamed in', () => {
+      const exercise = exerciseWithProgression([{ axis: 'load' }]);
+
+      expect(exercise.progression).toHaveLength(1);
+      expect(exercise.progression[0]!.step.toNumber()).toBe(2.5);
+      expect(exercise.progression[0]!.scope).toEqual({ type: 'allSets' });
+      expect(exercise.progression[0]!.trigger).toBe('allSetsMetTarget');
     });
 
-    it('defaults the amount and strategy for an increase-lowest overload', () => {
-      const exercise = firstExercise({
-        version: 3,
-        name: 'PPL',
-        blueprint: {
-          sessions: [
-            {
-              exercises: [
-                {
-                  type: 'WeightedExerciseBlueprint',
-                  progressiveOverload: {
-                    type: 'IncreaseLowestSetProgressiveOverload',
-                  },
-                },
-              ],
-            },
-          ],
-        },
-      }) as WeightedExerciseBlueprint;
+    it('defaults the pick of a lowest-sets scope', () => {
+      const exercise = exerciseWithProgression([{ axis: 'load', scope: { type: 'lowestSets' } }]);
 
-      const po = exercise.progressiveOverload as IncreaseLowestSetProgressiveOverload;
-      expect(po).toBeInstanceOf(IncreaseLowestSetProgressiveOverload);
-      expect(po.amount.toNumber()).toBe(2.5);
-      expect(po.increaseStrategy).toBe('all');
+      expect(exercise.progression[0]!.scope).toEqual({ type: 'lowestSets', pick: 'all' });
+    });
+
+    it('defaults a rule with nothing at all to a load rule', () => {
+      const exercise = exerciseWithProgression([{}]);
+
+      expect(exercise.progression[0]!.axis).toBe('load');
+    });
+
+    it('leaves an absent list empty rather than inventing a rule', () => {
+      expect(exerciseWithProgression(undefined).progression).toEqual([]);
+    });
+
+    it('keeps the order the model emitted', () => {
+      const exercise = exerciseWithProgression([{ axis: 'reps', step: '1' }, { axis: 'load' }]);
+
+      expect(exercise.progression.map((rule) => rule.axis)).toEqual(['reps', 'load']);
     });
   });
 

@@ -4,17 +4,14 @@ import { Duration } from '@js-joda/core';
 import {
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
-  IncreaseAllEvenlyProgressiveOverload,
-  IncreaseLowestSetProgressiveOverload,
-  NoProgressiveOverload,
+  ProgressionRule,
   normalizeExerciseName,
+  progressionEquals,
   RepsConfig,
   WeightedExerciseBlueprint,
   cardioTargetEquals,
 } from '@/models/blueprint-models';
 import { RecordedWeightedExercise } from '@/models/session-models';
-import { Weight } from '@/models/weight';
-import { emptyPotentialSet } from '@/models/session-models/__test__/helpers';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -24,249 +21,65 @@ function bn(n: number) {
   return new BigNumber(n);
 }
 
-function kg(n: number): Weight {
-  return new Weight(n, 'kilograms');
-}
-
-/**
- * Build a RecordedWeightedExercise whose sets have the given weights (kg).
- * No sets are recorded (all potential).
- */
-function exerciseWithWeights(...weights: number[]): RecordedWeightedExercise {
-  const blueprint = WeightedExerciseBlueprint.empty().with({
-    sets: weights.length,
-  });
-  const potentialSets = weights.map((w) => emptyPotentialSet(kg(w)));
-  return new RecordedWeightedExercise(blueprint, potentialSets, undefined);
-}
-
 describe('blueprint models', () => {
   // ---------------------------------------------------------------------------
-  // NoProgressiveOverload
+  // ProgressionRule
   // ---------------------------------------------------------------------------
 
-  describe('NoProgressiveOverload', () => {
-    it('returns the exercise unchanged', () => {
-      const ex = exerciseWithWeights(60, 70, 80);
-      const result = new NoProgressiveOverload().applyProgressiveOverload(ex);
-      expect(result).toBe(ex);
+  describe('ProgressionRule', () => {
+    it('round-trips through JSON', () => {
+      const rule = ProgressionRule.of({
+        axis: 'reps',
+        step: bn(1),
+        scope: { type: 'lowestSets', pick: 'middle' },
+        ceiling: bn(12),
+        onCeiling: 'reset',
+      });
+
+      expect(ProgressionRule.fromJSON(rule.toJSON()).equals(rule)).toBe(true);
     });
 
-    it('equals only another NoProgressiveOverload', () => {
-      const npo = new NoProgressiveOverload();
-      expect(npo.equals(new NoProgressiveOverload())).toBe(true);
-      expect(npo.equals(new IncreaseAllEvenlyProgressiveOverload(bn(2.5)))).toBe(false);
-    });
-  });
+    it('leaves an absent ceiling absent rather than writing null', () => {
+      const json = ProgressionRule.load(bn(2.5)).toJSON();
 
-  // ---------------------------------------------------------------------------
-  // IncreaseAllEvenlyProgressiveOverload
-  // ---------------------------------------------------------------------------
-
-  describe('IncreaseAllEvenlyProgressiveOverload', () => {
-    it('increases every set by the given amount', () => {
-      const ex = exerciseWithWeights(60, 70, 80);
-      const result = new IncreaseAllEvenlyProgressiveOverload(bn(5)).applyProgressiveOverload(ex);
-
-      expect(result.potentialSets.map((s) => s.weight.value)).toEqual([bn(65), bn(75), bn(85)]);
+      expect(json).not.toHaveProperty('ceiling');
+      expect(json).not.toHaveProperty('onCeiling');
+      expect(ProgressionRule.fromJSON(json).ceiling).toBeUndefined();
     });
 
-    it('works with a fractional increment', () => {
-      const ex = exerciseWithWeights(100);
-      const result = new IncreaseAllEvenlyProgressiveOverload(bn(2.5)).applyProgressiveOverload(ex);
+    it('compares every field', () => {
+      const rule = ProgressionRule.load(bn(2.5));
 
-      expect(result.potentialSets[0]!.weight.value).toEqual(bn(102.5));
+      expect(rule.equals(ProgressionRule.load(bn(2.5)))).toBe(true);
+      expect(rule.equals(rule.with({ step: bn(5) }))).toBe(false);
+      expect(rule.equals(rule.with({ axis: 'reps' }))).toBe(false);
+      expect(rule.equals(rule.with({ scope: { type: 'lowestSets', pick: 'all' } }))).toBe(false);
+      expect(rule.equals(rule.with({ ceiling: bn(12) }))).toBe(false);
+      expect(rule.equals(undefined)).toBe(false);
     });
 
-    it('weightIncrement falls back to 2.5 when amount is zero', () => {
-      const po = new IncreaseAllEvenlyProgressiveOverload(bn(0));
-      expect(po.weightIncrement.toNumber()).toBe(2.5);
+    it('tells a set ceiling from an absent one in both directions', () => {
+      const capped = ProgressionRule.load(bn(2.5)).with({ ceiling: bn(12) });
+      const uncapped = ProgressionRule.load(bn(2.5));
+
+      expect(capped.equals(uncapped)).toBe(false);
+      expect(uncapped.equals(capped)).toBe(false);
     });
 
-    it('weightIncrement returns amount when non-zero', () => {
-      const po = new IncreaseAllEvenlyProgressiveOverload(bn(5));
-      expect(po.weightIncrement.toNumber()).toBe(5);
-    });
-  });
+    it('clears a ceiling when the field is passed as undefined', () => {
+      const capped = ProgressionRule.load(bn(2.5)).with({ ceiling: bn(12) });
 
-  // ---------------------------------------------------------------------------
-  // IncreaseLowestSetProgressiveOverload - shared setup
-  // ---------------------------------------------------------------------------
-
-  /**
-   * Sets: [60, 80, 60, 70, 60]  - indices 0, 2, 4 are the lowest (60 kg).
-   * Useful for testing which of the lowest sets is selected.
-   */
-  function mixedExercise() {
-    return exerciseWithWeights(60, 80, 60, 70, 60);
-  }
-
-  describe('IncreaseLowestSetProgressiveOverload - strategy: all', () => {
-    it('increases every set that matches the lowest weight', () => {
-      const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'all').applyProgressiveOverload(mixedExercise());
-
-      const weights = result.potentialSets.map((s) => s.weight.value);
-      expect(weights).toEqual([bn(65), bn(80), bn(65), bn(70), bn(65)]);
+      expect(capped.with({ ceiling: undefined }).ceiling).toBeUndefined();
     });
 
-    it('leaves non-lowest sets untouched', () => {
-      const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'all').applyProgressiveOverload(mixedExercise());
+    it('compares lists by order', () => {
+      const load = ProgressionRule.load(bn(2.5));
+      const reps = ProgressionRule.of({ axis: 'reps', step: bn(1) });
 
-      expect(result.potentialSets[1]!.weight.value).toEqual(bn(80));
-      expect(result.potentialSets[3]!.weight.value).toEqual(bn(70));
-    });
-
-    it('handles a uniform exercise (all sets same weight)', () => {
-      const ex = exerciseWithWeights(50, 50, 50);
-      const result = new IncreaseLowestSetProgressiveOverload(bn(2.5), 'all').applyProgressiveOverload(ex);
-
-      expect(result.potentialSets.map((s) => s.weight.value)).toEqual([bn(52.5), bn(52.5), bn(52.5)]);
-    });
-  });
-
-  describe('IncreaseLowestSetProgressiveOverload - strategy: first', () => {
-    it('increases only the first set matching the lowest weight', () => {
-      // lowest sets are at indices 0, 2, 4 - first is index 0
-      const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'first').applyProgressiveOverload(mixedExercise());
-
-      const weights = result.potentialSets.map((s) => s.weight.value);
-      expect(weights).toEqual([bn(65), bn(80), bn(60), bn(70), bn(60)]);
-    });
-
-    it('does not touch any other lowest set', () => {
-      const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'first').applyProgressiveOverload(mixedExercise());
-
-      expect(result.potentialSets[2]!.weight.value).toEqual(bn(60));
-      expect(result.potentialSets[4]!.weight.value).toEqual(bn(60));
-    });
-  });
-
-  describe('IncreaseLowestSetProgressiveOverload - strategy: last', () => {
-    it('increases only the last set matching the lowest weight', () => {
-      // lowest sets are at indices 0, 2, 4 - last is index 4
-      const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'last').applyProgressiveOverload(mixedExercise());
-
-      const weights = result.potentialSets.map((s) => s.weight.value);
-      expect(weights).toEqual([bn(60), bn(80), bn(60), bn(70), bn(65)]);
-    });
-
-    it('does not touch the first lowest set', () => {
-      const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'last').applyProgressiveOverload(mixedExercise());
-
-      expect(result.potentialSets[0]!.weight.value).toEqual(bn(60));
-    });
-  });
-
-  describe('IncreaseLowestSetProgressiveOverload - strategy: middle', () => {
-    it('picks the lowest set closest to the centre of all sets', () => {
-      // Sets: [60, 80, 60, 70, 60] - length 5, midpoint = 2.0
-      // Lowest indices: 0, 2, 4. Distances from 2.0: 2, 0, 2 → index 2 wins
-      const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'middle').applyProgressiveOverload(
-        mixedExercise(),
-      );
-
-      const weights = result.potentialSets.map((s) => s.weight.value);
-      expect(weights).toEqual([bn(60), bn(80), bn(65), bn(70), bn(60)]);
-    });
-
-    it('breaks a tie towards the first equidistant candidate', () => {
-      // Sets: [60, 80, 60] - length 3, midpoint = 1.0
-      // Lowest indices: 0, 2. Distances: 1, 1 - tie → reduce keeps the first (index 0)
-      const ex = exerciseWithWeights(60, 80, 60);
-      const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'middle').applyProgressiveOverload(ex);
-
-      const weights = result.potentialSets.map((s) => s.weight.value);
-      expect(weights).toEqual([bn(65), bn(80), bn(60)]);
-    });
-
-    it('handles a single lowest set with no tie possible', () => {
-      // Sets: [60, 80, 80] - only one lowest set at index 0
-      const ex = exerciseWithWeights(60, 80, 80);
-      const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'middle').applyProgressiveOverload(ex);
-
-      expect(result.potentialSets[0]!.weight.value).toEqual(bn(65));
-      expect(result.potentialSets[1]!.weight.value).toEqual(bn(80));
-    });
-
-    it('selects the single lowest set closest to the centre in an asymmetric layout', () => {
-      // Sets: [80, 80, 80, 60, 60] - length 5, midpoint = 2.0
-      // Lowest indices: 3, 4. Distances: 1, 2 → index 3 wins
-      const ex = exerciseWithWeights(80, 80, 80, 60, 60);
-      const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'middle').applyProgressiveOverload(ex);
-
-      const weights = result.potentialSets.map((s) => s.weight.value);
-      expect(weights).toEqual([bn(80), bn(80), bn(80), bn(65), bn(60)]);
-    });
-
-    it('does not increase multiple sets', () => {
-      const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'middle').applyProgressiveOverload(
-        mixedExercise(),
-      );
-
-      const increased = result.potentialSets.filter(
-        (s, i) => !s.weight.value.isEqualTo(mixedExercise().potentialSets[i]!.weight.value),
-      );
-      expect(increased).toHaveLength(1);
-    });
-  });
-
-  describe('IncreaseLowestSetProgressiveOverload - empty / single set edge cases', () => {
-    it('returns exercise unchanged when there are no sets', () => {
-      const blueprint = WeightedExerciseBlueprint.empty().with({ sets: 0 });
-      const ex = new RecordedWeightedExercise(blueprint, [], undefined);
-      const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'all').applyProgressiveOverload(ex);
-      expect(result).toBe(ex);
-    });
-
-    it('handles a single set correctly for every strategy', () => {
-      const strategies = ['all', 'first', 'last', 'middle'] as const;
-      for (const strategy of strategies) {
-        const ex = exerciseWithWeights(100);
-        const result = new IncreaseLowestSetProgressiveOverload(bn(5), strategy).applyProgressiveOverload(ex);
-        expect(result.potentialSets[0]!.weight.value).toEqual(bn(105));
-      }
-    });
-
-    it('weightIncrement falls back to 2.5 when amount is zero', () => {
-      const po = new IncreaseLowestSetProgressiveOverload(bn(0), 'all');
-      expect(po.weightIncrement.toNumber()).toBe(2.5);
-    });
-  });
-
-  // ---------------------------------------------------------------------------
-  // toType conversions
-  // ---------------------------------------------------------------------------
-
-  describe('toType conversions', () => {
-    it('NoProgressiveOverload → IncreaseAllEvenly seeds with 2.5', () => {
-      const result = new NoProgressiveOverload().toType('IncreaseAllEvenlyProgressiveOverload');
-      expect(result).toBeInstanceOf(IncreaseAllEvenlyProgressiveOverload);
-      expect((result as IncreaseAllEvenlyProgressiveOverload).amount.toNumber()).toBe(2.5);
-    });
-
-    it('IncreaseAllEvenly → IncreaseLowestSet preserves amount', () => {
-      const result = new IncreaseAllEvenlyProgressiveOverload(bn(10)).toType('IncreaseLowestSetProgressiveOverload');
-      expect(result).toBeInstanceOf(IncreaseLowestSetProgressiveOverload);
-      expect((result as IncreaseLowestSetProgressiveOverload).amount.toNumber()).toBe(10);
-    });
-
-    it('IncreaseLowestSet → IncreaseAllEvenly preserves amount', () => {
-      const result = new IncreaseLowestSetProgressiveOverload(bn(7.5), 'first').toType(
-        'IncreaseAllEvenlyProgressiveOverload',
-      );
-      expect(result).toBeInstanceOf(IncreaseAllEvenlyProgressiveOverload);
-      expect((result as IncreaseAllEvenlyProgressiveOverload).amount.toNumber()).toBe(7.5);
-    });
-
-    it('toType with same type returns self', () => {
-      const npo = new NoProgressiveOverload();
-      expect(npo.toType('NoProgressiveOverload')).toBe(npo);
-
-      const iae = new IncreaseAllEvenlyProgressiveOverload(bn(5));
-      expect(iae.toType('IncreaseAllEvenlyProgressiveOverload')).toBe(iae);
-
-      const ils = new IncreaseLowestSetProgressiveOverload(bn(5), 'all');
-      expect(ils.toType('IncreaseLowestSetProgressiveOverload')).toBe(ils);
+      expect(progressionEquals([load, reps], [load, reps])).toBe(true);
+      expect(progressionEquals([load, reps], [reps, load])).toBe(false);
+      expect(progressionEquals([load], [])).toBe(false);
+      expect(progressionEquals([], [])).toBe(true);
     });
   });
 
@@ -492,6 +305,55 @@ describe('blueprint models', () => {
       expect(crunch.progressionKey()).toBe('Crunch_WeightedExerciseBlueprint_3');
       expect(crunch.with({ repsConfig: { type: 'fixed', reps: 25 } }).progressionKey()).toBe(crunch.progressionKey());
       expect(crunch.withSets(4).progressionKey()).not.toBe(crunch.progressionKey());
+    });
+
+    it('a loaded exercise whose reps a rule moves also keys without its rep scheme', () => {
+      const doubleProgression = WeightedExerciseBlueprint.of({
+        name: 'Chin Up',
+        sets: 3,
+        repsConfig: { type: 'fixed', reps: 8 },
+        progression: [
+          ProgressionRule.of({ axis: 'reps', step: bn(1), ceiling: bn(12), onCeiling: 'reset' }),
+          ProgressionRule.load(bn(2.5)),
+        ],
+      });
+
+      expect(doubleProgression.progressionKey()).toBe('Chin Up_WeightedExerciseBlueprint_3');
+      // Raising the plan's starting rung must not strand a ladder that has already climbed past it.
+      expect(doubleProgression.with({ repsConfig: { type: 'fixed', reps: 10 } }).progressionKey()).toBe(
+        doubleProgression.progressionKey(),
+      );
+    });
+
+    it('a loaded exercise with only a load rule still keys on its rep scheme', () => {
+      const linear = WeightedExerciseBlueprint.of({
+        name: 'Squat',
+        sets: 3,
+        repsConfig: { type: 'fixed', reps: 5 },
+        progression: [ProgressionRule.load(bn(2.5))],
+      });
+
+      expect(linear.progressionKey()).toBe('Squat_WeightedExerciseBlueprint_3_5');
+    });
+  });
+
+  describe('repsAreProgressed', () => {
+    const squat = (init = {}) => WeightedExerciseBlueprint.of({ name: 'Squat', sets: 3, ...init });
+
+    it.each([
+      ['no load to advance on', { loadBasis: 'none' as const }, true],
+      ['a rule that moves reps', { progression: [ProgressionRule.of({ axis: 'reps', step: bn(1) })] }, true],
+      [
+        'a ladder that reaches reps',
+        {
+          progression: [ProgressionRule.of({ axis: 'reps', step: bn(1) }), ProgressionRule.load(bn(2.5))],
+        },
+        true,
+      ],
+      ['only a load rule', { progression: [ProgressionRule.load(bn(2.5))] }, false],
+      ['no rules at all', {}, false],
+    ])('%s', (_label, init, expected) => {
+      expect(squat(init).repsAreProgressed).toBe(expected);
     });
   });
 
