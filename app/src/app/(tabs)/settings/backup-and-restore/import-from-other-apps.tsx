@@ -1,7 +1,7 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import Form from '@/components/presentation/foundation/form';
 import LabelledFormRow from '@/components/presentation/foundation/labelled-form-row';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import { spacing } from '@/hooks/useAppTheme';
 import { EXTERNAL_IMPORT_FORMATS } from '@/services/csv-import';
 import { ExternalImportFormat, importFromExternal } from '@/store/settings';
@@ -29,11 +29,7 @@ export default function ImportFromOtherAppsPage() {
       <Stack.Screen options={{ title: t('backup.import_from_other_apps.title') }} />
       <Card mode="contained" style={{ marginHorizontal: spacing[6], marginBottom: spacing[4] }}>
         <Card.Content>
-          <View>
-            <SurfaceText style={{ textAlign: 'center' }}>
-              <T keyName="backup.import_from_other_apps.explanation" />
-            </SurfaceText>
-          </View>
+          <LimitedHtml style={{ textAlign: 'center' }} value={t('backup.import_from_other_apps.explanation')} />
           <Button onPress={() => openUrl('https://github.com/LiamMorrow/LiftLog/blob/main/docs/CsvImport.md')}>
             <T keyName="generic.read_documentation.button" />
           </Button>
