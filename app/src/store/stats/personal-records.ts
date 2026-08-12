@@ -1,4 +1,4 @@
-import { NormalizedName } from '@/models/blueprint-models';
+import { MovementKey } from '@/models/blueprint-models';
 import { Session } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { calculateOneRepMax } from '@/store/stats/calculate-stats';
@@ -8,8 +8,8 @@ export interface PersonalRecord {
   oneRepMax: Weight;
 }
 
-function bestOneRepMax(session: Session): Map<string, PersonalRecord> {
-  const best = new Map<string, PersonalRecord>();
+function bestOneRepMax(session: Session): Map<MovementKey, PersonalRecord> {
+  const best = new Map<MovementKey, PersonalRecord>();
 
   for (const exercise of session.recordedExercises) {
     if (exercise.type !== 'RecordedWeightedExercise' || !exercise.isStarted) {
@@ -17,7 +17,7 @@ function bestOneRepMax(session: Session): Map<string, PersonalRecord> {
     }
 
     // Same key selectRecentlyCompletedExercises uses; it already guards the cardio/weighted name collision.
-    const key = NormalizedName.fromExerciseBlueprint(exercise.blueprint).toString();
+    const key = exercise.movementKey();
 
     for (const potentialSet of exercise.potentialSets) {
       if (!potentialSet.set?.repsCompleted) {
@@ -37,11 +37,11 @@ function bestOneRepMax(session: Session): Map<string, PersonalRecord> {
 /**
  * Records per session, walking oldest to newest with a running best per exercise.
  *
- * A record only counts if the exercise was seen in an *earlier* session — otherwise the first time anyone
+ * A record only counts if the exercise was seen in an *earlier* session - otherwise the first time anyone
  * lifts anything is a PR, and a user with a single event in your feed gets a badge on everything they do.
  */
 export function findPersonalRecords(sessionsOldestFirst: Session[]): Map<string, PersonalRecord[]> {
-  const runningBest = new Map<string, Weight>();
+  const runningBest = new Map<MovementKey, Weight>();
   const recordsBySession = new Map<string, PersonalRecord[]>();
 
   for (const session of sessionsOldestFirst) {

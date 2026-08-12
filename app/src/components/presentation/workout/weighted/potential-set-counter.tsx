@@ -1,19 +1,17 @@
 import { PotentialSet, WeightAppliesTo } from '@/models/session-models';
-import { formatRepsTarget, RepsTarget } from '@/models/blueprint-models';
+import { RepsTarget } from '@/models/blueprint-models';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { Text as PaperText, Chip } from 'react-native-paper';
-import { Keyboard, Text, View } from 'react-native';
-import WeightFormat from '@/components/presentation/foundation/weight-format';
+import { Keyboard, View } from 'react-native';
 import WeightDialog from '@/components/presentation/foundation/editors/weight-dialog';
-import { useAppTheme, spacing, font, rounding } from '@/hooks/useAppTheme';
+import { spacing, rounding } from '@/hooks/useAppTheme';
 import FocusRing from '@/components/presentation/foundation/focus-ring';
 import { T } from '@tolgee/react';
 import Holdable from '@/components/presentation/foundation/holdable';
-import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { Weight } from '@/models/weight';
 import PotentialSetAdditionalActionsDialog from '@/components/presentation/workout/weighted/potential-sets-addition-actions-dialog';
-import Icon from '@/components/presentation/foundation/icon';
+import { PotentialSetDisplay } from '@/components/presentation/workout/weighted/potential-set-display';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;
@@ -30,13 +28,9 @@ interface PotentialSetCounterProps {
 }
 
 export default function PotentialSetCounter(props: PotentialSetCounterProps) {
-  const { colors } = useAppTheme();
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const [isRepsDialogOpen, setIsRepsDialogOpen] = useState(false);
-  const repCountValue = props.set?.set?.repsCompleted;
-  const placeholderRepCount = props.previousRepCount;
   const maxReps = props.repsTarget.max;
-  const targetLabel = formatRepsTarget(props.repsTarget);
 
   useEffect(() => {
     if (!isRepsDialogOpen) {
@@ -48,152 +42,64 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   return (
     <Holdable disabled={props.isReadonly} onLongPress={() => setIsRepsDialogOpen(true)}>
       <FocusRing isSelected={props.toStartNext} radius={rounding.roundedRectangleFocusRingRadius}>
-        <View
-          style={[
-            {
-              userSelect: 'none',
-              minWidth: spacing[15],
-            },
-          ]}
+        <PotentialSetDisplay
+          set={props.set}
+          repsTarget={props.repsTarget}
+          usesBodyweight={props.usesBodyweight}
+          previousRepCount={props.previousRepCount}
+          onPressReps={props.isReadonly ? undefined : props.onTap}
+          onPressWeight={
+            props.isReadonly
+              ? undefined
+              : () => {
+                  setApplyTo(props.set.set ? 'thisSet' : 'uncompletedSets');
+                  setIsWeightDialogOpen(true);
+                }
+          }
+        />
+        <WeightDialog
+          open={isWeightDialogOpen}
+          allowNegative
+          increment={props.weightIncrement}
+          weight={props.set.weight}
+          onClose={() => setIsWeightDialogOpen(false)}
+          updateWeight={(w) => props.onUpdateWeight(w, applyTo)}
         >
-          <View
-            style={[
-              {
-                borderTopLeftRadius: rounding.roundedRectangleRadius,
-                borderTopRightRadius: rounding.roundedRectangleRadius,
-                overflow: 'hidden',
-              },
-            ]}
-          >
-            <TouchableRipple
+          <View style={{ gap: spacing[2] }}>
+            <PaperText variant="labelLarge">
+              <T keyName="weight.apply_to.label" />
+            </PaperText>
+            <View
               style={{
-                flexShrink: 0,
-                padding: 0,
-                height: spacing[15],
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: repCountValue !== undefined ? colors.primary : colors.secondaryContainer,
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: spacing[1],
               }}
-              onPress={props.isReadonly ? undefined : props.onTap}
-              disabled={props.isReadonly}
-              testID="repcount"
             >
-              <View style={{ alignItems: 'center' }}>
-                <Text
-                  style={{
-                    color: repCountValue !== undefined ? colors.onPrimary : colors.onSecondaryContainer,
-                    ...font['text-xl'],
-                  }}
-                >
-                  <Text style={{ fontWeight: 'bold' }}>{repCountValue ?? '-'}</Text>
-                  <Text
-                    style={{
-                      ...font['text-sm'],
-                      verticalAlign: 'top',
-                    }}
-                  >
-                    /{targetLabel}
-                  </Text>
-                </Text>
-                {repCountValue === undefined && placeholderRepCount !== undefined && (
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: spacing[0.5],
-                    }}
-                  >
-                    <Icon source={'history'} size={12} color={colors.onSecondaryContainer + '99'} />
-                    <Text
-                      style={{
-                        color: colors.onSecondaryContainer + '99',
-                      }}
-                    >
-                      {placeholderRepCount}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </TouchableRipple>
-          </View>
-          <View
-            style={{
-              borderTopWidth: 1,
-              borderColor: colors.outline,
-              backgroundColor: colors.surfaceContainerHigh,
-              borderBottomLeftRadius: rounding.roundedRectangleRadius,
-              borderBottomRightRadius: rounding.roundedRectangleRadius,
-              overflow: 'hidden',
-              padding: spacing[2],
-              width: '100%',
-            }}
-          >
-            <TouchableRipple
-              testID="repcount-weight"
-              style={{
-                alignItems: 'center',
-                margin: -spacing[2],
-                padding: spacing[2],
-              }}
-              onPress={
-                props.isReadonly
-                  ? undefined
-                  : () => {
-                      setApplyTo(props.set.set ? 'thisSet' : 'uncompletedSets');
-                      setIsWeightDialogOpen(true);
-                    }
-              }
-              disabled={props.isReadonly}
-            >
-              <Text style={{ color: colors.onSurface, ...font['text-sm'] }}>
-                <WeightFormat weight={props.set.weight} usesBodyweight={props.usesBodyweight} />
-              </Text>
-            </TouchableRipple>
-          </View>
-          <WeightDialog
-            open={isWeightDialogOpen}
-            allowNegative
-            increment={props.weightIncrement}
-            weight={props.set.weight}
-            onClose={() => setIsWeightDialogOpen(false)}
-            updateWeight={(w) => props.onUpdateWeight(w, applyTo)}
-          >
-            <View style={{ gap: spacing[2] }}>
-              <PaperText variant="labelLarge">
-                <T keyName="weight.apply_to.label" />
-              </PaperText>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                  gap: spacing[1],
-                }}
+              <Chip
+                selected={applyTo === 'thisSet'}
+                testID="repcount-apply-weight-to-this-set"
+                onPress={() => setApplyTo('thisSet')}
               >
-                <Chip
-                  selected={applyTo === 'thisSet'}
-                  testID="repcount-apply-weight-to-this-set"
-                  onPress={() => setApplyTo('thisSet')}
-                >
-                  <T keyName="exercise.this_set.label" />
-                </Chip>
-                <Chip
-                  selected={applyTo === 'uncompletedSets'}
-                  testID="repcount-apply-weight-to-uncompleted-sets"
-                  onPress={() => setApplyTo('uncompletedSets')}
-                >
-                  <T keyName="exercise.uncompleted_sets.label" />
-                </Chip>
-                <Chip
-                  selected={applyTo === 'allSets'}
-                  testID="repcount-apply-weight-to-all-sets"
-                  onPress={() => setApplyTo('allSets')}
-                >
-                  <T keyName="exercise.all_sets.label" />
-                </Chip>
-              </View>
+                <T keyName="exercise.this_set.label" />
+              </Chip>
+              <Chip
+                selected={applyTo === 'uncompletedSets'}
+                testID="repcount-apply-weight-to-uncompleted-sets"
+                onPress={() => setApplyTo('uncompletedSets')}
+              >
+                <T keyName="exercise.uncompleted_sets.label" />
+              </Chip>
+              <Chip
+                selected={applyTo === 'allSets'}
+                testID="repcount-apply-weight-to-all-sets"
+                onPress={() => setApplyTo('allSets')}
+              >
+                <T keyName="exercise.all_sets.label" />
+              </Chip>
             </View>
-          </WeightDialog>
-        </View>
+          </View>
+        </WeightDialog>
       </FocusRing>
 
       <PotentialSetAdditionalActionsDialog

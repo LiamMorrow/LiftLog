@@ -39,7 +39,7 @@ const settingsSlice = createSlice({
   },
   extraReducers: (builder) => {
     // Every generated setter carries its key in `meta`, so one matcher applies
-    // them all — no per-key reducer.
+    // them all - no per-key reducer.
     builder.addMatcher(isPreferenceAction, (state, action) => {
       (state as Record<PrefKey, unknown>)[action.meta.prefKey] = action.payload;
     });

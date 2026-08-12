@@ -47,7 +47,7 @@ import { equal } from '@/models/session-models/helpers';
 
 /**
  * How long a published feed event lives on the server before it expires. Followed users' sessions are
- * therefore only knowable for this window — beyond it their absence means "expired", not "didn't train".
+ * therefore only knowable for this window - beyond it their absence means "expired", not "didn't train".
  */
 export const FEED_EVENT_RETENTION_DAYS = 90;
 export const FEED_EVENT_RETENTION_SECONDS = FEED_EVENT_RETENTION_DAYS * 24 * 60 * 60;

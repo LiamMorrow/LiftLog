@@ -72,7 +72,7 @@ describe('levelFor', () => {
   const scale = { lo: 1000, hi: 5000 };
 
   it('grades a zero-volume (cardio-only) session as 1, never 0', () => {
-    // 0 is reserved for "no session at all" — grading a cardio day 0 would tell the user they didn't train.
+    // 0 is reserved for "no session at all" - grading a cardio day 0 would tell the user they didn't train.
     expect(levelFor(0, scale)).toBe(1);
   });
 

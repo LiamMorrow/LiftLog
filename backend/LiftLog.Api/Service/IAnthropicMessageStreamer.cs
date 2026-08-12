@@ -6,7 +6,7 @@ namespace LiftLog.Api.Service;
 /// <summary>
 /// Thin seam over <see cref="AnthropicClient"/>'s streaming message API. Exists
 /// so the planner's streaming logic can be unit tested by injecting a fake that
-/// yields a scripted sequence of <see cref="RawMessageStreamEvent"/> — no
+/// yields a scripted sequence of <see cref="RawMessageStreamEvent"/> - no
 /// network or API key required.
 /// </summary>
 public interface IAnthropicMessageStreamer

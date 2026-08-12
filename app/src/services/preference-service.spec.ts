@@ -5,7 +5,7 @@ import { PrefKey } from '@/store/settings/registry';
 import { DayOfWeek, Instant } from '@js-joda/core';
 
 // Characterization tests pinning the exact value read for a missing key and for
-// representative stored strings, and the exact string written back — asserted
+// representative stored strings, and the exact string written back - asserted
 // through the generic getPreference/setPreference and the bespoke named methods.
 // This is the guarantee that the registry refactor never changes what a user's
 // stored data means or loses it.
@@ -63,7 +63,7 @@ const booleanPrefs: BoolPref[] = [
   { key: 'backupReminder', default: true },
 ];
 
-describe('PreferenceService — boolean preferences', () => {
+describe('PreferenceService - boolean preferences', () => {
   for (const pref of booleanPrefs) {
     describe(pref.key, () => {
       it(`defaults to ${pref.default} when unset`, async () => {
@@ -94,7 +94,7 @@ describe('PreferenceService — boolean preferences', () => {
 
 // ─── Number preferences ───────────────────────────────────────────────────────
 
-describe('PreferenceService — number preferences', () => {
+describe('PreferenceService - number preferences', () => {
   describe('tipToShow', () => {
     it('defaults to 1 when unset or unparseable', async () => {
       expect(await makeService().service.getPreference('tipToShow')).toBe(1);
@@ -126,7 +126,7 @@ describe('PreferenceService — number preferences', () => {
 
 // ─── colorSchemeSeed ────────────────────────────────────────────────────────
 
-describe('PreferenceService — colorSchemeSeed', () => {
+describe('PreferenceService - colorSchemeSeed', () => {
   it("defaults to 'default' when unset", async () => {
     expect(await makeService().service.getPreference('colorSchemeSeed')).toBe('default');
   });
@@ -154,7 +154,7 @@ describe('PreferenceService — colorSchemeSeed', () => {
 
 // ─── firstDayOfWeek ───────────────────────────────────────────────────────────
 
-describe('PreferenceService — firstDayOfWeek', () => {
+describe('PreferenceService - firstDayOfWeek', () => {
   const days: [string, DayOfWeek][] = [
     ['sunday', DayOfWeek.SUNDAY],
     ['monday', DayOfWeek.MONDAY],
@@ -190,7 +190,7 @@ describe('PreferenceService — firstDayOfWeek', () => {
 
 // ─── proToken (has a __DEV__ write guard) ─────────────────────────────────────
 
-describe('PreferenceService — proToken', () => {
+describe('PreferenceService - proToken', () => {
   it('defaults to undefined and reads a stored token', async () => {
     expect(await makeService().service.getProToken()).toBeUndefined();
     expect(await makeService({ proToken: 'tok-123' }).service.getProToken()).toBe('tok-123');
@@ -220,7 +220,7 @@ describe('PreferenceService — proToken', () => {
 
 // ─── preferredLanguage (sync, legacy rewrite, remove-on-undefined) ────────────
 
-describe('PreferenceService — preferredLanguage', () => {
+describe('PreferenceService - preferredLanguage', () => {
   it('defaults to undefined and reads a stored code', () => {
     expect(makeService().service.getPreferredLanguage()).toBeUndefined();
     expect(makeService({ preferredLanguage: 'en' }).service.getPreferredLanguage()).toBe('en');
@@ -243,7 +243,7 @@ describe('PreferenceService — preferredLanguage', () => {
 
 // ─── remoteBackupSettings (one field ↔ three keys) ────────────────────────────
 
-describe('PreferenceService — remoteBackupSettings', () => {
+describe('PreferenceService - remoteBackupSettings', () => {
   it('defaults to empty settings when unset', async () => {
     expect(await makeService().service.getRemoteBackupSettings()).toEqual({
       endpoint: '',
@@ -276,7 +276,7 @@ describe('PreferenceService — remoteBackupSettings', () => {
 
 // ─── lastBackup bookkeeping ───────────────────────────────────────────────────
 
-describe('PreferenceService — last backup bookkeeping', () => {
+describe('PreferenceService - last backup bookkeeping', () => {
   it('lastSuccessfulRemoteBackupHash defaults to undefined and round-trips', async () => {
     expect(await makeService().service.getLastSuccessfulRemoteBackupHash()).toBeUndefined();
     expect(

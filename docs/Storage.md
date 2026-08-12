@@ -25,7 +25,7 @@ Redux is the source of truth at runtime. Storage is written **from effects**, ne
 reducers: a component dispatches an action, the reducer updates state synchronously, and an effect
 mirrors the change to disk.
 
-## Preferences — `PreferenceService`
+## Preferences - `PreferenceService`
 
 `app/src/services/preference-service.ts` wraps `KeyValueStore`
 (`app/src/services/key-value-store.ts`), which stores each key as its own file under `Paths.document`.
@@ -49,7 +49,7 @@ read and write via the codec, and a few bespoke methods remain for keys with spe
 The `add-setting-or-preference` skill walks this end to end. In short: add one entry to
 `preferenceRegistry` (`{ default, codec }`), then re-export the generated `set<Name>` action from
 `app/src/store/settings/index.ts` and add the settings UI. The state field, default, action, hydration,
-and `isHydrated`-guarded write-back are all derived from the registry entry — no `PreferenceService`
+and `isHydrated`-guarded write-back are all derived from the registry entry - no `PreferenceService`
 method or per-key effect. Keys with special needs use the `persist: false` / `hydrate: 'manual'` /
 `sync` escape hatches on the descriptor.
 
@@ -60,20 +60,20 @@ method or per-key effect. Keys with special needs use the `persist: false` / `hy
 
 ### Direct `keyValueStore` use
 
-A few non-settings blobs skip `PreferenceService` and use `extra.keyValueStore` directly — the
+A few non-settings blobs skip `PreferenceService` and use `extra.keyValueStore` directly - the
 in-progress session payload (`store/current-session/effects.ts`), the hidden built-in exercise id list,
 the "built-in programs seeded" marker. That's the escape hatch for a value that isn't a user-facing
 setting but is too small or too structurally awkward for a table. New *settings* should go through
 `PreferenceService`.
 
-## User data — SQLite via Drizzle
+## User data - SQLite via Drizzle
 
 Schema lives in `app/src/db/schema.ts`; generated SQL migrations in `app/src/drizzle/`. The database is
 opened in `components/smart/services-provider.tsx` (`openDatabaseAsync('db.db')` → `drizzle(expoDb)`)
 and passed into `createStore` / `createServices`, so effects get it as `extra.db` (and the raw handle as
 `extra.expoDb`, needed for backup/export).
 
-Tables are almost all the same shape — a text `id` primary key plus a `payload` JSON column typed with
+Tables are almost all the same shape - a text `id` primary key plus a `payload` JSON column typed with
 the model's `AnyVersion…JSON` union:
 
 ```ts
@@ -89,7 +89,7 @@ This means there are **two** independent migration mechanisms and both matter:
   `npx drizzle-kit generate` (config: `app/drizzle.config.ts`) and commit the new file in
   `src/drizzle/`. They are applied at startup by `DatabaseMigrationService.migrate()`.
 - **Payload migrations** change the shape of the JSON inside a row. Those are the versioned model
-  chains in `app/src/models/storage/versions/` — see [Migrations.md](./Migrations.md) and the
+  chains in `app/src/models/storage/versions/` - see [Migrations.md](./Migrations.md) and the
   `add-storage-migration` skill. Rows are migrated on read (`sessionMigrations.migrate(row.payload)`),
   not in bulk.
 
@@ -106,7 +106,7 @@ dispatch(setStoredSessions(completedSessions));
 ```
 
 Write with the `upsert` helper in `app/src/db/helpers.ts`, which does an
-`insert … onConflictDoUpdate` on the id — the right call for our id+payload tables, and it takes a
+`insert … onConflictDoUpdate` on the id - the right call for our id+payload tables, and it takes a
 transaction (`tx`) as well as `db`:
 
 ```ts
@@ -117,14 +117,14 @@ Use `db.transaction(async (tx) => …)` when several tables must move together.
 
 ### Testing
 
-Effects that touch the DB use a real in-memory SQLite rather than a mock — `openDatabaseAsync(':memory:')`,
+Effects that touch the DB use a real in-memory SQLite rather than a mock - `openDatabaseAsync(':memory:')`,
 `drizzle(...)`, then `DatabaseMigrationService.migrate()` to build the schema. See
 `app/src/store/program/effects.spec.ts` for the pattern and `utils/__test__/add-effect-testbed` for
 wiring effects to a test store.
 
 ## Which one do I use?
 
-Use **preferences** for a single scalar the user sets and the app reads — a toggle, a colour, a token, a
+Use **preferences** for a single scalar the user sets and the app reads - a toggle, a colour, a token, a
 timestamp. Use **SQLite** for anything the user creates in quantity, anything queried or deleted by id,
 and anything that needs to survive versioned shape changes.
 

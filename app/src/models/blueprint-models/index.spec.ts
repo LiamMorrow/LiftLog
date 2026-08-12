@@ -6,9 +6,8 @@ import {
   CardioExerciseSetBlueprint,
   IncreaseAllEvenlyProgressiveOverload,
   IncreaseLowestSetProgressiveOverload,
-  KeyedExerciseBlueprint,
   NoProgressiveOverload,
-  NormalizedName,
+  normalizeExerciseName,
   WeightedExerciseBlueprint,
   cardioTargetEquals,
 } from '@/models/blueprint-models';
@@ -89,18 +88,18 @@ describe('blueprint models', () => {
   });
 
   // ---------------------------------------------------------------------------
-  // IncreaseLowestSetProgressiveOverload — shared setup
+  // IncreaseLowestSetProgressiveOverload - shared setup
   // ---------------------------------------------------------------------------
 
   /**
-   * Sets: [60, 80, 60, 70, 60]  — indices 0, 2, 4 are the lowest (60 kg).
+   * Sets: [60, 80, 60, 70, 60]  - indices 0, 2, 4 are the lowest (60 kg).
    * Useful for testing which of the lowest sets is selected.
    */
   function mixedExercise() {
     return exerciseWithWeights(60, 80, 60, 70, 60);
   }
 
-  describe('IncreaseLowestSetProgressiveOverload — strategy: all', () => {
+  describe('IncreaseLowestSetProgressiveOverload - strategy: all', () => {
     it('increases every set that matches the lowest weight', () => {
       const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'all').applyProgressiveOverload(mixedExercise());
 
@@ -123,9 +122,9 @@ describe('blueprint models', () => {
     });
   });
 
-  describe('IncreaseLowestSetProgressiveOverload — strategy: first', () => {
+  describe('IncreaseLowestSetProgressiveOverload - strategy: first', () => {
     it('increases only the first set matching the lowest weight', () => {
-      // lowest sets are at indices 0, 2, 4 — first is index 0
+      // lowest sets are at indices 0, 2, 4 - first is index 0
       const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'first').applyProgressiveOverload(mixedExercise());
 
       const weights = result.potentialSets.map((s) => s.weight.value);
@@ -140,9 +139,9 @@ describe('blueprint models', () => {
     });
   });
 
-  describe('IncreaseLowestSetProgressiveOverload — strategy: last', () => {
+  describe('IncreaseLowestSetProgressiveOverload - strategy: last', () => {
     it('increases only the last set matching the lowest weight', () => {
-      // lowest sets are at indices 0, 2, 4 — last is index 4
+      // lowest sets are at indices 0, 2, 4 - last is index 4
       const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'last').applyProgressiveOverload(mixedExercise());
 
       const weights = result.potentialSets.map((s) => s.weight.value);
@@ -156,9 +155,9 @@ describe('blueprint models', () => {
     });
   });
 
-  describe('IncreaseLowestSetProgressiveOverload — strategy: middle', () => {
+  describe('IncreaseLowestSetProgressiveOverload - strategy: middle', () => {
     it('picks the lowest set closest to the centre of all sets', () => {
-      // Sets: [60, 80, 60, 70, 60] — length 5, midpoint = 2.0
+      // Sets: [60, 80, 60, 70, 60] - length 5, midpoint = 2.0
       // Lowest indices: 0, 2, 4. Distances from 2.0: 2, 0, 2 → index 2 wins
       const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'middle').applyProgressiveOverload(
         mixedExercise(),
@@ -169,8 +168,8 @@ describe('blueprint models', () => {
     });
 
     it('breaks a tie towards the first equidistant candidate', () => {
-      // Sets: [60, 80, 60] — length 3, midpoint = 1.0
-      // Lowest indices: 0, 2. Distances: 1, 1 — tie → reduce keeps the first (index 0)
+      // Sets: [60, 80, 60] - length 3, midpoint = 1.0
+      // Lowest indices: 0, 2. Distances: 1, 1 - tie → reduce keeps the first (index 0)
       const ex = exerciseWithWeights(60, 80, 60);
       const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'middle').applyProgressiveOverload(ex);
 
@@ -179,7 +178,7 @@ describe('blueprint models', () => {
     });
 
     it('handles a single lowest set with no tie possible', () => {
-      // Sets: [60, 80, 80] — only one lowest set at index 0
+      // Sets: [60, 80, 80] - only one lowest set at index 0
       const ex = exerciseWithWeights(60, 80, 80);
       const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'middle').applyProgressiveOverload(ex);
 
@@ -188,7 +187,7 @@ describe('blueprint models', () => {
     });
 
     it('selects the single lowest set closest to the centre in an asymmetric layout', () => {
-      // Sets: [80, 80, 80, 60, 60] — length 5, midpoint = 2.0
+      // Sets: [80, 80, 80, 60, 60] - length 5, midpoint = 2.0
       // Lowest indices: 3, 4. Distances: 1, 2 → index 3 wins
       const ex = exerciseWithWeights(80, 80, 80, 60, 60);
       const result = new IncreaseLowestSetProgressiveOverload(bn(5), 'middle').applyProgressiveOverload(ex);
@@ -209,7 +208,7 @@ describe('blueprint models', () => {
     });
   });
 
-  describe('IncreaseLowestSetProgressiveOverload — empty / single set edge cases', () => {
+  describe('IncreaseLowestSetProgressiveOverload - empty / single set edge cases', () => {
     it('returns exercise unchanged when there are no sets', () => {
       const blueprint = WeightedExerciseBlueprint.empty().with({ sets: 0 });
       const ex = new RecordedWeightedExercise(blueprint, [], undefined);
@@ -270,42 +269,40 @@ describe('blueprint models', () => {
   });
 
   // ---------------------------------------------------------------------------
-  // NormalizedName
+  // normalizeExerciseName
   // ---------------------------------------------------------------------------
 
-  describe('NormalizedName', () => {
+  describe('normalizeExerciseName', () => {
     it('lowercases and trims', () => {
-      expect(new NormalizedName('  Bench Press  ').toString()).toBe('bench pres');
+      expect(normalizeExerciseName('  Bench Press  ')).toBe('bench pres');
     });
 
     it('strips trailing "s"', () => {
-      expect(new NormalizedName('curls').toString()).toBe('curl');
+      expect(normalizeExerciseName('curls')).toBe('curl');
     });
 
     it('strips trailing "es"', () => {
-      expect(new NormalizedName('lunges').toString()).toBe('lung');
+      expect(normalizeExerciseName('lunges')).toBe('lung');
     });
 
     it('normalises "flies" → "flys" then strips the s', () => {
-      expect(new NormalizedName('flies').toString()).toBe('fly');
+      expect(normalizeExerciseName('flies')).toBe('fly');
     });
 
     it('normalises "flyes" → "flys" then strips the s', () => {
-      expect(new NormalizedName('Dumbbell Flyes').toString()).toBe('dumbbell fly');
+      expect(normalizeExerciseName('Dumbbell Flyes')).toBe('dumbbell fly');
     });
 
     it('treats "Dumbbell Flies" and "Dumbbell Flyes" as equal', () => {
-      const a = new NormalizedName('Dumbbell Flies');
-      const b = new NormalizedName('Dumbbell Flyes');
-      expect(a.equals(b)).toBe(true);
+      expect(normalizeExerciseName('Dumbbell Flies')).toBe(normalizeExerciseName('Dumbbell Flyes'));
     });
 
     it('treats differently-cased names as equal', () => {
-      expect(new NormalizedName('Squat').equals(new NormalizedName('squat'))).toBe(true);
+      expect(normalizeExerciseName('Squat')).toBe(normalizeExerciseName('squat'));
     });
 
     it('returns empty string for undefined/empty input', () => {
-      expect(new NormalizedName('').toString()).toBe('');
+      expect(normalizeExerciseName('')).toBe('');
     });
   });
 
@@ -361,43 +358,37 @@ describe('blueprint models', () => {
   });
 
   // ---------------------------------------------------------------------------
-  // KeyedExerciseBlueprint
+  // progressionKey
   // ---------------------------------------------------------------------------
 
-  describe('KeyedExerciseBlueprint', () => {
+  describe('progressionKey', () => {
     it('weighted exercise key encodes sets and repsPerSet', () => {
       const blueprint = WeightedExerciseBlueprint.empty().with({
         name: 'Squat',
         sets: 4,
         repsConfig: { type: 'fixed', reps: 8 },
       });
-      const key = KeyedExerciseBlueprint.fromExerciseBlueprint(blueprint);
-      expect(key.toString()).toBe('Squat_4_8');
+      expect(blueprint.progressionKey()).toBe('Squat_WeightedExerciseBlueprint_4_8');
     });
 
     it('two weighted blueprints with same name but different sets produce different keys', () => {
-      const a = KeyedExerciseBlueprint.fromExerciseBlueprint(
-        WeightedExerciseBlueprint.empty().with({
-          name: 'Press',
-          sets: 3,
-          repsConfig: { type: 'fixed', reps: 10 },
-        }),
-      );
-      const b = KeyedExerciseBlueprint.fromExerciseBlueprint(
-        WeightedExerciseBlueprint.empty().with({
-          name: 'Press',
-          sets: 5,
-          repsConfig: { type: 'fixed', reps: 10 },
-        }),
-      );
-      expect(a.toString()).not.toBe(b.toString());
+      const a = WeightedExerciseBlueprint.empty().with({
+        name: 'Press',
+        sets: 3,
+        repsConfig: { type: 'fixed', reps: 10 },
+      });
+      const b = WeightedExerciseBlueprint.empty().with({
+        name: 'Press',
+        sets: 5,
+        repsConfig: { type: 'fixed', reps: 10 },
+      });
+      expect(a.progressionKey()).not.toBe(b.progressionKey());
     });
 
     it('cardio exercise key encodes the target type of the first set', () => {
       const blueprint = CardioExerciseBlueprint.empty();
       // default first set target is 'time'
-      const key = KeyedExerciseBlueprint.fromExerciseBlueprint(blueprint);
-      expect(key.toString()).toContain('time');
+      expect(blueprint.progressionKey()).toContain('time');
     });
 
     it('cardio exercise key encodes distance when first set has a distance target', () => {
@@ -408,8 +399,46 @@ describe('blueprint models', () => {
         },
       });
       const blueprint = new CardioExerciseBlueprint('Run', [set], '', '');
-      const key = KeyedExerciseBlueprint.fromExerciseBlueprint(blueprint);
-      expect(key.toString()).toContain('distance');
+      expect(blueprint.progressionKey()).toContain('distance');
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // movementKey vs progressionKey
+  // ---------------------------------------------------------------------------
+
+  describe('movementKey vs progressionKey', () => {
+    const fiveByFive = WeightedExerciseBlueprint.empty().with({
+      name: 'Squats',
+      sets: 5,
+      repsConfig: { type: 'fixed', reps: 5 },
+    });
+    const threeByEight = fiveByFive.with({ sets: 3, repsConfig: { type: 'fixed', reps: 8 } });
+
+    it('the same movement under two rep schemes is one movement but two progressions', () => {
+      expect(fiveByFive.movementKey()).toBe(threeByEight.movementKey());
+      expect(fiveByFive.progressionKey()).not.toBe(threeByEight.progressionKey());
+    });
+
+    it('a differently-spelled name is the same movement but a different progression', () => {
+      const singular = fiveByFive.with({ name: 'Squat' });
+      expect(singular.movementKey()).toBe(fiveByFive.movementKey());
+      expect(singular.progressionKey()).not.toBe(fiveByFive.progressionKey());
+    });
+
+    it('a recorded exercise keys the same as the blueprint it was built from', () => {
+      const recorded = RecordedWeightedExercise.empty(fiveByFive, 'kilograms');
+      expect(recorded.movementKey()).toBe(fiveByFive.movementKey());
+      expect(recorded.progressionKey()).toBe(fiveByFive.progressionKey());
+    });
+
+    it('a weighted and a cardio exercise of the same name are different movements', () => {
+      const rowMachine = new CardioExerciseBlueprint('Row', [CardioExerciseSetBlueprint.empty()], '', '');
+      const barbellRow = fiveByFive.with({ name: 'Row' });
+
+      expect(barbellRow.movementKey()).not.toBe(rowMachine.movementKey());
+      expect(barbellRow.progressionKey()).not.toBe(rowMachine.progressionKey());
+      expect(normalizeExerciseName(barbellRow.name)).toBe(normalizeExerciseName(rowMachine.name));
     });
   });
 });

@@ -121,6 +121,7 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
         {set.tracksDuration && (
           <CardioDurationTile
             duration={liveDuration}
+            isReadonly={isReadonly}
             isTimerRunning={set.isTimerRunning}
             onSave={(duration) => updateSet((s) => s.with({ duration }))}
           />
@@ -128,12 +129,14 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
         {set.tracksDistance && (
           <CardioDistanceTile
             distance={set.distance}
+            isReadonly={isReadonly}
             emptyValue={emptyDistance}
             onSave={(distance) => updateSet((s) => s.with({ distance }))}
           />
         )}
         {blueprint.trackIncline && (
           <CardioValueTile
+            isReadonly={isReadonly}
             value={set.incline}
             emptyValue={BigNumber(0)}
             format={localeFormatBigNumber}
@@ -146,6 +149,7 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
         )}
         {blueprint.trackResistance && (
           <CardioValueTile
+            isReadonly={isReadonly}
             value={set.resistance}
             emptyValue={BigNumber(0)}
             format={localeFormatBigNumber}
@@ -158,6 +162,7 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
         )}
         {blueprint.trackWeight && (
           <CardioValueTile
+            isReadonly={isReadonly}
             value={set.weight}
             emptyValue={new Weight(0, preferredWeightUnit)}
             format={(weight) => weight.shortLocaleFormat()}
@@ -173,6 +178,7 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
         )}
         {blueprint.trackSteps && (
           <CardioValueTile
+            isReadonly={isReadonly}
             value={set.steps}
             emptyValue={0}
             format={(steps) => steps.toString()}
@@ -204,11 +210,13 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
 function CardioDurationTile(props: {
   duration: Duration | undefined;
   isTimerRunning: boolean;
+  isReadonly: boolean;
   onSave: (duration: Duration) => void;
 }) {
   const { t } = useTranslate();
   return (
     <CardioValueTile
+      isReadonly={props.isReadonly}
       value={props.duration}
       emptyValue={Duration.ZERO}
       format={formatDuration}
@@ -227,12 +235,14 @@ function CardioDurationTile(props: {
 function CardioDistanceTile(props: {
   distance: Distance | undefined;
   emptyValue: Distance;
+  isReadonly: boolean;
   onSave: (distance: Distance) => void;
 }) {
   const { t } = useTranslate();
   const units: DistanceUnit[] = ['kilometre', 'metre', 'mile', 'yard'];
   return (
     <CardioValueTile
+      isReadonly={props.isReadonly}
       value={props.distance}
       emptyValue={props.emptyValue}
       format={(distance) => localeFormatBigNumber(distance.value) + getShortUnit(distance.unit)}

@@ -73,7 +73,7 @@ const hydratedSettingsState = {
 describe('current-session effects', () => {
   // ─── initializeCurrentSessionStateSlice ──────────────────────────────────────
 
-  describe('applyCurrentSessionEffects — initializeCurrentSessionStateSlice', () => {
+  describe('applyCurrentSessionEffects - initializeCurrentSessionStateSlice', () => {
     it('dispatches setIsHydrated(true) when there is no stored session', async () => {
       const testBed = createAddEffectTestBed({
         initialState: hydratedSettingsState,
@@ -162,7 +162,7 @@ describe('current-session effects', () => {
 
   // ─── setCurrentSession ────────────────────────────────────────────────────────
 
-  describe('applyCurrentSessionEffects — setCurrentSession', () => {
+  describe('applyCurrentSessionEffects - setCurrentSession', () => {
     it('persists to keyValueStore when hydrated and session state changed', async () => {
       const kvStore = makeKeyValueStore();
       const testBed = createAddEffectTestBed({
@@ -177,7 +177,7 @@ describe('current-session effects', () => {
       });
       applyCurrentSessionEffects(testBed.addEffect);
 
-      // setState simulates the reducer having run — stateAfterReduce differs from stateBeforeReduce
+      // setState simulates the reducer having run - stateAfterReduce differs from stateBeforeReduce
       testBed.setStateBeforeReduce({
         currentSession: {
           isHydrated: true,
@@ -255,7 +255,7 @@ describe('current-session effects', () => {
       });
       applyCurrentSessionEffects(testBed.addEffect);
 
-      // stateAfterReduce same as original — no change
+      // stateAfterReduce same as original - no change
       await testBed.dispatchHandled(setCurrentSession({ target: 'workoutSession', session }));
 
       testBed.expectNotDispatched(currentWorkoutSessionUpdated);
@@ -298,7 +298,7 @@ describe('current-session effects', () => {
 
   // ─── finishCurrentWorkout ─────────────────────────────────────────────────────
 
-  describe('applyCurrentSessionEffects — finishCurrentWorkout', () => {
+  describe('applyCurrentSessionEffects - finishCurrentWorkout', () => {
     function testBedWithSession(session: Session | undefined) {
       const testBed = createAddEffectTestBed({
         initialState: {
@@ -333,7 +333,7 @@ describe('current-session effects', () => {
 
   // ─── persistCurrentSession ────────────────────────────────────────────────────
 
-  describe('applyCurrentSessionEffects — persistCurrentSession', () => {
+  describe('applyCurrentSessionEffects - persistCurrentSession', () => {
     it('stores the session and clears the current slot', async () => {
       const session = EmptySession.with({ id: 'to-store' });
       const testBed = createAddEffectTestBed({
@@ -357,7 +357,7 @@ describe('current-session effects', () => {
 
   // ─── currentWorkoutSessionUpdated ─────────────────────────────────────────────
 
-  describe('applyCurrentSessionEffects — currentWorkoutSessionUpdated', () => {
+  describe('applyCurrentSessionEffects - currentWorkoutSessionUpdated', () => {
     function testBed(settings: Partial<RootState['settings']> = { restNotifications: false }) {
       const bed = createAddEffectTestBed({
         initialState: { settings } as Partial<RootState>,
@@ -462,7 +462,7 @@ describe('current-session effects', () => {
 
   // ─── broadcastWorkoutEvent / notifications ────────────────────────────────────
 
-  describe('applyCurrentSessionEffects — broadcast and notifications', () => {
+  describe('applyCurrentSessionEffects - broadcast and notifications', () => {
     it('forwards broadcastWorkoutEvent to the worker service', async () => {
       const broadcast = vi.fn();
       const testBed = createAddEffectTestBed({
@@ -636,7 +636,7 @@ describe('current-session effects', () => {
 
   // ─── setCurrentSessionFromBlueprint ───────────────────────────────────────────
 
-  describe('applyCurrentSessionEffects — setCurrentSessionFromBlueprint', () => {
+  describe('applyCurrentSessionEffects - setCurrentSessionFromBlueprint', () => {
     it('hydrates a session from the blueprint and sets it as current', async () => {
       const hydrated = EmptySession.with({ id: 'hydrated' });
       const hydrateSessionFromBlueprint = vi.fn().mockReturnValue(hydrated);

@@ -19,7 +19,7 @@ public class AiPlanToolProvider
 
     /// <summary>
     /// The current AI plan contract version, read from the embedded schema (the
-    /// single source of truth — generated from the TS <c>AiPlanJSON.version</c>
+    /// single source of truth - generated from the TS <c>AiPlanJSON.version</c>
     /// literal). The hub compares clients against this to ask users to update their app.
     /// </summary>
     public int CurrentAiPlanVersion { get; }

@@ -1,5 +1,5 @@
 import {
-  KeyedExerciseBlueprint,
+  ProgressionKey,
   SessionBlueprint,
   ExerciseBlueprint,
   CardioExerciseBlueprint,
@@ -27,7 +27,7 @@ export class SessionService {
 
   async *getUpcomingSessions(
     sessionBlueprints: SessionBlueprint[],
-    latestExercises: Record<string, RecordedExercise | undefined>, // KeyedExerciseBlueprint -> Exercise
+    latestExercises: Record<ProgressionKey, RecordedExercise | undefined>,
   ): AsyncIterableIterator<Session> {
     const currentState = this.getState();
     const currentSession = currentState.currentSession.workoutSession;
@@ -65,22 +65,19 @@ export class SessionService {
 
   public hydrateSessionFromBlueprint(
     blueprint: SessionBlueprint,
-    latestExercises: Record<string, RecordedExercise | undefined>, // KeyedExerciseBlueprint -> Exercise
+    latestExercises: Record<ProgressionKey, RecordedExercise | undefined>,
   ): Session {
     return this.createNewSession(blueprint, latestExercises);
   }
 
   private createNewSession(
     sessionBlueprint: SessionBlueprint,
-    latestRecordedExercises: Record<
-      string, //KeyedExerciseBlueprint,
-      RecordedExercise | undefined
-    >,
+    latestRecordedExercises: Record<ProgressionKey, RecordedExercise | undefined>,
   ): Session {
     // oxlint-disable-next-line typescript/no-this-alias
     const $this = this;
     function getNextExercise(e: ExerciseBlueprint): RecordedExercise {
-      const lastExercise = latestRecordedExercises[KeyedExerciseBlueprint.fromExerciseBlueprint(e).toString()];
+      const lastExercise = latestRecordedExercises[e.progressionKey()];
       if (e instanceof CardioExerciseBlueprint) {
         const cardioLastExercise = lastExercise instanceof RecordedCardioExercise ? lastExercise : undefined;
         return RecordedCardioExercise.empty(e).with({

@@ -1,4 +1,4 @@
-import { WeightedExerciseBlueprint } from '@/models/blueprint-models';
+import { MovementKey, ProgressionKey, WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
 import { RecordedExercise } from '@/models/session-models/recorded-exercise';
 
@@ -31,6 +31,16 @@ export class RecordedWeightedExercise {
       json.potentialSets.map((x) => PotentialSet.fromJSON(x)),
       json.notes,
     );
+  }
+
+  /** See {@link MovementKey}. */
+  movementKey(): MovementKey {
+    return this.blueprint.movementKey();
+  }
+
+  /** See {@link ProgressionKey}. */
+  progressionKey(): ProgressionKey {
+    return this.blueprint.progressionKey();
   }
 
   static empty(b: WeightedExerciseBlueprint, unit: WeightUnit): RecordedWeightedExercise {

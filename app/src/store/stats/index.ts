@@ -3,7 +3,7 @@ import { Duration, LocalDate, OffsetDateTime } from '@js-joda/core';
 import { Weight } from '@/models/weight';
 import { LocalDateRange } from '@/models/time-models';
 import { RemoteData } from '@/models/remote';
-import { NormalizedName } from '@/models/blueprint-models';
+import { normalizeExerciseName } from '@/models/blueprint-models';
 
 interface StatsState {
   isDirty: boolean;
@@ -110,8 +110,8 @@ export const selectExerciseView = createSelector(
   (_, exercise: string) => exercise,
   (state: RemoteData<GranularStatisticView>, exerciseName: string) =>
     state.map((x) =>
-      x.weightedExerciseStats.find((ex) =>
-        new NormalizedName(ex.exerciseName).equals(new NormalizedName(exerciseName)),
+      x.weightedExerciseStats.find(
+        (ex) => normalizeExerciseName(ex.exerciseName) === normalizeExerciseName(exerciseName),
       ),
     ),
 );

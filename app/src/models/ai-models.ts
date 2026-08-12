@@ -66,7 +66,7 @@ export function describeSharedProgramForAi(programName: string, blueprint: Progr
   return (
     `Here is my current workout program, named "${programName}". ` +
     `It uses the same JSON structure as the "blueprint" field of your create_workout_plan tool. ` +
-    `Use it as the basis for my requests — when I ask for changes, return an updated plan with the create_workout_plan tool.\n\n` +
+    `Use it as the basis for my requests - when I ask for changes, return an updated plan with the create_workout_plan tool.\n\n` +
     JSON.stringify(blueprint.toJSON())
   );
 }
@@ -230,7 +230,7 @@ function fillBlueprint(partial: DeepPartial<ProgramBlueprintJSON> = {}): Program
 
 /**
  * Builds a complete latest {@link AiPlanJSON} from a possibly-incomplete wire
- * plan — the JSON streams top-to-bottom, so trailing fields may be missing —
+ * plan - the JSON streams top-to-bottom, so trailing fields may be missing -
  * filling any absent fields with empty defaults, then maps it into the domain
  * {@link ProgramBlueprint}.
  */
@@ -245,7 +245,7 @@ export function aiPlanFromJSON(partialJson: DeepPartial<AnyVersionAiPlanJSON>): 
           name: partialJson.name ?? '',
           description: partialJson.description ?? '',
           // The any-version plan type no longer couples the outer version to the embedded
-          // blueprint's, so `version === 3` can't narrow it — but a v3 wire plan is latest-shaped.
+          // blueprint's, so `version === 3` can't narrow it - but a v3 wire plan is latest-shaped.
           blueprint: fillBlueprint(partialJson.blueprint as DeepPartial<ProgramBlueprintJSON>),
         }
       : (partialJson as AnyVersionAiPlanJSON),

@@ -27,7 +27,7 @@ interface RestTimerProps {
 type RestPhase = 'resting' | 'ready' | 'over';
 
 // Neutral, then green, then red. The seed colour is the user's, so `primary` can land anywhere on the
-// wheel — including on green — and a phase drawn in it would stop being distinguishable from the next.
+// wheel - including on green - and a phase drawn in it would stop being distinguishable from the next.
 const phaseColor: Record<RestPhase, ColorChoice> = {
   resting: 'onSurfaceVariant',
   ready: 'green',

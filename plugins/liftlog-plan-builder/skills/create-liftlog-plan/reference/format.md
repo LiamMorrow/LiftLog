@@ -6,7 +6,7 @@ A `.liftlogplan` file is a single JSON object. `ProgramBlueprint.json` in this d
 
 Read these first. They are the reason most generated plans fail to import.
 
-1. **Every field is required.** There are no optional fields anywhere in this format. `notes` and `link` must be present even when empty — use `""`.
+1. **Every field is required.** There are no optional fields anywhere in this format. `notes` and `link` must be present even when empty - use `""`.
 2. **`"version": 2`** goes on the root object *and* on every session. It is not the plan's own version number; it is the format's.
 3. **Weights and distances are strings, not numbers.** `"amount": "2.5"`, never `"amount": 2.5`.
 4. **Rests and times are ISO-8601 durations.** `"PT3M"` is three minutes, `"PT90S"` is ninety seconds, `"PT1M30S"` also works. A bare `"90"` or `90` is invalid.
@@ -74,7 +74,7 @@ Read these first. They are the reason most generated plans fail to import.
 | `restBetweenSets` | object | See below. |
 | `supersetWithNext` | boolean | See supersets below. |
 | `notes` | string | Cues or instructions. `""` if none. |
-| `link` | string | A URL explaining the movement. **Leave as `""` unless the user gave you a specific link** — do not invent or guess URLs. |
+| `link` | string | A URL explaining the movement. **Leave as `""` unless the user gave you a specific link** - do not invent or guess URLs. |
 | `progressiveOverload` | object | See below. |
 
 ### Rest
@@ -85,7 +85,7 @@ All three are required ISO-8601 durations.
 | --- | --- |
 | `minRest` | The shortest acceptable rest. |
 | `maxRest` | The longest. |
-| `failureRest` | Rest after a set where they missed the target reps — normally the longest of the three. |
+| `failureRest` | Rest after a set where they missed the target reps - normally the longest of the three. |
 
 Pick rests from the effort of the lift: heavy compounds 3–5 minutes, accessories 60–90 seconds.
 
@@ -110,7 +110,7 @@ The normal one: after a successful session, every set goes up by `amount`. Use `
 ```json
 { "type": "IncreaseLowestSetProgressiveOverload", "amount": "1.25", "increaseStrategy": "middle" }
 ```
-Only raises *some* sets — for lifts where adding weight across the board is too big a jump (lateral raises, most shoulder and arm isolation work). `increaseStrategy` must be one of `"first"`, `"middle"`, `"last"`, `"all"` — which of the lowest-weight sets to bump.
+Only raises *some* sets - for lifts where adding weight across the board is too big a jump (lateral raises, most shoulder and arm isolation work). `increaseStrategy` must be one of `"first"`, `"middle"`, `"last"`, `"all"` - which of the lowest-weight sets to bump.
 
 ## Cardio exercise
 
@@ -134,7 +134,7 @@ Only raises *some* sets — for lifts where adding weight across the board is to
 }
 ```
 
-`sets` is an **array** here — one object per interval or round. There is no rest or progressive overload on cardio.
+`sets` is an **array** here - one object per interval or round. There is no rest or progressive overload on cardio.
 
 Every set needs a `target` plus all six `track*` booleans, which control the fields the app shows while logging. Turn on the ones that make sense for the movement (a bike: duration + resistance; a treadmill run: duration, distance, incline) and leave the rest `false`.
 

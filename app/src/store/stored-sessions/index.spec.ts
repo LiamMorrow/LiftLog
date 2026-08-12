@@ -27,6 +27,7 @@ import {
 import {
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
+  movementKeyFor,
   NoProgressiveOverload,
   Rest,
   SessionBlueprint,
@@ -314,10 +315,10 @@ describe('storedSessions selectors', () => {
     const session = squat(LocalDate.of(2026, 4, 10), OffsetDateTime.of(2026, 4, 10, 10, 0, 0, 0, ZoneOffset.UTC));
     const state = { storedSessions: reduce(addStoredSession(session)) };
 
-    const lookup = selectRecentlyCompletedExercises(state, 5);
+    const lookup = selectRecentlyCompletedExercises(state);
     const blueprint = session.recordedExercises[0]!.blueprint as WeightedExerciseBlueprint;
 
-    expect(lookup(blueprint)).toHaveLength(1);
+    expect(lookup(blueprint.movementKey())).toHaveLength(1);
   });
 
   it('selectRecentlyCompletedExercises excludes same-named exercises of a different type', () => {
@@ -342,7 +343,7 @@ describe('storedSessions selectors', () => {
     );
     const state = { storedSessions: reduce(addStoredSession(session)) };
 
-    const lookup = selectRecentlyCompletedExercises(state, 5);
+    const lookup = selectRecentlyCompletedExercises(state);
     const weightedBlueprint = new WeightedExerciseBlueprint(
       'New Exercise',
       3,
@@ -354,8 +355,12 @@ describe('storedSessions selectors', () => {
       '',
     );
 
-    expect(lookup(weightedBlueprint)).toEqual([]);
-    expect(lookup(cardioBlueprint)).toEqual([cardioExercise]);
+    expect(lookup(weightedBlueprint.movementKey())).toEqual([]);
+    expect(lookup(cardioBlueprint.movementKey())).toEqual([cardioExercise]);
+
+    // The sheet route only carries a name and a type, so the same lookup has to work without a blueprint.
+    expect(lookup(movementKeyFor('New Exercise', 'CardioExerciseBlueprint'))).toEqual([cardioExercise]);
+    expect(lookup(movementKeyFor('New Exercise', 'WeightedExerciseBlueprint'))).toEqual([]);
   });
 
   it('selectMuscles returns sorted distinct muscles and selectExerciseById reads one', () => {

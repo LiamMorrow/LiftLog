@@ -50,7 +50,7 @@ export default function SessionComponent(props: {
   const session = useAppSelectorWithArg(selectCurrentSession, props.target);
   const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
   const dispatch = useDispatch();
-  const recentlyCompletedExercises = useAppSelectorWithArg(selectRecentlyCompletedExercises, 10);
+  const recentlyCompletedExercises = useAppSelector(selectRecentlyCompletedExercises);
   const addExercise = useAddExercise(props.target);
   const resetTimer = (time: OffsetDateTime | undefined) => {
     updateSession((s) => s.with({ restTimer: time ? new RestTimerModel(time) : undefined }));
@@ -170,7 +170,7 @@ export default function SessionComponent(props: {
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
           isReadonly={isReadonly}
           showPreviousButton={props.target === 'workoutSession'}
-          previousRecordedExercises={recentlyCompletedExercises(item.blueprint) as RecordedWeightedExercise[]}
+          previousRecordedExercises={recentlyCompletedExercises(item.movementKey()) as RecordedWeightedExercise[]}
         />
       ))
       .with(P.instanceOf(RecordedCardioExercise), (item) => (
@@ -186,7 +186,7 @@ export default function SessionComponent(props: {
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
           isReadonly={isReadonly}
           showPreviousButton={props.target === 'workoutSession'}
-          previousRecordedExercises={recentlyCompletedExercises(item.blueprint) as RecordedCardioExercise[]}
+          previousRecordedExercises={recentlyCompletedExercises(item.movementKey()) as RecordedCardioExercise[]}
         />
       ))
       .exhaustive();
@@ -233,7 +233,7 @@ export default function SessionComponent(props: {
 
   const showRestTimer =
     restTimersEnabled && props.target === 'workoutSession' && nextExercise && restBetweenSets && session.restTimer;
-  // Only a weighted set can be failed — cardio has no rep count to fall short of.
+  // Only a weighted set can be failed - cardio has no rep count to fall short of.
   const lastSetFailed =
     lastRecordedSet?.set &&
     lastExercise instanceof RecordedWeightedExercise &&

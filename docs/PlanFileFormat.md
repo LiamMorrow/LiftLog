@@ -1,16 +1,16 @@
 # Plan Files
 
-LiftLog plans can be exported to, and imported from, `.liftlogplan` files. A plan file is plain JSON, so you can write one yourself, share one with a friend, keep one in version control — or have an AI write one for you.
+LiftLog plans can be exported to, and imported from, `.liftlogplan` files. A plan file is plain JSON, so you can write one yourself, share one with a friend, keep one in version control - or have an AI write one for you.
 
 To import a plan, either tap a `.liftlogplan` file on your device (LiftLog is registered to open them), or open the app and go to `Plans -> Import`.
 
-To export one, open `Plans`, tap the `⋮` next to the plan and choose `Export to file`. LiftLog writes the `.liftlogplan` and hands it to the system share sheet, so you can save it to Files or Drive, AirDrop it, or mail it to yourself — whatever gets it somewhere you can reach it again.
+To export one, open `Plans`, tap the `⋮` next to the plan and choose `Export to file`. LiftLog writes the `.liftlogplan` and hands it to the system share sheet, so you can save it to Files or Drive, AirDrop it, or mail it to yourself - whatever gets it somewhere you can reach it again.
 
 The authoritative definition of the format is the JSON Schema at [`docs/schemas/program-blueprint/ProgramBlueprint.json`](./schemas/program-blueprint/ProgramBlueprint.json). It is generated from the app's own models, so it is always in step with what the app will accept.
 
 ## Generating a plan with Claude
 
-This repository ships a Claude skill that writes plan files for you. Describe the training you want — "a 4-day upper/lower split for an intermediate lifter, dumbbells only" — and it produces a `.liftlogplan` file, validated against the schema above before you ever see it.
+This repository ships a Claude skill that writes plan files for you. Describe the training you want - "a 4-day upper/lower split for an intermediate lifter, dumbbells only" - and it produces a `.liftlogplan` file, validated against the schema above before you ever see it.
 
 ### Claude Code
 
@@ -41,7 +41,7 @@ The skill reads plans as happily as it writes them, so you can send it the one y
 
 > Have a look at my plan and tell me what's missing.
 
-Exporting means Claude sees your real exercise names, rest times, and progressive overload settings, so what comes back is your plan with the change made — not an approximation of it rebuilt from a description.
+Exporting means Claude sees your real exercise names, rest times, and progressive overload settings, so what comes back is your plan with the change made - not an approximation of it rebuilt from a description.
 
 Importing the result **adds a new plan**; it does not overwrite the original. Delete the old one from `Plans` once the replacement is in. Your logged workout history is kept separately and is untouched by either.
 
@@ -98,7 +98,7 @@ A plan file is one JSON object: a name, a date, and a list of sessions. Each ses
 }
 ```
 
-Complete examples live in [`plugins/liftlog-plan-builder/skills/create-liftlog-plan/examples/`](../plugins/liftlog-plan-builder/skills/create-liftlog-plan/examples) — one weighted plan and one cardio plan.
+Complete examples live in [`plugins/liftlog-plan-builder/skills/create-liftlog-plan/examples/`](../plugins/liftlog-plan-builder/skills/create-liftlog-plan/examples) - one weighted plan and one cardio plan.
 
 ### Exercises
 
@@ -108,7 +108,7 @@ An exercise is either a `WeightedExerciseBlueprint` or a `CardioExerciseBlueprin
 
 `supersetWithNext` is how supersets are expressed: there is no superset group. Setting it to `true` means "perform this back-to-back with the next exercise in the list, without resting".
 
-**Cardio exercises** have no rest and no progressive overload. Their `sets` is an array — one entry per interval — and each entry has a `target` (either a time or a distance) plus six `track*` booleans controlling which fields the app shows you while logging.
+**Cardio exercises** have no rest and no progressive overload. Their `sets` is an array - one entry per interval - and each entry has a `target` (either a time or a distance) plus six `track*` booleans controlling which fields the app shows you while logging.
 
 ### Progressive overload
 
@@ -117,7 +117,7 @@ Each weighted exercise carries one of three rules:
 | `type`                                 | Effect                                                                                                                                                                |
 | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `NoProgressiveOverload`                | Weight never increases automatically. Suits bodyweight work.                                                                                                          |
-| `IncreaseAllEvenlyProgressiveOverload` | After a successful session, every set goes up by `amount`. The usual choice — 2.5 kg or 5 lb.                                                                         |
+| `IncreaseAllEvenlyProgressiveOverload` | After a successful session, every set goes up by `amount`. The usual choice - 2.5 kg or 5 lb.                                                                         |
 | `IncreaseLowestSetProgressiveOverload` | Raises only the lowest-weight sets, chosen by `increaseStrategy` (`first`, `middle`, `last`, or `all`). For lifts where a full jump is too much, like lateral raises. |
 
 `amount` is a decimal string, in whatever unit the app is set to.
@@ -139,7 +139,7 @@ My Plan.liftlogplan is not a valid LiftLog plan:
   plan/sessions/1/exercises/0/progressiveOverload/amount must be string
 ```
 
-This is worth doing, because the app itself will only tell you _"That file isn't a valid workout plan"_ — it cannot tell you which field is wrong.
+This is worth doing, because the app itself will only tell you _"That file isn't a valid workout plan"_ - it cannot tell you which field is wrong.
 
 ## Regenerating the schema
 
