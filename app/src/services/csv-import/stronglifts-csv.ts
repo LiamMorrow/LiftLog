@@ -109,13 +109,10 @@ export function parseStrongLiftsCsv(csvText: string): ParseStrongLiftsCsvResult 
   }
 
   const fields = table.fields;
-  const missing = REQUIRED_HEADERS.filter(
-    (h) => !fields.some((f) => f.toLowerCase() === h.toLowerCase()),
-  );
+  const missing = REQUIRED_HEADERS.filter((h) => !fields.some((f) => f.toLowerCase() === h.toLowerCase()));
   if (missing.length > 0) {
     const hasDate =
-      fields.some((f) => f.toLowerCase() === 'date') ||
-      fields.some((f) => f.toLowerCase().startsWith('date'));
+      fields.some((f) => f.toLowerCase() === 'date') || fields.some((f) => f.toLowerCase().startsWith('date'));
     const hasExercise = fields.some((f) => f.toLowerCase() === 'exercise');
     if (!hasDate || !hasExercise) {
       return {
@@ -272,8 +269,7 @@ export function strongLiftsRowsToNormalized(
       contentDateKey: `${group.dateKey}|w${group.workout || '0'}`,
       date: group.date,
       sessionName,
-      bodyweight:
-        group.bodyWeight !== undefined ? new Weight(group.bodyWeight, unit) : undefined,
+      bodyweight: group.bodyWeight !== undefined ? new Weight(group.bodyWeight, unit) : undefined,
       exercises,
     });
   }

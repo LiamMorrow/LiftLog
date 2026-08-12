@@ -69,7 +69,6 @@ export const exportPlainText = createAction<{ format: PlaintextExportFormat }>('
 /** Pick a third-party export file and merge history via importBackupData. */
 export const importFromExternal = createAction<{ format: ExternalImportFormat }>('importFromExternal');
 
-
 export const executeRemoteBackup = createAction<{
   settings?: RemoteBackupSettings;
   force?: boolean;

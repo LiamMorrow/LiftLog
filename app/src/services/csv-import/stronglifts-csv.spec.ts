@@ -62,11 +62,7 @@ describe('getImportForStrongLifts', () => {
     expect(backup.workouts.every((s) => s.date.toString() === '2026-08-11')).toBe(true);
 
     const workoutA = backup.workouts[0]!;
-    expect(workoutA.recordedExercises.map((e) => e.blueprint.name)).toEqual([
-      'Squat',
-      'Bench Press',
-      'Barbell Row',
-    ]);
+    expect(workoutA.recordedExercises.map((e) => e.blueprint.name)).toEqual(['Squat', 'Bench Press', 'Barbell Row']);
     expect(workoutA.bodyweight?.value.toNumber()).toBe(83.5);
     expect(workoutA.bodyweight?.unit).toBe('kilograms');
 
@@ -85,11 +81,7 @@ describe('getImportForStrongLifts', () => {
     expect(row.potentialSets).toHaveLength(5);
 
     const workoutB = backup.workouts[1]!;
-    expect(workoutB.recordedExercises.map((e) => e.blueprint.name)).toEqual([
-      'Squat',
-      'Overhead Press',
-      'Deadlift',
-    ]);
+    expect(workoutB.recordedExercises.map((e) => e.blueprint.name)).toEqual(['Squat', 'Overhead Press', 'Deadlift']);
     const deadlift = workoutB.recordedExercises[2] as RecordedWeightedExercise;
     expect(deadlift.potentialSets).toHaveLength(1);
     expect(deadlift.potentialSets[0]!.weight.value.toNumber()).toBe(75);

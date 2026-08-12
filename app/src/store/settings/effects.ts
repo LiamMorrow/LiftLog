@@ -176,4 +176,3 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
   addImportExternalEffects(addEffect);
   addRemoteBackupEffects(addEffect);
 }
-

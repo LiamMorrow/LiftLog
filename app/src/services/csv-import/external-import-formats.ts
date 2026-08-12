@@ -25,10 +25,7 @@ export const EXTERNAL_IMPORT_FORMATS: readonly ExternalImportFormatEntry[] = [
   },
 ];
 
-const IMPORTERS: Record<
-  ExternalImportFormat,
-  (bytes: Uint8Array, opts?: CsvImportOptions) => BackupData
-> = {
+const IMPORTERS: Record<ExternalImportFormat, (bytes: Uint8Array, opts?: CsvImportOptions) => BackupData> = {
   FitNotes: getImportForFitNotes,
   StrongLifts: getImportForStrongLifts,
 };

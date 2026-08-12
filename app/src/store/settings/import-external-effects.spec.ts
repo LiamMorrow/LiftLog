@@ -25,13 +25,7 @@ type BedOpts = {
   tolgee?: (key: string, params?: { count?: number; error?: string }) => string;
 };
 
-function makeExternalImportBed({
-  format: _format,
-  bytes,
-  sessions = {},
-  imperial = false,
-  tolgee,
-}: BedOpts) {
+function makeExternalImportBed({ format: _format, bytes, sessions = {}, imperial = false, tolgee }: BedOpts) {
   const defaultTolgee = (key: string, params?: { count?: number; error?: string }) => {
     if (key === 'backup.import_from_other_apps.complete.message') {
       return `Imported ${params?.count} workout(s)`;
@@ -103,9 +97,7 @@ describe('import-external-effects', () => {
 
     expect(() => testBed.getDispatchedAction(importBackupData)).toThrow();
     expect(() => testBed.getDispatchedAction(setStatsIsDirty)).toThrow();
-    expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe(
-      'Those workouts are already in History',
-    );
+    expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe('Those workouts are already in History');
   });
 
   it('imports only sessions not already in History', async () => {

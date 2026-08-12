@@ -80,25 +80,22 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
     }
   });
 
-  addEffect(
-    importBackupData,
-    async ({ payload }, { dispatch, extra: { tolgee, db, databaseMigrationService } }) => {
-      const { workouts, programs, feed, successMessage } = payload;
-      dispatch(upsertStoredSessions(workouts));
-      dispatch(upsertSavedPlans(programs));
-      dispatch(
-        showSnackbar({
-          text: successMessage ?? tolgee.t('Restore complete!'),
-        }),
-      );
-      // Let the data migration re-run on next launch so imported nil-unit weights get coalesced
-      await db.delete(dataMigrationsSchema).where(eq(dataMigrationsSchema.id, migrateNilWeightUnitsDataMigration));
-      await databaseMigrationService.migrate();
-      if (feed) {
-        dispatch(beginFeedImport(feed));
-      }
-    },
-  );
+  addEffect(importBackupData, async ({ payload }, { dispatch, extra: { tolgee, db, databaseMigrationService } }) => {
+    const { workouts, programs, feed, successMessage } = payload;
+    dispatch(upsertStoredSessions(workouts));
+    dispatch(upsertSavedPlans(programs));
+    dispatch(
+      showSnackbar({
+        text: successMessage ?? tolgee.t('Restore complete!'),
+      }),
+    );
+    // Let the data migration re-run on next launch so imported nil-unit weights get coalesced
+    await db.delete(dataMigrationsSchema).where(eq(dataMigrationsSchema.id, migrateNilWeightUnitsDataMigration));
+    await databaseMigrationService.migrate();
+    if (feed) {
+      dispatch(beginFeedImport(feed));
+    }
+  });
 
   addEffect(importDataSql, async (action, { dispatch, extra: { logger } }) => {
     try {

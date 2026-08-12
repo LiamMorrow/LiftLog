@@ -1,10 +1,5 @@
 import { SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
-import {
-  PotentialSet,
-  RecordedSet,
-  RecordedWeightedExercise,
-  Session,
-} from '@/models/session-models';
+import { PotentialSet, RecordedSet, RecordedWeightedExercise, Session } from '@/models/session-models';
 import { Weight, WeightUnit } from '@/models/weight';
 import { uuidFromName } from '@/utils/uuid';
 import { LocalDate, LocalTime, ZoneOffset } from '@js-joda/core';
@@ -94,16 +89,11 @@ export function sessionsFromNormalized(sessions: NormalizedImportSession[]): Ses
           .atOffset(ZoneOffset.UTC)
           .plusSeconds(setOrdinal);
         setOrdinal += 1;
-        return new PotentialSet(
-          new RecordedSet(set.reps, completionDateTime),
-          new Weight(set.weight, set.unit),
-        );
+        return new PotentialSet(new RecordedSet(set.reps, completionDateTime), new Weight(set.weight, set.unit));
       });
 
       idPayload.push({ name: exercise.name, notes: exercise.notes, sets: setsForId });
-      recordedExercises.push(
-        new RecordedWeightedExercise(blueprint, potentialSets, exercise.notes),
-      );
+      recordedExercises.push(new RecordedWeightedExercise(blueprint, potentialSets, exercise.notes));
     }
 
     if (recordedExercises.length === 0) {

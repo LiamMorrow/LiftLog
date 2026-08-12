@@ -13,9 +13,7 @@ export type FitNotesCsvRow = {
   comment: string;
 };
 
-export type ParseFitNotesCsvResult =
-  | { ok: true; rows: FitNotesCsvRow[] }
-  | { ok: false; error: string };
+export type ParseFitNotesCsvResult = { ok: true; rows: FitNotesCsvRow[] } | { ok: false; error: string };
 
 const REQUIRED_HEADERS = ['Date', 'Exercise', 'Weight', 'Weight Unit', 'Reps'] as const;
 
@@ -48,9 +46,7 @@ export function parseFitNotesCsv(csvText: string): ParseFitNotesCsvResult {
     return table;
   }
 
-  const missing = REQUIRED_HEADERS.filter(
-    (h) => !table.fields.some((f) => f.toLowerCase() === h.toLowerCase()),
-  );
+  const missing = REQUIRED_HEADERS.filter((h) => !table.fields.some((f) => f.toLowerCase() === h.toLowerCase()));
   if (missing.length > 0) {
     return {
       ok: false,
