@@ -18,17 +18,23 @@ accepted as an import format.
   unit, notes). Re-importing the same rows is a no-op: workouts whose IDs already exist in History
   are skipped. A larger re-export only adds sessions for new or changed set content. Deleting an
   imported session and importing again restores it (same ID is no longer present).
+- Because **notes are part of the content id**, editing only a comment/note in the source app and
+  re-exporting can produce a **new** session id (possible duplicate next to the previous import).
 - Existing sessions and programs are not wiped; new sessions are merged via the same path as Restore
-  (`importBackupData`).
+  (`importBackupData`). Stats invalidation (`setStatsIsDirty`) runs on the external-import path only,
+  not inside full backup restore.
 - Weighted sets only (v1); cardio-only / timed-only rows are skipped.
 - Set comments / notes become exercise notes. Rest timers and progressive overload use LiftLog
   defaults.
 
 ## Formats
 
+Internal format ids (UI dropdown / `importFromExternal`): `FitNotes` | `StrongLifts`.
+(Plaintext export’s own `CSV` value is unrelated.)
+
 ### FitNotes-style CSV
 
-UI label: **FitNotes-style CSV** (internal format value: `CSV`). Portable contract is the
+UI label: **FitNotes-style CSV** (internal format value: `FitNotes`). Portable contract is the
 FitNotes-style CSV header row (not the binary `.fitnotes` database — that format is out of scope).
 
 Expected columns:
@@ -38,10 +44,12 @@ Expected columns:
 
 Required for a successful parse: `Date`, `Exercise`, `Weight`, `Weight Unit`, `Reps`.
 
-- Grouping: one session per calendar date.
+- Grouping: **one session per calendar date** (multiple visits on the same day merge into one
+  session).
 - Weight units come from the CSV when present; missing units fall back to the app preference.
 - **Imported:** date, exercise name, weight, weight unit, reps, comment.
-- **Not imported:** category, distance, distance unit, time (cardio).
+- **Not imported:** category, distance, distance unit, time (cardio) — headers may still appear;
+  they are ignored.
 
 ### StrongLifts-style CSV
 
@@ -74,10 +82,24 @@ Required: a date column (`Date (yyyy/mm/dd)` or `Date`), `Exercise`, and at leas
 
 ## Implementation
 
-- Parser/mapper: `app/src/services/csv-import/` — `getImportForFitNotes`, `getImportForStrongLifts`,
-  `sessionIdFromCsvContent` for stable IDs.
-- Settings effect: `importFromExternal` → `import-external-effects.ts` filters out session IDs
-  already in `storedSessions`, then `importBackupData` + `setStatsIsDirty` (or an already-imported
-  snackbar when nothing is new).
+```text
+UI dropdown  ←── EXTERNAL_IMPORT_FORMATS (id, labelKey, import)
+importFromExternal({ format })
+  → pickFile
+  → getExternalImporter(format)(bytes, { defaultWeightUnit })
+       → format-specific parse + group → NormalizedImportSession[]
+       → sessionsFromNormalized() → BackupData { workouts, programs: {} }
+  → filter session ids already in storedSessions
+  → importBackupData(...); setStatsIsDirty(true)   // external path only
+```
+
+- Package: `app/src/services/csv-import/`
+  - `external-import-formats.ts` — registry (`FitNotes` | `StrongLifts`)
+  - `fitnotes-csv.ts` / `stronglifts-csv.ts` — parse + normalize
+  - `csv-to-sessions.ts` — `sessionsFromNormalized`, `sessionIdFromCsvContent`
+  - `importers.ts` — `getImportForFitNotes` / `getImportForStrongLifts`
+  - `csv-parse-utils.ts` — shared cell/number/Papa preamble helpers
+- Settings effect: `import-external-effects.ts` uses the registry; filters existing session IDs;
+  dispatches `importBackupData` + `setStatsIsDirty` (or already-imported snackbar).
 - Local sample files (if any) live only under gitignored `tests/csv-import-test-files/`; unit tests
   use inline CSV excerpts.

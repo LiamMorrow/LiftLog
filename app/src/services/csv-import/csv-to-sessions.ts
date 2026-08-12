@@ -8,12 +8,11 @@ import {
 import { Weight, WeightUnit } from '@/models/weight';
 import { uuidFromName } from '@/utils/uuid';
 import { LocalDate, LocalTime, ZoneOffset } from '@js-joda/core';
-import { WorkoutCsvRow } from '@/services/csv-import/workout-csv';
 
 export type CsvImportOptions = {
   /** Fallback unit when a row's Weight Unit is missing/unknown. */
   defaultWeightUnit?: WeightUnit;
-  /** Session blueprint name prefix. Default: "Imported from FitNotes". */
+  /** Session blueprint name when the format does not supply one. */
   sessionName?: string;
 };
 
@@ -23,9 +22,21 @@ export type CsvImportOptions = {
  */
 export const CSV_IMPORT_SESSION_NAMESPACE = 'a7f3c8e2-4b1d-5e9a-8c2f-1d0e9b7a6c5f';
 
+export type NormalizedSet = { reps: number; weight: number; unit: WeightUnit };
+export type NormalizedExercise = { name: string; notes?: string; sets: NormalizedSet[] };
+export type NormalizedImportSession = {
+  /** Content-id key (e.g. `2026-08-08` or `2026-08-08|w1` for SL A/B). */
+  contentDateKey: string;
+  date: LocalDate;
+  sessionName: string;
+  bodyweight?: Weight;
+  exercises: NormalizedExercise[];
+};
+
 /**
  * Stable id from date + ordered exercises/sets (normalized weight unit, reps, weight, notes).
  * Synthetic completion timestamps are omitted — they are derived from set order only.
+ * Notes are part of the payload: note-only edits in the source app yield a new session id.
  */
 export function sessionIdFromCsvContent(
   dateKey: string,
@@ -46,72 +57,13 @@ export function sessionIdFromCsvContent(
   return uuidFromName(parts.join('\n'), CSV_IMPORT_SESSION_NAMESPACE);
 }
 
-function mapWeightUnit(raw: string, fallback: WeightUnit): WeightUnit {
-  const u = raw.trim().toLowerCase();
-  if (!u) {
-    return fallback;
-  }
-  if (u === 'kg' || u === 'kgs' || u === 'kilogram' || u === 'kilograms') {
-    return 'kilograms';
-  }
-  if (u === 'lb' || u === 'lbs' || u === 'pound' || u === 'pounds') {
-    return 'pounds';
-  }
-  return fallback;
-}
+/** Build Session domain objects from format-normalized import sessions. */
+export function sessionsFromNormalized(sessions: NormalizedImportSession[]): Session[] {
+  const result: Session[] = [];
 
-function parseLocalDate(raw: string): LocalDate | undefined {
-  try {
-    return LocalDate.parse(raw.trim());
-  } catch {
-    return undefined;
-  }
-}
-
-/** Weighted set rows only; cardio-only rows are skipped in v1. */
-function isWeightedSetRow(row: WorkoutCsvRow): boolean {
-  return row.reps !== undefined && row.weight !== undefined;
-}
-
-/**
- * Group workout CSV rows into LiftLog Session domain objects.
- * Grouping key: calendar date only (export format has no workout id).
- * Session ids are content-derived (date + sets) so re-importing the same rows is a no-op
- * when filtered against existing History; new/changed set content gets a new id.
- */
-export function csvRowsToSessions(rows: WorkoutCsvRow[], options: CsvImportOptions = {}): Session[] {
-  const defaultWeightUnit = options.defaultWeightUnit ?? 'kilograms';
-  const sessionName = options.sessionName ?? 'Imported from FitNotes';
-
-  const byDate = new Map<string, WorkoutCsvRow[]>();
-  for (const row of rows) {
-    if (!isWeightedSetRow(row)) {
+  for (const normalized of sessions) {
+    if (normalized.exercises.length === 0) {
       continue;
-    }
-    if (!parseLocalDate(row.date)) {
-      continue;
-    }
-    const list = byDate.get(row.date) ?? [];
-    list.push(row);
-    byDate.set(row.date, list);
-  }
-
-  const sessions: Session[] = [];
-  const sortedDates = [...byDate.keys()].sort();
-
-  for (const dateKey of sortedDates) {
-    const dayRows = byDate.get(dateKey)!;
-    const date = parseLocalDate(dateKey)!;
-
-    // Preserve first-seen exercise order within the day.
-    const exerciseOrder: string[] = [];
-    const byExercise = new Map<string, WorkoutCsvRow[]>();
-    for (const row of dayRows) {
-      if (!byExercise.has(row.exercise)) {
-        exerciseOrder.push(row.exercise);
-        byExercise.set(row.exercise, []);
-      }
-      byExercise.get(row.exercise)!.push(row);
     }
 
     const recordedExercises: RecordedWeightedExercise[] = [];
@@ -122,41 +74,36 @@ export function csvRowsToSessions(rows: WorkoutCsvRow[], options: CsvImportOptio
     }[] = [];
     let setOrdinal = 0;
 
-    for (const exerciseName of exerciseOrder) {
-      const setRows = byExercise.get(exerciseName)!;
-      const setCount = setRows.length;
-      const firstReps = setRows[0]?.reps ?? 10;
+    for (const exercise of normalized.exercises) {
+      if (exercise.sets.length === 0) {
+        continue;
+      }
+      const firstReps = exercise.sets[0]?.reps ?? 10;
       const blueprint = WeightedExerciseBlueprint.empty().with({
-        name: exerciseName,
-        sets: setCount,
+        name: exercise.name,
+        sets: exercise.sets.length,
         repsConfig: { type: 'fixed', reps: firstReps },
       });
 
-      const comments = setRows
-        .map((r, i) => {
-          const c = r.comment.trim();
-          return c ? `Set ${i + 1}: ${c}` : undefined;
-        })
-        .filter((c): c is string => !!c);
-      const notes = comments.length > 0 ? comments.join('\n') : undefined;
-
       const setsForId: { reps: number; weight: number; unit: WeightUnit }[] = [];
-      const potentialSets = setRows.map((row) => {
-        const unit = mapWeightUnit(row.weightUnit, defaultWeightUnit);
-        const reps = row.reps ?? 0;
-        const weightValue = row.weight ?? 0;
-        setsForId.push({ reps, weight: weightValue, unit });
-        // Stable synthetic timestamps: noon UTC + 1s per set so history ordering is deterministic.
-        const completionDateTime = date
+      const potentialSets = exercise.sets.map((set) => {
+        setsForId.push({ reps: set.reps, weight: set.weight, unit: set.unit });
+        // Noon UTC + 1s per set: deterministic history order without real timestamps in CSV.
+        const completionDateTime = normalized.date
           .atTime(LocalTime.of(12, 0, 0))
           .atOffset(ZoneOffset.UTC)
           .plusSeconds(setOrdinal);
         setOrdinal += 1;
-        return new PotentialSet(new RecordedSet(reps, completionDateTime), new Weight(weightValue, unit));
+        return new PotentialSet(
+          new RecordedSet(set.reps, completionDateTime),
+          new Weight(set.weight, set.unit),
+        );
       });
 
-      idPayload.push({ name: exerciseName, notes, sets: setsForId });
-      recordedExercises.push(new RecordedWeightedExercise(blueprint, potentialSets, notes));
+      idPayload.push({ name: exercise.name, notes: exercise.notes, sets: setsForId });
+      recordedExercises.push(
+        new RecordedWeightedExercise(blueprint, potentialSets, exercise.notes),
+      );
     }
 
     if (recordedExercises.length === 0) {
@@ -164,22 +111,22 @@ export function csvRowsToSessions(rows: WorkoutCsvRow[], options: CsvImportOptio
     }
 
     const sessionBlueprint = new SessionBlueprint(
-      sessionName,
+      normalized.sessionName,
       recordedExercises.map((e) => e.blueprint),
       '',
     );
 
-    sessions.push(
+    result.push(
       new Session(
-        sessionIdFromCsvContent(dateKey, idPayload),
+        sessionIdFromCsvContent(normalized.contentDateKey, idPayload),
         sessionBlueprint,
         recordedExercises,
-        date,
-        undefined,
+        normalized.date,
+        normalized.bodyweight,
         undefined,
       ),
     );
   }
 
-  return sessions;
+  return result;
 }

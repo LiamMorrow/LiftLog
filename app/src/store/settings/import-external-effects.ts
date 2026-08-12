@@ -2,7 +2,7 @@ import { showSnackbar } from '@/store/app';
 import { importBackupData, importFromExternal } from '@/store/settings';
 import { AddEffectFn } from '@/store/store';
 import { setStatsIsDirty } from '@/store/stats';
-import { getImportForFitNotes, getImportForStrongLifts } from '@/services/csv-import';
+import { getExternalImporter } from '@/services/csv-import';
 import { WeightUnit } from '@/models/weight';
 
 export function addImportExternalEffects(addEffect: AddEffectFn) {
@@ -17,20 +17,7 @@ export function addImportExternalEffects(addEffect: AddEffectFn) {
       const defaultWeightUnit: WeightUnit = getState().settings.useImperialUnits ? 'pounds' : 'kilograms';
 
       try {
-        let backupData;
-        switch (format) {
-          case 'CSV':
-            backupData = getImportForFitNotes(file.bytes, { defaultWeightUnit });
-            break;
-          case 'StrongLifts':
-            backupData = getImportForStrongLifts(file.bytes, { defaultWeightUnit });
-            break;
-          default: {
-            const _exhaustive: never = format;
-            void _exhaustive;
-            throw new Error('Unsupported import format');
-          }
-        }
+        const backupData = getExternalImporter(format)(file.bytes, { defaultWeightUnit });
 
         // Content-derived session ids: skip any workout already present so re-importing
         // the same rows is a no-op; new/changed set content still imports.
@@ -55,6 +42,7 @@ export function addImportExternalEffects(addEffect: AddEffectFn) {
             }),
           }),
         );
+        // History merge only: full restore via importBackupData leaves stats dirty handling unchanged.
         dispatch(setStatsIsDirty(true));
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);

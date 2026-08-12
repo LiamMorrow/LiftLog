@@ -3,6 +3,7 @@ import Form from '@/components/presentation/foundation/form';
 import LabelledFormRow from '@/components/presentation/foundation/labelled-form-row';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
+import { EXTERNAL_IMPORT_FORMATS } from '@/services/csv-import';
 import { ExternalImportFormat, importFromExternal } from '@/store/settings';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
@@ -16,7 +17,7 @@ import { useDispatch } from 'react-redux';
 export default function ImportFromOtherAppsPage() {
   const { t } = useTranslate();
   const dispatch = useDispatch();
-  const [format, setFormat] = useState<ExternalImportFormat>('CSV');
+  const [format, setFormat] = useState<ExternalImportFormat>('FitNotes');
   const importData = () => {
     dispatch(importFromExternal({ format }));
   };
@@ -41,10 +42,10 @@ export default function ImportFromOtherAppsPage() {
       <Form>
         <LabelledFormRow label={t('backup.import_from_other_apps.format.label')} icon={'descriptionFill'}>
           <Dropdown
-            options={[
-              { label: 'FitNotes-style CSV', value: 'CSV' },
-              { label: 'StrongLifts-style CSV', value: 'StrongLifts' },
-            ]}
+            options={EXTERNAL_IMPORT_FORMATS.map((f) => ({
+              label: t(f.labelKey),
+              value: f.id,
+            }))}
             value={format}
             mode="outlined"
             onSelect={(s) => s && setFormat(s as ExternalImportFormat)}

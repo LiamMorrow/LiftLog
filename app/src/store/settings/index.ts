@@ -2,6 +2,7 @@ import { LiftLog } from '@/gen/proto';
 import { whatsNewEntries, WhatsNewEntry } from '@/models/whats-new';
 import type { RootState } from '@/store';
 import { BackupData, FeedBackupData } from '@/models/backup';
+import type { ExternalImportFormat } from '@/services/csv-import';
 import { WeightUnit } from '@/models/weight';
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SQLiteDatabase } from 'expo-sqlite';
@@ -18,6 +19,7 @@ import {
 
 export type { ColorSchemeSeed } from './codecs';
 export type { RemoteBackupSettings, LastBackup };
+export type { ExternalImportFormat };
 
 type PreferenceState = { [K in PrefKey]: PrefValue<K> };
 type SettingsState = PreferenceState & { isHydrated: boolean };
@@ -63,9 +65,6 @@ export const beginFeedImport = createAction<FeedBackupData>('beginFeedImport');
 export const exportData = createAction<{ includeFeed: boolean }>('exportData');
 
 export const exportPlainText = createAction<{ format: PlaintextExportFormat }>('exportPlainText');
-
-/** Formats supported by Settings → Import from other apps. */
-export type ExternalImportFormat = 'CSV' | 'StrongLifts';
 
 /** Pick a third-party export file and merge history via importBackupData. */
 export const importFromExternal = createAction<{ format: ExternalImportFormat }>('importFromExternal');

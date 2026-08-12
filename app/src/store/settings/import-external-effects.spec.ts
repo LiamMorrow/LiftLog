@@ -1,10 +1,11 @@
-import { importBackupData, importFromExternal } from '@/store/settings';
+import { importBackupData, importFromExternal, ExternalImportFormat } from '@/store/settings';
 import { addImportExternalEffects } from '@/store/settings/import-external-effects';
 import { getImportForFitNotes, getImportForStrongLifts } from '@/services/csv-import';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { describe, expect, it, vi } from 'vitest';
 import { showSnackbar } from '@/store/app';
 import { setStatsIsDirty } from '@/store/stats';
+import { Session } from '@/models/session-models';
 
 const sampleCsv = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
 2026-08-08,Bench Press,Chest,60,kgs,8,,,,
@@ -16,33 +17,62 @@ const sampleStrongLiftsCsv = `Date (yyyy/mm/dd),Workout,Workout Name,Program Nam
 2026/08/11,1,"Workout A","Stronglifts 5×5",83.5,"Bench Press","",5,70,5,70
 `;
 
-describe('import-external-effects', () => {
-  it('picks a CSV and dispatches importBackupData with FitNotes-shaped BackupData', async () => {
-    const testBed = createAddEffectTestBed({
-      initialState: {
-        settings: { useImperialUnits: false },
-        storedSessions: { sessions: {} },
-      },
-      services: {
-        filePickerService: {
-          pickFile: vi.fn().mockResolvedValue({
-            name: 'workout_export.csv',
-            bytes: new TextEncoder().encode(sampleCsv),
-          }),
-        },
-        tolgee: {
-          t: (key: string, params?: { count?: number; error?: string }) => {
-            if (key === 'backup.import_from_other_apps.complete.message') {
-              return `Imported ${params?.count} workout(s)`;
-            }
-            return key;
-          },
-        },
-      },
-    });
+type BedOpts = {
+  format: ExternalImportFormat;
+  bytes: Uint8Array;
+  sessions?: Record<string, Session>;
+  imperial?: boolean;
+  tolgee?: (key: string, params?: { count?: number; error?: string }) => string;
+};
 
-    addImportExternalEffects(testBed.addEffect);
-    await testBed.dispatchHandled(importFromExternal({ format: 'CSV' }));
+function makeExternalImportBed({
+  format: _format,
+  bytes,
+  sessions = {},
+  imperial = false,
+  tolgee,
+}: BedOpts) {
+  const defaultTolgee = (key: string, params?: { count?: number; error?: string }) => {
+    if (key === 'backup.import_from_other_apps.complete.message') {
+      return `Imported ${params?.count} workout(s)`;
+    }
+    if (key === 'backup.import_from_other_apps.already_imported.message') {
+      return 'Those workouts are already in History';
+    }
+    if (key === 'backup.import_from_other_apps.failed.message') {
+      return `Could not import: ${params?.error}`;
+    }
+    return key;
+  };
+
+  const testBed = createAddEffectTestBed({
+    initialState: {
+      settings: { useImperialUnits: imperial },
+      storedSessions: { sessions },
+    },
+    services: {
+      filePickerService: {
+        pickFile: vi.fn().mockResolvedValue({
+          name: 'import.csv',
+          bytes,
+        }),
+      },
+      tolgee: {
+        t: tolgee ?? defaultTolgee,
+      },
+    },
+  });
+  addImportExternalEffects(testBed.addEffect);
+  return testBed;
+}
+
+describe('import-external-effects', () => {
+  it('picks a FitNotes CSV and dispatches importBackupData', async () => {
+    const testBed = makeExternalImportBed({
+      format: 'FitNotes',
+      bytes: new TextEncoder().encode(sampleCsv),
+    });
+    await testBed.dispatchHandled(importFromExternal({ format: 'FitNotes' }));
 
     const imported = testBed.getDispatchedAction(importBackupData);
     expect(imported.payload.workouts).toHaveLength(1);
@@ -50,39 +80,26 @@ describe('import-external-effects', () => {
     expect(imported.payload.workouts[0]!.recordedExercises).toHaveLength(2);
     expect(imported.payload.programs).toEqual({});
     expect(imported.payload.successMessage).toBe('Imported 1 workout(s)');
-
     expect(testBed.getDispatchedAction(setStatsIsDirty).payload).toBe(true);
   });
 
-  it('skips import when all sessions from the file already exist', async () => {
-    const backup = getImportForFitNotes(new TextEncoder().encode(sampleCsv));
-    const existing = Object.fromEntries(backup.workouts.map((w) => [w.id, w]));
-
-    const testBed = createAddEffectTestBed({
-      initialState: {
-        settings: { useImperialUnits: false },
-        storedSessions: { sessions: existing },
-      },
-      services: {
-        filePickerService: {
-          pickFile: vi.fn().mockResolvedValue({
-            name: 'workout_export.csv',
-            bytes: new TextEncoder().encode(sampleCsv),
-          }),
-        },
-        tolgee: {
-          t: (key: string) => {
-            if (key === 'backup.import_from_other_apps.already_imported.message') {
-              return 'Those workouts are already in History';
-            }
-            return key;
-          },
-        },
-      },
-    });
-
-    addImportExternalEffects(testBed.addEffect);
-    await testBed.dispatchHandled(importFromExternal({ format: 'CSV' }));
+  it.each([
+    {
+      name: 'FitNotes',
+      format: 'FitNotes' as const,
+      bytes: () => new TextEncoder().encode(sampleCsv),
+      backup: () => getImportForFitNotes(new TextEncoder().encode(sampleCsv)),
+    },
+    {
+      name: 'StrongLifts',
+      format: 'StrongLifts' as const,
+      bytes: () => new TextEncoder().encode(sampleStrongLiftsCsv),
+      backup: () => getImportForStrongLifts(new TextEncoder().encode(sampleStrongLiftsCsv)),
+    },
+  ] as const)('skips import when all $name sessions already exist', async ({ format, bytes, backup }) => {
+    const existing = Object.fromEntries(backup().workouts.map((w) => [w.id, w]));
+    const testBed = makeExternalImportBed({ format, bytes: bytes(), sessions: existing });
+    await testBed.dispatchHandled(importFromExternal({ format }));
 
     expect(() => testBed.getDispatchedAction(importBackupData)).toThrow();
     expect(() => testBed.getDispatchedAction(setStatsIsDirty)).toThrow();
@@ -99,31 +116,12 @@ describe('import-external-effects', () => {
     const all = getImportForFitNotes(new TextEncoder().encode(multiDayCsv));
     const firstOnly = Object.fromEntries([[all.workouts[0]!.id, all.workouts[0]!]]);
 
-    const testBed = createAddEffectTestBed({
-      initialState: {
-        settings: { useImperialUnits: false },
-        storedSessions: { sessions: firstOnly },
-      },
-      services: {
-        filePickerService: {
-          pickFile: vi.fn().mockResolvedValue({
-            name: 'workout_export.csv',
-            bytes: new TextEncoder().encode(multiDayCsv),
-          }),
-        },
-        tolgee: {
-          t: (key: string, params?: { count?: number }) => {
-            if (key === 'backup.import_from_other_apps.complete.message') {
-              return `Imported ${params?.count} workout(s)`;
-            }
-            return key;
-          },
-        },
-      },
+    const testBed = makeExternalImportBed({
+      format: 'FitNotes',
+      bytes: new TextEncoder().encode(multiDayCsv),
+      sessions: firstOnly,
     });
-
-    addImportExternalEffects(testBed.addEffect);
-    await testBed.dispatchHandled(importFromExternal({ format: 'CSV' }));
+    await testBed.dispatchHandled(importFromExternal({ format: 'FitNotes' }));
 
     const imported = testBed.getDispatchedAction(importBackupData);
     expect(imported.payload.workouts).toHaveLength(1);
@@ -132,31 +130,11 @@ describe('import-external-effects', () => {
   });
 
   it('shows an error snackbar for invalid CSV and does not import', async () => {
-    const testBed = createAddEffectTestBed({
-      initialState: {
-        settings: { useImperialUnits: false },
-        storedSessions: { sessions: {} },
-      },
-      services: {
-        filePickerService: {
-          pickFile: vi.fn().mockResolvedValue({
-            name: 'bad.csv',
-            bytes: new TextEncoder().encode('not,a,valid,file\n1,2,3,4\n'),
-          }),
-        },
-        tolgee: {
-          t: (key: string, params?: { error?: string }) => {
-            if (key === 'backup.import_from_other_apps.failed.message') {
-              return `Could not import: ${params?.error}`;
-            }
-            return key;
-          },
-        },
-      },
+    const testBed = makeExternalImportBed({
+      format: 'FitNotes',
+      bytes: new TextEncoder().encode('not,a,valid,file\n1,2,3,4\n'),
     });
-
-    addImportExternalEffects(testBed.addEffect);
-    await testBed.dispatchHandled(importFromExternal({ format: 'CSV' }));
+    await testBed.dispatchHandled(importFromExternal({ format: 'FitNotes' }));
 
     expect(() => testBed.getDispatchedAction(importBackupData)).toThrow();
     expect(testBed.getDispatchedAction(showSnackbar).payload.text).toMatch(/Could not import:/);
@@ -173,37 +151,17 @@ describe('import-external-effects', () => {
     });
 
     addImportExternalEffects(testBed.addEffect);
-    await testBed.dispatchHandled(importFromExternal({ format: 'CSV' }));
+    await testBed.dispatchHandled(importFromExternal({ format: 'FitNotes' }));
 
     expect(() => testBed.getDispatchedAction(importBackupData)).toThrow();
     expect(() => testBed.getDispatchedAction(showSnackbar)).toThrow();
   });
 
   it('picks a StrongLifts CSV and dispatches importBackupData', async () => {
-    const testBed = createAddEffectTestBed({
-      initialState: {
-        settings: { useImperialUnits: false },
-        storedSessions: { sessions: {} },
-      },
-      services: {
-        filePickerService: {
-          pickFile: vi.fn().mockResolvedValue({
-            name: 'stronglifts.csv',
-            bytes: new TextEncoder().encode(sampleStrongLiftsCsv),
-          }),
-        },
-        tolgee: {
-          t: (key: string, params?: { count?: number; error?: string }) => {
-            if (key === 'backup.import_from_other_apps.complete.message') {
-              return `Imported ${params?.count} workout(s)`;
-            }
-            return key;
-          },
-        },
-      },
+    const testBed = makeExternalImportBed({
+      format: 'StrongLifts',
+      bytes: new TextEncoder().encode(sampleStrongLiftsCsv),
     });
-
-    addImportExternalEffects(testBed.addEffect);
     await testBed.dispatchHandled(importFromExternal({ format: 'StrongLifts' }));
 
     const imported = testBed.getDispatchedAction(importBackupData);
@@ -213,41 +171,5 @@ describe('import-external-effects', () => {
     expect(imported.payload.programs).toEqual({});
     expect(imported.payload.successMessage).toBe('Imported 1 workout(s)');
     expect(testBed.getDispatchedAction(setStatsIsDirty).payload).toBe(true);
-  });
-
-  it('skips StrongLifts sessions already present in History', async () => {
-    const backup = getImportForStrongLifts(new TextEncoder().encode(sampleStrongLiftsCsv));
-    const existing = Object.fromEntries(backup.workouts.map((w) => [w.id, w]));
-
-    const testBed = createAddEffectTestBed({
-      initialState: {
-        settings: { useImperialUnits: false },
-        storedSessions: { sessions: existing },
-      },
-      services: {
-        filePickerService: {
-          pickFile: vi.fn().mockResolvedValue({
-            name: 'stronglifts.csv',
-            bytes: new TextEncoder().encode(sampleStrongLiftsCsv),
-          }),
-        },
-        tolgee: {
-          t: (key: string) => {
-            if (key === 'backup.import_from_other_apps.already_imported.message') {
-              return 'Those workouts are already in History';
-            }
-            return key;
-          },
-        },
-      },
-    });
-
-    addImportExternalEffects(testBed.addEffect);
-    await testBed.dispatchHandled(importFromExternal({ format: 'StrongLifts' }));
-
-    expect(() => testBed.getDispatchedAction(importBackupData)).toThrow();
-    expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe(
-      'Those workouts are already in History',
-    );
   });
 });

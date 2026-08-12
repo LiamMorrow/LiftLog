@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  getImportForStrongLifts,
-  importStrongLiftsCsvText,
-  parseStrongLiftsCsv,
-} from '@/services/csv-import';
+import { getImportForStrongLifts } from '@/services/csv-import';
+import { parseStrongLiftsCsv } from '@/services/csv-import/stronglifts-csv';
 import { RecordedWeightedExercise, Session } from '@/models/session-models';
 
 /** Excerpt shaped like a real StrongLifts export (see tests/csv-import-test-files/). */
@@ -15,6 +12,10 @@ const sampleStrongLiftsCsv = `Date (yyyy/mm/dd),Workout,Workout Name,Program Nam
 2026/08/11,2,"Workout B","Stronglifts 5×5",83.5,"Overhead Press",5/5/0/5/5,,5×30,34.7,20,600,1670.0,0.0086111,10:57 PM,10:57 PM,"",5,30,5,30,0,30,5,30,5,30
 2026/08/11,2,"Workout B","Stronglifts 5×5",83.5,"Deadlift",1×4,,4×75,84,4,300,1670.0,0.0086111,10:57 PM,10:57 PM,"",4,75,,,,,,,,
 `;
+
+function importSample(csv: string = sampleStrongLiftsCsv) {
+  return getImportForStrongLifts(new TextEncoder().encode(csv));
+}
 
 describe('parseStrongLiftsCsv', () => {
   it('parses exercise rows and expands set columns', () => {
@@ -53,18 +54,14 @@ describe('parseStrongLiftsCsv', () => {
   });
 });
 
-describe('importStrongLiftsCsvText', () => {
+describe('getImportForStrongLifts', () => {
   it('builds two sessions for A/B on the same day', () => {
-    const result = importStrongLiftsCsvText(sampleStrongLiftsCsv);
-    expect(result.ok).toBe(true);
-    if (!result.ok) {
-      return;
-    }
-    expect(result.sessions).toHaveLength(2);
-    expect(result.sessions.map((s) => s.blueprint.name)).toEqual(['Workout A', 'Workout B']);
-    expect(result.sessions.every((s) => s.date.toString() === '2026-08-11')).toBe(true);
+    const backup = importSample();
+    expect(backup.workouts).toHaveLength(2);
+    expect(backup.workouts.map((s) => s.blueprint.name)).toEqual(['Workout A', 'Workout B']);
+    expect(backup.workouts.every((s) => s.date.toString() === '2026-08-11')).toBe(true);
 
-    const workoutA = result.sessions[0]!;
+    const workoutA = backup.workouts[0]!;
     expect(workoutA.recordedExercises.map((e) => e.blueprint.name)).toEqual([
       'Squat',
       'Bench Press',
@@ -87,7 +84,7 @@ describe('importStrongLiftsCsvText', () => {
     expect(row.notes).toBe('form note');
     expect(row.potentialSets).toHaveLength(5);
 
-    const workoutB = result.sessions[1]!;
+    const workoutB = backup.workouts[1]!;
     expect(workoutB.recordedExercises.map((e) => e.blueprint.name)).toEqual([
       'Squat',
       'Overhead Press',
@@ -100,55 +97,38 @@ describe('importStrongLiftsCsvText', () => {
   });
 
   it('round-trips through Session.toJSON / fromJSON', () => {
-    const result = importStrongLiftsCsvText(sampleStrongLiftsCsv);
-    expect(result.ok).toBe(true);
-    if (!result.ok) {
-      return;
-    }
-    const json = result.sessions[0]!.toJSON();
-    const rebuilt = Session.fromJSON(json);
-    expect(rebuilt.equals(result.sessions[0])).toBe(true);
+    const session = importSample().workouts[0]!;
+    const rebuilt = Session.fromJSON(session.toJSON());
+    expect(rebuilt.equals(session)).toBe(true);
   });
 
   it('assigns stable session ids for identical content', () => {
-    const a = importStrongLiftsCsvText(sampleStrongLiftsCsv);
-    const b = importStrongLiftsCsvText(sampleStrongLiftsCsv);
-    expect(a.ok && b.ok).toBe(true);
-    if (!a.ok || !b.ok) {
-      return;
-    }
-    expect(a.sessions[0]!.id).toBe(b.sessions[0]!.id);
-    expect(a.sessions[1]!.id).toBe(b.sessions[1]!.id);
-    expect(a.sessions[0]!.id).not.toBe(a.sessions[1]!.id);
+    const a = importSample();
+    const b = importSample();
+    expect(a.workouts[0]!.id).toBe(b.workouts[0]!.id);
+    expect(a.workouts[1]!.id).toBe(b.workouts[1]!.id);
+    expect(a.workouts[0]!.id).not.toBe(a.workouts[1]!.id);
   });
 
   it('reads pounds from LB headers', () => {
     const csv = `Date (yyyy/mm/dd),Workout,Workout Name,Program Name,Body Weight (LB),Exercise,Notes,Set 1 (Reps),Set 1 (LB),Set 2 (Reps),Set 2 (LB)
 2026/01/02,1,"Workout A","Stronglifts 5×5",180,"Squat","",5,135,5,135
 `;
-    const result = importStrongLiftsCsvText(csv);
-    expect(result.ok).toBe(true);
-    if (!result.ok) {
-      return;
-    }
-    const squat = result.sessions[0]!.recordedExercises[0] as RecordedWeightedExercise;
+    const backup = importSample(csv);
+    const squat = backup.workouts[0]!.recordedExercises[0] as RecordedWeightedExercise;
     expect(squat.potentialSets[0]!.weight.unit).toBe('pounds');
     expect(squat.potentialSets[0]!.weight.value.toNumber()).toBe(135);
-    expect(result.sessions[0]!.bodyweight?.unit).toBe('pounds');
+    expect(backup.workouts[0]!.bodyweight?.unit).toBe('pounds');
   });
-});
 
-describe('getImportForStrongLifts', () => {
   it('returns BackupData with workouts and empty programs', () => {
-    const bytes = new TextEncoder().encode(sampleStrongLiftsCsv);
-    const backup = getImportForStrongLifts(bytes);
+    const backup = importSample();
     expect(backup.workouts).toHaveLength(2);
     expect(backup.programs).toEqual({});
     expect(backup.feed).toBeUndefined();
   });
 
   it('throws on invalid CSV', () => {
-    const bytes = new TextEncoder().encode('not,valid\n1,2\n');
-    expect(() => getImportForStrongLifts(bytes)).toThrow(/Missing CSV columns/);
+    expect(() => importSample('not,valid\n1,2\n')).toThrow(/Missing CSV columns/);
   });
 });

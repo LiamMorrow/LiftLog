@@ -1,21 +1,13 @@
-import Papa from 'papaparse';
-import { SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
-import {
-  PotentialSet,
-  RecordedSet,
-  RecordedWeightedExercise,
-  Session,
-} from '@/models/session-models';
+import { cell, parseCsvTable, parseOptionalNumber } from '@/services/csv-import/csv-parse-utils';
+import { CsvImportOptions, NormalizedImportSession } from '@/services/csv-import/csv-to-sessions';
 import { Weight, WeightUnit } from '@/models/weight';
-import { sessionIdFromCsvContent, CsvImportOptions } from '@/services/csv-import/csv-to-sessions';
-import { LocalDate, LocalTime, ZoneOffset } from '@js-joda/core';
+import { LocalDate } from '@js-joda/core';
 
-/** One exercise row from a StrongLifts CSV export (sets still in columns). */
+/** One exercise row from a StrongLifts CSV export (sets already expanded). */
 export type StrongLiftsCsvRow = {
   date: string;
   workout: string;
   workoutName: string;
-  programName: string;
   bodyWeight: number | undefined;
   exercise: string;
   notes: string;
@@ -27,28 +19,6 @@ export type ParseStrongLiftsCsvResult =
   | { ok: false; error: string };
 
 const REQUIRED_HEADERS = ['Date (yyyy/mm/dd)', 'Exercise'] as const;
-
-function cell(row: Record<string, string>, ...keys: string[]): string {
-  for (const key of keys) {
-    const direct = row[key];
-    if (direct !== undefined && direct !== '') {
-      return direct.trim();
-    }
-    const found = Object.entries(row).find(([k]) => k.trim().toLowerCase() === key.toLowerCase());
-    if (found && found[1] !== undefined && found[1] !== '') {
-      return String(found[1]).trim();
-    }
-  }
-  return '';
-}
-
-function parseOptionalNumber(raw: string): number | undefined {
-  if (!raw) {
-    return undefined;
-  }
-  const n = Number(raw);
-  return Number.isFinite(n) ? n : undefined;
-}
 
 function unitFromHeaderToken(token: string): WeightUnit | undefined {
   const u = token.trim().toLowerCase();
@@ -78,10 +48,6 @@ function detectWeightUnit(fields: string[]): WeightUnit | undefined {
 
 type SetColumnPair = { index: number; repsField: string; weightField: string };
 
-/**
- * Pair `Set N (Reps)` with `Set N (<unit>)` from the header row.
- * Supports more than 5 sets if StrongLifts adds columns later.
- */
 function findSetColumns(fields: string[]): SetColumnPair[] {
   const repsByIndex = new Map<number, string>();
   const weightByIndex = new Map<number, string>();
@@ -137,27 +103,16 @@ function parseStrongLiftsDate(raw: string): LocalDate | undefined {
  * Sets with empty or 0 reps are skipped (StrongLifts uses 0 both for skips and failed sets).
  */
 export function parseStrongLiftsCsv(csvText: string): ParseStrongLiftsCsvResult {
-  const text = csvText.replace(/^\uFEFF/, '').trim();
-  if (!text) {
-    return { ok: false, error: 'CSV is empty' };
+  const table = parseCsvTable(csvText);
+  if (!table.ok) {
+    return table;
   }
 
-  const parsed = Papa.parse<Record<string, string>>(text, {
-    header: true,
-    skipEmptyLines: true,
-    transformHeader: (h) => h.trim(),
-  });
-
-  if (parsed.errors.length > 0 && (!parsed.data || parsed.data.length === 0)) {
-    return { ok: false, error: parsed.errors[0]?.message ?? 'Failed to parse CSV' };
-  }
-
-  const fields = parsed.meta.fields?.map((f) => f.trim()) ?? [];
+  const fields = table.fields;
   const missing = REQUIRED_HEADERS.filter(
     (h) => !fields.some((f) => f.toLowerCase() === h.toLowerCase()),
   );
   if (missing.length > 0) {
-    // Also accept a bare `Date` header if StrongLifts ever drops the format hint.
     const hasDate =
       fields.some((f) => f.toLowerCase() === 'date') ||
       fields.some((f) => f.toLowerCase().startsWith('date'));
@@ -181,10 +136,7 @@ export function parseStrongLiftsCsv(csvText: string): ParseStrongLiftsCsvResult 
   const weightUnit = detectWeightUnit(fields) ?? 'kilograms';
   const rows: StrongLiftsCsvRow[] = [];
 
-  for (const raw of parsed.data) {
-    if (!raw || typeof raw !== 'object') {
-      continue;
-    }
+  for (const raw of table.data) {
     const date = cell(raw, 'Date (yyyy/mm/dd)', 'Date');
     const exercise = cell(raw, 'Exercise');
     if (!date || !exercise) {
@@ -210,7 +162,6 @@ export function parseStrongLiftsCsv(csvText: string): ParseStrongLiftsCsvResult 
       date,
       workout: cell(raw, 'Workout'),
       workoutName: cell(raw, 'Workout Name'),
-      programName: cell(raw, 'Program Name'),
       bodyWeight: parseOptionalNumber(cell(raw, 'Body Weight (KG)', 'Body Weight (LB)', 'Body Weight')),
       exercise,
       notes: cell(raw, 'Notes'),
@@ -226,14 +177,14 @@ export function parseStrongLiftsCsv(csvText: string): ParseStrongLiftsCsvResult 
 }
 
 /**
- * Map StrongLifts rows to sessions.
- * Grouping key: calendar date + Workout number (multiple workouts per day stay separate).
+ * Group StrongLifts rows by date + Workout number.
+ * Workout id is part of contentDateKey so A/B on the same day get distinct stable ids.
  */
-export function strongLiftsRowsToSessions(
+export function strongLiftsRowsToNormalized(
   rows: StrongLiftsCsvRow[],
   weightUnit: WeightUnit,
   options: CsvImportOptions = {},
-): Session[] {
+): NormalizedImportSession[] {
   // Unit is encoded in StrongLifts headers (e.g. Set 1 (KG)); prefer that over app preference.
   const unit = weightUnit !== 'nil' ? weightUnit : (options.defaultWeightUnit ?? 'kilograms');
 
@@ -275,7 +226,7 @@ export function strongLiftsRowsToSessions(
     group.exercises.push(row);
   }
 
-  const sessions: Session[] = [];
+  const sessions: NormalizedImportSession[] = [];
   const sortedKeys = [...groups.keys()].sort();
 
   for (const key of sortedKeys) {
@@ -286,15 +237,6 @@ export function strongLiftsRowsToSessions(
       options.sessionName ||
       'Imported';
 
-    const recordedExercises: RecordedWeightedExercise[] = [];
-    const idPayload: {
-      name: string;
-      notes: string | undefined;
-      sets: { reps: number; weight: number; unit: WeightUnit }[];
-    }[] = [];
-    let setOrdinal = 0;
-
-    // Preserve first-seen exercise order; merge duplicate exercise names in order of appearance.
     const exerciseOrder: string[] = [];
     const byExercise = new Map<string, StrongLiftsCsvRow[]>();
     for (const row of group.exercises) {
@@ -305,64 +247,35 @@ export function strongLiftsRowsToSessions(
       byExercise.get(row.exercise)!.push(row);
     }
 
-    for (const exerciseName of exerciseOrder) {
+    const exercises = exerciseOrder.flatMap((exerciseName) => {
       const exerciseRows = byExercise.get(exerciseName)!;
       const allSets = exerciseRows.flatMap((r) => r.sets);
       if (allSets.length === 0) {
-        continue;
+        return [];
       }
       const noteParts = exerciseRows.map((r) => r.notes.trim()).filter(Boolean);
       const notes = noteParts.length > 0 ? noteParts.join('\n') : undefined;
-      const firstReps = allSets[0]?.reps ?? 10;
-      const blueprint = WeightedExerciseBlueprint.empty().with({
-        name: exerciseName,
-        sets: allSets.length,
-        repsConfig: { type: 'fixed', reps: firstReps },
-      });
+      return [
+        {
+          name: exerciseName,
+          notes,
+          sets: allSets.map((set) => ({ reps: set.reps, weight: set.weight, unit })),
+        },
+      ];
+    });
 
-      const setsForId: { reps: number; weight: number; unit: WeightUnit }[] = [];
-      const potentialSets = allSets.map((set) => {
-        setsForId.push({ reps: set.reps, weight: set.weight, unit });
-        const completionDateTime = group.date
-          .atTime(LocalTime.of(12, 0, 0))
-          .atOffset(ZoneOffset.UTC)
-          .plusSeconds(setOrdinal);
-        setOrdinal += 1;
-        return new PotentialSet(
-          new RecordedSet(set.reps, completionDateTime),
-          new Weight(set.weight, unit),
-        );
-      });
-
-      idPayload.push({ name: exerciseName, notes, sets: setsForId });
-      recordedExercises.push(new RecordedWeightedExercise(blueprint, potentialSets, notes));
-    }
-
-    if (recordedExercises.length === 0) {
+    if (exercises.length === 0) {
       continue;
     }
 
-    const sessionBlueprint = new SessionBlueprint(
+    sessions.push({
+      contentDateKey: `${group.dateKey}|w${group.workout || '0'}`,
+      date: group.date,
       sessionName,
-      recordedExercises.map((e) => e.blueprint),
-      '',
-    );
-
-    const bodyweight =
-      group.bodyWeight !== undefined ? new Weight(group.bodyWeight, unit) : undefined;
-
-    // Include workout id in the content key so A/B on the same day get distinct stable ids.
-    const contentDateKey = `${group.dateKey}|w${group.workout || '0'}`;
-    sessions.push(
-      new Session(
-        sessionIdFromCsvContent(contentDateKey, idPayload),
-        sessionBlueprint,
-        recordedExercises,
-        group.date,
-        bodyweight,
-        undefined,
-      ),
-    );
+      bodyweight:
+        group.bodyWeight !== undefined ? new Weight(group.bodyWeight, unit) : undefined,
+      exercises,
+    });
   }
 
   return sessions;
