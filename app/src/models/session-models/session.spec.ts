@@ -587,6 +587,54 @@ describe('Session.withEditedExercise', () => {
       expect(sets[1]!.target).toEqual({ min: 15, max: 15 });
       expect(sets[2]!.target).toEqual({ min: 15, max: 15 });
     });
+
+    it('keeps a target that has climbed past the plan when the edit was about something else', () => {
+      const bp = makeWeightedBlueprint({ name: 'Crunches', resistance: 'none', sets: 2 });
+      const climbed = { min: 13, max: 13 };
+      const exercise = new RecordedWeightedExercise(
+        bp,
+        [emptyPotentialSet(0, climbed), emptyPotentialSet(0, climbed)],
+        undefined,
+      );
+      const session = new Session(
+        uuid(),
+        new SessionBlueprint('Test', [bp], ''),
+        [exercise],
+        LocalDate.of(2025, 4, 5),
+        undefined,
+        undefined,
+      );
+
+      const renotedBp = bp.with({ notes: 'brace' });
+      const sets = (session.withEditedExercise(0, renotedBp, false).recordedExercises[0]! as RecordedWeightedExercise)
+        .potentialSets;
+
+      expect(sets.map((s) => s.target)).toEqual([climbed, climbed]);
+    });
+
+    it('seeds an added set from the plan without pulling the others back to it', () => {
+      const bp = makeWeightedBlueprint({ name: 'Crunches', resistance: 'none', sets: 2 });
+      const climbed = { min: 13, max: 13 };
+      const exercise = new RecordedWeightedExercise(
+        bp,
+        [emptyPotentialSet(0, climbed), emptyPotentialSet(0, climbed)],
+        undefined,
+      );
+      const session = new Session(
+        uuid(),
+        new SessionBlueprint('Test', [bp], ''),
+        [exercise],
+        LocalDate.of(2025, 4, 5),
+        undefined,
+        undefined,
+      );
+
+      const sets = (
+        session.withEditedExercise(0, bp.withSets(3), false).recordedExercises[0]! as RecordedWeightedExercise
+      ).potentialSets;
+
+      expect(sets.map((s) => s.target)).toEqual([climbed, climbed, { min: 10, max: 10 }]);
+    });
   });
 
   describe('same type: cardio → cardio', () => {

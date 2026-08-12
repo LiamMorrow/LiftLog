@@ -1,6 +1,7 @@
 import {
   CardioExerciseBlueprint,
   ExerciseBlueprint,
+  repsTargetsEqual,
   SessionBlueprint,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
@@ -152,13 +153,19 @@ export class Session {
           weightedExistingExercise.with({
             blueprint: newBlueprint as WeightedExerciseBlueprint,
             // A set you already logged was chasing the target it was chasing, so only unrecorded
-            // sets take the edited blueprint's targets.
+            // sets take the edited blueprint's targets - and only where the edit actually moved
+            // them. A carried target can sit above what the plan asks for, and changing the notes
+            // is not a request to hand that back.
             potentialSets: (newBlueprint as WeightedExerciseBlueprint).plannedSets.map((planned, index) => {
               const existing = weightedExistingExercise.potentialSets.at(index);
               if (!existing) {
                 return new PotentialSet(undefined, weightedExistingExercise.maxWeight, planned.reps);
               }
-              return existing.set ? existing : existing.with({ target: planned.reps });
+              const plannedBefore = weightedExistingExercise.blueprint.repsTargetForSet(index);
+              if (existing.set || repsTargetsEqual(planned.reps, plannedBefore)) {
+                return existing;
+              }
+              return existing.with({ target: planned.reps });
             }),
           }),
         );

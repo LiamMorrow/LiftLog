@@ -684,8 +684,12 @@ export function uniformTarget(plannedSets: PlannedSet[]): RepsTarget | undefined
   return plannedSets.every((s) => s.reps.min === first.min && s.reps.max === first.max) ? first : undefined;
 }
 
+export function repsTargetsEqual(a: RepsTarget, b: RepsTarget): boolean {
+  return a.min === b.min && a.max === b.max;
+}
+
 export function plannedSetsEqual(a: PlannedSet[], b: PlannedSet[]): boolean {
-  return a.length === b.length && a.every((s, i) => s.reps.min === b[i]!.reps.min && s.reps.max === b[i]!.reps.max);
+  return a.length === b.length && a.every((s, i) => repsTargetsEqual(s.reps, b[i]!.reps));
 }
 
 /**
