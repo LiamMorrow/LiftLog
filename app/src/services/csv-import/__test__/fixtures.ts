@@ -4,6 +4,7 @@ import { join } from 'node:path';
 export type CsvImportFixtureName =
   | 'fitnotes-android-export-kgs.csv'
   | 'fitnotes-android-export-lbs.csv'
+  | 'fitnotes-android-export-lbs-edge-cases.csv'
   | 'stronglifts-export-kg.csv'
   | 'stronglifts-export-lb.csv';
 

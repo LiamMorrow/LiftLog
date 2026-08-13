@@ -130,4 +130,33 @@ describe('getImportForFitNotes', () => {
   it('throws on invalid CSV', () => {
     expect(() => importSample('not,valid\n1,2\n')).toThrow(/Missing CSV columns/);
   });
+
+  it('skips rows that set distance or time without a complete weight+reps pair', () => {
+    const backup = getImportForFitNotes(
+      csvImportFixtureBytes('fitnotes-android-export-lbs-edge-cases.csv'),
+    );
+    expect(backup.workouts.map((s) => s.date.toString())).toEqual(['2026-08-04', '2026-08-05']);
+    expect(backup.workouts[0]!.recordedExercises).toHaveLength(5);
+    expect(backup.workouts[1]!.recordedExercises).toHaveLength(3);
+  });
+
+  it('keeps weighted sets on a day that also has distance-only rows', () => {
+    const csv = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
+2026-08-08,Incline Dumbbell Bench Press,Chest,12.5,kgs,12,,,,
+2026-08-08,Cycling,Cardio,,,,30.0,km,,
+`;
+    const backup = importSample(csv);
+    expect(backup.workouts).toHaveLength(1);
+    expect(backup.workouts[0]!.recordedExercises.map((e) => e.blueprint.name)).toEqual([
+      'Incline Dumbbell Bench Press',
+    ]);
+  });
+
+  it('throws when every row is missing weight or reps', () => {
+    const csv = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
+2026-08-13,Cycling,Cardio,,,,30.0,km,,
+2026-08-13,Running (Outdoor),Cardio,,,,,,0:10:00,
+`;
+    expect(() => importSample(csv)).toThrow(/No weighted sets found to import/);
+  });
 });
