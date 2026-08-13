@@ -7,7 +7,6 @@ export type ExternalImportFormat = 'FitNotes' | 'StrongLifts';
 
 export type ExternalImportFormatEntry = {
   id: ExternalImportFormat;
-  /** i18n key for dropdown label */
   labelKey: TranslationKey;
   import: (bytes: Uint8Array, opts?: CsvImportOptions) => BackupData;
 };
