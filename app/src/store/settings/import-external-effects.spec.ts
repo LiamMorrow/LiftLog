@@ -1,21 +1,12 @@
 import { importBackupData, importFromExternal, ExternalImportFormat } from '@/store/settings';
 import { addImportExternalEffects } from '@/store/settings/import-external-effects';
 import { getImportForFitNotes, getImportForStrongLifts } from '@/services/csv-import';
+import { csvImportFixtureBytes } from '@/services/csv-import/__test__/fixtures';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { describe, expect, it, vi } from 'vitest';
 import { showSnackbar } from '@/store/app';
 import { setStatsIsDirty } from '@/store/stats';
 import { Session } from '@/models/session-models';
-
-const sampleCsv = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
-2026-08-08,Bench Press,Chest,60,kgs,8,,,,
-2026-08-08,Squat,Legs,100,kgs,5,,,,
-`;
-
-const sampleStrongLiftsCsv = `Date (yyyy/mm/dd),Workout,Workout Name,Program Name,Body Weight (KG),Exercise,Notes,Set 1 (Reps),Set 1 (KG),Set 2 (Reps),Set 2 (KG)
-2026/08/11,1,"Workout A","Stronglifts 5×5",83.5,"Squat","",5,55,5,55
-2026/08/11,1,"Workout A","Stronglifts 5×5",83.5,"Bench Press","",5,70,5,70
-`;
 
 type BedOpts = {
   format: ExternalImportFormat;
@@ -64,16 +55,16 @@ describe('import-external-effects', () => {
   it('picks a FitNotes CSV and dispatches importBackupData', async () => {
     const testBed = makeExternalImportBed({
       format: 'FitNotes',
-      bytes: new TextEncoder().encode(sampleCsv),
+      bytes: csvImportFixtureBytes('fitnotes-android-export-kgs.csv'),
     });
     await testBed.dispatchHandled(importFromExternal({ format: 'FitNotes' }));
 
     const imported = testBed.getDispatchedAction(importBackupData);
-    expect(imported.payload.workouts).toHaveLength(1);
-    expect(imported.payload.workouts[0]!.date.toString()).toBe('2026-08-08');
-    expect(imported.payload.workouts[0]!.recordedExercises).toHaveLength(2);
+    expect(imported.payload.workouts).toHaveLength(2);
+    expect(imported.payload.workouts[0]!.date.toString()).toBe('2026-08-04');
+    expect(imported.payload.workouts[0]!.recordedExercises).toHaveLength(5);
     expect(imported.payload.programs).toEqual({});
-    expect(imported.payload.successMessage).toBe('Imported 1 workout(s)');
+    expect(imported.payload.successMessage).toBe('Imported 2 workout(s)');
     expect(testBed.getDispatchedAction(setStatsIsDirty).payload).toBe(true);
   });
 
@@ -81,14 +72,14 @@ describe('import-external-effects', () => {
     {
       name: 'FitNotes',
       format: 'FitNotes' as const,
-      bytes: () => new TextEncoder().encode(sampleCsv),
-      backup: () => getImportForFitNotes(new TextEncoder().encode(sampleCsv)),
+      bytes: () => csvImportFixtureBytes('fitnotes-android-export-kgs.csv'),
+      backup: () => getImportForFitNotes(csvImportFixtureBytes('fitnotes-android-export-kgs.csv')),
     },
     {
       name: 'StrongLifts',
       format: 'StrongLifts' as const,
-      bytes: () => new TextEncoder().encode(sampleStrongLiftsCsv),
-      backup: () => getImportForStrongLifts(new TextEncoder().encode(sampleStrongLiftsCsv)),
+      bytes: () => csvImportFixtureBytes('stronglifts-export-kg.csv'),
+      backup: () => getImportForStrongLifts(csvImportFixtureBytes('stronglifts-export-kg.csv')),
     },
   ] as const)('skips import when all $name sessions already exist', async ({ format, bytes, backup }) => {
     const existing = Object.fromEntries(backup().workouts.map((w) => [w.id, w]));
@@ -122,16 +113,12 @@ describe('import-external-effects', () => {
   });
 
   it('imports only sessions not already in History', async () => {
-    const multiDayCsv = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
-2026-08-07,Bench Press,Chest,60,kgs,8,,,,
-2026-08-08,Squat,Legs,100,kgs,5,,,,
-`;
-    const all = getImportForFitNotes(new TextEncoder().encode(multiDayCsv));
+    const all = getImportForFitNotes(csvImportFixtureBytes('fitnotes-android-export-kgs.csv'));
     const firstOnly = Object.fromEntries([[all.workouts[0]!.id, all.workouts[0]!]]);
 
     const testBed = makeExternalImportBed({
       format: 'FitNotes',
-      bytes: new TextEncoder().encode(multiDayCsv),
+      bytes: csvImportFixtureBytes('fitnotes-android-export-kgs.csv'),
       sessions: firstOnly,
     });
     await testBed.dispatchHandled(importFromExternal({ format: 'FitNotes' }));
@@ -139,6 +126,7 @@ describe('import-external-effects', () => {
     const imported = testBed.getDispatchedAction(importBackupData);
     expect(imported.payload.workouts).toHaveLength(1);
     expect(imported.payload.workouts[0]!.id).toBe(all.workouts[1]!.id);
+    expect(imported.payload.workouts[0]!.date.toString()).toBe('2026-08-05');
     expect(imported.payload.successMessage).toBe('Imported 1 workout(s)');
   });
 
@@ -173,16 +161,16 @@ describe('import-external-effects', () => {
   it('picks a StrongLifts CSV and dispatches importBackupData', async () => {
     const testBed = makeExternalImportBed({
       format: 'StrongLifts',
-      bytes: new TextEncoder().encode(sampleStrongLiftsCsv),
+      bytes: csvImportFixtureBytes('stronglifts-export-kg.csv'),
     });
     await testBed.dispatchHandled(importFromExternal({ format: 'StrongLifts' }));
 
     const imported = testBed.getDispatchedAction(importBackupData);
-    expect(imported.payload.workouts).toHaveLength(1);
+    expect(imported.payload.workouts).toHaveLength(5);
     expect(imported.payload.workouts[0]!.blueprint.name).toBe('Workout A');
-    expect(imported.payload.workouts[0]!.recordedExercises).toHaveLength(2);
+    expect(imported.payload.workouts[0]!.recordedExercises).toHaveLength(3);
     expect(imported.payload.programs).toEqual({});
-    expect(imported.payload.successMessage).toBe('Imported 1 workout(s)');
+    expect(imported.payload.successMessage).toBe('Imported 5 workout(s)');
     expect(testBed.getDispatchedAction(setStatsIsDirty).payload).toBe(true);
   });
 });

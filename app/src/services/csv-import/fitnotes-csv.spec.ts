@@ -1,46 +1,32 @@
 import { describe, expect, it } from 'vitest';
 import { getImportForFitNotes } from '@/services/csv-import';
 import { parseFitNotesCsv } from '@/services/csv-import/fitnotes-csv';
+import { csvImportFixtureBytes, readCsvImportFixture } from '@/services/csv-import/__test__/fixtures';
 import { RecordedWeightedExercise, Session } from '@/models/session-models';
 
-const sampleFitNotesCsv = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
-
-2026-08-08,Incline Dumbbell Bench Press,Chest,12.5,kgs,12,,,,""
-2026-08-08,Incline Dumbbell Bench Press,Chest,40.0,kgs,12,,,,""
-2026-08-08,Incline Dumbbell Bench Press,Chest,35.0,kgs,12,,,,""
-2026-08-08,Incline Dumbbell Bench Press,Chest,25.0,kgs,8,,,,"Dropset incomplete"
-2026-08-08,EZ-Bar Preacher Curl,Biceps,15.0,kgs,10,,,,""
-2026-08-08,EZ-Bar Preacher Curl,Biceps,30.0,kgs,8,,,,""
-2026-08-08,EZ-Bar Preacher Curl,Biceps,40.0,kgs,6,,,,""
-2026-08-08,EZ-Bar Preacher Curl,Biceps,30.0,kgs,3,,,,"Dropset"
-2026-08-08,EZ-Bar Preacher Curl,Biceps,20.0,kgs,2,,,,"Dropset 2"
-2026-08-08,Lateral Dumbbell Raise,Shoulders,10.0,kgs,10,,,,""
-2026-08-08,Lateral Dumbbell Raise,Shoulders,10.0,kgs,8,,,,""
-2026-08-08,Barbell Squat,Legs,20.0,kgs,10,,,,""
-2026-08-08,Barbell Squat,Legs,60.0,kgs,10,,,,""
-2026-08-08,Barbell Squat,Legs,100.0,kgs,5,,,,""
-`;
-
-function importSample(csv: string = sampleFitNotesCsv) {
-  return getImportForFitNotes(new TextEncoder().encode(csv));
+function importSample(csv?: string) {
+  return getImportForFitNotes(
+    csv !== undefined ? new TextEncoder().encode(csv) : csvImportFixtureBytes('fitnotes-android-export-kgs.csv'),
+  );
 }
 
 describe('parseFitNotesCsv', () => {
   it('parses a FitNotes-style CSV export', () => {
-    const result = parseFitNotesCsv(sampleFitNotesCsv);
+    const result = parseFitNotesCsv(readCsvImportFixture('fitnotes-android-export-kgs.csv'));
     expect(result.ok).toBe(true);
     if (!result.ok) {
       return;
     }
-    expect(result.rows).toHaveLength(14);
+    expect(result.rows).toHaveLength(38);
     expect(result.rows[0]).toMatchObject({
-      date: '2026-08-08',
-      exercise: 'Incline Dumbbell Bench Press',
-      weight: 12.5,
+      date: '2026-08-04',
+      exercise: 'Lat Pulldown',
+      weight: 35,
       weightUnit: 'kgs',
-      reps: 12,
+      reps: 10,
     });
-    expect(result.rows.find((r) => r.comment === 'Dropset incomplete')).toBeDefined();
+    expect(result.rows.find((r) => r.comment === 'testing note 1')).toBeDefined();
+    expect(result.rows.find((r) => r.comment === 'testing note 2')).toBeDefined();
   });
 
   it('rejects CSV with unexpected headers', () => {
@@ -50,38 +36,43 @@ describe('parseFitNotesCsv', () => {
 });
 
 describe('getImportForFitNotes', () => {
-  it('builds one Session for the day with four exercises', () => {
+  it('builds one Session per day with exercises grouped across non-contiguous rows', () => {
     const backup = importSample();
-    expect(backup.workouts).toHaveLength(1);
-    const session = backup.workouts[0]!;
-    expect(session.date.toString()).toBe('2026-08-08');
-    expect(session.blueprint.name).toBe('Imported from FitNotes');
-    expect(session.recordedExercises).toHaveLength(4);
+    expect(backup.workouts).toHaveLength(2);
 
-    const names = session.recordedExercises.map((e) => e.blueprint.name);
-    expect(names).toEqual([
-      'Incline Dumbbell Bench Press',
-      'EZ-Bar Preacher Curl',
-      'Lateral Dumbbell Raise',
-      'Barbell Squat',
+    const day04 = backup.workouts[0]!;
+    expect(day04.date.toString()).toBe('2026-08-04');
+    expect(day04.blueprint.name).toBe('Imported from FitNotes');
+    expect(day04.recordedExercises.map((e) => e.blueprint.name)).toEqual([
+      'Lat Pulldown',
+      'Machine Triceps Pushdown',
+      'Hammer Strength Row',
+      'Lateral Machine Raise',
+      'Hip Thrust',
     ]);
 
-    const bench = session.recordedExercises[0] as RecordedWeightedExercise;
-    expect(bench.potentialSets).toHaveLength(4);
-    expect(bench.potentialSets[0]!.weight.unit).toBe('kilograms');
-    expect(bench.potentialSets[0]!.weight.value.toNumber()).toBe(12.5);
-    expect(bench.potentialSets[0]!.set?.repsCompleted).toBe(12);
-    expect(bench.notes).toContain('Dropset incomplete');
+    const latPulldown = day04.recordedExercises[0] as RecordedWeightedExercise;
+    expect(latPulldown.potentialSets).toHaveLength(6);
+    expect(latPulldown.potentialSets[0]!.weight.unit).toBe('kilograms');
+    expect(latPulldown.potentialSets[0]!.weight.value.toNumber()).toBe(35);
+    expect(latPulldown.potentialSets[0]!.set?.repsCompleted).toBe(10);
 
-    const curls = session.recordedExercises[1] as RecordedWeightedExercise;
-    expect(curls.potentialSets).toHaveLength(5);
-    expect(curls.notes).toContain('Dropset');
-    expect(curls.notes).toContain('Dropset 2');
+    const row = day04.recordedExercises[2] as RecordedWeightedExercise;
+    expect(row.notes).toContain('testing note 1');
 
-    const squat = session.recordedExercises[3] as RecordedWeightedExercise;
-    expect(squat.potentialSets).toHaveLength(3);
-    expect(squat.potentialSets[2]!.weight.value.toNumber()).toBe(100);
-    expect(squat.potentialSets[2]!.set?.repsCompleted).toBe(5);
+    const day05 = backup.workouts[1]!;
+    expect(day05.date.toString()).toBe('2026-08-05');
+    expect(day05.recordedExercises.map((e) => e.blueprint.name)).toEqual([
+      'Bigger Incline Dumbbell Bench Press',
+      'Smith Machine Shoulder Press',
+      'Seated Machine Fly',
+    ]);
+
+    const smith = day05.recordedExercises[1] as RecordedWeightedExercise;
+    expect(smith.potentialSets).toHaveLength(3);
+
+    const fly = day05.recordedExercises[2] as RecordedWeightedExercise;
+    expect(fly.notes).toContain('testing note 2');
   });
 
   it('round-trips through Session.toJSON / fromJSON', () => {
@@ -89,25 +80,21 @@ describe('getImportForFitNotes', () => {
     const json = session.toJSON();
     expect(json.version).toBe(4);
     const rebuilt = Session.fromJSON(json);
-    expect(rebuilt.date.toString()).toBe('2026-08-08');
-    expect(rebuilt.recordedExercises).toHaveLength(4);
+    expect(rebuilt.date.toString()).toBe('2026-08-04');
+    expect(rebuilt.recordedExercises).toHaveLength(5);
     expect(rebuilt.equals(session)).toBe(true);
   });
 
   it('groups multiple dates into multiple sessions', () => {
-    const csv = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
-2026-08-07,Bench Press,Chest,60,kgs,8,,,,
-2026-08-08,Squat,Legs,100,kgs,5,,,,
-`;
-    const backup = importSample(csv);
-    expect(backup.workouts).toHaveLength(2);
-    expect(backup.workouts.map((s) => s.date.toString())).toEqual(['2026-08-07', '2026-08-08']);
+    const backup = importSample();
+    expect(backup.workouts.map((s) => s.date.toString())).toEqual(['2026-08-04', '2026-08-05']);
   });
 
   it('assigns the same session id for identical CSV content', () => {
     const a = importSample();
     const b = importSample();
     expect(a.workouts[0]!.id).toBe(b.workouts[0]!.id);
+    expect(a.workouts[1]!.id).toBe(b.workouts[1]!.id);
   });
 
   it('keeps the same session id when sets or notes on that day change', () => {
@@ -126,18 +113,16 @@ describe('getImportForFitNotes', () => {
   });
 
   it('reads lbs as pounds', () => {
-    const csv = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
-2026-08-08,Bench Press,Chest,135,lbs,8,,,,
-`;
-    const bench = importSample(csv).workouts[0]!.recordedExercises[0] as RecordedWeightedExercise;
-    expect(bench.potentialSets[0]!.weight.unit).toBe('pounds');
-    expect(bench.potentialSets[0]!.weight.value.toNumber()).toBe(135);
+    const backup = getImportForFitNotes(csvImportFixtureBytes('fitnotes-android-export-lbs.csv'));
+    const latPulldown = backup.workouts[0]!.recordedExercises[0] as RecordedWeightedExercise;
+    expect(latPulldown.potentialSets[0]!.weight.unit).toBe('pounds');
+    expect(latPulldown.potentialSets[0]!.weight.value.toNumber()).toBe(77.16);
   });
 
   it('returns BackupData with workouts and empty programs', () => {
     const backup = importSample();
-    expect(backup.workouts).toHaveLength(1);
-    expect(backup.workouts[0]!.recordedExercises).toHaveLength(4);
+    expect(backup.workouts).toHaveLength(2);
+    expect(backup.workouts[0]!.recordedExercises).toHaveLength(5);
     expect(backup.programs).toEqual({});
     expect(backup.feed).toBeUndefined();
   });
