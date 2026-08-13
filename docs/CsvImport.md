@@ -1,86 +1,90 @@
 # Import from other apps
 
-Import workout history from a third-party CSV into LiftLog sessions. This is separate from
-[Plaintext export](./PlaintextExport.md): LiftLog’s own CSV/JSON export is one-way and is not
-accepted as an import format.
+You can bring workout history from another app into LiftLog by importing a CSV export. Imported
+workouts are added to History. Nothing already in LiftLog is deleted or overwritten.
 
-## How to use
+This is not the same as [plaintext export](./PlaintextExport.md). LiftLog’s own CSV and JSON
+exports cannot be imported back in.
 
-1. In the source app, export workout history as CSV (columns for the chosen format below).
-2. In LiftLog: `Settings → Export, backup, and restore → Import from other apps`.
-3. Choose **Format**, tap **Import**, and pick the file. Workouts appear in History after a
-   successful import.
+## How to import
 
-## Behaviour
+1. In the other app, export your workout history as a CSV (see [Supported formats](#supported-formats)
+   for what the file should look like).
+2. In LiftLog, go to **Settings → Export, backup, and restore → Import from other apps**.
+3. Choose the matching **Format**, tap **Import**, and pick the file.
 
-- Rows are grouped into sessions (see each format for the grouping key).
-- Session IDs are **content-derived** (UUID v5 over date + ordered exercises/sets: reps, weight,
-  unit, notes). Re-importing the same rows is a no-op: workouts whose IDs already exist in History
-  are skipped. A larger re-export only adds sessions for new or changed set content. Deleting an
-  imported session and importing again restores it (same ID is no longer present).
-- Because **notes are part of the content id**, editing only a comment/note in the source app and
-  re-exporting can produce a **new** session id (possible duplicate next to the previous import).
-- Existing sessions and programs are not wiped; new sessions are merged via the same path as Restore
-  (`importBackupData`). Stats invalidation (`setStatsIsDirty`) runs on the external-import path only,
-  not inside full backup restore.
-- Weighted sets only (v1); cardio-only / timed-only rows are skipped.
-- Set comments / notes become exercise notes. Rest timers and progressive overload use LiftLog
-  defaults.
+After a successful import, the workouts show up in History. If every workout in the file is already
+there, LiftLog tells you nothing new was added.
 
-## Formats
+## What to expect
 
-Internal format ids (UI dropdown / `importFromExternal`): `FitNotes` | `StrongLifts`.
-(Plaintext export’s own `CSV` value is unrelated.)
+- Your existing workouts and programs stay put. Import only adds sessions.
+- Importing the same file again does not create duplicates. LiftLog recognizes a workout from its
+  day (FitNotes) or day plus workout name (StrongLifts), not from the sets or notes inside it.
+- A later export only adds workouts for days or slots that are not already in History. Changing
+  sets or comments in the other app and exporting again does not update or duplicate a workout
+  you already imported. Delete that workout in History and import again if you want the new
+  version.
+- If you delete an imported workout and import the same file again, it comes back.
+- Only weighted sets are imported. Cardio-only or timed-only rows are skipped.
+- Comments and notes from the file become exercise notes. Rest timers and progressive overload use
+  LiftLog’s usual defaults.
+
+## Supported formats
+
+Choose the format in the app that matches the file you exported.
 
 ### FitNotes-style CSV
 
-UI label: **FitNotes-style CSV** (internal format value: `FitNotes`). Portable contract is the
-FitNotes-style CSV header row (not the binary `.fitnotes` database — that format is out of scope).
+Export a CSV from FitNotes for Android (not the `.fitnotes` database file).
 
-Expected columns:
+The file should have a header row with at least **Date**, **Exercise**, **Weight**, **Weight Unit**,
+and **Reps**. A typical FitNotes CSV export also includes Category, Distance, Distance Unit, Time, and
+Comment.
 
-`Date`, `Exercise`, `Category`, `Weight`, `Weight Unit`, `Reps`, `Distance`, `Distance Unit`,
-`Time`, `Comment`
-
-Required for a successful parse: `Date`, `Exercise`, `Weight`, `Weight Unit`, `Reps`.
-
-- Grouping: **one session per calendar date** (multiple visits on the same day merge into one
-  session).
-- Weight units come from the CSV when present; missing units fall back to the app preference.
+- All sets on the same calendar day become one workout. 
+- Weight units come from the file when present; otherwise LiftLog uses your app unit preference.
 - **Imported:** date, exercise name, weight, weight unit, reps, comment.
-- **Not imported:** category, distance, distance unit, time (cardio) — headers may still appear;
-  they are ignored.
+- **Not imported:** category, distance, and time (cardio). Those columns can still be in the file.
 
 ### StrongLifts-style CSV
 
-UI label: **StrongLifts-style CSV** (internal format value: `StrongLifts`). Export from StrongLifts
-(workout history CSV). One CSV row is one exercise; individual sets are columns.
+Export workout history as CSV from StrongLifts. Each row is one exercise; individual sets are
+separate columns.
 
-Expected columns (header names from a real export):
+The file should have a date column `Date (yyyy/mm/dd)`, an `Exercise` column, and
+pairs of `Set N (Reps)` / `Set N (KG)` or `Set N (LB)` columns (N is 1, 2, 3, …). Weight unit
+is taken from those headers.
 
-`Date (yyyy/mm/dd)`, `Workout`, `Workout Name`, `Program Name`, `Body Weight (KG|LB)`, `Exercise`,
-`Sets×Reps`, `Sets×Time`, `Top Set (…)`, `e1RM (…)`, `Reps`, `Volume (…)`, `Workout Volume (…)`,
-`Duration (hours)`, `Start Time (h:mm)`, `End Time (h:mm)`, `Notes`, then repeating
-`Set N (Reps)`, `Set N (KG|LB)` (N ≥ 1; sample exports use 1–5).
-
-Required: a date column (`Date (yyyy/mm/dd)` or `Date`), `Exercise`, and at least one
-`Set N (Reps)` + `Set N (KG|LB)` pair. Weight unit is taken from those headers (KG vs LB).
-
-- Grouping: one session per **date + Workout** number (A/B on the same day stay separate).
-- Session name comes from `Workout Name`.
-- Sets with empty or **0 reps** are skipped (StrongLifts uses 0 for both skipped slots and failed
-  sets in the set columns).
+- Each date plus workout letter (A or B) is a separate session, so A and B on the same day stay
+  separate.
+- The workout name in the file becomes the session name in LiftLog.
+- Sets with empty or **0 reps** are skipped (StrongLifts uses 0 for unused slots and failed sets).
 
 | Imported | Not imported |
 |----------|----------------|
 | Date | Program name (not linked to a LiftLog plan) |
 | Workout name → session name | Sets×Reps / Sets×Time summaries |
-| Exercise name | Top set, e1RM, total reps/volume aggregates |
+| Exercise name | Top set, e1RM, total reps/volume |
 | Set reps + weight (per Set N columns) | Duration, start/end time |
 | Notes → exercise notes | Timed-only work (`Sets×Time` without weight sets) |
 | Body weight → session bodyweight | |
 
-## Implementation
+## How it works (for contributors)
+
+The in-app **Read documentation** button opens this page; the sections above are
+the user-facing guide.
+
+Rows are parsed, grouped into sessions (see each format), then turned into `BackupData` and merged
+with the same path as Restore (`importBackupData`). Session IDs are grouping-key derived: UUID v5
+over the FitNotes calendar date, or StrongLifts date + Workout id (A/B) - not Workout Name, and not
+sets or notes. Re-import skips IDs already in History (first import wins). Changing sets or comments
+in the source app and exporting again does not create a second session for that day; delete the
+imported session and import again to refresh it. Stats invalidation (`setStatsIsDirty`) runs on the
+external-import path only, not inside full backup restore.
+
+Internal format ids (UI dropdown / `importFromExternal`): `FitNotes` | `StrongLifts`. These are
+unrelated to plaintext export’s own `CSV` value.
 
 ```text
 UI dropdown  ←── EXTERNAL_IMPORT_FORMATS (id, labelKey, import)
@@ -101,5 +105,3 @@ importFromExternal({ format })
   - `csv-parse-utils.ts` — shared cell/number/Papa preamble helpers
 - Settings effect: `import-external-effects.ts` uses the registry; filters existing session IDs;
   dispatches `importBackupData` + `setStatsIsDirty` (or already-imported snackbar).
-- Local sample files (if any) live only under gitignored `tests/csv-import-test-files/`; unit tests
-  use inline CSV excerpts.
