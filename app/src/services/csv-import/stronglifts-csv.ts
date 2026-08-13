@@ -1,7 +1,7 @@
 import { cell, parseCsvTable, parseOptionalNumber } from '@/services/csv-import/csv-parse-utils';
 import { CsvImportOptions, NormalizedImportSession } from '@/services/csv-import/csv-to-sessions';
 import { Weight, WeightUnit } from '@/models/weight';
-import { LocalDate } from '@js-joda/core';
+import { DateTimeFormatter, LocalDate } from '@js-joda/core';
 
 /** One exercise row from a StrongLifts CSV export (sets already expanded). */
 export type StrongLiftsCsvRow = {
@@ -79,19 +79,12 @@ function findSetColumns(fields: string[]): SetColumnPair[] {
   return pairs;
 }
 
-/** StrongLifts dates are `yyyy/mm/dd`. */
+const STRONG_LIFTS_DATE = DateTimeFormatter.ofPattern('yyyy/MM/dd');
+
+/** StrongLifts dates are `yyyy/mm/dd`. Invalid cells are skipped by the caller. */
 function parseStrongLiftsDate(raw: string): LocalDate | undefined {
-  const trimmed = raw.trim();
-  const slash = trimmed.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
-  if (slash) {
-    try {
-      return LocalDate.of(Number(slash[1]), Number(slash[2]), Number(slash[3]));
-    } catch {
-      return undefined;
-    }
-  }
   try {
-    return LocalDate.parse(trimmed);
+    return LocalDate.parse(raw.trim(), STRONG_LIFTS_DATE);
   } catch {
     return undefined;
   }
