@@ -39,7 +39,9 @@ export function getImportForStrongLifts(contentBytes: Uint8Array, options?: CsvI
   if (!parsed.ok) {
     throw new Error(parsed.error);
   }
-  const sessions = sessionsFromNormalized(strongLiftsRowsToNormalized(parsed.rows, parsed.weightUnit, options));
+  const sessions = sessionsFromNormalized(
+    strongLiftsRowsToNormalized(parsed.rows, parsed.weightUnit, parsed.bodyWeightUnit, options),
+  );
   if (sessions.length === 0) {
     throw new Error('No weighted sets found to import');
   }

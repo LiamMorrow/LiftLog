@@ -123,15 +123,16 @@ describe('getImportForStrongLifts', () => {
     expect(importSample(renamed).workouts[0]!.blueprint.name).toBe('Heavy lower');
   });
 
-  it('reads pounds from LB headers', () => {
+  it('reads pounds from LB headers for sets and body weight', () => {
     const csv = `Date (yyyy/mm/dd),Workout,Workout Name,Program Name,Body Weight (LB),Exercise,Notes,Set 1 (Reps),Set 1 (LB),Set 2 (Reps),Set 2 (LB)
-2026/01/02,1,"Workout A","Stronglifts 5×5",180,"Squat","",5,135,5,135
+2026/01/02,1,"Workout A","Stronglifts 5×5",184,"Squat","",5,135,5,135
 `;
     const backup = importSample(csv);
     const squat = backup.workouts[0]!.recordedExercises[0] as RecordedWeightedExercise;
     expect(squat.potentialSets[0]!.weight.unit).toBe('pounds');
     expect(squat.potentialSets[0]!.weight.value.toNumber()).toBe(135);
     expect(backup.workouts[0]!.bodyweight?.unit).toBe('pounds');
+    expect(backup.workouts[0]!.bodyweight?.value.toNumber()).toBe(184);
   });
 
   it('returns BackupData with workouts and empty programs', () => {

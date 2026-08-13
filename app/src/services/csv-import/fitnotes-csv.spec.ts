@@ -125,14 +125,13 @@ describe('getImportForFitNotes', () => {
     expect(importSample(changedNotes).workouts[0]!.id).toBe(baseId);
   });
 
-  it('normalizes weight unit aliases into the same session id', () => {
-    const kgs = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
-2026-08-08,Bench Press,Chest,60,kgs,8,,,,
+  it('reads lbs as pounds', () => {
+    const csv = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
+2026-08-08,Bench Press,Chest,135,lbs,8,,,,
 `;
-    const kg = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
-2026-08-08,Bench Press,Chest,60,kg,8,,,,
-`;
-    expect(importSample(kgs).workouts[0]!.id).toBe(importSample(kg).workouts[0]!.id);
+    const bench = importSample(csv).workouts[0]!.recordedExercises[0] as RecordedWeightedExercise;
+    expect(bench.potentialSets[0]!.weight.unit).toBe('pounds');
+    expect(bench.potentialSets[0]!.weight.value.toNumber()).toBe(135);
   });
 
   it('returns BackupData with workouts and empty programs', () => {

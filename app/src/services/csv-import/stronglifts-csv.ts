@@ -15,42 +15,42 @@ export type StrongLiftsCsvRow = {
 };
 
 export type ParseStrongLiftsCsvResult =
-  | { ok: true; rows: StrongLiftsCsvRow[]; weightUnit: WeightUnit }
+  | { ok: true; rows: StrongLiftsCsvRow[]; weightUnit: WeightUnit; bodyWeightUnit: WeightUnit | undefined }
   | { ok: false; error: string };
 
 const REQUIRED_HEADERS = ['Date (yyyy/mm/dd)', 'Exercise'] as const;
 
+/** StrongLifts headers use `KG` or `LB` only (e.g. `Set 1 (KG)`, `Body Weight (LB)`). */
 function unitFromHeaderToken(token: string): WeightUnit | undefined {
   const u = token.trim().toLowerCase();
-  if (u === 'kg' || u === 'kgs' || u === 'kilogram' || u === 'kilograms') {
+  if (u === 'kg') {
     return 'kilograms';
   }
-  if (u === 'lb' || u === 'lbs' || u === 'pound' || u === 'pounds') {
+  if (u === 'lb') {
     return 'pounds';
   }
   return undefined;
 }
 
-/** Detect weight unit from headers like `Body Weight (KG)` / `Set 1 (LB)`. */
-function detectWeightUnit(fields: string[]): WeightUnit | undefined {
+function findBodyWeightColumn(fields: string[]): { field: string; unit: WeightUnit } | undefined {
   for (const field of fields) {
-    const m = field.match(/\(([^)]+)\)\s*$/);
+    const m = field.match(/^Body Weight\s*\(\s*([^)]+)\s*\)$/i);
     if (!m) {
       continue;
     }
     const unit = unitFromHeaderToken(m[1]!);
     if (unit) {
-      return unit;
+      return { field, unit };
     }
   }
   return undefined;
 }
 
-type SetColumnPair = { index: number; repsField: string; weightField: string };
+type SetColumnPair = { index: number; repsField: string; weightField: string; unit: WeightUnit };
 
 function findSetColumns(fields: string[]): SetColumnPair[] {
   const repsByIndex = new Map<number, string>();
-  const weightByIndex = new Map<number, string>();
+  const weightByIndex = new Map<number, { field: string; unit: WeightUnit }>();
 
   for (const field of fields) {
     const repsMatch = field.match(/^Set\s+(\d+)\s*\(\s*Reps\s*\)$/i);
@@ -62,7 +62,7 @@ function findSetColumns(fields: string[]): SetColumnPair[] {
     if (weightMatch && !/^reps$/i.test(weightMatch[2]!.trim())) {
       const unit = unitFromHeaderToken(weightMatch[2]!);
       if (unit) {
-        weightByIndex.set(Number(weightMatch[1]), field);
+        weightByIndex.set(Number(weightMatch[1]), { field, unit });
       }
     }
   }
@@ -71,9 +71,9 @@ function findSetColumns(fields: string[]): SetColumnPair[] {
   const pairs: SetColumnPair[] = [];
   for (const index of indices) {
     const repsField = repsByIndex.get(index);
-    const weightField = weightByIndex.get(index);
-    if (repsField && weightField) {
-      pairs.push({ index, repsField, weightField });
+    const weightCol = weightByIndex.get(index);
+    if (repsField && weightCol) {
+      pairs.push({ index, repsField, weightField: weightCol.field, unit: weightCol.unit });
     }
   }
   return pairs;
@@ -123,7 +123,8 @@ export function parseStrongLiftsCsv(csvText: string): ParseStrongLiftsCsvResult 
     };
   }
 
-  const weightUnit = detectWeightUnit(fields) ?? 'kilograms';
+  const weightUnit = setColumns[0]!.unit;
+  const bodyWeightCol = findBodyWeightColumn(fields);
   const rows: StrongLiftsCsvRow[] = [];
 
   for (const raw of table.data) {
@@ -152,7 +153,7 @@ export function parseStrongLiftsCsv(csvText: string): ParseStrongLiftsCsvResult 
       date,
       workout: cell(raw, 'Workout'),
       workoutName: cell(raw, 'Workout Name'),
-      bodyWeight: parseOptionalNumber(cell(raw, 'Body Weight (KG)', 'Body Weight (LB)', 'Body Weight')),
+      bodyWeight: bodyWeightCol ? parseOptionalNumber(cell(raw, bodyWeightCol.field)) : undefined,
       exercise,
       notes: cell(raw, 'Notes'),
       sets,
@@ -163,7 +164,7 @@ export function parseStrongLiftsCsv(csvText: string): ParseStrongLiftsCsvResult 
     return { ok: false, error: 'No workout rows found in CSV' };
   }
 
-  return { ok: true, rows, weightUnit };
+  return { ok: true, rows, weightUnit, bodyWeightUnit: bodyWeightCol?.unit };
 }
 
 /**
@@ -173,10 +174,11 @@ export function parseStrongLiftsCsv(csvText: string): ParseStrongLiftsCsvResult 
 export function strongLiftsRowsToNormalized(
   rows: StrongLiftsCsvRow[],
   weightUnit: WeightUnit,
+  bodyWeightUnit: WeightUnit | undefined = weightUnit,
   options: CsvImportOptions = {},
 ): NormalizedImportSession[] {
-  // Unit is encoded in StrongLifts headers (e.g. Set 1 (KG)); prefer that over app preference.
   const unit = weightUnit !== 'nil' ? weightUnit : (options.defaultWeightUnit ?? 'kilograms');
+  const bodyUnit = bodyWeightUnit !== undefined && bodyWeightUnit !== 'nil' ? bodyWeightUnit : unit;
 
   type Group = {
     dateKey: string;
@@ -262,7 +264,7 @@ export function strongLiftsRowsToNormalized(
       contentDateKey: `${group.dateKey}|w${group.workout || '0'}`,
       date: group.date,
       sessionName,
-      bodyweight: group.bodyWeight !== undefined ? new Weight(group.bodyWeight, unit) : undefined,
+      bodyweight: group.bodyWeight !== undefined ? new Weight(group.bodyWeight, bodyUnit) : undefined,
       exercises,
     });
   }

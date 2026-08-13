@@ -17,15 +17,13 @@ export type ParseFitNotesCsvResult = { ok: true; rows: FitNotesCsvRow[] } | { ok
 
 const REQUIRED_HEADERS = ['Date', 'Exercise', 'Weight', 'Weight Unit', 'Reps'] as const;
 
+/** FitNotes Weight Unit cells are `kgs` or `lbs`. */
 function mapWeightUnit(raw: string, fallback: WeightUnit): WeightUnit {
   const u = raw.trim().toLowerCase();
-  if (!u) {
-    return fallback;
-  }
-  if (u === 'kg' || u === 'kgs' || u === 'kilogram' || u === 'kilograms') {
+  if (u === 'kgs') {
     return 'kilograms';
   }
-  if (u === 'lb' || u === 'lbs' || u === 'pound' || u === 'pounds') {
+  if (u === 'lbs') {
     return 'pounds';
   }
   return fallback;
