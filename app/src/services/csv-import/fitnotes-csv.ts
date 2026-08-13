@@ -78,7 +78,7 @@ export function parseFitNotesCsv(csvText: string): ParseFitNotesCsvResult {
   return { ok: true, rows };
 }
 
-/** Weighted set rows only; cardio-only rows are skipped in v1. */
+/** Weighted set rows only; cardio-only rows are currently skipped */
 function isWeightedSetRow(row: FitNotesCsvRow): boolean {
   return row.reps !== undefined && row.weight !== undefined;
 }
