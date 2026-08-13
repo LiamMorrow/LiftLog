@@ -100,6 +100,27 @@ describe('import-external-effects', () => {
     expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe('Those workouts are already in History');
   });
 
+  it('skips a FitNotes day already in History even when sets changed', async () => {
+    const original = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
+2026-08-08,Bench Press,Chest,60,kgs,8,,,,
+`;
+    const changedSets = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
+2026-08-08,Bench Press,Chest,65,kgs,8,,,,
+`;
+    const existing = Object.fromEntries(
+      getImportForFitNotes(new TextEncoder().encode(original)).workouts.map((w) => [w.id, w]),
+    );
+    const testBed = makeExternalImportBed({
+      format: 'FitNotes',
+      bytes: new TextEncoder().encode(changedSets),
+      sessions: existing,
+    });
+    await testBed.dispatchHandled(importFromExternal({ format: 'FitNotes' }));
+
+    expect(() => testBed.getDispatchedAction(importBackupData)).toThrow();
+    expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe('Those workouts are already in History');
+  });
+
   it('imports only sessions not already in History', async () => {
     const multiDayCsv = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
 2026-08-07,Bench Press,Chest,60,kgs,8,,,,

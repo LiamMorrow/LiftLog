@@ -102,6 +102,27 @@ describe('getImportForStrongLifts', () => {
     expect(a.workouts[0]!.id).not.toBe(a.workouts[1]!.id);
   });
 
+  it('keeps the same session id when sets, notes, or workout name change', () => {
+    const header = `Date (yyyy/mm/dd),Workout,Workout Name,Program Name,Body Weight (KG),Exercise,Notes,Set 1 (Reps),Set 1 (KG),Set 2 (Reps),Set 2 (KG)`;
+    const base = `${header}
+2026/08/11,1,"Workout A","Stronglifts 5×5",83.5,"Squat","",5,55,5,55
+`;
+    const changedSets = `${header}
+2026/08/11,1,"Workout A","Stronglifts 5×5",83.5,"Squat","",5,60,5,60
+`;
+    const changedNotes = `${header}
+2026/08/11,1,"Workout A","Stronglifts 5×5",83.5,"Squat","felt heavy",5,55,5,55
+`;
+    const renamed = `${header}
+2026/08/11,1,"Heavy lower","Stronglifts 5×5",83.5,"Squat","",5,55,5,55
+`;
+    const baseId = importSample(base).workouts[0]!.id;
+    expect(importSample(changedSets).workouts[0]!.id).toBe(baseId);
+    expect(importSample(changedNotes).workouts[0]!.id).toBe(baseId);
+    expect(importSample(renamed).workouts[0]!.id).toBe(baseId);
+    expect(importSample(renamed).workouts[0]!.blueprint.name).toBe('Heavy lower');
+  });
+
   it('reads pounds from LB headers', () => {
     const csv = `Date (yyyy/mm/dd),Workout,Workout Name,Program Name,Body Weight (LB),Exercise,Notes,Set 1 (Reps),Set 1 (LB),Set 2 (Reps),Set 2 (LB)
 2026/01/02,1,"Workout A","Stronglifts 5×5",180,"Squat","",5,135,5,135

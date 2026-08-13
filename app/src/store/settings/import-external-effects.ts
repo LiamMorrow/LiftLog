@@ -1,9 +1,8 @@
 import { showSnackbar } from '@/store/app';
-import { importBackupData, importFromExternal } from '@/store/settings';
+import { importBackupData, importFromExternal, selectPreferredWeightUnit } from '@/store/settings';
 import { AddEffectFn } from '@/store/store';
 import { setStatsIsDirty } from '@/store/stats';
 import { getExternalImporter } from '@/services/csv-import';
-import { WeightUnit } from '@/models/weight';
 
 export function addImportExternalEffects(addEffect: AddEffectFn) {
   addEffect(
@@ -14,13 +13,13 @@ export function addImportExternalEffects(addEffect: AddEffectFn) {
         return;
       }
 
-      const defaultWeightUnit = selectPreferredWeightUnit(getState())
+      const defaultWeightUnit = selectPreferredWeightUnit(getState());
 
       try {
         const backupData = getExternalImporter(format)(file.bytes, { defaultWeightUnit });
 
-        // Content-derived session ids: skip any workout already present so re-importing
-        // the same rows is a no-op; new/changed set content still imports.
+        // Grouping-key session ids: skip any workout already present so re-importing
+        // the same day (FitNotes) or date+Workout slot (StrongLifts) is a no-op.
         const existingSessions = getState().storedSessions.sessions;
         const newWorkouts = backupData.workouts.filter((w) => !existingSessions[w.id]);
         if (newWorkouts.length === 0) {

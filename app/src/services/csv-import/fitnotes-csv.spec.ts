@@ -110,14 +110,19 @@ describe('getImportForFitNotes', () => {
     expect(a.workouts[0]!.id).toBe(b.workouts[0]!.id);
   });
 
-  it('assigns a different session id when set content differs', () => {
+  it('keeps the same session id when sets or notes on that day change', () => {
     const base = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
 2026-08-08,Bench Press,Chest,60,kgs,8,,,,
 `;
-    const changed = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
+    const changedSets = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
 2026-08-08,Bench Press,Chest,65,kgs,8,,,,
 `;
-    expect(importSample(base).workouts[0]!.id).not.toBe(importSample(changed).workouts[0]!.id);
+    const changedNotes = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
+2026-08-08,Bench Press,Chest,60,kgs,8,,,,"felt easy"
+`;
+    const baseId = importSample(base).workouts[0]!.id;
+    expect(importSample(changedSets).workouts[0]!.id).toBe(baseId);
+    expect(importSample(changedNotes).workouts[0]!.id).toBe(baseId);
   });
 
   it('normalizes weight unit aliases into the same session id', () => {
