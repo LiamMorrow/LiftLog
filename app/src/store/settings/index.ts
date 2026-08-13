@@ -57,8 +57,7 @@ export const importDataProto = createAction<{
   dao: LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2;
 }>('importDataProto');
 export type ImportBackupDataPayload = BackupData & {
-  /** When set, used instead of the default restore success snackbar. */
-  successMessage?: string;
+  successMessage: string;
 };
 export const importBackupData = createAction<ImportBackupDataPayload>('importBackupData');
 export const beginFeedImport = createAction<FeedBackupData>('beginFeedImport');

@@ -35,6 +35,7 @@ describe('import-backup-effects', () => {
     expect(dispatchedImport.payload.workouts).toHaveLength(420);
     expect(dispatchedImport.payload.feed).toBeDefined();
     expect(Object.values(dispatchedImport.payload.programs)).toHaveLength(13);
+    expect(dispatchedImport.payload.successMessage).toBe('Restore complete!');
   });
 
   it('dispatches a valid import when it is a proto', async () => {
@@ -58,6 +59,7 @@ describe('import-backup-effects', () => {
     expect(dispatchedImport.payload.workouts).toHaveLength(85);
     expect(dispatchedImport.payload.feed).toBeUndefined();
     expect(Object.values(dispatchedImport.payload.programs)).toHaveLength(0);
+    expect(dispatchedImport.payload.successMessage).toBe('Restore complete!');
   });
   it('dispatches the appropriate actions when importing', async () => {
     const testBed = createAddEffectTestBed({
@@ -84,6 +86,7 @@ describe('import-backup-effects', () => {
         workouts: mockWorkouts,
         programs: mockPrograms,
         feed: mockFeed,
+        successMessage: 'Restore complete!',
       }),
     );
 
@@ -93,7 +96,7 @@ describe('import-backup-effects', () => {
     expect(testBed.getDispatchedAction(beginFeedImport).payload).toBe(mockFeed);
   });
 
-  it('uses optional successMessage instead of restore copy', async () => {
+  it('shows the provided successMessage', async () => {
     const testBed = createAddEffectTestBed({
       services: {
         tolgee: { t: (s: string) => s },
@@ -127,6 +130,7 @@ describe('import-backup-effects', () => {
         workouts: [],
         programs: {},
         feed: undefined,
+        successMessage: 'Restore complete!',
       }),
     );
 
