@@ -14,7 +14,7 @@ export function addImportExternalEffects(addEffect: AddEffectFn) {
         return;
       }
 
-      const defaultWeightUnit: WeightUnit = getState().settings.useImperialUnits ? 'pounds' : 'kilograms';
+      const defaultWeightUnit = selectPreferredWeightUnit(getState())
 
       try {
         const backupData = getExternalImporter(format)(file.bytes, { defaultWeightUnit });
