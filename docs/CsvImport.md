@@ -26,8 +26,7 @@ there, LiftLog tells you nothing new was added.
   version.
 - If you delete an imported workout and import the same file again, it comes back.
 - Only weighted sets are imported. Cardio-only or timed-only rows are skipped.
-- Comments and notes from the file become exercise notes. Rest timers and progressive overload use
-  LiftLog’s usual defaults.
+- Comments and notes from the file become exercise notes. 
 
 ## Supported formats
 
