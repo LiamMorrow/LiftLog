@@ -19,8 +19,7 @@ there, LiftLog tells you nothing new was added.
 ## What to expect
 
 - Your existing workouts and programs stay put. Import only adds sessions.
-- Importing the same file again does not create duplicates. LiftLog recognizes a workout from its
-  day (FitNotes) or day plus workout name (StrongLifts), not from the sets or notes inside it.
+- Importing the same file again does not create duplicates.
 - A later export only adds workouts for days or slots that are not already in History. Changing
   sets or comments in the other app and exporting again does not update or duplicate a workout
   you already imported. Delete that workout in History and import again if you want the new
