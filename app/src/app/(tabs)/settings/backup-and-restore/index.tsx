@@ -16,6 +16,7 @@ import {
 } from '@/store/feed';
 import { beginFeedImport, exportData, importData, setBackupReminder } from '@/store/settings';
 import { setStatsIsDirty } from '@/store/stats';
+
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -58,12 +59,19 @@ export default function BackupAndRestorePage() {
           onPress={() => push('/settings/backup-and-restore/remote-backup')}
         />
         <List.Item
+          title={t('backup.import_from_other_apps.title')}
+          description={t('backup.import_from_other_apps.subtitle')}
+          left={(props) => <List.Icon icon={'download'} {...props} />}
+          onPress={() => push('/settings/backup-and-restore/import-from-other-apps')}
+        />
+        <List.Item
           title={t('backup.plaintext_export.title')}
           description={t('backup.plaintext_export.subtitle')}
           left={(props) => <List.Icon icon={'description'} {...props} />}
           onPress={() => push('/settings/backup-and-restore/plain-text-export')}
         />
         <HealthExportSwitch />
+
         <ListSwitch
           headline={<T keyName="backup.reminders.title" />}
           supportingText={<T keyName="backup.reminders.subtitle" />}

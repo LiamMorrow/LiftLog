@@ -21,7 +21,9 @@ import {
 import { addExportBackupEffects } from '@/store/settings/export-backup-effects';
 import { addExportPlaintextEffects } from '@/store/settings/export-plaintext-effects';
 import { addImportBackupEffects } from '@/store/settings/import-backup-effects';
+import { addImportExternalEffects } from '@/store/settings/import-external-effects';
 import { addRemoteBackupEffects } from '@/store/settings/remote-backup-effects';
+
 import Purchases from 'react-native-purchases';
 import { I18nManager, Platform } from 'react-native';
 import { detectLanguageFromDateLocale } from '@/utils/language-detector';
@@ -171,5 +173,6 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
   addExportPlaintextEffects(addEffect);
   addExportBackupEffects(addEffect);
   addImportBackupEffects(addEffect);
+  addImportExternalEffects(addEffect);
   addRemoteBackupEffects(addEffect);
 }

@@ -24,9 +24,11 @@ work to find the docs relevant to your area, and update it whenever you add, rem
   the two ways to set up double progression. Ends with pointers to the code.
 - [PlanFileFormat.md](./PlanFileFormat.md) - the `.liftlogplan` file format, how plans are imported and
   exported, and the Claude skill that authors plan files against the schema.
-- [PlaintextExport.md](./PlaintextExport.md) - CSV/JSON export of workout data, including which fields
+- [PlaintextExport.md](./PlaintextExport.md) — CSV/JSON export of workout data, including which fields
   are included. Explicitly _not_ a backup mechanism; LiftLog cannot read these files back.
-- [RemoteBackup.md](./RemoteBackup.md) - the automatic remote backup: the app-side settings, the HTTPS
+- [CsvImport.md](./CsvImport.md) — user guide for Import from other apps (FitNotes-style and
+  StrongLifts-style CSV); contributor notes at the end. Separate from plaintext export.
+- [RemoteBackup.md](./RemoteBackup.md) — the automatic remote backup: the app-side settings, the HTTPS
   requirement, and the contract a self-hosted backup endpoint must satisfy.
 
 ## Generated
