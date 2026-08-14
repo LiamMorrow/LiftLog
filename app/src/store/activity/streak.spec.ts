@@ -2,35 +2,22 @@ import { describe, expect, it } from 'vitest';
 import { DayOfWeek, LocalDate, OffsetDateTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { calculateStreak } from '@/store/activity/streak';
-import { PotentialSet, RecordedSet, RecordedWeightedExercise, Session } from '@/models/session-models';
-import {
-  IncreaseLowestSetProgressiveOverload,
-  Rest,
-  SessionBlueprint,
-  WeightedExerciseBlueprint,
-} from '@/models/blueprint-models';
-import { Weight } from '@/models/weight';
+import { RecordedWeightedExercise, Session } from '@/models/session-models';
+import { ProgressionRule, Rest, SessionBlueprint } from '@/models/blueprint-models';
+import { filledPotentialSet, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
 
 const MONDAY = DayOfWeek.MONDAY;
 
 /** A session with one completed set, so `isStarted` is true. */
 function sessionOn(date: LocalDate, id = date.toString()): Session {
-  const blueprint = new WeightedExerciseBlueprint(
-    'Squat',
-    3,
-    { type: 'fixed', reps: 5 },
-    new IncreaseLowestSetProgressiveOverload(new BigNumber(2.5), 'middle'),
-    Rest.long,
-    false,
-    '',
-    '',
-  );
-  const set = new RecordedSet(5, OffsetDateTime.parse('2026-01-01T10:00:00Z'));
-  const exercise = new RecordedWeightedExercise(
-    blueprint,
-    [new PotentialSet(set, new Weight(100, 'kilograms'))],
-    undefined,
-  );
+  const blueprint = makeWeightedBlueprint({
+    name: 'Squat',
+    repsConfig: { type: 'fixed', reps: 5 },
+    progression: [ProgressionRule.load(new BigNumber(2.5), { type: 'lowestSets', pick: 'middle' })],
+    restBetweenSets: Rest.long,
+  });
+  const time = OffsetDateTime.parse('2026-01-01T10:00:00Z');
+  const exercise = new RecordedWeightedExercise(blueprint, [filledPotentialSet(5, time)], undefined);
 
   return new Session(id, new SessionBlueprint('Day', [], ''), [exercise], date, undefined, undefined);
 }

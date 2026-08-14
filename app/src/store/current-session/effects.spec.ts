@@ -23,9 +23,8 @@ import { fetchUpcomingSessions } from '@/store/program';
 import { setRestTimersEnabled } from '@/store/settings';
 import { WorkoutUpdatedEvent } from '@/models/workout-worker-messages';
 import { SessionBlueprint } from '@/models/blueprint-models';
-import { RecordedWeightedExercise, PotentialSet } from '@/models/session-models/recorded-weighted-exercise';
-import { Weight } from '@/models/weight';
-import { makeWeightedBlueprint, filledPotentialSet } from '@/models/session-models/__test__/helpers';
+import { RecordedWeightedExercise } from '@/models/session-models/recorded-weighted-exercise';
+import { emptyPotentialSet, filledPotentialSet, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
 import { uuid } from '@/utils/uuid';
 
 function broadcastEventTypes(testBed: ReturnType<typeof createAddEffectTestBed>): string[] {
@@ -38,7 +37,7 @@ function sessionWithRestTimer(restTimerStartTime: OffsetDateTime): Session {
   const bp = makeWeightedBlueprint();
   const exercise = new RecordedWeightedExercise(
     bp,
-    [filledPotentialSet(10, restTimerStartTime), new PotentialSet(undefined, new Weight(100, 'kilograms'))],
+    [filledPotentialSet(10, restTimerStartTime), emptyPotentialSet(100)],
     undefined,
   );
   return new Session(

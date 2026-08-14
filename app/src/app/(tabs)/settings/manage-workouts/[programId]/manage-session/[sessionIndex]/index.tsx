@@ -10,13 +10,7 @@ import { PageActions } from '@/components/presentation/foundation/page-actions';
 import AddIcon from '@expo/material-symbols/add.xml';
 import CopyExerciseDialog from '@/components/smart/copy-exercise-dialog';
 import { spacing } from '@/hooks/useAppTheme';
-import {
-  WeightedExerciseBlueprint,
-  Rest,
-  SessionBlueprint,
-  ExerciseBlueprint,
-  IncreaseLowestSetProgressiveOverload,
-} from '@/models/blueprint-models';
+import { WeightedExerciseBlueprint, Rest, SessionBlueprint, ExerciseBlueprint } from '@/models/blueprint-models';
 import { RootState, useAppSelector } from '@/store';
 import { setProgramSession } from '@/store/program';
 import {
@@ -30,7 +24,6 @@ import {
   setEditingSessionNotes,
 } from '@/store/session-editor';
 import { T, useTranslate } from '@tolgee/react';
-import BigNumber from 'bignumber.js';
 import { Redirect, Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Card, TextInput } from 'react-native-paper';
@@ -92,7 +85,6 @@ function SessionEditor({
           name: `Exercise ${session.exercises.length + 1}`,
           repsConfig: { type: 'fixed', reps: 10 },
           sets: 3,
-          progressiveOverload: new IncreaseLowestSetProgressiveOverload(BigNumber('2.5'), 'all'),
           link: '',
           notes: '',
           restBetweenSets: Rest.medium,

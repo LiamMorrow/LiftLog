@@ -4,14 +4,15 @@ import { ProgramBlueprint, SessionBlueprint } from '@/models/blueprint-models';
 import { Session } from '@/models/session-models/session';
 import { RestTimer } from '@/models/session-models/rest-timer';
 import { RecordedCardioExercise } from '@/models/session-models/recorded-cardio-exercise';
-import { PotentialSet, RecordedWeightedExercise } from '@/models/session-models/recorded-weighted-exercise';
-import { Weight as WeightModel } from '@/models/weight';
+import { RecordedWeightedExercise } from '@/models/session-models/recorded-weighted-exercise';
 import {
-  tick,
-  makeSession,
-  makeWeightedBlueprint,
-  makeCardioBlueprint,
+  emptyPotentialSet,
   filledPotentialSet,
+  makeCardioBlueprint,
+  makeSession,
+  makeRecordedExercise,
+  makeWeightedBlueprint,
+  tick,
 } from '@/models/session-models/__test__/helpers';
 import {
   getPlanDiff,
@@ -27,14 +28,14 @@ function programWith(sessions: SessionBlueprint[]) {
 
 describe('getPlanDiff', () => {
   it('returns undefined when the session blueprint already matches the plan', () => {
-    const session = makeSession([makeWeightedBlueprint('Squat')]);
+    const session = makeSession([makeWeightedBlueprint({ name: 'Squat' })]);
     const program = programWith([session.blueprint]);
     expect(getPlanDiff(program, session)).toBeUndefined();
   });
 
   it('returns a diff against the same-named session in the plan', () => {
-    const original = makeSession([makeWeightedBlueprint('Squat')]);
-    const edited = original.withAddedExercise(makeWeightedBlueprint('Bench'), false);
+    const original = makeSession([makeWeightedBlueprint({ name: 'Squat' })]);
+    const edited = original.withAddedExercise(makeWeightedBlueprint({ name: 'Bench' }), false);
     const program = programWith([original.blueprint]);
 
     const result = getPlanDiff(program, edited)!;
@@ -47,8 +48,10 @@ describe('getPlanDiff', () => {
   });
 
   it('returns an add diff when no session shares the name', () => {
-    const session = makeSession([makeWeightedBlueprint('Squat')]);
-    const program = programWith([makeSession([makeWeightedBlueprint('Row')]).withName('Cardio Day').blueprint]);
+    const session = makeSession([makeWeightedBlueprint({ name: 'Squat' })]);
+    const program = programWith([
+      makeSession([makeWeightedBlueprint({ name: 'Row' })]).withName('Cardio Day').blueprint,
+    ]);
 
     const result = getPlanDiff(program, session)!;
 
@@ -90,7 +93,7 @@ describe('getCurrentExerciseDetails', () => {
   });
 
   it('returns the serialized next exercise and its current set index', () => {
-    const session = makeSession([makeWeightedBlueprint('Squat')]);
+    const session = makeSession([makeWeightedBlueprint({ name: 'Squat' })]);
     const details = getCurrentExerciseDetails(session)!;
     expect(details.setIndex).toBe(0);
     expect(details.exercise).toBeDefined();
@@ -102,7 +105,7 @@ describe('getTimerInfo', () => {
     const bp = makeWeightedBlueprint();
     const exercise = new RecordedWeightedExercise(
       bp,
-      [filledPotentialSet(reps, tick()), new PotentialSet(undefined, new WeightModel(100, 'kilograms'))],
+      [filledPotentialSet(reps, tick()), emptyPotentialSet(100)],
       undefined,
     );
     return new Session(
@@ -154,15 +157,7 @@ describe('getTimerInfo', () => {
       },
     });
     // Set 0 stays open so a next exercise exists; the most recent completion is set 2 (target 8).
-    const exercise = new RecordedWeightedExercise(
-      bp,
-      [
-        new PotentialSet(undefined, new WeightModel(100, 'kilograms')),
-        filledPotentialSet(10, tick()),
-        filledPotentialSet(lastSetReps, tick()),
-      ],
-      undefined,
-    );
+    const exercise = makeRecordedExercise(bp, [undefined, 10, lastSetReps]);
     return new Session(
       uuid(),
       new SessionBlueprint('Test', [bp], ''),

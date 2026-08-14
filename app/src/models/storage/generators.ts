@@ -142,7 +142,7 @@ const RecordedSetGenerator = fc
     repsCompleted: fc.integer({ min: 0, max: 100 }),
     completionDateTime: OffsetDateTimeGenerator,
   })
-  .map((x) => new RecordedSet(x.repsCompleted, x.completionDateTime));
+  .map(RecordedSet.of);
 
 const PotentialSetGenerator = fc
   .record({
@@ -151,7 +151,7 @@ const PotentialSetGenerator = fc
     }),
     weight: WeightGenerator,
   })
-  .map((x) => new PotentialSet(x.set, x.weight));
+  .map(PotentialSet.of);
 
 const DistanceUnitGenerator = fc.oneof(...DistanceUnits.map(fc.constant));
 

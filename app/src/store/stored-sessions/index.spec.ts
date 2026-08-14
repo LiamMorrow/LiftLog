@@ -28,49 +28,37 @@ import {
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
   movementKeyFor,
-  NoProgressiveOverload,
-  Rest,
   SessionBlueprint,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import {
-  PotentialSet,
   RecordedCardioExercise,
   RecordedCardioExerciseSet,
-  RecordedSet,
   RecordedWeightedExercise,
   Session,
 } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import { UnknownAction } from '@reduxjs/toolkit';
+import { emptyPotentialSet, filledPotentialSet, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
 
 function createSessionWithCompletionTime(sessionDate: LocalDate, completionTime: OffsetDateTime, name: string) {
   const blueprint = new SessionBlueprint(
     name,
     [
-      new WeightedExerciseBlueprint(
-        `${name} Exercise`,
-        1,
-        { type: 'fixed', reps: 5 },
-        new NoProgressiveOverload(),
-        Rest.medium,
-        false,
-        '',
-        '',
-      ),
+      makeWeightedBlueprint({
+        name: `${name} Exercise`,
+        sets: 1,
+        repsConfig: { type: 'fixed', reps: 5 },
+        progression: [],
+      }),
     ],
     '',
   );
   const exerciseBlueprint = blueprint.exercises[0] as WeightedExerciseBlueprint;
   const recordedExercise = new RecordedWeightedExercise(
     exerciseBlueprint,
-    [
-      new PotentialSet(
-        new RecordedSet(exerciseBlueprint.repsTargetForSet(0).max, completionTime),
-        new Weight(100, 'kilograms'),
-      ),
-    ],
+    [filledPotentialSet(exerciseBlueprint.repsTargetForSet(0).max, completionTime, new Weight(100, 'kilograms'))],
     undefined,
   );
 
@@ -83,7 +71,7 @@ function createAbandonedSession(sessionDate: LocalDate, name: string) {
   const exercise = template.recordedExercises[0] as RecordedWeightedExercise;
 
   return template.with({
-    recordedExercises: [exercise.with({ potentialSets: [new PotentialSet(undefined, new Weight(0, 'kilograms'))] })],
+    recordedExercises: [exercise.with({ potentialSets: [emptyPotentialSet(0)] })],
   });
 }
 
@@ -344,16 +332,11 @@ describe('storedSessions selectors', () => {
     const state = { storedSessions: reduce(addStoredSession(session)) };
 
     const lookup = selectRecentlyCompletedExercises(state);
-    const weightedBlueprint = new WeightedExerciseBlueprint(
-      'New Exercise',
-      3,
-      { type: 'fixed', reps: 10 },
-      new NoProgressiveOverload(),
-      Rest.medium,
-      false,
-      '',
-      '',
-    );
+    const weightedBlueprint = makeWeightedBlueprint({
+      name: 'New Exercise',
+      repsConfig: { type: 'fixed', reps: 10 },
+      progression: [],
+    });
 
     expect(lookup(weightedBlueprint.movementKey())).toEqual([]);
     expect(lookup(cardioBlueprint.movementKey())).toEqual([cardioExercise]);
@@ -389,22 +372,18 @@ describe('getSessionReferenceTime', () => {
     const blueprint = new SessionBlueprint(
       'Empty',
       [
-        new WeightedExerciseBlueprint(
-          'Squat',
-          1,
-          { type: 'fixed', reps: 5 },
-          new NoProgressiveOverload(),
-          Rest.medium,
-          false,
-          '',
-          '',
-        ),
+        makeWeightedBlueprint({
+          name: 'Squat',
+          sets: 1,
+          repsConfig: { type: 'fixed', reps: 5 },
+          progression: [],
+        }),
       ],
       '',
     );
     const exercise = new RecordedWeightedExercise(
       blueprint.exercises[0] as WeightedExerciseBlueprint,
-      [new PotentialSet(undefined, new Weight(100, 'kilograms'))],
+      [emptyPotentialSet(100)],
       undefined,
     );
     const session = new Session(uuid(), blueprint, [exercise], LocalDate.of(2026, 4, 10), undefined, undefined);

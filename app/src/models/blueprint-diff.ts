@@ -5,11 +5,13 @@ import {
   CardioTarget,
   cardioTargetEquals,
   ExerciseBlueprint,
-  formatRepsConfig,
   IncreaseStrategy,
-  ProgressiveOverload,
-  RepsConfig,
-  repsConfigEquals,
+  Resistance,
+  ProgressionRule,
+  progressionEquals,
+  formatPlannedSets,
+  PlannedSet,
+  plannedSetsEqual,
   Rest,
   SessionBlueprint,
   WeightedExerciseBlueprint,
@@ -93,31 +95,23 @@ interface ExerciseNameChange extends BaseChange {
   newValue: string;
 }
 
-interface ExerciseSetsChange extends BaseChange {
-  kind: 'exerciseSets';
+/** Set count and rep targets are one list, so they change together. */
+interface ExercisePlannedSetsChange extends BaseChange {
+  kind: 'exercisePlannedSets';
   type: 'modified';
   exerciseName: string;
   exerciseIndex: number;
-  oldValue: number;
-  newValue: number;
+  oldValue: PlannedSet[];
+  newValue: PlannedSet[];
 }
 
-interface ExerciseRepsChange extends BaseChange {
-  kind: 'exerciseReps';
+interface ExerciseProgressionChange extends BaseChange {
+  kind: 'progression';
   type: 'modified';
   exerciseName: string;
   exerciseIndex: number;
-  oldValue: RepsConfig;
-  newValue: RepsConfig;
-}
-
-interface ExerciseWeightIncreaseChange extends BaseChange {
-  kind: 'progressiveOverload';
-  type: 'modified';
-  exerciseName: string;
-  exerciseIndex: number;
-  oldValue: ProgressiveOverload;
-  newValue: ProgressiveOverload;
+  oldValue: ProgressionRule[];
+  newValue: ProgressionRule[];
 }
 
 /** Grouped rest settings change */
@@ -139,13 +133,13 @@ interface ExerciseSupersetChange extends BaseChange {
   newValue: boolean;
 }
 
-interface ExerciseBodyweightChange extends BaseChange {
-  kind: 'exerciseBodyweight';
+interface ExerciseResistanceChange extends BaseChange {
+  kind: 'exerciseResistance';
   type: 'modified';
   exerciseName: string;
   exerciseIndex: number;
-  oldValue: boolean;
-  newValue: boolean;
+  oldValue: Resistance;
+  newValue: Resistance;
 }
 
 interface ExerciseNotesChange extends BaseChange {
@@ -232,12 +226,11 @@ interface ExerciseTypeChange extends BaseChange {
 
 type ExerciseFieldChange =
   | ExerciseNameChange
-  | ExerciseSetsChange
-  | ExerciseRepsChange
-  | ExerciseWeightIncreaseChange
+  | ExercisePlannedSetsChange
+  | ExerciseProgressionChange
   | ExerciseRestChange
   | ExerciseSupersetChange
-  | ExerciseBodyweightChange
+  | ExerciseResistanceChange
   | ExerciseNotesChange
   | ExerciseLinkChange
   | ExerciseTargetChange
@@ -426,39 +419,27 @@ function diffWeightedExercises(
     });
   }
 
-  if (oldEx.sets !== newEx.sets) {
+  if (!plannedSetsEqual(oldEx.plannedSets, newEx.plannedSets)) {
     changes.push({
       id: generateChangeId(),
-      kind: 'exerciseSets',
+      kind: 'exercisePlannedSets',
       type: 'modified',
       exerciseName,
       exerciseIndex,
-      oldValue: oldEx.sets,
-      newValue: newEx.sets,
+      oldValue: oldEx.plannedSets,
+      newValue: newEx.plannedSets,
     });
   }
 
-  if (!repsConfigEquals(oldEx.repsConfig, newEx.repsConfig)) {
+  if (!progressionEquals(oldEx.progression, newEx.progression)) {
     changes.push({
       id: generateChangeId(),
-      kind: 'exerciseReps',
+      kind: 'progression',
       type: 'modified',
       exerciseName,
       exerciseIndex,
-      oldValue: oldEx.repsConfig,
-      newValue: newEx.repsConfig,
-    });
-  }
-
-  if (!oldEx.progressiveOverload.equals(newEx.progressiveOverload)) {
-    changes.push({
-      id: generateChangeId(),
-      kind: 'progressiveOverload',
-      type: 'modified',
-      exerciseName,
-      exerciseIndex,
-      oldValue: oldEx.progressiveOverload,
-      newValue: newEx.progressiveOverload,
+      oldValue: oldEx.progression,
+      newValue: newEx.progression,
     });
   }
 
@@ -487,15 +468,15 @@ function diffWeightedExercises(
     });
   }
 
-  if (oldEx.usesBodyweight !== newEx.usesBodyweight) {
+  if (oldEx.resistance !== newEx.resistance) {
     changes.push({
       id: generateChangeId(),
-      kind: 'exerciseBodyweight',
+      kind: 'exerciseResistance',
       type: 'modified',
       exerciseName,
       exerciseIndex,
-      oldValue: oldEx.usesBodyweight,
-      newValue: newEx.usesBodyweight,
+      oldValue: oldEx.resistance,
+      newValue: newEx.resistance,
     });
   }
 
@@ -917,14 +898,11 @@ export function applySessionBlueprintDiff(original: SessionBlueprint, diff: Sess
     for (const change of mod.changes) {
       exercise = match(change)
         .with({ kind: 'exerciseName' }, (c) => exercise.with({ name: c.newValue }))
-        .with({ kind: 'exerciseSets' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ sets: c.newValue }) : exercise,
+        .with({ kind: 'exercisePlannedSets' }, (c) =>
+          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ plannedSets: c.newValue }) : exercise,
         )
-        .with({ kind: 'exerciseReps' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ repsConfig: c.newValue }) : exercise,
-        )
-        .with({ kind: 'progressiveOverload' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ progressiveOverload: c.newValue }) : exercise,
+        .with({ kind: 'progression' }, (c) =>
+          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ progression: c.newValue }) : exercise,
         )
         .with({ kind: 'exerciseRest' }, (c) =>
           exercise instanceof WeightedExerciseBlueprint ? exercise.with({ restBetweenSets: c.newValue }) : exercise,
@@ -932,8 +910,8 @@ export function applySessionBlueprintDiff(original: SessionBlueprint, diff: Sess
         .with({ kind: 'exerciseSuperset' }, (c) =>
           exercise instanceof WeightedExerciseBlueprint ? exercise.with({ supersetWithNext: c.newValue }) : exercise,
         )
-        .with({ kind: 'exerciseBodyweight' }, (c) =>
-          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ usesBodyweight: c.newValue }) : exercise,
+        .with({ kind: 'exerciseResistance' }, (c) =>
+          exercise instanceof WeightedExerciseBlueprint ? exercise.with({ resistance: c.newValue }) : exercise,
         )
         .with({ kind: 'exerciseNotes' }, (c) => exercise.with({ notes: c.newValue }))
         .with({ kind: 'exerciseLink' }, (c) => exercise.with({ link: c.newValue }))
@@ -1081,30 +1059,24 @@ export function getChangeDescription(t: UseTranslateResult['t'], change: DiffCha
         newValue: c.newValue,
       }),
     )
-    .with({ kind: 'exerciseSets' }, (c) =>
+    .with({ kind: 'exercisePlannedSets' }, (c) =>
       t('plan.diff.generic_two_value_change.body', {
-        oldValue: c.oldValue,
-        newValue: c.newValue,
+        oldValue: formatPlannedSets(c.oldValue),
+        newValue: formatPlannedSets(c.newValue),
       }),
     )
-    .with({ kind: 'exerciseReps' }, (c) =>
+    .with({ kind: 'progression' }, (c) =>
       t('plan.diff.generic_two_value_change.body', {
-        oldValue: formatRepsConfig(c.oldValue),
-        newValue: formatRepsConfig(c.newValue),
-      }),
-    )
-    .with({ kind: 'progressiveOverload' }, (c) =>
-      t('plan.diff.generic_two_value_change.body', {
-        oldValue: stringifyProgressiveOverload(t, c.oldValue),
-        newValue: stringifyProgressiveOverload(t, c.newValue),
+        oldValue: stringifyProgression(t, c.oldValue),
+        newValue: stringifyProgression(t, c.newValue),
       }),
     )
     .with({ kind: 'exerciseRest' }, () => t('plan.diff.generic_updated.body'))
     .with({ kind: 'exerciseSuperset' }, (c) =>
       t(c.newValue ? 'plan.diff.generic_enabled.body' : 'plan.diff.generic_disabled.body'),
     )
-    .with({ kind: 'exerciseBodyweight' }, (c) =>
-      t(c.newValue ? 'plan.diff.generic_enabled.body' : 'plan.diff.generic_disabled.body'),
+    .with({ kind: 'exerciseResistance' }, (c) =>
+      t('plan.diff.generic_two_value_change.body', { oldValue: c.oldValue, newValue: c.newValue }),
     )
     .with({ kind: 'exerciseNotes' }, () => t('plan.diff.generic_updated.body'))
     .with({ kind: 'exerciseLink' }, () => t('plan.diff.generic_updated.body'))
@@ -1156,13 +1128,10 @@ export function getChangeLabelKey(change: DiffChange): TranslatableString {
     .with({ kind: 'exerciseName' }, () => ({
       key: 'plan.diff.name.label',
     }))
-    .with({ kind: 'exerciseSets' }, () => ({
+    .with({ kind: 'exercisePlannedSets' }, () => ({
       key: 'plan.diff.sets.label',
     }))
-    .with({ kind: 'exerciseReps' }, () => ({
-      key: 'plan.diff.reps.label',
-    }))
-    .with({ kind: 'progressiveOverload' }, () => ({
+    .with({ kind: 'progression' }, () => ({
       key: 'plan.diff.progressive_overload.label',
     }))
     .with({ kind: 'exerciseRest' }, () => ({
@@ -1171,8 +1140,8 @@ export function getChangeLabelKey(change: DiffChange): TranslatableString {
     .with({ kind: 'exerciseSuperset' }, () => ({
       key: 'plan.diff.superset.label',
     }))
-    .with({ kind: 'exerciseBodyweight' }, () => ({
-      key: 'plan.diff.bodyweight.label',
+    .with({ kind: 'exerciseResistance' }, () => ({
+      key: 'plan.diff.resistance.label',
     }))
     .with({ kind: 'exerciseNotes' }, () => ({
       key: 'plan.diff.notes.label',
@@ -1204,22 +1173,29 @@ export function getChangeLabelKey(change: DiffChange): TranslatableString {
     .exhaustive();
 }
 
-function stringifyProgressiveOverload(t: UseTranslateResult['t'], progressiveOverload: ProgressiveOverload): string {
-  return match(progressiveOverload)
-    .returnType<string>()
-    .with({ type: 'NoProgressiveOverload' }, () => t('exercise.progressive_overload.no.label'))
-    .with({ type: 'IncreaseAllEvenlyProgressiveOverload' }, (x) =>
-      t('plan.diff.progressive_overload_increase_all_evenly.label', {
-        amount: localeFormatBigNumber(x.amount),
-      }),
-    )
-    .with({ type: 'IncreaseLowestSetProgressiveOverload' }, (x) =>
-      t('plan.diff.progressive_overload_increase_lowest_set.label', {
-        amount: localeFormatBigNumber(x.amount),
-        strategy: stringifyIncreaseStrategy(t, x.increaseStrategy),
-      }),
-    )
-    .exhaustive();
+function stringifyProgression(t: UseTranslateResult['t'], progression: ProgressionRule[]): string {
+  if (!progression.length) {
+    return t('exercise.progressive_overload.no.label');
+  }
+  return progression.map((rule) => stringifyProgressionRule(t, rule)).join(', ');
+}
+
+function stringifyProgressionRule(t: UseTranslateResult['t'], rule: ProgressionRule): string {
+  const amount = localeFormatBigNumber(rule.step);
+  const axis = t(
+    rule.axis === 'reps' ? 'exercise.progression.axis.reps.label' : 'exercise.progression.axis.load.label',
+  );
+  const move =
+    rule.scope.type === 'allSets'
+      ? t('plan.diff.progression_rule_all_sets.label', { amount, axis })
+      : t('plan.diff.progression_rule_lowest_sets.label', {
+          amount,
+          axis,
+          strategy: stringifyIncreaseStrategy(t, rule.scope.pick),
+        });
+  return rule.ceiling === undefined
+    ? move
+    : t('plan.diff.progression_rule_ceiling.label', { move, ceiling: localeFormatBigNumber(rule.ceiling) });
 }
 
 function stringifyIncreaseStrategy(t: UseTranslateResult['t'], strategy: IncreaseStrategy) {

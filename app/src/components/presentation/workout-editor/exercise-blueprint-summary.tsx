@@ -10,6 +10,7 @@ import {
   CardioExerciseBlueprint,
   ExerciseBlueprint,
   formatRepsTarget,
+  uniformTarget,
   matchCardioTarget,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
@@ -105,32 +106,25 @@ function CardioExerciseBlueprintSummary({ blueprint }: { blueprint: CardioExerci
 export { formatCardioTarget };
 
 function WeightedExerciseBlueprintSummary({ blueprint }: { blueprint: WeightedExerciseBlueprint }) {
+  const sets = blueprint.plannedSets.length;
+  const uniform = uniformTarget(blueprint.plannedSets);
   return (
     <View style={{ gap: spacing[1], alignItems: 'flex-start' }}>
       <SurfaceText>
-        {match(blueprint.repsConfig)
-          .with({ type: 'fixed' }, (c) => (
-            <>
-              <SurfaceText color="primary">{blueprint.sets}</SurfaceText> {pluralize(blueprint.sets, 'set')} of{' '}
-              <SurfaceText color="primary">{c.reps}</SurfaceText> {pluralize(c.reps, 'rep')}
-            </>
-          ))
-          .with({ type: 'range' }, (c) => (
-            <>
-              <SurfaceText color="primary">{blueprint.sets}</SurfaceText> {pluralize(blueprint.sets, 'set')} of{' '}
-              <SurfaceText color="primary">
-                {c.min}–{c.max}
-              </SurfaceText>{' '}
-              reps
-            </>
-          ))
-          .with({ type: 'perSet' }, (c) => (
-            <>
-              <SurfaceText color="primary">{blueprint.sets}</SurfaceText> {pluralize(blueprint.sets, 'set')}:{' '}
-              <SurfaceText color="primary">{c.targets.map(formatRepsTarget).join(' / ')}</SurfaceText> reps
-            </>
-          ))
-          .exhaustive()}
+        {uniform ? (
+          <>
+            <SurfaceText color="primary">{sets}</SurfaceText> {pluralize(sets, 'set')} of{' '}
+            <SurfaceText color="primary">{formatRepsTarget(uniform)}</SurfaceText> {pluralize(uniform.max, 'rep')}
+          </>
+        ) : (
+          <>
+            <SurfaceText color="primary">{sets}</SurfaceText> {pluralize(sets, 'set')}:{' '}
+            <SurfaceText color="primary">
+              {blueprint.plannedSets.map((s) => formatRepsTarget(s.reps)).join(' / ')}
+            </SurfaceText>{' '}
+            reps
+          </>
+        )}
       </SurfaceText>
     </View>
   );

@@ -9,7 +9,6 @@ import {
   WeightedExerciseBlueprint,
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
-  NoProgressiveOverload,
 } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { Duration, Instant, OffsetDateTime, ZoneOffset } from '@js-joda/core';
@@ -76,7 +75,7 @@ function makeWeightedExercise(): RecordedWeightedExercise {
     name: 'Bench Press',
     sets: 3,
     repsPerSet: 10,
-    progressiveOverload: new NoProgressiveOverload(),
+    progression: [],
   };
   const blueprint = WeightedExerciseBlueprint.empty().with(blueprintJson);
   return RecordedWeightedExercise.empty(blueprint, 'kilograms');

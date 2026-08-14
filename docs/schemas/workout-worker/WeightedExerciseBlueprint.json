@@ -9,12 +9,12 @@
     "name": {
       "type": "string"
     },
-    "sets": {
-      "type": "integer"
-    },
-    "repsConfig": {
-      "$ref": "./RepsConfig.json",
-      "description": "How the rep targets are laid out: one fixed target, a min–max range, or a per-set pyramid."
+    "plannedSets": {
+      "type": "array",
+      "items": {
+        "$ref": "./PlannedSet.json"
+      },
+      "description": "What the plan asks for, one entry per set."
     },
     "restBetweenSets": {
       "$ref": "./Rest.json"
@@ -30,24 +30,27 @@
       "type": "string",
       "description": "A url to some explanation of how to do this. We should not fill this unless the user has explicitly given us a link to fill"
     },
-    "progressiveOverload": {
-      "$ref": "./ProgressiveOverload.json"
+    "progression": {
+      "type": "array",
+      "items": {
+        "$ref": "./ProgressionRule.json"
+      },
+      "description": "Ordered; the first rule that can still move, moves. Empty means no automatic progression."
     },
-    "usesBodyweight": {
-      "type": "boolean",
-      "description": "When true, the movement's base load is the lifter's own bodyweight (pull-ups, dips), and each set's stored weight is the *added* load on top of it - positive when weighted, negative when assisted."
+    "resistance": {
+      "$ref": "./Resistance.json",
+      "description": "Where this movement's load comes from: the whole stored weight (`external`), what is added on top of the lifter (`bodyweight`), or nothing at all (`none`, e.g. crunches)."
     }
   },
   "required": [
     "type",
     "name",
-    "sets",
-    "repsConfig",
+    "plannedSets",
     "restBetweenSets",
     "supersetWithNext",
     "notes",
     "link",
-    "progressiveOverload",
-    "usesBodyweight"
+    "progression",
+    "resistance"
   ]
 }

@@ -54,7 +54,7 @@ class ExportedSetCsvRow {
     public SessionId: string,
     public Timestamp: string,
     public Exercise: string,
-    public Weight: BigNumber,
+    public Weight: BigNumber | '',
     public WeightUnit: string,
     public Reps: number,
     public TargetReps: number,
@@ -74,10 +74,11 @@ class ExportedSetCsvRow {
             session.id,
             set.set!.completionDateTime.toString(),
             exercise.blueprint.name,
-            set.weight.value,
-            shortFormatWeightUnit(set.weight.unit),
+            // An exercise with no load has no weight to report.
+            exercise.tracksResistance ? set.weight.value : '',
+            exercise.tracksResistance ? shortFormatWeightUnit(set.weight.unit) : '',
             set.set!.repsCompleted,
-            exercise.blueprint.repsTargetForSet(index).max,
+            exercise.repsTargetForSet(index).max,
             exercise.notes ?? '',
           ),
       );

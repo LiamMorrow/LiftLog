@@ -62,4 +62,4 @@ If they want to change a plan they're already running but haven't given you the 
 
 Don't rebuild their plan from a verbal description when they could just export it - the file has their real exercise names, rest times, and progressive overload settings, and anything you reconstruct will quietly differ.
 
-When you hand the edited file back, mention that importing it creates a *new* plan rather than overwriting the old one, so they'll want to delete the original from `Plans` once they've imported the replacement. Their logged workout history isn't affected either way.
+When you hand the edited file back, mention that importing it creates a _new_ plan rather than overwriting the old one, so they'll want to delete the original from `Plans` once they've imported the replacement. Their logged workout history isn't affected either way.

@@ -1,5 +1,5 @@
 import { PotentialSet } from '@/models/session-models';
-import { formatRepsTarget, RepsTarget } from '@/models/blueprint-models';
+import { formatRepsTarget, Resistance, RepsTarget } from '@/models/blueprint-models';
 import { ReactNode } from 'react';
 import { Text, View } from 'react-native';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
@@ -12,7 +12,7 @@ export type PotentialSetSize = 'default' | 'compact';
 interface PotentialSetDisplayProps {
   set: PotentialSet;
   repsTarget: RepsTarget;
-  usesBodyweight: boolean;
+  resistance: Resistance;
   previousRepCount?: number | undefined;
   size?: PotentialSetSize;
 
@@ -52,6 +52,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
   const size = metrics[props.size ?? 'default'];
   const repCountValue = props.set.set?.repsCompleted;
   const isFilled = repCountValue !== undefined;
+  const showsWeight = props.resistance !== 'none';
 
   return (
     <View
@@ -65,8 +66,10 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
     >
       <View
         style={{
-          borderTopLeftRadius: rounding.roundedRectangleRadius,
-          borderTopRightRadius: rounding.roundedRectangleRadius,
+          borderRadius: rounding.roundedRectangleRadius,
+          // The weight row closes the tile off when there is one.
+          borderBottomLeftRadius: showsWeight ? 0 : rounding.roundedRectangleRadius,
+          borderBottomRightRadius: showsWeight ? 0 : rounding.roundedRectangleRadius,
           overflow: 'hidden',
         }}
       >
@@ -100,32 +103,34 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
           </View>
         </Pressable>
       </View>
-      <View
-        style={{
-          borderTopWidth: 1,
-          borderColor: colors.outline,
-          backgroundColor: colors.surfaceContainerHigh,
-          borderBottomLeftRadius: rounding.roundedRectangleRadius,
-          borderBottomRightRadius: rounding.roundedRectangleRadius,
-          overflow: 'hidden',
-          padding: size.weightPadding,
-          width: '100%',
-        }}
-      >
-        <Pressable
-          onPress={props.onPressWeight}
-          testID="repcount-weight"
+      {showsWeight && (
+        <View
           style={{
-            alignItems: 'center',
-            margin: -size.weightPadding,
+            borderTopWidth: 1,
+            borderColor: colors.outline,
+            backgroundColor: colors.surfaceContainerHigh,
+            borderBottomLeftRadius: rounding.roundedRectangleRadius,
+            borderBottomRightRadius: rounding.roundedRectangleRadius,
+            overflow: 'hidden',
             padding: size.weightPadding,
+            width: '100%',
           }}
         >
-          <Text style={{ color: colors.onSurface, ...size.weightFont }}>
-            <WeightFormat weight={props.set.weight} usesBodyweight={props.usesBodyweight} />
-          </Text>
-        </Pressable>
-      </View>
+          <Pressable
+            onPress={props.onPressWeight}
+            testID="repcount-weight"
+            style={{
+              alignItems: 'center',
+              margin: -size.weightPadding,
+              padding: size.weightPadding,
+            }}
+          >
+            <Text style={{ color: colors.onSurface, ...size.weightFont }}>
+              <WeightFormat weight={props.set.weight} usesBodyweight={props.resistance === 'bodyweight'} />
+            </Text>
+          </Pressable>
+        </View>
+      )}
     </View>
   );
 }

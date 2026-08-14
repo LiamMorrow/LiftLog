@@ -1,0 +1,2320 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`built-in-programs > 0d0e0860-0555-4b43-bd93-350edd49c6bd migrates to a stable weighted shape 1`] = `
+[
+  {
+    "name": "Pushups",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Pushups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Dips",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Dips_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Handstand Pushups",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Handstand Pushups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Pullups",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Pullups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Chinups",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Chinups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Inverted Rows",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Inverted Rows_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Squats",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Squats_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Lunges",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Lunges_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Calf Raises",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Calf Raises_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+]
+`;
+
+exports[`built-in-programs > 590a285b-f883-4536-a1ce-cdc9e2d90399 migrates to a stable weighted shape 1`] = `[]`;
+
+exports[`built-in-programs > 890a285b-f883-4536-a1ce-cbc9e2d90399 migrates to a stable weighted shape 1`] = `
+[
+  {
+    "name": "Pushups",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Pushups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Dips",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Dips_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Handstand Pushups",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Handstand Pushups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Planche Pushups",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Planche Pushups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Pullups",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Pullups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Chinups",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Chinups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Inverted Rows",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Inverted Rows_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Muscle Ups",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Muscle Ups_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Squats",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Squats_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Lunges",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Lunges_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Calf Raises",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Calf Raises_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Pistol Squats",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [],
+    "progressionKey": "Pistol Squats_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+]
+`;
+
+exports[`built-in-programs > 5072c29e-1de9-44e0-865f-f65a15e860f7 migrates to a stable weighted shape 1`] = `
+[
+  {
+    "name": "Bench Press",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Bench Press_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
+  },
+  {
+    "name": "Barbell Row",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Barbell Row_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
+  },
+  {
+    "name": "Overhead Press",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Overhead Press_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Lat Pulldown",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Lat Pulldown_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Barbell Curl",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Barbell Curl_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Tricep Extension",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Tricep Extension_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Cable Fly",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Cable Fly_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Squat",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Squat_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
+  },
+  {
+    "name": "Deadlift",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Deadlift_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
+  },
+  {
+    "name": "Leg Press",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Leg Press_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Leg Curl",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Leg Curl_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Calf Raise",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Calf Raise_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Incline Bench Press",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Incline Bench Press_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Cable Row",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Cable Row_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Dumbbell Fly",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Dumbbell Fly_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Lat Pulldown",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Lat Pulldown_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Dumbbell Curl",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Dumbbell Curl_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Skullcrusher",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Skullcrusher_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Front Squat",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Front Squat_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Romanian Deadlift",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Romanian Deadlift_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Leg Extension",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Leg Extension_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Leg Curl",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Leg Curl_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+  {
+    "name": "Calf Raise",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+      {
+        "reps": {
+          "max": 10,
+          "min": 10,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Calf Raise_WeightedExerciseBlueprint_3_10",
+    "resistance": "external",
+  },
+]
+`;
+
+exports[`built-in-programs > 347607f0-67b8-4051-bfc2-3b73fccf92d8 migrates to a stable weighted shape 1`] = `
+[
+  {
+    "name": "Bench Press",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Bench Press_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
+  },
+  {
+    "name": "Overhead Press",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Overhead Press_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
+  },
+  {
+    "name": "Tricep Extension",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Tricep Extension_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
+  },
+  {
+    "name": "Cable Fly",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Cable Fly_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
+  },
+  {
+    "name": "Deadlift",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Deadlift_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
+  },
+  {
+    "name": "Barbell Row",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Barbell Row_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
+  },
+  {
+    "name": "Lat Pulldown",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Lat Pulldown_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
+  },
+  {
+    "name": "Barbell Curl",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Barbell Curl_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
+  },
+  {
+    "name": "Squat",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Squat_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
+  },
+  {
+    "name": "Lunges",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Lunges_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
+  },
+  {
+    "name": "Leg Extension",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Leg Extension_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
+  },
+  {
+    "name": "Leg Curl",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+      {
+        "reps": {
+          "max": 8,
+          "min": 8,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Leg Curl_WeightedExerciseBlueprint_4_8",
+    "resistance": "external",
+  },
+]
+`;
+
+exports[`built-in-programs > a303c855-9ed7-4ff8-ae60-11e9a573193e migrates to a stable weighted shape 1`] = `
+[
+  {
+    "name": "Squat",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Squat_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
+  },
+  {
+    "name": "Bench Press",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Bench Press_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
+  },
+  {
+    "name": "Deadlift",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Deadlift_WeightedExerciseBlueprint_1_5",
+    "resistance": "external",
+  },
+  {
+    "name": "Squat",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Squat_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
+  },
+  {
+    "name": "Overhead Press",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Overhead Press_WeightedExerciseBlueprint_3_5",
+    "resistance": "external",
+  },
+  {
+    "name": "Deadlift",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Deadlift_WeightedExerciseBlueprint_1_5",
+    "resistance": "external",
+  },
+]
+`;
+
+exports[`built-in-programs > ac80c322-3c0f-42ba-b837-cd998adee25a migrates to a stable weighted shape 1`] = `
+[
+  {
+    "name": "Squat",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Squat_WeightedExerciseBlueprint_5_5",
+    "resistance": "external",
+  },
+  {
+    "name": "Bench Press",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Bench Press_WeightedExerciseBlueprint_5_5",
+    "resistance": "external",
+  },
+  {
+    "name": "Barbell Row",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Barbell Row_WeightedExerciseBlueprint_5_5",
+    "resistance": "external",
+  },
+  {
+    "name": "Squat",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Squat_WeightedExerciseBlueprint_5_5",
+    "resistance": "external",
+  },
+  {
+    "name": "Overhead Press",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "2.5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Overhead Press_WeightedExerciseBlueprint_5_5",
+    "resistance": "external",
+  },
+  {
+    "name": "Deadlift",
+    "plannedSets": [
+      {
+        "reps": {
+          "max": 5,
+          "min": 5,
+        },
+      },
+    ],
+    "progression": [
+      {
+        "axis": "load",
+        "scope": {
+          "type": "allSets",
+        },
+        "step": "5",
+        "trigger": "allSetsMetTarget",
+      },
+    ],
+    "progressionKey": "Deadlift_WeightedExerciseBlueprint_1_5",
+    "resistance": "external",
+  },
+]
+`;

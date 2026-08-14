@@ -5,12 +5,15 @@ import {
   setLastSeenWhatsNewId,
   settingsReducer,
 } from '@/store/settings';
+import programReducer from '@/store/program';
 import { latestWhatsNewId, whatsNewEntries } from '@/models/whats-new';
 import { RootState } from '@/store';
 
+// Conditions read whatever slice their feature lives in, so every slice they can reach is built.
 const stateWith = (settings: Partial<ReturnType<typeof settingsReducer>>) =>
   ({
     settings: { ...settingsReducer(undefined, { type: '@@INIT' }), ...settings },
+    program: programReducer(undefined, { type: '@@INIT' }),
   }) as RootState;
 
 describe('whats-new selectors', () => {

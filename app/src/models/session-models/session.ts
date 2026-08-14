@@ -1,6 +1,7 @@
 import {
   CardioExerciseBlueprint,
   ExerciseBlueprint,
+  repsTargetsEqual,
   SessionBlueprint,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
@@ -44,7 +45,7 @@ export class Session {
       json.id,
       SessionBlueprint.fromJSON({
         ...json.blueprint,
-        version: 4,
+        version: 6,
         exercises: json.recordedExercises.map((x) => x.blueprint),
       }),
       json.recordedExercises.map(fromRecordedExerciseJSON),
@@ -62,7 +63,7 @@ export class Session {
           (we) =>
             new RecordedWeightedExercise(
               we,
-              Array.from({ length: we.sets }).map(() => new PotentialSet(undefined, new Weight(0, defaultWeightUnit))),
+              we.plannedSets.map((s) => new PotentialSet(undefined, new Weight(0, defaultWeightUnit), s.reps)),
               undefined,
             ),
         )
@@ -151,13 +152,21 @@ export class Session {
           exerciseIndex,
           weightedExistingExercise.with({
             blueprint: newBlueprint as WeightedExerciseBlueprint,
-            potentialSets: Enumerable.range(0, (newBlueprint as WeightedExerciseBlueprint).sets)
-              .select(
-                (index) =>
-                  weightedExistingExercise.potentialSets.at(index) ??
-                  new PotentialSet(undefined, weightedExistingExercise.maxWeight),
-              )
-              .toArray(),
+            // A set you already logged was chasing the target it was chasing, so only unrecorded
+            // sets take the edited blueprint's targets - and only where the edit actually moved
+            // them. A carried target can sit above what the plan asks for, and changing the notes
+            // is not a request to hand that back.
+            potentialSets: (newBlueprint as WeightedExerciseBlueprint).plannedSets.map((planned, index) => {
+              const existing = weightedExistingExercise.potentialSets.at(index);
+              if (!existing) {
+                return new PotentialSet(undefined, weightedExistingExercise.maxWeight, planned.reps);
+              }
+              const plannedBefore = weightedExistingExercise.blueprint.repsTargetForSet(index);
+              if (existing.set || repsTargetsEqual(planned.reps, plannedBefore)) {
+                return existing;
+              }
+              return existing.with({ target: planned.reps });
+            }),
           }),
         );
       }
@@ -311,7 +320,7 @@ export class Session {
 
   toJSON(): SessionJSON {
     return {
-      version: 4,
+      version: 7,
       blueprint: this.blueprint.toJSON(),
       bodyweight: this.bodyweight?.toJSON(),
       date: toLocalDateJSON(this.date),
@@ -493,7 +502,7 @@ export class Session {
 
       const lastSet = exercise.lastRecordedSet;
       const targetMin = lastSet?.set
-        ? exercise.blueprint.repsTargetForSet(exercise.potentialSets.indexOf(lastSet)).min
+        ? exercise.repsTargetForSet(exercise.potentialSets.indexOf(lastSet)).min
         : undefined;
       const rest =
         targetMin === undefined ? Duration.ZERO : lastSet!.set!.repsCompleted >= targetMin ? minRest : failureRest;

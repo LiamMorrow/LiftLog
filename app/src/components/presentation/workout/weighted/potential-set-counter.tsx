@@ -1,5 +1,5 @@
 import { PotentialSet, WeightAppliesTo } from '@/models/session-models';
-import { RepsTarget } from '@/models/blueprint-models';
+import { Resistance, RepsTarget } from '@/models/blueprint-models';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { Text as PaperText, Chip } from 'react-native-paper';
@@ -20,7 +20,7 @@ interface PotentialSetCounterProps {
   previousRepCount: number | undefined;
   toStartNext: boolean;
   isReadonly: boolean;
-  usesBodyweight: boolean;
+  resistance: Resistance;
 
   onTap: () => void;
   onUpdateWeight: (weight: Weight, applyTo: WeightAppliesTo) => void;
@@ -45,7 +45,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
         <PotentialSetDisplay
           set={props.set}
           repsTarget={props.repsTarget}
-          usesBodyweight={props.usesBodyweight}
+          resistance={props.resistance}
           previousRepCount={props.previousRepCount}
           onPressReps={props.isReadonly ? undefined : props.onTap}
           onPressWeight={

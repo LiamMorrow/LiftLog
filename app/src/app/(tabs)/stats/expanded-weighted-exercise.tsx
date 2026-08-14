@@ -5,8 +5,9 @@ import SingleValueStatisticCard from '@/components/presentation/stats/single-val
 import { SingleValueStatisticsGrid } from '@/components/presentation/stats/single-value-statistics-grid';
 import { TimePeriodSelector } from '@/components/presentation/stats/time-period-selector';
 import { TitledSection } from '@/components/presentation/stats/titled-section';
-import { WeightBarChart } from '@/components/presentation/stats/weight-bar-chart';
-import { WeightLineChart } from '@/components/presentation/stats/weight-line-chart';
+import { StatisticBarChart } from '@/components/presentation/stats/statistic-bar-chart';
+import { StatisticLineChart } from '@/components/presentation/stats/statistic-line-chart';
+import { useLoadAxis, useRepsAxis } from '@/components/presentation/stats/quantity-axis';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { fetchOverallStats, selectExerciseView, setOverallViewTime, WeightedExerciseStatistics } from '@/store/stats';
@@ -59,18 +60,31 @@ function LoadedStats({ stats }: { stats: WeightedExerciseStatistics | undefined 
 
 function LoadedStatsFilled({ stats }: { stats: WeightedExerciseStatistics }) {
   const { t } = useTranslate();
+  const loadAxis = useLoadAxis();
+  const repsAxis = useRepsAxis();
   return (
     <View style={{ gap: spacing[4] }}>
       <OverallStatsGrid stats={stats} />
-      <StatCardWithTitle title={t('stats.exercise.max_weight.title')}>
-        <WeightLineChart statistics={stats.maxLiftedPerSessionStatistics} />
-      </StatCardWithTitle>
-      <StatCardWithTitle title={t('stats.exercise.1rm_progress.title')}>
-        <WeightLineChart statistics={stats.max1RMPerSessionStatistics} />
-      </StatCardWithTitle>
-      <StatCardWithTitle title={t('stats.exercise.volume_per_workout.title')}>
-        <WeightBarChart statistics={stats.totalVolumeStatistics} />
-      </StatCardWithTitle>
+      {stats.primary === 'reps' ? (
+        <StatCardWithTitle title={t('stats.exercise.max_reps.title')}>
+          <StatisticLineChart statistics={stats.series.reps} axis={repsAxis} />
+        </StatCardWithTitle>
+      ) : (
+        <StatCardWithTitle title={t('stats.exercise.max_weight.title')}>
+          <StatisticLineChart statistics={stats.series.load} axis={loadAxis} />
+        </StatCardWithTitle>
+      )}
+      {/* 1RM and volume both need a load and a rep count, so a reps-only exercise has neither. */}
+      {stats.primary === 'load' && (
+        <>
+          <StatCardWithTitle title={t('stats.exercise.1rm_progress.title')}>
+            <StatisticLineChart statistics={stats.max1RMPerSessionStatistics} axis={loadAxis} />
+          </StatCardWithTitle>
+          <StatCardWithTitle title={t('stats.exercise.volume_per_workout.title')}>
+            <StatisticBarChart statistics={stats.totalVolumeStatistics} axis={loadAxis} />
+          </StatCardWithTitle>
+        </>
+      )}
       <StatCardWithTitle title={t('stats.exercise.reps_breakdown.title')}>
         <RepsBarChart statistics={stats.repsStatistics} />
         <Text style={{ textAlign: 'center' }}>{t('stats.exercise.reps_breakdown_sets_x_axis.label')}</Text>
@@ -98,39 +112,70 @@ function StatCardWithTitle(props: { title: string; children: ReactNode }) {
 function OverallStatsGrid({ stats }: { stats: WeightedExerciseStatistics }) {
   const { t } = useTranslate();
   const usualRepRange = getUsualRepRange(stats);
+  const repsAxis = useRepsAxis();
+  const onReps = stats.primary === 'reps';
+  // The grid lays each child out as its own cell, so this has to stay a flat list.
   return (
     <TitledSection title={t('stats.exercise.overview.title')}>
       <SingleValueStatisticsGrid>
-        <SingleValueStatisticCard
-          title={t('stats.exercise.sets_per_week.label')}
-          icon={'function'}
-          value={formatWeeklyRate(stats.setsPerWeek)}
-        />
-        <SingleValueStatisticCard
-          title={t('stats.exercise.current_weight.label')}
-          icon={'weight'}
-          value={stats.maxLiftedPerSessionStatistics.currentValue.shortLocaleFormat()}
-        />
-        <SingleValueStatisticCard
-          title={t('stats.exercise.max_weight.label')}
-          icon={'fitnessCenter'}
-          value={stats.maxLiftedPerSessionStatistics.maxValue.shortLocaleFormat()}
-        />
-        <SingleValueStatisticCard
-          title={t('stats.exercise.total_lifted.label')}
-          icon={'anchor'}
-          value={stats.totalVolumeStatistics.totalValue.shortLocaleFormat(0)}
-        />
-        <SingleValueStatisticCard
-          title={t('stats.exercise.estimated_1rm.label')}
-          icon={'function'}
-          value={stats.max1RMPerSessionStatistics.currentValue.shortLocaleFormat(0)}
-        />
-        <SingleValueStatisticCard
-          title={t('stats.exercise.usual_rep_range.label')}
-          icon={'barChart'}
-          value={usualRepRange}
-        />
+        {[
+          <SingleValueStatisticCard
+            key="sets-per-week"
+            title={t('stats.exercise.sets_per_week.label')}
+            icon={'function'}
+            value={formatWeeklyRate(stats.setsPerWeek)}
+          />,
+          <SingleValueStatisticCard
+            key="current"
+            title={onReps ? t('stats.exercise.current_reps.label') : t('stats.exercise.current_weight.label')}
+            icon={onReps ? 'barChart' : 'weight'}
+            value={
+              onReps
+                ? repsAxis.format(stats.series.reps.currentValue)
+                : stats.series.load.currentValue.shortLocaleFormat()
+            }
+          />,
+          <SingleValueStatisticCard
+            key="max"
+            title={onReps ? t('stats.exercise.max_reps.label') : t('stats.exercise.max_weight.label')}
+            icon={'fitnessCenter'}
+            value={
+              onReps ? repsAxis.format(stats.series.reps.maxValue) : stats.series.load.maxValue.shortLocaleFormat()
+            }
+          />,
+          onReps ? (
+            <SingleValueStatisticCard
+              key="total"
+              title={t('stats.exercise.total_reps.label')}
+              icon={'anchor'}
+              value={repsAxis.format(stats.series.reps.totalValue)}
+            />
+          ) : (
+            <SingleValueStatisticCard
+              key="total"
+              title={t('stats.exercise.total_lifted.label')}
+              icon={'anchor'}
+              value={stats.totalVolumeStatistics.totalValue.shortLocaleFormat(0)}
+            />
+          ),
+          // A 1RM needs a load and a rep count, so a reps-only exercise has none to offer.
+          ...(onReps
+            ? []
+            : [
+                <SingleValueStatisticCard
+                  key="1rm"
+                  title={t('stats.exercise.estimated_1rm.label')}
+                  icon={'function'}
+                  value={stats.max1RMPerSessionStatistics.currentValue.shortLocaleFormat(0)}
+                />,
+              ]),
+          <SingleValueStatisticCard
+            key="rep-range"
+            title={t('stats.exercise.usual_rep_range.label')}
+            icon={'barChart'}
+            value={usualRepRange}
+          />,
+        ]}
       </SingleValueStatisticsGrid>
     </TitledSection>
   );

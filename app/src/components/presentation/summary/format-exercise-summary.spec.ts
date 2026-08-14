@@ -5,21 +5,23 @@ import { SessionBlueprint } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { LocalDate } from '@js-joda/core';
 import { v4 as uuid } from 'uuid';
-import { makeWeightedBlueprint, tick } from '@/models/session-models/__test__/helpers';
+import { makeRecordedExercise, makeWeightedBlueprint, tick } from '@/models/session-models/__test__/helpers';
 
 vi.mock('expo-localization', () => ({ getLocales: () => [{ decimalSeparator: '.' }] }));
 
 const filled = { isFilled: true, showWeight: true };
 
-function exerciseOf(sets: { reps: number | undefined; weight: number }[]) {
+/** Every set is seeded with the plan's target, which is what building a session does. */
+function exerciseOf(sets: { reps: number | undefined; weight: number }[], blueprint = makeWeightedBlueprint()) {
   return new RecordedWeightedExercise(
-    makeWeightedBlueprint(),
-    sets.map(
-      (set) =>
-        new PotentialSet(
-          set.reps === undefined ? undefined : new RecordedSet(set.reps, tick()),
-          new Weight(set.weight, 'kilograms'),
-        ),
+    blueprint,
+    sets.map((set, index) =>
+      PotentialSet.of({
+        set:
+          set.reps === undefined ? undefined : RecordedSet.of({ repsCompleted: set.reps, completionDateTime: tick() }),
+        weight: new Weight(set.weight, 'kilograms'),
+        target: blueprint.repsTargetForSet(index),
+      }),
     ),
     undefined,
   );
@@ -85,13 +87,36 @@ describe('formatExerciseSummary', () => {
     expect(formatExerciseSummary(exercise, filled)).toBe('12 @ 60kg');
   });
 
-  it('states a plan as its shape, taking reps from the blueprint rather than what was recorded', () => {
+  it('states a plan as its shape, taking reps from the targets rather than what was recorded', () => {
     const exercise = exerciseOf([
       { reps: undefined, weight: 60 },
       { reps: undefined, weight: 60 },
     ]);
 
     expect(formatExerciseSummary(exercise, { isFilled: false, showWeight: true })).toBe('2 × 10 @ 60kg');
+  });
+
+  it('states the target the sets are chasing, not the plan they were seeded from', () => {
+    // What a reps rule leaves behind: the plan still says 10, the session is on 11.
+    const exercise = new RecordedWeightedExercise(
+      makeWeightedBlueprint(),
+      [0, 1, 2].map(() => PotentialSet.of({ weight: new Weight(0, 'kilograms'), target: { min: 11, max: 11 } })),
+      undefined,
+    );
+
+    expect(formatExerciseSummary(exercise, { isFilled: false, showWeight: true })).toBe('3 × 11');
+  });
+
+  it('spells out a climb that has left some sets behind', () => {
+    const exercise = new RecordedWeightedExercise(
+      makeWeightedBlueprint(),
+      [12, 10, 10].map((reps) =>
+        PotentialSet.of({ weight: new Weight(0, 'kilograms'), target: { min: reps, max: reps } }),
+      ),
+      undefined,
+    );
+
+    expect(formatExerciseSummary(exercise, { isFilled: false, showWeight: true })).toBe('12/10/10');
   });
 
   it('gives a planned exercise whose weight steps a range, rather than a set-by-set list', () => {
@@ -108,13 +133,16 @@ describe('formatExerciseSummary', () => {
 describe('formatExerciseSummary for bodyweight exercises', () => {
   function bodyweightExerciseOf(sets: { reps: number | undefined; weight: number }[]) {
     return new RecordedWeightedExercise(
-      makeWeightedBlueprint('Pull Up', false, true),
-      sets.map(
-        (set) =>
-          new PotentialSet(
-            set.reps === undefined ? undefined : new RecordedSet(set.reps, tick()),
-            new Weight(set.weight, 'kilograms'),
-          ),
+      makeWeightedBlueprint({ name: 'Pull Up', resistance: 'bodyweight' }),
+      sets.map((set, index) =>
+        PotentialSet.of({
+          set:
+            set.reps === undefined
+              ? undefined
+              : RecordedSet.of({ repsCompleted: set.reps, completionDateTime: tick() }),
+          weight: new Weight(set.weight, 'kilograms'),
+          target: makeWeightedBlueprint().repsTargetForSet(index),
+        }),
       ),
       undefined,
     );
@@ -158,5 +186,21 @@ describe('formatSessionVolume', () => {
     const session = sessionOf(exerciseOf([{ reps: 10, weight: 0 }]));
 
     expect(formatSessionVolume(session)).toBeUndefined();
+  });
+});
+
+describe('formatExerciseSummary for exercises that track no load', () => {
+  const crunch = makeWeightedBlueprint({ name: 'Crunch', sets: 3, resistance: 'none' });
+
+  it('says nothing about weight when logged', () => {
+    const exercise = makeRecordedExercise(crunch, [20, 20, 20], new Weight(999, 'kilograms'));
+
+    expect(formatExerciseSummary(exercise, filled)).toBe('3 × 20');
+  });
+
+  it('says nothing about weight when planned', () => {
+    const exercise = makeRecordedExercise(crunch, [undefined, undefined, undefined], new Weight(999, 'kilograms'));
+
+    expect(formatExerciseSummary(exercise, { isFilled: false, showWeight: true })).toBe('3 × 10');
   });
 });

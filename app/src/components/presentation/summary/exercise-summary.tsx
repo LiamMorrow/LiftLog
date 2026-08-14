@@ -201,16 +201,16 @@ interface PotentialSetChipData {
 function getWeightAndRepsChips(exercise: RecordedWeightedExercise): WeightAndRepsChipData[] {
   return exercise.potentialSets.map((set, index) => ({
     repsCompleted: set.set?.repsCompleted,
-    repTarget: exercise.blueprint.repsTargetForSet(index).max,
+    repTarget: exercise.repsTargetForSet(index).max,
     weight: set.weight,
-    usesBodyweight: exercise.blueprint.usesBodyweight,
+    usesBodyweight: exercise.blueprint.resistance === 'bodyweight',
   }));
 }
 
 function getPlannedChipData(exercise: RecordedWeightedExercise): PotentialSetChipData[] {
   return Enumerable.from(
     exercise.potentialSets.map((set, index) => ({
-      repTarget: formatRepsTarget(exercise.blueprint.repsTargetForSet(index)),
+      repTarget: formatRepsTarget(exercise.repsTargetForSet(index)),
       weight: set.weight,
     })),
   )
@@ -219,7 +219,7 @@ function getPlannedChipData(exercise: RecordedWeightedExercise): PotentialSetChi
       repTarget: x.first().repTarget,
       numSets: x.count(),
       weight: x.first().weight,
-      usesBodyweight: exercise.blueprint.usesBodyweight,
+      usesBodyweight: exercise.blueprint.resistance === 'bodyweight',
     }))
     .toArray();
 }

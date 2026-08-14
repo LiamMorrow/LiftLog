@@ -33,29 +33,56 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
           "link": "",
           "name": "Bench Press",
           "notes": "",
-          "progressiveOverload": {
-            "amount": "2.5",
-            "type": "IncreaseAllEvenlyProgressiveOverload",
-          },
-          "repsConfig": {
-            "reps": 10,
-            "type": "fixed",
-          },
+          "plannedSets": [
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+          ],
+          "progression": [
+            {
+              "axis": "load",
+              "scope": {
+                "type": "allSets",
+              },
+              "step": "2.5",
+              "trigger": "allSetsMetTarget",
+            },
+          ],
+          "resistance": "external",
           "restBetweenSets": {
             "failureRest": "PT5M",
             "maxRest": "PT3M",
             "minRest": "PT1M30S",
           },
-          "sets": 3,
           "supersetWithNext": false,
           "type": "WeightedExerciseBlueprint",
-          "usesBodyweight": false,
         },
         "potentialSets": [
           {
             "set": {
               "completionDateTime": "2024-01-15T10:00:00Z",
               "repsCompleted": 10,
+            },
+            "target": {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
             },
             "weight": {
               "unit": "kilograms",
@@ -67,6 +94,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
               "completionDateTime": "2024-01-15T10:01:00Z",
               "repsCompleted": 10,
             },
+            "target": {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
             "weight": {
               "unit": "kilograms",
               "value": "100",
@@ -76,6 +109,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
             "set": {
               "completionDateTime": "2024-01-15T10:02:00Z",
               "repsCompleted": 10,
+            },
+            "target": {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
             },
             "weight": {
               "unit": "kilograms",
@@ -100,29 +139,56 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
           "link": "",
           "name": "Squat",
           "notes": "",
-          "progressiveOverload": {
-            "amount": "2.5",
-            "type": "IncreaseAllEvenlyProgressiveOverload",
-          },
-          "repsConfig": {
-            "reps": 10,
-            "type": "fixed",
-          },
+          "plannedSets": [
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+          ],
+          "progression": [
+            {
+              "axis": "load",
+              "scope": {
+                "type": "allSets",
+              },
+              "step": "2.5",
+              "trigger": "allSetsMetTarget",
+            },
+          ],
+          "resistance": "external",
           "restBetweenSets": {
             "failureRest": "PT5M",
             "maxRest": "PT3M",
             "minRest": "PT1M30S",
           },
-          "sets": 3,
           "supersetWithNext": false,
           "type": "WeightedExerciseBlueprint",
-          "usesBodyweight": false,
         },
         "potentialSets": [
           {
             "set": {
               "completionDateTime": "2024-01-15T10:00:00Z",
               "repsCompleted": 10,
+            },
+            "target": {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
             },
             "weight": {
               "unit": "kilograms",
@@ -134,6 +200,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
               "completionDateTime": "2024-01-15T10:01:00Z",
               "repsCompleted": 10,
             },
+            "target": {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
             "weight": {
               "unit": "kilograms",
               "value": "100",
@@ -143,6 +215,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
             "set": {
               "completionDateTime": "2024-01-15T10:02:00Z",
               "repsCompleted": 10,
+            },
+            "target": {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
             },
             "weight": {
               "unit": "kilograms",

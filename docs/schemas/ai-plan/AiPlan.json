@@ -58,7 +58,7 @@
       "properties": {
         "version": {
           "type": "number",
-          "const": 4
+          "const": 6
         },
         "name": {
           "type": "string"
@@ -107,12 +107,12 @@
         "name": {
           "type": "string"
         },
-        "sets": {
-          "type": "integer"
-        },
-        "repsConfig": {
-          "$ref": "#/definitions/RepsConfig",
-          "description": "How the rep targets are laid out: one fixed target, a min–max range, or a per-set pyramid."
+        "plannedSets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PlannedSet"
+          },
+          "description": "What the plan asks for, one entry per set."
         },
         "restBetweenSets": {
           "$ref": "#/definitions/Rest"
@@ -128,102 +128,41 @@
           "type": "string",
           "description": "A url to some explanation of how to do this. We should not fill this unless the user has explicitly given us a link to fill"
         },
-        "progressiveOverload": {
-          "$ref": "#/definitions/ProgressiveOverload"
+        "progression": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ProgressionRule"
+          },
+          "description": "Ordered; the first rule that can still move, moves. Empty means no automatic progression."
         },
-        "usesBodyweight": {
-          "type": "boolean",
-          "description": "When true, the movement's base load is the lifter's own bodyweight (pull-ups, dips), and each set's stored weight is the *added* load on top of it - positive when weighted, negative when assisted."
+        "resistance": {
+          "$ref": "#/definitions/Resistance",
+          "description": "Where this movement's load comes from: the whole stored weight (`external`), what is added on top of the lifter (`bodyweight`), or nothing at all (`none`, e.g. crunches)."
         }
       },
       "required": [
         "type",
         "name",
-        "sets",
-        "repsConfig",
+        "plannedSets",
         "restBetweenSets",
         "supersetWithNext",
         "notes",
         "link",
-        "progressiveOverload",
-        "usesBodyweight"
+        "progression",
+        "resistance"
       ]
     },
-    "RepsConfig": {
-      "type": "object",
-      "discriminator": {
-        "propertyName": "type"
-      },
-      "required": [
-        "type"
-      ],
-      "oneOf": [
-        {
-          "$ref": "#/definitions/FixedRepsConfig"
-        },
-        {
-          "$ref": "#/definitions/RangeRepsConfig"
-        },
-        {
-          "$ref": "#/definitions/PerSetRepsConfig"
-        }
-      ]
-    },
-    "FixedRepsConfig": {
+    "PlannedSet": {
       "type": "object",
       "properties": {
-        "type": {
-          "type": "string",
-          "const": "fixed"
-        },
         "reps": {
-          "type": "integer"
+          "$ref": "#/definitions/RepsTarget"
         }
       },
       "required": [
-        "type",
         "reps"
-      ]
-    },
-    "RangeRepsConfig": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "const": "range"
-        },
-        "min": {
-          "type": "integer"
-        },
-        "max": {
-          "type": "integer"
-        }
-      },
-      "required": [
-        "type",
-        "min",
-        "max"
-      ]
-    },
-    "PerSetRepsConfig": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "const": "perSet"
-        },
-        "targets": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/RepsTarget"
-          },
-          "description": "One target per set; length matches `sets`. It's important to note that while the model allows for max and min to be specified, the UI does not, so it is VERY important that the min and max values are the same when using this mode"
-        }
-      },
-      "required": [
-        "type",
-        "targets"
-      ]
+      ],
+      "description": "What the plan asks for on one set."
     },
     "RepsTarget": {
       "type": "object",
@@ -238,7 +177,8 @@
       "required": [
         "min",
         "max"
-      ]
+      ],
+      "description": "Always a band; `min === max` is a point target."
     },
     "Rest": {
       "type": "object",
@@ -264,7 +204,55 @@
       "type": "string",
       "format": "duration"
     },
-    "ProgressiveOverload": {
+    "ProgressionRule": {
+      "type": "object",
+      "properties": {
+        "axis": {
+          "$ref": "#/definitions/ProgressionAxis"
+        },
+        "step": {
+          "$ref": "#/definitions/BigNumber"
+        },
+        "scope": {
+          "$ref": "#/definitions/SetScope"
+        },
+        "ceiling": {
+          "$ref": "#/definitions/BigNumber",
+          "description": "Where the axis stops climbing. Above this the rule can no longer move, so the next one is tried."
+        },
+        "onCeiling": {
+          "type": "string",
+          "const": "reset",
+          "description": "Drop the axis back to what the plan asks for once a later rule fires."
+        },
+        "trigger": {
+          "$ref": "#/definitions/SuccessRule"
+        }
+      },
+      "required": [
+        "axis",
+        "step",
+        "scope",
+        "trigger"
+      ],
+      "description": "One step of automatic progression. An exercise carries an ordered list of these, and the first rule that can still move is the one that moves.\n\n`step` and `ceiling` are in the axis's own unit - whole reps, or plate increments in whatever unit the lifter works in. Deliberately not a weight: 2.5 in a kilogram gym and 5 in a pound gym are the same step, not conversions of one another, and a blueprint has no unit to be expressed in."
+    },
+    "ProgressionAxis": {
+      "type": "string",
+      "enum": [
+        "reps",
+        "load"
+      ],
+      "description": "Which number a rule moves."
+    },
+    "BigNumber": {
+      "type": "string",
+      "examples": [
+        "1.23"
+      ],
+      "format": "decimal"
+    },
+    "SetScope": {
       "type": "object",
       "discriminator": {
         "propertyName": "type"
@@ -274,64 +262,34 @@
       ],
       "oneOf": [
         {
-          "$ref": "#/definitions/NoProgressiveOverload"
+          "$ref": "#/definitions/AllSetsScope"
         },
         {
-          "$ref": "#/definitions/IncreaseAllEvenlyProgressiveOverload"
-        },
-        {
-          "$ref": "#/definitions/IncreaseLowestSetProgressiveOverload"
+          "$ref": "#/definitions/LowestSetsScope"
         }
-      ]
+      ],
+      "description": "Which sets a rule moves."
     },
-    "NoProgressiveOverload": {
+    "AllSetsScope": {
       "type": "object",
       "properties": {
         "type": {
           "type": "string",
-          "const": "NoProgressiveOverload"
+          "const": "allSets"
         }
       },
       "required": [
         "type"
-      ],
-      "description": "Used when the user does not want progressive overload at all. Potentially with bodyweight exercises."
+      ]
     },
-    "IncreaseAllEvenlyProgressiveOverload": {
+    "LowestSetsScope": {
       "type": "object",
       "properties": {
         "type": {
           "type": "string",
-          "const": "IncreaseAllEvenlyProgressiveOverload"
+          "const": "lowestSets"
         },
-        "amount": {
-          "$ref": "#/definitions/BigNumber"
-        }
-      },
-      "required": [
-        "type",
-        "amount"
-      ],
-      "description": "The standard \"increase every set across the board\" progressive overload. Usually 2.5kg, or 5lb."
-    },
-    "BigNumber": {
-      "type": "string",
-      "examples": [
-        "1.23"
-      ],
-      "format": "decimal"
-    },
-    "IncreaseLowestSetProgressiveOverload": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "const": "IncreaseLowestSetProgressiveOverload"
-        },
-        "amount": {
-          "$ref": "#/definitions/BigNumber"
-        },
-        "increaseStrategy": {
+        "pick": {
           "type": "string",
           "enum": [
             "first",
@@ -343,10 +301,22 @@
       },
       "required": [
         "type",
-        "amount",
-        "increaseStrategy"
+        "pick"
       ],
-      "description": "A more complex progressive overload which allows the user to increase only a single set, or all sets which have the lowest weight.\n\nA user might want to increase the middle weight for exercises where going up across the board would be too much e.g. lateral raises, or other shoulder exercises"
+      "description": "Ranks by the rule's own axis, so a reps rule picks the smallest target rather than the smallest weight."
+    },
+    "SuccessRule": {
+      "type": "string",
+      "const": "allSetsMetTarget",
+      "description": "What has to happen for a rule to fire."
+    },
+    "Resistance": {
+      "type": "string",
+      "enum": [
+        "none",
+        "external",
+        "bodyweight"
+      ]
     },
     "CardioExerciseBlueprint": {
       "type": "object",

@@ -41,6 +41,29 @@ export const whatsNewEntries: WhatsNewEntry[] = [
       route: '/settings/program-list',
     },
   },
+  {
+    id: 3,
+    icon: 'trendingUp',
+    titleKey: 'whats_new.reps_progression.title',
+    bodyKey: 'whats_new.reps_progression.body',
+    cta: {
+      labelKey: 'whats_new.reps_progression.cta',
+      route: '/settings/program-list',
+    },
+    condition: (state) => !someExerciseProgressesReps(state),
+  },
 ];
+
+/** Nothing to announce once a plan already uses it. */
+function someExerciseProgressesReps(state: RootState): boolean {
+  return Object.values(state.program.savedPrograms).some((program) =>
+    program.sessions.some((session) =>
+      session.exercises.some(
+        (exercise) =>
+          exercise.type === 'WeightedExerciseBlueprint' && exercise.progression.some((rule) => rule.axis === 'reps'),
+      ),
+    ),
+  );
+}
 
 export const latestWhatsNewId = whatsNewEntries.reduce((max, entry) => Math.max(max, entry.id), 0);

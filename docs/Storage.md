@@ -2,23 +2,26 @@
 
 LiftLog persists on-device data in two places. Which one you use depends on what kind of data it is:
 
-| | Preferences | User data |
-| --- | --- | --- |
-| Written through | `PreferenceService` | Drizzle ORM (`db`) |
-| Backed by | One file per key in the app document directory (`KeyValueStore`) | SQLite (`db.db`, via expo-sqlite) |
-| Holds | Settings and small scalars the user toggles | Sessions, programs, exercises, feed state |
-| Shape changes handled by | Hand-written defaults in the getter | Drizzle SQL migrations + JSON payload migrations (see [Migrations.md](./Migrations.md)) |
-| Injected as | `extra.preferenceService` | `extra.db` |
+|                          | Preferences                                                      | User data                                                                               |
+| ------------------------ | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Written through          | `PreferenceService`                                              | Drizzle ORM (`db`)                                                                      |
+| Backed by                | One file per key in the app document directory (`KeyValueStore`) | SQLite (`db.db`, via expo-sqlite)                                                       |
+| Holds                    | Settings and small scalars the user toggles                      | Sessions, programs, exercises, feed state                                               |
+| Shape changes handled by | Hand-written defaults in the getter                              | Drizzle SQL migrations + JSON payload migrations (see [Migrations.md](./Migrations.md)) |
+| Injected as              | `extra.preferenceService`                                        | `extra.db`                                                                              |
 
 Both are built in `app/src/services/index.ts` (`createServices`) and are reachable from any Redux effect
 via the `extra` bag:
 
 ```ts
-addEffect(setUseImperialUnits, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-  if (stateAfterReduce.settings.isHydrated) {
-    await preferenceService.setUseImperialUnits(action.payload);
-  }
-});
+addEffect(
+  setUseImperialUnits,
+  async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (stateAfterReduce.settings.isHydrated) {
+      await preferenceService.setUseImperialUnits(action.payload);
+    }
+  },
+);
 ```
 
 Redux is the source of truth at runtime. Storage is written **from effects**, never from components or
@@ -63,7 +66,7 @@ method or per-key effect. Keys with special needs use the `persist: false` / `hy
 A few non-settings blobs skip `PreferenceService` and use `extra.keyValueStore` directly - the
 in-progress session payload (`store/current-session/effects.ts`), the hidden built-in exercise id list,
 the "built-in programs seeded" marker. That's the escape hatch for a value that isn't a user-facing
-setting but is too small or too structurally awkward for a table. New *settings* should go through
+setting but is too small or too structurally awkward for a table. New _settings_ should go through
 `PreferenceService`.
 
 ## User data - SQLite via Drizzle
@@ -77,9 +80,9 @@ Tables are almost all the same shape - a text `id` primary key plus a `payload` 
 the model's `AnyVersion…JSON` union:
 
 ```ts
-export const sessionsSchema = sqliteTable('session', {
+export const sessionsSchema = sqliteTable("session", {
   id: text().primaryKey(),
-  payload: text('payload', { mode: 'json' }).$type<AnyVersionSessionJSON>().notNull(),
+  payload: text("payload", { mode: "json" }).$type<AnyVersionSessionJSON>().notNull(),
 });
 ```
 
@@ -99,7 +102,10 @@ Read on hydration, dispatch into the slice:
 
 ```ts
 const completedSessions = (await db.select().from(sessionsSchema)).reduce(
-  toRecord((x) => x.id, (row) => Session.fromJSON(sessionMigrations.migrate(row.payload))),
+  toRecord(
+    (x) => x.id,
+    (row) => Session.fromJSON(sessionMigrations.migrate(row.payload)),
+  ),
   {},
 );
 dispatch(setStoredSessions(completedSessions));
@@ -110,7 +116,9 @@ Write with the `upsert` helper in `app/src/db/helpers.ts`, which does an
 transaction (`tx`) as well as `db`:
 
 ```ts
-await upsert(db, feedSentReactionsSchema, [{ id: action.payload.id, payload: action.payload.toJSON() }]);
+await upsert(db, feedSentReactionsSchema, [
+  { id: action.payload.id, payload: action.payload.toJSON() },
+]);
 ```
 
 Use `db.transaction(async (tx) => …)` when several tables must move together.

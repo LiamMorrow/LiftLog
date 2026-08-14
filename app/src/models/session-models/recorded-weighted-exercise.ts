@@ -1,4 +1,4 @@
-import { MovementKey, ProgressionKey, WeightedExerciseBlueprint } from '@/models/blueprint-models';
+import { MovementKey, ProgressionKey, RepsTarget, WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
 import { RecordedExercise } from '@/models/session-models/recorded-exercise';
 
@@ -43,12 +43,15 @@ export class RecordedWeightedExercise {
     return this.blueprint.progressionKey();
   }
 
+  /** The performance's own target wins; the blueprint only seeds it when the exercise is created. */
+  repsTargetForSet(index: number): RepsTarget {
+    return this.potentialSets[index]?.target ?? this.blueprint.repsTargetForSet(index);
+  }
+
   static empty(b: WeightedExerciseBlueprint, unit: WeightUnit): RecordedWeightedExercise {
     return new RecordedWeightedExercise(
       b,
-      Enumerable.range(0, b.sets)
-        .select(() => new PotentialSet(undefined, new Weight(0, unit)))
-        .toArray(),
+      b.plannedSets.map((s) => new PotentialSet(undefined, new Weight(0, unit), s.reps)),
       undefined,
     );
   }
@@ -103,7 +106,7 @@ export class RecordedWeightedExercise {
       s.with({
         set: match(s.set)
           .returnType<RecordedSet | undefined>()
-          .with(undefined, () => new RecordedSet(this.blueprint.repsTargetForSet(setIndex).max, time))
+          .with(undefined, () => new RecordedSet(this.repsTargetForSet(setIndex).max, time))
           .with({ repsCompleted: 0 }, () => undefined)
           .otherwise((x) =>
             x.with({
@@ -155,13 +158,21 @@ export class RecordedWeightedExercise {
     };
   }
 
+  /** False for a movement that tracks no load, so nothing sums a volume or computes a 1RM for it. */
+  get tracksResistance(): boolean {
+    return this.blueprint.resistance !== 'none';
+  }
+
   /**
    * The load actually moved for a set: the stored weight for a plain exercise, or the
    * bodyweight plus the stored (added/assisted) weight for a bodyweight exercise. When the
    * session bodyweight is unknown the bodyweight contribution is treated as zero.
    */
   effectiveWeight(set: PotentialSet, bodyweight: Weight | undefined): Weight {
-    return this.blueprint.usesBodyweight ? (bodyweight ?? Weight.NIL).plus(set.weight) : set.weight;
+    if (!this.tracksResistance) {
+      return Weight.NIL;
+    }
+    return this.blueprint.resistance === 'bodyweight' ? (bodyweight ?? Weight.NIL).plus(set.weight) : set.weight;
   }
 
   get maxWeight(): Weight {
@@ -240,9 +251,7 @@ export class RecordedWeightedExercise {
   /// An exercise is considered a success if ALL sets are successful
   /// </summary>
   get isSuccessForProgressiveOverload(): boolean {
-    return this.potentialSets.every(
-      (x, index) => x.set && x.set.repsCompleted >= this.blueprint.repsTargetForSet(index).max,
-    );
+    return this.potentialSets.every((x, index) => x.set && x.set.repsCompleted >= this.repsTargetForSet(index).max);
   }
 }
 
@@ -251,6 +260,11 @@ export class RecordedSet {
     readonly repsCompleted: number,
     readonly completionDateTime: OffsetDateTime,
   ) {}
+
+  /** Build a recorded set from named fields. See {@link PotentialSet.of}. */
+  static of(init: { repsCompleted: number; completionDateTime: OffsetDateTime }): RecordedSet {
+    return new RecordedSet(init.repsCompleted, init.completionDateTime);
+  }
 
   static fromJSON(json: RecordedSetJSON): RecordedSet {
     return new RecordedSet(json.repsCompleted, fromOffsetDateTimeJSON(json.completionDateTime));
@@ -286,10 +300,20 @@ export class PotentialSet {
   constructor(
     readonly set: RecordedSet | undefined,
     readonly weight: Weight,
+    /** The target this set is chasing, carried on the performance rather than re-read from the plan. */
+    readonly target: RepsTarget = { min: 0, max: 0 },
   ) {}
 
+  /** Build a set from named fields; preferred over the constructor, which leads with the absent one. */
+  static of(init: { set?: RecordedSet | undefined; weight: Weight; target?: RepsTarget }): PotentialSet {
+    return new PotentialSet(init.set, init.weight, init.target);
+  }
+
   static fromJSON(json: PotentialSetJSON): PotentialSet {
-    return new PotentialSet(json.set ? RecordedSet.fromJSON(json.set) : undefined, Weight.fromJSON(json.weight));
+    return new PotentialSet(json.set ? RecordedSet.fromJSON(json.set) : undefined, Weight.fromJSON(json.weight), {
+      min: json.target.reps.min,
+      max: json.target.reps.max,
+    });
   }
 
   equals(other: PotentialSet | undefined): boolean {
@@ -299,15 +323,25 @@ export class PotentialSet {
     if (other === this) {
       return true;
     }
-    return (this.set?.equals(other.set) ?? other.set === undefined) && this.weight.equals(other.weight);
+    return (
+      (this.set?.equals(other.set) ?? other.set === undefined) &&
+      this.weight.equals(other.weight) &&
+      this.target.min === other.target.min &&
+      this.target.max === other.target.max
+    );
   }
 
   with(other: Partial<PotentialSet>): PotentialSet {
-    return new PotentialSet('set' in other ? other.set : this.set, 'weight' in other ? other.weight! : this.weight);
+    return new PotentialSet(
+      'set' in other ? other.set : this.set,
+      'weight' in other ? other.weight! : this.weight,
+      other.target ?? this.target,
+    );
   }
 
   toJSON(): PotentialSetJSON {
     return {
+      target: { reps: { min: this.target.min, max: this.target.max } },
       set: this.set?.toJSON(),
       weight: this.weight.toJSON(),
     };

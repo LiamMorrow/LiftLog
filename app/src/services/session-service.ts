@@ -3,6 +3,7 @@ import {
   SessionBlueprint,
   ExerciseBlueprint,
   CardioExerciseBlueprint,
+  applyProgression,
 } from '@/models/blueprint-models';
 import { Weight, WeightUnit } from '@/models/weight';
 import {
@@ -93,18 +94,22 @@ export class SessionService {
       const potentialSets: PotentialSet[] = match(weightedLastExercise)
         .returnType<PotentialSet[]>()
         .with(undefined, () =>
-          Array.from(
-            { length: e.sets },
-            () => new PotentialSet(undefined, new Weight(0, $this.getDefaultWeightUnit())),
-          ),
+          e.plannedSets.map((s) => new PotentialSet(undefined, new Weight(0, $this.getDefaultWeightUnit()), s.reps)),
         )
-        .otherwise((x) => x.potentialSets.map((x) => new PotentialSet(undefined, x.weight)));
-      let newExercise = new RecordedWeightedExercise(e, potentialSets, undefined);
-      if (weightedLastExercise?.isSuccessForProgressiveOverload) {
-        newExercise = newExercise.blueprint.progressiveOverload.applyProgressiveOverload(newExercise);
-      }
-
-      return newExercise;
+        // Where reps are what advances, the target carries forward alongside the weight so the
+        // lineage keeps what a rule won for it. Where they are a fixed prescription it is re-seeded
+        // from the plan, because the only thing that could have changed it is an edit to the plan -
+        // and that edit already had its own say in the save-changes dialog.
+        .otherwise((x) =>
+          x.potentialSets.map(
+            (ps, index) =>
+              new PotentialSet(undefined, ps.weight, e.repsAreProgressed ? ps.target : e.repsTargetForSet(index)),
+          ),
+        );
+      const newExercise = new RecordedWeightedExercise(e, potentialSets, undefined);
+      return weightedLastExercise?.isSuccessForProgressiveOverload
+        ? applyProgression(e.progression, newExercise)
+        : newExercise;
     }
     return new Session(
       uuid(),

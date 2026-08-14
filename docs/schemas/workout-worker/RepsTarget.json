@@ -12,5 +12,6 @@
   "required": [
     "min",
     "max"
-  ]
+  ],
+  "description": "Always a band; `min === max` is a point target."
 }

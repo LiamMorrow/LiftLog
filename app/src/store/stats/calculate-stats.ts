@@ -1,5 +1,5 @@
 import { PotentialSet, RecordedCardioExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
-import { MovementKey } from '@/models/blueprint-models';
+import { ExerciseBlueprint, MovementKey } from '@/models/blueprint-models';
 import { LocalDateRange } from '@/models/time-models';
 import { Weight, WeightUnit } from '@/models/weight';
 import {
@@ -7,10 +7,12 @@ import {
   HeaviestLift,
   OptionalStatisticOverTime,
   RepsBreakdownStatistics,
+  StatisticOverTime,
   TimeTrackedStatistic,
   WeightedExerciseStatistics,
   WeightedStatisticOverTime,
 } from '@/store/stats';
+import { loadOps, QuantityOps, repsOps, StatAxis } from '@/store/stats/quantity';
 import { Duration, OffsetDateTime, ZoneId } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
@@ -75,7 +77,7 @@ export function calculateStats(
     }))
     .toArray();
   // --- Bodyweight stats over time ---
-  const bodyweightStats: WeightedStatisticOverTime = unsortedStatsToWeightedStatisticOverTime(bodyWeightStatistics);
+  const bodyweightStats: WeightedStatisticOverTime = toStatisticOverTime(bodyWeightStatistics, loadOps);
 
   // --- Session stats grouped by blueprint name ---
   const sessionStats: OptionalStatisticOverTime<Weight>[] = [];
@@ -110,7 +112,9 @@ export function calculateStats(
   // --- Exercise stats grouped by normalized exercise name ---
   interface ExerciseStatAcc {
     exerciseName: string;
+    primary: StatAxis;
     maxWeightStatistics: TimeTrackedStatistic<Weight>[];
+    maxRepsStatistics: TimeTrackedStatistic<number>[];
     max1RMStatistics: TimeTrackedStatistic<Weight>[];
     totalVolumeStatistics: TimeTrackedStatistic<Weight>[];
     repsStatistics: RepsBreakdownStatistics;
@@ -126,7 +130,9 @@ export function calculateStats(
       if (!exerciseStatsMap.has(key)) {
         exerciseStatsMap.set(key, {
           exerciseName: blueprint.name,
+          primary: primaryAxisFor(blueprint),
           maxWeightStatistics: [],
+          maxRepsStatistics: [],
           max1RMStatistics: [],
           repsStatistics: { breakdown: {} },
           totalVolumeStatistics: [],
@@ -170,10 +176,16 @@ export function calculateStats(
       const lastSet = ex.lastRecordedSet!;
       if (exerciseStats.latestTime.isBefore(lastSet.set!.completionDateTime)) {
         exerciseStats.latestTime = lastSet.set!.completionDateTime;
+        // How the exercise is programmed now, not how it was the first time it was logged.
+        exerciseStats.primary = primaryAxisFor(blueprint);
       }
       exerciseStats.maxWeightStatistics.push({
         dateTime: lastSet.set!.completionDateTime,
         value: maxWeight,
+      });
+      exerciseStats.maxRepsStatistics.push({
+        dateTime: lastSet.set!.completionDateTime,
+        value: ex.potentialSets.reduce((most, ps) => Math.max(most, ps.set?.repsCompleted ?? 0), 0),
       });
       exerciseStats.max1RMStatistics.push({
         dateTime: lastSet.set!.completionDateTime,
@@ -192,19 +204,28 @@ export function calculateStats(
     }
   }
 
-  const exerciseStats: WeightedExerciseStatistics[] = Array.from(exerciseStatsMap.values()).map((ex) => {
-    const maxLiftedPerSessionStatistics = unsortedStatsToWeightedStatisticOverTime(ex.maxWeightStatistics);
-    const max1RMPerSessionStatistics = unsortedStatsToWeightedStatisticOverTime(ex.max1RMStatistics);
-    return {
-      exerciseName: ex.exerciseName,
-      setsPerWeek:
-        Object.values(ex.repsStatistics.breakdown).reduce((accum, entry) => accum + entry.numberOfSets, 0) / totalWeeks,
-      maxLiftedPerSessionStatistics,
-      max1RMPerSessionStatistics,
-      totalVolumeStatistics: unsortedStatsToWeightedStatisticOverTime(ex.totalVolumeStatistics),
-      repsStatistics: ex.repsStatistics,
-    } satisfies WeightedExerciseStatistics;
-  });
+  // Most recently performed first, so what the user is training now heads the list.
+  const exerciseStats: WeightedExerciseStatistics[] = Array.from(exerciseStatsMap.values())
+    .sort((a, b) => (a.latestTime.isEqual(b.latestTime) ? 0 : a.latestTime.isAfter(b.latestTime) ? -1 : 1))
+    .map((ex) => {
+      const maxLiftedPerSessionStatistics = toStatisticOverTime(ex.maxWeightStatistics, loadOps);
+      const max1RMPerSessionStatistics = toStatisticOverTime(ex.max1RMStatistics, loadOps);
+      return {
+        exerciseName: ex.exerciseName,
+        setsPerWeek:
+          Object.values(ex.repsStatistics.breakdown).reduce((accum, entry) => accum + entry.numberOfSets, 0) /
+          totalWeeks,
+        primary: ex.primary,
+        series: {
+          load: maxLiftedPerSessionStatistics,
+          reps: toStatisticOverTime(ex.maxRepsStatistics, repsOps),
+        },
+        maxLiftedPerSessionStatistics,
+        max1RMPerSessionStatistics,
+        totalVolumeStatistics: toStatisticOverTime(ex.totalVolumeStatistics, loadOps),
+        repsStatistics: ex.repsStatistics,
+      } satisfies WeightedExerciseStatistics;
+    });
 
   // --- Average session length ---
   const sessionDurations: Duration[] = [];
@@ -262,26 +283,36 @@ export function calculateStats(
   };
 }
 
-function unsortedStatsToWeightedStatisticOverTime(
-  unsortedStats: TimeTrackedStatistic<Weight>[],
-): WeightedStatisticOverTime {
+/**
+ * Sort a series by time and roll up its extremes and total. Parametric over the axis's arithmetic,
+ * so a rep count aggregates by the same code as a load without ever being treated as a mass.
+ */
+function toStatisticOverTime<T>(unsortedStats: TimeTrackedStatistic<T>[], ops: QuantityOps<T>): StatisticOverTime<T> {
   const statistics = Enumerable.from(unsortedStats)
     .orderBy((x) => x.dateTime.toString())
     .toArray();
-  let max = Weight.NIL;
-  let min = Weight.NIL;
-  let total = Weight.NIL;
+  let max = ops.zero;
+  let min = ops.zero;
+  let total = ops.zero;
 
   for (const stat of statistics) {
-    if (stat.value.isGreaterThan(max) || max.equals(Weight.NIL)) max = stat.value;
-    if (min.isGreaterThan(stat.value) || min.equals(Weight.NIL)) min = stat.value;
-    total = total.plus(stat.value);
+    if (ops.isGreaterThan(stat.value, max) || ops.equals(max, ops.zero)) max = stat.value;
+    if (ops.isGreaterThan(min, stat.value) || ops.equals(min, ops.zero)) min = stat.value;
+    total = ops.plus(total, stat.value);
   }
   return {
     statistics,
-    currentValue: statistics.at(-1)?.value ?? Weight.NIL,
+    currentValue: statistics.at(-1)?.value ?? ops.zero,
     totalValue: total,
     maxValue: max,
     minValue: min,
   };
+}
+
+/**
+ * Which axis an exercise's progress is read on. Externally loaded, weight style exercises (squats)
+ * return 'load'
+ */
+function primaryAxisFor(blueprint: ExerciseBlueprint): StatAxis {
+  return blueprint.type === 'WeightedExerciseBlueprint' && blueprint.resistance === 'none' ? 'reps' : 'load';
 }

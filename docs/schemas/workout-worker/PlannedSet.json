@@ -2,16 +2,12 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "type": {
-      "type": "string",
-      "const": "fixed"
-    },
     "reps": {
-      "type": "integer"
+      "$ref": "./RepsTarget.json"
     }
   },
   "required": [
-    "type",
     "reps"
-  ]
+  ],
+  "description": "What the plan asks for on one set."
 }
