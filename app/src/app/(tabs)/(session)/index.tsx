@@ -15,8 +15,8 @@ import SessionSummaryTitle from '@/components/presentation/summary/session-summa
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
-import { useAppSelector, useAppSelectorWhenFocusedWithArg } from '@/store';
-import { selectCurrentSession, setCurrentSession } from '@/store/current-session';
+import { useAppSelector, useAppSelectorWhenFocused } from '@/store';
+import { deleteStoredSession, selectActiveSession } from '@/store/stored-sessions';
 import { encryptAndShare, publishUnpublishedSessions } from '@/store/feed';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import { executeRemoteBackup } from '@/store/settings';
@@ -31,25 +31,27 @@ import { useDispatch } from 'react-redux';
 import { WelcomeWizard } from '@/components/smart/welcome-wizard';
 import { WhatsNewBanner } from '@/components/smart/whats-new-banner';
 import { SharedSession } from '@/models/feed-models';
-import { CurrentWorkoutReplacer } from '@/components/smart/current-workout-replacer';
+import { useStartWorkoutWithConfirmation } from '@/hooks/useStartWorkoutWithConfirmation';
 
 function ListUpcomingWorkouts({
   upcoming,
-  selectSession,
+  startSession,
 }: {
   upcoming: readonly Session[];
-  selectSession: (s: Session) => void;
+  startSession: (s: Session) => void;
 }) {
   const plan = useAppSelector(selectActiveProgram);
   const { t } = useTranslate();
   const formatDate = useFormatDate();
-  const currentSession = useAppSelectorWhenFocusedWithArg(selectCurrentSession, 'workoutSession');
+  const currentSession = useAppSelectorWhenFocused(selectActiveSession);
   const planId = useAppSelector((x) => x.program.activePlanId);
   const { push } = useRouter();
   const dispatch = useDispatch();
   const [confirmDeleteSessionOpen, setConfirmDeleteSessionOpen] = useState(false);
   const clearCurrentSession = () => {
-    dispatch(setCurrentSession({ session: undefined, target: 'workoutSession' }));
+    if (currentSession) {
+      dispatch(deleteStoredSession(currentSession.id));
+    }
     dispatch(fetchUpcomingSessions());
   };
   const handleSharePress = (session: Session) => {
@@ -96,7 +98,7 @@ function ListUpcomingWorkouts({
                 icon={'playCircle'}
                 mode="contained"
                 testID="resume-workout-button"
-                onPress={() => selectSession(currentSession)}
+                onPress={() => startSession(currentSession)}
               >
                 <T keyName="workout.resume.button" />
               </Button>
@@ -132,7 +134,7 @@ function ListUpcomingWorkouts({
                 mode="contained"
                 icon={'playCircle'}
                 testID="start-resume-workout-button"
-                onPress={() => selectSession(session)}
+                onPress={() => startSession(session)}
               >
                 {session.isStarted ? <T keyName="workout.resume.button" /> : <T keyName="workout.start.button" />}
               </Button>
@@ -229,8 +231,7 @@ export default function Index() {
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const currentBodyweight = upcomingSessions.map((x) => x.at(0)?.bodyweight).unwrapOr(undefined);
-
-  const [selectedSession, setSelectedSession] = useState<Session | undefined>();
+  const { start, confirmationDialog } = useStartWorkoutWithConfirmation();
 
   useFocusEffect(() => {
     dispatch(fetchUpcomingSessions());
@@ -239,8 +240,7 @@ export default function Index() {
   });
 
   const createFreeformSession = () => {
-    const newSession = Session.freeformSession(LocalDate.now(), currentBodyweight);
-    setSelectedSession(newSession);
+    start(Session.freeformSession(LocalDate.now(), currentBodyweight));
   };
 
   const floatingBottomContainer = (
@@ -270,10 +270,10 @@ export default function Index() {
       <Remote
         value={upcomingSessions}
         success={(upcoming) => {
-          return <ListUpcomingWorkouts selectSession={setSelectedSession} upcoming={upcoming} />;
+          return <ListUpcomingWorkouts startSession={start} upcoming={upcoming} />;
         }}
       />
-      <CurrentWorkoutReplacer session={selectedSession} clearSession={() => setSelectedSession(undefined)} />
+      {confirmationDialog}
     </FullHeightScrollView>
   );
 }

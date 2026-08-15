@@ -18,7 +18,9 @@ export default function SnackbarProvider(props: { children: ReactNode }) {
               ? {
                   label: currentSnackbar.action ?? '',
                   onPress: () => {
-                    if (Array.isArray(currentSnackbar.dispatchAction)) {
+                    if (currentSnackbar.onAction) {
+                      currentSnackbar.onAction();
+                    } else if (Array.isArray(currentSnackbar.dispatchAction)) {
                       currentSnackbar.dispatchAction.forEach((x) => dispatch(x));
                     } else {
                       dispatch(currentSnackbar.dispatchAction);

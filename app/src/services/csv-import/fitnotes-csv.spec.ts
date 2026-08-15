@@ -78,7 +78,7 @@ describe('getImportForFitNotes', () => {
   it('round-trips through Session.toJSON / fromJSON', () => {
     const session = importSample().workouts[0]!;
     const json = session.toJSON();
-    expect(json.version).toBe(4);
+    expect(json.version).toBe(7);
     const rebuilt = Session.fromJSON(json);
     expect(rebuilt.date.toString()).toBe('2026-08-04');
     expect(rebuilt.recordedExercises).toHaveLength(5);

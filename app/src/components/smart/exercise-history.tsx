@@ -2,7 +2,7 @@ import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { ExerciseHistoryList } from '@/components/presentation/workout/exercise-history-list';
 import { spacing } from '@/hooks/useAppTheme';
 import { ExerciseBlueprint, MovementKey } from '@/models/blueprint-models';
-import { useAppSelector } from '@/store';
+import { useAppSelectorWithArg } from '@/store';
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 import { Href } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,7 +12,8 @@ export function getExerciseHistoryHref(blueprint: ExerciseBlueprint): Href {
 }
 
 export function ExerciseHistory(props: { movementKey: MovementKey; exerciseName: string }) {
-  const exercises = useAppSelector(selectRecentlyCompletedExercises)(props.movementKey);
+  // No session to exclude: this sheet is opened from an exercise, and shows the whole lineage.
+  const exercises = useAppSelectorWithArg(selectRecentlyCompletedExercises, undefined)(props.movementKey);
 
   return (
     <SafeAreaView edges={{ left: 'additive', right: 'additive', top: 'off', bottom: 'off' }} style={{ flex: 1 }}>

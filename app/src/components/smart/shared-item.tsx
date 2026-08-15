@@ -17,13 +17,10 @@ import { uuid } from '@/utils/uuid';
 import { useRouter } from 'expo-router';
 import { Session } from '@/models/session-models';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
-import { useMountEffect } from '@/hooks/useMountEffect';
-import { setCurrentSession } from '@/store/current-session';
 import SessionComponent from '@/components/smart/session-component';
 import { useAppSelector } from '@/store';
 import { useScrollHeaderColor } from '@/hooks/useScrollListener';
-import { useState } from 'react';
-import { CurrentWorkoutReplacer } from '@/components/smart/current-workout-replacer';
+import { useStartWorkoutWithConfirmation } from '@/hooks/useStartWorkoutWithConfirmation';
 
 interface SharedItemProps {
   sharedItem: SharedItem;
@@ -120,11 +117,8 @@ function SharedSessionContent({ sharedItem }: { sharedItem: SharedSession }) {
   const headerColor = useScrollHeaderColor();
   const activeProgramId = useAppSelector((x) => x.program.activePlanId);
   const { push } = useRouter();
-  const [sessionToReplace, setSessionToReplace] = useState<Session | undefined>(undefined);
+  const { start, confirmationDialog } = useStartWorkoutWithConfirmation();
 
-  useMountEffect(() => {
-    dispatch(setCurrentSession({ target: 'sharedSession', session }));
-  });
   return (
     <View style={{ flex: 1 }}>
       <Animated.View
@@ -153,15 +147,15 @@ function SharedSessionContent({ sharedItem }: { sharedItem: SharedSession }) {
         </Button>
         <Button
           icon={'playCircle'}
-          onPress={() => setSessionToReplace(session.with({ id: uuid() }))}
+          onPress={() => start(session.with({ id: uuid() }))}
           mode="contained"
           style={{ flex: 1 }}
         >
           <T keyName="feed.shared_session.start_workout.button" />
         </Button>
       </Animated.View>
-      <CurrentWorkoutReplacer session={sessionToReplace} clearSession={() => setSessionToReplace(undefined)} />
-      <SessionComponent target="sharedSession" showBodyweight={showBodyweight} />
+      {confirmationDialog}
+      <SessionComponent session={session} showBodyweight={showBodyweight} />
     </View>
   );
 }

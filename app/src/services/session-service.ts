@@ -16,6 +16,7 @@ import {
 } from '@/models/session-models';
 import { ProgressRepository } from '@/services/progress-repository';
 import type { RootState } from '@/store';
+import { selectActiveSession } from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
 import { match } from 'ts-pattern';
@@ -31,7 +32,7 @@ export class SessionService {
     latestExercises: Record<ProgressionKey, RecordedExercise | undefined>,
   ): AsyncIterableIterator<Session> {
     const currentState = this.getState();
-    const currentSession = currentState.currentSession.workoutSession;
+    const currentSession = selectActiveSession(currentState);
 
     const firstSessionBlueprint = sessionBlueprints[0];
     if (!firstSessionBlueprint) {

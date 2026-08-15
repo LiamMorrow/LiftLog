@@ -1,24 +1,27 @@
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { finishCurrentWorkout, selectCurrentSession, SessionTarget, setCurrentPlanDiff } from '@/store/current-session';
-import { getPlanDiff } from '@/store/current-session/helpers';
-import { selectActiveProgram } from '@/store/program';
+import { getPlanDiff } from '@/store/program/helpers';
+import { selectActiveProgram, setPendingPlanDiff } from '@/store/program';
+import { selectSession, sessionFinished } from '@/store/stored-sessions';
 import { useDispatch } from 'react-redux';
 
 /**
- * Finishes the current workout for the target and returns whether the saved session
+ * Finishes the given session and returns whether the saved session
  * differs from the active plan, so the caller can open the diff-save modal.
  */
-export function useFinishWorkout(target: SessionTarget) {
+export function useFinishWorkout(sessionId: string | undefined) {
   const dispatch = useDispatch();
-  const session = useAppSelectorWithArg(selectCurrentSession, target);
+  const session = useAppSelectorWithArg(selectSession, sessionId ?? '');
   const program = useAppSelector(selectActiveProgram);
   const programId = useAppSelector((x) => x.program.activePlanId);
   return (): boolean => {
-    const diff = session ? getPlanDiff(program, session, programId) : undefined;
-    if (diff) {
-      dispatch(setCurrentPlanDiff(diff));
+    if (!sessionId || !session) {
+      return false;
     }
-    dispatch(finishCurrentWorkout(target));
+    const diff = getPlanDiff(program, session, programId);
+    if (diff) {
+      dispatch(setPendingPlanDiff(diff));
+    }
+    dispatch(sessionFinished(sessionId));
     return !!diff;
   };
 }

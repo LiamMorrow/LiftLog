@@ -2,7 +2,7 @@ import { useMountEffect } from '@/hooks/useMountEffect';
 import { ProgressionRule, SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { Session, RecordedWeightedExercise, RecordedSet, RestTimer } from '@/models/session-models';
 import { Weight } from '@/models/weight';
-import { setCurrentSession } from '@/store/current-session';
+import { putStoredSession, setActiveSessionId } from '@/store/stored-sessions';
 import { useAppSelector } from '@/store';
 import { Duration, LocalDate, LocalTime, OffsetDateTime, ZoneOffset } from '@js-joda/core';
 import { Redirect, useLocalSearchParams } from 'expo-router';
@@ -269,7 +269,7 @@ function PrepareHomePage() {
   const activePlanId = useAppSelector((s) => s.program.activePlanId);
   const dispatch = useDispatch();
   useMountEffect(() => {
-    dispatch(setCurrentSession({ target: 'workoutSession', session: undefined }));
+    dispatch(setActiveSessionId(undefined));
     dispatch(
       setSavedPlans({
         [activePlanId]: new ProgramBlueprint(
@@ -407,7 +407,8 @@ function PrepareWorkoutPage() {
       false,
     );
     session = setExerciseWeight(session, 2, 120);
-    dispatch(setCurrentSession({ target: 'workoutSession', session }));
+    dispatch(putStoredSession(session));
+    dispatch(setActiveSessionId(session.id));
   });
 
   return <Redirect href={'/(tabs)/(session)/session'} />;

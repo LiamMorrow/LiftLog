@@ -24,7 +24,7 @@ interface ExerciseSectionProps<T extends RecordedExercise> {
   children: ReactNode;
 
   updateExercise: (update: Updater<T>) => void;
-  onEditExercise: () => void;
+  onEditExercise: (() => void) | undefined;
   onRemoveExercise: () => void;
 }
 
@@ -66,12 +66,17 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
       <Menu
         trigger={(open) => <IconButton testID="more-exercise-btn" onPress={open} icon={'moreHoriz'} />}
         items={[
-          {
-            label: t('generic.edit.button'),
-            icon: 'edit',
-            systemImage: 'pencil',
-            onPress: () => props.onEditExercise(),
-          },
+          // Absent for a session the user does not own, which has nothing to edit.
+          ...(props.onEditExercise
+            ? [
+                {
+                  label: t('generic.edit.button'),
+                  icon: 'edit',
+                  systemImage: 'pencil',
+                  onPress: props.onEditExercise,
+                } satisfies MenuItem,
+              ]
+            : []),
           {
             label: t('generic.notes.label'),
             icon: 'notes',

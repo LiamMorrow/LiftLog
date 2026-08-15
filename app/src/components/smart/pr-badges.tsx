@@ -1,6 +1,6 @@
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { useAppSelector } from '@/store';
+import { useAppSelector, useAppSelectorWhenFocused } from '@/store';
 import { selectFeedPersonalRecords } from '@/store/activity';
 import { PersonalRecord } from '@/store/stats/personal-records';
 import { selectHistoryPersonalRecords } from '@/store/stored-sessions';
@@ -16,7 +16,7 @@ export function FeedPrBadges({ eventId }: { eventId: string }) {
 }
 
 export function HistoryPrBadges({ sessionId }: { sessionId: string }) {
-  const records = useAppSelector(selectHistoryPersonalRecords).get(sessionId);
+  const records = useAppSelectorWhenFocused(selectHistoryPersonalRecords).get(sessionId);
 
   return <PrBadges records={records} labelKey="history.pr_badge.label" />;
 }

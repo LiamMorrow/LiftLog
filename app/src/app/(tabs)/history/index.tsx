@@ -16,10 +16,15 @@ import { useScroll } from '@/hooks/useScrollListener';
 import { useToday } from '@/hooks/useToday';
 import { Session } from '@/models/session-models';
 import { selectStreakStats } from '@/store/activity';
-import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { selectCurrentSession, setCurrentSession } from '@/store/current-session';
+import { useAppSelector, useAppSelectorWhenFocused, useAppSelectorWhenFocusedWithArg } from '@/store';
 import { addUnpublishedSessionId, encryptAndShare, removeReactionsForEvents } from '@/store/feed';
-import { deleteStoredSession, selectSessionsBy, selectSessionsInMonth } from '@/store/stored-sessions';
+import {
+  deleteStoredSession,
+  putStoredSession,
+  selectActiveSession,
+  selectSessionsBy,
+  selectSessionsInMonth,
+} from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
 import { LocalDate, YearMonth } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
@@ -32,6 +37,7 @@ import { Card, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import { useStartWorkout } from '@/hooks/useStartWorkout';
 import { SharedSession } from '@/models/feed-models';
 
 export default function History() {
@@ -45,21 +51,24 @@ export default function History() {
     x.program.upcomingSessions.map((x) => x.at(0)?.bodyweight).unwrapOr(undefined),
   );
   const [selectedDate, setSelectedDate] = useState<LocalDate>();
-  const sessionsInMonth = useAppSelectorWithArg(selectSessionsInMonth, currentYearMonth);
-  const sessionsOnSelectedDate = useAppSelector((state) =>
+  // These sweep the whole history, and this screen stays mounted under /history/edit - so they must
+  // not recompute while a session is being edited on top of it.
+  const sessionsInMonth = useAppSelectorWhenFocusedWithArg(selectSessionsInMonth, currentYearMonth);
+  const sessionsOnSelectedDate = useAppSelectorWhenFocused((state) =>
     selectedDate ? selectSessionsBy(state, selectedDate, selectedDate) : undefined,
   );
   const visibleSessions = sessionsOnSelectedDate ?? sessionsInMonth;
   const today = useToday();
-  const streakStats = useAppSelectorWithArg(selectStreakStats, today);
+  const streakStats = useAppSelectorWhenFocusedWithArg(selectStreakStats, today);
   const { push } = useRouter();
-  const currentWorkoutSession = useAppSelectorWithArg(selectCurrentSession, 'workoutSession');
+  const currentWorkoutSession = useAppSelector(selectActiveSession);
+  const startWorkoutSession = useStartWorkout();
   const onSelectSession = (session: Session) => {
-    dispatch(setCurrentSession({ target: 'historySession', session }));
-    push('/history/edit');
+    push(`/history/edit?sessionId=${encodeURIComponent(session.id)}`);
   };
   const createSessionAtDate = (date: LocalDate) => {
     const newSession = Session.freeformSession(date, latesBodyweight);
+    dispatch(putStoredSession(newSession));
     onSelectSession(newSession);
   };
   const [replaceCurrentSessionConfirmOpen, setReplaceCurrentSessionConfirmOpen] = useState(false);
@@ -83,12 +92,7 @@ export default function History() {
       setSelectedWorkout(session);
       setReplaceCurrentSessionConfirmOpen(true);
     } else {
-      dispatch(
-        setCurrentSession({
-          target: 'workoutSession',
-          session: session.withNothingCompleted().with({ date: LocalDate.now(), id: uuid() }),
-        }),
-      );
+      startWorkoutSession(session.withNothingCompleted().with({ date: LocalDate.now(), id: uuid() }));
       setReplaceCurrentSessionConfirmOpen(false);
       setSelectedWorkout(undefined);
 

@@ -17,7 +17,7 @@ interface WeightedExerciseProps {
   timeProvider: () => OffsetDateTime;
   updateExercise: (update: Updater<RecordedWeightedExercise>) => void;
   resetSetTimer: () => void;
-  onEditExercise: () => void;
+  onEditExercise: (() => void) | undefined;
   onRemoveExercise: () => void;
 }
 

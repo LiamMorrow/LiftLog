@@ -1,8 +1,7 @@
-import { selectCurrentSession, SessionTarget } from '@/store/current-session';
+import { Session } from '@/models/session-models';
 import { useTranslate } from '@tolgee/react';
 import { useEffect, useRef, useState } from 'react';
 import { getSessionWorkoutEditorHref } from '@/components/smart/session-workout-editor';
-import { useAppSelectorWithArg } from '@/store';
 import { Tooltip, TooltipHandle } from 'react-native-paper';
 import PageMenu from '@/components/presentation/foundation/page-menu';
 import { Platform } from 'react-native';
@@ -10,23 +9,18 @@ import { Stack, useRouter } from 'expo-router';
 import { Jiggler } from '@/components/presentation/foundation/jiggler';
 import IconButton from '@/components/presentation/foundation/icon-button';
 
-export default function SessionMoreMenuComponent(props: { target: SessionTarget; save: () => void }) {
-  const { save, target } = props;
-  const session = useAppSelectorWithArg(selectCurrentSession, target);
+export default function SessionMoreMenuComponent(props: {
+  session: Session;
+  isActiveWorkout?: boolean;
+  save: () => void;
+}) {
+  const { save, session, isActiveWorkout } = props;
   const { push } = useRouter();
   const { t } = useTranslate();
 
-  const isReadonly = target === 'feedSession';
+  const finishText = isActiveWorkout ? t('generic.finish.button') : t('generic.save.button');
 
-  const handleEditWorkout = () => {
-    push(getSessionWorkoutEditorHref(target));
-  };
-
-  const finishText = target === 'workoutSession' ? t('generic.finish.button') : t('generic.save.button');
-
-  if (!session || isReadonly) {
-    return <></>;
-  }
+  const handleEditWorkout = () => push(getSessionWorkoutEditorHref(session.id));
 
   return (
     <PageMenu
@@ -39,7 +33,7 @@ export default function SessionMoreMenuComponent(props: { target: SessionTarget;
             <Stack.Toolbar.Label>{finishText}</Stack.Toolbar.Label>
           </Stack.Toolbar.Button>
         ),
-        android: <AndroidFinishButton target={target} save={save} />,
+        android: <AndroidFinishButton session={session} save={save} />,
       })}
       items={[
         {
@@ -53,13 +47,12 @@ export default function SessionMoreMenuComponent(props: { target: SessionTarget;
   );
 }
 
-function AndroidFinishButton({ target, save }: { target: SessionTarget; save: () => void }) {
+function AndroidFinishButton({ session, save }: { session: Session; save: () => void }) {
   const { t } = useTranslate();
-  const session = useAppSelectorWithArg(selectCurrentSession, target);
 
   const [jiggleFinishButton, setJiggleFinishButton] = useState(false);
-  const isComplete = session?.isComplete;
-  const hasExercises = !!session?.recordedExercises.length;
+  const isComplete = session.isComplete;
+  const hasExercises = !!session.recordedExercises.length;
   const tooltipRef = useRef<TooltipHandle>(null);
 
   useEffect(() => {

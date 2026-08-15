@@ -32,6 +32,8 @@ interface ProgramState {
   };
   /** A plan parsed from an imported file, awaiting the user's confirmation to save. */
   readonly pendingImport?: ProgramBlueprint;
+  /** How a just-finished session differs from the plan, awaiting the user's decision in /diff-save. */
+  readonly pendingPlanDiff?: PlanDiff;
 }
 
 const initialState: ProgramState = {
@@ -191,6 +193,10 @@ const programSlice = createSlice({
     clearPendingImport(state) {
       state.pendingImport = undefined;
     },
+
+    setPendingPlanDiff(state, action: PayloadAction<PlanDiff | undefined>) {
+      state.pendingPlanDiff = action.payload;
+    },
   },
   selectors: {
     selectActiveProgram: (state: ProgramState) => state.savedPrograms[state.activePlanId]!,
@@ -208,6 +214,7 @@ const programSlice = createSlice({
     ),
     selectProgram: (state: ProgramState, id: string) => state.savedPrograms[id]!,
     selectPendingImport: (state: ProgramState) => state.pendingImport,
+    selectPendingPlanDiff: (state: ProgramState) => state.pendingPlanDiff,
     selectProgramSession: (state: ProgramState, location: ProgramSessionLocation) =>
       state.savedPrograms[location.programId]?.sessions[location.sessionIndex],
     selectProgramSessionExercise: (state: ProgramState, location: ProgramSessionLocation & { exerciseIndex: number }) =>
@@ -254,6 +261,7 @@ export const {
   setSavedPlans,
   setPendingImport,
   clearPendingImport,
+  setPendingPlanDiff,
 } = programSlice.actions;
 
 export const {
@@ -262,6 +270,7 @@ export const {
   selectAllPrograms,
   selectNewWorkoutName,
   selectPendingImport,
+  selectPendingPlanDiff,
   selectProgramSession,
   selectProgramSessionExercise,
 } = programSlice.selectors;

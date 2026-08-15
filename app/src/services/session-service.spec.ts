@@ -10,9 +10,13 @@ import { Weight } from '@/models/weight';
 import type { RootState } from '@/store';
 
 function makeState(overrides?: { workoutSession?: Session; orderedSessions?: Session[] }): RootState {
+  const active = overrides?.workoutSession;
   return {
     settings: { useImperialUnits: false },
-    currentSession: { workoutSession: overrides?.workoutSession },
+    storedSessions: {
+      sessions: active ? { [active.id]: active } : {},
+      activeSessionId: active?.id,
+    },
   } as unknown as RootState;
 }
 
