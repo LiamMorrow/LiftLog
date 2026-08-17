@@ -3,6 +3,8 @@ import { match, P } from 'ts-pattern';
 
 export type ColorSchemeSeed = 'default' | `#${string}`;
 
+export type ThemeMode = 'system' | 'light' | 'dark';
+
 // A codec maps between a preference's runtime value and its on-disk string.
 // `deserialize` returns undefined when the key is absent or unparseable, so the
 // caller falls back to the descriptor default. `serialize` returns undefined to
@@ -37,6 +39,14 @@ export const colorSchemeSeedCodec: Codec<ColorSchemeSeed> = {
       .returnType<ColorSchemeSeed>()
       .with(P.string.regex(/^#[0-9a-fA-F]{6}$/), (v) => v as ColorSchemeSeed)
       .otherwise(() => 'default'),
+  serialize: (value) => value,
+};
+
+export const themeModeCodec: Codec<ThemeMode> = {
+  deserialize: (raw) =>
+    match(raw)
+      .with('light', 'dark', 'system', (v) => v)
+      .otherwise(() => undefined),
   serialize: (value) => value,
 };
 

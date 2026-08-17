@@ -152,6 +152,25 @@ describe('PreferenceService - colorSchemeSeed', () => {
   });
 });
 
+// ─── themeMode ──────────────────────────────────────────────────────────────
+
+describe('PreferenceService - themeMode', () => {
+  it("defaults to 'system' when unset or unrecognised", async () => {
+    expect(await makeService().service.getPreference('themeMode')).toBe('system');
+    expect(await makeService({ themeMode: 'Dark' }).service.getPreference('themeMode')).toBe('system');
+    expect(await makeService({ themeMode: 'garbage' }).service.getPreference('themeMode')).toBe('system');
+  });
+
+  it('reads and writes each mode verbatim', async () => {
+    for (const mode of ['system', 'light', 'dark'] as const) {
+      expect(await makeService({ themeMode: mode }).service.getPreference('themeMode')).toBe(mode);
+      const { service, store } = makeService();
+      await service.setPreference('themeMode', mode);
+      expect(store.setItem).toHaveBeenCalledWith('themeMode', mode);
+    }
+  });
+});
+
 // ─── firstDayOfWeek ───────────────────────────────────────────────────────────
 
 describe('PreferenceService - firstDayOfWeek', () => {

@@ -17,7 +17,7 @@ import {
   RemoteBackupSettings,
 } from './registry';
 
-export type { ColorSchemeSeed } from './codecs';
+export type { ColorSchemeSeed, ThemeMode } from './codecs';
 export type { RemoteBackupSettings, LastBackup };
 export type { ExternalImportFormat };
 
@@ -100,6 +100,7 @@ export const {
   setExportToHealthAggregator,
   setShowPostWorkoutSummary,
   setTrueBlackDarkTheme,
+  setThemeMode,
 } = preferenceSetters;
 
 export const { selectPreferredWeightUnit } = settingsSlice.selectors;

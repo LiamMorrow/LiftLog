@@ -9,6 +9,8 @@ import {
   dayOfWeekCodec,
   intCodec,
   stringCodec,
+  ThemeMode,
+  themeModeCodec,
 } from './codecs';
 
 export interface RemoteBackupSettings {
@@ -66,6 +68,7 @@ export const preferenceRegistry = {
   tipToShow: pref({ default: 1, codec: intCodec }),
   lastSeenWhatsNewId: pref({ default: 0, codec: intCodec }),
   colorSchemeSeed: pref<ColorSchemeSeed>({ default: 'default', codec: colorSchemeSeedCodec }),
+  themeMode: pref<ThemeMode>({ default: 'system', codec: themeModeCodec }),
   firstDayOfWeek: pref<DayOfWeek>({ default: DayOfWeek.SUNDAY, codec: dayOfWeekCodec }),
 
   // Generic read, but bespoke write-back (permission gate + revert).

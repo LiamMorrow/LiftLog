@@ -13,6 +13,7 @@ import {
   setPreferredLanguage,
   setRestNotifications,
   setShowFeed,
+  setThemeMode,
   setTrueBlackDarkTheme,
   setUseImperialUnits,
   setWelcomeWizardCompleted,
@@ -178,6 +179,8 @@ export function WelcomeWizard() {
           onUpdateTheme={(x) => dispatch(setColorSchemeSeed(x))}
           setTrueBlack={(b) => dispatch(setTrueBlackDarkTheme(b))}
           trueBlack={settings.trueBlackDarkTheme}
+          themeMode={settings.themeMode}
+          setThemeMode={(m) => dispatch(setThemeMode(m))}
         />
       </View>
     </View>
