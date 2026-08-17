@@ -29,7 +29,6 @@ import { I18nManager, Platform } from 'react-native';
 import { detectLanguageFromDateLocale } from '@/utils/language-detector';
 import { supportedLanguages } from '@/services/tolgee';
 import { initializeStoredSessionsStateSlice } from '@/store/stored-sessions';
-import { initializeCurrentSessionStateSlice } from '@/store/current-session';
 
 // Read every generically-hydrated key, then dispatch its setter.
 async function hydrateGenericPreferences(
@@ -105,7 +104,6 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
       }
       dispatch(setIsHydrated(true));
       dispatch(initializeStoredSessionsStateSlice());
-      dispatch(initializeCurrentSessionStateSlice());
       const end = performance.now();
       logger.log(`initializeSettingsStateSlice effect took ${(end - start).toFixed(2)}ms`);
     },

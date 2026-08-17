@@ -1,23 +1,23 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelectorWithArg } from '@/store';
-import { selectCurrentSession, SessionTarget, setCurrentSession } from '@/store/current-session';
+import { selectSession, updateStoredSession } from '@/store/stored-sessions';
 import { useTranslate } from '@tolgee/react';
 import { Href, Stack, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { TextInput } from 'react-native-paper';
-import { useDispatch, useStore } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useOnDismiss } from '@/hooks/useOnDismiss';
 
-export function getSessionWorkoutEditorHref(target: SessionTarget): Href {
-  return `/workout-editor?target=${target}` as Href;
+export function getSessionWorkoutEditorHref(sessionId: string): Href {
+  return `/workout-editor?sessionId=${encodeURIComponent(sessionId)}` as Href;
 }
 
-export function SessionWorkoutEditor(props: { target: SessionTarget }) {
+export function SessionWorkoutEditor(props: { sessionId: string }) {
   const { t } = useTranslate();
-  const workout = useAppSelectorWithArg(selectCurrentSession, props.target);
+  const workout = useAppSelectorWithArg(selectSession, props.sessionId);
   const dispatch = useDispatch();
-  const { getState } = useStore();
   const { dismiss } = useRouter();
 
   const title = t('workout.edit.button');
@@ -32,23 +32,18 @@ export function SessionWorkoutEditor(props: { target: SessionTarget }) {
     draftRef.current = { ...draftRef.current, ...changes };
   };
 
-  const commitRef = useRef(() => {});
-  commitRef.current = () => {
+  useOnDismiss(() => {
     const changes = draftRef.current;
     if (changes.name === undefined && changes.notes === undefined) {
       return;
     }
-    const latestSession = selectCurrentSession(getState(), props.target);
-    if (latestSession) {
-      dispatch(
-        setCurrentSession({
-          session: latestSession.with({ blueprint: latestSession.blueprint.with(changes) }),
-          target: props.target,
-        }),
-      );
-    }
-  };
-  useEffect(() => () => commitRef.current(), []);
+    dispatch(
+      updateStoredSession({
+        sessionId: props.sessionId,
+        update: (s) => s.with({ blueprint: s.blueprint.with(changes) }),
+      }),
+    );
+  });
 
   const hasWorkout = !!workout;
   useEffect(() => {

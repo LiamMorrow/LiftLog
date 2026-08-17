@@ -1,7 +1,6 @@
-import { selectCurrentSession, SessionTarget, setCurrentSession } from '@/store/current-session';
 import { showSnackbar } from '@/store/app';
 import { Card, Icon, Text } from 'react-native-paper';
-import { useDispatch, useStore } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { View } from 'react-native';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
@@ -37,85 +36,67 @@ import WeightFormat from '../presentation/foundation/weight-format';
 import { formatDuration } from '@/utils/format-date';
 import { useAddExercise } from '@/hooks/useAddExercise';
 
+function withRestTimerAt(session: Session, time: OffsetDateTime | undefined) {
+  return session.with({ restTimer: time ? new RestTimerModel(time) : undefined });
+}
+
 export default function SessionComponent(props: {
-  target: SessionTarget;
+  session: Session;
+  /**
+   * Takes a reducer rather than a value so consecutive edits compose against whatever the owner
+   * currently holds. Omit it for a session the user does not own, which makes the screen read-only.
+   */
+  updateSession?: (update: (session: Session) => Session) => void;
+  /** The workout being performed right now: rest timers, live timestamps, previous performances. */
+  isActiveWorkout?: boolean;
   showBodyweight: boolean;
   header?: ReactNode;
   openPostWorkoutSummary?: () => void;
 }) {
+  const { session, isActiveWorkout } = props;
   const { colors } = useAppTheme();
   const { t } = useTranslate();
-  const { getState } = useStore();
   const { push } = useRouter();
-  const session = useAppSelectorWithArg(selectCurrentSession, props.target);
   const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
   const dispatch = useDispatch();
-  const recentlyCompletedExercises = useAppSelector(selectRecentlyCompletedExercises);
-  const addExercise = useAddExercise(props.target);
+  const isReadonly = !props.updateSession;
+  const editableSessionId = isReadonly ? undefined : session.id;
+  const recentlyCompletedExercises = useAppSelectorWithArg(selectRecentlyCompletedExercises, session.id);
+  const addExercise = useAddExercise(editableSessionId);
+  const updateSession = (reducer: (session: Session) => Session) => props.updateSession?.(reducer);
   const resetTimer = (time: OffsetDateTime | undefined) => {
-    updateSession((s) => s.with({ restTimer: time ? new RestTimerModel(time) : undefined }));
+    updateSession((s) => withRestTimerAt(s, time));
   };
   const dismissTimer = () => {
-    withLatestSession((latestSession) => {
-      const dismissedTimer = latestSession.restTimer;
-      resetTimer(undefined);
-      dispatch(
-        showSnackbar({
-          text: t('rest_timer.dismissed.message'),
-          action: t('generic.undo.button'),
-          dispatchAction: setCurrentSession({
-            session: latestSession.with({ restTimer: dismissedTimer }),
-            target: props.target,
-          }),
-        }),
-      );
-    });
+    const dismissedTimer = session.restTimer;
+    resetTimer(undefined);
+    dispatch(
+      showSnackbar({
+        text: t('rest_timer.dismissed.message'),
+        action: t('generic.undo.button'),
+        onAction: () => updateSession((s) => s.with({ restTimer: dismissedTimer })),
+      }),
+    );
   };
   const toggleRestTimerPaused = () => {
     updateSession((s) => s.with({ restTimer: s.restTimer?.togglePause(OffsetDateTime.now()) }));
-  };
-  const withLatestSession = (callback: (session: Session) => void) => {
-    // Ensure we always have the latest session, allows us to call callbacks consecutively
-    const latestSession = selectCurrentSession(getState(), props.target);
-    if (!latestSession) {
-      return;
-    }
-    callback(latestSession);
-  };
-  const updateSession = (reducer: (session: Session) => Session) => {
-    withLatestSession((latestSession) => {
-      dispatch(
-        setCurrentSession({
-          session: reducer(latestSession),
-          target: props.target,
-        }),
-      );
-    });
   };
 
   // Both the set's own tiles and the docked clock write through here, so a set earns its rest
   // whichever way it was filled in.
   const updateCardioSet = (exerciseIndex: number) => (setIndex: number, update: Updater<RecordedCardioExerciseSet>) => {
     const now = OffsetDateTime.now();
-    withLatestSession((latestSession) => {
-      const before = latestSession.cardioSetAt(exerciseIndex, setIndex);
-      const session = latestSession.withCardioSet(exerciseIndex, setIndex, update, now);
-      dispatch(setCurrentSession({ session, target: props.target }));
-
-      if (session.cardioSetAt(exerciseIndex, setIndex)?.earnsRest(before)) {
-        withLatestSession((s) => resetTimer(s.lastExercise?.latestTime));
-      }
+    updateSession((s) => {
+      const before = s.cardioSetAt(exerciseIndex, setIndex);
+      const updated = s.withCardioSet(exerciseIndex, setIndex, update, now);
+      return updated.cardioSetAt(exerciseIndex, setIndex)?.earnsRest(before)
+        ? withRestTimerAt(updated, updated.lastExercise?.latestTime)
+        : updated;
     });
   };
 
   const startCardioTimer = (exerciseIndex: number) => (setIndex: number) =>
     updateSession((s) => s.withCardioTimerStarted(exerciseIndex, setIndex, OffsetDateTime.now()));
-
-  const isReadonly = props.target === 'feedSession' || props.target === 'sharedSession';
-
-  if (!session) {
-    return <Text>Loading</Text>;
-  }
 
   const notesComponent = session.blueprint.notes ? (
     <Card
@@ -155,21 +136,23 @@ export default function SessionComponent(props: {
       .with(P.instanceOf(RecordedWeightedExercise), (item) => (
         <WeightedExercise
           timeProvider={() =>
-            props.target === 'workoutSession'
+            isActiveWorkout
               ? OffsetDateTime.now()
               : (session.lastExercise?.latestTime ??
                 session.date.atTime(LocalTime.now()).atZone(ZoneId.systemDefault()).toOffsetDateTime())
           }
-          resetSetTimer={() => withLatestSession((s) => resetTimer(s.lastExercise?.latestTime))}
+          resetSetTimer={() => updateSession((s) => withRestTimerAt(s, s.lastExercise?.latestTime))}
           recordedExercise={item}
           toStartNext={session.nextExercise === item}
           updateExercise={(update) =>
             updateSession((s) => s.withExercise(index, update(s.recordedExercises[index] as RecordedWeightedExercise)))
           }
-          onEditExercise={() => push(getSessionExerciseEditorHref(props.target, index))}
+          onEditExercise={
+            editableSessionId ? () => push(getSessionExerciseEditorHref(editableSessionId, index)) : undefined
+          }
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
           isReadonly={isReadonly}
-          showPreviousButton={props.target === 'workoutSession'}
+          showPreviousButton={!!isActiveWorkout}
           previousRecordedExercises={recentlyCompletedExercises(item.movementKey()) as RecordedWeightedExercise[]}
         />
       ))
@@ -182,10 +165,12 @@ export default function SessionComponent(props: {
           updateSet={updateCardioSet(index)}
           onStartTimer={startCardioTimer(index)}
           toStartNext={session.nextExercise === item}
-          onEditExercise={() => push(getSessionExerciseEditorHref(props.target, index))}
+          onEditExercise={
+            editableSessionId ? () => push(getSessionExerciseEditorHref(editableSessionId, index)) : undefined
+          }
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
           isReadonly={isReadonly}
-          showPreviousButton={props.target === 'workoutSession'}
+          showPreviousButton={!!isActiveWorkout}
           previousRecordedExercises={recentlyCompletedExercises(item.movementKey()) as RecordedCardioExercise[]}
         />
       ))
@@ -231,8 +216,7 @@ export default function SessionComponent(props: {
     .with(P.instanceOf(RecordedCardioExercise), (exercise) => exercise.lastCompletedSet?.blueprint.restBetweenSets)
     .otherwise(() => undefined);
 
-  const showRestTimer =
-    restTimersEnabled && props.target === 'workoutSession' && nextExercise && restBetweenSets && session.restTimer;
+  const showRestTimer = restTimersEnabled && isActiveWorkout && nextExercise && restBetweenSets && session.restTimer;
   // Only a weighted set can be failed - cardio has no rep count to fall short of.
   const lastSetFailed =
     lastRecordedSet?.set &&
@@ -251,7 +235,7 @@ export default function SessionComponent(props: {
     />
   ) : undefined;
 
-  const runningCardio = props.target === 'workoutSession' ? session.runningCardioSet : undefined;
+  const runningCardio = isActiveWorkout ? session.runningCardioSet : undefined;
   const cardioTimer = runningCardio ? (
     <CardioTimer
       set={runningCardio.set}
@@ -287,7 +271,7 @@ export default function SessionComponent(props: {
   const workoutSummary = (
     <Card
       mode="contained"
-      onPress={props.target === 'workoutSession' ? props.openPostWorkoutSummary : undefined}
+      onPress={isActiveWorkout ? props.openPostWorkoutSummary : undefined}
       style={{ margin: spacing.pageHorizontalMargin }}
     >
       <Card.Content>

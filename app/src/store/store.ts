@@ -6,7 +6,6 @@ import {
   createListenerMiddleware,
   UnknownAction,
 } from '@reduxjs/toolkit';
-import { currentSessionReducer } from './current-session';
 import { settingsReducer } from './settings';
 import programReducer from './program';
 import appReducer from './app';
@@ -19,7 +18,6 @@ import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { SQLiteDatabase } from 'expo-sqlite';
 
 const rootReducer = combineReducers({
-  currentSession: currentSessionReducer,
   aiPlanner: aiPlannerReducer,
   settings: settingsReducer,
   program: programReducer,

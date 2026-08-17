@@ -35,7 +35,7 @@ interface CardioExerciseProps {
   updateExercise: (update: Updater<RecordedCardioExercise>) => void;
   updateSet: (setIndex: number, update: Updater<RecordedCardioExerciseSet>) => void;
   onStartTimer: (setIndex: number) => void;
-  onEditExercise: () => void;
+  onEditExercise: (() => void) | undefined;
   onRemoveExercise: () => void;
 }
 

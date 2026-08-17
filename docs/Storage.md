@@ -63,11 +63,15 @@ method or per-key effect. Keys with special needs use the `persist: false` / `hy
 
 ### Direct `keyValueStore` use
 
-A few non-settings blobs skip `PreferenceService` and use `extra.keyValueStore` directly - the
-in-progress session payload (`store/current-session/effects.ts`), the hidden built-in exercise id list,
-the "built-in programs seeded" marker. That's the escape hatch for a value that isn't a user-facing
-setting but is too small or too structurally awkward for a table. New _settings_ should go through
-`PreferenceService`.
+A few non-settings blobs skip `PreferenceService` and use `extra.keyValueStore` directly - the hidden
+built-in exercise id list, the "built-in programs seeded" marker. That's the escape hatch for a value
+that isn't a user-facing setting but is too small or too structurally awkward for a table. New
+_settings_ should go through `PreferenceService`.
+
+The in-progress workout used to live here too, under `CurrentSessionStateV1`. It is now a row in the
+`session` table like any other, flagged `active`;
+`store/stored-sessions/legacy-current-session.ts` lifts a leftover blob into the table on first launch
+and then deletes the keys.
 
 ## User data - SQLite via Drizzle
 
@@ -137,6 +141,40 @@ timestamp. Use **SQLite** for anything the user creates in quantity, anything qu
 and anything that needs to survive versioned shape changes.
 
 Startup order is `initializeSettingsStateSlice` → (once settings are hydrated)
-`initializeStoredSessionsStateSlice` and `initializeCurrentSessionStateSlice`. Preferences are
-therefore available to DB hydration, but not the other way round; `stored-sessions/effects.ts` asserts
-this explicitly.
+`initializeStoredSessionsStateSlice`. Preferences are therefore available to DB hydration, but not the
+other way round; `stored-sessions/effects.ts` asserts this explicitly.
+
+## Sessions, and the one in progress
+
+`storedSessions.sessions` holds every session the user owns - their history *and* the workout in
+progress - keyed by id, with `activeSessionId` pointing at the live one. Screens address a session by
+id (`updateStoredSession({ sessionId, update })`, mirroring `updateProgram`), so two screens editing
+different sessions cannot collide.
+
+Two things follow from that, and both matter when you touch this slice:
+
+- **Editing a session must not re-run every aggregate.** Streak, personal records, volume scales, the
+  month list and the "previous performances" lookup all sweep the whole history, and screens that
+  subscribe to them stay mounted while you edit - the History tab sits behind the workout screen, and
+  the History list sits behind `/history/edit`. Three things keep an edit off that path, and all three
+  matter:
+  - `selectSessions` returns only *finished* sessions, so the workout in progress cannot move it.
+  - `selectRecentlyCompletedExercises(state, sessionId)` additionally drops the session being viewed,
+    which is both what "previous" means and what makes editing a history session cheap.
+  - Both memoize with `resultEqualityCheck: shallowEqual`. The underlying map changes identity on every
+    recorded set, so the filter re-runs; handing back the previous array is what stops everything
+    downstream from recomputing.
+
+  Use `selectSession(state, id)` to look up a session by id, active or not, and `selectActiveSession`
+  for the live workout.
+- `useAppSelectorWhenFocused` (`store/index.ts`) does not run its selector at all while the screen is
+  offscreen - it is the tool for an expensive selector on a screen that stays mounted underneath
+  another. It returns the last value it saw until focus comes back.
+- `putStoredSession` / `updateStoredSession` mean "this session changed" and only write the payload.
+  `sessionFinished` means "the user is done with it" and is what queues the feed publish, exports to the
+  health aggregator, marks stats dirty and clears the active pointer. Keep completion work on the
+  latter, or it fires once per set.
+
+The `active` column has a single writer, the `setActiveSessionId` effect, in a transaction with a unique
+partial index (`single_active_session`) enforcing at most one - the same shape the `program` table uses
+for the active plan.

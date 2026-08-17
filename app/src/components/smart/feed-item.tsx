@@ -8,22 +8,18 @@ import { FeedPrBadges } from '@/components/smart/pr-badges';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useAppSelector } from '@/store';
-import { setCurrentSession } from '@/store/current-session';
 import { selectFeedFollowing, selectFeedSessionItems, selectOwnFeedUserId } from '@/store/feed';
 import { T, useTranslate } from '@tolgee/react';
 import { LocalDate } from '@js-joda/core';
 import { Href, Stack } from 'expo-router';
-import { useEffect } from 'react';
 import { View } from 'react-native';
 import { Card } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
 
 export function getFeedItemHref(eventId: string): Href {
   return `/feed/item/${encodeURIComponent(eventId)}` as Href;
 }
 
 export function FeedItem({ eventId }: { eventId: string }) {
-  const dispatch = useDispatch();
   const { colors } = useAppTheme();
   const feedItem = useAppSelector(selectFeedSessionItems).find((x) => x.eventId === eventId);
   const users = useAppSelector(selectFeedFollowing);
@@ -33,10 +29,6 @@ export function FeedItem({ eventId }: { eventId: string }) {
   const formatDate = useFormatDate();
   const { t } = useTranslate();
   const session = feedItem?.session;
-
-  useEffect(() => {
-    dispatch(setCurrentSession({ target: 'feedSession', session }));
-  }, [dispatch, session]);
 
   if (!feedItem || !session) {
     return (
@@ -63,7 +55,7 @@ export function FeedItem({ eventId }: { eventId: string }) {
     <>
       <Stack.Screen options={{ title: session.blueprint.name }} />
       <SessionComponent
-        target="feedSession"
+        session={session}
         showBodyweight={showBodyweight && !!session.bodyweight}
         header={
           <Card mode="contained" style={{ margin: spacing.pageHorizontalMargin }}>

@@ -14,10 +14,20 @@ import {
 import { sql } from 'drizzle-orm';
 import { check, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
-export const sessionsSchema = sqliteTable('session', {
-  id: text().primaryKey(),
-  payload: text('payload', { mode: 'json' }).$type<AnyVersionSessionJSON>().notNull(),
-});
+export const sessionsSchema = sqliteTable(
+  'session',
+  {
+    id: text().primaryKey(),
+    // The workout currently in progress, if any. At most one row may be active.
+    active: integer({ mode: 'boolean' }).notNull().default(false),
+    payload: text('payload', { mode: 'json' }).$type<AnyVersionSessionJSON>().notNull(),
+  },
+  (table) => [
+    uniqueIndex('single_active_session')
+      .on(table.active)
+      .where(sql`${table.active} = 1`),
+  ],
+);
 
 export const exercisesSchema = sqliteTable('exercise', {
   id: text().primaryKey(),
