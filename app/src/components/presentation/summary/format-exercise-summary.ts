@@ -14,13 +14,13 @@ import { localeFormatBigNumber } from '@/utils/locale-bignumber';
  */
 export function formatExerciseSummary(
   exercise: RecordedExercise,
-  options: { isFilled: boolean; showWeight: boolean; bodyweightLabel?: string },
+  options: { isFilled: boolean; showWeight: boolean; bodyweightLabel: string },
 ): string {
   if (exercise instanceof RecordedWeightedExercise) {
     const usesBodyweight = exercise.blueprint.resistance === 'bodyweight';
     // An exercise with no load has nothing to say about one.
     const showWeight = options.showWeight && exercise.tracksResistance;
-    const label = options.bodyweightLabel ?? 'BW';
+    const label = options.bodyweightLabel;
     return options.isFilled
       ? formatRuns(filledRuns(exercise, showWeight, usesBodyweight, label))
       : formatPlanned(exercise, showWeight, usesBodyweight, label);
@@ -118,7 +118,7 @@ function formatPlanned(
       return shape;
     }
     const heaviest = Weight.max(...sets.map((set) => set.weight));
-    const lightest = Weight.min(...sets.map((set) => set.weight)).convertTo(heaviest.unit);
+    const lightest = Weight.min(...sets.map((set) => set.weight));
     const suffix = heaviest.equals(lightest)
       ? bodyweightWeightLabel(heaviest, bodyweightLabel)
       : `${bodyweightLabel} ${signedWeight(lightest)}–${signedWeight(heaviest)}`;
@@ -131,12 +131,12 @@ function formatPlanned(
   }
 
   const heaviest = Weight.max(...weights);
-  const lightest = Weight.min(...weights).convertTo(heaviest.unit);
+  const lightest = Weight.min(...weights);
 
   // The unit belongs to the range, not to each end of it.
   return heaviest.equals(lightest)
     ? `${shape} @ ${heaviest.shortLocaleFormat()}`
-    : `${shape} @ ${localeFormatBigNumber(lightest.value)}–${heaviest.shortLocaleFormat()}`;
+    : `${shape} @ ${lightest.shortLocaleFormat()}–${heaviest.shortLocaleFormat()}`;
 }
 
 /** A signed weight for a bodyweight range end: `+10kg`, `-20kg`. */

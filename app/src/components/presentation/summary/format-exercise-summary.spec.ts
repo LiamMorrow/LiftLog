@@ -9,17 +9,20 @@ import { makeRecordedExercise, makeWeightedBlueprint, tick } from '@/models/sess
 
 vi.mock('expo-localization', () => ({ getLocales: () => [{ decimalSeparator: '.' }] }));
 
-const filled = { isFilled: true, showWeight: true };
+const filled = { isFilled: true, showWeight: true, bodyweightLabel: 'BW' };
 
 /** Every set is seeded with the plan's target, which is what building a session does. */
-function exerciseOf(sets: { reps: number | undefined; weight: number }[], blueprint = makeWeightedBlueprint()) {
+function exerciseOf(
+  sets: { reps: number | undefined; weight: number | Weight }[],
+  blueprint = makeWeightedBlueprint(),
+) {
   return new RecordedWeightedExercise(
     blueprint,
     sets.map((set, index) =>
       PotentialSet.of({
         set:
           set.reps === undefined ? undefined : RecordedSet.of({ repsCompleted: set.reps, completionDateTime: tick() }),
-        weight: new Weight(set.weight, 'kilograms'),
+        weight: set.weight instanceof Weight ? set.weight : new Weight(set.weight, 'kilograms'),
         target: blueprint.repsTargetForSet(index),
       }),
     ),
@@ -93,7 +96,9 @@ describe('formatExerciseSummary', () => {
       { reps: undefined, weight: 60 },
     ]);
 
-    expect(formatExerciseSummary(exercise, { isFilled: false, showWeight: true })).toBe('2 × 10 @ 60kg');
+    expect(formatExerciseSummary(exercise, { isFilled: false, bodyweightLabel: 'BW', showWeight: true })).toBe(
+      '2 × 10 @ 60kg',
+    );
   });
 
   it('states the target the sets are chasing, not the plan they were seeded from', () => {
@@ -104,7 +109,9 @@ describe('formatExerciseSummary', () => {
       undefined,
     );
 
-    expect(formatExerciseSummary(exercise, { isFilled: false, showWeight: true })).toBe('3 × 11');
+    expect(formatExerciseSummary(exercise, { isFilled: false, bodyweightLabel: 'BW', showWeight: true })).toBe(
+      '3 × 11',
+    );
   });
 
   it('spells out a climb that has left some sets behind', () => {
@@ -116,7 +123,9 @@ describe('formatExerciseSummary', () => {
       undefined,
     );
 
-    expect(formatExerciseSummary(exercise, { isFilled: false, showWeight: true })).toBe('12/10/10');
+    expect(formatExerciseSummary(exercise, { isFilled: false, bodyweightLabel: 'BW', showWeight: true })).toBe(
+      '12/10/10',
+    );
   });
 
   it('gives a planned exercise whose weight steps a range, rather than a set-by-set list', () => {
@@ -126,7 +135,21 @@ describe('formatExerciseSummary', () => {
       { reps: undefined, weight: 15 },
     ]);
 
-    expect(formatExerciseSummary(exercise, { isFilled: false, showWeight: true })).toBe('3 × 10 @ 15–20kg');
+    expect(formatExerciseSummary(exercise, { isFilled: false, bodyweightLabel: 'BW', showWeight: true })).toBe(
+      '3 × 10 @ 15kg–20kg',
+    );
+  });
+
+  it('gives a planned exercise whose weight steps a range with different units, rather than a set-by-set list', () => {
+    const exercise = exerciseOf([
+      { reps: undefined, weight: new Weight(15, 'pounds') },
+      { reps: undefined, weight: 20 },
+      { reps: undefined, weight: 15 },
+    ]);
+
+    expect(formatExerciseSummary(exercise, { isFilled: false, bodyweightLabel: 'BW', showWeight: true })).toBe(
+      '3 × 10 @ 15lbs–20kg',
+    );
   });
 });
 
@@ -201,6 +224,8 @@ describe('formatExerciseSummary for exercises that track no load', () => {
   it('says nothing about weight when planned', () => {
     const exercise = makeRecordedExercise(crunch, [undefined, undefined, undefined], new Weight(999, 'kilograms'));
 
-    expect(formatExerciseSummary(exercise, { isFilled: false, showWeight: true })).toBe('3 × 10');
+    expect(formatExerciseSummary(exercise, { isFilled: false, bodyweightLabel: 'BW', showWeight: true })).toBe(
+      '3 × 10',
+    );
   });
 });

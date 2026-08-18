@@ -15,11 +15,6 @@ interface ExerciseSummaryLineProps {
 /** Half the row, so the two columns stay a grid: nothing here is ever wide enough to be worth breaking it for. */
 const SETS_MAX_WIDTH = '50%';
 
-/**
- * The chip-free counterpart to `ExerciseSummary`. Both columns hold their side of the row -- a long name wraps
- * within its own column rather than pushing the sets onto a line of their own, which reads as a broken row
- * rather than a deliberate one.
- */
 export function ExerciseSummaryLine({ exercise, isFilled, showWeight, color = 'onSurface' }: ExerciseSummaryLineProps) {
   const { t } = useTranslate();
   return (

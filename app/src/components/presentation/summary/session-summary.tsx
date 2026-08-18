@@ -1,4 +1,3 @@
-import ExerciseSummary from '@/components/presentation/summary/exercise-summary';
 import { ExerciseSummaryLine } from '@/components/presentation/summary/exercise-summary-line';
 import { ColorChoice, spacing } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
@@ -9,41 +8,21 @@ interface SessionSummaryProps {
   isFilled?: boolean;
   showWeight?: boolean;
   color?: ColorChoice;
-  /** `chips` keeps the scrolling per-set chips, for surfaces that are worked from rather than read. */
-  variant?: 'chips' | 'text';
 }
-export default function SessionSummary({
-  session,
-  isFilled,
-  showWeight,
-  color = 'onSurface',
-  variant = 'text',
-}: SessionSummaryProps) {
+export default function SessionSummary({ session, isFilled, showWeight, color = 'onSurface' }: SessionSummaryProps) {
   return (
-    <View style={{ gap: variant === 'text' ? spacing[1] : spacing[2] }} testID="session-summary">
+    <View style={{ gap: spacing[1] }} testID="session-summary">
       {session.recordedExercises
         .filter((x) => x.isStarted || !isFilled)
-        .map((ex, index) =>
-          variant === 'text' ? (
-            <ExerciseSummaryLine
-              key={index}
-              exercise={ex}
-              isFilled={!!isFilled}
-              showWeight={!!showWeight}
-              color={color}
-            />
-          ) : (
-            <ExerciseSummary
-              key={index}
-              exercise={ex}
-              isFilled={!!isFilled}
-              showName={true}
-              showWeight={!!showWeight}
-              showDate={false}
-              color={color}
-            />
-          ),
-        )}
+        .map((ex, index) => (
+          <ExerciseSummaryLine
+            key={index}
+            exercise={ex}
+            isFilled={!!isFilled}
+            showWeight={!!showWeight}
+            color={color}
+          />
+        ))}
     </View>
   );
 }
