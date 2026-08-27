@@ -6,7 +6,6 @@ import { View } from 'react-native';
 import ExerciseSection from '@/components/presentation/workout/exercise-section';
 import { OffsetDateTime } from '@js-joda/core';
 import { Updater } from '@/utils/types';
-import { KeyedExerciseBlueprint } from '@/models/blueprint-models';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedWeightedExercise;
@@ -18,7 +17,7 @@ interface WeightedExerciseProps {
   timeProvider: () => OffsetDateTime;
   updateExercise: (update: Updater<RecordedWeightedExercise>) => void;
   resetSetTimer: () => void;
-  onEditExercise: () => void;
+  onEditExercise: (() => void) | undefined;
   onRemoveExercise: () => void;
 }
 
@@ -45,7 +44,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           <PotentialSetCounter
             isReadonly={props.isReadonly}
             key={index}
-            repsTarget={recordedExercise.blueprint.repsTargetForSet(index)}
+            repsTarget={recordedExercise.repsTargetForSet(index)}
             onTap={() => {
               const previousSet = set.set;
               const newSet = recordedExercise.withCycledRepCount(index, timeProvider()).getSet(index).set;
@@ -58,11 +57,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             }}
             previousRepCount={
               props.previousRecordedExercises
-                .filter(
-                  (x) =>
-                    KeyedExerciseBlueprint.fromExerciseBlueprint(x.blueprint).toString() ===
-                    KeyedExerciseBlueprint.fromExerciseBlueprint(props.recordedExercise.blueprint).toString(),
-                )
+                .filter((x) => x.progressionKey() === props.recordedExercise.progressionKey())
                 .at(0)?.potentialSets[index]?.set?.repsCompleted
             }
             onUpdateReps={(reps) => {
@@ -72,8 +67,8 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             onUpdateWeight={(w, applyTo) => updateExercise((ex) => ex.withWeight(index, w, applyTo))}
             set={set}
             toStartNext={props.toStartNext && setToStartNext === index && !props.isReadonly}
-            usesBodyweight={recordedExercise.blueprint.usesBodyweight}
-            weightIncrement={recordedExercise.blueprint.progressiveOverload.weightIncrement}
+            resistance={recordedExercise.blueprint.resistance}
+            weightIncrement={recordedExercise.blueprint.weightIncrement}
           />
         ))}
       </View>

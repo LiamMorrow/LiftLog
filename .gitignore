@@ -384,6 +384,7 @@ purchaseToken.txt
 
 appsettings.development.json
 backend/LiftLog.Api/appsettings.Development.json
+backend/LiftLog.Api/local-data/
 
 LiftLog.Web/wwwroot/crypto-utils.js
 LiftLog.Ui/wwwroot/app-utils.js

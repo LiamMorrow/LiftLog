@@ -5,7 +5,6 @@ import { SessionComparisonTable } from '@/components/presentation/workout/sessio
 import { ReactionSummary } from '@/components/smart/reaction-summary';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelectorWithArg } from '@/store';
-import { selectCurrentSession } from '@/store/current-session';
 import { selectPreviousComparableSession, selectSession } from '@/store/stored-sessions';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
@@ -17,9 +16,7 @@ export default function PostWorkoutPage() {
     sessionId?: string;
     source?: 'finished' | 'live' | 'history';
   }>();
-  const storedSession = useAppSelectorWithArg(selectSession, sessionId ?? '');
-  const currentWorkoutSession = useAppSelectorWithArg(selectCurrentSession, 'workoutSession');
-  const session = storedSession ?? (currentWorkoutSession?.id === sessionId ? currentWorkoutSession : undefined);
+  const session = useAppSelectorWithArg(selectSession, sessionId ?? '');
   const openedAfterFinishingWorkout = source === 'finished';
   const showFinishButton = openedAfterFinishingWorkout;
   const showBackButton = !openedAfterFinishingWorkout;

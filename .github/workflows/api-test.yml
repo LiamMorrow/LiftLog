@@ -30,6 +30,17 @@ jobs:
         ports:
           # Maps tcp port 5432 on service container to the host
           - 5401:5432
+      localstack:
+        image: localstack/localstack:4
+        env:
+          SERVICES: s3
+        options: >-
+          --health-cmd "curl -sf http://localhost:4566/_localstack/health"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 4566:4566
     steps:
       - uses: actions/checkout@v6
       - name: Setup .NET

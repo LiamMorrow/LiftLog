@@ -13,7 +13,12 @@ export default function SegmentedPicker<T extends SegmentedPickerValue>({
   const { colors } = useAppTheme();
 
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }} seedColor={colors.seedColor}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}
+      seedColor={colors.seedColor}
+      colorScheme={colors.scheme}
+    >
       <Row horizontalArrangement={{ spacedBy: spacing[1] }} modifiers={[fillMaxWidth()]}>
         {options.map((option) => {
           const checked = option.value === value;

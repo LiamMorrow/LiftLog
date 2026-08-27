@@ -68,7 +68,7 @@ export function PageActions({
         paddingBottom: spacing[3],
       }}
     >
-      <Host matchContents seedColor={colors.seedColor}>
+      <Host matchContents seedColor={colors.seedColor} colorScheme={colors.scheme}>
         {primaryKind === 'surface' ? (
           surfaceActions
         ) : (

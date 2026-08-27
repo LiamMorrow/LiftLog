@@ -7,7 +7,7 @@ export default function Menu({ trigger, items, testID, size = 40 }: MenuProps) {
   const { colors } = useAppTheme();
 
   return (
-    <Host style={{ width: size, height: size, margin: 6 }} seedColor={colors.seedColor}>
+    <Host style={{ width: size, height: size, margin: 6 }} seedColor={colors.seedColor} colorScheme={colors.scheme}>
       <NativeMenu label={trigger(() => {})} testID={testID} modifiers={[frame({ width: size, height: size })]}>
         {items.map((item) => (
           <Button

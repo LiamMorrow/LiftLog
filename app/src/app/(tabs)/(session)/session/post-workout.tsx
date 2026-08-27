@@ -4,7 +4,6 @@ import CheckIcon from '@expo/material-symbols/check.xml';
 import { SessionComparisonTable } from '@/components/presentation/workout/session-comparison-table';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelectorWithArg } from '@/store';
-import { selectCurrentSession } from '@/store/current-session';
 import { useFinishWorkout } from '@/hooks/useFinishWorkout';
 import { selectPreviousComparableSession, selectSession } from '@/store/stored-sessions';
 import { useTranslate } from '@tolgee/react';
@@ -17,15 +16,13 @@ export default function PostWorkoutPage() {
     sessionId?: string;
     source?: 'finished' | 'live' | 'history';
   }>();
-  const storedSession = useAppSelectorWithArg(selectSession, sessionId ?? '');
-  const currentWorkoutSession = useAppSelectorWithArg(selectCurrentSession, 'workoutSession');
-  const session = storedSession ?? (currentWorkoutSession?.id === sessionId ? currentWorkoutSession : undefined);
+  const session = useAppSelectorWithArg(selectSession, sessionId ?? '');
   const openedAfterFinishingWorkout = source === 'finished';
   const showFinishButton = openedAfterFinishingWorkout;
   const showBackButton = !openedAfterFinishingWorkout;
   const previousComparableSession = useAppSelectorWithArg(selectPreviousComparableSession, session);
   const { dismissTo, push } = useRouter();
-  const finishWorkout = useFinishWorkout('workoutSession');
+  const finishWorkout = useFinishWorkout(sessionId);
   const { t } = useTranslate();
 
   useEffect(() => {

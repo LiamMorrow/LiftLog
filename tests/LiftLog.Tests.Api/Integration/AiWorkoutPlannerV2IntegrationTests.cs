@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using Anthropic.Models.Messages;
+using LiftLog.Api.Authentication;
 using LiftLog.Api.Models;
 using LiftLog.Api.Service;
 using LiftLog.Tests.Api.Unit.Helpers;
@@ -16,7 +18,7 @@ namespace LiftLog.Tests.Api.Integration;
 [ClassDataSource<WebApplicationFactory<Program>>(Shared = SharedType.PerClass)]
 public class AiWorkoutPlannerV2IntegrationTests
 {
-    private const string TestWebAuthKey = "test-web-auth-key-12345";
+    private const string TestApiKey = "test-api-key-12345";
 
     private static readonly int CurrentVersion = new AiPlanToolProvider().CurrentAiPlanVersion;
 
@@ -40,8 +42,6 @@ public class AiWorkoutPlannerV2IntegrationTests
             factory,
             services =>
             {
-                services.AddScoped(_ => new WebAuthPurchaseVerificationService(TestWebAuthKey));
-
                 var mockRevenueCatService =
                     Substitute.For<IRevenueCatPurchaseVerificationService>();
                 mockRevenueCatService
@@ -54,17 +54,27 @@ public class AiWorkoutPlannerV2IntegrationTests
                 services.AddSingleton<IAnthropicMessageStreamer>(
                     new FakeAnthropicMessageStreamer(events)
                 );
+            },
+            extraConfiguration: new Dictionary<string, string?>
+            {
+                [AuthConfiguration.ApiKey.ValuePath] = TestApiKey,
             }
         );
     }
 
-    private static async Task WaitForMessageAsync(
+    /// <summary>
+    /// Hub messages arrive on the connection's own callbacks, so they can still be in flight when
+    /// the InvokeAsync that triggered them returns. Wait for the ones under test rather than
+    /// assuming they have landed.
+    /// </summary>
+    private static async Task WaitForAsync(
         IReadOnlyCollection<AiChatResponseV2> messages,
+        Func<IEnumerable<AiChatResponseV2>, bool> predicate,
         int timeoutMs = 5000
     )
     {
         var deadline = DateTime.UtcNow.AddMilliseconds(timeoutMs);
-        while (messages.Count == 0 && DateTime.UtcNow < deadline)
+        while (!predicate(messages) && DateTime.UtcNow < deadline)
         {
             await Task.Delay(25);
         }
@@ -79,7 +89,7 @@ public class AiWorkoutPlannerV2IntegrationTests
                 options =>
                 {
                     options.HttpMessageHandlerFactory = _ => server.CreateHandler();
-                    options.Headers.Add("Authorization", $"Web {TestWebAuthKey}");
+                    options.Headers.Add("X-API-Key", TestApiKey);
                 }
             )
             .AddJsonProtocol()
@@ -91,11 +101,12 @@ public class AiWorkoutPlannerV2IntegrationTests
     public async Task SendMessage_StreamsTextThenForwardsTheGeneratedPlan()
     {
         await using var hubConnection = CreateHubConnection();
-        var receivedMessages = new List<AiChatResponseV2>();
-        hubConnection.On<AiChatResponseV2>("ReceiveMessage", receivedMessages.Add);
+        var receivedMessages = new ConcurrentQueue<AiChatResponseV2>();
+        hubConnection.On<AiChatResponseV2>("ReceiveMessage", receivedMessages.Enqueue);
 
         await hubConnection.StartAsync();
         await hubConnection.InvokeAsync("SendMessage", "Make me a plan", CurrentVersion);
+        await WaitForAsync(receivedMessages, m => m.OfType<AiChatPlanResponseV2>().Any());
 
         // Streamed assistant prose arrives as a message response.
         await Assert
@@ -118,13 +129,13 @@ public class AiWorkoutPlannerV2IntegrationTests
     public async Task Introduce_WhenClientOutOfDate_ReturnsUpdateRequired()
     {
         await using var hubConnection = CreateHubConnection();
-        var receivedMessages = new List<AiChatResponseV2>();
-        hubConnection.On<AiChatResponseV2>("ReceiveMessage", receivedMessages.Add);
+        var receivedMessages = new ConcurrentQueue<AiChatResponseV2>();
+        hubConnection.On<AiChatResponseV2>("ReceiveMessage", receivedMessages.Enqueue);
 
         await hubConnection.StartAsync();
         // Client reports a version behind the server's current contract version.
         await hubConnection.InvokeAsync("Introduce", "en-US", CurrentVersion - 1, "kg");
-        await WaitForMessageAsync(receivedMessages);
+        await WaitForAsync(receivedMessages, m => m.OfType<AiChatUpdateRequiredResponseV2>().Any());
 
         var update = receivedMessages.OfType<AiChatUpdateRequiredResponseV2>().Single();
         await Assert.That(update.RequiredVersion).IsEqualTo(CurrentVersion);

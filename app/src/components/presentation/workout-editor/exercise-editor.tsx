@@ -45,17 +45,15 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
     let newExercise: CardioExerciseBlueprint | WeightedExerciseBlueprint = current;
     if (type === 'weighted') {
       newExercise = WeightedExerciseBlueprint.empty().with({
-        // oxlint-disable-next-line typescript/no-misused-spread
-        ...current,
-        type: 'WeightedExerciseBlueprint',
-        sets: undefined!, // Will not overwrite empty
+        name: current.name,
+        notes: current.notes,
+        link: current.link,
       });
     } else {
       newExercise = CardioExerciseBlueprint.empty().with({
-        // oxlint-disable-next-line typescript/no-misused-spread
-        ...current,
-        type: 'CardioExerciseBlueprint',
-        sets: undefined!, // Will not overwrite empty
+        name: current.name,
+        notes: current.notes,
+        link: current.link,
       });
     }
     commit(newExercise);

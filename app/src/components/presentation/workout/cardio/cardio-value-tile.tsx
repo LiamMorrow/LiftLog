@@ -9,17 +9,27 @@ import TouchableRipple from '@/components/presentation/foundation/touchable-ripp
 
 const emptyDisplay = '-';
 
-interface CardioValueTileProps<T> {
+type CardioValueTileProps<T> = {
   value: T | undefined;
-  /** Seeds the editor when an empty tile is opened. */
-  emptyValue: T;
   format: (value: T) => string;
   label: string;
-  onSave: (value: T) => void;
-  children: (value: T, setValue: (value: T) => void) => ReactNode;
   dialogStyle?: ViewStyle;
   testID?: string;
-}
+} & (
+  | {
+      isReadonly: true;
+      /** Seeds the editor when an empty tile is opened. */
+      emptyValue?: T;
+      onSave?: (value: T) => void;
+      children?: (value: T, setValue: (value: T) => void) => ReactNode;
+    }
+  | {
+      isReadonly?: false;
+      emptyValue: T;
+      onSave: (value: T) => void;
+      children: (value: T, setValue: (value: T) => void) => ReactNode;
+    }
+);
 
 export function CardioValueTile<T>({
   value,
@@ -30,38 +40,53 @@ export function CardioValueTile<T>({
   children,
   dialogStyle,
   testID,
+  isReadonly,
 }: CardioValueTileProps<T>) {
   const { colors } = useAppTheme();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogValue, setDialogValue] = useState<T>(value ?? emptyValue);
+  const [dialogValue, setDialogValue] = useState<T | undefined>(value ?? emptyValue);
   const filled = value !== undefined;
+
+  const face = (
+    <View style={{ alignItems: 'center' }}>
+      <Text style={[styles.value, { color: filled ? colors.onSecondaryContainer : colors.outline }]}>
+        {filled ? format(value) : emptyDisplay}
+      </Text>
+      <Text style={[styles.label, { color: colors.onSurfaceVariant }]}>{label}</Text>
+    </View>
+  );
+  const tileStyle = [
+    styles.tile,
+    { backgroundColor: filled ? colors.secondaryContainer : colors.surfaceContainerHighest },
+  ];
 
   // The seed colour is the user's and can land anywhere on the wheel, so filled and empty are
   // separated by a tonal step rather than by hue.
   return (
     <View style={{ borderRadius: rounding.roundedRectangleRadius, overflow: 'hidden' }}>
-      <TouchableRipple
-        testID={testID}
-        onPress={() => {
-          setDialogValue(value ?? emptyValue);
-          setDialogOpen(true);
-        }}
-        style={[styles.tile, { backgroundColor: filled ? colors.secondaryContainer : colors.surfaceContainerHighest }]}
-      >
-        <View style={{ alignItems: 'center' }}>
-          <Text style={[styles.value, { color: filled ? colors.onSecondaryContainer : colors.outline }]}>
-            {filled ? format(value) : emptyDisplay}
-          </Text>
-          <Text style={[styles.label, { color: colors.onSurfaceVariant }]}>{label}</Text>
+      {isReadonly ? (
+        <View testID={testID} style={tileStyle}>
+          {face}
         </View>
-      </TouchableRipple>
-      {dialogOpen && (
+      ) : (
+        <TouchableRipple
+          testID={testID}
+          onPress={() => {
+            setDialogValue(value ?? emptyValue);
+            setDialogOpen(true);
+          }}
+          style={tileStyle}
+        >
+          {face}
+        </TouchableRipple>
+      )}
+      {dialogOpen && dialogValue !== undefined && (
         <Portal>
           <KeyboardAvoidingView behavior={'height'} style={{ flex: 1, pointerEvents: 'box-none' }}>
             <Dialog visible={dialogOpen} onDismiss={() => setDialogOpen(false)}>
               <Dialog.Title>{label}</Dialog.Title>
               <Dialog.Content style={[{ flexDirection: 'row', alignItems: 'center' }, dialogStyle]}>
-                {children(dialogValue, setDialogValue)}
+                {children?.(dialogValue, setDialogValue)}
               </Dialog.Content>
               <Dialog.Actions>
                 <Button onPress={() => setDialogOpen(false)}>
@@ -71,7 +96,7 @@ export function CardioValueTile<T>({
                   testID="cardio-value-save"
                   onPress={() => {
                     setDialogOpen(false);
-                    onSave(dialogValue);
+                    onSave?.(dialogValue);
                   }}
                 >
                   <T keyName="generic.save.button" />

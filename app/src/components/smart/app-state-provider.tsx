@@ -16,7 +16,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const waitingOn = useAppSelector(
     (s) =>
       getLoadMessage(s.app, 'app settings') ||
-      getLoadMessage(s.currentSession, 'current session') ||
       getLoadMessage(s.program, 'program') ||
       getLoadMessage(s.settings, 'settings') ||
       getLoadMessage(s.storedSessions, 'stored sessions') ||

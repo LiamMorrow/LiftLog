@@ -1,12 +1,8 @@
 import { RecordedExercise, Session } from '@/models/session-models';
-import {
-  NormalizedName,
-  NormalizedNameKey,
-  ExerciseBlueprint,
-  KeyedExerciseBlueprint,
-} from '@/models/blueprint-models';
+import { MovementKey, ProgressionKey } from '@/models/blueprint-models';
 import { LocalDate, OffsetDateTime, YearMonth, ZoneId } from '@js-joda/core';
 import { createAction, createSelector, createSlice, PayloadAction, WritableDraft } from '@reduxjs/toolkit';
+import { shallowEqual } from 'react-redux';
 import Enumerable from 'linq';
 import { TemporalComparer } from '@/models/comparers';
 import { ExerciseDescriptor } from '@/models/exercise-models';
@@ -15,7 +11,9 @@ import { findPersonalRecords } from '@/store/stats/personal-records';
 interface StoredSessionState {
   isHydrated: boolean;
   sessions: Record<string, Session>;
-  latestExercises: Record<string, RecordedExercise | undefined>; // KeyedExerciseBlueprint -> RecordedExercise
+  // The workout in progress. It lives in `sessions` like any other; this only says which one it is.
+  activeSessionId: string | undefined;
+  latestExercises: Record<ProgressionKey, RecordedExercise | undefined>;
   // Read-only catalog resolved for the current locale, keyed by the exercise's English name.
   builtInExercises: Record<string, ExerciseDescriptor>;
   // User-created exercises and copy-on-write edits of built-ins.
@@ -29,6 +27,7 @@ interface StoredSessionState {
 const initialState: StoredSessionState = {
   isHydrated: false,
   sessions: {},
+  activeSessionId: undefined,
   latestExercises: {},
   builtInExercises: {},
   savedExercises: {},
@@ -46,6 +45,21 @@ function mergeExercises(
   hidden.forEach((id) => delete merged[id]);
   return Object.fromEntries(Object.entries(merged).sort((a, b) => a[1].name.localeCompare(b[1].name)));
 }
+
+/**
+ * Every session the user has finished with. The workout in progress is deliberately absent, because
+ * this is the input to every whole-history aggregate - streak, personal records, volume scales, the
+ * month list - and the History tab stays mounted behind the workout screen.
+ *
+ * The shallow result check is what makes that hold: `sessions` changes identity on each tap, so this
+ * recomputes, but handing back the previous array keeps everything downstream memoized. Use
+ * `selectSession` to look a session up by id, active or not.
+ */
+const selectFinishedSessions = createSelector(
+  [(state: StoredSessionState) => state.sessions, (state: StoredSessionState) => state.activeSessionId],
+  (sessions, activeSessionId) => Object.values(sessions).filter((session) => session.id !== activeSessionId),
+  { memoizeOptions: { resultEqualityCheck: shallowEqual } },
+);
 
 const storedSessionsSlice = createSlice({
   name: 'storedSessions',
@@ -69,23 +83,43 @@ const storedSessionsSlice = createSlice({
       });
     },
 
-    addStoredSession(state, action: PayloadAction<Session>) {
+    putStoredSession(state, action: PayloadAction<Session>) {
       state.sessions[action.payload.id] = action.payload;
       updateDerivatives(state, action.payload);
+    },
+
+    /** Applies an edit to one session, addressed by id so it cannot land on the wrong one. */
+    updateStoredSession(
+      state,
+      action: PayloadAction<{
+        sessionId: string;
+        update: (session: Session) => Session;
+      }>,
+    ) {
+      const session = state.sessions[action.payload.sessionId] as Session | undefined;
+      if (!session) {
+        return;
+      }
+      const updated = action.payload.update(session);
+      state.sessions[action.payload.sessionId] = updated;
+      updateDerivatives(state, updated);
+    },
+
+    setActiveSessionId(state, action: PayloadAction<string | undefined>) {
+      state.activeSessionId = action.payload;
     },
 
     deleteStoredSession(state, action: PayloadAction<string>) {
       const deletedSession = state.sessions[action.payload];
       delete state.sessions[action.payload];
+      if (state.activeSessionId === action.payload) {
+        state.activeSessionId = undefined;
+      }
 
       if (!deletedSession) return;
 
       // Collect the exercise keys that were in the deleted session
-      const affectedKeys = new Set(
-        deletedSession.recordedExercises.map((e) =>
-          KeyedExerciseBlueprint.fromExerciseBlueprint(e.blueprint as ExerciseBlueprint).toString(),
-        ),
-      );
+      const affectedKeys = new Set(deletedSession.recordedExercises.map((e) => e.progressionKey()));
 
       // For each affected key, clear and recalculate from remaining sessions
       affectedKeys.forEach((key) => {
@@ -131,22 +165,25 @@ const storedSessionsSlice = createSlice({
     selectLatestExercises: createSelector([(state: StoredSessionState) => state.latestExercises], (exercises) =>
       Object.fromEntries(Object.entries(exercises).map(([key, exercise]) => [key, exercise ? exercise : undefined])),
     ),
-    selectSessions: createSelector([(state: StoredSessionState) => state.sessions], (sessions) =>
-      Object.values(sessions),
-    ),
+    selectSessions: selectFinishedSessions,
     selectSession: createSelector(
       [(state: StoredSessionState) => state.sessions, (_, id: string) => id],
       (sessions, id) => sessions[id],
     ),
     selectCompletedDistinctSessionNames: createSelector(
-      [(state: StoredSessionState) => state.sessions, (_, since: LocalDate) => since],
+      [selectFinishedSessions, (_: StoredSessionState, since: LocalDate) => since],
       (sessions, since) =>
-        Enumerable.from(Object.values(sessions))
+        Enumerable.from(sessions)
           .where((x) => x.date.isAfter(since) || x.date.isEqual(since))
           .select((x) => x.blueprint.name)
           .distinct()
           .toArray(),
     ),
+
+    selectActiveSessionId: (state: StoredSessionState) => state.activeSessionId,
+
+    selectActiveSession: (state: StoredSessionState) =>
+      state.activeSessionId === undefined ? undefined : state.sessions[state.activeSessionId],
 
     selectExercises: createSelector(
       [
@@ -167,7 +204,7 @@ function updateDerivatives(state: WritableDraft<StoredSessionState>, session: Se
     if (!exercise.latestTime) {
       return;
     }
-    const key = KeyedExerciseBlueprint.fromExerciseBlueprint(exercise.blueprint).toString();
+    const key = exercise.progressionKey();
     const latestExercise = state.latestExercises[key];
     if (!latestExercise?.latestTime || latestExercise.latestTime.isBefore(exercise.latestTime)) {
       state.latestExercises[key] = exercise;
@@ -194,7 +231,9 @@ export const {
   setIsHydrated,
   setStoredSessions,
   upsertStoredSessions,
-  addStoredSession,
+  putStoredSession,
+  updateStoredSession,
+  setActiveSessionId,
   deleteStoredSession,
   updateExercise,
   deleteExercise,
@@ -205,38 +244,59 @@ export const {
   setFilteredExerciseIds,
 } = storedSessionsSlice.actions;
 
-export const { selectSessions, selectSession, selectExercises, selectLatestExercises } = storedSessionsSlice.selectors;
+export const {
+  selectSessions,
+  selectSession,
+  selectActiveSession,
+  selectActiveSessionId,
+  selectExercises,
+  selectLatestExercises,
+} = storedSessionsSlice.selectors;
+
+/** Fired when a session is done being edited: publish it, export it, and re-derive what depends on it. */
+export const sessionFinished = createAction<string>('sessionFinished');
 
 export const selectExerciseById = createSelector(
   [selectExercises, (_, id: string) => id],
   (exercises, id) => exercises[id],
 );
 
+/**
+ * Finished sessions, minus the one the caller is looking at. Editing a session changes the contents of
+ * `selectSessions`, so a selector that derives from it recomputes on every recorded set - dropping the
+ * session under edit keeps the input identical, and the shallow result check turns that into a stable
+ * reference the groupBy below can memoize on.
+ */
+const selectSessionsExcluding = createSelector(
+  [storedSessionsSlice.selectors.selectSessions, (_, excludeSessionId: string | undefined) => excludeSessionId],
+  (sessions, excludeSessionId) => sessions.filter((x) => x.id !== excludeSessionId),
+  { memoizeOptions: { resultEqualityCheck: shallowEqual } },
+);
+
 const selectLatestOrderedRecordedExercises = createSelector(
-  [storedSessionsSlice.selectors.selectSessions, (_, maxRecordsPerExercise: number) => maxRecordsPerExercise],
-  (sessions, maxRecordsPerExercise): Record<NormalizedNameKey, RecordedExercise[]> => {
+  [selectSessionsExcluding],
+  (sessions): Record<MovementKey, RecordedExercise[]> => {
     return Enumerable.from(sessions)
       .selectMany((x) => x.recordedExercises.filter((x) => x.isStarted))
-      .groupBy((x) => NormalizedName.fromExerciseBlueprint(x.blueprint).toString())
+      .groupBy((x) => x.movementKey())
       .toObject(
         (x) => x.key(),
-        (x) =>
-          x
-            .orderByDescending((x) => x.latestTime, TemporalComparer)
-            .take(maxRecordsPerExercise)
-            .toArray(),
+        (x) => x.orderByDescending((x) => x.latestTime, TemporalComparer).toArray(),
       );
   },
 );
 
+const noRecordedExercises: RecordedExercise[] = [];
+
+/**
+ * Previous performances of each movement, for the session identified by `excludeSessionId` - which is
+ * left out, because "previous" cannot mean the session you are looking at.
+ */
 export const selectRecentlyCompletedExercises = createSelector(
   selectLatestOrderedRecordedExercises,
   (recentlyCompletedExercises) =>
-    (blueprint: ExerciseBlueprint): RecordedExercise[] =>
-      (recentlyCompletedExercises[NormalizedName.fromExerciseBlueprint(blueprint).toString()] ?? []).filter(
-        // A cardio and weighted exercise can share a name; their records aren't comparable
-        (x) => x.blueprint.type === blueprint.type,
-      ),
+    (exercise: MovementKey): RecordedExercise[] =>
+      recentlyCompletedExercises[exercise] ?? noRecordedExercises,
 );
 
 export const selectPreviousComparableSession = createSelector(

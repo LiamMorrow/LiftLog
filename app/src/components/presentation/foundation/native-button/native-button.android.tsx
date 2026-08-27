@@ -14,7 +14,7 @@ export default function NativeButton({ label, onPress, icon, variant = 'filled',
   const MaterialButton = buttonForVariant[variant];
 
   return (
-    <Host matchContents seedColor={colors.seedColor} style={style}>
+    <Host matchContents seedColor={colors.seedColor} style={style} colorScheme={colors.scheme}>
       <MaterialButton onClick={onPress} enabled={!disabled}>
         <Row horizontalArrangement={{ spacedBy: spacing[2] }} verticalAlignment="center">
           {icon !== undefined && <Icon source={icon} size={18} />}

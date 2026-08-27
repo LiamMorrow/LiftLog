@@ -1,22 +1,27 @@
+# Default local dev stack: builds the API image and runs it against SQLite.
+#   docker compose up
+# For Postgres instead, layer the override:
+#   docker compose -f docker-compose.yml -f docker-compose.postgres.yml up
+name: liftlog
+
 services:
-  postgres:
-    image: postgres:15-alpine
-    container_name: liftlog-postgres-dev
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: liftlog
+  api:
+    build:
+      context: ../..
+      dockerfile: backend/Dockerfile
+    image: liftlog-api:local
     ports:
-      - "5400:5432"
+      - "5264:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Database__Provider: Sqlite
+      Database__ConnectionString: "Data Source=/var/lib/liftlog/liftlog.db"
+      AiPlanner__AnthropicApiKey: ${ANTHROPIC_API_KEY:-}
+      Auth__ApiKey__Value: ${LIFTLOG_API_KEY:-test-web-auth-key-12345}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - liftlog_data:/var/lib/liftlog
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d LiftLogDev"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
 volumes:
-  postgres_data:
+  liftlog_data:
     driver: local

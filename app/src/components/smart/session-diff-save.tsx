@@ -12,16 +12,22 @@ import {
   SessionBlueprintDiff,
 } from '@/models/blueprint-diff';
 import { EmptySession } from '@/models/session-models';
-import { useAppSelector } from '@/store';
-import { setCurrentPlanDiff } from '@/store/current-session';
-import { applyDiffToPlan, fetchUpcomingSessions, selectNewWorkoutName } from '@/store/program';
+import { useAppSelector, useAppSelectorWithArg } from '@/store';
+import {
+  applyDiffToPlan,
+  fetchUpcomingSessions,
+  selectNewWorkoutName,
+  selectPendingPlanDiff,
+  setPendingPlanDiff,
+} from '@/store/program';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useOnDismiss } from '@/hooks/useOnDismiss';
 
 /**
  * Creates a diff for updating an existing workout in the plan.
@@ -54,9 +60,9 @@ export function SessionDiffSaveEditor() {
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const { dismiss } = useRouter();
-  const currentPlanDiff = useAppSelector((x) => x.currentSession.currentPlanDiff);
+  const currentPlanDiff = useAppSelector(selectPendingPlanDiff);
   const [selectedDiff, setSelectedDiff] = useState<SessionBlueprintDiff>();
-  const newWorkoutName = useAppSelector(selectNewWorkoutName);
+  const newWorkoutName = useAppSelectorWithArg(selectNewWorkoutName, currentPlanDiff?.programId ?? '');
 
   // Track whether user has opted to create a new workout instead of updating existing
   const [isCreatingNewWorkout, setIsCreatingNewWorkout] = useState(false);
@@ -68,7 +74,7 @@ export function SessionDiffSaveEditor() {
   const saveAsNewWorkout = isCreatingNewWorkout || !canEditExistingWorkout;
 
   // Clear the diff on any exit so the trigger can reopen for a later diff
-  useEffect(() => () => void dispatch(setCurrentPlanDiff(undefined)), [dispatch]);
+  useOnDismiss(() => dispatch(setPendingPlanDiff(undefined)));
 
   /**
    * Handles toggling between "update existing workout" and "save as new workout" modes.
@@ -85,7 +91,7 @@ export function SessionDiffSaveEditor() {
       ? createAddNewWorkoutDiff(currentPlanDiff, newWorkoutName)
       : createUpdateExistingWorkoutDiff(currentPlanDiff);
 
-    dispatch(setCurrentPlanDiff({ ...currentPlanDiff, diff: newDiff }));
+    dispatch(setPendingPlanDiff({ ...currentPlanDiff, diff: newDiff }));
   };
 
   const getSwitchSubtitle = (): string => {
@@ -100,10 +106,12 @@ export function SessionDiffSaveEditor() {
   };
 
   const save = () => {
-    if (selectedDiff) {
+    if (selectedDiff && currentPlanDiff) {
       dispatch(
         applyDiffToPlan(
-          saveAsNewWorkout ? { type: 'add', diff: selectedDiff } : { ...currentPlanDiff, diff: selectedDiff },
+          saveAsNewWorkout
+            ? { type: 'add', programId: currentPlanDiff.programId, diff: selectedDiff }
+            : { ...currentPlanDiff, diff: selectedDiff },
         ),
       );
     }

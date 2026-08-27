@@ -21,13 +21,14 @@ import {
 import { addExportBackupEffects } from '@/store/settings/export-backup-effects';
 import { addExportPlaintextEffects } from '@/store/settings/export-plaintext-effects';
 import { addImportBackupEffects } from '@/store/settings/import-backup-effects';
+import { addImportExternalEffects } from '@/store/settings/import-external-effects';
 import { addRemoteBackupEffects } from '@/store/settings/remote-backup-effects';
+
 import Purchases from 'react-native-purchases';
 import { I18nManager, Platform } from 'react-native';
 import { detectLanguageFromDateLocale } from '@/utils/language-detector';
 import { supportedLanguages } from '@/services/tolgee';
 import { initializeStoredSessionsStateSlice } from '@/store/stored-sessions';
-import { initializeCurrentSessionStateSlice } from '@/store/current-session';
 
 // Read every generically-hydrated key, then dispatch its setter.
 async function hydrateGenericPreferences(
@@ -103,7 +104,6 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
       }
       dispatch(setIsHydrated(true));
       dispatch(initializeStoredSessionsStateSlice());
-      dispatch(initializeCurrentSessionStateSlice());
       const end = performance.now();
       logger.log(`initializeSettingsStateSlice effect took ${(end - start).toFixed(2)}ms`);
     },
@@ -171,5 +171,6 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
   addExportPlaintextEffects(addEffect);
   addExportBackupEffects(addEffect);
   addImportBackupEffects(addEffect);
+  addImportExternalEffects(addEffect);
   addRemoteBackupEffects(addEffect);
 }

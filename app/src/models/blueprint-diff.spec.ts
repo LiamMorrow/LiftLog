@@ -8,7 +8,7 @@ vi.mock('expo-localization', () => ({
 import {
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
-  IncreaseAllEvenlyProgressiveOverload,
+  ProgressionRule,
   Rest,
   SessionBlueprint,
   WeightedExerciseBlueprint,
@@ -20,21 +20,17 @@ import {
   getChangeDescription,
   getChangeLabelKey,
 } from './blueprint-diff';
-import { IncreaseLowestSetProgressiveOverload, NoProgressiveOverload, ProgressiveOverload } from './blueprint-models';
 import { UseTranslateResult } from '@tolgee/react';
+import { makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
 
 describe('diffSessionBlueprints', () => {
   const createWeightedExercise = (name: string, sets = 3, reps = 10): WeightedExerciseBlueprint =>
-    new WeightedExerciseBlueprint(
+    makeWeightedBlueprint({
       name,
       sets,
-      { type: 'fixed', reps },
-      new IncreaseAllEvenlyProgressiveOverload(new BigNumber('2.5')),
-      Rest.medium,
-      false,
-      '',
-      '',
-    );
+      repsConfig: { type: 'fixed', reps },
+      progression: [ProgressionRule.load(new BigNumber('2.5'))],
+    });
 
   const createCardioSet = (
     durationMinutes = 30,
@@ -194,9 +190,9 @@ describe('diffSessionBlueprints', () => {
       expect(diff.modifiedExercises[0]!.exerciseName).toBe('Squat');
       expect(diff.modifiedExercises[0]!.changes).toHaveLength(1);
       expect(diff.modifiedExercises[0]!.changes[0]).toMatchObject({
-        kind: 'exerciseSets',
-        oldValue: 3,
-        newValue: 5,
+        kind: 'exercisePlannedSets',
+        oldValue: Array.from({ length: 3 }, () => ({ reps: { min: 10, max: 10 } })),
+        newValue: Array.from({ length: 5 }, () => ({ reps: { min: 10, max: 10 } })),
       });
     });
 
@@ -207,9 +203,9 @@ describe('diffSessionBlueprints', () => {
       const diff = diffSessionBlueprints(original, modified);
 
       expect(diff.modifiedExercises[0]!.changes[0]).toMatchObject({
-        kind: 'exerciseReps',
-        oldValue: { type: 'fixed', reps: 10 },
-        newValue: { type: 'fixed', reps: 8 },
+        kind: 'exercisePlannedSets',
+        oldValue: Array.from({ length: 3 }, () => ({ reps: { min: 10, max: 10 } })),
+        newValue: Array.from({ length: 3 }, () => ({ reps: { min: 8, max: 8 } })),
       });
     });
 
@@ -217,32 +213,24 @@ describe('diffSessionBlueprints', () => {
       const original = new SessionBlueprint(
         'Workout',
         [
-          new WeightedExerciseBlueprint(
-            'Squat',
-            3,
-            { type: 'fixed', reps: 10 },
-            new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-            Rest.short,
-            false,
-            '',
-            '',
-          ),
+          makeWeightedBlueprint({
+            name: 'Squat',
+            repsConfig: { type: 'fixed', reps: 10 },
+            progression: [ProgressionRule.load(BigNumber(2.5))],
+            restBetweenSets: Rest.short,
+          }),
         ],
         '',
       );
       const modified = new SessionBlueprint(
         'Workout',
         [
-          new WeightedExerciseBlueprint(
-            'Squat',
-            3,
-            { type: 'fixed', reps: 10 },
-            new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-            Rest.long,
-            false,
-            '',
-            '',
-          ),
+          makeWeightedBlueprint({
+            name: 'Squat',
+            repsConfig: { type: 'fixed', reps: 10 },
+            progression: [ProgressionRule.load(BigNumber(2.5))],
+            restBetweenSets: Rest.long,
+          }),
         ],
         '',
       );
@@ -259,32 +247,26 @@ describe('diffSessionBlueprints', () => {
     });
 
     it('should detect bodyweight change', () => {
-      const base = new WeightedExerciseBlueprint(
-        'Pull Up',
-        3,
-        { type: 'fixed', reps: 10 },
-        new NoProgressiveOverload(),
-        Rest.medium,
-        false,
-        '',
-        '',
-        false,
-      );
+      const base = makeWeightedBlueprint({
+        name: 'Pull Up',
+        repsConfig: { type: 'fixed', reps: 10 },
+        progression: [],
+      });
       const original = new SessionBlueprint('Workout', [base], '');
-      const modified = new SessionBlueprint('Workout', [base.with({ usesBodyweight: true })], '');
+      const modified = new SessionBlueprint('Workout', [base.with({ resistance: 'bodyweight' })], '');
 
       const diff = diffSessionBlueprints(original, modified);
 
       expect(diff.modifiedExercises).toHaveLength(1);
       expect(diff.modifiedExercises[0]!.changes).toHaveLength(1);
       expect(diff.modifiedExercises[0]!.changes[0]).toMatchObject({
-        kind: 'exerciseBodyweight',
-        oldValue: false,
-        newValue: true,
+        kind: 'exerciseResistance',
+        oldValue: 'external',
+        newValue: 'bodyweight',
       });
 
       const applied = applySessionBlueprintDiff(original, diff);
-      expect((applied.exercises[0] as WeightedExerciseBlueprint).usesBodyweight).toBe(true);
+      expect((applied.exercises[0] as WeightedExerciseBlueprint).resistance).toBe('bodyweight');
     });
 
     it('should detect multiple field changes on same exercise', () => {
@@ -293,10 +275,9 @@ describe('diffSessionBlueprints', () => {
 
       const diff = diffSessionBlueprints(original, modified);
 
-      expect(diff.modifiedExercises[0]!.changes).toHaveLength(2);
-      const kinds = diff.modifiedExercises[0]!.changes.map((c) => c.kind);
-      expect(kinds).toContain('exerciseSets');
-      expect(kinds).toContain('exerciseReps');
+      // Set count and rep targets are one list, so changing both is a single change.
+      expect(diff.modifiedExercises[0]!.changes).toHaveLength(1);
+      expect(diff.modifiedExercises[0]!.changes[0]!.kind).toBe('exercisePlannedSets');
     });
   });
 
@@ -335,15 +316,15 @@ describe('diffSessionBlueprints', () => {
       expect(diff.modifiedExercises).toHaveLength(2);
       // First Squat: reps 10 -> 12
       const firstSquatChanges = diff.modifiedExercises.find((m) => m.exerciseIndex === 0)?.changes;
-      expect(firstSquatChanges?.find((c) => c.kind === 'exerciseReps')).toMatchObject({
-        oldValue: { type: 'fixed', reps: 10 },
-        newValue: { type: 'fixed', reps: 12 },
+      expect(firstSquatChanges?.find((c) => c.kind === 'exercisePlannedSets')).toMatchObject({
+        oldValue: Array.from({ length: 3 }, () => ({ reps: { min: 10, max: 10 } })),
+        newValue: Array.from({ length: 3 }, () => ({ reps: { min: 12, max: 12 } })),
       });
       // Second Squat: sets 4 -> 5
       const secondSquatChanges = diff.modifiedExercises.find((m) => m.exerciseIndex === 1)?.changes;
-      expect(secondSquatChanges?.find((c) => c.kind === 'exerciseSets')).toMatchObject({
-        oldValue: 4,
-        newValue: 5,
+      expect(secondSquatChanges?.find((c) => c.kind === 'exercisePlannedSets')).toMatchObject({
+        oldValue: Array.from({ length: 4 }, () => ({ reps: { min: 8, max: 8 } })),
+        newValue: Array.from({ length: 5 }, () => ({ reps: { min: 8, max: 8 } })),
       });
     });
   });
@@ -474,16 +455,12 @@ describe('diffSessionBlueprints', () => {
 
 describe('applySessionBlueprintDiff', () => {
   const createWeightedExercise = (name: string, sets = 3, reps = 10): WeightedExerciseBlueprint =>
-    new WeightedExerciseBlueprint(
+    makeWeightedBlueprint({
       name,
       sets,
-      { type: 'fixed', reps },
-      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-      Rest.medium,
-      false,
-      '',
-      '',
-    );
+      repsConfig: { type: 'fixed', reps },
+      progression: [ProgressionRule.load(BigNumber(2.5))],
+    });
 
   it('should apply selected session name change', () => {
     const original = new SessionBlueprint('Workout A', [], '');
@@ -537,7 +514,7 @@ describe('applySessionBlueprintDiff', () => {
     const result = applySessionBlueprintDiff(original, diff);
 
     const exercise = result.exercises[0]! as WeightedExerciseBlueprint;
-    expect(exercise.sets).toBe(5);
+    expect(exercise.plannedSets).toHaveLength(5);
   });
 
   it('should apply all selected changes correctly', () => {
@@ -549,8 +526,7 @@ describe('applySessionBlueprintDiff', () => {
     const result = applySessionBlueprintDiff(original, diff);
 
     const exercise = result.exercises[0]! as WeightedExerciseBlueprint;
-    expect(exercise.sets).toBe(5);
-    expect(exercise.repsConfig).toEqual({ type: 'fixed', reps: 8 });
+    expect(exercise.plannedSets).toEqual(Array.from({ length: 5 }, () => ({ reps: { min: 8, max: 8 } })));
   });
 
   const createCardioSet = (
@@ -625,16 +601,11 @@ describe('applySessionBlueprintDiff', () => {
 
 describe('getChangeDescription', () => {
   const createWeightedExercise = (name: string): WeightedExerciseBlueprint =>
-    new WeightedExerciseBlueprint(
+    makeWeightedBlueprint({
       name,
-      3,
-      { type: 'fixed', reps: 10 },
-      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-      Rest.medium,
-      false,
-      '',
-      '',
-    );
+      repsConfig: { type: 'fixed', reps: 10 },
+      progression: [ProgressionRule.load(BigNumber(2.5))],
+    });
 
   it('should return translation key for session name change', () => {
     const original = new SessionBlueprint('Workout A', [], '');
@@ -674,22 +645,18 @@ describe('getChangeDescription', () => {
     const modified = new SessionBlueprint(
       'Workout',
       [
-        new WeightedExerciseBlueprint(
-          'Squat',
-          5,
-          { type: 'fixed', reps: 10 },
-          new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-          Rest.medium,
-          false,
-          '',
-          '',
-        ),
+        makeWeightedBlueprint({
+          name: 'Squat',
+          sets: 5,
+          repsConfig: { type: 'fixed', reps: 10 },
+          progression: [ProgressionRule.load(BigNumber(2.5))],
+        }),
       ],
       '',
     );
 
     const diff = diffSessionBlueprints(original, modified);
-    const setsChange = diff.modifiedExercises[0]!.changes.find((c) => c.kind === 'exerciseSets');
+    const setsChange = diff.modifiedExercises[0]!.changes.find((c) => c.kind === 'exercisePlannedSets');
 
     const t: UseTranslateResult['t'] = (key, params?) => ({ key, params }) as unknown as string;
     const translatable = getChangeDescription(t, setsChange!) as unknown as {
@@ -699,8 +666,8 @@ describe('getChangeDescription', () => {
 
     expect(translatable.key).toBe('plan.diff.generic_two_value_change.body');
     expect(translatable.params).toEqual({
-      oldValue: 3,
-      newValue: 5,
+      oldValue: '10',
+      newValue: '10',
     });
   });
 });
@@ -709,23 +676,20 @@ describe('getChangeDescription', () => {
 
 describe('filterDiff', () => {
   const weighted = (name: string, sets = 3, reps = 10, notes = ''): WeightedExerciseBlueprint =>
-    new WeightedExerciseBlueprint(
+    makeWeightedBlueprint({
       name,
       sets,
-      { type: 'fixed', reps },
-      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-      Rest.medium,
-      false,
+      repsConfig: { type: 'fixed', reps },
+      progression: [ProgressionRule.load(BigNumber(2.5))],
       notes,
-      '',
-    );
+    });
 
   it('keeps only the selected changes and recomputes hasChanges', () => {
     const original = new SessionBlueprint('Workout', [weighted('Squat', 3, 10)], 'old notes');
     const modified = new SessionBlueprint('Workout renamed', [weighted('Squat', 5, 8)], 'old notes');
 
     const diff = diffSessionBlueprints(original, modified);
-    const setsChange = diff.modifiedExercises[0]!.changes.find((c) => c.kind === 'exerciseSets')!;
+    const setsChange = diff.modifiedExercises[0]!.changes.find((c) => c.kind === 'exercisePlannedSets')!;
 
     const filtered = filterDiff(diff, new Set([setsChange.id]));
 
@@ -736,7 +700,7 @@ describe('filterDiff', () => {
     // Applying the filtered diff changes sets but not the session name
     const applied = applySessionBlueprintDiff(original, filtered);
     expect(applied.name).toBe('Workout');
-    expect((applied.exercises[0] as WeightedExerciseBlueprint).sets).toBe(5);
+    expect((applied.exercises[0] as WeightedExerciseBlueprint).plannedSets).toHaveLength(5);
   });
 
   it('drops modified exercises whose changes were all deselected', () => {
@@ -755,16 +719,11 @@ describe('filterDiff', () => {
 
 describe('applySessionBlueprintDiff additional branches', () => {
   const weighted = (name: string): WeightedExerciseBlueprint =>
-    new WeightedExerciseBlueprint(
+    makeWeightedBlueprint({
       name,
-      3,
-      { type: 'fixed', reps: 10 },
-      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-      Rest.medium,
-      false,
-      '',
-      '',
-    );
+      repsConfig: { type: 'fixed', reps: 10 },
+      progression: [ProgressionRule.load(BigNumber(2.5))],
+    });
   const cardioSet = (durationMinutes: number, trackDuration = true): CardioExerciseSetBlueprint =>
     new CardioExerciseSetBlueprint(
       { type: 'time', value: Duration.ofMinutes(durationMinutes) },
@@ -813,16 +772,16 @@ describe('applySessionBlueprintDiff additional branches', () => {
     const modified = new SessionBlueprint(
       'W2',
       [
-        new WeightedExerciseBlueprint(
-          'Squat',
-          5,
-          { type: 'fixed', reps: 8 },
-          new NoProgressiveOverload(),
-          Rest.long,
-          true,
-          'note',
-          'link',
-        ),
+        makeWeightedBlueprint({
+          name: 'Squat',
+          sets: 5,
+          repsConfig: { type: 'fixed', reps: 8 },
+          progression: [],
+          restBetweenSets: Rest.long,
+          supersetWithNext: true,
+          notes: 'note',
+          link: 'link',
+        }),
       ],
       'notes2',
     );
@@ -839,21 +798,19 @@ describe('change label and description mapping', () => {
   const t: UseTranslateResult['t'] = (key, params?) => ({ key, params }) as unknown as string;
   const weighted = (
     name: string,
-    overload: ProgressiveOverload = new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+    progression: ProgressionRule[] = [ProgressionRule.load(BigNumber(2.5))],
     supersetWithNext = false,
     notes = '',
     link = '',
   ): WeightedExerciseBlueprint =>
-    new WeightedExerciseBlueprint(
+    makeWeightedBlueprint({
       name,
-      3,
-      { type: 'fixed', reps: 10 },
-      overload,
-      Rest.medium,
+      repsConfig: { type: 'fixed', reps: 10 },
+      progression,
       supersetWithNext,
       notes,
       link,
-    );
+    });
 
   it('produces a non-empty label key and description for every change kind', () => {
     const original = new SessionBlueprint('Workout', [weighted('Squat'), weighted('Bench')], 'notes');
@@ -861,7 +818,13 @@ describe('change label and description mapping', () => {
       'Renamed',
       [
         weighted('Bench'), // reordered
-        weighted('Squat', new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'last'), true, 'new note', 'new link'),
+        weighted(
+          'Squat',
+          [ProgressionRule.load(BigNumber(5), { type: 'lowestSets', pick: 'last' })],
+          true,
+          'new note',
+          'new link',
+        ),
         weighted('Deadlift'), // added
       ],
       'new notes',
@@ -878,25 +841,25 @@ describe('change label and description mapping', () => {
     }
   });
 
-  it('describes each progressive overload strategy', () => {
-    const cases = [
-      new NoProgressiveOverload(),
-      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-      new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'all'),
-      new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'first'),
-      new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'middle'),
-      new IncreaseLowestSetProgressiveOverload(BigNumber(5), 'last'),
+  it('describes every progression arrangement, including a multi-rule ladder', () => {
+    const cases: ProgressionRule[][] = [
+      [],
+      [ProgressionRule.load(BigNumber(2.5))],
+      [ProgressionRule.load(BigNumber(5), { type: 'lowestSets', pick: 'all' })],
+      [ProgressionRule.load(BigNumber(5), { type: 'lowestSets', pick: 'first' })],
+      [ProgressionRule.load(BigNumber(5), { type: 'lowestSets', pick: 'middle' })],
+      [ProgressionRule.load(BigNumber(5), { type: 'lowestSets', pick: 'last' })],
+      [
+        ProgressionRule.of({ axis: 'reps', step: BigNumber(1), ceiling: BigNumber(12), onCeiling: 'reset' }),
+        ProgressionRule.load(BigNumber(2.5)),
+      ],
     ];
 
-    for (const overload of cases) {
-      const original = new SessionBlueprint(
-        'W',
-        [weighted('Squat', new IncreaseAllEvenlyProgressiveOverload(BigNumber(1)))],
-        '',
-      );
-      const modified = new SessionBlueprint('W', [weighted('Squat', overload)], '');
+    for (const progression of cases) {
+      const original = new SessionBlueprint('W', [weighted('Squat', [ProgressionRule.load(BigNumber(1))])], '');
+      const modified = new SessionBlueprint('W', [weighted('Squat', progression)], '');
       const diff = diffSessionBlueprints(original, modified);
-      const change = diff.modifiedExercises[0]!.changes.find((c) => c.kind === 'progressiveOverload')!;
+      const change = diff.modifiedExercises[0]!.changes.find((c) => c.kind === 'progression')!;
       const description = getChangeDescription(t, change) as unknown as { key: string };
       expect(description.key).toBeTruthy();
     }

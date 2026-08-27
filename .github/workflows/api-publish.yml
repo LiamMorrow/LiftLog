@@ -1,8 +1,15 @@
 name: Publish API docker image to GitHub Container Registry
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      version_code:
+        description: "Version code (e.g., 1.0.0)"
+        required: true
+        type: string
+      commit_sha:
+        description: "Commit SHA to checkout (optional, defaults to the branch head)"
+        required: false
+        type: string
 
 env:
   REGISTRY: ghcr.io
@@ -20,11 +27,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 10.0.x
+          ref: ${{ inputs.commit_sha || github.ref }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log into registry ${{ env.REGISTRY }}
         uses: docker/login-action@v3
@@ -32,10 +42,17 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build image
-        run: dotnet publish --os linux --arch x64 /t:PublishContainer -c Release
-        working-directory: backend/LiftLog.Api
-      - name: Tag image
-        run: docker tag liftlog-api:latest ghcr.io/liammorrow/liftlog:api
-      - name: Push image
-        run: docker push ghcr.io/liammorrow/liftlog:api
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: backend/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          provenance: false
+          tags: |
+            ghcr.io/liammorrow/liftlog:api
+            ghcr.io/liammorrow/liftlog:api-${{ inputs.version_code }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

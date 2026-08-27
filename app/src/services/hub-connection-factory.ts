@@ -7,7 +7,7 @@ export class HubConnectionFactory {
     if (__DEV__) {
       return builder
         .withUrl(`${apiBaseUrl}${path}`, {
-          accessTokenFactory: () => `Web test-web-auth-key-12345`,
+          headers: { 'X-API-Key': 'test-web-auth-key-12345' },
         })
         .build();
     }

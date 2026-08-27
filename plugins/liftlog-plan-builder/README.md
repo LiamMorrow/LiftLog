@@ -1,6 +1,6 @@
 # LiftLog Plan Builder
 
-A Claude skill that builds [LiftLog](https://liftlog.online) workout plans. Describe the training you want — "a 4-day upper/lower split for an intermediate lifter, dumbbells only" — and it writes a `.liftlogplan` file you can import into the app.
+A Claude skill that builds [LiftLog](https://liftlog.online) workout plans. Describe the training you want - "a 4-day upper/lower split for an intermediate lifter, dumbbells only" - and it writes a `.liftlogplan` file you can import into the app.
 
 The plan is validated against LiftLog's own schema before you get it, so it will import cleanly.
 
@@ -29,11 +29,11 @@ Just ask:
 
 > Take my push-pull-legs plan and swap the barbell work for dumbbells.
 
-When it's done, get the file onto your phone (AirDrop, email, or Files) and tap it — LiftLog will open it. Or open LiftLog and go to **Plans → Import**.
+When it's done, get the file onto your phone (AirDrop, email, or Files) and tap it - LiftLog will open it. Or open LiftLog and go to **Plans → Import**.
 
 ## Editing a plan you already have
 
-You don't have to describe your current plan — send it. In LiftLog, open **Plans**, tap the `⋮` next to the plan and choose **Export to file**; the share sheet lets you save it to Files/Drive or mail it to yourself. Hand that `.liftlogplan` to Claude along with what you want changed, and you get the same plan back with the change made.
+You don't have to describe your current plan - send it. In LiftLog, open **Plans**, tap the `⋮` next to the plan and choose **Export to file**; the share sheet lets you save it to Files/Drive or mail it to yourself. Hand that `.liftlogplan` to Claude along with what you want changed, and you get the same plan back with the change made.
 
 Importing the result adds a _new_ plan rather than overwriting the old one, so delete the original once the replacement is in. Your workout history is stored separately and isn't affected.
 
@@ -43,8 +43,8 @@ Importing the result adds a _new_ plan rather than overwriting the old one, so d
 | ------------------------------------------------------------ | -------------------------------------------------------------- |
 | `skills/create-liftlog-plan/SKILL.md`                        | The skill itself.                                              |
 | `skills/create-liftlog-plan/reference/format.md`             | Field-by-field guide to the format.                            |
-| `skills/create-liftlog-plan/reference/ProgramBlueprint.json` | The JSON Schema. Generated — see below.                        |
-| `skills/create-liftlog-plan/scripts/validate-plan.mjs`       | Validator. No dependencies, no network. Generated — see below. |
+| `skills/create-liftlog-plan/reference/ProgramBlueprint.json` | The JSON Schema. Generated - see below.                        |
+| `skills/create-liftlog-plan/scripts/validate-plan.mjs`       | Validator. No dependencies, no network. Generated - see below. |
 | `skills/create-liftlog-plan/examples/`                       | A weighted plan and a cardio plan.                             |
 
 `ProgramBlueprint.json` and `validate-plan.mjs` are **generated** from the app's TypeScript models by `cd app && npm run json-schema`. Don't edit them by hand; change `app/src/models/storage/versions/latest/blueprint.ts` and regenerate.

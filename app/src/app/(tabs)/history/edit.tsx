@@ -2,19 +2,39 @@ import SessionComponent from '@/components/smart/session-component';
 import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { selectCurrentSession, setCurrentSession } from '@/store/current-session';
+import { selectSession, sessionFinished, updateStoredSession } from '@/store/stored-sessions';
 import { useFinishWorkout } from '@/hooks/useFinishWorkout';
 import { LocalDate } from '@js-joda/core';
-import { useRouter, Stack } from 'expo-router';
+import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { View } from 'react-native';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { useDispatch } from 'react-redux';
+import { useOnDismiss } from '@/hooks/useOnDismiss';
+import { useStartWorkoutWithConfirmation } from '@/hooks/useStartWorkoutWithConfirmation';
+import { useTranslate } from '@tolgee/react';
+import { useRef } from 'react';
 
 export default function HistoryEditPage() {
   const dispatch = useDispatch();
-  const session = useAppSelectorWithArg(selectCurrentSession, 'historySession');
+  const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
+  const session = useAppSelectorWithArg(selectSession, sessionId);
   const { dismissTo, push } = useRouter();
-  const finishWorkout = useFinishWorkout('historySession');
+  const finishWorkout = useFinishWorkout(sessionId);
+
+  // Resuming hands the session back to the workout in progress, so leaving this screen must not also
+  // finish it - that would immediately clear it as the active workout again.
+  const resumed = useRef(false);
+  useOnDismiss(() => {
+    if (!resumed.current) {
+      dispatch(sessionFinished(sessionId));
+    }
+  });
+  const { start: resume, confirmationDialog } = useStartWorkoutWithConfirmation({
+    onStarted: () => {
+      resumed.current = true;
+      dismissTo('/history');
+    },
+  });
 
   const save = () => {
     const hasDiff = finishWorkout();
@@ -24,18 +44,38 @@ export default function HistoryEditPage() {
     }
   };
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
-  const jsDate = session && new Date(session.date.year(), session.date.month().ordinal(), session.date.dayOfMonth());
+  const { t } = useTranslate();
+
+  // The row is gone if it was deleted from under this screen.
+  if (!session) {
+    return null;
+  }
+
+  const jsDate = new Date(session.date.year(), session.date.month().ordinal(), session.date.dayOfMonth());
 
   return (
     <>
       <Stack.Screen
         options={{
-          title: session?.blueprint.name ?? 'Workout',
+          title: session.blueprint.name,
         }}
       />
-      <SessionMoreMenuComponent target="historySession" save={save} />
+      <SessionMoreMenuComponent
+        session={session}
+        save={save}
+        additionalItems={[
+          {
+            label: t('workout.resume.button'),
+            icon: 'playCircle',
+            systemImage: 'play.circle',
+            onPress: () => resume(session),
+          },
+        ]}
+      />
+      {confirmationDialog}
       <SessionComponent
-        target="historySession"
+        session={session}
+        updateSession={(update) => dispatch(updateStoredSession({ sessionId, update }))}
         showBodyweight={showBodyweight}
         header={
           <View style={{ paddingHorizontal: spacing.pageHorizontalMargin }}>
@@ -44,11 +84,11 @@ export default function HistoryEditPage() {
               locale="default"
               inputMode="start"
               onChange={(e) => {
-                if (e && session)
+                if (e)
                   dispatch(
-                    setCurrentSession({
-                      target: 'historySession',
-                      session: session.withUpdatedDate(LocalDate.of(e.getFullYear(), e.getMonth() + 1, e.getDate())),
+                    updateStoredSession({
+                      sessionId,
+                      update: (s) => s.withUpdatedDate(LocalDate.of(e.getFullYear(), e.getMonth() + 1, e.getDate())),
                     }),
                   );
               }}

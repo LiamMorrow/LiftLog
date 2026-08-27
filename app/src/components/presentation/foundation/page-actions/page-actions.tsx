@@ -58,7 +58,7 @@ export function PageActions({ primary, secondary = [], primaryExpanded, accessor
         pointerEvents: 'box-none',
       }}
     >
-      <Host matchContents seedColor={colors.seedColor}>
+      <Host matchContents seedColor={colors.seedColor} colorScheme={colors.scheme}>
         {/* The shadow rides the stack, not the buttons: glass swallows a shadow set on itself. */}
         <HStack spacing={8} modifiers={[shadow(floatingShadowModifier)]}>
           {glassButton(primary, true, expanded)}

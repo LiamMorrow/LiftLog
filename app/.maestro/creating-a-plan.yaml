@@ -38,13 +38,33 @@ appId: com.limajuice.liftlog
     direction: DOWN
 - tapOn: 'Superset next exercise'
 
-# Switch progressive overload from "Lowest set/s" to "Evenly" via its dropdown
+# A new exercise has no rules. The first one added moves weight; narrow it to the lowest sets via the
+# scope dropdown, then add a second: a weight rule never hands over, so the new rung goes in front of
+# it and the pair comes out as reps-then-weight without any further editing.
 - scrollUntilVisible:
     element:
-      text: 'Lowest set/s'
+      id: 'progression-add-rule'
     direction: DOWN
-- tapOn: 'Lowest set/s'
-- tapOn: 'Evenly'
+- tapOn:
+    id: 'progression-add-rule'
+- scrollUntilVisible:
+    element:
+      text: 'Amount to increase'
+    direction: DOWN
+- scrollUntilVisible:
+    element:
+      text: 'Every set'
+    direction: DOWN
+- tapOn: 'Every set'
+- tapOn: 'Every lowest'
+
+- scrollUntilVisible:
+    element:
+      id: 'progression-add-rule'
+    direction: DOWN
+- tapOn:
+    id: 'progression-add-rule'
+- assertVisible: 'Stop at a limit'
 
 # Back to the workout; the exercise persisted
 - back
@@ -66,7 +86,17 @@ appId: com.limajuice.liftlog
 - assertVisible:
     checked: true
     rightOf: 'Superset next exercise'
-- assertVisible: 'Evenly'
+# Rule 1 is the reps rung added above and rule 2 the original weight rule, so both survived in order
+- scrollUntilVisible:
+    element:
+      text: 'Rule 2'
+    direction: DOWN
+- assertVisible: 'Limit'
+# Rule 2's own scope, which is the narrowing made before it was pushed down the list
+- scrollUntilVisible:
+    element:
+      text: 'Every lowest'
+    direction: DOWN
 
 # Back out to the plan list and remove the plan so the flow leaves no state behind
 - back

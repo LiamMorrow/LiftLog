@@ -204,7 +204,7 @@ function withHorizon(context: Omit<CellContext, 'today' | 'horizon'>, today: Loc
   return { ...context, today, horizon: today.minusDays(FEED_EVENT_RETENTION_DAYS) };
 }
 
-/** The seven days ending on `today`, as one row per user — you first, then whoever else trained. */
+/** The seven days ending on `today`, as one row per user - you first, then whoever else trained. */
 export const selectActivityWeek = createSelector(
   [selectCellContext, selectFollowedUserNames, (_: RootState, today: LocalDate) => today],
   (cellContext, names, today): ActivityRow[] => {

@@ -22,11 +22,12 @@ import programReducer, {
   removeSessionFromProgram,
   addProgramSession,
   setProgramSession,
+  selectNewWorkoutName,
 } from '@/store/program';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { ProgramBlueprint, SessionBlueprint } from '@/models/blueprint-models';
 import { RemoteData } from '@/models/remote';
-import { EmptySessionBlueprintDiff } from '@/models/blueprint-diff';
+import { diffSessionBlueprints, EmptySessionBlueprintDiff } from '@/models/blueprint-diff';
 import { programsSchema } from '@/db/schema';
 import type { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import type { RootState } from '@/store/store';
@@ -93,7 +94,7 @@ function makeProgramState(savedPrograms: Record<string, ProgramBlueprint> = {}, 
     program: {
       isHydrated,
       activePlanId,
-      savedPrograms: Object.fromEntries(Object.entries(savedPrograms).map(([id, p]) => [id, p.toPOJO()])),
+      savedPrograms,
       upcomingSessions: RemoteData.notAsked(),
     },
     storedSessions: { latestExercises: {} },
@@ -556,6 +557,39 @@ describe('program reducer', () => {
   });
 
   describe('applyDiffToPlan', () => {
+    // A diff is computed when a workout is finished, but only applied once the user confirms it in
+    // the diff-save modal — by which point the plan it was computed against may no longer be active.
+    function noteDiff(sessionName: string, notes: string) {
+      return diffSessionBlueprints(
+        new SessionBlueprint(sessionName, [], ''),
+        new SessionBlueprint(sessionName, [], notes),
+      );
+    }
+
+    function storeWithTwoPlans() {
+      const store = createProgramStore();
+      store.dispatch(
+        savePlan({
+          programId: 'plan-a',
+          programBlueprint: makeProgram('Plan A', [
+            new SessionBlueprint('A1', [], ''),
+            new SessionBlueprint('A2', [], ''),
+          ]),
+        }),
+      );
+      store.dispatch(
+        savePlan({
+          programId: 'plan-b',
+          programBlueprint: makeProgram('Plan B', [
+            new SessionBlueprint('B1', [], ''),
+            new SessionBlueprint('B2', [], ''),
+          ]),
+        }),
+      );
+      store.dispatch(setActivePlan({ activePlanId: 'plan-b' }));
+      return store;
+    }
+
     it('adds a session on "add" diff type', () => {
       const activeId = 'active-id';
       const store = createProgramStore();
@@ -564,10 +598,114 @@ describe('program reducer', () => {
       store.dispatch(
         applyDiffToPlan({
           type: 'add',
+          programId: activeId,
           diff: EmptySessionBlueprintDiff,
         }),
       );
       expect(getProgram(store, activeId)!.sessions).toHaveLength(1);
+    });
+
+    it('applies the diff to the plan it was computed for, not the active plan', () => {
+      const store = storeWithTwoPlans();
+
+      store.dispatch(
+        applyDiffToPlan({
+          type: 'diff',
+          programId: 'plan-a',
+          sessionIndex: 1,
+          diff: noteDiff('A2', 'did 5 extra reps'),
+        }),
+      );
+
+      expect(getProgram(store, 'plan-a')!.sessions[1]!.notes).toBe('did 5 extra reps');
+      expect(getProgram(store, 'plan-b')!.sessions.map((s) => s.notes)).toEqual(['', '']);
+    });
+
+    it('adds a new workout to the plan the diff was computed for', () => {
+      const store = storeWithTwoPlans();
+
+      store.dispatch(
+        applyDiffToPlan({
+          type: 'add',
+          programId: 'plan-a',
+          diff: EmptySessionBlueprintDiff,
+        }),
+      );
+
+      expect(getProgram(store, 'plan-a')!.sessions).toHaveLength(3);
+      expect(getProgram(store, 'plan-b')!.sessions).toHaveLength(2);
+    });
+
+    it('follows the workout by name when the plan has been reordered since', () => {
+      const store = storeWithTwoPlans();
+      store.dispatch(
+        moveSessionBlueprintUpInProgram({
+          programId: 'plan-a',
+          sessionBlueprint: new SessionBlueprint('A2', [], ''),
+        }),
+      );
+
+      store.dispatch(
+        applyDiffToPlan({
+          type: 'diff',
+          programId: 'plan-a',
+          sessionIndex: 1,
+          diff: noteDiff('A2', 'did 5 extra reps'),
+        }),
+      );
+
+      const sessions = getProgram(store, 'plan-a')!.sessions;
+      expect(sessions.map((s) => s.name)).toEqual(['A2', 'A1']);
+      expect(sessions[0]!.notes).toBe('did 5 extra reps');
+      expect(sessions[1]!.notes).toBe('');
+    });
+
+    it('leaves the plan alone when the workout it was diffing has been removed', () => {
+      const store = storeWithTwoPlans();
+      store.dispatch(
+        removeSessionFromProgram({
+          programId: 'plan-a',
+          sessionBlueprint: new SessionBlueprint('A2', [], ''),
+        }),
+      );
+
+      store.dispatch(
+        applyDiffToPlan({
+          type: 'diff',
+          programId: 'plan-a',
+          sessionIndex: 1,
+          diff: noteDiff('A2', 'did 5 extra reps'),
+        }),
+      );
+
+      const sessions = getProgram(store, 'plan-a')!.sessions;
+      expect(sessions.map((s) => s.name)).toEqual(['A1']);
+      expect(sessions[0]!.notes).toBe('');
+      expect(getProgram(store, 'plan-b')!.sessions.map((s) => s.notes)).toEqual(['', '']);
+    });
+
+    it('names a new workout after the plan it is being added to', () => {
+      const store = storeWithTwoPlans();
+
+      expect(selectNewWorkoutName(store.getState(), 'plan-a')).toBe('Workout 3');
+      expect(selectNewWorkoutName(store.getState(), 'plan-c')).toBe('Workout 1');
+    });
+
+    it('leaves everything alone when the plan the diff came from has been deleted', () => {
+      const store = storeWithTwoPlans();
+      store.dispatch(deleteSavedPlan({ programId: 'plan-a' }));
+
+      store.dispatch(
+        applyDiffToPlan({
+          type: 'diff',
+          programId: 'plan-a',
+          sessionIndex: 1,
+          diff: noteDiff('A2', 'did 5 extra reps'),
+        }),
+      );
+
+      expect(getProgram(store, 'plan-a')).toBeUndefined();
+      expect(getProgram(store, 'plan-b')!.sessions.map((s) => s.notes)).toEqual(['', '']);
     });
   });
 

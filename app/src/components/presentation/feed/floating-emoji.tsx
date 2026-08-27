@@ -18,7 +18,7 @@ interface FloatingEmojiLayerProps {
   onFinished: (key: string) => void;
 }
 
-/** Sits above the cheer buttons and lets them through — purely decorative. */
+/** Sits above the cheer buttons and lets them through - purely decorative. */
 export function FloatingEmojiLayer({ emojis, onFinished }: FloatingEmojiLayerProps) {
   if (emojis.length === 0) {
     return null;

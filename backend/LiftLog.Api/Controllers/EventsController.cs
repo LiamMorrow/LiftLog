@@ -1,5 +1,6 @@
 using FluentValidation;
 using LiftLog.Api.Db;
+using LiftLog.Api.Features;
 using LiftLog.Api.Models;
 using LiftLog.Lib.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
+[FeatureCheck(Feature.Feed)]
 public class EventsController(UserDataContext db) : ControllerBase
 {
     [HttpPost]
@@ -40,14 +42,16 @@ public class EventsController(UserDataContext db) : ControllerBase
             })
             .ToArray();
 
+        var now = DateTimeOffset.UtcNow;
+
         var events = await db
             .UserEvents.Join(
-                db.UserEventFilterStubDbSet.CreateResultSetFromData(userIdsAndSince),
+                db.CreateUserEventFilterResultSet(userIdsAndSince),
                 x => x.UserId,
                 x => x.UserId,
                 (Event, Request) => new { Event, Request }
             )
-            .Where(x => x.Event.Expiry > DateTimeOffset.UtcNow)
+            .Where(x => x.Event.Expiry > now)
             .Where(x => x.Event.Timestamp > x.Request.Since)
             .Select(x => x.Event)
             .ToArrayAsync();
@@ -64,7 +68,7 @@ public class EventsController(UserDataContext db) : ControllerBase
             .ToArray();
         foreach (var userEvent in events)
         {
-            userEvent.LastAccessed = DateTimeOffset.UtcNow;
+            userEvent.LastAccessed = now;
         }
 
         await db.SaveChangesAsync();

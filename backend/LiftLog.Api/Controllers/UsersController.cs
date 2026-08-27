@@ -1,5 +1,6 @@
 using FluentValidation;
 using LiftLog.Api.Db;
+using LiftLog.Api.Features;
 using LiftLog.Lib.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
+[FeatureCheck(Feature.Feed, Feature.Sharing)]
 public class UsersController(UserDataContext db) : ControllerBase
 {
     [HttpPost]

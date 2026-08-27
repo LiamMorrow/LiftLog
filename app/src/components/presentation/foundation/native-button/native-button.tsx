@@ -22,7 +22,7 @@ export default function NativeButton({
   const { colors } = useAppTheme();
 
   return (
-    <Host matchContents seedColor={colors.seedColor} style={style}>
+    <Host matchContents seedColor={colors.seedColor} colorScheme={colors.scheme} style={style}>
       <Button
         label={label}
         systemImage={systemImage}

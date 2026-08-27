@@ -12,9 +12,10 @@ import { clearPendingImport, savePlan, selectPendingImport } from '@/store/progr
 import { uuid } from '@/utils/uuid';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
-import { Fragment, useEffect } from 'react';
+import { Fragment } from 'react';
 import { View } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { useOnDismiss } from '@/hooks/useOnDismiss';
 
 export default function ImportPlan() {
   const pending = useAppSelector(selectPendingImport);
@@ -23,9 +24,7 @@ export default function ImportPlan() {
   const { replace } = useRouter();
   const preferredWeightUnit = usePreferredWeightUnit();
 
-  // Leaving the screen without saving (system back or after save) discards the
-  // pending plan so the import gate doesn't route us straight back here.
-  useEffect(() => () => void dispatch(clearPendingImport()), [dispatch]);
+  useOnDismiss(() => dispatch(clearPendingImport()));
 
   const save = () => {
     if (!pending) {

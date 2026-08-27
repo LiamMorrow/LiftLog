@@ -13,7 +13,12 @@ export default function SegmentedPicker<T extends SegmentedPickerValue>({
   const selectedIndex = options.findIndex((x) => x.value === value);
 
   return (
-    <Host matchContents={{ vertical: true }} seedColor={colors.seedColor} style={{ width: '100%' }}>
+    <Host
+      matchContents={{ vertical: true }}
+      seedColor={colors.seedColor}
+      colorScheme={colors.scheme}
+      style={{ width: '100%' }}
+    >
       <Picker
         selection={selectedIndex}
         onSelectionChange={(index) => {

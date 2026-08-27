@@ -1,4 +1,4 @@
-import { formatRepsTarget } from '@/models/blueprint-models';
+import { formatRepsTarget, uniformTarget } from '@/models/blueprint-models';
 import { RecordedExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { formatDistance } from '@/utils/distance';
@@ -14,14 +14,16 @@ import { localeFormatBigNumber } from '@/utils/locale-bignumber';
  */
 export function formatExerciseSummary(
   exercise: RecordedExercise,
-  options: { isFilled: boolean; showWeight: boolean; bodyweightLabel?: string },
+  options: { isFilled: boolean; showWeight: boolean; bodyweightLabel: string },
 ): string {
   if (exercise instanceof RecordedWeightedExercise) {
-    const usesBodyweight = exercise.blueprint.usesBodyweight;
-    const label = options.bodyweightLabel ?? 'BW';
+    const usesBodyweight = exercise.blueprint.resistance === 'bodyweight';
+    // An exercise with no load has nothing to say about one.
+    const showWeight = options.showWeight && exercise.tracksResistance;
+    const label = options.bodyweightLabel;
     return options.isFilled
-      ? formatRuns(filledRuns(exercise, options.showWeight, usesBodyweight, label))
-      : formatPlanned(exercise, options.showWeight, usesBodyweight, label);
+      ? formatRuns(filledRuns(exercise, showWeight, usesBodyweight, label))
+      : formatPlanned(exercise, showWeight, usesBodyweight, label);
   }
 
   const sets = options.isFilled
@@ -95,6 +97,9 @@ function bodyweightWeightLabel(weight: Weight, bodyweightLabel: string): string 
  * A plan is a shape, not a log, so it collapses to one line: `sets × reps` when every set shares a target,
  * or the per-set targets spelled out (`12/10/8`) for a pyramid. A rep range shows as `min–max`. The weight,
  * when shown, becomes a range if it steps between sets.
+ *
+ * Targets come off the sets rather than the blueprint, since a rule that has climbed the reps leaves the
+ * plan's numbers behind and the card would otherwise promise a session you are not about to do.
  */
 function formatPlanned(
   exercise: RecordedWeightedExercise,
@@ -103,18 +108,17 @@ function formatPlanned(
   bodyweightLabel: string,
 ): string {
   const sets = exercise.potentialSets;
-  const blueprint = exercise.blueprint;
+  const targets = sets.map((_, index) => exercise.repsTargetForSet(index));
+  const uniform = uniformTarget(targets.map((reps) => ({ reps })));
   const shape =
-    blueprint.repsConfig.type === 'perSet'
-      ? blueprint.repsConfig.targets.map(formatRepsTarget).join('/')
-      : `${sets.length} × ${formatRepsTarget(blueprint.repsTargetForSet(0))}`;
+    uniform === undefined ? targets.map(formatRepsTarget).join('/') : `${sets.length} × ${formatRepsTarget(uniform)}`;
 
   if (usesBodyweight) {
     if (!showWeight) {
       return shape;
     }
     const heaviest = Weight.max(...sets.map((set) => set.weight));
-    const lightest = Weight.min(...sets.map((set) => set.weight)).convertTo(heaviest.unit);
+    const lightest = Weight.min(...sets.map((set) => set.weight));
     const suffix = heaviest.equals(lightest)
       ? bodyweightWeightLabel(heaviest, bodyweightLabel)
       : `${bodyweightLabel} ${signedWeight(lightest)}–${signedWeight(heaviest)}`;
@@ -127,12 +131,12 @@ function formatPlanned(
   }
 
   const heaviest = Weight.max(...weights);
-  const lightest = Weight.min(...weights).convertTo(heaviest.unit);
+  const lightest = Weight.min(...weights);
 
   // The unit belongs to the range, not to each end of it.
   return heaviest.equals(lightest)
     ? `${shape} @ ${heaviest.shortLocaleFormat()}`
-    : `${shape} @ ${localeFormatBigNumber(lightest.value)}–${heaviest.shortLocaleFormat()}`;
+    : `${shape} @ ${lightest.shortLocaleFormat()}–${heaviest.shortLocaleFormat()}`;
 }
 
 /** A signed weight for a bodyweight range end: `+10kg`, `-20kg`. */

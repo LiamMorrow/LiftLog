@@ -56,6 +56,16 @@ function Layout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="exercise-search" options={{ presentation: 'modal' }} />
       <Stack.Screen name="exercise-editor" />
+      <Stack.Screen
+        name="exercise-history"
+        options={{
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.6, 0.95],
+          sheetGrabberVisible: true,
+          sheetCornerRadius: 28,
+          headerShown: false,
+        }}
+      />
       <Stack.Screen name="workout-editor" />
       <Stack.Screen name="diff-save" />
     </StackWithHeader>

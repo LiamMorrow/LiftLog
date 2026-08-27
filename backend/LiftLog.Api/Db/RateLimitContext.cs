@@ -3,8 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LiftLog.Api.Db;
 
-public class RateLimitContext(DbContextOptions<RateLimitContext> options) : DbContext(options)
+public abstract class RateLimitContext : DbContext
 {
+    protected RateLimitContext(DbContextOptions options)
+        : base(options) { }
+
     public DbSet<RateLimitConsumption> RateLimitConsumptions { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

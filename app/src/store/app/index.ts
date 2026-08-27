@@ -53,11 +53,19 @@ export type SnackbarDescriptor =
       text: string;
       action?: undefined;
       dispatchAction?: undefined;
+      onAction?: undefined;
     }
   | {
       text: string;
       action: string;
       dispatchAction: UnknownAction | UnknownAction[];
+      onAction?: undefined;
+    }
+  | {
+      text: string;
+      action: string;
+      onAction: () => void;
+      dispatchAction?: undefined;
     };
 export const showSnackbar = createAction<SnackbarDescriptor & { duration?: number }>('snackBarWithAction');
 

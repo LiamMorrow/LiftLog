@@ -12,7 +12,7 @@ export function CardioTimerControls({ onStop }: CardioTimerControlsProps) {
   const { t } = useTranslate();
 
   return (
-    <Host matchContents seedColor={colors.seedColor}>
+    <Host matchContents seedColor={colors.seedColor} colorScheme={colors.scheme}>
       <Row horizontalArrangement={{ spacedBy: spacing[1] }} verticalAlignment="center">
         <IconButton onClick={onStop}>
           <Icon source={StopIcon} size={cardioControlIconSize + 3} contentDescription={t('cardio_timer.stop')} />

@@ -2,6 +2,7 @@ import { LiftLog } from '@/gen/proto';
 import { whatsNewEntries, WhatsNewEntry } from '@/models/whats-new';
 import type { RootState } from '@/store';
 import { BackupData, FeedBackupData } from '@/models/backup';
+import type { ExternalImportFormat } from '@/services/csv-import';
 import { WeightUnit } from '@/models/weight';
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SQLiteDatabase } from 'expo-sqlite';
@@ -16,8 +17,9 @@ import {
   RemoteBackupSettings,
 } from './registry';
 
-export type { ColorSchemeSeed } from './codecs';
+export type { ColorSchemeSeed, ThemeMode } from './codecs';
 export type { RemoteBackupSettings, LastBackup };
+export type { ExternalImportFormat };
 
 type PreferenceState = { [K in PrefKey]: PrefValue<K> };
 type SettingsState = PreferenceState & { isHydrated: boolean };
@@ -37,7 +39,7 @@ const settingsSlice = createSlice({
   },
   extraReducers: (builder) => {
     // Every generated setter carries its key in `meta`, so one matcher applies
-    // them all — no per-key reducer.
+    // them all - no per-key reducer.
     builder.addMatcher(isPreferenceAction, (state, action) => {
       (state as Record<PrefKey, unknown>)[action.meta.prefKey] = action.payload;
     });
@@ -54,11 +56,17 @@ export const importDataSql = createAction<{ db: SQLiteDatabase }>('importDataSql
 export const importDataProto = createAction<{
   dao: LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2;
 }>('importDataProto');
-export const importBackupData = createAction<BackupData>('importBackupData');
+export type ImportBackupDataPayload = BackupData & {
+  successMessage: string;
+};
+export const importBackupData = createAction<ImportBackupDataPayload>('importBackupData');
 export const beginFeedImport = createAction<FeedBackupData>('beginFeedImport');
 export const exportData = createAction<{ includeFeed: boolean }>('exportData');
 
 export const exportPlainText = createAction<{ format: PlaintextExportFormat }>('exportPlainText');
+
+/** Pick a third-party export file and merge history via importBackupData. */
+export const importFromExternal = createAction<{ format: ExternalImportFormat }>('importFromExternal');
 
 export const executeRemoteBackup = createAction<{
   settings?: RemoteBackupSettings;
@@ -92,6 +100,7 @@ export const {
   setExportToHealthAggregator,
   setShowPostWorkoutSummary,
   setTrueBlackDarkTheme,
+  setThemeMode,
 } = preferenceSetters;
 
 export const { selectPreferredWeightUnit } = settingsSlice.selectors;

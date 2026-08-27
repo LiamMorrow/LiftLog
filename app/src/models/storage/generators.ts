@@ -1,5 +1,4 @@
 import {
-  ProgramBlueprintPOJO,
   Rest,
   WeightedExerciseBlueprint,
   SessionBlueprint,
@@ -129,20 +128,19 @@ export const SessionBlueprintGenerator = fc
   .map((x) => new SessionBlueprint(x.name, x.exercises, x.notes));
 
 export const ProgramBlueprintGenerator = fc
-  .record<ProgramBlueprintPOJO>({
-    type: fc.constant('ProgramBlueprint'),
+  .record({
     name: fc.string(),
     sessions: fc.array(SessionBlueprintGenerator, { maxLength: 5 }),
     lastEdited: LocalDateGenerator,
   })
-  .map(ProgramBlueprint.fromPOJO);
+  .map((x) => new ProgramBlueprint(x.name, x.sessions, x.lastEdited));
 
 const RecordedSetGenerator = fc
   .record({
     repsCompleted: fc.integer({ min: 0, max: 100 }),
     completionDateTime: OffsetDateTimeGenerator,
   })
-  .map((x) => new RecordedSet(x.repsCompleted, x.completionDateTime));
+  .map(RecordedSet.of);
 
 const PotentialSetGenerator = fc
   .record({
@@ -151,7 +149,7 @@ const PotentialSetGenerator = fc
     }),
     weight: WeightGenerator,
   })
-  .map((x) => new PotentialSet(x.set, x.weight));
+  .map(PotentialSet.of);
 
 const DistanceUnitGenerator = fc.oneof(...DistanceUnits.map(fc.constant));
 

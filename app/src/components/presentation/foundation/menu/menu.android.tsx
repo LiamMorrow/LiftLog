@@ -19,7 +19,7 @@ export default function Menu({ trigger, items }: MenuProps) {
           which would collapse the anchor to a point and open the menu beside the trigger. */}
       {expanded && (
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Host style={{ flex: 1 }} seedColor={colors.seedColor}>
+          <Host style={{ flex: 1 }} seedColor={colors.seedColor} colorScheme={colors.scheme}>
             <DropdownMenu expanded onDismissRequest={() => setExpanded(false)}>
               <DropdownMenu.Trigger>
                 <Spacer />

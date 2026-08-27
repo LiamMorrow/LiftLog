@@ -45,8 +45,20 @@ appId: com.limajuice.liftlog
 - tapOn:
     id: 'action-ok'
 
-# It shows up in History with the logged weight
+# A freeform session names itself and adds an exercise, so finishing it offers to fold both back into
+# the plan. This flow is not about that, so decline and leave the plan alone.
+- runFlow:
+    when:
+      visible: 'Would you like to save this workout to your plan?'
+    commands:
+      - back
+
+# It shows up in History with the logged weight, below the streak card and the calendar
 - tapOn: 'History'
 - assertVisible:
     id: 'session-summary-title'
-- assertVisible: '7.5 kg'
+# Summaries read "10 @ 7.5kg", and `text` is a full-string match, so anchor on the tail
+- scrollUntilVisible:
+    element:
+      text: '.*7\.5kg'
+    direction: DOWN

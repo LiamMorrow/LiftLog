@@ -48,8 +48,14 @@ describe('programBlueprintMigrations to v3', () => {
     const exercise = migrated.sessions[0]!.exercises[0]!;
     expect(exercise.type).toBe('WeightedExerciseBlueprint');
     if (exercise.type === 'WeightedExerciseBlueprint') {
-      expect(exercise.repsConfig).toEqual({ type: 'fixed', reps: 5 });
+      // The scalar becomes a fixed config here and a per-set list further along the chain.
+      expect(exercise.plannedSets).toEqual([
+        { reps: { min: 5, max: 5 } },
+        { reps: { min: 5, max: 5 } },
+        { reps: { min: 5, max: 5 } },
+      ]);
       expect('repsPerSet' in exercise).toBe(false);
+      expect('repsConfig' in exercise).toBe(false);
     }
   });
 });

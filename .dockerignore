@@ -1,0 +1,12 @@
+# Deny everything, then re-include only what the backend image build needs.
+*
+
+!backend
+!docs/schemas
+!.editorconfig
+
+backend/**/bin
+backend/**/obj
+backend/LiftLog.Api/local-data
+backend/LiftLog.Api/appsettings.Development.json
+**/.DS_Store

@@ -1,8 +1,9 @@
 import {
-  KeyedExerciseBlueprint,
+  ProgressionKey,
   SessionBlueprint,
   ExerciseBlueprint,
   CardioExerciseBlueprint,
+  applyProgression,
 } from '@/models/blueprint-models';
 import { Weight, WeightUnit } from '@/models/weight';
 import {
@@ -15,6 +16,7 @@ import {
 } from '@/models/session-models';
 import { ProgressRepository } from '@/services/progress-repository';
 import type { RootState } from '@/store';
+import { selectActiveSession } from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
 import { match } from 'ts-pattern';
@@ -27,10 +29,10 @@ export class SessionService {
 
   async *getUpcomingSessions(
     sessionBlueprints: SessionBlueprint[],
-    latestExercises: Record<string, RecordedExercise | undefined>, // KeyedExerciseBlueprint -> Exercise
+    latestExercises: Record<ProgressionKey, RecordedExercise | undefined>,
   ): AsyncIterableIterator<Session> {
     const currentState = this.getState();
-    const currentSession = currentState.currentSession.workoutSession;
+    const currentSession = selectActiveSession(currentState);
 
     const firstSessionBlueprint = sessionBlueprints[0];
     if (!firstSessionBlueprint) {
@@ -65,22 +67,19 @@ export class SessionService {
 
   public hydrateSessionFromBlueprint(
     blueprint: SessionBlueprint,
-    latestExercises: Record<string, RecordedExercise | undefined>, // KeyedExerciseBlueprint -> Exercise
+    latestExercises: Record<ProgressionKey, RecordedExercise | undefined>,
   ): Session {
     return this.createNewSession(blueprint, latestExercises);
   }
 
   private createNewSession(
     sessionBlueprint: SessionBlueprint,
-    latestRecordedExercises: Record<
-      string, //KeyedExerciseBlueprint,
-      RecordedExercise | undefined
-    >,
+    latestRecordedExercises: Record<ProgressionKey, RecordedExercise | undefined>,
   ): Session {
     // oxlint-disable-next-line typescript/no-this-alias
     const $this = this;
     function getNextExercise(e: ExerciseBlueprint): RecordedExercise {
-      const lastExercise = latestRecordedExercises[KeyedExerciseBlueprint.fromExerciseBlueprint(e).toString()];
+      const lastExercise = latestRecordedExercises[e.progressionKey()];
       if (e instanceof CardioExerciseBlueprint) {
         const cardioLastExercise = lastExercise instanceof RecordedCardioExercise ? lastExercise : undefined;
         return RecordedCardioExercise.empty(e).with({
@@ -96,18 +95,22 @@ export class SessionService {
       const potentialSets: PotentialSet[] = match(weightedLastExercise)
         .returnType<PotentialSet[]>()
         .with(undefined, () =>
-          Array.from(
-            { length: e.sets },
-            () => new PotentialSet(undefined, new Weight(0, $this.getDefaultWeightUnit())),
-          ),
+          e.plannedSets.map((s) => new PotentialSet(undefined, new Weight(0, $this.getDefaultWeightUnit()), s.reps)),
         )
-        .otherwise((x) => x.potentialSets.map((x) => new PotentialSet(undefined, x.weight)));
-      let newExercise = new RecordedWeightedExercise(e, potentialSets, undefined);
-      if (weightedLastExercise?.isSuccessForProgressiveOverload) {
-        newExercise = newExercise.blueprint.progressiveOverload.applyProgressiveOverload(newExercise);
-      }
-
-      return newExercise;
+        // Where reps are what advances, the target carries forward alongside the weight so the
+        // lineage keeps what a rule won for it. Where they are a fixed prescription it is re-seeded
+        // from the plan, because the only thing that could have changed it is an edit to the plan -
+        // and that edit already had its own say in the save-changes dialog.
+        .otherwise((x) =>
+          x.potentialSets.map(
+            (ps, index) =>
+              new PotentialSet(undefined, ps.weight, e.repsAreProgressed ? ps.target : e.repsTargetForSet(index)),
+          ),
+        );
+      const newExercise = new RecordedWeightedExercise(e, potentialSets, undefined);
+      return weightedLastExercise?.isSuccessForProgressiveOverload
+        ? applyProgression(e.progression, newExercise)
+        : newExercise;
     }
     return new Session(
       uuid(),

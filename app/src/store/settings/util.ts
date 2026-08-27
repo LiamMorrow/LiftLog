@@ -3,13 +3,15 @@ import { backupDatabaseAsync, openDatabaseAsync, SQLiteDatabase } from 'expo-sql
 
 export async function getBackupBytes(options: { includeFeed: boolean; expoDb: SQLiteDatabase }) {
   const { expoDb, includeFeed } = options;
-  const backupDatabase = await openDatabaseAsync(':memory:');
-  await backupDatabaseAsync({
-    sourceDatabase: expoDb,
-    destDatabase: backupDatabase,
-  });
-  if (!includeFeed) {
-    await backupDatabase.execAsync(`
+
+  const backupDatabase = await openDatabaseAsync(':memory:', { useNewConnection: true });
+  try {
+    await backupDatabaseAsync({
+      sourceDatabase: expoDb,
+      destDatabase: backupDatabase,
+    });
+    if (!includeFeed) {
+      await backupDatabase.execAsync(`
           DELETE FROM feed_items;
           DELETE FROM feed_identity;
           DELETE FROM feed_followed_user;
@@ -18,16 +20,19 @@ export async function getBackupBytes(options: { includeFeed: boolean; expoDb: SQ
           DELETE FROM feed_revoked_follow_secrets;
           DELETE FROM feed_unpublished_sessions;
           `);
-  }
-  const bytes = await backupDatabase.serializeAsync();
-  const stream = new CompressionStream('gzip');
-  const writer = stream.writable.getWriter();
-  // Don't await this until we start reading
-  const writePromise = writer.write(bytes);
-  const readable = stream.readable;
-  const gzippedPromise = streamToUint8Array(readable);
+    }
+    const bytes = await backupDatabase.serializeAsync();
+    const stream = new CompressionStream('gzip');
+    const writer = stream.writable.getWriter();
+    // Don't await this until we start reading
+    const writePromise = writer.write(bytes);
+    const readable = stream.readable;
+    const gzippedPromise = streamToUint8Array(readable);
 
-  await writePromise;
-  await writer.close();
-  return gzippedPromise;
+    await writePromise;
+    await writer.close();
+    return await gzippedPromise;
+  } finally {
+    await backupDatabase.closeAsync();
+  }
 }

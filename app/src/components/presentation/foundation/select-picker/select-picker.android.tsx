@@ -15,7 +15,7 @@ export default function SelectPicker<T extends SelectPickerValue>({
   const selectedLabel = items.find((x) => isSelectPickerValueEqual(x.value, value))?.label ?? '';
 
   return (
-    <Host matchContents seedColor={colors.seedColor}>
+    <Host matchContents seedColor={colors.seedColor} colorScheme={colors.scheme}>
       <DropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)}>
         <DropdownMenu.Trigger>
           <TextButton onClick={enabled ? () => setExpanded(true) : undefined}>

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, type LayoutChangeEvent, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import { useOnDismiss } from '@/hooks/useOnDismiss';
 
 const THUMB = 28;
 const TRACK_HEIGHT = 28;
@@ -45,7 +46,7 @@ export function ColorSliders({ value, onChange }: ColorSlidersProps) {
       }, EMIT_INTERVAL_MS - elapsed);
     }
   };
-  useEffect(() => () => clearTimeout(emitTimer.current), []);
+  useOnDismiss(() => clearTimeout(emitTimer.current));
 
   const update = (partial: Partial<typeof hsv>) => {
     setHsv((prev) => {

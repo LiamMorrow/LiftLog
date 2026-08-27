@@ -1,7 +1,7 @@
 import FocusRing, { ANIMATION_DURATION } from '@/components/presentation/foundation/focus-ring';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
-import { ColorSchemeSeed } from '@/store/settings';
+import { ColorSchemeSeed, ThemeMode } from '@/store/settings';
 import { hsvToHex, type HexColor } from '@/utils/color';
 import { sleep } from '@/utils/sleep';
 import { createMaterial3Theme } from '@pchmn/expo-material3-theme';
@@ -14,12 +14,15 @@ import { List } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
 import ColorPickerDialog from '@/components/presentation/foundation/editors/color-picker-dialog';
+import SelectPicker, { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
 
 interface ThemeChooserProps {
   seed: ColorSchemeSeed;
   trueBlack: boolean;
   setTrueBlack: (t: boolean) => void;
   onUpdateTheme: (seed: ColorSchemeSeed) => void;
+  themeMode: ThemeMode;
+  setThemeMode: (mode: ThemeMode) => void;
 }
 
 function ColorBall(props: {
@@ -126,6 +129,12 @@ export default function ThemeChooser(props: ThemeChooserProps) {
     <ColorBall selectedSeed={selectedSeed} seed={item} onUpdateTheme={updateSeed} />
   );
 
+  const themeModeOptions: SelectPickerOption<ThemeMode>[] = [
+    { value: 'system', label: t('settings.theme.mode.system') },
+    { value: 'light', label: t('settings.theme.mode.light') },
+    { value: 'dark', label: t('settings.theme.mode.dark') },
+  ];
+
   return (
     <>
       <List.Item title={t('settings.theme.title')} />
@@ -161,6 +170,17 @@ export default function ThemeChooser(props: ThemeChooserProps) {
           }
         />
       </View>
+      <List.Item
+        title={t('settings.theme.mode.label')}
+        right={() => (
+          <SelectPicker
+            testID="setThemeMode"
+            value={props.themeMode}
+            options={themeModeOptions}
+            onChange={props.setThemeMode}
+          />
+        )}
+      />
       <ListSwitch
         headline={t('settings.app_configuration.true_black_dark_theme.title')}
         value={props.trueBlack}

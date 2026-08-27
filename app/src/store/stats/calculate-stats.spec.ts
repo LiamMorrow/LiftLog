@@ -1,10 +1,16 @@
 import { describe, it, expect } from 'vitest';
-import { Session, PotentialSet, RecordedWeightedExercise, RecordedSet } from '@/models/session-models';
+import { Session, RecordedWeightedExercise } from '@/models/session-models';
 import { Weight } from '@/models/weight';
-import { NoProgressiveOverload, SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
+import { SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { LocalDate, LocalTime, OffsetDateTime, ZoneOffset, Duration } from '@js-joda/core';
 import { LocalDateRange } from '@/models/time-models';
 import { calculateStats } from '@/store/stats/calculate-stats';
+import {
+  emptyPotentialSet,
+  filledPotentialSet,
+  makeRecordedExercise,
+  makeWeightedBlueprint,
+} from '@/models/session-models/__test__/helpers';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -15,21 +21,18 @@ function makeOffset(date: LocalDate, hour = 10, minute = 0): OffsetDateTime {
 }
 
 function makeBlueprint(name: string, sets = 3, reps = 8, usesBodyweight = false): WeightedExerciseBlueprint {
-  return new WeightedExerciseBlueprint(
+  return makeWeightedBlueprint({
     name,
     sets,
-    { type: 'fixed', reps },
-    new NoProgressiveOverload(),
-    {
+    repsConfig: { type: 'fixed', reps },
+    progression: [],
+    restBetweenSets: {
       maxRest: Duration.ofSeconds(0),
       minRest: Duration.ofSeconds(90),
       failureRest: Duration.ofSeconds(180),
     },
-    false,
-    '',
-    '',
-    usesBodyweight,
-  );
+    resistance: usesBodyweight ? 'bodyweight' : 'external',
+  });
 }
 
 function makeSessionBlueprint(name: string, exercises: WeightedExerciseBlueprint[] = []): SessionBlueprint {
@@ -46,10 +49,8 @@ function makeCompletedExercise(
   repsPerSet: number,
   baseTime: OffsetDateTime,
 ): RecordedWeightedExercise {
-  const potentialSets = Array.from(
-    { length: blueprint.sets },
-    (_, i) =>
-      new PotentialSet(new RecordedSet(repsPerSet, baseTime.plusSeconds(i * 60)), new Weight(weightKg, 'kilograms')),
+  const potentialSets = Array.from({ length: blueprint.plannedSets.length }, (_, i) =>
+    filledPotentialSet(repsPerSet, baseTime.plusSeconds(i * 60), new Weight(weightKg, 'kilograms')),
   );
   return new RecordedWeightedExercise(blueprint, potentialSets, undefined);
 }
@@ -89,7 +90,7 @@ function makeRange(from: LocalDate, to: LocalDate): LocalDateRange {
 // ---------------------------------------------------------------------------
 
 describe('calculateStats', () => {
-  describe('calculateStats — empty input', () => {
+  describe('calculateStats - empty input', () => {
     it('returns zeroed result for empty session list', () => {
       const today = LocalDate.now();
       const result = calculateStats([], 'kilograms', makeRange(today, today));
@@ -102,7 +103,7 @@ describe('calculateStats', () => {
     });
   });
 
-  describe('calculateStats — workoutsPerWeek / setsPerWeek', () => {
+  describe('calculateStats - workoutsPerWeek / setsPerWeek', () => {
     it('calculates correct rates for a 14-day range with 2 sessions of 3 sets each', () => {
       const from = LocalDate.of(2024, 1, 1);
       const to = LocalDate.of(2024, 1, 14); // exactly 2 weeks
@@ -134,7 +135,7 @@ describe('calculateStats', () => {
     });
   });
 
-  describe('calculateStats — heaviestLift', () => {
+  describe('calculateStats - heaviestLift', () => {
     it('returns the heaviest single set weight across all sessions', () => {
       const date = LocalDate.of(2024, 3, 1);
       const s1 = makeSession(date, 'Deadlift', 150);
@@ -154,7 +155,7 @@ describe('calculateStats', () => {
     });
   });
 
-  describe('calculateStats — exercise stats', () => {
+  describe('calculateStats - exercise stats', () => {
     it('tracks max weight and 1RM per exercise', () => {
       const date = LocalDate.of(2024, 4, 1);
       // 3 sets @ 100kg x 5 reps
@@ -172,6 +173,92 @@ describe('calculateStats', () => {
       expect(bench!.max1RMPerSessionStatistics.maxValue.value.toNumber()).toBeCloseTo(expected1RM, 2);
     });
 
+    it('tracks the best set on both axes, and says which one leads', () => {
+      const date = LocalDate.of(2024, 4, 1);
+      const blueprint = makeBlueprint('Crunch', 3, 10);
+      const sessionBlueprint = makeSessionBlueprint('Core', [blueprint]);
+      const baseTime = makeOffset(date);
+      const exercise = new RecordedWeightedExercise(
+        blueprint,
+        [
+          filledPotentialSet(12, baseTime, new Weight(20, 'kilograms')),
+          filledPotentialSet(20, baseTime.plusSeconds(60), new Weight(20, 'kilograms')),
+          filledPotentialSet(15, baseTime.plusSeconds(120), new Weight(20, 'kilograms')),
+        ],
+        undefined,
+      );
+      const session = new Session('id', sessionBlueprint, [exercise], date, undefined, undefined);
+
+      const crunch = calculateStats([session], 'kilograms', makeRange(date, date)).weightedExerciseStats[0]!;
+
+      expect(crunch.series.reps.maxValue).toBe(20);
+      expect(crunch.series.reps.currentValue).toBe(20);
+      expect(crunch.series.load.maxValue.value.toNumber()).toBe(20);
+      expect(crunch.primary).toBe('load');
+    });
+
+    it('reads an exercise that tracks no load on its reps', () => {
+      const date = LocalDate.of(2024, 4, 1);
+      const blueprint = makeBlueprint('Crunch', 3, 10).with({ resistance: 'none' });
+      const exercise = makeRecordedExercise(blueprint, [20, 20, 20], new Weight(999, 'kilograms'));
+      const session = new Session(
+        'id',
+        makeSessionBlueprint('Core', [blueprint]),
+        [exercise],
+        date,
+        undefined,
+        undefined,
+      );
+
+      const crunch = calculateStats([session], 'kilograms', makeRange(date, date)).weightedExerciseStats[0]!;
+
+      expect(crunch.primary).toBe('reps');
+      expect(crunch.series.reps.maxValue).toBe(20);
+      // The stored weight contributes nothing, so there is no volume to plot.
+      expect(crunch.totalVolumeStatistics.totalValue.value.toNumber()).toBe(0);
+    });
+
+    it('reads a movement on how it is programmed now, not how it started', () => {
+      const d1 = LocalDate.of(2024, 4, 1);
+      const d2 = d1.plusDays(7);
+      const loaded = makeBlueprint('Crunch', 3, 10);
+      const unloaded = loaded.with({ resistance: 'none' });
+      const session = (id: string, date: LocalDate, blueprint: WeightedExerciseBlueprint) =>
+        new Session(
+          id,
+          makeSessionBlueprint('Core', [blueprint]),
+          [makeRecordedExercise(blueprint, [20, 20, 20], new Weight(60, 'kilograms'))],
+          date,
+          undefined,
+          undefined,
+        );
+
+      const stats = calculateStats(
+        [session('s1', d1, loaded), session('s2', d2, unloaded)],
+        'kilograms',
+        makeRange(d1, d2),
+      );
+
+      expect(stats.weightedExerciseStats[0]!.primary).toBe('reps');
+    });
+
+    it('aggregates a reps series without giving it a unit', () => {
+      const d1 = LocalDate.of(2024, 4, 1);
+      const d2 = d1.plusDays(7);
+      const result = calculateStats(
+        [makeSession(d1, 'Squat', 100, 5, 3), makeSession(d2, 'Squat', 100, 8, 3)],
+        'kilograms',
+        makeRange(d1, d2),
+      );
+
+      const reps = result.weightedExerciseStats[0]!.series.reps;
+      expect(reps.statistics.map((x) => x.value)).toEqual([5, 8]);
+      expect(reps.minValue).toBe(5);
+      expect(reps.maxValue).toBe(8);
+      expect(reps.totalValue).toBe(13);
+      expect(reps.currentValue).toBe(8);
+    });
+
     it('accumulates reps breakdown correctly', () => {
       const date = LocalDate.of(2024, 4, 1);
       const blueprint = makeBlueprint('OHP', 3, 8);
@@ -180,9 +267,9 @@ describe('calculateStats', () => {
 
       // 2 sets @ 8 reps, 1 set @ 6 reps
       const potentialSets = [
-        new PotentialSet(new RecordedSet(8, baseTime), new Weight(60, 'kilograms')),
-        new PotentialSet(new RecordedSet(8, baseTime.plusSeconds(60)), new Weight(60, 'kilograms')),
-        new PotentialSet(new RecordedSet(6, baseTime.plusSeconds(120)), new Weight(60, 'kilograms')),
+        filledPotentialSet(8, baseTime, new Weight(60, 'kilograms')),
+        filledPotentialSet(8, baseTime.plusSeconds(60), new Weight(60, 'kilograms')),
+        filledPotentialSet(6, baseTime.plusSeconds(120), new Weight(60, 'kilograms')),
       ];
       const exercise = new RecordedWeightedExercise(blueprint, potentialSets, undefined);
       const session = new Session('id', sessionBlueprint, [exercise], date, undefined, undefined);
@@ -192,6 +279,21 @@ describe('calculateStats', () => {
 
       expect(ohp!.repsStatistics.breakdown[8]?.numberOfSets).toBe(2);
       expect(ohp!.repsStatistics.breakdown[6]?.numberOfSets).toBe(1);
+    });
+
+    it('lists the most recently performed exercise first', () => {
+      const date = LocalDate.of(2024, 5, 1);
+      const result = calculateStats(
+        [
+          makeSession(date, 'Bench Press', 80, 8, 3),
+          makeSession(date.plusDays(14), 'Deadlift', 140, 5, 3),
+          makeSession(date.plusDays(7), 'Squat', 100, 5, 3),
+        ],
+        'kilograms',
+        makeRange(date, date.plusDays(14)),
+      );
+
+      expect(result.weightedExerciseStats.map((x) => x.exerciseName)).toEqual(['Deadlift', 'Squat', 'Bench Press']);
     });
 
     it('groups same exercise names under one stat entry', () => {
@@ -244,7 +346,7 @@ describe('calculateStats', () => {
     });
   });
 
-  describe('calculateStats — bodyweight stats', () => {
+  describe('calculateStats - bodyweight stats', () => {
     it('tracks bodyweight over time', () => {
       const d1 = LocalDate.of(2024, 2, 1);
       const d2 = LocalDate.of(2024, 2, 8);
@@ -269,7 +371,7 @@ describe('calculateStats', () => {
     });
   });
 
-  describe('calculateStats — bodyweight exercises', () => {
+  describe('calculateStats - bodyweight exercises', () => {
     it('folds the session bodyweight into max weight, 1RM and volume', () => {
       const date = LocalDate.of(2024, 8, 1);
       // bodyweight 80kg + 10kg added, 3 sets × 5 reps → effective load 90kg
@@ -317,7 +419,7 @@ describe('calculateStats', () => {
     });
   });
 
-  describe('calculateStats — unit conversion', () => {
+  describe('calculateStats - unit conversion', () => {
     it('converts maxWeightLiftedInAWorkout to the preferred unit', () => {
       const date = LocalDate.of(2024, 6, 1);
       const session = makeSession(date, 'Deadlift', 100); // 100kg
@@ -330,17 +432,14 @@ describe('calculateStats', () => {
     });
   });
 
-  describe('calculateStats — averageSessionLength', () => {
+  describe('calculateStats - averageSessionLength', () => {
     it('returns zero duration when no sessions have computable durations', () => {
       // Sessions only have a duration if at least one exercise has timestamps.
       // An exercise with no completed sets has no timestamps → session.duration is undefined.
       const date = LocalDate.of(2024, 7, 1);
       const blueprint = makeBlueprint('Press', 2, 5);
       const sessionBlueprint = makeSessionBlueprint('S', [blueprint]);
-      const noSets = [
-        new PotentialSet(undefined, new Weight(60, 'kilograms')),
-        new PotentialSet(undefined, new Weight(60, 'kilograms')),
-      ];
+      const noSets = [emptyPotentialSet(60), emptyPotentialSet(60)];
       const exercise = new RecordedWeightedExercise(blueprint, noSets, undefined);
       const session = new Session('id', sessionBlueprint, [exercise], date, undefined, undefined);
 
@@ -358,8 +457,8 @@ describe('calculateStats', () => {
         const start = makeOffset(d, 10, startMinute);
         const end = makeOffset(d, 10, endMinute);
         const sets = [
-          new PotentialSet(new RecordedSet(5, start), new Weight(100, 'kilograms')),
-          new PotentialSet(new RecordedSet(5, end), new Weight(100, 'kilograms')),
+          filledPotentialSet(5, start, new Weight(100, 'kilograms')),
+          filledPotentialSet(5, end, new Weight(100, 'kilograms')),
         ];
         const ex = new RecordedWeightedExercise(blueprint, sets, undefined);
         return new Session(id, sessionBlueprint, [ex], d, undefined, undefined);

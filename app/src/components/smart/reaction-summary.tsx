@@ -18,7 +18,7 @@ interface ReactionSummaryProps {
 
 /**
  * Author-only. The feed is end-to-end encrypted with one-way follows, so there is no channel by which anyone
- * but the author could learn who cheered — the copy has to say so, or it reads as a broken like count.
+ * but the author could learn who cheered - the copy has to say so, or it reads as a broken like count.
  */
 export function ReactionSummary({ eventId, animateOnMount, compact }: ReactionSummaryProps) {
   const { t } = useTranslate();

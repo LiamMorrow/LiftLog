@@ -7,6 +7,8 @@ import { createMigrations } from './migrator';
 import { addProgressiveOverloadToExercise } from '@/models/storage/versions/migrations/steps/add-progressive-overload';
 import { repsPerSetToRepsConfig } from '@/models/storage/versions/migrations/steps/reps-per-set-to-reps-config';
 import { addUsesBodyweight } from '@/models/storage/versions/migrations/steps/add-uses-bodyweight';
+import { repsConfigToPlannedSets } from '@/models/storage/versions/migrations/steps/reps-config-to-planned-sets';
+import { progressiveOverloadToRules } from '@/models/storage/versions/migrations/steps/progressive-overload-to-rules';
 
 export const sessionBlueprintMigrations = createMigrations<InitialSessionBlueprintJSON>()
   .add((value) => ({
@@ -26,6 +28,18 @@ export const sessionBlueprintMigrations = createMigrations<InitialSessionBluepri
   .add((value) => ({
     version: 4 as const,
     exercises: value.exercises.map((x) => (x.type === 'WeightedExerciseBlueprint' ? addUsesBodyweight(x) : x)),
+    name: value.name,
+    notes: value.notes,
+  }))
+  .add((value) => ({
+    version: 5 as const,
+    exercises: value.exercises.map((x) => (x.type === 'WeightedExerciseBlueprint' ? repsConfigToPlannedSets(x) : x)),
+    name: value.name,
+    notes: value.notes,
+  }))
+  .add((value) => ({
+    version: 6 as const,
+    exercises: value.exercises.map((x) => (x.type === 'WeightedExerciseBlueprint' ? progressiveOverloadToRules(x) : x)),
     name: value.name,
     notes: value.notes,
   }))

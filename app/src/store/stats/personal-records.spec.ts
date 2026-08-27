@@ -2,28 +2,24 @@ import { describe, expect, it } from 'vitest';
 import { LocalDate, OffsetDateTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { findPersonalRecords } from '@/store/stats/personal-records';
-import { PotentialSet, RecordedSet, RecordedWeightedExercise, Session } from '@/models/session-models';
-import {
-  IncreaseLowestSetProgressiveOverload,
-  Rest,
-  SessionBlueprint,
-  WeightedExerciseBlueprint,
-} from '@/models/blueprint-models';
+import { RecordedWeightedExercise, Session } from '@/models/session-models';
+import { ProgressionRule, Rest, SessionBlueprint } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
+import {
+  filledPotentialSet,
+  makeRecordedExercise,
+  makeWeightedBlueprint,
+} from '@/models/session-models/__test__/helpers';
 
 function exercise(name: string, weight: Weight, reps: number) {
-  const blueprint = new WeightedExerciseBlueprint(
+  const blueprint = makeWeightedBlueprint({
     name,
-    3,
-    { type: 'fixed', reps: 5 },
-    new IncreaseLowestSetProgressiveOverload(new BigNumber(2.5), 'middle'),
-    Rest.long,
-    false,
-    '',
-    '',
-  );
-  const set = new RecordedSet(reps, OffsetDateTime.parse('2026-01-01T10:00:00Z'));
-  return new RecordedWeightedExercise(blueprint, [new PotentialSet(set, weight)], undefined);
+    repsConfig: { type: 'fixed', reps: 5 },
+    progression: [ProgressionRule.load(new BigNumber(2.5), { type: 'lowestSets', pick: 'middle' })],
+    restBetweenSets: Rest.long,
+  });
+  const time = OffsetDateTime.parse('2026-01-01T10:00:00Z');
+  return new RecordedWeightedExercise(blueprint, [filledPotentialSet(reps, time, weight)], undefined);
 }
 
 function session(id: string, date: LocalDate, exercises: RecordedWeightedExercise[]) {
@@ -92,20 +88,16 @@ describe('findPersonalRecords', () => {
 
   it('folds bodyweight into the estimated 1RM for a bodyweight exercise', () => {
     // Same +10kg added both sessions, but a heavier bodyweight makes the effective 1RM a record.
-    const blueprint = new WeightedExerciseBlueprint(
-      'Pull Up',
-      3,
-      { type: 'fixed', reps: 5 },
-      new IncreaseLowestSetProgressiveOverload(new BigNumber(2.5), 'middle'),
-      Rest.long,
-      false,
-      '',
-      '',
-      true,
-    );
+    const blueprint = makeWeightedBlueprint({
+      name: 'Pull Up',
+      repsConfig: { type: 'fixed', reps: 5 },
+      progression: [ProgressionRule.load(new BigNumber(2.5), { type: 'lowestSets', pick: 'middle' })],
+      restBetweenSets: Rest.long,
+      resistance: 'bodyweight',
+    });
     const build = (id: string, date: LocalDate, bodyweightKg: number) => {
-      const set = new RecordedSet(5, OffsetDateTime.parse('2026-01-01T10:00:00Z'));
-      const ex = new RecordedWeightedExercise(blueprint, [new PotentialSet(set, kg(10))], undefined);
+      const time = OffsetDateTime.parse('2026-01-01T10:00:00Z');
+      const ex = new RecordedWeightedExercise(blueprint, [filledPotentialSet(5, time, kg(10))], undefined);
       return new Session(
         id,
         new SessionBlueprint('Day', [], ''),
@@ -130,5 +122,24 @@ describe('findPersonalRecords', () => {
 
     expect(records.has('s2')).toBe(false);
     expect(records.has('s3')).toBe(true);
+  });
+});
+
+describe('findPersonalRecords for exercises that track no load', () => {
+  it('awards no records, because a 1RM needs a load', () => {
+    const blueprint = makeWeightedBlueprint({ name: 'Crunch', resistance: 'none' });
+    const build = (id: string, date: LocalDate, reps: number) =>
+      new Session(
+        id,
+        new SessionBlueprint('Core', [blueprint], ''),
+        [makeRecordedExercise(blueprint, [reps])],
+        date,
+        undefined,
+        undefined,
+      );
+
+    const records = findPersonalRecords([build('s1', day(1), 20), build('s2', day(8), 30)]);
+
+    expect([...records.values()].flat()).toEqual([]);
   });
 });

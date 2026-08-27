@@ -92,12 +92,18 @@ export default function RemoteBackupPage() {
             error={!!endpointError}
             onChangeText={updateEndpoint}
             autoCorrect={false}
+            autoCapitalize="none"
           />
           <HelperText type="error">{endpointError}</HelperText>
         </LabelledFormRow>
         <LabelledFormRow label={t('backup.api_key.label')} icon={'vpnKeyFill'}>
-          <TextInput mode="outlined" value={apiKeyValue} onChangeText={setApiKey} autoCorrect={false} />
-          <HelperText type="error">{endpointError}</HelperText>
+          <TextInput
+            mode="outlined"
+            value={apiKeyValue}
+            onChangeText={setApiKey}
+            autoCorrect={false}
+            autoCapitalize="none"
+          />
         </LabelledFormRow>
         <ListSwitch
           headline={t('feed.backup_account.title')}

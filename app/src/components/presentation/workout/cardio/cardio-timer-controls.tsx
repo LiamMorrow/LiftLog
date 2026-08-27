@@ -15,7 +15,7 @@ export function CardioTimerControls({ onStop }: CardioTimerControlsProps) {
   const { t } = useTranslate();
 
   return (
-    <Host matchContents seedColor={colors.seedColor}>
+    <Host matchContents seedColor={colors.seedColor} colorScheme={colors.scheme}>
       <HStack alignment="center">
         <Button
           onPress={onStop}

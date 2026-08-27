@@ -11,6 +11,7 @@ import {
   setShowFeed,
   setShowPostWorkoutSummary,
   setShowTips,
+  setThemeMode,
   setTrueBlackDarkTheme,
   setWelcomeWizardCompleted,
 } from '@/store/settings';
@@ -73,6 +74,8 @@ export default function AppConfiguration() {
           onUpdateTheme={(x) => dispatch(setColorSchemeSeed(x))}
           trueBlack={settings.trueBlackDarkTheme}
           setTrueBlack={(b) => dispatch(setTrueBlackDarkTheme(b))}
+          themeMode={settings.themeMode}
+          setThemeMode={(m) => dispatch(setThemeMode(m))}
         />
         <Button
           onPress={() => dispatch(setWelcomeWizardCompleted(false))}

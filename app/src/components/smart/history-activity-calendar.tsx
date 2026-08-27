@@ -5,7 +5,7 @@ import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useToday } from '@/hooks/useToday';
-import { useAppSelector, useAppSelectorWithArg } from '@/store';
+import { useAppSelector, useAppSelectorWhenFocusedWithArg } from '@/store';
 import { ActivityCell, selectActivityMonth, selectFollowsOtherUsers } from '@/store/activity';
 import { LocalDate, Year, YearMonth } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
@@ -34,7 +34,7 @@ export function HistoryActivityCalendar({
   const followsOthers = useAppSelector(selectFollowsOtherUsers);
 
   const params = useMemo(() => ({ yearMonth: currentYearMonth, today }), [currentYearMonth, today]);
-  const { rows, crossesFeedHorizon } = useAppSelectorWithArg(selectActivityMonth, params);
+  const { rows, crossesFeedHorizon } = useAppSelectorWhenFocusedWithArg(selectActivityMonth, params);
 
   const firstOfMonth = currentYearMonth.atDay(1);
   const isCurrentMonth = currentYearMonth.equals(YearMonth.now());

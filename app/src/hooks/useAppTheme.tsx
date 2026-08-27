@@ -1,7 +1,7 @@
 import { useAppSelector } from '@/store';
 import { Material3Scheme, useMaterial3Theme } from '@pchmn/expo-material3-theme';
 import React, { createContext, ReactNode, useContext, useEffect } from 'react';
-import { Platform, useColorScheme } from 'react-native';
+import { Appearance, Platform, useColorScheme } from 'react-native';
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { DarkTheme, ThemeProvider as NavigationThemeProvider, DefaultTheme } from 'expo-router';
 import { MsIconSrc } from '@/components/presentation/foundation/ms-icon-source';
@@ -125,6 +125,8 @@ export type AppThemeColors = Material3Scheme &
     onAmber: string;
 
     seedColor: string | undefined;
+
+    scheme: 'dark' | 'light' | undefined;
   };
 
 export type ColorChoice = keyof {
@@ -153,8 +155,16 @@ interface AppThemeProviderProps {
 export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) => {
   const colorSchemeSeed = useAppSelector((state) => state.settings.colorSchemeSeed);
   const trueBlack = useAppSelector((state) => state.settings.trueBlackDarkTheme);
+  const themeMode = useAppSelector((state) => state.settings.themeMode);
 
-  const colorScheme = useColorScheme();
+  const systemColorScheme = useColorScheme();
+  // Native views (expo-ui hosts, system dialogs, the status bar) read the platform appearance rather
+  // than anything we compute here, so the override has to be pushed down to it too.
+  useEffect(() => {
+    Appearance.setColorScheme(themeMode === 'system' ? 'unspecified' : themeMode);
+  }, [themeMode]);
+
+  const colorScheme = themeMode === 'system' ? (systemColorScheme === 'dark' ? 'dark' : 'light') : themeMode;
   const isDark = colorScheme === 'dark';
   // If the device is not compatible, it will return a theme based on the fallback source color (optional, default to #6750A4)
   const sourceColor = colorSchemeSeed === 'default' ? undefined : colorSchemeSeed;
@@ -207,8 +217,9 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) 
       ...colorPair('amber', 'ffffc107', schemedTheme.primary, isDark),
       ...activityRamp(schemedTheme.primary, isDark),
       seedColor: seedColor,
+      scheme: colorScheme,
     } satisfies AppThemeColors,
-    colorScheme: colorScheme === 'unspecified' ? 'light' : colorScheme,
+    colorScheme,
   };
 
   const baseNavigationThem = isDark ? DarkTheme : DefaultTheme;

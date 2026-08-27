@@ -139,7 +139,7 @@ async function persistPrograms(
         Object.entries(stateAfterReduce.program.savedPrograms).map(([key, program]) => ({
           id: key,
           active: key === stateAfterReduce.program.activePlanId,
-          payload: ProgramBlueprint.fromPOJO(program).toJSON(),
+          payload: program.toJSON(),
         })),
       );
       throwIfCancelled();

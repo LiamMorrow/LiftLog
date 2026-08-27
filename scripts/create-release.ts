@@ -147,14 +147,28 @@ try {
 // Trigger the publish workflows
 console.log("Triggering publish workflows...");
 
-const workflows = ["android-publish.yml", "ios-publish.yml"];
+const workflows = [
+  {
+    name: "android-publish.yml",
+    inputs: { version_code: version, release_notes: storeNotes },
+  },
+  {
+    name: "ios-publish.yml",
+    inputs: { version_code: version, release_notes: storeNotes },
+  },
+  { name: "api-publish.yml", inputs: { version_code: version } },
+];
 
-for (const workflow of workflows) {
+for (const { name, inputs } of workflows) {
+  const inputArgs = Object.entries(inputs).flatMap(([key, value]) => [
+    "-f",
+    `${key}=${value}`,
+  ]);
   try {
-    await $`gh workflow run ${workflow} -f version_code=${version} -f release_notes=${storeNotes}`;
-    console.log(`  ✓ Triggered ${workflow}`);
+    await $`gh workflow run ${name} ${inputArgs}`;
+    console.log(`  ✓ Triggered ${name}`);
   } catch (err) {
-    console.error(`  ✗ Failed to trigger ${workflow}:`, err);
+    console.error(`  ✗ Failed to trigger ${name}:`, err);
   }
 }
 

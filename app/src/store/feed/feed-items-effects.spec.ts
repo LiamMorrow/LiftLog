@@ -42,7 +42,7 @@ function sessionWithBodyweight(bodyweight: Weight | undefined): Session {
 }
 
 /**
- * Captures the plaintext handed to the encryption service — the only place the published bodyweight is
+ * Captures the plaintext handed to the encryption service - the only place the published bodyweight is
  * observable. The reader's UI hides bodyweight regardless of this flag, which is how the leak went unnoticed.
  */
 function capturingServices() {

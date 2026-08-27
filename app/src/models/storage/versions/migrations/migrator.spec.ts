@@ -129,7 +129,7 @@ describe('migrator', () => {
     });
 
     it('returns a mid-chain value unchanged when it is already at maxVersion', () => {
-      // v2 input, stop at 2 — no migration should run
+      // v2 input, stop at 2 - no migration should run
       const input: UserV2 = {
         version: 2,
         firstName: 'Grace',
@@ -140,7 +140,7 @@ describe('migrator', () => {
     });
 
     it('returns a value unchanged when its version already exceeds maxVersion', () => {
-      // v3 input, stop at 2 — version >= maxVersion so early-exit fires immediately
+      // v3 input, stop at 2 - version >= maxVersion so early-exit fires immediately
       const input: UserV3 = {
         version: 3,
         firstName: 'Alan',
@@ -265,7 +265,7 @@ describe('migrator', () => {
       .dependsOn({ primary: widgetMigrations })
       .build<KitLatest>();
 
-    // wrapper embedding another wrapper — recursion must reach the leaf
+    // wrapper embedding another wrapper - recursion must reach the leaf
     type CrateInit = { gadget: GadgetInit };
     type CrateLatest = { version: 3; gadget: GadgetLatest };
 
@@ -273,7 +273,7 @@ describe('migrator', () => {
       .dependsOn({ gadget: gadgetMigrations })
       .build<CrateLatest>();
 
-    // wrapper with two independent leaf children — the case a scalar/max version can't model
+    // wrapper with two independent leaf children - the case a scalar/max version can't model
     type ComboInit = { widget: WidgetV1; sprocket: SprocketV1 };
     type ComboLatest = { version: 3; widget: WidgetV3; sprocket: SprocketV2 };
 

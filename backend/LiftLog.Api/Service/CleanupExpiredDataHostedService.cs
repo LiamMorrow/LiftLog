@@ -3,26 +3,40 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LiftLog.Api.Service;
 
-public class CleanupExpiredDataHostedService(IServiceProvider services) : BackgroundService
+public class CleanupExpiredDataHostedService(
+    IServiceProvider services,
+    ILogger<CleanupExpiredDataHostedService> logger
+) : BackgroundService
 {
+    private static readonly TimeSpan Interval = TimeSpan.FromMinutes(60);
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                using var scope = services.CreateScope();
-                var db = scope.ServiceProvider.GetRequiredService<UserDataContext>();
-                var now = DateTimeOffset.UtcNow;
-                var expiredEvents = await db
-                    .UserEvents.Where(e => e.Expiry < now)
-                    .ToListAsync(cancellationToken: stoppingToken);
-                db.UserEvents.RemoveRange(expiredEvents);
-                await db.SaveChangesAsync(stoppingToken);
-                await Task.Delay(TimeSpan.FromMinutes(60), stoppingToken);
+                await CleanupAsync(stoppingToken);
+                await Task.Delay(Interval, stoppingToken);
             }
         }
-        catch (TaskCanceledException) { }
         catch (OperationCanceledException) { }
+    }
+
+    private async Task CleanupAsync(CancellationToken stoppingToken)
+    {
+        try
+        {
+            using var scope = services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<UserDataContext>();
+            var now = DateTimeOffset.UtcNow;
+
+            await db.UserEvents.Where(e => e.Expiry < now).ExecuteDeleteAsync(stoppingToken);
+        }
+        catch (Exception e) when (e is not OperationCanceledException)
+        {
+            // Expiring old events is housekeeping. Failing it must not take the API down.
+            logger.LogError(e, "Failed to delete expired user events");
+        }
     }
 }

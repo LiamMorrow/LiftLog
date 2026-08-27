@@ -6,12 +6,12 @@ import { Linking, View } from 'react-native';
 import { Tooltip } from 'react-native-paper';
 import Menu, { MenuItem } from '@/components/presentation/foundation/menu';
 import { useTranslate } from '@tolgee/react';
-import PreviousExerciseViewer from '@/components/presentation/workout/weighted/previous-exercise-viewer';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import ExerciseNotesDisplay from '@/components/presentation/workout/exercise-notes-display';
 import RecordedExerciseNotesEditor from '@/components/presentation/workout/recorded-exercise-notes-editor';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { useRouter } from 'expo-router';
+import { getExerciseHistoryHref } from '@/components/smart/exercise-history';
 import { Updater } from '@/utils/types';
 
 interface ExerciseSectionProps<T extends RecordedExercise> {
@@ -24,7 +24,7 @@ interface ExerciseSectionProps<T extends RecordedExercise> {
   children: ReactNode;
 
   updateExercise: (update: Updater<T>) => void;
-  onEditExercise: () => void;
+  onEditExercise: (() => void) | undefined;
   onRemoveExercise: () => void;
 }
 
@@ -37,11 +37,10 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
   const { push } = useRouter();
   const { recordedExercise } = props;
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
-  const [previousDialogOpen, setPreviousDialogOpen] = useState(false);
   const [removeExerciseDialogOpen, setRemoveExerciseDialogOpen] = useState(false);
   const showStats = recordedExercise instanceof RecordedWeightedExercise;
   const showPrevious = () => {
-    setPreviousDialogOpen(true);
+    push(getExerciseHistoryHref(recordedExercise.blueprint), { withAnchor: true });
   };
 
   const interactiveButtons = props.isReadonly ? (
@@ -67,12 +66,17 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
       <Menu
         trigger={(open) => <IconButton testID="more-exercise-btn" onPress={open} icon={'moreHoriz'} />}
         items={[
-          {
-            label: t('generic.edit.button'),
-            icon: 'edit',
-            systemImage: 'pencil',
-            onPress: () => props.onEditExercise(),
-          },
+          // Absent for a session the user does not own, which has nothing to edit.
+          ...(props.onEditExercise
+            ? [
+                {
+                  label: t('generic.edit.button'),
+                  icon: 'edit',
+                  systemImage: 'pencil',
+                  onPress: props.onEditExercise,
+                } satisfies MenuItem,
+              ]
+            : []),
           {
             label: t('generic.notes.label'),
             icon: 'notes',
@@ -164,12 +168,6 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
         }}
         onCancel={() => setRemoveExerciseDialogOpen(false)}
         preventCancel={false}
-      />
-      <PreviousExerciseViewer
-        name={recordedExercise.blueprint.name}
-        previousRecordedExercises={props.previousRecordedExercises}
-        close={() => setPreviousDialogOpen(false)}
-        open={previousDialogOpen}
       />
     </View>
   );

@@ -8,7 +8,12 @@
   "plugins": [
     {
       "name": "liftlog-plan-builder",
-      "source": "./plugins/liftlog-plan-builder",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/LiamMorrow/LiftLog",
+        "path": "plugins/liftlog-plan-builder",
+        "ref": "plan-builder-skill"
+      },
       "description": "Generate LiftLog workout plans (.liftlogplan files) from a training goal, validated against the app's own schema."
     }
   ]

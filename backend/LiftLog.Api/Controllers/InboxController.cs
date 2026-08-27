@@ -1,5 +1,6 @@
 using FluentValidation;
 using LiftLog.Api.Db;
+using LiftLog.Api.Features;
 using LiftLog.Api.Models;
 using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
+[FeatureCheck(Feature.Feed)]
 public class InboxController(UserDataContext db) : ControllerBase
 {
     [HttpPut]

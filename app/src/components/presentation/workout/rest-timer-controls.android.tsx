@@ -15,7 +15,7 @@ export function RestTimerControls({ paused, onRestart, onTogglePause, onDismiss 
   const { t } = useTranslate();
 
   return (
-    <Host matchContents seedColor={colors.seedColor}>
+    <Host matchContents seedColor={colors.seedColor} colorScheme={colors.scheme}>
       <Row horizontalArrangement={{ spacedBy: spacing[1] }} verticalAlignment="center">
         <IconButton onClick={onRestart}>
           <Icon source={RestartIcon} size={restControlIconSize} contentDescription={t('rest_timer.restart')} />

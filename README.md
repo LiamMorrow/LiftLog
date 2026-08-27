@@ -36,7 +36,7 @@
 
 LiftLog uses [Weblate](https://translate.liftlog.online/) for internationalization and translation management. Anyone can create an account and start translating!
 
-[![Translation status](https://translate.liftlog.online/widget/liftlog/multi-auto.svg)](https://translate.liftlog.online/engage/liftlog/)
+[![Translation status](https://translate.liftlog.online/widget/liftlog/liftlog-app/multi-auto.svg)](https://translate.liftlog.online/engage/liftlog/)
 
 Want to help translate? [Create an account on Weblate!](https://translate.liftlog.online/)
 
@@ -84,7 +84,7 @@ LiftLog is organized into several projects:
 
 For documentation on running the backend for local development, see [the README](./backend/README.md)
 
-- **Dotnet WebAPI** for feeds, AI plans, and secure data
+- **Dotnet WebAPI** for feeds, AI plans, and backups
 - **End-to-end encrypted feeds** (AES)
 - **Claude integration** for workout plans
 
@@ -99,7 +99,6 @@ For documentation on running the backend for local development, see [the README]
 ---
 
 ## 📊 Stats
-
 
 <a href="https://www.star-history.com/?type=date&repos=LiamMorrow%2FLiftLog">
  <picture>
@@ -119,6 +118,7 @@ AI/LLM-assisted contributions are welcome, but issues and feature requests shoul
 
 ## 📚 Documentation
 
+- [Self Hosting](./docs/SelfHosting.md) - Documents the how to self host the backend for backups or your own AI planner and private feed.
 - [Plan Files](./docs/PlanFileFormat.md) - Documents the `.liftlogplan` file format, and how to generate plans with an AI for import into the app.
 - [Feed Process](./docs/FeedProcess.md) - Documents how the feed and sharing works, especially around e2e encryption.
 - [Remote Backup](./docs/RemoteBackup.md) - Documents how to connect LiftLog to a remote backup server.

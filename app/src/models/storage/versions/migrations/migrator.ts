@@ -4,7 +4,7 @@ import { TupleIndices } from '@/utils/tuple';
 /**
  * Represents a single schema migration step from one version's shape to the next.
  *
- * The `$type` field is never populated at runtime — it exists solely as a
+ * The `$type` field is never populated at runtime - it exists solely as a
  * phantom type carrier so that `Migrator` and friends can infer the output
  * type of each step from the tuple of migrations without running any code.
  *
@@ -12,15 +12,31 @@ import { TupleIndices } from '@/utils/tuple';
  * @typeParam TOutput - Shape of the data coming *out* of this migration
  */
 export type Migration<TInput = unknown, TOutput = unknown> = {
-  /** Phantom field — never set at runtime. Carries `TOutput` into the type system. */
+  /** Phantom field - never set at runtime. Carries `TOutput` into the type system. */
   $type: TOutput;
   up: (state: TInput) => TOutput;
 };
 
+/**
+ * Thrown when a value carries a version this build has never heard of - it was
+ * written by a newer app than the one reading it. Distinguishable from a
+ * corrupt or unrecognised value so callers can tell the user to update rather
+ * than that their file is broken.
+ */
+export class UnsupportedVersionError extends Error {
+  constructor(
+    readonly version: number,
+    readonly latestVersion: number,
+  ) {
+    super(`Cannot migrate value at version ${version}: latest known version is ${latestVersion}`);
+    this.name = 'UnsupportedVersionError';
+  }
+}
+
 /** A {@link Migration} with both type parameters erased. */
 type AnyMigration = Migration<any, any>;
 
-/** A {@link Migrator} with every type parameter erased — used to hold declared child dependencies. */
+/** A {@link Migrator} with every type parameter erased - used to hold declared child dependencies. */
 type AnyMigrator = Migrator<any, any, any>;
 
 /**
@@ -89,7 +105,7 @@ type MigrationsBuilder<TPrevOutput, TAccumulated extends readonly [...AnyMigrati
    * Every declared field is brought up to its child's latest version on `migrate()`, so this
    * model never needs a numbered step merely because a child's shape changed, and a child bump
    * is picked up automatically (per leaf) rather than tracked by a single scalar version. A
-   * `dependsOn` builder is terminal — `.build()` pins against the derived latest shape.
+   * `dependsOn` builder is terminal - `.build()` pins against the derived latest shape.
    *
    * @example
    * createMigrations<InitialProgramBlueprintJSON>({ pseudoMigrateUntil: 3 })
@@ -243,9 +259,7 @@ class MigratorImpl<TFinal, TAny, TMigrations extends readonly [...AnyMigration[]
   ): TMigrations[TVersion]['$type'] {
     const currentVersion = value.version ?? 0;
     if (currentVersion > this.latestVersion) {
-      throw new Error(
-        `Cannot migrate value at version ${currentVersion}: latest known version is ${this.latestVersion}`,
-      );
+      throw new UnsupportedVersionError(currentVersion, this.latestVersion);
     }
     if (!this.migrations.length || currentVersion >= maxVersion) {
       return value;
@@ -283,13 +297,13 @@ class MigratorImpl<TFinal, TAny, TMigrations extends readonly [...AnyMigration[]
  * @typeParam TMigrations - The full readonly tuple of numbered migrations, for per-index lookups
  */
 interface Migrator<TFinal, TAny, TMigrations extends readonly [...AnyMigration[], AnyMigration]> {
-  /** Phantom — never set at runtime. Carries the latest type (`typeof migrator.$finalType`). */
+  /** Phantom - never set at runtime. Carries the latest type (`typeof migrator.$finalType`). */
   $finalType: TFinal;
-  /** Phantom — never set at runtime. Carries the any-stored-version input type. */
+  /** Phantom - never set at runtime. Carries the any-stored-version input type. */
   $anyType: TAny;
 
   /**
-   * The highest version this model stamps on disk — its chain length, counting any
+   * The highest version this model stamps on disk - its chain length, counting any
    * `pseudoMigrateUntil` seed steps. Used to reject values from a newer app version.
    */
   latestVersion: number;
@@ -299,7 +313,7 @@ interface Migrator<TFinal, TAny, TMigrations extends readonly [...AnyMigration[]
 
   /**
    * Migrates `value` only up to (but not past) `maxVersion` of the numbered chain. Dependents
-   * are *not* applied — this is an intermediate accessor over the numbered steps only.
+   * are *not* applied - this is an intermediate accessor over the numbered steps only.
    */
   migrateUntil<TVersion extends TupleIndices<TMigrations>>(
     value: TMigrations[number]['$type'],
@@ -317,7 +331,7 @@ interface Migrator<TFinal, TAny, TMigrations extends readonly [...AnyMigration[]
  * @param opts.pseudoMigrateUntil - For a wrapper with no numbered steps of its own, seeds the
  *   chain with identity steps that stamp the top-level `version` up to this number, so existing
  *   rows (which already carry it) keep round-tripping. These come *before* any `.add()` steps
- *   and only set `version` — the final shape still emerges from the chain, never overridden.
+ *   and only set `version` - the final shape still emerges from the chain, never overridden.
  *
  * @example
  * const migrator = createMigrations<V1>().add(v1ToV2).add(v2ToV3).build();

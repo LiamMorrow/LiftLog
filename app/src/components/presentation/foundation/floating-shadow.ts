@@ -1,5 +1,5 @@
 /**
- * Lift for surfaces that float above page content on iOS: soft, low, and close to the surface —
+ * Lift for surfaces that float above page content on iOS: soft, low, and close to the surface -
  * not a Material elevation shadow, which is darker and tighter than anything Apple casts.
  *
  * Android is absent on purpose: Compose expresses elevation tonally and its components cast their

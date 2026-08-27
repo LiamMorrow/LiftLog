@@ -9,10 +9,16 @@ import { Provider } from 'react-redux';
 
 // Create context for services
 const ServicesContext = createContext<Services | null>(null);
+
+let databasePromise: Promise<SQLiteDatabase> | undefined;
+function openDatabase() {
+  return (databasePromise ??= openDatabaseAsync('db.db'));
+}
+
 export default function ServicesProvider(props: { children: ReactNode }) {
   const [expoDb, setOpDb] = useState<SQLiteDatabase>();
   useEffect(() => {
-    void openDatabaseAsync('db.db').then(setOpDb);
+    void openDatabase().then(setOpDb);
   }, [setOpDb]);
   const db = useMemo(() => expoDb && drizzle(expoDb), [expoDb]);
   const resolved = useMemo(() => (db && expoDb ? resolveStore(db, expoDb) : undefined), [db, expoDb]);

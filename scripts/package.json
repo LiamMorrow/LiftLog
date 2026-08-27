@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "create-release": "./create-release.ts patch",
-    "collect-screenshots": "./collect-screenshots.ts"
+    "collect-screenshots": "./collect-screenshots.ts",
+    "release-plan-builder-skill": "./release-plan-builder-skill.ts"
   },
   "devDependencies": {
     "@types/node": "^24.2.1",

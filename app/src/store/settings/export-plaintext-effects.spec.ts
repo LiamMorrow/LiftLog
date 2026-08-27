@@ -1,22 +1,16 @@
 import { describe, it, expect, vi, MockedObject } from 'vitest';
 import { LocalDate, OffsetDateTime, ZoneOffset } from '@js-joda/core';
-import BigNumber from 'bignumber.js';
 import { v4 as uuid } from 'uuid';
-import {
-  SessionBlueprint,
-  WeightedExerciseBlueprint,
-  CardioExerciseBlueprint,
-  Rest,
-  CardioExerciseSetBlueprint,
-  IncreaseAllEvenlyProgressiveOverload,
-} from '@/models/blueprint-models';
+import { SessionBlueprint, CardioExerciseBlueprint, CardioExerciseSetBlueprint } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { Session } from '@/models/session-models/session';
+import { RecordedWeightedExercise } from '@/models/session-models/recorded-weighted-exercise';
 import {
-  PotentialSet,
-  RecordedSet,
-  RecordedWeightedExercise,
-} from '@/models/session-models/recorded-weighted-exercise';
+  emptyPotentialSet,
+  filledPotentialSet,
+  makeRecordedExercise,
+  makeWeightedBlueprint,
+} from '@/models/session-models/__test__/helpers';
 import { RecordedCardioExercise } from '@/models/session-models/recorded-cardio-exercise';
 import { exportPlainText } from '@/store/settings';
 import Enumerable from 'linq';
@@ -30,26 +24,17 @@ import { SessionJSON } from '@/models/storage/versions/latest';
 
 const t = OffsetDateTime.of(2024, 1, 15, 10, 0, 0, 0, ZoneOffset.UTC);
 
-function makeWeightedBlueprint(name = 'Bench Press', sets = 3, repsPerSet = 10) {
-  return new WeightedExerciseBlueprint(
-    name,
-    sets,
-    { type: 'fixed', reps: repsPerSet },
-    new IncreaseAllEvenlyProgressiveOverload(BigNumber('2.5')),
-    Rest.medium,
-    false,
-    '',
-    '',
-  );
+function makeBenchBlueprint(name = 'Bench Press', sets = 3, repsPerSet = 10) {
+  return makeWeightedBlueprint({ name, sets, repsConfig: { type: 'fixed', reps: repsPerSet } });
 }
 
 function makeWeightedExercise(name = 'Bench Press', sets = 3, weightKg = 100, reps = 10): RecordedWeightedExercise {
-  const bp = makeWeightedBlueprint(name, sets, reps);
-  const weight = new Weight(weightKg, 'kilograms');
-  return new RecordedWeightedExercise(
+  const bp = makeBenchBlueprint(name, sets, reps);
+  return makeRecordedExercise(
     bp,
-    Array.from({ length: sets }, (_, i) => new PotentialSet(new RecordedSet(reps, t.plusSeconds(i * 60)), weight)),
-    undefined,
+    Array.from({ length: sets }, () => reps),
+    new Weight(weightKg, 'kilograms'),
+    (i) => t.plusSeconds(i * 60),
   );
 }
 
@@ -84,7 +69,7 @@ function makeFileExportService(): MockedObject<FileExportService> {
 
 describe('export-plaintext-effects', () => {
   // ─── CSV export ───────────────────────────────────────────────────────────────
-  describe('addExportPlaintextEffects — CSV', () => {
+  describe('addExportPlaintextEffects - CSV', () => {
     it('calls exportBytes with a .csv filename and text/csv content type', async () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
@@ -171,13 +156,13 @@ describe('export-plaintext-effects', () => {
 
     it('skips uncompleted sets (set === undefined)', async () => {
       const fileExportService = makeFileExportService();
-      const bp = makeWeightedBlueprint('OHP', 3, 8);
+      const bp = makeBenchBlueprint('OHP', 3, 8);
       const exercise = new RecordedWeightedExercise(
         bp,
         [
-          new PotentialSet(new RecordedSet(8, t), new Weight(60, 'kilograms')),
-          new PotentialSet(undefined, new Weight(60, 'kilograms')), // incomplete
-          new PotentialSet(undefined, new Weight(60, 'kilograms')), // incomplete
+          filledPotentialSet(8, t, new Weight(60, 'kilograms')),
+          emptyPotentialSet(60), // incomplete
+          emptyPotentialSet(60), // incomplete
         ],
         undefined,
       );
@@ -201,10 +186,10 @@ describe('export-plaintext-effects', () => {
 
     it('includes exercise notes in the CSV', async () => {
       const fileExportService = makeFileExportService();
-      const bp = makeWeightedBlueprint('Curl', 1, 12);
+      const bp = makeBenchBlueprint('Curl', 1, 12);
       const exercise = new RecordedWeightedExercise(
         bp,
-        [new PotentialSet(new RecordedSet(12, t), new Weight(20, 'kilograms'))],
+        [filledPotentialSet(12, t, new Weight(20, 'kilograms'))],
         'slow eccentric',
       );
       const testBed = createAddEffectTestBed({
@@ -248,7 +233,7 @@ describe('export-plaintext-effects', () => {
 
   // ─── JSON export ──────────────────────────────────────────────────────────────
 
-  describe('addExportPlaintextEffects — JSON', () => {
+  describe('addExportPlaintextEffects - JSON', () => {
     it('calls exportBytes with a .json filename and application/json content type', async () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
@@ -346,7 +331,7 @@ describe('export-plaintext-effects', () => {
 
   // ─── Shared behaviour ─────────────────────────────────────────────────────────
 
-  describe('addExportPlaintextEffects — shared', () => {
+  describe('addExportPlaintextEffects - shared', () => {
     it('does not dispatch any actions', async () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({

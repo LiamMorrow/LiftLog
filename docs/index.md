@@ -5,29 +5,41 @@ work to find the docs relevant to your area, and update it whenever you add, rem
 
 ## Architecture and patterns
 
-- [Storage.md](./Storage.md) — the two on-device storage layers: preferences (`PreferenceService`, one
+- [Storage.md](./Storage.md) - the two on-device storage layers: preferences (`PreferenceService`, one
   file per key) and user data (SQLite via Drizzle). Both are injected into Redux effects via `extra`.
   Covers which to use, how to add to each, and the startup hydration order.
-- [Migrations.md](./Migrations.md) — the `createMigrations()` chain in `app/src/models/storage/versions/`
+- [Migrations.md](./Migrations.md) - the `createMigrations()` chain in `app/src/models/storage/versions/`
   that brings previously-persisted JSON up to the shape the app expects. Read alongside `Storage.md`.
-- [WorkoutWorker.md](./WorkoutWorker.md) — the platform-specific, message-driven execution environment
+- [WorkoutWorker.md](./WorkoutWorker.md) - the platform-specific, message-driven execution environment
   for an in-progress workout (persistent notifications, background timers, system UI). Redux stays the
   source of truth; the worker is disposable.
 
 ## Features
 
-- [FeedProcess.md](./FeedProcess.md) — the opt-in social feed: the follow/accept flow, what is and isn't
+- [FeedProcess.md](./FeedProcess.md) - the opt-in social feed: the follow/accept flow, what is and isn't
   visible to the server, and the end-to-end encryption model (AES-CBC payloads, RSA-PSS signatures).
-- [PlanFileFormat.md](./PlanFileFormat.md) — the `.liftlogplan` file format, how plans are imported and
+- [Progression.md](./Progression.md) - how last session's
+  numbers carry into today (and why weight carries but reps usually do not), and how the progressive
+  overload rules move them. Covers rule order, limits and starting over, rules that can never run, and
+  the two ways to set up double progression. Ends with pointers to the code.
+- [PlanFileFormat.md](./PlanFileFormat.md) - the `.liftlogplan` file format, how plans are imported and
   exported, and the Claude skill that authors plan files against the schema.
 - [PlaintextExport.md](./PlaintextExport.md) — CSV/JSON export of workout data, including which fields
-  are included. Explicitly *not* a backup mechanism; LiftLog cannot read these files back.
+  are included. Explicitly _not_ a backup mechanism; LiftLog cannot read these files back.
+- [CsvImport.md](./CsvImport.md) — user guide for Import from other apps (FitNotes-style and
+  StrongLifts-style CSV); contributor notes at the end. Separate from plaintext export.
 - [RemoteBackup.md](./RemoteBackup.md) — the automatic remote backup: the app-side settings, the HTTPS
   requirement, and the contract a self-hosted backup endpoint must satisfy.
 
+## Running it yourself
+
+- [SelfHosting.md](./SelfHosting.md) — quickstart for running your own backend: a copy-paste Docker
+  Compose file, how to point the app at it, and the environment variables that switch on the feed,
+  remote backup, and AI planner. Pairs with the [backend README](../backend/README.md).
+
 ## Generated
 
-- [schemas/](./schemas) — JSON schemas generated from the app's models: `ai-plan/`,
+- [schemas/](./schemas) - JSON schemas generated from the app's models: `ai-plan/`,
   `program-blueprint/`, `workout-worker/`. Regenerate with `npm run json-schema` from `app/`; never
   hand-edit.
-- [img/](./img) — images referenced by the docs above.
+- [img/](./img) - images referenced by the docs above.

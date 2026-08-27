@@ -5,7 +5,7 @@ namespace LiftLog.Tests.Api.Unit.Helpers;
 
 /// <summary>
 /// Builds <see cref="RawMessageStreamEvent"/>s from raw JSON matching Anthropic's
-/// streaming SSE wire format — the same shape the SDK materializes from a real
+/// streaming SSE wire format - the same shape the SDK materializes from a real
 /// response, so the planner's union handling is exercised against realistic input.
 /// </summary>
 public static class StreamEvents
@@ -14,7 +14,7 @@ public static class StreamEvents
 
     public static RawMessageStreamEvent ToolUseStart(string id, string name, long index = 0) =>
         // Built via FromRawUnchecked so RawData is populated and .Value is NOT
-        // materialized — this exercises the planner's raw-JSON fallback path (the
+        // materialized - this exercises the planner's raw-JSON fallback path (the
         // content-block union does not lazily resolve its .Value).
         RawContentBlockStartEvent.FromRawUnchecked(
             new Dictionary<string, JsonElement>

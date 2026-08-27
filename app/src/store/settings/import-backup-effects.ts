@@ -80,26 +80,24 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
     }
   });
 
-  addEffect(
-    importBackupData,
-    async ({ payload: dao }, { dispatch, extra: { tolgee, db, databaseMigrationService } }) => {
-      dispatch(upsertStoredSessions(dao.workouts));
-      dispatch(upsertSavedPlans(dao.programs));
-      dispatch(
-        showSnackbar({
-          text: tolgee.t('Restore complete!'),
-        }),
-      );
-      // Let the data migration re-run on next launch so imported nil-unit weights get coalesced
-      await db.delete(dataMigrationsSchema).where(eq(dataMigrationsSchema.id, migrateNilWeightUnitsDataMigration));
-      await databaseMigrationService.migrate();
-      if (dao.feed) {
-        dispatch(beginFeedImport(dao.feed));
-      }
-    },
-  );
+  addEffect(importBackupData, async ({ payload }, { dispatch, extra: { db, databaseMigrationService } }) => {
+    const { workouts, programs, feed, successMessage } = payload;
+    dispatch(upsertStoredSessions(workouts));
+    dispatch(upsertSavedPlans(programs));
+    dispatch(
+      showSnackbar({
+        text: successMessage,
+      }),
+    );
+    // Let the data migration re-run on next launch so imported nil-unit weights get coalesced
+    await db.delete(dataMigrationsSchema).where(eq(dataMigrationsSchema.id, migrateNilWeightUnitsDataMigration));
+    await databaseMigrationService.migrate();
+    if (feed) {
+      dispatch(beginFeedImport(feed));
+    }
+  });
 
-  addEffect(importDataSql, async (action, { dispatch, extra: { logger } }) => {
+  addEffect(importDataSql, async (action, { dispatch, extra: { logger, tolgee } }) => {
     try {
       const {
         payload: { db: backupDb },
@@ -150,6 +148,7 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
           programs,
           workouts,
           feed,
+          successMessage: tolgee.t('Restore complete!'),
         }),
       );
     } finally {
@@ -157,7 +156,7 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
     }
   });
 
-  addEffect(importDataProto, async ({ payload: { dao } }, { dispatch }) => {
+  addEffect(importDataProto, async ({ payload: { dao } }, { dispatch, extra: { tolgee } }) => {
     const workouts = dao.sessions.map((s) =>
       Session.fromJSON(sessionMigrations.migrate(ProtobufToJsonV1Migrator.migrateSession(s))),
     );
@@ -208,6 +207,7 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
         workouts,
         programs,
         feed,
+        successMessage: tolgee.t('Restore complete!'),
       }),
     );
   });

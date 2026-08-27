@@ -8,7 +8,7 @@ import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { applySettingsEffects } from '@/store/settings/effects';
 import { setColorSchemeSeed, setExportToHealthAggregator, setProToken, settingsReducer } from '@/store/settings';
 
-describe('settings slice — generated preference actions', () => {
+describe('settings slice - generated preference actions', () => {
   it('applies a generated setter through the matcher reducer', () => {
     const state = settingsReducer(undefined, setColorSchemeSeed('#abcdef'));
     expect(state.colorSchemeSeed).toBe('#abcdef');
@@ -39,7 +39,7 @@ function makeTestBed(isHydrated: boolean, extraServices?: Record<string, unknown
   return { testBed, preferenceService };
 }
 
-describe('settings effects — generic persistence', () => {
+describe('settings effects - generic persistence', () => {
   it('persists a generic preference when hydrated', async () => {
     const { testBed, preferenceService } = makeTestBed(true);
     await testBed.dispatchHandled(setColorSchemeSeed('#abcdef'));
@@ -60,7 +60,7 @@ describe('settings effects — generic persistence', () => {
   });
 });
 
-describe('settings effects — exportToHealthAggregator gate', () => {
+describe('settings effects - exportToHealthAggregator gate', () => {
   it('reverts and does not persist when export is unavailable', async () => {
     const healthExportService = { canExport: vi.fn(() => false), requestPermission: vi.fn() };
     const { testBed, preferenceService } = makeTestBed(true, { healthExportService });

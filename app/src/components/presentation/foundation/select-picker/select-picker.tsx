@@ -15,7 +15,7 @@ export default function SelectPicker<T extends SelectPickerValue>({
   const selectedIndex = items.findIndex((x) => isSelectPickerValueEqual(x.value, value));
 
   return (
-    <Host matchContents seedColor={colors.seedColor}>
+    <Host matchContents seedColor={colors.seedColor} colorScheme={colors.scheme}>
       <Picker
         selectedValue={String(selectedIndex)}
         onValueChange={(key) => {

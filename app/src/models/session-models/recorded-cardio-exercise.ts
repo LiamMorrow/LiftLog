@@ -3,6 +3,8 @@ import {
   CardioExerciseSetBlueprint,
   Distance,
   fromDistanceJSON,
+  MovementKey,
+  ProgressionKey,
   toDistanceJSON,
 } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
@@ -213,6 +215,16 @@ export class RecordedCardioExercise {
     );
   }
 
+  /** See {@link MovementKey}. */
+  movementKey(): MovementKey {
+    return this.blueprint.movementKey();
+  }
+
+  /** See {@link ProgressionKey}. */
+  progressionKey(): ProgressionKey {
+    return this.blueprint.progressionKey();
+  }
+
   get currentSetIndex() {
     return this.sets.findIndex((x) => !x.isCompletelyFilled);
   }
@@ -225,7 +237,7 @@ export class RecordedCardioExercise {
     return this.sets.every((x) => x.isCompletelyFilled);
   }
 
-  /** The set whose rest is owed — cardio carries its rest per set, not per exercise. */
+  /** The set whose rest is owed - cardio carries its rest per set, not per exercise. */
   get lastCompletedSet(): RecordedCardioExerciseSet | undefined {
     return this.sets.reduce<RecordedCardioExerciseSet | undefined>((latest, set) => {
       if (!set.completionDateTime) return latest;

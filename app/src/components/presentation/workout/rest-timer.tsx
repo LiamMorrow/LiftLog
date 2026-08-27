@@ -19,19 +19,12 @@ interface RestTimerProps {
   onTogglePause: () => void;
 }
 
-/**
- * We treat resting as a window, not a deadline: below `minRest` you are still recovering, between min and max
- * you should lift, and past max you have gone over. Each phase owns one colour, and the two track
- * segments are the window itself, sized in proportion to how long each part of it lasts.
- */
 type RestPhase = 'resting' | 'ready' | 'over';
 
-// Neutral, then green, then red. The seed colour is the user's, so `primary` can land anywhere on the
-// wheel — including on green — and a phase drawn in it would stop being distinguishable from the next.
 const phaseColor: Record<RestPhase, ColorChoice> = {
   resting: 'onSurfaceVariant',
   ready: 'green',
-  over: 'error',
+  over: 'orange',
 };
 
 export default function RestTimer({
@@ -129,14 +122,14 @@ export default function RestTimer({
     {
       flex: windowStart,
       progress: timerState.restProgress,
-      color: phase === 'over' && windowEnd === undefined ? 'error' : 'onSurfaceVariant',
+      color: phase === 'over' && windowEnd === undefined ? phaseColor['over'] : phaseColor['resting'],
     },
     ...(windowEnd !== undefined
       ? [
           {
             flex: windowEnd - windowStart,
             progress: timerState.windowProgress,
-            color: (phase === 'over' ? 'error' : 'green') as ColorChoice,
+            color: phaseColor[phase],
           },
         ]
       : []),
