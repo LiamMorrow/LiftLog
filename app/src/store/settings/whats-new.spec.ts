@@ -6,6 +6,7 @@ import {
   settingsReducer,
 } from '@/store/settings';
 import programReducer from '@/store/program';
+import { backendsReducer } from '@/store/backends';
 import { latestWhatsNewId, whatsNewEntries } from '@/models/whats-new';
 import { RootState } from '@/store';
 
@@ -14,6 +15,7 @@ const stateWith = (settings: Partial<ReturnType<typeof settingsReducer>>) =>
   ({
     settings: { ...settingsReducer(undefined, { type: '@@INIT' }), ...settings },
     program: programReducer(undefined, { type: '@@INIT' }),
+    backends: backendsReducer(undefined, { type: '@@INIT' }),
   }) as RootState;
 
 describe('whats-new selectors', () => {

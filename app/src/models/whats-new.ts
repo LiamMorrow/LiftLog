@@ -41,6 +41,17 @@ export const whatsNewEntries: WhatsNewEntry[] = [
       route: '/settings/program-list',
     },
   },
+  {
+    id: 3,
+    icon: 'dns',
+    titleKey: 'whats_new.backends.title',
+    bodyKey: 'whats_new.backends.body',
+    cta: {
+      labelKey: 'whats_new.backends.cta',
+      route: '/settings/backends',
+    },
+    condition: (state) => state.backends.backends.length === 0,
+  },
 ];
 
 export const latestWhatsNewId = whatsNewEntries.reduce((max, entry) => Math.max(max, entry.id), 0);

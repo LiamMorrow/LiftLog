@@ -43,13 +43,26 @@ The server must be reachable over **HTTPS** from your phone - put it behind a re
 terminates TLS (Caddy, Traefik, nginx) rather than exposing port 8080 directly. Mobile platforms
 block cleartext HTTP, so this is not optional.
 
-How much of the app you can point at your server depends on the feature, eventually all features will be able to target your backend:
+In the app, go to **Settings → Backends → Add backend** and enter:
 
-| Feature       | Can the app use your server today?                                                                                                                                       |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Remote backup | **Yes.** Settings → Export, backup, and restore → Automatic remote backup. Set the endpoint to `https://your-host/backup` and the API key to your `Auth__ApiKey__Value`. |
-| Social feed   | Not yet - the base URL is compiled in ([`api-consts.ts`](../app/src/services/api-consts.ts)).                                                                            |
-| AI planner    | Not yet - same base URL.                                                                                                                                                 |
+| Field   | Value                                                                               |
+| ------- | ----------------------------------------------------------------------------------- |
+| Name    | Whatever you want to call it.                                                       |
+| URL     | `https://your-host`                                                                 |
+| Type    | **LiftLog backend**.                                                                |
+| Headers | `X-API-Key` set to your `Auth__ApiKey__Value` , or any other headers you might need |
+
+**Test** calls `GET /features` and reports which features that instance offers. Then assign the feed,
+the AI planner and remote backup to it.
+
+Two things worth knowing before you switch:
+
+- **Remote backup is not assigned to anything by default.** It uploads your whole database, so it
+  stays off until you pick a backend for it.
+- **Moving the feed deletes your feed account**, including your followers.
+
+[Backends.md](./Backends.md) covers both in full, along with the separate "backup endpoint only"
+backend type for bare implementations of the backup protocol.
 
 ## Turning features off
 

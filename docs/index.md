@@ -36,6 +36,9 @@ work to find the docs relevant to your area, and update it whenever you add, rem
 - [SelfHosting.md](./SelfHosting.md) — quickstart for running your own backend: a copy-paste Docker
   Compose file, how to point the app at it, and the environment variables that switch on the feed,
   remote backup, and AI planner. Pairs with the [backend README](../backend/README.md).
+- [Backends.md](./Backends.md) — the app side: creating backends, assigning the feed, AI planner and
+  remote backup to different ones, custom headers for API keys and forward auth, and why moving the
+  feed destroys the account. Read alongside `SelfHosting.md`.
 
 ## Generated
 
