@@ -60,6 +60,8 @@ function BackendEditor({ backend }: { backend: Backend }) {
   const dispatch = useDispatch();
   const router = useRouter();
   const [probe, setProbe] = useState<ProbeState>({ status: 'idle' });
+  const probeSignature = probeSignatureOf(backend);
+  const [previousProbeSignature, setPreviousProbeSignature] = useState(probeSignatureOf(backend));
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const update = (changes: Partial<Backend>) => dispatch(putBackend({ ...backend, ...changes }));
@@ -71,10 +73,10 @@ function BackendEditor({ backend }: { backend: Backend }) {
       ? ''
       : t('backends.url.error.message');
   const canTest = backendUrlIsValid(backend.url);
-
-  // A result is a result for the values it was run against, so editing them retires it.
-  const probeSignature = probeSignatureOf(backend);
-  useEffect(() => setProbe((current) => (current.status === 'idle' ? current : { status: 'idle' })), [probeSignature]);
+  if (previousProbeSignature !== probeSignature) {
+    setPreviousProbeSignature(probeSignature);
+    setProbe((current) => (current.status === 'idle' ? current : { status: 'idle' }));
+  }
 
   // Adding a backend creates it, so one that was opened and never filled in was never really added.
   const latest = useRef(backend);

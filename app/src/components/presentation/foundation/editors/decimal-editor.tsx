@@ -1,8 +1,9 @@
 import { localeFormatBigNumber, localeParseBigNumber } from '@/utils/locale-bignumber';
-import React, { useState, useEffect } from 'react';
-import { TextStyle } from 'react-native';
+import { Platform, TextStyle, TextInput as NativeTextInput } from 'react-native';
 import { TextInput, TextInputProps } from 'react-native-paper';
 import BigNumber from 'bignumber.js';
+import { useDerivedState } from '@/hooks/useDerivedState';
+import { useRef } from 'react';
 
 interface DecimalEditorProps {
   value: BigNumber;
@@ -12,50 +13,50 @@ interface DecimalEditorProps {
   testID?: string;
 }
 
+const format = (v: BigNumber) => localeFormatBigNumber(v) || '0';
+
 export function DecimalEditor(props: DecimalEditorProps & Partial<Omit<TextInputProps, keyof DecimalEditorProps>>) {
   const { value, onChange, testID, label, style, ...rest } = props;
-  const [text, setText] = useState(localeFormatBigNumber(props.value) || '-');
-  const [editorValue, setEditorValue] = useState(value);
+  const [text, setText] = useDerivedState(value, format);
 
-  const handleTextChange = (text: string) => {
-    setText(text);
-    if (text.trim() === '') {
-      setEditorValue(BigNumber(0));
-      onChange(BigNumber(0));
-      return;
+  const propagateChanges = (text: string) => {
+    const trimmed = text.trim();
+    const parsed = trimmed === '' ? new BigNumber(0) : localeParseBigNumber(trimmed);
+
+    if (parsed.isNaN()) {
+      return value;
     }
 
-    const parsed = localeParseBigNumber(text);
-    if (!parsed.isNaN()) {
-      setEditorValue(parsed);
-      onChange(parsed);
-      return;
+    if (!parsed.isEqualTo(value)) onChange(parsed);
+    setText(text);
+    return parsed;
+  };
+
+  const inputRef = useRef<NativeTextInput | null>(null);
+  const selectTextOnFocus = () => {
+    if (Platform.OS === 'android' && text) {
+      // A 50-100ms timeout bypasses Android's native keyboard-layout cursor reset
+      setTimeout(() => {
+        inputRef.current?.setSelection(0, text.length);
+      }, 50);
     }
   };
-  useEffect(() => {
-    if (!editorValue.eq(value)) {
-      setText(localeFormatBigNumber(value) || '0');
-      setEditorValue(value);
-    }
-  }, [value, editorValue]);
+
   return (
     <TextInput
+      ref={inputRef}
+      onFocus={selectTextOnFocus}
       testID={testID}
       value={text}
       inputMode={'decimal'}
       label={label}
       keyboardType={'decimal-pad'}
-      onChangeText={handleTextChange}
+      onChangeText={propagateChanges}
       submitBehavior="blurAndSubmit"
       returnKeyType="done"
-      selectTextOnFocus
+      selectTextOnFocus={Platform.OS === 'ios'}
       style={[style]}
-      onBlur={() => {
-        if (text === '') {
-          setText('0');
-        }
-        onChange(editorValue);
-      }}
+      onBlur={() => setText(format(value))}
       {...rest}
     />
   );

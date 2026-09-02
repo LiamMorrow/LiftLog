@@ -237,7 +237,7 @@ class MigratorImpl<TFinal, TAny, TMigrations extends readonly [...AnyMigration[]
   }
 
   migrate(value: TAny): TFinal {
-    const migrated: any = this.migrateUntil(value as any, this.migrations.length as any);
+    const migrated: any = this.migrateUntil(value, this.migrations.length as any);
     if (!this.hasDependents()) {
       return migrated as TFinal;
     }

@@ -5,8 +5,8 @@ import { useAppSelector } from '@/store';
 import { copyLogs } from '@/store/app';
 import { T } from '@tolgee/react';
 import * as Application from 'expo-application';
-import { ReactNode, useEffect, useRef, useState } from 'react';
-import { Animated, Platform, Text, View } from 'react-native';
+import { ReactNode, useEffect, useState } from 'react';
+import { Animated, Platform, Text, useAnimatedValue, View } from 'react-native';
 import { openUrl } from '@/utils/open-url';
 import { useDispatch } from 'react-redux';
 
@@ -24,7 +24,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   );
   const { colors } = useAppTheme();
   const isWaiting = !!waitingOn;
-  const anim = useRef(new Animated.Value(1)).current;
+  const anim = useAnimatedValue(1);
 
   if (isWaiting) {
     return (

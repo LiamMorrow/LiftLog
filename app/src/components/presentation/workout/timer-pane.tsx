@@ -1,6 +1,6 @@
-import React, { ReactNode, useEffect, useRef } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { Animated, Platform, useWindowDimensions, View, ViewStyle } from 'react-native';
+import { Animated, Platform, useAnimatedValue, useWindowDimensions, View, ViewStyle } from 'react-native';
 import { GlassBackground } from '@/components/presentation/foundation/glass-background';
 import { floatingShadowStyle } from '@/components/presentation/foundation/floating-shadow';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
@@ -125,7 +125,7 @@ function ProgressBar({ segments, colors, trackColor }: ProgressBarProps) {
   // Segments fill in order, so the filled length is the flex-weighted sum of their individual progress.
   const progress =
     totalFlex > 0 ? segments.reduce((sum, segment) => sum + segment.flex * segment.progress, 0) / totalFlex : 0;
-  const cover = useRef(new Animated.Value(1)).current;
+  const cover = useAnimatedValue(1);
 
   useEffect(() => {
     Animated.timing(cover, {

@@ -99,7 +99,7 @@ interface ChannelSliderProps {
 function ChannelSlider({ fraction, stops, thumbColor, accessibilityLabel, onChange }: ChannelSliderProps) {
   const { colors } = useAppTheme();
   const [trackWidth, setTrackWidth] = useState(0);
-  const gradientId = useRef(`grad-${Math.random().toString(36).slice(2)}`).current;
+  const [gradientId] = useState(() => `grad-${Math.random().toString(36).slice(2)}`);
 
   const setFromX = (x: number) => {
     if (trackWidth <= 0) return;

@@ -63,6 +63,7 @@ export function useAppSelectorWhenFocused<TRes>(selector: (s: RootState) => TRes
 
   useEffect(() => {
     if (currentValue !== notRecomputed) {
+      // oxlint-disable-next-line react/set-state-in-effect -- TODO
       setLastFocusedValue(currentValue);
     }
   }, [currentValue]);

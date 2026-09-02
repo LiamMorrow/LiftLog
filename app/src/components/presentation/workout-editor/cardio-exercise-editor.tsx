@@ -1,5 +1,4 @@
 import DurationEditor from '@/components/presentation/foundation/editors/duration-editor';
-import EditableIncrementer from '@/components/presentation/foundation/editors/editable-incrementer';
 import Button from '@/components/presentation/foundation/button';
 import { FormRow } from '@/components/presentation/foundation/form-row';
 import RestFormat from '@/components/presentation/foundation/rest-format';
@@ -32,6 +31,7 @@ import BigNumber from 'bignumber.js';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { Divider, List } from 'react-native-paper';
+import { DecimalEditor } from '@/components/presentation/foundation/editors/decimal-editor';
 
 const distanceUnitOptions = DistanceUnits.map((value) => ({
   value,
@@ -276,9 +276,8 @@ function DistanceTargetEditor(props: {
       }}
     >
       <View style={{ flex: 1 }}>
-        <EditableIncrementer
+        <DecimalEditor
           onChange={(value) => onValueChange({ ...target, value: { ...target.value, value } })}
-          disallowNegative
           value={props.target.value.value}
         />
       </View>

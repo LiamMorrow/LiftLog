@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { View, LayoutChangeEvent, StyleSheet, Animated, Easing } from 'react-native';
+import { View, LayoutChangeEvent, StyleSheet, Animated, Easing, useAnimatedValue } from 'react-native';
 
 type AccordionItemProps = {
   isExpanded: boolean;
@@ -20,7 +20,7 @@ export function AccordionItem({
   style,
   unexpandedHeight = 0,
 }: AccordionItemProps) {
-  const animatedHeight = useRef(new Animated.Value(unexpandedHeight)).current;
+  const animatedHeight = useAnimatedValue(unexpandedHeight);
   const measuredHeightRef = useRef(unexpandedHeight);
   const settledHeightRef = useRef(unexpandedHeight);
 

@@ -68,7 +68,7 @@ describe('stored-sessions effects', () => {
         settings: { isHydrated: true, preferredLanguage: 'en', exportToHealthAggregator: false },
         storedSessions: { sessions: {}, activeSessionId: undefined },
         ...options.state,
-      } as Partial<RootState>,
+      },
       services: {
         db,
         logger,
@@ -206,7 +206,7 @@ describe('stored-sessions effects', () => {
         initialState: {
           settings: { isHydrated: true, exportToHealthAggregator: true },
           storedSessions: { sessions: { [session.id]: session }, activeSessionId: session.id },
-        } as Partial<RootState>,
+        },
         services: {
           db,
           logger,

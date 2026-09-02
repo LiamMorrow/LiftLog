@@ -1,6 +1,5 @@
 import { useMountEffect } from '@/hooks/useMountEffect';
-import { useRef } from 'react';
-import { Animated, Easing, Text, View } from 'react-native';
+import { Animated, Easing, Text, useAnimatedValue, View } from 'react-native';
 
 const RISE_DISTANCE = 56;
 const DURATION_MS = 900;
@@ -34,7 +33,7 @@ export function FloatingEmojiLayer({ emojis, onFinished }: FloatingEmojiLayerPro
 }
 
 function RisingEmoji({ emoji, onFinished }: { emoji: FloatingEmoji; onFinished: () => void }) {
-  const anim = useRef(new Animated.Value(0)).current;
+  const anim = useAnimatedValue(0);
 
   useMountEffect(() => {
     Animated.timing(anim, {

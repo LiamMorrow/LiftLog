@@ -16,7 +16,7 @@ import { View } from 'react-native';
 import { Card } from 'react-native-paper';
 
 export function getFeedItemHref(eventId: string): Href {
-  return `/feed/item/${encodeURIComponent(eventId)}` as Href;
+  return `/feed/item/${encodeURIComponent(eventId)}`;
 }
 
 export function FeedItem({ eventId }: { eventId: string }) {

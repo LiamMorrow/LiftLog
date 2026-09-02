@@ -4,7 +4,7 @@ import { detectLanguage, LanguageDetectorMiddleware, TolgeePlugin } from '@tolge
 // Tolgee's types claim `detectLanguage` returns a string, but it returns undefined for a locale with
 // no exact or two-letter match.
 export function detectLanguageFromDateLocale(availableLanguages: string[]): string | undefined {
-  return detectLanguage(Intl.DateTimeFormat().resolvedOptions().locale, availableLanguages) as string | undefined;
+  return detectLanguage(Intl.DateTimeFormat().resolvedOptions().locale, availableLanguages);
 }
 
 export const detectLanguageOrPreferred = (preferenceService: PreferenceService, availableLanguages: string[]) => {

@@ -7,6 +7,7 @@ import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { RestTimerControls } from '@/components/presentation/workout/rest-timer-controls';
 import { formatTimeSpan, TimerPane, TimerSegment } from '@/components/presentation/workout/timer-pane';
 import { useTranslate } from '@tolgee/react';
+import { useDerivedState } from '@/hooks/useDerivedState';
 
 interface RestTimerProps {
   rest: Rest;
@@ -39,11 +40,7 @@ export default function RestTimer({
 }: RestTimerProps) {
   const { t } = useTranslate();
   const paused = pausedAt !== undefined;
-  const [jiggled, setJiggled] = useState([] as string[]);
-
-  useEffect(() => {
-    setJiggled([]);
-  }, [startTime]);
+  const [jiggled, setJiggled] = useDerivedState(startTime, () => [] as string[]);
 
   const getTimerState = useCallback(() => {
     const now = pausedAt ?? OffsetDateTime.now();
@@ -94,7 +91,7 @@ export default function RestTimer({
       setTimeout(() => setJiggling(false), 10);
       setJiggled((j) => [...j, milestone]);
     },
-    [jiggled],
+    [jiggled, setJiggled],
   );
 
   useEffect(() => {
