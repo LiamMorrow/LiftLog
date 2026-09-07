@@ -318,6 +318,36 @@ export class Session {
     });
   }
 
+  withExerciseMovedUp(exerciseIndex: number): Session {
+    return this.withExerciseMoved(exerciseIndex, exerciseIndex - 1);
+  }
+
+  withExerciseMovedDown(exerciseIndex: number): Session {
+    return this.withExerciseMoved(exerciseIndex, exerciseIndex + 1);
+  }
+
+  withExerciseMoved(exerciseIndex: number, newIndex: number): Session {
+    if (
+      exerciseIndex < 0 ||
+      exerciseIndex >= this.recordedExercises.length ||
+      newIndex < 0 ||
+      newIndex >= this.recordedExercises.length ||
+      exerciseIndex === newIndex
+    ) {
+      return this;
+    }
+    // Remove first, then re-insert at the target index: since removal shifts nothing before it,
+    // inserting at newIndex lands the item at its final position for moves in either direction.
+    const move = <T>(items: T[]): T[] =>
+      items.toSpliced(exerciseIndex, 1).toSpliced(newIndex, 0, items[exerciseIndex]!);
+    return this.with({
+      recordedExercises: move(this.recordedExercises),
+      blueprint: this.blueprint.with({
+        exercises: move(this.blueprint.exercises),
+      }),
+    });
+  }
+
   toJSON(): SessionJSON {
     return {
       version: 7,

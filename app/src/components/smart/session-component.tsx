@@ -151,6 +151,14 @@ export default function SessionComponent(props: {
             editableSessionId ? () => push(getSessionExerciseEditorHref(editableSessionId, index)) : undefined
           }
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
+          onMoveExerciseUp={
+            !isReadonly && index > 0 ? () => updateSession((s) => s.withExerciseMovedUp(index)) : undefined
+          }
+          onMoveExerciseDown={
+            !isReadonly && index < session.recordedExercises.length - 1
+              ? () => updateSession((s) => s.withExerciseMovedDown(index))
+              : undefined
+          }
           isReadonly={isReadonly}
           showPreviousButton={!!isActiveWorkout}
           previousRecordedExercises={recentlyCompletedExercises(item.movementKey()) as RecordedWeightedExercise[]}
@@ -169,6 +177,14 @@ export default function SessionComponent(props: {
             editableSessionId ? () => push(getSessionExerciseEditorHref(editableSessionId, index)) : undefined
           }
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
+          onMoveExerciseUp={
+            !isReadonly && index > 0 ? () => updateSession((s) => s.withExerciseMovedUp(index)) : undefined
+          }
+          onMoveExerciseDown={
+            !isReadonly && index < session.recordedExercises.length - 1
+              ? () => updateSession((s) => s.withExerciseMovedDown(index))
+              : undefined
+          }
           isReadonly={isReadonly}
           showPreviousButton={!!isActiveWorkout}
           previousRecordedExercises={recentlyCompletedExercises(item.movementKey()) as RecordedCardioExercise[]}
