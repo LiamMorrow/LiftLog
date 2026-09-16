@@ -118,7 +118,7 @@ export class RecordedWeightedExercise {
   withRepCount(setIndex: number, reps: number | undefined, time: OffsetDateTime): RecordedWeightedExercise {
     return this.withSet(setIndex, (s) =>
       s.with({
-        set: reps === undefined ? undefined : new RecordedSet(reps, time),
+        set: reps === undefined ? undefined : new RecordedSet(reps, s.set?.completionDateTime ?? time),
       }),
     );
   }

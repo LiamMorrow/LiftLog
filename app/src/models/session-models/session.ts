@@ -492,6 +492,20 @@ export class Session {
     return result;
   }
 
+  get lastSetFailed(): boolean {
+    const exercise = this.lastExercise;
+    if (!(exercise instanceof RecordedWeightedExercise)) return false;
+    const lastSet = exercise.lastRecordedSet;
+    return (
+      !!lastSet?.set &&
+      lastSet.set.repsCompleted < exercise.repsTargetForSet(exercise.potentialSets.indexOf(lastSet)).min
+    );
+  }
+
+  withRestTimerAt(time: OffsetDateTime | undefined): Session {
+    return this.with({ restTimer: time ? new RestTimer(time, undefined, this.lastSetFailed) : undefined });
+  }
+
   get restTimerEndTime(): OffsetDateTime | undefined {
     if (!this.restTimer || this.restTimer.isPaused) {
       return undefined;
@@ -505,7 +519,11 @@ export class Session {
         ? exercise.repsTargetForSet(exercise.potentialSets.indexOf(lastSet)).min
         : undefined;
       const rest =
-        targetMin === undefined ? Duration.ZERO : lastSet!.set!.repsCompleted >= targetMin ? minRest : failureRest;
+        targetMin === undefined
+          ? Duration.ZERO
+          : (this.restTimer.failedAtStart ?? this.lastSetFailed)
+            ? failureRest
+            : minRest;
 
       if (rest.equals(Duration.ZERO)) {
         return undefined;

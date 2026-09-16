@@ -17,6 +17,33 @@ import {
 import { getCardioTimerInfo, getCurrentExerciseDetails, getTimerInfo } from '@/store/workout-worker/helpers';
 import { uuid } from '@/utils/uuid';
 
+describe('rest timer after logged reps corrections', () => {
+  it.each([
+    [10, 8],
+    [8, 10],
+  ])('preserves rest after correcting %i reps to %i', (before, after) => {
+    const start = tick();
+    const blueprint = makeWeightedBlueprint();
+    const exercise = new RecordedWeightedExercise(
+      blueprint,
+      [filledPotentialSet(before, start), emptyPotentialSet()],
+      undefined,
+    );
+    const session = makeSession([blueprint]).withExercise(0, exercise).withRestTimerAt(start);
+    const corrected = session.withExercise(0, exercise.withRepCount(0, after, start.plusSeconds(30)));
+
+    expect(corrected.restTimer).toBe(session.restTimer);
+    expect(corrected.restTimerEndTime).toEqual(session.restTimerEndTime);
+    expect(getTimerInfo(corrected)).toEqual(getTimerInfo(session));
+    expect(corrected.restTimer!.elapsed(start.plusSeconds(30))).toEqual(
+      session.restTimer!.elapsed(start.plusSeconds(30)),
+    );
+
+    const restarted = corrected.withRestTimerAt(start.plusSeconds(30));
+    expect(restarted.restTimer!.failedAtStart).toBe(after < 10);
+  });
+});
+
 describe('getCardioTimerInfo', () => {
   it('returns undefined when no cardio set has a running timer', () => {
     const session = makeSession([makeCardioBlueprint(1)]);

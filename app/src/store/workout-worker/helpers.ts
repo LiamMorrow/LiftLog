@@ -48,7 +48,7 @@ export function getTimerInfo(session: Session): RestTimerInfo | undefined {
     return undefined;
   }
 
-  const rest = getRestWindow(lastExercise);
+  const rest = getRestWindow(lastExercise, session.restTimer.failedAtStart);
   if (!rest || rest.partialRest.equals(Duration.ZERO)) {
     return;
   }
@@ -60,7 +60,7 @@ export function getTimerInfo(session: Session): RestTimerInfo | undefined {
 }
 
 /** Cardio rests per set and has nothing to fail; a weighted exercise rests per exercise. */
-function getRestWindow(lastExercise: RecordedExercise) {
+function getRestWindow(lastExercise: RecordedExercise, failedAtStart?: boolean) {
   if (lastExercise instanceof RecordedCardioExercise) {
     const rest = lastExercise.lastCompletedSet?.blueprint.restBetweenSets;
     return rest && { partialRest: rest.minRest, fullRest: rest.maxRest };
@@ -77,7 +77,7 @@ function getRestWindow(lastExercise: RecordedExercise) {
   }
 
   const targetMin = lastExercise.repsTargetForSet(lastExercise.potentialSets.indexOf(lastSet)).min;
-  return lastSet.set.repsCompleted >= targetMin
+  return !(failedAtStart ?? lastSet.set.repsCompleted < targetMin)
     ? { partialRest: minRest, fullRest: maxRest }
     : { partialRest: failureRest, fullRest: failureRest };
 }

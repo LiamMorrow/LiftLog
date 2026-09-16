@@ -62,7 +62,10 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             }
             onUpdateReps={(reps) => {
               updateExercise((ex) => ex.withRepCount(index, reps, timeProvider()));
-              resetSetTimer();
+              // Editing a logged set must also preserve paused or dismissed rest timers.
+              if (!!set.set !== (reps !== undefined)) {
+                resetSetTimer();
+              }
             }}
             onUpdateWeight={(w, applyTo) => updateExercise((ex) => ex.withWeight(index, w, applyTo))}
             set={set}

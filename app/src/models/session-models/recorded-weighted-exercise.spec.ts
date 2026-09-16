@@ -100,6 +100,15 @@ describe('RecordedWeightedExercise.getSet', () => {
 // ─── withRepCount ─────────────────────────────────────────────────────────────
 
 describe('RecordedWeightedExercise.withRepCount', () => {
+  it.each([0, 8, 10])('preserves completion time when correcting a logged set to %i reps', (reps) => {
+    const t = tick();
+    const exercise = new RecordedWeightedExercise(makeWeightedBlueprint(), [filledPotentialSet(10, t)], undefined);
+
+    const result = exercise.withRepCount(0, reps, t.plusMinutes(5));
+
+    expect(result.getSet(0).set).toEqual(RecordedSet.of({ repsCompleted: reps, completionDateTime: t }));
+  });
+
   it('records a set with the given reps', () => {
     const t = tick();
     const exercise = new RecordedWeightedExercise(makeWeightedBlueprint(), [emptyPotentialSet(60)], undefined);

@@ -11,7 +11,6 @@ import {
   RecordedCardioExerciseSet,
   RecordedExercise,
   RecordedWeightedExercise,
-  RestTimer as RestTimerModel,
   Session,
 } from '@/models/session-models';
 import { Updater } from '@/utils/types';
@@ -37,7 +36,7 @@ import { formatDuration } from '@/utils/format-date';
 import { useAddExercise } from '@/hooks/useAddExercise';
 
 function withRestTimerAt(session: Session, time: OffsetDateTime | undefined) {
-  return session.with({ restTimer: time ? new RestTimerModel(time) : undefined });
+  return session.withRestTimerAt(time);
 }
 
 export default function SessionComponent(props: {
@@ -228,7 +227,7 @@ export default function SessionComponent(props: {
       rest={restBetweenSets}
       startTime={session.restTimer.startedAt}
       pausedAt={session.restTimer.pausedAt}
-      failed={!!lastSetFailed}
+      failed={session.restTimer.failedAtStart ?? !!lastSetFailed}
       onRestart={() => resetTimer(OffsetDateTime.now())}
       onDismiss={dismissTimer}
       onTogglePause={toggleRestTimerPaused}
