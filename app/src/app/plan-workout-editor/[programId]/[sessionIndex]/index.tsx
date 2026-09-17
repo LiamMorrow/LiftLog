@@ -47,7 +47,7 @@ function SessionEditor({ session, location }: { session: SessionBlueprint; locat
   const { push } = useRouter();
   const openExerciseEditor = (exerciseIndex: number) => {
     push({
-      pathname: '/settings/manage-workouts/[programId]/manage-session/[sessionIndex]/exercise',
+      pathname: '/plan-workout-editor/[programId]/[sessionIndex]/exercise',
       params: { ...location, exerciseIndex },
     });
   };
