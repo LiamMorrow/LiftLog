@@ -46,7 +46,11 @@ export function createHandler(
 
     // The app checks its backup target by posting an empty body with this header. Answer it, but do
     // not store it - see docs/RemoteBackup.md.
-    if (event.headers["X-LiftLog-Probe"] || event.headers["x-liftlog-probe"]) {
+    if (
+      Object.entries(event.headers).some(
+        ([name, value]) => name.toLowerCase() === "x-liftlog-probe" && value,
+      )
+    ) {
       return getReturnResult(200, "Probe acknowledged. Nothing was stored.");
     }
 
