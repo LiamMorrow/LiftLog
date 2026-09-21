@@ -14,6 +14,7 @@ export default function FullHeightScrollView({
   avoidKeyboard,
   contentContainerStyle,
   safeAreaEdges = { left: 'additive', right: 'additive', top: 'off', bottom: 'off' },
+  modal,
 }: {
   children: React.ReactNode;
   floatingChildren?: React.ReactNode;
@@ -22,6 +23,7 @@ export default function FullHeightScrollView({
   scrollStyle?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
   safeAreaEdges?: Edges;
+  modal?: boolean;
 }) {
   const { colors } = useAppTheme();
   const { handleScroll } = useScroll();
@@ -67,7 +69,7 @@ export default function FullHeightScrollView({
           onLayout={(event) => setFloatingBottomSize(event.nativeEvent.layout.height)}
           style={{
             position: 'absolute',
-            bottom: Platform.select({ ios: insets.bottom }) ?? 0,
+            bottom: modal || Platform.OS === 'ios' ? insets.bottom : 0,
             width: '100%',
           }}
         >

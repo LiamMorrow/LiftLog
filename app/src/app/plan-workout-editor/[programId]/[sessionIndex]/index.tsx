@@ -86,7 +86,7 @@ function SessionEditor({ session, location }: { session: SessionBlueprint; locat
     />
   );
   return (
-    <FullHeightScrollView floatingChildren={floatingBottomContainer}>
+    <FullHeightScrollView floatingChildren={floatingBottomContainer} modal>
       <Stack.Screen options={{ title: session.name }} />
       <Form>
         <LabelledFormRow label={t('workout.name.label')} icon={'assignmentFill'}>
