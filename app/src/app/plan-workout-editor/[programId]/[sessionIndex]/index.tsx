@@ -47,7 +47,7 @@ function SessionEditor({ session, location }: { session: SessionBlueprint; locat
   const { push } = useRouter();
   const openExerciseEditor = (exerciseIndex: number) => {
     push({
-      pathname: '/settings/manage-workouts/[programId]/manage-session/[sessionIndex]/exercise',
+      pathname: '/plan-workout-editor/[programId]/[sessionIndex]/exercise',
       params: { ...location, exerciseIndex },
     });
   };
@@ -86,7 +86,7 @@ function SessionEditor({ session, location }: { session: SessionBlueprint; locat
     />
   );
   return (
-    <FullHeightScrollView floatingChildren={floatingBottomContainer}>
+    <FullHeightScrollView floatingChildren={floatingBottomContainer} modal>
       <Stack.Screen options={{ title: session.name }} />
       <Form>
         <LabelledFormRow label={t('workout.name.label')} icon={'assignmentFill'}>

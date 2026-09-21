@@ -45,7 +45,7 @@ export default function ExercisePage() {
   }
 
   return (
-    <FullHeightScrollView avoidKeyboard>
+    <FullHeightScrollView avoidKeyboard modal>
       <ExerciseEditor
         exercise={exercise}
         updateExercise={(ex) => {
