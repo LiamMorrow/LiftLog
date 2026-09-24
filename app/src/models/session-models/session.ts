@@ -309,6 +309,15 @@ export class Session {
     });
   }
 
+  withWeightedExercise(exerciseIndex: number, exercise: RecordedWeightedExercise): Session {
+    const updated = this.withExercise(exerciseIndex, exercise);
+    const before = this.lastExercise?.latestTime;
+    const after = updated.lastExercise?.latestTime;
+    // Rep corrections and removing older sets must preserve elapsed time, pause, and dismissal.
+    // Only a change to the latest completion starts a different rest period.
+    return (before && after ? before.isEqual(after) : before === after) ? updated : updated.withRestTimerAt(after);
+  }
+
   withRemovedExercise(exerciseIndex: number): Session {
     return this.with({
       recordedExercises: this.recordedExercises.toSpliced(exerciseIndex, 1),
@@ -492,6 +501,14 @@ export class Session {
     return result;
   }
 
+  get lastSetFailed(): boolean {
+    return this.lastExercise?.lastSetFailed ?? false;
+  }
+
+  withRestTimerAt(time: OffsetDateTime | undefined): Session {
+    return this.with({ restTimer: time ? new RestTimer(time) : undefined });
+  }
+
   get restTimerEndTime(): OffsetDateTime | undefined {
     if (!this.restTimer || this.restTimer.isPaused) {
       return undefined;
@@ -504,8 +521,7 @@ export class Session {
       const targetMin = lastSet?.set
         ? exercise.repsTargetForSet(exercise.potentialSets.indexOf(lastSet)).min
         : undefined;
-      const rest =
-        targetMin === undefined ? Duration.ZERO : lastSet!.set!.repsCompleted >= targetMin ? minRest : failureRest;
+      const rest = targetMin === undefined ? Duration.ZERO : this.lastSetFailed ? failureRest : minRest;
 
       if (rest.equals(Duration.ZERO)) {
         return undefined;
