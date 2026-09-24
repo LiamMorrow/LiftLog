@@ -4,7 +4,6 @@ export class RestTimer {
   constructor(
     readonly startedAt: OffsetDateTime,
     readonly pausedAt?: OffsetDateTime,
-    readonly failedAtStart?: boolean,
   ) {}
 
   get isPaused(): boolean {
@@ -16,14 +15,14 @@ export class RestTimer {
   }
 
   pause(now: OffsetDateTime): RestTimer {
-    return this.pausedAt ? this : new RestTimer(this.startedAt, now, this.failedAtStart);
+    return this.pausedAt ? this : new RestTimer(this.startedAt, now);
   }
 
   resume(now: OffsetDateTime): RestTimer {
     if (!this.pausedAt) {
       return this;
     }
-    return new RestTimer(this.startedAt.plus(Duration.between(this.pausedAt, now)), undefined, this.failedAtStart);
+    return new RestTimer(this.startedAt.plus(Duration.between(this.pausedAt, now)), undefined);
   }
 
   togglePause(now: OffsetDateTime): RestTimer {
@@ -33,7 +32,6 @@ export class RestTimer {
   equals(other: RestTimer | undefined): boolean {
     return (
       !!other &&
-      this.failedAtStart === other.failedAtStart &&
       this.startedAt.isEqual(other.startedAt) &&
       (this.pausedAt?.isEqual(other.pausedAt ?? OffsetDateTime.MAX) ?? other.pausedAt === undefined)
     );

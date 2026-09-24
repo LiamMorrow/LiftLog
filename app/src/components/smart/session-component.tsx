@@ -140,11 +140,12 @@ export default function SessionComponent(props: {
               : (session.lastExercise?.latestTime ??
                 session.date.atTime(LocalTime.now()).atZone(ZoneId.systemDefault()).toOffsetDateTime())
           }
-          resetSetTimer={() => updateSession((s) => withRestTimerAt(s, s.lastExercise?.latestTime))}
           recordedExercise={item}
           toStartNext={session.nextExercise === item}
           updateExercise={(update) =>
-            updateSession((s) => s.withExercise(index, update(s.recordedExercises[index] as RecordedWeightedExercise)))
+            updateSession((s) =>
+              s.withWeightedExercise(index, update(s.recordedExercises[index] as RecordedWeightedExercise)),
+            )
           }
           onEditExercise={
             editableSessionId ? () => push(getSessionExerciseEditorHref(editableSessionId, index)) : undefined
@@ -206,7 +207,6 @@ export default function SessionComponent(props: {
   ) : null;
 
   const lastExercise = session.lastExercise;
-  const lastRecordedSet = lastExercise instanceof RecordedWeightedExercise ? lastExercise?.lastRecordedSet : undefined;
   const nextExercise = session.nextExercise;
 
   // A weighted exercise rests per exercise; cardio rests per set, and may not rest at all.
@@ -216,18 +216,12 @@ export default function SessionComponent(props: {
     .otherwise(() => undefined);
 
   const showRestTimer = restTimersEnabled && isActiveWorkout && nextExercise && restBetweenSets && session.restTimer;
-  // Only a weighted set can be failed - cardio has no rep count to fall short of.
-  const lastSetFailed =
-    lastRecordedSet?.set &&
-    lastExercise instanceof RecordedWeightedExercise &&
-    lastRecordedSet.set.repsCompleted <
-      lastExercise.repsTargetForSet(lastExercise.potentialSets.indexOf(lastRecordedSet)).min;
   const restTimer = showRestTimer ? (
     <RestTimer
       rest={restBetweenSets}
       startTime={session.restTimer.startedAt}
       pausedAt={session.restTimer.pausedAt}
-      failed={session.restTimer.failedAtStart ?? !!lastSetFailed}
+      failed={session.lastSetFailed}
       onRestart={() => resetTimer(OffsetDateTime.now())}
       onDismiss={dismissTimer}
       onTogglePause={toggleRestTimerPaused}

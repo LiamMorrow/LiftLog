@@ -16,17 +16,16 @@ interface WeightedExerciseProps {
 
   timeProvider: () => OffsetDateTime;
   updateExercise: (update: Updater<RecordedWeightedExercise>) => void;
-  resetSetTimer: () => void;
   onEditExercise: (() => void) | undefined;
   onRemoveExercise: () => void;
 }
 
 export default function WeightedExercise(props: WeightedExerciseProps) {
-  const { updateExercise, timeProvider, resetSetTimer } = props;
+  const { updateExercise, timeProvider } = props;
   const { recordedExercise } = props;
   useState(false);
 
-  const setToStartNext = recordedExercise.potentialSets.findIndex((x) => !x.set);
+  const setToStartNext = recordedExercise.potentialSets.findIndex((x) => !x.isComplete);
 
   return (
     <ExerciseSection
@@ -46,14 +45,8 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             key={index}
             repsTarget={recordedExercise.repsTargetForSet(index)}
             onTap={() => {
-              const previousSet = set.set;
-              const newSet = recordedExercise.withCycledRepCount(index, timeProvider()).getSet(index).set;
-              updateExercise((ex) => ex.withCycledRepCount(index, timeProvider()));
-              // We only want to reset the timer when switching between unfilled and filled
-              // Otherwise, keep the same time
-              if (!previousSet || !newSet) {
-                resetSetTimer();
-              }
+              const time = timeProvider();
+              updateExercise((ex) => ex.withCycledRepCount(index, time));
             }}
             previousRepCount={
               props.previousRecordedExercises
@@ -61,11 +54,8 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
                 .at(0)?.potentialSets[index]?.set?.repsCompleted
             }
             onUpdateReps={(reps) => {
-              updateExercise((ex) => ex.withRepCount(index, reps, timeProvider()));
-              // Editing a logged set must also preserve paused or dismissed rest timers.
-              if (!!set.set !== (reps !== undefined)) {
-                resetSetTimer();
-              }
+              const time = timeProvider();
+              updateExercise((ex) => ex.withRepCount(index, reps, time));
             }}
             onUpdateWeight={(w, applyTo) => updateExercise((ex) => ex.withWeight(index, w, applyTo))}
             set={set}

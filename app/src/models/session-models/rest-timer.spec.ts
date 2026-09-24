@@ -5,13 +5,6 @@ import { RestTimer } from '@/models/session-models/rest-timer';
 const start = OffsetDateTime.of(2025, 4, 5, 12, 0, 0, 0, ZoneOffset.UTC);
 
 describe('RestTimer', () => {
-  it('preserves the original failure state through pause and resume', () => {
-    const timer = new RestTimer(start, undefined, true);
-    const paused = timer.pause(start.plusSeconds(30));
-    expect(paused.failedAtStart).toBe(true);
-    expect(paused.resume(start.plusSeconds(90)).failedAtStart).toBe(true);
-    expect(timer.equals(new RestTimer(start, undefined, false))).toBe(false);
-  });
   it('is not paused when created', () => {
     const timer = new RestTimer(start);
     expect(timer.isPaused).toBe(false);
