@@ -22,6 +22,7 @@ describe('settings slice - generated preference actions', () => {
     const state = settingsReducer(undefined, { type: '@@init' });
     expect(state.notesExpandedByDefault).toBe(true);
     expect(state.keepScreenAwakeDuringWorkout).toBe(true);
+    expect(state.restCountdownTones).toBe(false);
     expect(state.isHydrated).toBe(false);
   });
 });

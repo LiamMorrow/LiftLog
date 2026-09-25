@@ -88,6 +88,7 @@ export const {
   setLastSeenWhatsNewId,
   setShowFeed,
   setRestNotifications,
+  setRestCountdownTones,
   setRestTimersEnabled,
   setCrashReportsEnabled,
   setWelcomeWizardCompleted,

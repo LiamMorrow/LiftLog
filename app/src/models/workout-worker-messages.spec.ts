@@ -66,6 +66,7 @@ const TRANSLATIONS: Translations = {
 
 const APP_CONFIG: AppConfiguration = {
   notificationsEnabled: true,
+  restCountdownTonesEnabled: false,
 };
 
 function makeWeightedExercise(): RecordedWeightedExercise {
@@ -307,7 +308,7 @@ describe('WorkoutMessage JSON schema validation', () => {
     it('validates a WorkoutMessage with notifications disabled', () => {
       const message: WorkoutMessage = {
         translations: TRANSLATIONS,
-        appConfiguration: { notificationsEnabled: false },
+        appConfiguration: { notificationsEnabled: false, restCountdownTonesEnabled: false },
         payload: { type: 'WorkoutStartedEvent' },
       };
       expect(validate('WorkoutMessage', message)).toBe(true);
@@ -352,11 +353,17 @@ describe('WorkoutMessage JSON schema validation', () => {
 
   describe('AppConfiguration', () => {
     it('validates AppConfiguration with notifications enabled', () => {
-      expect(validate('AppConfiguration', { notificationsEnabled: true })).toBe(true);
+      expect(validate('AppConfiguration', { notificationsEnabled: true, restCountdownTonesEnabled: false })).toBe(true);
     });
 
     it('validates AppConfiguration with notifications disabled', () => {
-      expect(validate('AppConfiguration', { notificationsEnabled: false })).toBe(true);
+      expect(validate('AppConfiguration', { notificationsEnabled: false, restCountdownTonesEnabled: false })).toBe(
+        true,
+      );
+    });
+
+    it('validates AppConfiguration with countdown tones enabled', () => {
+      expect(validate('AppConfiguration', { notificationsEnabled: true, restCountdownTonesEnabled: true })).toBe(true);
     });
   });
   // -------------------------------------------------------------------------
@@ -468,7 +475,13 @@ describe('WorkoutMessage JSON schema validation', () => {
       });
 
       it('rejects an AppConfiguration where notificationsEnabled is not a boolean', () => {
-        expect(validate('AppConfiguration', { notificationsEnabled: 'yes' })).toBe(false);
+        expect(validate('AppConfiguration', { notificationsEnabled: 'yes', restCountdownTonesEnabled: false })).toBe(
+          false,
+        );
+      });
+
+      it('rejects an AppConfiguration missing restCountdownTonesEnabled', () => {
+        expect(validate('AppConfiguration', { notificationsEnabled: true })).toBe(false);
       });
     });
 

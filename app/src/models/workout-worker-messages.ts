@@ -93,4 +93,5 @@ export interface Translations {
 
 export interface AppConfiguration {
   notificationsEnabled: boolean;
+  restCountdownTonesEnabled: boolean;
 }

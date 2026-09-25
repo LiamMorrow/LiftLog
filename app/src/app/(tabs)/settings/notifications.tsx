@@ -2,12 +2,14 @@ import { RootState, useAppSelector } from '@/store';
 import { broadcastWorkoutEvent } from '@/store/workout-worker';
 import { workoutUpdatedEvent } from '@/store/workout-worker/helpers';
 import { selectActiveSession } from '@/store/stored-sessions';
-import { setRestNotifications, setRestTimersEnabled } from '@/store/settings';
+import { setRestCountdownTones, setRestNotifications, setRestTimersEnabled } from '@/store/settings';
 import { useTranslate } from '@tolgee/react';
 import { useDispatch } from 'react-redux';
 import { SettingsPage } from '@/components/layout/settings-page';
 import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
 import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
+import { spacing } from '@/hooks/useAppTheme';
+import { Platform } from 'react-native';
 
 export default function NotificationsPage() {
   const { t } = useTranslate();
@@ -34,6 +36,26 @@ export default function NotificationsPage() {
             }
           }}
         />
+        {Platform.OS === 'android' ? (
+          <SegmentedListSwitch
+            testID="setRestCountdownTones"
+            label={t('rest.notifications.countdown_tones.title')}
+            icon="volumeUp"
+            supportingText={t('rest.notifications.countdown_tones.subtitle')}
+            value={settings.restCountdownTones}
+            disabled={!settings.restNotifications}
+            style={{
+              paddingInlineStart: spacing[8],
+              opacity: settings.restNotifications ? 1 : 0.5,
+            }}
+            onValueChange={(value) => {
+              dispatch(setRestCountdownTones(value));
+              if (currentWorkout) {
+                dispatch(broadcastWorkoutEvent(workoutUpdatedEvent(currentWorkout, settings.restTimersEnabled)));
+              }
+            }}
+          />
+        ) : undefined}
         <SegmentedListSwitch
           testID="setRestTimersEnabled"
           label={t('workout.rest_timers.label')}
