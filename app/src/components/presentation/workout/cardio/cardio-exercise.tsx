@@ -37,6 +37,8 @@ interface CardioExerciseProps {
   onStartTimer: (setIndex: number) => void;
   onEditExercise: (() => void) | undefined;
   onRemoveExercise: () => void;
+  onMoveExerciseUp: (() => void) | undefined;
+  onMoveExerciseDown: (() => void) | undefined;
 }
 
 export function CardioExercise(props: CardioExerciseProps) {
@@ -52,6 +54,8 @@ export function CardioExercise(props: CardioExerciseProps) {
       updateExercise={updateExercise}
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
+      onMoveExerciseUp={props.onMoveExerciseUp}
+      onMoveExerciseDown={props.onMoveExerciseDown}
     >
       <View style={{ gap: spacing[4] }}>
         {recordedExercise.sets.map((set, setIndex) => (
