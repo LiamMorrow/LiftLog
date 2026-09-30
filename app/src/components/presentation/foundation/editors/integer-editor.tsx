@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { TextStyle } from 'react-native';
+import { useDerivedState } from '@/hooks/useDerivedState';
+import { useRef } from 'react';
+import { Platform, TextStyle, TextInput as NativeTextInput } from 'react-native';
 import { TextInput, TextInputProps } from 'react-native-paper';
 
 interface IntegerEditorProps {
@@ -12,48 +13,48 @@ interface IntegerEditorProps {
 
 export function IntegerEditor(props: IntegerEditorProps & Partial<Omit<TextInputProps, keyof IntegerEditorProps>>) {
   const { value, onChange, noUnderline, style, testID, ...rest } = props;
-  const [text, setText] = useState(props.value.toString());
-  const [editorValue, setEditorValue] = useState(value);
+  const [text, setText] = useDerivedState(value, (v) => v.toString());
 
-  const handleTextChange = (text: string) => {
-    setText(text);
-    if (text.trim() === '') {
-      setEditorValue(0);
-      onChange(0);
-      return;
+  const propagateChanges = (text: string) => {
+    const trimmed = text.trim();
+    const parsed = trimmed === '' ? 0 : Number.parseInt(trimmed, 10);
+
+    if (Number.isNaN(parsed)) {
+      return value;
     }
 
-    const parsed = Number.parseInt(text);
-    if (!Number.isNaN(parsed)) {
-      setEditorValue(parsed);
-      onChange(parsed);
-      return;
+    setText(text);
+    onChange(parsed);
+    return parsed;
+  };
+
+  const inputRef = useRef<NativeTextInput | null>(null);
+  const selectTextOnFocus = () => {
+    if (Platform.OS === 'android' && text) {
+      // A 50-100ms timeout bypasses Android's native keyboard-layout cursor reset
+      setTimeout(() => {
+        inputRef.current?.setSelection(0, text.length);
+      }, 50);
     }
   };
-  useEffect(() => {
-    if (editorValue !== value) {
-      setText(value.toString() || '0');
-      setEditorValue(value);
-    }
-  }, [value, editorValue]);
+
   return (
     <TextInput
+      ref={inputRef}
+      onFocus={selectTextOnFocus}
       testID={testID}
       value={text}
       inputMode={'numeric'}
       keyboardType={'numeric'}
-      onChangeText={handleTextChange}
+      onChangeText={propagateChanges}
+      submitBehavior="blurAndSubmit"
+      returnKeyType="done"
       underlineStyle={noUnderline ? { display: 'none' } : {}}
-      selectTextOnFocus
+      selectTextOnFocus={Platform.OS === 'ios'}
       style={[style]}
       // oxlint-disable-next-line typescript/no-non-null-asserted-optional-chain
       textColor={style?.color! as string}
-      onBlur={() => {
-        if (text === '') {
-          setText('0');
-        }
-        onChange(editorValue);
-      }}
+      onBlur={() => setText(value.toString())}
       {...rest}
     />
   );

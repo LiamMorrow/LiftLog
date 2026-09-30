@@ -5,8 +5,8 @@ import { spacing } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useMountEffect } from '@/hooks/useMountEffect';
 import { ActivityCell } from '@/store/activity';
-import { useMemo, useRef } from 'react';
-import { Animated, Easing, I18nManager, View } from 'react-native';
+import { useMemo } from 'react';
+import { Animated, Easing, I18nManager, useAnimatedValue, View } from 'react-native';
 
 const ENTRANCE_DURATION_MS = 450;
 
@@ -22,7 +22,7 @@ interface WeekActivityStripProps {
 export function WeekActivityStrip({ cells }: WeekActivityStripProps) {
   const formatDate = useFormatDate();
 
-  const progress = useRef(new Animated.Value(0)).current;
+  const progress = useAnimatedValue(0);
   useMountEffect(() => {
     Animated.timing(progress, {
       toValue: 1,

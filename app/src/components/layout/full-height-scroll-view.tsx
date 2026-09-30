@@ -1,10 +1,11 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
-import { useState } from 'react';
+import { HeaderHeightContext } from 'expo-router/react-navigation';
+import { useContext, useState } from 'react';
 import { View, StyleProp, ViewStyle, Platform } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { Edges, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function FullHeightScrollView({
   children,
@@ -13,7 +14,7 @@ export default function FullHeightScrollView({
   scrollStyle,
   avoidKeyboard,
   contentContainerStyle,
-  safeAreaEdges = { left: 'additive', right: 'additive', top: 'off', bottom: 'off' },
+  modal,
 }: {
   children: React.ReactNode;
   floatingChildren?: React.ReactNode;
@@ -21,7 +22,7 @@ export default function FullHeightScrollView({
   avoidKeyboard?: boolean;
   scrollStyle?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
-  safeAreaEdges?: Edges;
+  modal?: boolean;
 }) {
   const { colors } = useAppTheme();
   const { handleScroll } = useScroll();
@@ -29,9 +30,12 @@ export default function FullHeightScrollView({
   const insets = useSafeAreaInsets();
   const bottomInsetHeight = floatingBottomSize;
 
+  const headerHeight = useContext(HeaderHeightContext);
+  const topInsetHeight = modal ? (Platform.select({ ios: headerHeight }) ?? 0) : 0;
+
   return (
     <SafeAreaView
-      edges={safeAreaEdges}
+      edges={{ left: 'additive', right: 'additive', top: 'off', bottom: 'off' }}
       style={[
         {
           backgroundColor: colors.surface,
@@ -44,7 +48,7 @@ export default function FullHeightScrollView({
           ref={scrollRef}
           onScroll={handleScroll}
           style={[scrollStyle]}
-          contentContainerStyle={[contentContainerStyle]}
+          contentContainerStyle={[{ insetBlockStart: topInsetHeight }, contentContainerStyle]}
         >
           {children}
           <View style={{ height: bottomInsetHeight }} />
@@ -56,7 +60,7 @@ export default function FullHeightScrollView({
           ref={scrollRef as never}
           onScroll={handleScroll}
           style={[scrollStyle]}
-          contentContainerStyle={[contentContainerStyle]}
+          contentContainerStyle={[{ insetBlockStart: topInsetHeight }, contentContainerStyle]}
         >
           {children}
           <View style={{ height: bottomInsetHeight }} />
@@ -67,7 +71,7 @@ export default function FullHeightScrollView({
           onLayout={(event) => setFloatingBottomSize(event.nativeEvent.layout.height)}
           style={{
             position: 'absolute',
-            bottom: Platform.select({ ios: insets.bottom }) ?? 0,
+            bottom: modal || Platform.OS === 'ios' ? insets.bottom : 0,
             width: '100%',
           }}
         >

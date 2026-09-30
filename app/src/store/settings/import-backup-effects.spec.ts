@@ -66,8 +66,8 @@ describe('import-backup-effects', () => {
     const testBed = createAddEffectTestBed({
       services: {
         tolgee: { t: (s: string) => s },
-        db: { delete: () => ({ where: () => Promise.resolve() }) } as never,
-        databaseMigrationService: { migrate: vi.fn() } as never,
+        db: { delete: () => ({ where: () => Promise.resolve() }) },
+        databaseMigrationService: { migrate: vi.fn() },
       },
     });
     addImportBackupEffects(testBed.addEffect);
@@ -115,8 +115,8 @@ describe('import-backup-effects', () => {
     const testBed = createAddEffectTestBed({
       services: {
         tolgee: { t: (s: string) => s },
-        db: { delete: () => ({ where: () => Promise.resolve() }) } as never,
-        databaseMigrationService: { migrate: vi.fn() } as never,
+        db: { delete: () => ({ where: () => Promise.resolve() }) },
+        databaseMigrationService: { migrate: vi.fn() },
       },
     });
     addImportBackupEffects(testBed.addEffect);

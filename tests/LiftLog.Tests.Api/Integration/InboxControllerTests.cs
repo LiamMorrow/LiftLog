@@ -10,7 +10,12 @@ namespace LiftLog.Tests.Api.Integration;
 public class InboxControllerTests(ApiFactory factory)
 {
     // RSA can only encrypt up to the key size, so a message arrives as ordered chunks.
-    private static readonly byte[][] chunks = [[0x01, 0x02], [0x03, 0x04], [0x05, 0x06]];
+    private static readonly byte[][] chunks =
+    [
+        [0x01, 0x02],
+        [0x03, 0x04],
+        [0x05, 0x06],
+    ];
 
     [Test]
     public async Task PutThenGet_RoundTripsEveryChunkInOrder()
@@ -43,8 +48,12 @@ public class InboxControllerTests(ApiFactory factory)
         ).EnsureSuccessStatusCode();
 
         var request = new GetInboxMessagesRequest(alice.Id, alice.Password);
-        var first = await (await client.PostAsJsonAsync("/inbox", request)).Content.ReadFromJsonAsync<GetInboxMessagesResponse>();
-        var second = await (await client.PostAsJsonAsync("/inbox", request)).Content.ReadFromJsonAsync<GetInboxMessagesResponse>();
+        var first = await (
+            await client.PostAsJsonAsync("/inbox", request)
+        ).Content.ReadFromJsonAsync<GetInboxMessagesResponse>();
+        var second = await (
+            await client.PostAsJsonAsync("/inbox", request)
+        ).Content.ReadFromJsonAsync<GetInboxMessagesResponse>();
 
         await Assert.That(first!.InboxMessages).Count().IsEqualTo(1);
         await Assert.That(second!.InboxMessages).IsEmpty();

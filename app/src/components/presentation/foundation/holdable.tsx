@@ -3,8 +3,8 @@ import {
   triggerClickHaptic,
   triggerSlowRiseHaptic,
 } from '~/modules/native-lib/src/ReactNativeHapticsModule';
-import { ReactNode, useRef } from 'react';
-import { Animated, Easing, ViewStyle } from 'react-native';
+import { ReactNode } from 'react';
+import { Animated, Easing, useAnimatedValue, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 export type HoldableProps = {
@@ -16,7 +16,7 @@ export type HoldableProps = {
 };
 
 export default function Holdable({ children, onLongPress, duration = 500, style, disabled }: HoldableProps) {
-  const holdingScale = useRef(new Animated.Value(1)).current;
+  const holdingScale = useAnimatedValue(1);
 
   const handleLongPress = () => {
     onLongPress();

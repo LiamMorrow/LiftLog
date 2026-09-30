@@ -108,8 +108,8 @@ const rootReducer = combineReducers({ feed: feedReducer });
 
 function makeTestBed(feed: FeedStateShape, services = defaultServices()) {
   const testBed = createAddEffectTestBed({
-    initialState: stateWith(feed) as never,
-    services: services as never,
+    initialState: stateWith(feed),
+    services: services,
     reducer: rootReducer,
   });
   addFollowingEffects(testBed.addEffect);

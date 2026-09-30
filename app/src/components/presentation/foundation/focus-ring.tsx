@@ -1,6 +1,6 @@
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { ReactNode, useEffect, useRef } from 'react';
-import { View, ViewProps, Animated, Easing } from 'react-native';
+import { View, ViewProps, Animated, Easing, useAnimatedValue } from 'react-native';
 
 export const ANIMATION_DURATION = 600;
 
@@ -20,7 +20,7 @@ export default function FocusRing({
   const { colors } = useAppTheme();
   padding ??= 5;
 
-  const growAnim = useRef(new Animated.Value(isSelected ? 1 : 0)).current;
+  const growAnim = useAnimatedValue(isSelected ? 1 : 0);
   const settledSelection = useRef(isSelected);
 
   useEffect(() => {

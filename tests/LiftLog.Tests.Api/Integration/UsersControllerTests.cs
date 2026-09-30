@@ -23,7 +23,9 @@ public class UsersControllerTests(ApiFactory factory)
         response.EnsureSuccessStatusCode();
         var body = await response.Content.ReadFromJsonAsync<GetUsersResponse>();
 
-        await Assert.That(body!.Users.Keys.Order()).IsEquivalentTo(new[] { alice.Id, bob.Id }.Order());
+        await Assert
+            .That(body!.Users.Keys.Order())
+            .IsEquivalentTo(new[] { alice.Id, bob.Id }.Order());
         await Assert.That(body.Users[alice.Id].Lookup).IsEqualTo(alice.Lookup);
     }
 

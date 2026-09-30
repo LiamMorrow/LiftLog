@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ColorChoice } from '@/hooks/useAppTheme';
 import { matchCardioTarget } from '@/models/blueprint-models';
 import { RecordedCardioExerciseSet } from '@/models/session-models';
 import { OffsetDateTime } from '@js-joda/core';
@@ -10,6 +9,7 @@ import { CardioTimerControls } from '@/components/presentation/workout/cardio/ca
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { getShortUnit, toMetres } from '@/utils/unit';
 import { useTranslate } from '@tolgee/react';
+import { ColorChoice } from '@/hooks/useAppTheme';
 
 interface CardioTimerProps {
   set: RecordedCardioExerciseSet;
@@ -28,7 +28,6 @@ const persistIntervalMs = 1000;
 export function CardioTimer({ set, onPersist, onStop, style }: CardioTimerProps) {
   const { t } = useTranslate();
   const [jiggling, setJiggling] = useState(false);
-  const [hasReachedTarget, setHasReachedTarget] = useState(false);
 
   const getTimerState = useCallback(() => {
     const elapsedMs = set.elapsedAt(OffsetDateTime.now()).toMillis();
@@ -41,12 +40,12 @@ export function CardioTimer({ set, onPersist, onStop, style }: CardioTimerProps)
           reached,
           time: reached ? `+${formatTimeSpan(elapsedMs - targetMs)}` : formatTimeSpan(targetMs - elapsedMs),
           status: reached ? t('cardio_timer.status.over_target') : t('cardio_timer.status.working'),
-          accent: (reached ? 'green' : 'onSurfaceVariant') as ColorChoice,
+          accent: reached ? 'green' : 'onSurfaceVariant',
           segments: [
             {
               flex: 1,
               progress: targetMs > 0 ? Math.min(1, elapsedMs / targetMs) : 1,
-              color: (reached ? 'green' : 'onSurfaceVariant') as ColorChoice,
+              color: reached ? 'green' : 'onSurfaceVariant',
             },
           ] satisfies TimerSegment[],
         };
@@ -64,12 +63,12 @@ export function CardioTimer({ set, onPersist, onStop, style }: CardioTimerProps)
           reached,
           time: formatTimeSpan(elapsedMs),
           status: `${done} / ${localeFormatBigNumber(target.value.value) + getShortUnit(target.value.unit)}`,
-          accent: (reached ? 'green' : 'onSurfaceVariant') as ColorChoice,
+          accent: reached ? 'green' : 'onSurfaceVariant',
           segments: [
             {
               flex: 1,
               progress,
-              color: (reached ? 'green' : 'onSurfaceVariant') as ColorChoice,
+              color: reached ? 'green' : 'onSurfaceVariant',
             },
           ] satisfies TimerSegment[],
         };
@@ -84,19 +83,23 @@ export function CardioTimer({ set, onPersist, onStop, style }: CardioTimerProps)
     return () => clearInterval(timer);
   }, [getTimerState]);
 
+  // Guards the one-shot haptic/jiggle below. Not rendered, so it belongs in a ref, not state.
+  const hasFiredTargetEffect = useRef(false);
   useEffect(() => {
-    if (timerState.reached && !hasReachedTarget) {
-      setHasReachedTarget(true);
+    if (timerState.reached && !hasFiredTargetEffect.current) {
+      hasFiredTargetEffect.current = true;
       impactAsync(ImpactFeedbackStyle.Heavy).catch(console.log);
       setJiggling(true);
       setTimeout(() => setJiggling(false), 10);
     }
-  }, [timerState.reached, hasReachedTarget]);
+  }, [timerState.reached]);
 
   // Persisting re-renders the parent, which hands us a fresh `onPersist`. Holding it in a ref keeps
   // that from resetting the interval and pushing the next write further out each time.
   const persist = useRef(onPersist);
-  persist.current = onPersist;
+  useEffect(() => {
+    persist.current = onPersist;
+  });
   useEffect(() => {
     const interval = setInterval(() => persist.current(), persistIntervalMs);
     return () => clearInterval(interval);
@@ -107,7 +110,7 @@ export function CardioTimer({ set, onPersist, onStop, style }: CardioTimerProps)
       testID="cardio-timer"
       time={timerState.time}
       status={timerState.status}
-      accent={timerState.accent}
+      accent={timerState.accent as ColorChoice}
       segments={timerState.segments}
       jiggling={jiggling}
       style={style}

@@ -47,8 +47,8 @@ function makeTestBed() {
         feed: [feedEvent()],
         followedUsers: { [AUTHOR_ID]: author() },
       },
-    } as never,
-    services: services as never,
+    },
+    services: services,
     reducer: combineReducers({ feed: feedReducer }),
   });
 

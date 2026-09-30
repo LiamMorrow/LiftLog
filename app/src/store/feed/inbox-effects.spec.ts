@@ -76,8 +76,8 @@ function makeTestBed(options?: {
       storedSessions: {
         sessions: options?.sessions ?? { [OWN_SESSION_ID]: ownSession() },
       },
-    } as never,
-    services: services as never,
+    },
+    services: services,
     reducer: combineReducers({ feed: feedReducer, storedSessions: storedSessionsReducer }),
   });
 

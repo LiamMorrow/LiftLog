@@ -19,7 +19,7 @@
           "launchMode": "most-recent"
         }
       ],
-      "expo-health-connect",
+      "react-native-health-connect",
       [
         "@kingstinct/react-native-healthkit",
         {

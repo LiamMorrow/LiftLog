@@ -8,7 +8,7 @@ import { Href } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export function getExerciseHistoryHref(blueprint: ExerciseBlueprint): Href {
-  return `/exercise-history?name=${encodeURIComponent(blueprint.name)}&type=${blueprint.type}` as Href;
+  return `/exercise-history?name=${encodeURIComponent(blueprint.name)}&type=${blueprint.type}`;
 }
 
 export function ExerciseHistory(props: { movementKey: MovementKey; exerciseName: string }) {

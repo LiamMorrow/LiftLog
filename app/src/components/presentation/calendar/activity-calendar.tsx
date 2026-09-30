@@ -5,8 +5,8 @@ import { useMountEffect } from '@/hooks/useMountEffect';
 import { ActivityCell, ActivityRow } from '@/store/activity';
 import { getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek, LocalDate } from '@js-joda/core';
-import { ReactNode, useMemo, useRef } from 'react';
-import { Animated, Easing, I18nManager, View, ViewStyle } from 'react-native';
+import { ReactNode, useMemo } from 'react';
+import { Animated, Easing, I18nManager, useAnimatedValue, View, ViewStyle } from 'react-native';
 import { ActivityDayCell } from '@/components/presentation/calendar/activity-day-cell';
 import { ActivityWeekCell } from '@/components/presentation/calendar/activity-week-cell';
 import { cellEntrance } from '@/components/presentation/calendar/activity-entrance';
@@ -42,7 +42,7 @@ export function ActivityCalendar({
 }: ActivityCalendarProps) {
   const formatDate = useFormatDate();
 
-  const progress = useRef(new Animated.Value(0)).current;
+  const progress = useAnimatedValue(0);
   useMountEffect(() => {
     Animated.timing(progress, {
       toValue: 1,

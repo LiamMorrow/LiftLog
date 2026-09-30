@@ -236,7 +236,7 @@ describe('real migrations', () => {
           name: 'future',
           lastEdited: date('2024-01-01'),
           sessions: [],
-        } as never),
+        }),
       ).toThrow();
     });
   });
@@ -373,7 +373,7 @@ describe('real migrations', () => {
     });
 
     it('rejects a feed event whose own version is from the future', () => {
-      expect(() => sessionUserEventMigrations.migrate({ ...initialSessionUserEvent(), version: 9 } as never)).toThrow();
+      expect(() => sessionUserEventMigrations.migrate({ ...initialSessionUserEvent(), version: 9 })).toThrow();
     });
 
     it('rejects a feed event whose embedded session is from the future', () => {

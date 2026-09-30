@@ -182,8 +182,8 @@ function ingestionTestBed(events: { eventId: string; version: number }[]) {
   const testBed = createAddEffectTestBed({
     initialState: {
       feed: { followedUsers: { [FOLLOWED_ID]: followedUser() } },
-    } as never,
-    services: services as never,
+    },
+    services: services,
     reducer: combineReducers({ feed: feedReducer, storedSessions: storedSessionsReducer }),
   });
 

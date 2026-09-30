@@ -60,7 +60,7 @@ describe('workout-worker effects', () => {
   describe('activeSessionUpdated', () => {
     function testBed(settings: Partial<RootState['settings']> = { restNotifications: false }) {
       const bed = createAddEffectTestBed({
-        initialState: { settings } as Partial<RootState>,
+        initialState: { settings },
         services: { workoutWorkerService: { broadcast: vi.fn() } },
       });
       applyWorkoutWorkerEffects(bed.addEffect);
@@ -158,11 +158,11 @@ describe('workout-worker effects', () => {
     it('fires when a session becomes the active one', async () => {
       const session = sessionWithRestTimer(OffsetDateTime.now());
       const bed = createAddEffectTestBed({
-        initialState: { settings: {}, storedSessions: withActiveSession(session) } as Partial<RootState>,
+        initialState: { settings: {}, storedSessions: withActiveSession(session) },
         services: { workoutWorkerService: { broadcast: vi.fn() } },
       });
       applyWorkoutWorkerEffects(bed.addEffect);
-      bed.setStateBeforeReduce({ storedSessions: withActiveSession(undefined) } as Partial<RootState>);
+      bed.setStateBeforeReduce({ storedSessions: withActiveSession(undefined) });
 
       await bed.dispatchHandled(setActiveSessionId(session.id));
 
@@ -216,7 +216,7 @@ describe('workout-worker effects', () => {
       const scheduleNextSetNotification = vi.fn();
       const clearSetTimerNotification = vi.fn();
       const testBed = createAddEffectTestBed({
-        initialState: { settings, storedSessions: withActiveSession(session) } as Partial<RootState>,
+        initialState: { settings, storedSessions: withActiveSession(session) },
         services: {
           notificationService: { scheduleNextSetNotification, clearSetTimerNotification },
         },
@@ -335,7 +335,7 @@ describe('workout-worker effects', () => {
         initialState: {
           settings: { restNotifications: true, restTimersEnabled: false },
           storedSessions: withActiveSession(session),
-        } as Partial<RootState>,
+        },
         services: { workoutWorkerService: { broadcast } },
       });
       applyWorkoutWorkerEffects(testBed.addEffect);

@@ -55,7 +55,7 @@ function Layout() {
     <StackWithHeader>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="exercise-search" options={{ presentation: 'modal' }} />
-      <Stack.Screen name="exercise-editor" />
+      <Stack.Screen name="exercise-editor" options={{}} />
       <Stack.Screen
         name="exercise-history"
         options={{

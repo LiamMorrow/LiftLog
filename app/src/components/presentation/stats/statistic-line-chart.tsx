@@ -37,8 +37,8 @@ export function StatisticLineChart<T>({
   // On android the area chart renders poorly unless it is delayed until after initial render
   const [areaChart, setAreaChart] = useState(false);
   useEffect(() => {
-    setAreaChart(!!width);
-  }, [width]);
+    setTimeout(() => setAreaChart(!!width), 0);
+  }, [width, setAreaChart]);
   return (
     <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
       <LineChart

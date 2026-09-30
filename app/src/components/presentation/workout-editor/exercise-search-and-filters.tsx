@@ -30,6 +30,7 @@ export default function ExerciseSearchAndFilters({
         placeholder={t('generic.search.button')}
         value={searchText}
         defaultValue={searchText}
+        selectTextOnFocus
         onChangeText={setSearchText}
         autoCapitalize={'words'}
         autoCorrect={false}

@@ -54,14 +54,13 @@ export default function SessionMoreMenuComponent(props: {
 function AndroidFinishButton({ session, save }: { session: Session; save: () => void }) {
   const { t } = useTranslate();
 
-  const [jiggleFinishButton, setJiggleFinishButton] = useState(false);
-  const isComplete = session.isComplete;
   const hasExercises = !!session.recordedExercises.length;
+  const isComplete = session.isComplete;
+  const shouldJiggle = hasExercises && isComplete === true;
+  const [jiggleFinishButton, setJiggleFinishButton] = useState(shouldJiggle);
   const tooltipRef = useRef<TooltipHandle>(null);
 
   useEffect(() => {
-    const shouldJiggle = hasExercises && isComplete === true;
-    setJiggleFinishButton(shouldJiggle);
     if (shouldJiggle) {
       tooltipRef.current?.show();
       const timeout = setTimeout(() => {
@@ -70,7 +69,7 @@ function AndroidFinishButton({ session, save }: { session: Session; save: () => 
       }, 10000);
       return () => clearTimeout(timeout);
     }
-  }, [isComplete, hasExercises]);
+  }, [shouldJiggle]);
 
   return (
     <Jiggler jiggling={jiggleFinishButton} jiggleSpeed={140}>

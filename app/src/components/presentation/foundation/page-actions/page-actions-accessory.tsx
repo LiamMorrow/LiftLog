@@ -1,6 +1,6 @@
 import { spacing } from '@/hooks/useAppTheme';
-import { ReactNode, useEffect, useRef, useState } from 'react';
-import { Animated, Easing } from 'react-native';
+import { ReactNode, useEffect, useState } from 'react';
+import { Animated, Easing, useAnimatedValue } from 'react-native';
 
 /**
  * Slides the page's accessory in and out, and animates the space it takes with it, so the actions
@@ -8,15 +8,18 @@ import { Animated, Easing } from 'react-native';
  */
 export function PageActionsAccessory({ children }: { children?: ReactNode }) {
   const visible = !!children;
-  const progress = useRef(new Animated.Value(visible ? 1 : 0)).current;
+
+  const progress = useAnimatedValue(visible ? 1 : 0);
+
   const [mounted, setMounted] = useState(visible);
+  if (visible && !mounted) setMounted(true);
+
   const [height, setHeight] = useState(0);
-  // Leaving outlives the prop, so the last accessory stays on screen for as long as it takes to go.
-  const departing = useRef(children);
-  if (children) departing.current = children;
+
+  const [content, setContent] = useState(children);
+  if (children && children !== content) setContent(children);
 
   useEffect(() => {
-    if (visible) setMounted(true);
     const transition = Animated.timing(progress, {
       toValue: visible ? 1 : 0,
       duration: 250,
@@ -47,7 +50,7 @@ export function PageActionsAccessory({ children }: { children?: ReactNode }) {
         }),
       }}
     >
-      {children ?? departing.current}
+      {content}
     </Animated.View>
   );
 }
