@@ -17,7 +17,7 @@ jobs:
           script: |
             const body = `Thanks for starting a discussion!
 
-            Please write in your own words. AI-generated summaries tend to be more verbose than necessary and [frustrating to read](https://www.seangoedecke.com/dont-feed-me-slop/).
+            Please write in your own words. AI-generated summaries tend to be more verbose than necessary.
 
             A few things that help:
 
