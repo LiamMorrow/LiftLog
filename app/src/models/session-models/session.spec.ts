@@ -824,6 +824,55 @@ describe('Session structural mutations', () => {
     expect(result.recordedExercises[0]!.blueprint.name).toBe('Bench');
   });
 
+  describe('withExerciseMovedUp/Down', () => {
+    it('moving up keeps recordedExercises and blueprint exercises in lockstep', () => {
+      const session = makeSession([
+        makeWeightedBlueprint({ name: 'Squat' }),
+        makeWeightedBlueprint({ name: 'Bench' }),
+        makeWeightedBlueprint({ name: 'Row' }),
+      ]);
+
+      const result = session.withExerciseMovedUp(1);
+
+      expect(result.recordedExercises.map((x) => x.blueprint.name)).toEqual(['Bench', 'Squat', 'Row']);
+      expect(result.blueprint.exercises.map((x) => x.name)).toEqual(['Bench', 'Squat', 'Row']);
+    });
+
+    it('moving down keeps recordedExercises and blueprint exercises in lockstep', () => {
+      const session = makeSession([
+        makeWeightedBlueprint({ name: 'Squat' }),
+        makeWeightedBlueprint({ name: 'Bench' }),
+        makeWeightedBlueprint({ name: 'Row' }),
+      ]);
+
+      const result = session.withExerciseMovedDown(1);
+
+      expect(result.recordedExercises.map((x) => x.blueprint.name)).toEqual(['Squat', 'Row', 'Bench']);
+      expect(result.blueprint.exercises.map((x) => x.name)).toEqual(['Squat', 'Row', 'Bench']);
+    });
+
+    it('preserves the recorded state of the moved exercise', () => {
+      const session = makeSession([makeWeightedBlueprint({ name: 'Squat' }), makeWeightedBlueprint({ name: 'Bench' })]);
+      const moved = session.withExerciseMovedUp(1).recordedExercises[0] as RecordedWeightedExercise;
+
+      expect(moved.potentialSets[0]!.set?.repsCompleted).toBe(
+        (session.recordedExercises[1] as RecordedWeightedExercise).potentialSets[0]!.set?.repsCompleted,
+      );
+    });
+
+    it('moving the first exercise up is a no-op', () => {
+      const session = makeSession([makeWeightedBlueprint({ name: 'Squat' }), makeWeightedBlueprint({ name: 'Bench' })]);
+
+      expect(session.withExerciseMovedUp(0)).toBe(session);
+    });
+
+    it('moving the last exercise down is a no-op', () => {
+      const session = makeSession([makeWeightedBlueprint({ name: 'Squat' }), makeWeightedBlueprint({ name: 'Bench' })]);
+
+      expect(session.withExerciseMovedDown(1)).toBe(session);
+    });
+  });
+
   it('withName renames the blueprint', () => {
     const session = makeSession([makeWeightedBlueprint()]);
     expect(session.withName('Push Day').blueprint.name).toBe('Push Day');
