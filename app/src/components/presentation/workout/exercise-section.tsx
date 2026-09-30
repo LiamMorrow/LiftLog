@@ -14,6 +14,11 @@ import IconButton from '@/components/presentation/foundation/icon-button';
 import { useRouter } from 'expo-router';
 import { getExerciseHistoryHref } from '@/components/smart/exercise-history';
 import { Updater } from '@/utils/types';
+import Analytics from '@expo/material-symbols/analytics.xml';
+import Edit from '@expo/material-symbols/edit.xml';
+import Notes from '@expo/material-symbols/notes.xml';
+import Delete from '@expo/material-symbols/delete.xml';
+import OpenInBrowser from '@expo/material-symbols/open_in_browser.xml';
 
 interface ExerciseSectionProps<T extends RecordedExercise> {
   recordedExercise: T;
@@ -69,7 +74,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             ? [
                 {
                   label: t('generic.edit.button'),
-                  icon: 'edit',
+                  icon: Edit,
                   systemImage: 'pencil',
                   onPress: props.onEditExercise,
                 } satisfies MenuItem,
@@ -77,7 +82,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             : []),
           {
             label: t('generic.notes.label'),
-            icon: 'notes',
+            icon: Notes,
             systemImage: 'note.text',
             onPress: () => setNotesDialogOpen(true),
           },
@@ -85,7 +90,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             ? [
                 {
                   label: t('stats.stats.title'),
-                  icon: 'analytics',
+                  icon: Analytics,
                   systemImage: 'chart.bar',
                   onPress: () =>
                     push(
@@ -97,7 +102,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             : []),
           {
             label: t('generic.remove.button'),
-            icon: 'delete',
+            icon: Delete,
             systemImage: 'trash',
             onPress: () => setRemoveExerciseDialogOpen(true),
           },
@@ -105,7 +110,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             ? [
                 {
                   label: t('generic.open_link.button'),
-                  icon: 'openInBrowser',
+                  icon: OpenInBrowser,
                   systemImage: 'safari',
                   onPress: () => openUrl(props.recordedExercise.blueprint.link),
                 } satisfies MenuItem,

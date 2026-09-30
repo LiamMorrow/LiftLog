@@ -20,6 +20,7 @@ import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { LegendList } from '@legendapp/list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import PersonRemove from '@expo/material-symbols/person_remove.xml';
 
 export function FeedFollowing() {
   const following = useAppSelector(selectFeedFollowing);
@@ -93,7 +94,7 @@ function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
             items={[
               {
                 label: t('feed.unfollow.button'),
-                icon: 'personRemove',
+                icon: PersonRemove,
                 systemImage: 'person.badge.minus',
                 destructive: true,
                 onPress: () => {

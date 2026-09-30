@@ -6,6 +6,8 @@ import { getFeedProfileEditorHref } from '@/components/smart/feed-profile-editor
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
+import Edit from '@expo/material-symbols/edit.xml';
+import Share from '@expo/material-symbols/share.xml';
 
 export function FeedMenu() {
   const { t } = useTranslate();
@@ -23,13 +25,13 @@ export function FeedMenu() {
       items={[
         {
           label: t('feed.edit_profile.button'),
-          icon: 'edit',
+          icon: Edit,
           systemImage: 'pencil',
           onPress: () => push(getFeedProfileEditorHref()),
         },
         {
           label: t('feed.share_feed.button'),
-          icon: 'share',
+          icon: Share,
           systemImage: 'square.and.arrow.up',
           onPress: () =>
             dispatch(

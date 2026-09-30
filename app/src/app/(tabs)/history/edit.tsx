@@ -13,6 +13,7 @@ import { useOnDismiss } from '@/hooks/useOnDismiss';
 import { useStartWorkoutWithConfirmation } from '@/hooks/useStartWorkoutWithConfirmation';
 import { useTranslate } from '@tolgee/react';
 import { useRef } from 'react';
+import PlayCircle from '@expo/material-symbols/play_circle.xml';
 
 export default function HistoryEditPage() {
   const dispatch = useDispatch();
@@ -66,7 +67,7 @@ export default function HistoryEditPage() {
         additionalItems={[
           {
             label: t('workout.resume.button'),
-            icon: 'playCircle',
+            icon: PlayCircle,
             systemImage: 'play.circle',
             onPress: () => resume(session),
           },

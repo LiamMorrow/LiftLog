@@ -28,6 +28,7 @@ import Button from '@/components/presentation/foundation/button';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { useDispatch } from 'react-redux';
 import { match } from 'ts-pattern';
+import PersonRemove from '@expo/material-symbols/person_remove.xml';
 import { LegendList } from '@legendapp/list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -49,9 +50,11 @@ export function FeedFollowers() {
     ...(followRequests.length
       ? ([
           { type: 'header', key: 'requests-header', label: t('feed.requests.title'), count: followRequests.length },
-          ...followRequests.map(
-            (request): FollowerRow => ({ type: 'request', key: `request-${request.senderUserId}`, request }),
-          ),
+          ...followRequests.map((request): FollowerRow => ({
+            type: 'request',
+            key: `request-${request.senderUserId}`,
+            request,
+          })),
         ] satisfies FollowerRow[])
       : []),
     ...(followers.length
@@ -214,7 +217,7 @@ function FeedFollowersItem(props: { user: FeedUser }) {
             items={[
               {
                 label: t('feed.remove_follower.button'),
-                icon: 'personRemove',
+                icon: PersonRemove,
                 systemImage: 'person.badge.minus',
                 destructive: true,
                 onPress: () => {

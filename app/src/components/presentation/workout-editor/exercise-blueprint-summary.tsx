@@ -17,6 +17,7 @@ import {
 import { match, P } from 'ts-pattern';
 import { formatCardioTarget } from '@/utils/format-cardio-target';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
+import CopyAll from '@expo/material-symbols/copy_all.xml';
 
 interface ExerciseBlueprintSummaryProps {
   blueprint: ExerciseBlueprint;
@@ -64,7 +65,7 @@ export default function ExerciseBlueprintSummary({
               items={[
                 {
                   label: t('exercise.copy_to.button'),
-                  icon: 'copyAll',
+                  icon: CopyAll,
                   systemImage: 'doc.on.clipboard',
                   onPress: onCopyTo,
                 },

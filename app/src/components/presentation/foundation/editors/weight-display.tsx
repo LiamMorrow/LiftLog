@@ -47,7 +47,8 @@ export default function WeightDisplay(props: WeightDisplayProps) {
           allowNegative={props.allowNegative}
           label={props.label ?? t('weight.weight.label')}
           allowNull={props.allowNull}
-          updateWeight={props.updateWeight}
+          // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
+          updateWeight={props.updateWeight as (weight: Weight | undefined) => void}
           onClose={() => setDialogOpen(false)}
         />
       )}

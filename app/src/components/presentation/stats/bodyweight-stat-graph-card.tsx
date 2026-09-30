@@ -14,14 +14,12 @@ export default function BodyweightStatGraphCard(props: { bodyweightStats: Weight
   const { t } = useTranslate();
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
   const { colors } = useAppTheme();
-  const points: lineDataItem[] = props.bodyweightStats.statistics.map(
-    (stat): lineDataItem => ({
-      value: stat.value.convertTo(weightUnit).value.toNumber(),
-      dataPointText: stat.value.shortLocaleFormat(2),
-      textShiftY: -10,
-      dataPointColor: colors.primary,
-    }),
-  );
+  const points: lineDataItem[] = props.bodyweightStats.statistics.map((stat): lineDataItem => ({
+    value: stat.value.convertTo(weightUnit).value.toNumber(),
+    dataPointText: stat.value.shortLocaleFormat(2),
+    textShiftY: -10,
+    dataPointColor: colors.primary,
+  }));
   const [width, setWidth] = useState(0);
   if (!showBodyweight || !props.bodyweightStats.statistics.length) {
     return undefined;
