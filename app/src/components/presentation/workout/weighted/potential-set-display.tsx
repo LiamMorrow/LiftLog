@@ -6,6 +6,7 @@ import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { font, rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import Icon from '@/components/presentation/foundation/icon';
+import { match } from 'ts-pattern';
 
 export type PotentialSetSize = 'default' | 'compact';
 
@@ -27,7 +28,7 @@ const metrics = {
     minWidth: spacing[15],
     maxWidth: undefined,
     repsFont: font['text-xl'],
-    targetFont: font['text-sm'],
+    targetFont: font['text-base'],
     weightFont: font['text-sm'],
     weightPadding: spacing[2],
   },
@@ -53,6 +54,11 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
   const repCountValue = props.set.set?.repsCompleted;
   const isFilled = repCountValue !== undefined;
   const showsWeight = props.resistance !== 'none';
+  const setColors = match({ isFilled })
+    .returnType<{ background: string; text: string }>()
+    .with({ isFilled: true }, () => ({ background: colors.primary, text: colors.onPrimary }))
+    .with({}, () => ({ background: colors.secondaryContainer, text: colors.onSecondaryContainer + '99' }))
+    .exhaustive();
 
   return (
     <View
@@ -82,23 +88,23 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
             height: size.repsHeight,
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: isFilled ? colors.primary : colors.secondaryContainer,
+            backgroundColor: setColors.background,
           }}
         >
           <View style={{ alignItems: 'center' }}>
             <Text
               style={{
-                color: isFilled ? colors.onPrimary : colors.onSecondaryContainer,
+                color: setColors.text,
                 ...size.repsFont,
               }}
             >
-              <Text style={{ fontWeight: 'bold' }}>{repCountValue ?? '-'}</Text>
+              <Text style={{ fontWeight: isFilled ? 'bold' : undefined }}>{repCountValue ?? '-'}</Text>
               <Text style={{ ...size.targetFont, verticalAlign: 'top' }}>/{formatRepsTarget(props.repsTarget)}</Text>
             </Text>
-            {!isFilled && props.previousRepCount !== undefined && (
+            {props.previousRepCount !== undefined && (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[0.5] }}>
-                <Icon source={'history'} size={12} color={colors.onSecondaryContainer + '99'} />
-                <Text style={{ color: colors.onSecondaryContainer + '99' }}>{props.previousRepCount}</Text>
+                <Icon source={'history'} size={12} color={setColors.text} />
+                <Text style={{ color: setColors.text }}>{props.previousRepCount}</Text>
               </View>
             )}
           </View>
