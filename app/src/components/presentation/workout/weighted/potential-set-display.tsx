@@ -60,6 +60,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
         userSelect: 'none',
         minWidth: size.minWidth,
         maxWidth: size.maxWidth,
+        gap: 2,
         flexGrow: size.maxWidth === undefined ? undefined : 1,
         flexBasis: size.maxWidth === undefined ? undefined : size.minWidth,
       }}
@@ -68,8 +69,8 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
         style={{
           borderRadius: rounding.roundedRectangleRadius,
           // The weight row closes the tile off when there is one.
-          borderBottomLeftRadius: showsWeight ? 0 : rounding.roundedRectangleRadius,
-          borderBottomRightRadius: showsWeight ? 0 : rounding.roundedRectangleRadius,
+          borderBottomLeftRadius: showsWeight ? rounding.segmentedBetweenRadius : rounding.roundedRectangleRadius,
+          borderBottomRightRadius: showsWeight ? rounding.segmentedBetweenRadius : rounding.roundedRectangleRadius,
           overflow: 'hidden',
         }}
       >
@@ -106,9 +107,9 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
       {showsWeight && (
         <View
           style={{
-            borderTopWidth: 1,
-            borderColor: colors.outline,
-            backgroundColor: colors.surfaceContainerHigh,
+            backgroundColor: colors.secondaryContainer + 'AA',
+            borderTopLeftRadius: rounding.segmentedBetweenRadius,
+            borderTopRightRadius: rounding.segmentedBetweenRadius,
             borderBottomLeftRadius: rounding.roundedRectangleRadius,
             borderBottomRightRadius: rounding.roundedRectangleRadius,
             overflow: 'hidden',
@@ -125,7 +126,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
               padding: size.weightPadding,
             }}
           >
-            <Text style={{ color: colors.onSurface, ...size.weightFont }}>
+            <Text style={{ color: colors.onSecondaryContainer, ...size.weightFont }}>
               <WeightFormat weight={props.set.weight} usesBodyweight={props.resistance === 'bodyweight'} />
             </Text>
           </Pressable>
