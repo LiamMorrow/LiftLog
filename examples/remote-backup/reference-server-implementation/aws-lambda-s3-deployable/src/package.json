@@ -17,7 +17,7 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.162",
     "@types/node": "^24.13.2",
-    "ts-loader": "^9.6.0",
+    "ts-loader": "^9.6.2",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",
     "webpack": "^5.107.2",
