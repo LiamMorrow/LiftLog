@@ -118,7 +118,7 @@ export class RecordedWeightedExercise {
   withRepCount(setIndex: number, reps: number | undefined, time: OffsetDateTime): RecordedWeightedExercise {
     return this.withSet(setIndex, (s) =>
       s.with({
-        set: reps === undefined ? undefined : new RecordedSet(reps, time),
+        set: reps === undefined ? undefined : new RecordedSet(reps, s.set?.completionDateTime ?? time),
       }),
     );
   }
@@ -220,6 +220,11 @@ export class RecordedWeightedExercise {
     return best;
   }
 
+  get lastSetFailed(): boolean {
+    const lastSet = this.lastRecordedSet;
+    return !!lastSet?.set && lastSet.set.repsCompleted < this.repsTargetForSet(this.potentialSets.indexOf(lastSet)).min;
+  }
+
   get firstRecordedSet(): PotentialSet | undefined {
     let best: PotentialSet | undefined;
     for (const ps of this.potentialSets) {
@@ -246,7 +251,7 @@ export class RecordedWeightedExercise {
   }
 
   get isComplete(): boolean {
-    return !this.potentialSets.some((x) => x.set === undefined);
+    return this.potentialSets.every((x) => x.isComplete);
   }
 
   /// <summary>
@@ -305,6 +310,10 @@ export class PotentialSet {
     /** The target this set is chasing, carried on the performance rather than re-read from the plan. */
     readonly target: RepsTarget = { min: 0, max: 0 },
   ) {}
+
+  get isComplete(): boolean {
+    return this.set !== undefined;
+  }
 
   /** Build a set from named fields; preferred over the constructor, which leads with the absent one. */
   static of(init: { set?: RecordedSet | undefined; weight: Weight; target?: RepsTarget }): PotentialSet {
