@@ -2,12 +2,12 @@ package expo.modules.workoutworker.handlers
 
 
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.util.Log
 import com.limajuice.liftlog.DistanceCardioTarget
 import com.limajuice.liftlog.RecordedCardioExercise
 import com.limajuice.liftlog.RecordedCardioExerciseSet
 import com.limajuice.liftlog.RecordedWeightedExercise
+import com.limajuice.liftlog.RestTimerInfo
 import com.limajuice.liftlog.TimeCardioTarget
 import com.limajuice.liftlog.Translations
 import com.limajuice.liftlog.Weight
@@ -17,7 +17,10 @@ import com.limajuice.liftlog.WorkoutUpdatedEvent
 import expo.modules.workoutworker.utils.RepeatingTimerAction
 import expo.modules.workoutworker.utils.RestWindow
 import expo.modules.workoutworker.utils.WorkoutNotificationManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
@@ -36,8 +39,12 @@ class WorkoutUpdatedHandler(
 
     val timer = RepeatingTimerAction(MainScope(), {})
 
-    // Every workout update restarts the timer callback, so "have we announced this target yet" has to
-    // outlive it - otherwise a set left running past its target re-announces on every update.
+    private val restAlertScope = MainScope()
+    private var restAlertJob: Job? = null
+    private var scheduledRestAlert: Triple<Long, Long, Boolean>? = null
+
+    // Every workout update restarts the timer callback, so "have we announced this target yet" has
+    // to outlive it - otherwise a set left running past its target re-announces on every update.
     private var announcedCardioTarget: Pair<Int, Int>? = null
 
     override suspend fun handle(
@@ -46,9 +53,16 @@ class WorkoutUpdatedHandler(
     ) {
         try {
             val workoutUpdatedEvent = event.payload as WorkoutUpdatedEvent
+            if (workoutUpdatedEvent.restTimerInfo == null) {
+                cancelRestAlerts()
+            }
 
             when {
-                workoutUpdatedEvent.restTimerInfo != null -> showRestTimerNotification(event.translations, workoutUpdatedEvent)
+                workoutUpdatedEvent.restTimerInfo != null -> showRestTimerNotification(
+                    event.translations,
+                    workoutUpdatedEvent,
+                    event.appConfiguration.restCountdownTonesEnabled,
+                )
                 workoutUpdatedEvent.cardioTimerInfo != null -> showCardioTimerNotification(event.translations, workoutUpdatedEvent)
                 workoutUpdatedEvent.currentExerciseDetails != null -> showCurrentExerciseNotification(
                     event.translations,
@@ -99,9 +113,12 @@ class WorkoutUpdatedHandler(
     private fun showRestTimerNotification(
         translations: Translations,
         workoutUpdatedEvent: WorkoutUpdatedEvent,
+        restCountdownTonesEnabled: Boolean,
     ) {
 
         val restTimerInfo = workoutUpdatedEvent.restTimerInfo ?:return
+        scheduleRestAlerts(translations, restTimerInfo, restCountdownTonesEnabled)
+
         fun getProgress(): Long {
             val timeStartSecs = restTimerInfo.startedAt.epochSeconds
             val now = Clock.System.now().epochSeconds
@@ -109,7 +126,6 @@ class WorkoutUpdatedHandler(
         }
 
         val currentExerciseMessage = getCurrentExerciseMessage(translations, workoutUpdatedEvent)
-        var previousProgress = getProgress()
         timer.updateCallback {
             val timeStartSecs = restTimerInfo.startedAt.epochSeconds
             val timePartiallyEndSecs = restTimerInfo.partiallyEndAt.epochSeconds
@@ -123,29 +139,6 @@ class WorkoutUpdatedHandler(
             val progressMax = if (now < timePartiallyEndSecs)
                 partialProgressMax else
                 fullProgressMax
-
-
-            val restNotif: Notification? = when {
-                partialProgressMax in (previousProgress + 1)..progress && partialProgressMax != 0L -> notificationManager.createRestNotificationBuilder()
-                    .setContentTitle(translations.workoutPersistentNotificationMinRestOverMessage)
-                    .build()
-
-                fullProgressMax in (previousProgress + 1)..progress && fullProgressMax != 0L -> notificationManager.createRestNotificationBuilder()
-                    .setContentTitle(translations.workoutPersistentNotificationMaxRestOverMessage)
-                    .build()
-
-                else -> null
-            }
-            if (restNotif != null) {
-                notificationManager.notifyRest(restNotif)
-
-                MainScope().launch {
-                    delay(10_000)
-                    notificationManager.clearRestNotification()
-                }
-            }
-            @Suppress("AssignedValueIsNeverRead")
-            previousProgress = progress
 
             val message = when {
                 now < timePartiallyEndSecs -> translations.workoutPersistentNotificationRestBreakMessage
@@ -186,6 +179,70 @@ class WorkoutUpdatedHandler(
         timer.start()
     }
 
+    @OptIn(ExperimentalTime::class)
+    private fun scheduleRestAlerts(
+        translations: Translations,
+        restTimerInfo: RestTimerInfo,
+        countdownTonesEnabled: Boolean,
+    ) {
+        val schedule = Triple(
+            restTimerInfo.partiallyEndAt.toEpochMilliseconds(),
+            restTimerInfo.endAt.toEpochMilliseconds(),
+            countdownTonesEnabled,
+        )
+        if (scheduledRestAlert == schedule) return
+
+        cancelRestAlerts()
+        scheduledRestAlert = schedule
+        restAlertJob = restAlertScope.launch {
+            val boundaries = listOf(
+                schedule.first to translations.workoutPersistentNotificationMinRestOverMessage,
+                schedule.second to translations.workoutPersistentNotificationMaxRestOverMessage,
+            ).filter { (targetMs) -> targetMs > restTimerInfo.startedAt.toEpochMilliseconds() }
+                .distinctBy { (targetMs) -> targetMs }
+
+            for ((targetMs, title) in boundaries) {
+                if (countdownTonesEnabled) {
+                    for (remainingSecs in 3L downTo 1L) {
+                        scheduleAtTime(targetMs - remainingSecs * 1_000) {
+                            notificationManager.playRestCountdownTone(remainingSecs, targetMs)
+                        }
+                    }
+                }
+                scheduleAtTime(targetMs) {
+                    notificationManager.notifyRest(
+                        notificationManager.createRestNotificationBuilder()
+                            .setContentTitle(title)
+                            .build(),
+                        targetMs,
+                    )
+                    MainScope().launch {
+                        delay(10_000)
+                        notificationManager.clearRestNotification()
+                    }
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    private fun CoroutineScope.scheduleAtTime(targetEpochMs: Long, action: suspend () -> Unit) {
+        launch {
+            val delayMs = targetEpochMs - Clock.System.now().toEpochMilliseconds()
+            if (delayMs <= 0) {
+                return@launch
+            }
+            delay(delayMs)
+            action()
+        }
+    }
+
+    private fun cancelRestAlerts() {
+        if (scheduledRestAlert != null) notificationManager.cancelRestToneSequence()
+        restAlertJob?.cancel()
+        restAlertJob = null
+        scheduledRestAlert = null
+    }
 
     @OptIn(ExperimentalTime::class)
     private fun showCardioTimerNotification(
@@ -351,5 +408,8 @@ class WorkoutUpdatedHandler(
 
     override fun onDestroy() {
         timer.destroy()
+        cancelRestAlerts()
+        restAlertScope.cancel()
+        notificationManager.cancelRestToneSequence()
     }
 }

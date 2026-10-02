@@ -35,6 +35,7 @@ export class WorkoutWorker {
   private getAppConfigurationMessage(): AppConfiguration {
     return {
       notificationsEnabled: this.getState().settings.restNotifications,
+      restCountdownTonesEnabled: this.getState().settings.restCountdownTones,
     };
   }
 

@@ -4,9 +4,10 @@
   "properties": {
     "notificationsEnabled": {
       "type": "boolean"
+    },
+    "restCountdownTonesEnabled": {
+      "type": "boolean"
     }
   },
-  "required": [
-    "notificationsEnabled"
-  ]
+  "required": ["notificationsEnabled", "restCountdownTonesEnabled"]
 }

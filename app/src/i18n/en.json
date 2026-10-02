@@ -441,6 +441,8 @@
   "rest.min.label": "Min Rest",
   "rest.notifications.subtitle": "Show a notification when the rest timer finishes, even if the app is in the background",
   "rest.notifications.title": "Rest notifications",
+  "rest.notifications.countdown_tones.subtitle": "Play short tones at 3, 2, and 1 seconds before each rest notification",
+  "rest.notifications.countdown_tones.title": "Countdown tones",
   "rest.rest.label": "Rest",
   "rest.short.label": "Short",
   "rest.singular.label": "Rest <em>{time}</em>",

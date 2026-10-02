@@ -51,6 +51,7 @@ const booleanPrefs: BoolPref[] = [
   { key: 'showBodyweight', default: true },
   { key: 'showFeed', default: true },
   { key: 'restNotifications', default: true },
+  { key: 'restCountdownTones', default: false },
   { key: 'restTimersEnabled', default: true },
   { key: 'crashReportsEnabled', default: true },
   { key: 'welcomeWizardCompleted', default: false },
