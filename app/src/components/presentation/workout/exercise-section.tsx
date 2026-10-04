@@ -32,6 +32,8 @@ interface ExerciseSectionProps<T extends RecordedExercise> {
   updateExercise: (update: Updater<T>) => void;
   onEditExercise: (() => void) | undefined;
   onRemoveExercise: () => void;
+  onMoveExerciseUp: (() => void) | undefined;
+  onMoveExerciseDown: (() => void) | undefined;
 }
 
 export default function ExerciseSection<T extends RecordedExercise>(props: ExerciseSectionProps<T>) {
@@ -77,6 +79,26 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
                   icon: Edit,
                   systemImage: 'pencil',
                   onPress: props.onEditExercise,
+                } satisfies MenuItem,
+              ]
+            : []),
+          ...(props.onMoveExerciseUp
+            ? [
+                {
+                  label: t('exercise.move_up.button'),
+                  icon: 'arrowUpward',
+                  systemImage: 'arrow.up',
+                  onPress: props.onMoveExerciseUp,
+                } satisfies MenuItem,
+              ]
+            : []),
+          ...(props.onMoveExerciseDown
+            ? [
+                {
+                  label: t('exercise.move_down.button'),
+                  icon: 'arrowDownward',
+                  systemImage: 'arrow.down',
+                  onPress: props.onMoveExerciseDown,
                 } satisfies MenuItem,
               ]
             : []),
