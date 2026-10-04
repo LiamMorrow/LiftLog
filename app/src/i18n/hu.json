@@ -167,5 +167,10 @@
   "feed.explanation.body": "Ez a te hírfolyamod; oszd meg ismerőseiddel, hogy követhessék edzéseidet!",
   "feed.follow_back.button": "{user} visszakövetése",
   "feed.follow_back.short.button": "Követés viszonzása",
-  "feed.followers.title": "Követők"
+  "feed.followers.title": "Követők",
+  "feed.following.title": "Követések",
+  "feed.import_data.confirm.title": "Biztosan importálni szeretnéd a hírfolyam adatait?",
+  "feed.import_plan.confirm.body": "<em>{user}</em> edzésterve importálódni fog. Ezzel a már meglévő edzésterved nem lesz felülírva.",
+  "feed.link_privacy.explanation": "Csak a link birtokában lehet megtekinteni.",
+  "feed.manage.title": "Hírfolyam kezelése"
 }
