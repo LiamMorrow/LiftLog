@@ -20,10 +20,10 @@ export async function importExercises(db: ExpoSQLiteDatabase, keyValueStore: Key
       }) satisfies typeof exercisesSchema.$inferInsert,
   );
 
-  await db.transaction(async (tx) => {
+  db.transaction((tx) => {
     if (converted.length) {
-      await tx.insert(exercisesSchema).values(converted);
+      tx.insert(exercisesSchema).values(converted).run();
     }
-    await tx.insert(dataMigrationsSchema).values({ id: importExercisesDataMigration });
+    tx.insert(dataMigrationsSchema).values({ id: importExercisesDataMigration }).run();
   });
 }

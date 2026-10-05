@@ -25,8 +25,9 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { getSessionExerciseEditorHref } from '@/components/smart/session-exercise-editor';
 import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
 import { useRouter } from 'expo-router';
-import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
+import { useAppSelector } from '@/store';
+import { readPreviousExercises } from '@/db/sessions';
+import { useSessionsQuery } from '@/hooks/useSessionsQuery';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import AddIcon from '@expo/material-symbols/add.xml';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
@@ -61,7 +62,11 @@ export default function SessionComponent(props: {
   const dispatch = useDispatch();
   const isReadonly = !props.updateSession;
   const editableSessionId = isReadonly ? undefined : session.id;
-  const recentlyCompletedExercises = useAppSelectorWithArg(selectRecentlyCompletedExercises, session.id);
+  const progressionKeys = [...new Set(session.recordedExercises.map((x) => x.progressionKey()))];
+  const previousExercises = useSessionsQuery(
+    (db) => readPreviousExercises(db, progressionKeys, session.id),
+    `${session.id}:${progressionKeys.join('\n')}`,
+  );
   const addExercise = useAddExercise(editableSessionId);
   const updateSession = (reducer: (session: Session) => Session) => props.updateSession?.(reducer);
   const resetTimer = (time: OffsetDateTime | undefined) => {
@@ -153,7 +158,7 @@ export default function SessionComponent(props: {
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
           isReadonly={isReadonly}
           showPreviousButton={!!isActiveWorkout}
-          previousRecordedExercises={recentlyCompletedExercises(item.movementKey()) as RecordedWeightedExercise[]}
+          previousLineageExercise={previousExercises?.[item.progressionKey()] as RecordedWeightedExercise | undefined}
         />
       ))
       .with(P.instanceOf(RecordedCardioExercise), (item) => (
@@ -171,7 +176,7 @@ export default function SessionComponent(props: {
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
           isReadonly={isReadonly}
           showPreviousButton={!!isActiveWorkout}
-          previousRecordedExercises={recentlyCompletedExercises(item.movementKey()) as RecordedCardioExercise[]}
+          previousLineageExercise={previousExercises?.[item.progressionKey()] as RecordedCardioExercise | undefined}
         />
       ))
       .exhaustive();

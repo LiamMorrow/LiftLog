@@ -162,7 +162,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     if (!action.payload.isSuccess()) {
       return;
     }
-    await upsert(db, feedIdentitySchema, [
+    upsert(db, feedIdentitySchema, [
       {
         id: 0,
         payload: action.payload.data.toJSON(),
@@ -176,9 +176,9 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
   });
 
   addEffect(setFollowRequests, async (action, { extra: { db } }) => {
-    await db.transaction(async (tx) => {
-      await tx.delete(feedFollowRequestsSchema);
-      await upsert(
+    db.transaction((tx) => {
+      tx.delete(feedFollowRequestsSchema).run();
+      upsert(
         tx,
         feedFollowRequestsSchema,
         action.payload.map((req) => ({
@@ -189,7 +189,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     });
   });
   addEffect(addFollower, async (action, { extra: { db } }) => {
-    await upsert(db, feedFollowerUsersSchema, [
+    upsert(db, feedFollowerUsersSchema, [
       {
         id: action.payload.id,
         payload: action.payload.toJSON(),
@@ -203,18 +203,18 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     await db.delete(feedFollowRequestsSchema).where(eq(feedFollowRequestsSchema.id, action.payload.senderUserId));
   });
   addEffect(putFollowedUser, async (action, { extra: { db } }) => {
-    await db.transaction(async (tx) => {
+    db.transaction((tx) => {
       if (action.payload.type === 'PendingFeedUser') {
-        await upsert(tx, feedPendingUsersSchema, [
+        upsert(tx, feedPendingUsersSchema, [
           {
             id: action.payload.id,
             payload: action.payload.toJSON(),
           },
         ]);
-        await tx.delete(feedFollowedUsersSchema).where(eq(feedFollowedUsersSchema.id, action.payload.id));
+        tx.delete(feedFollowedUsersSchema).where(eq(feedFollowedUsersSchema.id, action.payload.id)).run();
       } else {
-        await tx.delete(feedPendingUsersSchema).where(eq(feedPendingUsersSchema.id, action.payload.id));
-        await upsert(tx, feedFollowedUsersSchema, [
+        tx.delete(feedPendingUsersSchema).where(eq(feedPendingUsersSchema.id, action.payload.id)).run();
+        upsert(tx, feedFollowedUsersSchema, [
           {
             id: action.payload.id,
             payload: action.payload.toJSON(),
@@ -224,7 +224,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     });
   });
   addEffect(upsertFeedItems, async (action, { extra: { db } }) => {
-    await upsert(
+    upsert(
       db,
       feedItemsSchema,
       action.payload.map((x) => ({
@@ -240,14 +240,14 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     await db.delete(feedItemsSchema).where(inArray(feedItemsSchema.id, action.payload));
   });
   addEffect(upsertReceivedReactions, async (action, { extra: { db } }) => {
-    await upsert(
+    upsert(
       db,
       feedReactionsSchema,
       action.payload.map((x) => ({ id: x.id, payload: x.toJSON() })),
     );
   });
   addEffect(setSentReaction, async (action, { extra: { db } }) => {
-    await upsert(db, feedSentReactionsSchema, [{ id: action.payload.id, payload: action.payload.toJSON() }]);
+    upsert(db, feedSentReactionsSchema, [{ id: action.payload.id, payload: action.payload.toJSON() }]);
   });
   addEffect(removeSentReaction, async (action, { extra: { db } }) => {
     await db.delete(feedSentReactionsSchema).where(eq(feedSentReactionsSchema.id, action.payload));

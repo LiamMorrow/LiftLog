@@ -11,7 +11,6 @@ import { KeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
 import { NotificationService } from '@/services/notification-service';
 import { PreferenceService } from '@/services/preference-service';
-import { ProgressRepository } from '@/services/progress-repository';
 import { SessionService } from '@/services/session-service';
 import { StringSharer } from '@/services/string-sharer';
 import { getTolgee } from '@/services/tolgee';
@@ -30,8 +29,7 @@ export type Services = ReturnType<typeof createServices>;
 export function createServices(store: Store<RootState>, db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
   const logger = new Logger();
   const keyValueStore = new KeyValueStore();
-  const progressRepository = new ProgressRepository(store.getState);
-  const sessionService = new SessionService(progressRepository, store.getState);
+  const sessionService = new SessionService(db, store.getState);
   const notificationService = new NotificationService(store.getState, store.dispatch);
   const encryptionService = new EncryptionService();
   const feedApiService = new FeedApiService(store.getState);
@@ -55,7 +53,6 @@ export function createServices(store: Store<RootState>, db: ExpoSQLiteDatabase, 
   return {
     logger,
     keyValueStore,
-    progressRepository,
     sessionService,
     notificationService,
     encryptionService,

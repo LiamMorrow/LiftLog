@@ -2,9 +2,9 @@ import { describe, expect, it, vi } from 'vitest';
 import { combineReducers } from '@reduxjs/toolkit';
 import { Instant, LocalDate } from '@js-joda/core';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
+import { createTestDb } from '@/utils/__test__/test-db';
 import { addInboxEffects } from '@/store/feed/inbox-effects';
 import feedReducer, { fetchInboxItems, upsertReceivedReactions } from '@/store/feed';
-import { storedSessionsReducer } from '@/store/stored-sessions';
 import {
   FeedIdentity,
   FollowerFeedUser,
@@ -52,10 +52,10 @@ function cheer(overrides?: { senderUserId?: string; eventId?: string; reactionId
   );
 }
 
-function makeTestBed(options?: {
+async function makeTestBed(options?: {
   followers?: Record<string, FollowerFeedUser>;
   receivedReactions?: Record<string, ReceivedReaction>;
-  sessions?: Record<string, Session>;
+  sessions?: Session[];
 }) {
   const services = {
     feedApiService: {
@@ -73,12 +73,9 @@ function makeTestBed(options?: {
         followers: options?.followers ?? { [FOLLOWER_ID]: new FollowerFeedUser(FOLLOWER_ID, publicKey, 'Bob', 's') },
         receivedReactions: options?.receivedReactions ?? {},
       },
-      storedSessions: {
-        sessions: options?.sessions ?? { [OWN_SESSION_ID]: ownSession() },
-      },
     },
-    services: services,
-    reducer: combineReducers({ feed: feedReducer, storedSessions: storedSessionsReducer }),
+    services: { ...services, db: await createTestDb(options?.sessions ?? [ownSession()]) },
+    reducer: combineReducers({ feed: feedReducer }),
   });
 
   addInboxEffects(testBed.addEffect);
@@ -86,7 +83,7 @@ function makeTestBed(options?: {
 }
 
 /** The decryption service is what yields InboxMessages; stub it to return exactly these. */
-function deliver(services: ReturnType<typeof makeTestBed>['services'], messages: ReactionInboxMessage[]) {
+function deliver(services: Awaited<ReturnType<typeof makeTestBed>>['services'], messages: ReactionInboxMessage[]) {
   services.feedApiService.getInboxMessagesAsync.mockResolvedValue(
     ApiResult.success({ inboxMessages: messages.map(() => ({})) }),
   );
@@ -96,7 +93,7 @@ function deliver(services: ReturnType<typeof makeTestBed>['services'], messages:
   );
 }
 
-function acceptedReactions(testBed: ReturnType<typeof makeTestBed>['testBed']): ReceivedReaction[] {
+function acceptedReactions(testBed: Awaited<ReturnType<typeof makeTestBed>>['testBed']): ReceivedReaction[] {
   return Object.values(testBed.getState().feed.receivedReactions);
 }
 
@@ -104,7 +101,7 @@ function acceptedReactions(testBed: ReturnType<typeof makeTestBed>['testBed']): 
 
 describe('inbox-effects reactions', () => {
   it('accepts a cheer from a follower on a session you own', async () => {
-    const { testBed, services } = makeTestBed();
+    const { testBed, services } = await makeTestBed();
     deliver(services, [cheer({ count: 5 })]);
 
     await testBed.dispatchHandled(fetchInboxItems({ fromUserAction: true }));
@@ -117,7 +114,7 @@ describe('inbox-effects reactions', () => {
 
   it('drops a cheer from someone who is not a follower', async () => {
     // PUT /inbox is unauthenticated, so any stranger who knows the user id can post one of these.
-    const { testBed, services } = makeTestBed({ followers: {} });
+    const { testBed, services } = await makeTestBed({ followers: {} });
     deliver(services, [cheer()]);
 
     await testBed.dispatchHandled(fetchInboxItems({ fromUserAction: true }));
@@ -126,7 +123,7 @@ describe('inbox-effects reactions', () => {
   });
 
   it('drops a cheer targeting a session you do not own', async () => {
-    const { testBed, services } = makeTestBed();
+    const { testBed, services } = await makeTestBed();
     deliver(services, [cheer({ eventId: 'someone-elses-session' })]);
 
     await testBed.dispatchHandled(fetchInboxItems({ fromUserAction: true }));
@@ -135,7 +132,7 @@ describe('inbox-effects reactions', () => {
   });
 
   it('does not double count a redelivered cheer', async () => {
-    const { testBed, services } = makeTestBed();
+    const { testBed, services } = await makeTestBed();
     deliver(services, [cheer({ reactionId: 'r1', count: 3 }), cheer({ reactionId: 'r1', count: 3 })]);
 
     await testBed.dispatchHandled(fetchInboxItems({ fromUserAction: true }));
@@ -146,7 +143,7 @@ describe('inbox-effects reactions', () => {
   });
 
   it('caps how many cheers one sender can store against a single event', async () => {
-    const { testBed, services } = makeTestBed();
+    const { testBed, services } = await makeTestBed();
     const flood = Array.from({ length: MAX_REACTIONS_PER_SENDER_PER_EVENT + 10 }, (_, i) =>
       cheer({ reactionId: `r${i}` }),
     );
@@ -158,7 +155,7 @@ describe('inbox-effects reactions', () => {
   });
 
   it('persists cheers before doing anything else, since the server has already deleted them', async () => {
-    const { testBed, services } = makeTestBed();
+    const { testBed, services } = await makeTestBed();
     deliver(services, [cheer()]);
 
     await testBed.dispatchHandled(fetchInboxItems({ fromUserAction: true }));

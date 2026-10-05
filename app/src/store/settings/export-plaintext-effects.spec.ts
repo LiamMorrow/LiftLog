@@ -13,8 +13,8 @@ import {
 } from '@/models/session-models/__test__/helpers';
 import { RecordedCardioExercise } from '@/models/session-models/recorded-cardio-exercise';
 import { exportPlainText } from '@/store/settings';
-import Enumerable from 'linq';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
+import { createTestDb } from '@/utils/__test__/test-db';
 import { addExportPlaintextEffects } from '@/store/settings/export-plaintext-effects';
 import { FileExportService } from '@/services/file-export-service';
 import { fromJsonBytes } from '@/services/encryption-service';
@@ -55,12 +55,6 @@ function makeSession(exercises: RecordedWeightedExercise[] | ReturnType<typeof m
   );
 }
 
-function makeProgressRepository(sessions: Session[]) {
-  return {
-    getOrderedSessions: vi.fn(() => Enumerable.from(sessions)),
-  };
-}
-
 function makeFileExportService(): MockedObject<FileExportService> {
   return {
     exportBytes: vi.fn().mockResolvedValue(undefined),
@@ -74,7 +68,7 @@ describe('export-plaintext-effects', () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([makeSession([makeWeightedExercise()])]),
+          db: await createTestDb([makeSession([makeWeightedExercise()])]),
           fileExportService,
         },
       });
@@ -97,7 +91,7 @@ describe('export-plaintext-effects', () => {
       ]).with({ id: '124' });
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([session]),
+          db: await createTestDb([session]),
           fileExportService,
         },
       });
@@ -118,7 +112,7 @@ describe('export-plaintext-effects', () => {
       const session = makeSession([makeWeightedExercise('Deadlift', 1, 180, 5)]);
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([session]),
+          db: await createTestDb([session]),
           fileExportService,
         },
       });
@@ -139,7 +133,7 @@ describe('export-plaintext-effects', () => {
       const session = makeSession([makeCardioExercise('Treadmill')]);
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([session]),
+          db: await createTestDb([session]),
           fileExportService,
         },
       });
@@ -169,7 +163,7 @@ describe('export-plaintext-effects', () => {
       const session = makeSession([exercise]);
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([session]),
+          db: await createTestDb([session]),
           fileExportService,
         },
       });
@@ -194,7 +188,7 @@ describe('export-plaintext-effects', () => {
       );
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([makeSession([exercise])]),
+          db: await createTestDb([makeSession([exercise])]),
           fileExportService,
         },
       });
@@ -215,7 +209,7 @@ describe('export-plaintext-effects', () => {
       ];
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository(sessions),
+          db: await createTestDb(sessions),
           fileExportService,
         },
       });
@@ -238,7 +232,7 @@ describe('export-plaintext-effects', () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([makeSession([makeWeightedExercise()])]),
+          db: await createTestDb([makeSession([makeWeightedExercise()])]),
           fileExportService,
         },
       });
@@ -256,7 +250,7 @@ describe('export-plaintext-effects', () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([makeSession([makeWeightedExercise()])]),
+          db: await createTestDb([makeSession([makeWeightedExercise()])]),
           fileExportService,
         },
       });
@@ -278,7 +272,7 @@ describe('export-plaintext-effects', () => {
       ];
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository(sessions),
+          db: await createTestDb(sessions),
           fileExportService,
         },
       });
@@ -296,7 +290,7 @@ describe('export-plaintext-effects', () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([makeSession([makeWeightedExercise()])]),
+          db: await createTestDb([makeSession([makeWeightedExercise()])]),
           fileExportService,
         },
       });
@@ -314,7 +308,7 @@ describe('export-plaintext-effects', () => {
       const session = makeSession([makeWeightedExercise('Deadlift', 2, 180, 5)]);
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([session]),
+          db: await createTestDb([session]),
           fileExportService,
         },
       });
@@ -336,7 +330,7 @@ describe('export-plaintext-effects', () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([makeSession([makeWeightedExercise()])]),
+          db: await createTestDb([makeSession([makeWeightedExercise()])]),
           fileExportService,
         },
       });
@@ -351,7 +345,7 @@ describe('export-plaintext-effects', () => {
       const fileExportService = makeFileExportService();
       const testBed = createAddEffectTestBed({
         services: {
-          progressRepository: makeProgressRepository([]),
+          db: await createTestDb([]),
           fileExportService,
         },
       });

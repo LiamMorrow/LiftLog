@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { Instant, LocalDate } from '@js-joda/core';
-import { selectFollowingActivity } from '@/store/activity';
+import { DayOfWeek, Instant, LocalDate } from '@js-joda/core';
+import { ownHistoryOf, selectFollowingActivity } from '@/store/activity';
 import { FollowedFeedUser, SessionUserEvent } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
 import { AesKey, RsaPublicKey } from '@/models/encryption-models';
@@ -35,24 +35,24 @@ function event(userId: string, date: LocalDate): SessionUserEvent {
   );
 }
 
-function stateWith(
-  events: SessionUserEvent[],
-  userIds: string[],
-  own?: { userId: string; sessions: Session[] },
-): RootState {
+function stateWith(events: SessionUserEvent[], userIds: string[], ownUserId?: string): RootState {
   return {
     feed: {
       feed: events,
       followedUsers: Object.fromEntries(userIds.map((id) => [id, followedUser(id)])),
-      identity: own ? RemoteData.success({ id: own.userId }) : RemoteData.notAsked(),
+      identity: ownUserId ? RemoteData.success({ id: ownUserId }) : RemoteData.notAsked(),
     },
-    storedSessions: { sessions: own?.sessions ?? [] },
   } as unknown as RootState;
+}
+
+function withOwn(trainedOn: LocalDate[] = []) {
+  const sessions = trainedOn.map((date, index) => ({ id: `own-${index}`, date, volumeKg: 100 }));
+  return { today, own: ownHistoryOf(sessions, [], DayOfWeek.MONDAY, today) };
 }
 
 describe('selectFollowingActivity', () => {
   it('gives a followed user with no events a full week of empty cells', () => {
-    const activity = selectFollowingActivity(stateWith([], ['quiet']), today).get('quiet');
+    const activity = selectFollowingActivity(stateWith([], ['quiet']), withOwn()).get('quiet');
 
     expect(activity?.cells).toHaveLength(7);
     expect(activity?.cells.every((cell) => cell.level === 0)).toBe(true);
@@ -63,7 +63,7 @@ describe('selectFollowingActivity', () => {
   it('counts only the days inside the trailing week, but remembers the last workout beyond it', () => {
     const state = stateWith([event('friend', today.minusDays(2)), event('friend', today.minusDays(30))], ['friend']);
 
-    const activity = selectFollowingActivity(state, today).get('friend');
+    const activity = selectFollowingActivity(state, withOwn()).get('friend');
 
     expect(activity?.workoutsThisWeek).toBe(1);
     expect(activity?.lastWorkoutDate?.toString()).toBe(today.minusDays(2).toString());
@@ -72,23 +72,23 @@ describe('selectFollowingActivity', () => {
   it('reports a workout older than the week without counting it', () => {
     const state = stateWith([event('friend', today.minusDays(20))], ['friend']);
 
-    const activity = selectFollowingActivity(state, today).get('friend');
+    const activity = selectFollowingActivity(state, withOwn()).get('friend');
 
     expect(activity?.workoutsThisWeek).toBe(0);
     expect(activity?.lastWorkoutDate?.toString()).toBe(today.minusDays(20).toString());
   });
 
-  it('reads a self-follow from stored sessions, which the feed filters out to avoid double-counting', () => {
-    const state = stateWith([], ['me'], { userId: 'me', sessions: [startedSessionOn(today.minusDays(1))] });
+  it('reads a self-follow from your own history, which the feed filters out to avoid double-counting', () => {
+    const state = stateWith([], ['me'], 'me');
 
-    const activity = selectFollowingActivity(state, today).get('me');
+    const activity = selectFollowingActivity(state, withOwn([today.minusDays(1)])).get('me');
 
     expect(activity?.workoutsThisWeek).toBe(1);
     expect(activity?.lastWorkoutDate?.toString()).toBe(today.minusDays(1).toString());
   });
 
   it('marks today so the strip can ring the current day', () => {
-    const activity = selectFollowingActivity(stateWith([], ['friend']), today).get('friend');
+    const activity = selectFollowingActivity(stateWith([], ['friend']), withOwn()).get('friend');
 
     expect(activity?.cells.filter((cell) => cell.isToday)).toHaveLength(1);
     expect(activity?.cells.at(-1)?.isToday).toBe(true);

@@ -3,9 +3,11 @@ import { PageActions } from '@/components/presentation/foundation/page-actions';
 import CheckIcon from '@expo/material-symbols/check.xml';
 import { SessionComparisonTable } from '@/components/presentation/workout/session-comparison-table';
 import { spacing } from '@/hooks/useAppTheme';
-import { useAppSelectorWithArg } from '@/store';
 import { useFinishWorkout } from '@/hooks/useFinishWorkout';
-import { selectPreviousComparableSession, selectSession } from '@/store/stored-sessions';
+import { getSessionReferenceTime } from '@/store/stored-sessions';
+import { useSession } from '@/hooks/useSession';
+import { useSessionsQuery } from '@/hooks/useSessionsQuery';
+import { readPreviousComparableSession } from '@/db/sessions';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect } from 'react';
@@ -16,11 +18,18 @@ export default function PostWorkoutPage() {
     sessionId?: string;
     source?: 'finished' | 'live' | 'history';
   }>();
-  const session = useAppSelectorWithArg(selectSession, sessionId ?? '');
+  const session = useSession(sessionId);
   const openedAfterFinishingWorkout = source === 'finished';
   const showFinishButton = openedAfterFinishingWorkout;
   const showBackButton = !openedAfterFinishingWorkout;
-  const previousComparableSession = useAppSelectorWithArg(selectPreviousComparableSession, session);
+  const before = session && getSessionReferenceTime(session);
+  const previousComparableSession = useSessionsQuery(
+    (db) =>
+      session && before
+        ? readPreviousComparableSession(db, { id: session.id, name: session.blueprint.name, before })
+        : undefined,
+    `${session?.id}:${session?.blueprint.name}:${before?.toString()}`,
+  );
   const { dismissTo, push } = useRouter();
   const finishWorkout = useFinishWorkout(sessionId);
   const { t } = useTranslate();

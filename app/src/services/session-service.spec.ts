@@ -1,30 +1,51 @@
-import { describe, it, expect } from 'vitest';
-import Enumerable from 'linq';
+import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { SessionService } from '@/services/session-service';
-import { ProgressRepository } from '@/services/progress-repository';
+import { DatabaseMigrationService } from '@/services/database-migration-service';
+import { setActiveSession, writeSession } from '@/db/sessions';
 import { ProgressionRule, SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import BigNumber from 'bignumber.js';
-import { RecordedWeightedExercise, Session } from '@/models/session-models';
+import { freeformSessionName, RecordedExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
 import { makeRecordedExercise, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
 import { Weight } from '@/models/weight';
+import { LocalDate } from '@js-joda/core';
+import { drizzle, type ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
+import { openDatabaseAsync } from 'expo-sqlite';
+import { v4 as uuid } from 'uuid';
 import type { RootState } from '@/store';
 
-function makeState(overrides?: { workoutSession?: Session; orderedSessions?: Session[] }): RootState {
-  const active = overrides?.workoutSession;
-  return {
-    settings: { useImperialUnits: false },
-    storedSessions: {
-      sessions: active ? { [active.id]: active } : {},
-      activeSessionId: active?.id,
-    },
-  } as unknown as RootState;
+let db: ExpoSQLiteDatabase;
+
+beforeEach(async () => {
+  db = drizzle(await openDatabaseAsync(':memory:'));
+  await new DatabaseMigrationService(db, { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() } as never, {
+    importOldData: async () => {},
+  }).migrate();
+});
+
+function makeService({ useImperialUnits = false } = {}) {
+  return new SessionService(db, () => ({ settings: { useImperialUnits } }) as unknown as RootState);
 }
 
-function makeService(state: RootState, orderedSessions: Session[] = []) {
-  const progressRepository = {
-    getOrderedSessions: () => Enumerable.from(orderedSessions),
-  } as unknown as ProgressRepository;
-  return new SessionService(progressRepository, () => state);
+function store(...sessions: Session[]) {
+  db.transaction((tx) => sessions.forEach((session) => writeSession(tx, session)));
+}
+
+function performed(
+  name: string,
+  exercises: RecordedExercise[] = [makeRecordedExercise(makeWeightedBlueprint(), [10])],
+) {
+  return new Session(
+    uuid(),
+    new SessionBlueprint(
+      name,
+      exercises.map((x) => x.blueprint),
+      '',
+    ),
+    exercises,
+    LocalDate.of(2025, 4, 5),
+    undefined,
+    undefined,
+  );
 }
 
 async function collect(iter: AsyncIterableIterator<Session>, count: number): Promise<Session[]> {
@@ -43,9 +64,7 @@ function bp(name: string, notes = '') {
 describe('SessionService.getUpcomingSessions', () => {
   it('walks the plan in order and cycles when there is no history', async () => {
     const plan = [bp('Push'), bp('Pull'), bp('Legs')];
-    const service = makeService(makeState());
-
-    const upcoming = await collect(service.getUpcomingSessions(plan, {}), 6);
+    const upcoming = await collect(makeService().getUpcomingSessions(plan), 6);
 
     expect(upcoming.map((s) => s.blueprint.name)).toEqual(['Push', 'Pull', 'Legs', 'Push', 'Pull', 'Legs']);
   });
@@ -54,9 +73,7 @@ describe('SessionService.getUpcomingSessions', () => {
     // Regression: matching the next workout by name resolved duplicates to the
     // first occurrence, trapping progression on it forever.
     const plan = [bp('Upper'), bp('Lower'), bp('Lower', 'second'), bp('Cardio')];
-    const service = makeService(makeState());
-
-    const upcoming = await collect(service.getUpcomingSessions(plan, {}), 8);
+    const upcoming = await collect(makeService().getUpcomingSessions(plan), 8);
 
     expect(upcoming.map((s) => s.blueprint.name)).toEqual([
       'Upper',
@@ -74,50 +91,76 @@ describe('SessionService.getUpcomingSessions', () => {
 
   it('continues from the last completed session', async () => {
     const plan = [bp('Push'), bp('Pull'), bp('Legs')];
-    const service = makeService(makeState());
-    const completed = service.hydrateSessionFromBlueprint(bp('Pull'), {});
+    store(performed('Pull'));
 
-    const upcoming = await collect(makeService(makeState(), [completed]).getUpcomingSessions(plan, {}), 3);
+    const upcoming = await collect(makeService().getUpcomingSessions(plan), 3);
 
     expect(upcoming.map((s) => s.blueprint.name)).toEqual(['Legs', 'Push', 'Pull']);
   });
 
+  it('continues from the workout in progress', async () => {
+    const plan = [bp('Push'), bp('Pull'), bp('Legs')];
+    store(performed('Legs'));
+    db.transaction((tx) => setActiveSession(tx, performed('Push')));
+
+    const upcoming = await collect(makeService().getUpcomingSessions(plan), 3);
+
+    expect(upcoming.map((s) => s.blueprint.name)).toEqual(['Pull', 'Legs', 'Push']);
+  });
+
+  it('does not count a freeform workout as a step through the plan', async () => {
+    const plan = [bp('Push'), bp('Pull'), bp('Legs')];
+    store(performed('Push'), performed(freeformSessionName));
+
+    const upcoming = await collect(makeService().getUpcomingSessions(plan), 1);
+
+    expect(upcoming.map((s) => s.blueprint.name)).toEqual(['Pull']);
+  });
+
   it('restarts the plan when the last session is no longer in the plan', async () => {
     const plan = [bp('Push'), bp('Pull')];
-    const stale = makeService(makeState()).hydrateSessionFromBlueprint(bp('Removed'), {});
+    store(performed('Removed'));
 
-    const upcoming = await collect(makeService(makeState(), [stale]).getUpcomingSessions(plan, {}), 3);
+    const upcoming = await collect(makeService().getUpcomingSessions(plan), 3);
 
     expect(upcoming.map((s) => s.blueprint.name)).toEqual(['Push', 'Pull', 'Push']);
   });
 
+  it('carries the last bodyweight into every upcoming session', async () => {
+    const plan = [bp('Push'), bp('Pull')];
+    store(performed('Push').with({ bodyweight: new Weight(80, 'kilograms') }));
+
+    const upcoming = await collect(makeService().getUpcomingSessions(plan), 2);
+
+    expect(upcoming.map((s) => s.bodyweight?.value.toNumber())).toEqual([80, 80]);
+  });
+
   it('repeats a single-workout plan', async () => {
     const plan = [bp('Full Body')];
-    const upcoming = await collect(makeService(makeState()).getUpcomingSessions(plan, {}), 3);
+    const upcoming = await collect(makeService().getUpcomingSessions(plan), 3);
 
     expect(upcoming.map((s) => s.blueprint.name)).toEqual(['Full Body', 'Full Body', 'Full Body']);
   });
 
   it('yields nothing for an empty plan', async () => {
-    const upcoming = await collect(makeService(makeState()).getUpcomingSessions([], {}), 3);
+    const upcoming = await collect(makeService().getUpcomingSessions([]), 3);
     expect(upcoming).toHaveLength(0);
   });
 
   it('gives every upcoming session a unique id', async () => {
     const plan = [bp('A'), bp('B')];
-    const upcoming = await collect(makeService(makeState()).getUpcomingSessions(plan, {}), 6);
+    const upcoming = await collect(makeService().getUpcomingSessions(plan), 6);
     expect(new Set(upcoming.map((s) => s.id)).size).toBe(upcoming.length);
   });
 });
 
 describe('SessionService rep targets', () => {
   async function upcoming(blueprint: WeightedExerciseBlueprint, latest?: RecordedWeightedExercise) {
-    const service = makeService(makeState());
+    if (latest) {
+      store(performed('Day', [latest]));
+    }
     const [session] = await collect(
-      service.getUpcomingSessions(
-        [new SessionBlueprint('Day', [blueprint], '')],
-        latest ? { [blueprint.progressionKey()]: latest } : {},
-      ),
+      makeService().getUpcomingSessions([new SessionBlueprint('Day', [blueprint], '')]),
       1,
     );
     return session!.recordedExercises[0] as RecordedWeightedExercise;
@@ -237,12 +280,11 @@ describe('SessionService rep targets', () => {
 
 describe('SessionService progressive overload', () => {
   async function upcomingWeights(blueprint: WeightedExerciseBlueprint, latest?: RecordedWeightedExercise) {
-    const service = makeService(makeState());
+    if (latest) {
+      store(performed('Day', [latest]));
+    }
     const [session] = await collect(
-      service.getUpcomingSessions(
-        [new SessionBlueprint('Day', [blueprint], '')],
-        latest ? { [blueprint.progressionKey()]: latest } : {},
-      ),
+      makeService().getUpcomingSessions([new SessionBlueprint('Day', [blueprint], '')]),
       1,
     );
     const exercise = session!.recordedExercises[0] as RecordedWeightedExercise;
@@ -276,6 +318,17 @@ describe('SessionService progressive overload', () => {
     const blueprint = makeWeightedBlueprint({ sets: 2 });
 
     expect(await upcomingWeights(blueprint)).toEqual([0, 0]);
+  });
+
+  it('starts a fresh exercise in the unit the user prefers', async () => {
+    const [session] = await collect(
+      makeService({ useImperialUnits: true }).getUpcomingSessions([
+        new SessionBlueprint('Day', [makeWeightedBlueprint({ sets: 1 })], ''),
+      ]),
+      1,
+    );
+
+    expect((session!.recordedExercises[0] as RecordedWeightedExercise).potentialSets[0]!.weight.unit).toBe('pounds');
   });
 
   it('progresses a bodyweight exercise, which carries load on top of the lifter', async () => {

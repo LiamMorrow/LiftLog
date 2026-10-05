@@ -24,7 +24,7 @@ import { Session } from '@/models/session-models';
 import { GetUserResponse, UserEventResponse } from '@/models/feed-api-models';
 import { EncryptionService, fromJsonBytes, toJsonBytes } from '@/services/encryption-service';
 import { FeedApiService } from '@/services/feed-api';
-import { selectSession } from '@/store/stored-sessions';
+import { readSession } from '@/db/sessions';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { feedUnpublishedSessionsSchema } from '@/db/schema';
 import { AnyVersionProgramBlueprintJSON, AnyVersionUserEventJSON } from '@/models/storage/versions/any';
@@ -201,7 +201,7 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
       const unpublishedSessionIds = await db.select().from(feedUnpublishedSessionsSchema);
 
       for (const { sessionId } of unpublishedSessionIds) {
-        const session = selectSession(getState(), sessionId);
+        const session = readSession(db, sessionId);
 
         let result;
         if (session) {

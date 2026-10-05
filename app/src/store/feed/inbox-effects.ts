@@ -17,7 +17,7 @@ import {
   ReactionInboxMessage,
   ReceivedReaction,
 } from '@/models/feed-models';
-import { selectSession } from '@/store/stored-sessions';
+import { readExistingSessionIds } from '@/db/sessions';
 import { match } from 'ts-pattern';
 
 /**
@@ -27,7 +27,11 @@ import { match } from 'ts-pattern';
  *
  * The emoji allowlist and the count bound are enforced earlier, in `Reaction.fromJSON`.
  */
-function acceptableReactions(messages: ReactionInboxMessage[], state: RootState): ReceivedReaction[] {
+function acceptableReactions(
+  messages: ReactionInboxMessage[],
+  state: RootState,
+  ownSessionIds: Set<string>,
+): ReceivedReaction[] {
   const followers = new Set(selectFeedFollowers(state).map((x) => x.id));
   const existing = Object.values(state.feed.receivedReactions);
 
@@ -45,7 +49,7 @@ function acceptableReactions(messages: ReactionInboxMessage[], state: RootState)
     if (!followers.has(senderUserId)) {
       continue;
     }
-    if (!selectSession(state, payload.eventId)) {
+    if (!ownSessionIds.has(payload.eventId)) {
       continue;
     }
 
@@ -76,7 +80,7 @@ function acceptableReactions(messages: ReactionInboxMessage[], state: RootState)
 export function addInboxEffects(addEffect: AddEffectFn) {
   addEffect(
     fetchInboxItems,
-    async (action, { dispatch, getState, extra: { feedApiService, feedInboxDecryptionService } }) => {
+    async (action, { dispatch, getState, extra: { db, feedApiService, feedInboxDecryptionService } }) => {
       const state = getState();
       const identityRemote = selectFeedIdentityRemote(state);
 
@@ -131,7 +135,14 @@ export function addInboxEffects(addEffect: AddEffectFn) {
 
       // The server deletes inbox messages once we've read them, so this dispatch is the only copy that will
       // ever exist. Persist before anything that could throw or await.
-      const accepted = acceptableReactions(newReactions, getState());
+      const accepted = acceptableReactions(
+        newReactions,
+        getState(),
+        readExistingSessionIds(
+          db,
+          newReactions.map((x) => x.payload.eventId),
+        ),
+      );
       if (accepted.length > 0) {
         dispatch(upsertReceivedReactions(accepted));
       }

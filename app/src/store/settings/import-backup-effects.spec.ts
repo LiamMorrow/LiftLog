@@ -7,7 +7,9 @@ import { resolve } from 'path';
 import { FeedBackupData } from '@/models/backup';
 import { FeedIdentity } from '@/models/feed-models';
 import { ProgramBlueprint } from '@/models/blueprint-models';
-import { EmptySession, Session } from '@/models/session-models';
+import { EmptySession, RecordedWeightedExercise, Session } from '@/models/session-models';
+import { makeRecordedExercise, makeSession, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
+import { Weight } from '@/models/weight';
 import { uuid } from '@/utils/uuid';
 import { upsertExercises, upsertStoredSessions } from '@/store/stored-sessions';
 import { upsertSavedPlans } from '@/store/program';
@@ -33,7 +35,7 @@ describe('import-backup-effects', () => {
 
     const dispatchedImport = testBed.getDispatchedAction(importBackupData);
     expect(dispatchedImport.payload.workouts).toHaveLength(420);
-    expect(dispatchedImport.payload.feed).toBeDefined();
+    expect(dispatchedImport.payload.feed).toBeUndefined();
     expect(Object.values(dispatchedImport.payload.programs)).toHaveLength(13);
     expect(Object.values(dispatchedImport.payload.exercises ?? {})).toHaveLength(962);
     expect(dispatchedImport.payload.successMessage).toBe('Restore complete!');
@@ -64,10 +66,9 @@ describe('import-backup-effects', () => {
   });
   it('dispatches the appropriate actions when importing', async () => {
     const testBed = createAddEffectTestBed({
+      initialState: { settings: { useImperialUnits: false } },
       services: {
         tolgee: { t: (s: string) => s },
-        db: { delete: () => ({ where: () => Promise.resolve() }) },
-        databaseMigrationService: { migrate: vi.fn() },
       },
     });
     addImportBackupEffects(testBed.addEffect);
@@ -104,7 +105,9 @@ describe('import-backup-effects', () => {
       }),
     );
 
-    expect(testBed.getDispatchedAction(upsertStoredSessions).payload).toBe(mockWorkouts);
+    expect(testBed.getDispatchedAction(upsertStoredSessions).payload.map((x) => x.id)).toEqual(
+      mockWorkouts.map((x) => x.id),
+    );
     expect(testBed.getDispatchedAction(upsertSavedPlans).payload).toBe(mockPrograms);
     expect(testBed.getDispatchedAction(upsertExercises).payload).toBe(mockExercises);
     expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe('Restore complete!');
@@ -113,10 +116,9 @@ describe('import-backup-effects', () => {
 
   it('shows the provided successMessage', async () => {
     const testBed = createAddEffectTestBed({
+      initialState: { settings: { useImperialUnits: false } },
       services: {
         tolgee: { t: (s: string) => s },
-        db: { delete: () => ({ where: () => Promise.resolve() }) },
-        databaseMigrationService: { migrate: vi.fn() },
       },
     });
     addImportBackupEffects(testBed.addEffect);
@@ -132,8 +134,29 @@ describe('import-backup-effects', () => {
     expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe('Imported 3 workout(s)');
   });
 
+  it('coalesces nil weight units to the preferred unit', async () => {
+    const testBed = createAddEffectTestBed({
+      initialState: { settings: { useImperialUnits: true } },
+      services: {
+        tolgee: { t: (s: string) => s },
+      },
+    });
+    addImportBackupEffects(testBed.addEffect);
+    const blueprint = makeWeightedBlueprint();
+    const session = makeSession([blueprint]).with({
+      recordedExercises: [makeRecordedExercise(blueprint, [5, undefined], new Weight(20, 'nil'))],
+    });
+
+    await testBed.dispatchHandled(importBackupData({ workouts: [session], programs: {}, successMessage: '' }));
+
+    const [imported] = testBed.getDispatchedAction(upsertStoredSessions).payload;
+    const exercise = imported!.recordedExercises[0] as RecordedWeightedExercise;
+    expect(exercise.potentialSets.map((x) => x.weight)).toEqual([new Weight(20, 'pounds'), new Weight(20, 'pounds')]);
+  });
+
   it('does not dispatch beginFeedImport when feed is absent', async () => {
     const testBed = createAddEffectTestBed({
+      initialState: { settings: { useImperialUnits: false } },
       services: {
         tolgee: { t: (s: string) => s },
       },

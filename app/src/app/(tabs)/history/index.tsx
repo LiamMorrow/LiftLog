@@ -13,17 +13,20 @@ import SplitCardControl from '@/components/presentation/foundation/split-card-co
 import { StreakCard } from '@/components/presentation/summary/streak-card';
 import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
-import { useToday } from '@/hooks/useToday';
 import { Session } from '@/models/session-models';
-import { selectStreakStats } from '@/store/activity';
-import { useAppSelector, useAppSelectorWhenFocused, useAppSelectorWhenFocusedWithArg } from '@/store';
+import { useAppSelector } from '@/store';
+import { OwnHistoryProvider, useOwnHistory } from '@/components/smart/own-history-provider';
+import { useSessionsQuery } from '@/hooks/useSessionsQuery';
+import { readSessionsBetween } from '@/db/sessions';
+import { TemporalComparer } from '@/models/comparers';
+import Enumerable from 'linq';
 import { addUnpublishedSessionId, encryptAndShare, removeReactionsForEvents } from '@/store/feed';
 import {
   deleteStoredSession,
+  getSessionReferenceTime,
+  openSession,
   putStoredSession,
   selectActiveSession,
-  selectSessionsBy,
-  selectSessionsInMonth,
 } from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
 import { LocalDate, YearMonth } from '@js-joda/core';
@@ -40,7 +43,17 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import { useStartWorkout } from '@/hooks/useStartWorkout';
 import { SharedSession } from '@/models/feed-models';
 
-export default function History() {
+const noSessions: Session[] = [];
+
+export default function HistoryPage() {
+  return (
+    <OwnHistoryProvider>
+      <History />
+    </OwnHistoryProvider>
+  );
+}
+
+function History() {
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const formatDate = useFormatDate();
@@ -51,19 +64,22 @@ export default function History() {
     x.program.upcomingSessions.map((x) => x.at(0)?.bodyweight).unwrapOr(undefined),
   );
   const [selectedDate, setSelectedDate] = useState<LocalDate>();
-  // These sweep the whole history, and this screen stays mounted under /history/edit - so they must
-  // not recompute while a session is being edited on top of it.
-  const sessionsInMonth = useAppSelectorWhenFocusedWithArg(selectSessionsInMonth, currentYearMonth);
-  const sessionsOnSelectedDate = useAppSelectorWhenFocused((state) =>
-    selectedDate ? selectSessionsBy(state, selectedDate, selectedDate) : undefined,
-  );
-  const visibleSessions = sessionsOnSelectedDate ?? sessionsInMonth;
-  const today = useToday();
-  const streakStats = useAppSelectorWhenFocusedWithArg(selectStreakStats, today);
+  const from = selectedDate ?? currentYearMonth.atDay(1);
+  const to = selectedDate ?? currentYearMonth.atEndOfMonth();
+  const visibleSessions =
+    useSessionsQuery(
+      (db) =>
+        Enumerable.from(readSessionsBetween(db, from, to))
+          .orderByDescending((x) => getSessionReferenceTime(x), TemporalComparer)
+          .toArray(),
+      `${from.toString()}:${to.toString()}`,
+    ) ?? noSessions;
+  const streakStats = useOwnHistory().streak;
   const { push } = useRouter();
   const currentWorkoutSession = useAppSelector(selectActiveSession);
   const startWorkoutSession = useStartWorkout();
   const onSelectSession = (session: Session) => {
+    dispatch(openSession(session));
     push(`/history/edit?sessionId=${encodeURIComponent(session.id)}`);
   };
   const createSessionAtDate = (date: LocalDate) => {

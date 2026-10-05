@@ -3,7 +3,8 @@ import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useToday } from '@/hooks/useToday';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { selectActivityWeek, selectFollowsOtherUsers, selectStreakStats } from '@/store/activity';
+import { selectActivityWeek, selectFollowsOtherUsers } from '@/store/activity';
+import { useOwnHistory } from '@/components/smart/own-history-provider';
 import { useTranslate } from '@tolgee/react';
 import { View } from 'react-native';
 import { Card } from 'react-native-paper';
@@ -14,8 +15,9 @@ const MAX_ROWS = 8;
 export function FeedWeekStrip() {
   const { t } = useTranslate();
   const today = useToday();
-  const rows = useAppSelectorWithArg(selectActivityWeek, today);
-  const streak = useAppSelectorWithArg(selectStreakStats, today);
+  const own = useOwnHistory();
+  const rows = useAppSelectorWithArg(selectActivityWeek, { today, own });
+  const streak = own.streak;
   const followsAnyone = useAppSelector(selectFollowsOtherUsers);
 
   if (!followsAnyone) {

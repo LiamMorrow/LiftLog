@@ -38,29 +38,31 @@ export async function importFeed(db: ExpoSQLiteDatabase, keyValueStore: KeyValue
   const convertedFeedItems = getFeedItems(decoded);
   const convertedFollowRequests = getFollowRequests(decoded);
 
-  await db.transaction(async (tx) => {
+  db.transaction((tx) => {
     if (convertedIdentity) {
-      await tx.insert(feedIdentitySchema).values(convertedIdentity);
+      tx.insert(feedIdentitySchema).values(convertedIdentity).run();
     }
     if (convertedFollowers.length) {
-      await tx.insert(feedFollowerUsersSchema).values(convertedFollowers);
+      tx.insert(feedFollowerUsersSchema).values(convertedFollowers).run();
     }
     if (convertedPending.length) {
-      await tx.insert(feedPendingUsersSchema).values(convertedPending);
+      tx.insert(feedPendingUsersSchema).values(convertedPending).run();
     }
     if (convertedFollowedUsers.length) {
-      await tx.insert(feedFollowedUsersSchema).values(convertedFollowedUsers);
+      tx.insert(feedFollowedUsersSchema).values(convertedFollowedUsers).run();
     }
     if (convertedFeedItems.length) {
-      await tx.insert(feedItemsSchema).values(convertedFeedItems);
+      tx.insert(feedItemsSchema).values(convertedFeedItems).run();
     }
     if (convertedFollowRequests.length) {
-      await tx.insert(feedFollowRequestsSchema).values(convertedFollowRequests);
+      tx.insert(feedFollowRequestsSchema).values(convertedFollowRequests).run();
     }
     if (decoded.revokedFollowSecrets.length) {
-      await tx.insert(feedRevokedFollowSecretsSchema).values(decoded.revokedFollowSecrets.map((x) => ({ secret: x })));
+      tx.insert(feedRevokedFollowSecretsSchema)
+        .values(decoded.revokedFollowSecrets.map((x) => ({ secret: x })))
+        .run();
     }
-    await tx.insert(dataMigrationsSchema).values({ id: importFeedDataMigration });
+    tx.insert(dataMigrationsSchema).values({ id: importFeedDataMigration }).run();
   });
 }
 

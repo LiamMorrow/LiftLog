@@ -1,7 +1,9 @@
 import { LiftLog } from '@/gen/proto';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { KeyValueStore } from '../key-value-store';
-import { dataMigrationsSchema, sessionsSchema } from '@/db/schema';
+import { dataMigrationsSchema } from '@/db/schema';
+import { writeSession } from '@/db/sessions';
+import { Session } from '@/models/session-models';
 import { WeightJSON } from '@/models/storage/versions/latest';
 import { PreferenceService } from '../preference-service';
 import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/initial/protobuf-migrator';
@@ -27,22 +29,14 @@ export async function importSessions(
           value: weight.value,
         }
       : undefined;
-  const completedSessionsList: (typeof sessionsSchema.$inferInsert)[] =
+  const completedSessions =
     storedData?.completedSessions.map((x) => {
       const session = sessionMigrations.migrate(ProtobufToJsonV1Migrator.migrateSession(x));
-      return {
-        payload: {
-          ...session,
-          bodyweight: coalesceWeightUnit(session.bodyweight),
-        },
-        id: session.id,
-      } satisfies typeof sessionsSchema.$inferInsert;
+      return Session.fromJSON({ ...session, bodyweight: coalesceWeightUnit(session.bodyweight) });
     }) ?? [];
 
-  await db.transaction(async (tx) => {
-    if (completedSessionsList.length) {
-      await tx.insert(sessionsSchema).values(completedSessionsList);
-    }
-    await tx.insert(dataMigrationsSchema).values({ id: importSessionsDataMigration });
+  db.transaction((tx) => {
+    completedSessions.forEach((session) => writeSession(tx, session));
+    tx.insert(dataMigrationsSchema).values({ id: importSessionsDataMigration }).run();
   });
 }

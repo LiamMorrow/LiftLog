@@ -3,7 +3,14 @@ import { Logger } from '@/services/logger';
 import { showSnackbar } from '@/store/app';
 import { AddEffectFn } from '@/store/store';
 import { upsertSavedPlans } from '@/store/program';
-import { beginFeedImport, importBackupData, importData, importDataProto, importDataSql } from '@/store/settings';
+import {
+  beginFeedImport,
+  importBackupData,
+  importData,
+  importDataProto,
+  importDataSql,
+  selectPreferredWeightUnit,
+} from '@/store/settings';
 import { upsertExercises, upsertStoredSessions } from '@/store/stored-sessions';
 import { streamToUint8Array, writeInChunks } from '@/utils/stream';
 import { sleep } from '@/utils/sleep';
@@ -19,11 +26,9 @@ import {
 } from '@/models/feed-models';
 import { deserializeDatabaseAsync } from 'expo-sqlite';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
-import { eq } from 'drizzle-orm';
 import { DatabaseMigrationService } from '@/services/database-migration-service';
 import { FeedBackupData } from '@/models/backup';
 import {
-  dataMigrationsSchema,
   exercisesSchema,
   feedFollowedUsersSchema,
   feedFollowerUsersSchema,
@@ -32,9 +37,8 @@ import {
   feedItemsSchema,
   feedPendingUsersSchema,
   programsSchema,
-  sessionsSchema,
 } from '@/db/schema';
-import { migrateNilWeightUnitsDataMigration } from '@/services/data-migrations/migrate-nil-weight-units';
+import { readSessions } from '@/db/sessions';
 import { toRecord } from '@/utils/reduce';
 import {
   followRequestInboxMessageMigrations,
@@ -83,9 +87,10 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
     }
   });
 
-  addEffect(importBackupData, async ({ payload }, { dispatch, extra: { db, databaseMigrationService } }) => {
+  addEffect(importBackupData, async ({ payload }, { dispatch, getState }) => {
     const { workouts, programs, exercises, feed, successMessage } = payload;
-    dispatch(upsertStoredSessions(workouts));
+    const preferredWeightUnit = selectPreferredWeightUnit(getState());
+    dispatch(upsertStoredSessions(workouts.map((x) => x.withNoNilWeights(preferredWeightUnit))));
     dispatch(upsertSavedPlans(programs));
     if (exercises) {
       dispatch(upsertExercises(exercises));
@@ -95,9 +100,6 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
         text: successMessage,
       }),
     );
-    // Let the data migration re-run on next launch so imported nil-unit weights get coalesced
-    await db.delete(dataMigrationsSchema).where(eq(dataMigrationsSchema.id, migrateNilWeightUnitsDataMigration));
-    await databaseMigrationService.migrate();
     if (feed) {
       dispatch(beginFeedImport(feed));
     }
@@ -114,9 +116,7 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
       });
 
       await migrator.migrate();
-      const workouts = (await drizzleBackupDb.select().from(sessionsSchema)).map((x) =>
-        Session.fromJSON(sessionMigrations.migrate(x.payload)),
-      );
+      const workouts = readSessions(drizzleBackupDb).sessions;
       const programs = (await drizzleBackupDb.select().from(programsSchema)).reduce(
         toRecord(
           (x) => x.id,

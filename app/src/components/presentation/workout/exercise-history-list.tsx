@@ -24,7 +24,7 @@ export function ExerciseHistoryList(props: {
     <LegendList
       testID="exercise-history-list"
       data={props.exercises}
-      keyExtractor={(exercise, index) => exercise.latestTime?.toString() ?? index.toString()}
+      keyExtractor={(exercise, index) => `${exercise.latestTime?.toString()}-${index}`}
       contentContainerStyle={props.contentContainerStyle}
       renderItem={({ item }) => <ExerciseHistoryEntry exercise={item} />}
       ItemSeparatorComponent={() => <Divider style={{ marginVertical: spacing[4] }} />}

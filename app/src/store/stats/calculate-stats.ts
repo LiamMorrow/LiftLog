@@ -79,8 +79,8 @@ export function calculateStats(
   // --- Bodyweight stats over time ---
   const bodyweightStats: WeightedStatisticOverTime = toStatisticOverTime(bodyWeightStatistics, loadOps);
 
-  // --- Session stats grouped by blueprint name ---
-  const sessionStats: OptionalStatisticOverTime<Weight>[] = [];
+  // --- Session stats grouped by blueprint name, most recently performed first ---
+  const sessionStatGroups: { latestTime: OffsetDateTime; stat: OptionalStatisticOverTime<Weight> }[] = [];
   const sessionsByBlueprint = new Map<string, Session[]>();
   for (const session of sessionsWithExercises) {
     const key = session.blueprint.name;
@@ -101,13 +101,21 @@ export function calculateStats(
     const statsWithValue = statistics.filter((x) => x.value !== undefined);
     const min = statsWithValue.length ? Weight.min(...statsWithValue.map((x) => x.value!)) : Weight.NIL;
     const max = statsWithValue.length ? Weight.max(...statsWithValue.map((x) => x.value!)) : Weight.NIL;
-    sessionStats.push({
-      title: name,
-      statistics,
-      minValue: min,
-      maxValue: max,
-    });
+    const latestTime = group.reduce(
+      (latest, s) => (s.lastExercise?.latestTime?.isAfter(latest) ? s.lastExercise.latestTime : latest),
+      OffsetDateTime.MIN,
+    );
+    sessionStatGroups.push({ latestTime, stat: { title: name, statistics, minValue: min, maxValue: max } });
   }
+  const sessionStats: OptionalStatisticOverTime<Weight>[] = sessionStatGroups
+    .sort((a, b) =>
+      a.latestTime.isEqual(b.latestTime)
+        ? a.stat.title.localeCompare(b.stat.title)
+        : a.latestTime.isAfter(b.latestTime)
+          ? -1
+          : 1,
+    )
+    .map((g) => g.stat);
 
   // --- Exercise stats grouped by normalized exercise name ---
   interface ExerciseStatAcc {
@@ -176,7 +184,8 @@ export function calculateStats(
       const lastSet = ex.lastRecordedSet!;
       if (exerciseStats.latestTime.isBefore(lastSet.set!.completionDateTime)) {
         exerciseStats.latestTime = lastSet.set!.completionDateTime;
-        // How the exercise is programmed now, not how it was the first time it was logged.
+        // The name and axis as the exercise is programmed now, not how it was first logged.
+        exerciseStats.exerciseName = blueprint.name;
         exerciseStats.primary = primaryAxisFor(blueprint);
       }
       exerciseStats.maxWeightStatistics.push({
@@ -206,7 +215,13 @@ export function calculateStats(
 
   // Most recently performed first, so what the user is training now heads the list.
   const exerciseStats: WeightedExerciseStatistics[] = Array.from(exerciseStatsMap.values())
-    .sort((a, b) => (a.latestTime.isEqual(b.latestTime) ? 0 : a.latestTime.isAfter(b.latestTime) ? -1 : 1))
+    .sort((a, b) =>
+      a.latestTime.isEqual(b.latestTime)
+        ? a.exerciseName.localeCompare(b.exerciseName)
+        : a.latestTime.isAfter(b.latestTime)
+          ? -1
+          : 1,
+    )
     .map((ex) => {
       const maxLiftedPerSessionStatistics = toStatisticOverTime(ex.maxWeightStatistics, loadOps);
       const max1RMPerSessionStatistics = toStatisticOverTime(ex.max1RMStatistics, loadOps);

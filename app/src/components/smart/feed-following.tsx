@@ -10,6 +10,7 @@ import { useToday } from '@/hooks/useToday';
 import { FeedUser } from '@/models/feed-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { FollowingActivity, selectFollowingActivity } from '@/store/activity';
+import { useOwnHistory } from '@/components/smart/own-history-provider';
 import { fetchInboxItems, selectFeedFollowing, unfollowFeedUser } from '@/store/feed';
 import { T, useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
@@ -61,7 +62,8 @@ function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const today = useToday();
-  const activity = useAppSelectorWithArg(selectFollowingActivity, today).get(props.userId);
+  const own = useOwnHistory();
+  const activity = useAppSelectorWithArg(selectFollowingActivity, { today, own }).get(props.userId);
   const [confirmUnfollowVisible, setConfirmUnfollowVisible] = useState(false);
 
   const isAccepted = props.user.type === 'FollowedFeedUser';

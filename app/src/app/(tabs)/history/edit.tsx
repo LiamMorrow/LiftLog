@@ -1,8 +1,9 @@
 import SessionComponent from '@/components/smart/session-component';
 import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
 import { spacing } from '@/hooks/useAppTheme';
-import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { selectSession, sessionFinished, updateStoredSession } from '@/store/stored-sessions';
+import { useAppSelector } from '@/store';
+import { sessionFinished, updateStoredSession } from '@/store/stored-sessions';
+import { useSession } from '@/hooks/useSession';
 import { useFinishWorkout } from '@/hooks/useFinishWorkout';
 import { LocalDate } from '@js-joda/core';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
@@ -18,7 +19,7 @@ import PlayCircle from '@expo/material-symbols/play_circle.xml';
 export default function HistoryEditPage() {
   const dispatch = useDispatch();
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
-  const session = useAppSelectorWithArg(selectSession, sessionId);
+  const session = useSession(sessionId);
   const { dismissTo, push } = useRouter();
   const finishWorkout = useFinishWorkout(sessionId);
 

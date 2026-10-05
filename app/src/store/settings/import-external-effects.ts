@@ -3,11 +3,12 @@ import { importBackupData, importFromExternal, selectPreferredWeightUnit } from 
 import { AddEffectFn } from '@/store/store';
 import { setStatsIsDirty } from '@/store/stats';
 import { getExternalImporter } from '@/services/csv-import';
+import { readExistingSessionIds } from '@/db/sessions';
 
 export function addImportExternalEffects(addEffect: AddEffectFn) {
   addEffect(
     importFromExternal,
-    async ({ payload: { format } }, { dispatch, getState, extra: { filePickerService, tolgee, logger } }) => {
+    async ({ payload: { format } }, { dispatch, getState, extra: { db, filePickerService, tolgee, logger } }) => {
       const file = await filePickerService.pickFile();
       if (!file) {
         return;
@@ -20,8 +21,11 @@ export function addImportExternalEffects(addEffect: AddEffectFn) {
 
         // Grouping-key session ids: skip any workout already present so re-importing
         // the same day (FitNotes) or date+Workout slot (StrongLifts) is a no-op.
-        const existingSessions = getState().storedSessions.sessions;
-        const newWorkouts = backupData.workouts.filter((w) => !existingSessions[w.id]);
+        const existingIds = readExistingSessionIds(
+          db,
+          backupData.workouts.map((w) => w.id),
+        );
+        const newWorkouts = backupData.workouts.filter((w) => !existingIds.has(w.id));
         if (newWorkouts.length === 0) {
           dispatch(
             showSnackbar({

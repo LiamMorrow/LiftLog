@@ -12,16 +12,8 @@ const sqlShim: Plugin = {
 const expoSqliteShim: Plugin = {
   name: 'expo-sqlite-shim',
   enforce: 'pre',
-  resolveId(id, importer) {
-    if (id === 'drizzle-orm/expo-sqlite') {
-      return this.resolve('drizzle-orm/libsql', importer, {
-        skipSelf: true,
-      });
-    }
-    if (id === 'drizzle-orm/expo-sqlite/migrator') {
-      return resolve(__dirname, 'test/shims/migrator.ts');
-    }
-    if (id === 'expo-sqlite' || id.startsWith('expo-sqlite/') || id.includes('expo-sqlite')) {
+  resolveId(id) {
+    if (id === 'expo-sqlite' || id.startsWith('expo-sqlite/')) {
       return resolve(__dirname, 'test/shims/expo-sqlite.ts');
     }
   },
@@ -35,6 +27,7 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['**/*.spec.ts', '**/*.spec.tsx'],
     setupFiles: ['./test/setup.ts'],
+    server: { deps: { inline: [/drizzle-orm\/expo-sqlite/] } },
     coverage: {
       provider: 'v8',
       reporter: ['text-summary', 'html', 'json-summary'],

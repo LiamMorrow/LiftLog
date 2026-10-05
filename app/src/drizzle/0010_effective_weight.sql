@@ -1,0 +1,7 @@
+ALTER TABLE `session` ADD `bodyweightKg` real GENERATED ALWAYS AS (CASE "bodyweightUnit" WHEN 'pounds' THEN CAST("bodyweightValue" AS REAL) / 2.20462 ELSE CAST("bodyweightValue" AS REAL) END) VIRTUAL;--> statement-breakpoint
+ALTER TABLE `weighted_set` ADD `weightKg` real GENERATED ALWAYS AS (CASE "weightUnit" WHEN 'pounds' THEN CAST("weightValue" AS REAL) / 2.20462 ELSE CAST("weightValue" AS REAL) END) VIRTUAL;--> statement-breakpoint
+CREATE VIEW `effective_weighted_set` AS select "weighted_set"."sessionId", "weighted_set"."exerciseOrd", "recorded_exercise"."movementKey" as "movementKey", "recorded_exercise"."name" as "exerciseName", "recorded_exercise"."resistance" as "resistance", "weighted_set"."repsCompleted", "weighted_set"."completedAtMs", CASE "recorded_exercise"."resistance"
+        WHEN 'none' THEN 0
+        WHEN 'bodyweight' THEN coalesce("session"."bodyweightKg", 0) + "weighted_set"."weightKg"
+        ELSE "weighted_set"."weightKg"
+      END as "effectiveKg" from "weighted_set" inner join "recorded_exercise" on ("recorded_exercise"."sessionId" = "weighted_set"."sessionId" and "recorded_exercise"."ord" = "weighted_set"."exerciseOrd") inner join "session" on "session"."id" = "weighted_set"."sessionId";

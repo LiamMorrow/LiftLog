@@ -9,7 +9,7 @@ import { Updater } from '@/utils/types';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedWeightedExercise;
-  previousRecordedExercises: RecordedWeightedExercise[];
+  previousLineageExercise: RecordedWeightedExercise | undefined;
   toStartNext: boolean;
   isReadonly: boolean;
   showPreviousButton: boolean;
@@ -31,7 +31,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
   return (
     <ExerciseSection
       recordedExercise={props.recordedExercise}
-      previousRecordedExercises={props.previousRecordedExercises}
+      previousLineageExercise={props.previousLineageExercise}
       toStartNext={props.toStartNext}
       isReadonly={props.isReadonly}
       showPreviousButton={props.showPreviousButton}
@@ -55,11 +55,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
                 resetSetTimer();
               }
             }}
-            previousRepCount={
-              props.previousRecordedExercises
-                .filter((x) => x.progressionKey() === props.recordedExercise.progressionKey())
-                .at(0)?.potentialSets[index]?.set?.repsCompleted
-            }
+            previousRepCount={props.previousLineageExercise?.potentialSets[index]?.set?.repsCompleted}
             onUpdateReps={(reps) => {
               updateExercise((ex) => ex.withRepCount(index, reps, timeProvider()));
               resetSetTimer();

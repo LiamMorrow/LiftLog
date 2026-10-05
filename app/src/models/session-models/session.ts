@@ -25,6 +25,8 @@ import { PotentialSet, RecordedWeightedExercise } from '@/models/session-models/
 import { RestTimer } from '@/models/session-models/rest-timer';
 import { IndexOutOfBoundsError } from '@/utils/index-out-of-bounds';
 
+export const freeformSessionName = 'Freeform Workout';
+
 export class Session {
   constructor(
     readonly id: string,
@@ -80,7 +82,7 @@ export class Session {
     );
   }
 
-  withNoNilWeights(fallbackWeightUnit: WeightUnit): Session | undefined {
+  withNoNilWeights(fallbackWeightUnit: WeightUnit): Session {
     return this.with({
       recordedExercises: this.recordedExercises.map((re) =>
         re instanceof RecordedWeightedExercise
@@ -334,7 +336,7 @@ export class Session {
       id: uuid(),
       date: date,
       bodyweight,
-      blueprint: EmptySession.blueprint.with({ name: 'Freeform Workout' }),
+      blueprint: EmptySession.blueprint.with({ name: freeformSessionName }),
     });
   }
 
@@ -537,7 +539,7 @@ export class Session {
   }
 
   get isFreeform(): boolean {
-    return this.blueprint.name === 'Freeform Workout';
+    return this.blueprint.name === freeformSessionName;
   }
 }
 

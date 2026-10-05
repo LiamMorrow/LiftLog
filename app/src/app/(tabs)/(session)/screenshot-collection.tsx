@@ -13,7 +13,7 @@ import { AiPlan } from '@/models/ai-models';
 import { setStatsIsDirty, fetchOverallStats } from '@/store/stats';
 import { savePlan, setSavedPlans } from '@/store/program';
 import { ProgramBlueprint } from '@/models/blueprint-models';
-import { upsertStoredSessions, setStoredSessions } from '@/store/stored-sessions';
+import { upsertStoredSessions } from '@/store/stored-sessions';
 import {
   setColorSchemeSeed,
   setLastSeenWhatsNewId,
@@ -242,13 +242,14 @@ function buildStatsSessionData(dispatch: ReturnType<typeof useDispatch>) {
     89, 87, 84, 82, 80, 77, 75, 73, 70, 68, 65, 63, 61, 58, 56, 54, 51, 49, 47, 44, 42, 40, 37, 35, 33, 30, 28, 26, 23,
     21, 19, 16, 14, 12, 9, 7, 5, 3, 1,
   ];
+  // Fixed ids, so running this again rewrites the same sessions rather than adding another set of them.
   const sessions = daysAgoList.map((daysAgo, i) => {
-    if (i % 3 === 0) return push(daysAgo, i);
-    if (i % 3 === 1) return pull(daysAgo, i);
-    return legs(daysAgo, i);
+    const id = `00000000-0000-4000-8000-${i.toString().padStart(12, '0')}`;
+    if (i % 3 === 0) return push(daysAgo, i).with({ id });
+    if (i % 3 === 1) return pull(daysAgo, i).with({ id });
+    return legs(daysAgo, i).with({ id });
   });
 
-  dispatch(setStoredSessions({}));
   dispatch(upsertStoredSessions(sessions));
   dispatch(setStatsIsDirty(true));
   dispatch(fetchOverallStats());

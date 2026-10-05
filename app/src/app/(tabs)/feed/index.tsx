@@ -2,6 +2,7 @@ import Feed from '@/components/smart/feed';
 import { FeedFollowers } from '@/components/smart/feed-followers';
 import { FeedFollowing } from '@/components/smart/feed-following';
 import { FeedMenu } from '@/components/smart/feed-menu';
+import { OwnHistoryProvider } from '@/components/smart/own-history-provider';
 import { ScrollProvider, useScroll, useScrollHeaderColor } from '@/hooks/useScrollListener';
 import { useAppSelector } from '@/store';
 import { selectFollowRequestCount } from '@/store/feed';
@@ -34,7 +35,7 @@ export default function FeedIndexPage() {
   const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
   const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
   return (
-    <>
+    <OwnHistoryProvider>
       <Stack.Screen options={{ title: t('feed.feed.title') }} />
       <FeedMenu />
       <TabsProvider onChangeIndex={setActiveTabIndex}>
@@ -64,6 +65,6 @@ export default function FeedIndexPage() {
           </TabScreen>
         </Tabs>
       </TabsProvider>
-    </>
+    </OwnHistoryProvider>
   );
 }

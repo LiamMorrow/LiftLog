@@ -51,7 +51,7 @@ function sessionWithRestTimer(restTimerStartTime: OffsetDateTime): Session {
 /** The slice shape the worker effects read: the session in the map, and the pointer at it. */
 function withActiveSession(session: Session | undefined) {
   return {
-    sessions: session ? { [session.id]: session } : {},
+    openSessions: session ? { [session.id]: session } : {},
     activeSessionId: session?.id,
   } as Partial<RootState>['storedSessions'];
 }

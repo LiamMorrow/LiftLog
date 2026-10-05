@@ -22,7 +22,7 @@ import OpenInBrowser from '@expo/material-symbols/open_in_browser.xml';
 
 interface ExerciseSectionProps<T extends RecordedExercise> {
   recordedExercise: T;
-  previousRecordedExercises: RecordedExercise[];
+  previousLineageExercise: RecordedExercise | undefined;
   toStartNext: boolean;
   isReadonly: boolean;
   showPreviousButton: boolean;
@@ -147,10 +147,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
           {interactiveButtons}
         </View>
         {props.children}
-        <ExerciseNotesDisplay
-          exercise={props.recordedExercise}
-          previousExercise={props.previousRecordedExercises.at(0)}
-        />
+        <ExerciseNotesDisplay exercise={props.recordedExercise} previousExercise={props.previousLineageExercise} />
       </View>
 
       <RecordedExerciseNotesEditor

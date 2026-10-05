@@ -15,7 +15,6 @@ import {
 import { uuid } from '@/utils/uuid';
 import { AsyncStream } from 'data-async-iterators';
 import { Logger } from '@/services/logger';
-import { selectLatestExercises } from '../stored-sessions';
 import { programsSchema } from '@/db/schema';
 import { toLocalDateJSON } from '@/models/storage/versions/latest';
 import { programBlueprintMigrations } from '@/models/storage/versions/migrations';
@@ -110,9 +109,7 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
       }
       await yieldToEventLoop();
 
-      const sessions = await AsyncStream.from(
-        sessionService.getUpcomingSessions(sessionBlueprints, selectLatestExercises(state)),
-      )
+      const sessions = await AsyncStream.from(sessionService.getUpcomingSessions(sessionBlueprints))
         .takeWhile(() => !signal.aborted)
         .take(numberOfUpcomingSessions)
         .toArray();
@@ -132,17 +129,17 @@ async function persistPrograms(
   throwIfCancelled: () => void,
 ) {
   try {
-    await db.transaction(async (tx) => {
-      throwIfCancelled();
-      await tx.delete(programsSchema);
-      await tx.insert(programsSchema).values(
-        Object.entries(stateAfterReduce.program.savedPrograms).map(([key, program]) => ({
-          id: key,
-          active: key === stateAfterReduce.program.activePlanId,
-          payload: program.toJSON(),
-        })),
-      );
-      throwIfCancelled();
+    const rows = Object.entries(stateAfterReduce.program.savedPrograms).map(([key, program]) => ({
+      id: key,
+      active: key === stateAfterReduce.program.activePlanId,
+      payload: program.toJSON(),
+    }));
+    throwIfCancelled();
+    db.transaction((tx) => {
+      tx.delete(programsSchema).run();
+      if (rows.length) {
+        tx.insert(programsSchema).values(rows).run();
+      }
     });
   } catch (e) {
     if (e instanceof TaskAbortError) {
