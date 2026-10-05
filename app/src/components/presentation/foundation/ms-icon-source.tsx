@@ -127,6 +127,7 @@ import { msTerminal } from '@material-symbols-react-native/outlined-400/msTermin
 import { msTrendingUp } from '@material-symbols-react-native/outlined-400/msTrendingUp';
 import { msCampaign } from '@material-symbols-react-native/outlined-400/msCampaign';
 import { msVisibilityOff } from '@material-symbols-react-native/outlined-400/msVisibilityOff';
+import { msVolumeUp } from '@material-symbols-react-native/outlined-400/msVolumeUp';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -157,6 +158,7 @@ const MaterialSymbols = {
   info: msInfo,
   visibility: msVisibility,
   visibilityOff: msVisibilityOff,
+  volumeUp: msVolumeUp,
   minus: msRemove,
   trendingUp: msTrendingUp,
   moreHoriz: msMoreHoriz,

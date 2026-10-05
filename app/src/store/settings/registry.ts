@@ -61,6 +61,7 @@ export const preferenceRegistry = {
   showBodyweight: pref({ default: true, codec: boolCodec }),
   showFeed: pref({ default: true, codec: boolCodec }),
   restNotifications: pref({ default: true, codec: boolCodec }),
+  restCountdownTones: pref({ default: false, codec: boolCodec }),
   restTimersEnabled: pref({ default: true, codec: boolCodec }),
   crashReportsEnabled: pref({ default: true, codec: boolCodec }),
   welcomeWizardCompleted: pref({ default: false, codec: boolCodec }),
