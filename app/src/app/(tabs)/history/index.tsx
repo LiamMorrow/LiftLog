@@ -32,7 +32,7 @@ import { uuid } from '@/utils/uuid';
 import { LocalDate, YearMonth } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useDeferredValue, useState } from 'react';
 import { View } from 'react-native';
 import { LegendList } from '@legendapp/list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -64,8 +64,10 @@ function History() {
     x.program.upcomingSessions.map((x) => x.at(0)?.bodyweight).unwrapOr(undefined),
   );
   const [selectedDate, setSelectedDate] = useState<LocalDate>();
-  const from = selectedDate ?? currentYearMonth.atDay(1);
-  const to = selectedDate ?? currentYearMonth.atEndOfMonth();
+  const listedYearMonth = useDeferredValue(currentYearMonth);
+  const listedDate = useDeferredValue(selectedDate);
+  const from = listedDate ?? listedYearMonth.atDay(1);
+  const to = listedDate ?? listedYearMonth.atEndOfMonth();
   const visibleSessions =
     useSessionsQuery(
       (db) =>
@@ -192,12 +194,12 @@ function History() {
           </Card>
         )}
         ListEmptyComponent={
-          selectedDate ? (
+          listedDate ? (
             <View style={{ gap: spacing[4], alignItems: 'center' }}>
               <EmptyInfo>
                 <LimitedHtml
                   value={t('history.calendar.no_sessions_on_day.message', {
-                    date: formatDate(selectedDate, { day: 'numeric', month: 'long' }),
+                    date: formatDate(listedDate, { day: 'numeric', month: 'long' }),
                   })}
                 />
               </EmptyInfo>
@@ -205,7 +207,7 @@ function History() {
                 mode="contained"
                 icon="plus"
                 testID="history-add-workout-on-day"
-                onPress={() => createSessionAtDate(selectedDate)}
+                onPress={() => createSessionAtDate(listedDate)}
               >
                 <T keyName="history.calendar.add_workout.button" />
               </Button>
@@ -214,7 +216,7 @@ function History() {
             <EmptyInfo>
               <LimitedHtml
                 value={t('workout.no_sessions_in_month.message', {
-                  month: formatDate(currentYearMonth.atDay(1), {
+                  month: formatDate(listedYearMonth.atDay(1), {
                     month: 'long',
                   }),
                 })}

@@ -1,17 +1,14 @@
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { useMountEffect } from '@/hooks/useMountEffect';
 import { ActivityCell, ActivityRow } from '@/store/activity';
 import { getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek, LocalDate } from '@js-joda/core';
-import { ReactNode, useMemo } from 'react';
-import { Animated, Easing, I18nManager, useAnimatedValue, View, ViewStyle } from 'react-native';
+import { ReactNode } from 'react';
+import { I18nManager, View, ViewStyle } from 'react-native';
 import { ActivityDayCell } from '@/components/presentation/calendar/activity-day-cell';
 import { ActivityWeekCell } from '@/components/presentation/calendar/activity-week-cell';
-import { cellEntrance } from '@/components/presentation/calendar/activity-entrance';
 
-const ENTRANCE_DURATION_MS = 450;
 /** Keeps every row's cells aligned under one another regardless of how long the names are. */
 const LABEL_WIDTH = 64;
 const TRAILING_WIDTH = 72;
@@ -42,17 +39,6 @@ export function ActivityCalendar({
 }: ActivityCalendarProps) {
   const formatDate = useFormatDate();
 
-  const progress = useAnimatedValue(0);
-  useMountEffect(() => {
-    Animated.timing(progress, {
-      toValue: 1,
-      duration: ENTRANCE_DURATION_MS,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start();
-  });
-
-  const totalCells = rows.reduce((total, row) => total + row.cells.length, 0);
   const isWeek = density === 'week';
 
   // A week row ends on today rather than on the last day of the week, so naming its columns from
@@ -62,12 +48,6 @@ export function ActivityCalendar({
     : Array.from({ length: 7 }, (_, offset) =>
         getDateOnDay(DayOfWeek.of((((firstDayOfWeek ?? DayOfWeek.MONDAY).ordinal() + offset) % 7) + 1)),
       );
-
-  // Held so the memoized cells don't re-render on every parent render.
-  const entrances = useMemo(
-    () => Array.from({ length: totalCells }, (_, index) => cellEntrance(progress, index, totalCells)),
-    [progress, totalCells],
-  );
 
   return (
     <View style={{ alignItems: 'stretch', gap: spacing[1] }}>
@@ -90,25 +70,22 @@ export function ActivityCalendar({
         {isWeek && renderRowTrailing && <View style={{ width: TRAILING_WIDTH }} />}
       </View>
 
-      {rows.map((row, rowIndex) => {
+      {rows.map((row) => {
         const cells = (
           <ForceLTRRow style={{ flex: 1, gap: spacing[1] }}>
-            {row.cells.map((cell, columnIndex) => {
+            {row.cells.map((cell, columnIndex) =>
               // Position, not date: keying by date would remount all 42 cells on every month change.
-              const entrance = entrances[rowIndex * 7 + columnIndex]!;
-
-              return isWeek ? (
-                <ActivityWeekCell key={columnIndex} cell={cell} entrance={entrance} />
+              isWeek ? (
+                <ActivityWeekCell key={columnIndex} cell={cell} />
               ) : (
                 <ActivityDayCell
                   key={columnIndex}
                   cell={cell}
                   isSelected={!!selectedDate?.isEqual(cell.date)}
-                  entrance={entrance}
                   onPress={onCellPress}
                 />
-              );
-            })}
+              ),
+            )}
           </ForceLTRRow>
         );
 
