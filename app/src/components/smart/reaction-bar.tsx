@@ -1,8 +1,7 @@
 import { FloatingEmoji, FloatingEmojiLayer } from '@/components/presentation/feed/floating-emoji';
 import Button from '@/components/presentation/foundation/button';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
-import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { spacing } from '@/hooks/useAppTheme';
 import { REACTION_EMOJIS, ReactionEmoji } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import { cheerFeedItem, selectSentReactionsByEvent } from '@/store/feed';
@@ -18,7 +17,6 @@ interface ReactionBarProps {
 
 export function ReactionBar({ eventId, animateOnMount }: ReactionBarProps) {
   const dispatch = useDispatch();
-  const { colors } = useAppTheme();
   const sentByEvent = useAppSelector(selectSentReactionsByEvent);
   const sent = useMemo(() => sentByEvent.get(eventId) ?? [], [sentByEvent, eventId]);
 
