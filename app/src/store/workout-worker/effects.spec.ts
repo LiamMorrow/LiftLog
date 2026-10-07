@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { OffsetDateTime, ZoneOffset } from '@js-joda/core';
+import { Duration, OffsetDateTime, ZoneOffset } from '@js-joda/core';
 import {
   activeSessionUpdated,
   broadcastWorkoutEvent,
@@ -235,6 +235,41 @@ describe('workout-worker effects', () => {
 
       expect(clearSetTimerNotification).toHaveBeenCalled();
       expect(scheduleNextSetNotification).toHaveBeenCalled();
+    });
+
+    it('reschedules an expired rest after a failure correction and cancels when corrected back', async () => {
+      const start = OffsetDateTime.now().minusSeconds(20);
+      const original = sessionWithRestTimer(start);
+      const exercise = (original.recordedExercises[0] as RecordedWeightedExercise).with({
+        blueprint: (original.recordedExercises[0] as RecordedWeightedExercise).blueprint.with({
+          restBetweenSets: {
+            minRest: Duration.ofSeconds(5),
+            maxRest: Duration.ofSeconds(5),
+            failureRest: Duration.ofMinutes(5),
+          },
+        }),
+      });
+      const before = original.withExercise(0, exercise);
+      const after = before.withWeightedExercise(0, exercise.withRepCount(0, 4, OffsetDateTime.now()));
+      const { testBed, scheduleNextSetNotification, clearSetTimerNotification } = notifyTestBed(
+        { restNotifications: true, restTimersEnabled: true },
+        after,
+      );
+      await testBed.dispatchHandled(activeSessionUpdated({ before, after }));
+      testBed.getDispatchedAction(notifySetTimer);
+      const update = broadcastUpdateEvents(testBed)[0];
+      expect(update?.restTimerInfo?.startedAt).toBe(start.toInstant().toString());
+      expect(update?.restTimerInfo?.endAt).toBe(start.plusMinutes(5).toInstant().toString());
+      await testBed.dispatchHandled(notifySetTimer());
+      expect(scheduleNextSetNotification).toHaveBeenCalledWith(start.plusMinutes(5));
+
+      testBed.setState({ storedSessions: withActiveSession(before) });
+      scheduleNextSetNotification.mockClear();
+      clearSetTimerNotification.mockClear();
+      await testBed.dispatchHandled(activeSessionUpdated({ before: after, after: before }));
+      await testBed.dispatchHandled(notifySetTimer());
+      expect(clearSetTimerNotification).toHaveBeenCalledOnce();
+      expect(scheduleNextSetNotification).not.toHaveBeenCalled();
     });
 
     it('notifySetTimer does nothing extra when rest notifications are disabled', async () => {
