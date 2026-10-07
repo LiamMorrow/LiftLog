@@ -10,9 +10,15 @@ import { Provider } from 'react-redux';
 // Create context for services
 const ServicesContext = createContext<Services | null>(null);
 
+async function openWalDatabase() {
+  const db = await openDatabaseAsync('db.db');
+  await db.execAsync('PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL;');
+  return db;
+}
+
 let databasePromise: Promise<SQLiteDatabase> | undefined;
 function openDatabase() {
-  return (databasePromise ??= openDatabaseAsync('db.db'));
+  return (databasePromise ??= openWalDatabase());
 }
 
 export default function ServicesProvider(props: { children: ReactNode }) {
