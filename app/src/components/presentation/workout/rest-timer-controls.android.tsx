@@ -17,7 +17,7 @@ export function RestTimerControls({ paused, onRestart, onTogglePause, onDismiss 
   return (
     <Host matchContents seedColor={colors.seedColor} colorScheme={colors.scheme}>
       <Row horizontalArrangement={{ spacedBy: spacing[1] }} verticalAlignment="center">
-        <IconButton onClick={onRestart}>
+        <IconButton colors={{ contentColor: colors.onSurface }} onClick={onRestart}>
           <Icon source={RestartIcon} size={restControlIconSize} contentDescription={t('rest_timer.restart')} />
         </IconButton>
         {/* Pausing is a state, not an action, so it gets the control Material has for state: the
@@ -29,7 +29,7 @@ export function RestTimerControls({ paused, onRestart, onTogglePause, onDismiss 
             contentDescription={paused ? t('rest_timer.resume') : t('rest_timer.pause')}
           />
         </FilledIconToggleButton>
-        <IconButton onClick={onDismiss}>
+        <IconButton colors={{ contentColor: colors.onSurface }} onClick={onDismiss}>
           <Icon source={DismissIcon} size={restControlIconSize} contentDescription={t('rest_timer.dismiss')} />
         </IconButton>
       </Row>
