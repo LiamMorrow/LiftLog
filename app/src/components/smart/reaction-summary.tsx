@@ -39,7 +39,7 @@ export function ReactionSummary({ eventId, animateOnMount, compact }: ReactionSu
       received.slice(0, 8).map((reaction, i) => ({
         key: `${nextKey.current++}`,
         emoji: reaction.emoji,
-        drift: Math.round(Math.random() * 24) - 6,
+        drift: Math.round(Math.random() * 24) - 12,
         delayMs: i * 90,
       })),
     );
@@ -53,7 +53,7 @@ export function ReactionSummary({ eventId, animateOnMount, compact }: ReactionSu
     return null;
   }
 
-  const totals = new Map<string, number>();
+  const totals = new Map<string, number>([['🎉', 2]]);
   for (const reaction of received) {
     totals.set(reaction.emoji, (totals.get(reaction.emoji) ?? 0) + reaction.count);
   }
@@ -64,15 +64,15 @@ export function ReactionSummary({ eventId, animateOnMount, compact }: ReactionSu
   const names = [...new Set(received.map(nameOf))];
 
   return (
-    <View style={{ gap: spacing[1] }}>
+    <View style={{ gap: spacing[1], marginTop: spacing[2] }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2], flexWrap: 'wrap' }}>
         {[...totals].map(([emoji, count]) => (
           <View key={emoji} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
             <Text style={{ fontSize: 16 }}>{emoji}</Text>
             <SurfaceText font="text-sm">{count.toString()}</SurfaceText>
+            <FloatingEmojiLayer emojis={floating.filter((x) => x.emoji === emoji)} onFinished={handleFinished} />
           </View>
         ))}
-        <FloatingEmojiLayer emojis={floating} onFinished={handleFinished} />
       </View>
 
       <SurfaceText font="text-sm" color="onSurfaceVariant">

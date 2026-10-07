@@ -17,7 +17,7 @@ interface FloatingEmojiLayerProps {
   onFinished: (key: string) => void;
 }
 
-/** Sits above the cheer buttons and lets them through - purely decorative. */
+/** Sits above the element it is placed in, rising from its centre, and lets touches through - purely decorative. */
 export function FloatingEmojiLayer({ emojis, onFinished }: FloatingEmojiLayerProps) {
   if (emojis.length === 0) {
     return null;
@@ -50,9 +50,12 @@ function RisingEmoji({ emoji, onFinished }: { emoji: FloatingEmoji; onFinished: 
       style={{
         position: 'absolute',
         bottom: 0,
-        left: emoji.drift,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
         opacity: anim.interpolate({ inputRange: [0, 0.15, 0.7, 1], outputRange: [0, 1, 1, 0] }),
         transform: [
+          { translateX: emoji.drift },
           { translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [0, -RISE_DISTANCE] }) },
           { scale: anim.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0.6, 1.1, 0.9] }) },
         ],
