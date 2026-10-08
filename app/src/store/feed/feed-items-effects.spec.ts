@@ -3,7 +3,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 import { Instant, LocalDate } from '@js-joda/core';
 import { addFeedItemEffects, publishSessionAsync } from '@/store/feed/feed-items-effects';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
-import feedReducer, { fetchFeedItems } from '@/store/feed';
+import feedReducer, { fetchFeedItems, putFollowedUser, putFollowedUsers } from '@/store/feed';
 import { storedSessionsReducer } from '@/store/stored-sessions';
 import { FeedIdentity, FEED_EVENT_RETENTION_SECONDS, FollowedFeedUser, SessionUserEvent } from '@/models/feed-models';
 import { Session } from '@/models/session-models';
@@ -138,8 +138,8 @@ describe('publishSessionAsync', () => {
 const FOLLOWED_ID = 'followed-1';
 const followedPublicKey: RsaPublicKey = { spkiPublicKeyBytes: new Uint8Array([1]) };
 
-function followedUser(): FollowedFeedUser {
-  return new FollowedFeedUser(FOLLOWED_ID, followedPublicKey, 'Alice', undefined, {} as AesKey, 'follow-secret');
+function followedUser(id = FOLLOWED_ID): FollowedFeedUser {
+  return new FollowedFeedUser(id, followedPublicKey, 'Alice', undefined, {} as AesKey, `follow-secret-${id}`);
 }
 
 /** A session event payload as it arrives over the wire, at an arbitrary schema version. */
@@ -154,7 +154,7 @@ function eventPayload(eventId: string, version: number): Uint8Array {
   return toJsonBytes({ ...event.toJSON(), version });
 }
 
-function ingestionTestBed(events: { eventId: string; version: number }[]) {
+function ingestionTestBed(events: { eventId: string; version: number }[], followedIds = [FOLLOWED_ID]) {
   const services = {
     feedApiService: {
       getUserEventsAsync: vi.fn().mockResolvedValue(
@@ -170,7 +170,9 @@ function ingestionTestBed(events: { eventId: string; version: number }[]) {
           invalidFollowSecrets: [],
         }),
       ),
-      getUsersAsync: vi.fn().mockResolvedValue(ApiResult.success({ users: { [FOLLOWED_ID]: {} } })),
+      getUsersAsync: vi
+        .fn()
+        .mockResolvedValue(ApiResult.success({ users: Object.fromEntries(followedIds.map((id) => [id, {}])) })),
     },
     encryptionService: {
       decryptAesCbcAndVerifyRsa256PssAsync: vi.fn((payload: { encryptedPayload: Uint8Array }) =>
@@ -181,7 +183,7 @@ function ingestionTestBed(events: { eventId: string; version: number }[]) {
 
   const testBed = createAddEffectTestBed({
     initialState: {
-      feed: { followedUsers: { [FOLLOWED_ID]: followedUser() } },
+      feed: { followedUsers: Object.fromEntries(followedIds.map((id) => [id, followedUser(id)])) },
     },
     services: services,
     reducer: combineReducers({ feed: feedReducer, storedSessions: storedSessionsReducer }),
@@ -223,5 +225,17 @@ describe('fetchFeedItems ingestion', () => {
     await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
 
     expect(ingestedEventIds(testBed).sort()).toEqual(['good-1', 'good-2']);
+  });
+
+  it('refreshes every followed user in a single dispatch', async () => {
+    const testBed = ingestionTestBed([{ eventId: 'e1', version: 3 }], [FOLLOWED_ID, 'followed-2', 'followed-3']);
+
+    await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
+
+    const puts = testBed.dispatchedActions.filter((x) => putFollowedUsers.match(x));
+    expect(puts.map((x) => x.payload.map((user) => user.id).sort())).toEqual([
+      [FOLLOWED_ID, 'followed-2', 'followed-3'],
+    ]);
+    testBed.expectNotDispatched(putFollowedUser);
   });
 });

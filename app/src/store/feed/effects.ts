@@ -10,6 +10,7 @@ import {
   initializeFeedStateSlice,
   patchFeedState,
   putFollowedUser,
+  putFollowedUsers,
   removeFeedItems,
   removeFollowedUser,
   removeFollower,
@@ -53,8 +54,10 @@ import {
 } from '@/db/schema';
 import { eq, inArray, sql } from 'drizzle-orm';
 import { upsert } from '@/db/helpers';
+import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import {
   FeedIdentity,
+  FeedUser,
   FollowerFeedUser,
   FollowRequestInboxMessage,
   fromFeedUserJSON,
@@ -203,25 +206,10 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     await db.delete(feedFollowRequestsSchema).where(eq(feedFollowRequestsSchema.id, action.payload.senderUserId));
   });
   addEffect(putFollowedUser, async (action, { extra: { db } }) => {
-    db.transaction((tx) => {
-      if (action.payload.type === 'PendingFeedUser') {
-        upsert(tx, feedPendingUsersSchema, [
-          {
-            id: action.payload.id,
-            payload: action.payload.toJSON(),
-          },
-        ]);
-        tx.delete(feedFollowedUsersSchema).where(eq(feedFollowedUsersSchema.id, action.payload.id)).run();
-      } else {
-        tx.delete(feedPendingUsersSchema).where(eq(feedPendingUsersSchema.id, action.payload.id)).run();
-        upsert(tx, feedFollowedUsersSchema, [
-          {
-            id: action.payload.id,
-            payload: action.payload.toJSON(),
-          },
-        ]);
-      }
-    });
+    db.transaction((tx) => writeFollowedUser(tx, action.payload));
+  });
+  addEffect(putFollowedUsers, async (action, { extra: { db } }) => {
+    db.transaction((tx) => action.payload.forEach((user) => writeFollowedUser(tx, user)));
   });
   addEffect(upsertFeedItems, async (action, { extra: { db } }) => {
     upsert(
@@ -457,6 +445,16 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
   addInboxEffects(addEffect);
   addFollowingEffects(addEffect);
   addReactionEffects(addEffect);
+}
+
+function writeFollowedUser(tx: ExpoSQLiteDatabase, user: FeedUser) {
+  if (user.type === 'PendingFeedUser') {
+    upsert(tx, feedPendingUsersSchema, [{ id: user.id, payload: user.toJSON() }]);
+    tx.delete(feedFollowedUsersSchema).where(eq(feedFollowedUsersSchema.id, user.id)).run();
+  } else {
+    tx.delete(feedPendingUsersSchema).where(eq(feedPendingUsersSchema.id, user.id)).run();
+    upsert(tx, feedFollowedUsersSchema, [{ id: user.id, payload: user.toJSON() }]);
+  }
 }
 
 // There was a period of time where we generated bad keys on IOS

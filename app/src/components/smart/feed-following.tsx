@@ -29,6 +29,9 @@ export function FeedFollowing() {
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
+  const today = useToday();
+  const own = useOwnHistory();
+  const activityByUser = useAppSelectorWithArg(selectFollowingActivity, { today, own });
   return (
     <LegendList
       style={{ flex: 1 }}
@@ -47,8 +50,11 @@ export function FeedFollowing() {
       refreshing={fetchingFeedItems}
       onScroll={handleScroll}
       data={following}
+      extraData={activityByUser}
       keyExtractor={(x) => x.userId}
-      renderItem={({ item }) => <FeedFollowingItem user={item.user} userId={item.userId} />}
+      renderItem={({ item }) => (
+        <FeedFollowingItem user={item.user} userId={item.userId} activity={activityByUser.get(item.userId)} />
+      )}
       ItemSeparatorComponent={() => <View style={{ height: spacing[2] }} />}
       contentContainerStyle={{
         padding: spacing.pageHorizontalMargin,
@@ -58,12 +64,10 @@ export function FeedFollowing() {
   );
 }
 
-function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
+function FeedFollowingItem(props: { user: FeedUser; userId: string; activity: FollowingActivity | undefined }) {
+  const { activity } = props;
   const dispatch = useDispatch();
   const { t } = useTranslate();
-  const today = useToday();
-  const own = useOwnHistory();
-  const activity = useAppSelectorWithArg(selectFollowingActivity, { today, own }).get(props.userId);
   const [confirmUnfollowVisible, setConfirmUnfollowVisible] = useState(false);
 
   const isAccepted = props.user.type === 'FollowedFeedUser';

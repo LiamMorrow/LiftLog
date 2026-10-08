@@ -8,7 +8,7 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import {
   addFollower,
   clearFeedState,
-  putFollowedUser,
+  putFollowedUsers,
   resetFeedAccount,
   setFollowRequests,
   setIdentity,
@@ -111,7 +111,7 @@ function ImportFeedDialog({ open, setOpen }: DialogProps) {
     dispatch(setIdentity(RemoteData.success(importedFeedState.identity)));
     dispatch(upsertFeedItems(importedFeedState.feedItems));
     dispatch(setFollowRequests(importedFeedState.followRequests));
-    importedFeedState.followed.forEach((x) => dispatch(putFollowedUser(x)));
+    dispatch(putFollowedUsers(importedFeedState.followed));
     importedFeedState.followers.forEach((x) => dispatch(addFollower(x)));
     setOpen(false);
   };

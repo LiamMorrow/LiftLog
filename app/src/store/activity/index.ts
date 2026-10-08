@@ -302,9 +302,13 @@ export const selectFollowingActivity = createSelector(
           };
         });
 
+        const trainedOn = (date: string) =>
+          isOwn
+            ? (own.days.get(date)?.sessionCount ?? 0) > 0
+            : (feedEvents.get(date) ?? []).some((event) => event.userId === userId);
         const lastWorkoutDate = [...(isOwn ? own.days : feedEvents).keys()]
+          .filter(trainedOn)
           .map((date) => LocalDate.parse(date))
-          .filter((date) => activityOn(date).sessionCount > 0)
           .reduce<LocalDate | undefined>(
             (latest, date) => (!latest || date.isAfter(latest) ? date : latest),
             undefined,

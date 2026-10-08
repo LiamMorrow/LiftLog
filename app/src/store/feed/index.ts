@@ -98,6 +98,11 @@ const feedSlice = createSlice({
     putFollowedUser(state, action: PayloadAction<FeedUser>) {
       state.followedUsers[action.payload.id] = action.payload;
     },
+    putFollowedUsers(state, action: PayloadAction<FeedUser[]>) {
+      for (const user of action.payload) {
+        state.followedUsers[user.id] = user;
+      }
+    },
     upsertFeedItems(state, action: PayloadAction<SessionUserEvent[]>) {
       const ids = action.payload.map((x) => x.id);
       state.feed = state.feed.filter((x) => !ids.includes(x.id)).concat(action.payload);
@@ -205,6 +210,7 @@ export const {
   removeFollowRequest,
   upsertFeedItems,
   putFollowedUser,
+  putFollowedUsers,
   removeFollowedUser,
   addRevokableFollowSecret,
   removeRevokableFollowSecret,

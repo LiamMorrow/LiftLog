@@ -5,7 +5,7 @@ import {
   feedApiError,
   fetchFeedItems,
   setIsFetching,
-  putFollowedUser,
+  putFollowedUsers,
   removeFeedItems,
   upsertFeedItems,
 } from '@/store/feed';
@@ -123,7 +123,7 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
         .concat(Object.values(originalFollowedUsers).filter((user) => user.type === 'PendingFeedUser'))
         .filter((user) => user.type === 'PendingFeedUser' || !invalidFollowSecrets.has(user.followSecret || ''));
 
-      newUsers.forEach((user) => dispatch(putFollowedUser(user)));
+      dispatch(putFollowedUsers(newUsers));
 
       // Decrypt and process feed events
       const feedItems = (
