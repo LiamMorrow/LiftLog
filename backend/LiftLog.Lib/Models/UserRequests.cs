@@ -68,7 +68,9 @@ public record GetEventsResponse(UserEventResponse[] Events, string[] InvalidFoll
 // RSA has max message size of key size, so chunk if necessary
 public record PutInboxMessageRequest(Guid ToUserId, byte[][] EncryptedMessage);
 
-public record GetInboxMessagesRequest(Guid UserId, string Password);
+public record GetInboxMessagesRequest(Guid UserId, string Password, bool ManualAck = false);
+
+public record AckInboxMessagesRequest(Guid UserId, string Password, Guid[] Ids);
 
 // Encrypted with the requester's public key, which they store on their client
 public record GetInboxMessageResponse(Guid Id, byte[][] EncryptedMessage);
