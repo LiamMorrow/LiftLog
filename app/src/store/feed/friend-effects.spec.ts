@@ -7,6 +7,7 @@ import {
   fetchInboxItems,
   rejectLegacyFollowRequests,
   removeFriend,
+  repairFriends,
   requestFriend,
   revokeFollowSecrets,
   rotateFeedKey,
@@ -18,6 +19,8 @@ import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { feedFollowRequestsSchema, feedRevokedFollowSecretsSchema } from '@/db/schema';
 import { readFriends } from '@/db/feed-friends';
 import { enqueueOutboxMessages } from '@/db/feed-outbox';
+import { readFriendRepairs, writeFriendRepairs } from '@/db/feed-friend-repair';
+import { addRepairEffects } from '@/store/feed/repair-effects';
 import { makeFriend } from '@/store/feed/__test__/friends';
 import {
   deliver,
@@ -433,5 +436,104 @@ describe('friend handshake end to end', () => {
     expect(friend(bob.testBed, 'alice')).toMatchObject({ status: 'friend', theirSecret: alicesSecret });
     expect(outboxRows(alice.db)).toEqual([['bob', 'FriendKeys']]);
     expect(outboxRows(bob.db)).toEqual([]);
+  });
+});
+
+describe('repairing a friendship end to end', () => {
+  const repairRow = (friendId: string, awaitingReply: boolean) => ({
+    friendId,
+    kind: 'staleKeys' as const,
+    firstNoticedAtMs: 0,
+    lastSentAtMs: 0,
+    attempts: 1,
+    awaitingReply,
+  });
+
+  it('keys from a friend we asked to repair get ours back, once', async () => {
+    const bed = await makeInboxTestBed({ friends: [makeFriend('bob')] });
+    writeFriendRepairs(bed.db, [repairRow('bob', true)]);
+    deliver(bed.services, [
+      { json: inbox.friendKeys('bob'), sentAtMs: 1 },
+      { json: inbox.friendKeys('bob'), sentAtMs: 2 },
+    ]);
+
+    await poll(bed.testBed);
+
+    expect(outboxRows(bed.db)).toEqual([['bob', 'FriendKeys']]);
+    expect(readFriendRepairs(bed.db)).toMatchObject([{ friendId: 'bob', awaitingReply: false }]);
+  });
+
+  it('keys from a friend we did not ask get no reply', async () => {
+    const bed = await makeInboxTestBed({ friends: [makeFriend('bob')] });
+    writeFriendRepairs(bed.db, [repairRow('bob', false)]);
+    deliver(bed.services, [inbox.friendKeys('bob')]);
+
+    await poll(bed.testBed);
+
+    expect(outboxRows(bed.db)).toEqual([]);
+  });
+
+  it('reconnects with a friend who restored a backup from before we met', async () => {
+    const alice = await makeInboxTestBed({ friends: [makeFriend('bob')] });
+    addRepairEffects(alice.testBed.addEffect);
+    const bob = await makeInboxTestBed();
+
+    await alice.testBed.dispatchHandled(repairFriends({ undecryptable: ['bob'] }));
+    deliver(bob.services, [{ json: inbox.friendRequest('alice'), sentAtMs: 1 }]);
+    await poll(bob.testBed);
+    expect(friend(bob.testBed, 'alice')?.status).toBe('incoming');
+
+    await bob.testBed.dispatchHandled(acceptFriendRequest({ friendId: 'alice', fromUserAction: true }));
+    const bobsSecret = friend(bob.testBed, 'alice')!.mySecret!;
+    deliver(alice.services, [{ json: inbox.friendKeys('bob', ['bmV3'], bobsSecret), sentAtMs: 2 }]);
+    await poll(alice.testBed);
+
+    const alicesSecret = friend(alice.testBed, 'bob')!.mySecret!;
+    deliver(bob.services, [{ json: inbox.friendKeys('alice', ['YWxpY2U='], alicesSecret), sentAtMs: 3 }]);
+    await poll(bob.testBed);
+
+    expect(outboxRows(alice.db)).toEqual([
+      ['bob', 'FriendRequest'],
+      ['bob', 'FriendKeys'],
+    ]);
+    expect(friend(alice.testBed, 'bob')).toMatchObject({ status: 'friend', theirSecret: bobsSecret });
+    expect(friend(bob.testBed, 'alice')).toMatchObject({ status: 'friend', theirSecret: alicesSecret });
+  });
+
+  it('a lost accept is recovered by the side that accepted', async () => {
+    const alice = await makeInboxTestBed({ friends: [makeFriend('bob', { status: 'pending', mySecret: undefined })] });
+    const bob = await makeInboxTestBed({
+      friends: [makeFriend('alice', { theirKeys: [], theirSecret: undefined, mySecret: 'bobs-secret' })],
+    });
+    addRepairEffects(bob.testBed.addEffect);
+    const now = Date.now();
+    writeFriendRepairs(bob.db, [
+      {
+        friendId: 'alice',
+        kind: 'missingKeys',
+        firstNoticedAtMs: now - 8 * 24 * 60 * 60 * 1000,
+        lastSentAtMs: null,
+        attempts: 0,
+        awaitingReply: false,
+      },
+    ]);
+
+    await bob.testBed.dispatchHandled(repairFriends({ undecryptable: [] }));
+    expect(outboxRows(bob.db)).toEqual([
+      ['alice', 'FriendKeys'],
+      ['alice', 'FriendRequest'],
+    ]);
+    deliver(alice.services, [
+      { json: inbox.friendKeys('bob', ['Ym9i'], 'bobs-secret'), sentAtMs: 1 },
+      { json: inbox.friendRequest('bob'), sentAtMs: 2 },
+    ]);
+    await poll(alice.testBed);
+
+    const alicesSecret = friend(alice.testBed, 'bob')!.mySecret!;
+    deliver(bob.services, [{ json: inbox.friendKeys('alice', ['YWxpY2U='], alicesSecret), sentAtMs: 3 }]);
+    await poll(bob.testBed);
+
+    expect(friend(alice.testBed, 'bob')).toMatchObject({ status: 'friend', theirSecret: 'bobs-secret' });
+    expect(friend(bob.testBed, 'alice')).toMatchObject({ status: 'friend', theirSecret: alicesSecret });
   });
 });

@@ -11,6 +11,7 @@ import {
   AnyVersionSessionUserEventJSON,
 } from '@/models/storage/versions/any';
 import { BackendFeature, BackendKind } from '@/models/backend';
+import type { FriendRepairKind } from '@/models/feed-models';
 import { MovementKey, ProgressionKey } from '@/models/blueprint-models';
 import type {
   Base64Uint8ArrayJSON,
@@ -290,6 +291,15 @@ export const feedInboxQueueSchema = sqliteTable('feed_inbox_queue', {
 export const feedInboxSeenSchema = sqliteTable('feed_inbox_seen', {
   messageId: text().primaryKey(),
   seenAtMs: integer().notNull(),
+});
+
+export const feedFriendRepairSchema = sqliteTable('feed_friend_repair', {
+  friendId: text().primaryKey(),
+  kind: text().$type<FriendRepairKind>().notNull(),
+  firstNoticedAtMs: integer().notNull(),
+  lastSentAtMs: integer(),
+  attempts: integer().notNull().default(0),
+  awaitingReply: integer({ mode: 'boolean' }).notNull().default(false),
 });
 
 // Just a table we can use to keep track of which data migrations have been run

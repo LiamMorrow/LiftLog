@@ -276,6 +276,8 @@ export const rejectLegacyFollowRequests = createAction('rejectLegacyFollowReques
 
 export const rotateFeedKey = createAction('rotateFeedKey');
 
+export const repairFriends = createAction<{ undecryptable: string[] }>('repairFriends');
+
 export const restoreFeedBackup = createAction<FeedBackupData & FeedAction>('restoreFeedBackup');
 
 export const addUnpublishedSessionId = createAction<string>('addUnpublishedSessionId');

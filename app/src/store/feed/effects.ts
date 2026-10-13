@@ -35,6 +35,7 @@ import { addFriendEffects } from '@/store/feed/friend-effects';
 import { addReactionEffects } from '@/store/feed/reaction-effects';
 import { addOutboxEffects } from '@/store/feed/outbox-effects';
 import { addRotationEffects, keyHolders } from '@/store/feed/rotation-effects';
+import { addRepairEffects } from '@/store/feed/repair-effects';
 import { selectActiveProgram } from '@/store/program';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { Platform } from 'react-native';
@@ -44,6 +45,7 @@ import {
   feedIdentitySchema,
   feedInboxQueueSchema,
   feedInboxSeenSchema,
+  feedFriendRepairSchema,
   feedItemsSchema,
   feedOutboxSchema,
   feedReactionsSchema,
@@ -417,6 +419,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
   addOutboxEffects(addEffect);
   addFriendEffects(addEffect);
   addRotationEffects(addEffect);
+  addRepairEffects(addEffect);
   addReactionEffects(addEffect);
 }
 
@@ -432,6 +435,7 @@ function wipeFeedTables(tx: ExpoSQLiteDatabase) {
     feedOutboxSchema,
     feedInboxQueueSchema,
     feedInboxSeenSchema,
+    feedFriendRepairSchema,
   ]) {
     tx.delete(table).run();
   }

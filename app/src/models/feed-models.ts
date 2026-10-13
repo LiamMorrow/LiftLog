@@ -54,6 +54,8 @@ import { equal } from '@/models/session-models/helpers';
 export const FEED_EVENT_RETENTION_DAYS = 90;
 export const FEED_EVENT_RETENTION_SECONDS = FEED_EVENT_RETENTION_DAYS * 24 * 60 * 60;
 
+export type FriendRepairKind = 'staleKeys' | 'missingKeys' | 'staleRequest';
+
 // ---------------------------------------------------------------------------
 // FeedUser
 // ---------------------------------------------------------------------------

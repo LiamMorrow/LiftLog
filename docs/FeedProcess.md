@@ -132,13 +132,13 @@ sequenceDiagram
 
 The inbox message types:
 
-| Type            | Payload                                           | On receipt                                                                                                                                                           |
-| --------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `FriendRequest` | name                                              | From a stranger: stored as `incoming`. From a `pending`, `friend` or `legacyFollower`: they get our keys. Ignored from a `legacyFollowing`.                          |
-| `FriendKeys`    | AES keys (newest first, at most 20), FollowSecret | Replaces their keys and secret. A `pending` or `legacyFollower` becomes a `friend`. Ignored from strangers and `incoming`, and when older than the last one applied. |
-| `FriendReject`  | none                                              | Ends a request we are waiting on.                                                                                                                                    |
-| `Unfriend`      | none                                              | Removes them ([see Removing a friend](#removing-a-friend)).                                                                                                          |
-| `Reaction`      | a cheer on a feed item                            | Accepted only from a `friend`                                                                                                                                        |
+| Type            | Payload                                           | On receipt                                                                                                                                                                                                                                                     |
+| --------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FriendRequest` | name                                              | From a stranger: stored as `incoming`. From a `pending`, `friend` or `legacyFollower`: they get our keys. Ignored from a `legacyFollowing`.                                                                                                                    |
+| `FriendKeys`    | AES keys (newest first, at most 20), FollowSecret | Replaces their keys and secret. A `pending` or `legacyFollower` becomes a `friend`. Our keys are resent if they were `pending`, or if we asked them to repair the friendship. Ignored from strangers and `incoming`, and when older than the last one applied. |
+| `FriendReject`  | none                                              | Ends a request we are waiting on.                                                                                                                                                                                                                              |
+| `Unfriend`      | none                                              | Removes them ([see Removing a friend](#removing-a-friend)).                                                                                                                                                                                                    |
+| `Reaction`      | a cheer on a feed item                            | Accepted only from a `friend`                                                                                                                                                                                                                                  |
 
 PUT /inbox is unauthenticated by design: anyone who knows a user id can post into its inbox. The signature proves who wrote a message, never that they were entitled to, which is why every rule above checks the sender's status first.
 
@@ -177,6 +177,16 @@ Revoking a `FollowSecret` stops a removed friend fetching new feed items, in add
 3. The profile is published again with the new key.
 
 Friends replace their key list when the `FriendKeys` arrives, and keep reading older feed items with the older keys in it. A previous key is dropped 90 days after it was replaced, when every feed item encrypted with it has expired, so `FriendKeys` never needs more than the last 90 days of keys.
+
+### Repairing a friendship
+
+Delivery is at least once, but a message can still be lost to a bug or a message the server rejects, and restoring an older backup leaves one side behind. Each of these leaves a symptom on at least one side, so the app repairs a friendship when it notices one, after every successful feed fetch:
+
+| Symptom                                                                                                       | Likely cause                                    | Repair                                   | When                                        |
+| ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ---------------------------------------- | ------------------------------------------- |
+| A `friend`'s profile or feed items decrypt with none of their keys, while their `FollowSecret` is still valid | We missed a rotation, or they restored a backup | `FriendRequest`                          | Straight away, then weekly, at most 4 times |
+| A `friend` whose keys never arrived                                                                           | Our accept or their reply was lost              | Our `FriendKeys`, then a `FriendRequest` | After a week, then weekly, at most 4 times  |
+| A `pending` request                                                                                           | The request was lost                            | `FriendRequest`                          | Once, after two weeks                       |
 
 ### Inbox Message Encryption
 
@@ -222,6 +232,7 @@ All paths are under `app/src/`.
 - `store/feed/inbox-effects.ts` - polling, the inbox queue, and routing each message to its handler.
 - `store/feed/outbox-effects.ts` - sending the outbox.
 - `store/feed/rotation-effects.ts` - key rotation.
+- `store/feed/repair-effects.ts` - repairing friendships that drifted out of sync.
 - `store/feed/feed-items-effects.ts` - publishing workouts, fetching friends' feed items and profiles.
 - `store/feed/feed-timeline.ts` - merging your own sessions into the feed.
 - `services/feed-follow-service.ts` - building and encrypting inbox messages.

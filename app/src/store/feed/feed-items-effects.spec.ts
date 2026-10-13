@@ -3,7 +3,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 import { Instant, LocalDate } from '@js-joda/core';
 import { addFeedItemEffects, publishSessionAsync } from '@/store/feed/feed-items-effects';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
-import feedReducer, { fetchFeedItems, patchFriendProfiles, removeFriend } from '@/store/feed';
+import feedReducer, { fetchFeedItems, patchFriendProfiles, removeFriend, repairFriends } from '@/store/feed';
 import { makeFriend } from '@/store/feed/__test__/friends';
 import { storedSessionsReducer } from '@/store/stored-sessions';
 import { FeedIdentity, FEED_EVENT_RETENTION_SECONDS, Friend, SessionUserEvent } from '@/models/feed-models';
@@ -11,7 +11,7 @@ import { Session } from '@/models/session-models';
 import { SessionBlueprint } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { AesKey, RsaKeyPair } from '@/models/encryption-models';
-import { ApiResult } from '@/services/api-error';
+import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { EncryptionService, toJsonBytes } from '@/services/encryption-service';
 import { SessionJSON } from '@/models/storage/versions/latest';
 
@@ -289,6 +289,73 @@ describe('fetchFeedItems ingestion', () => {
     await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
 
     expect(testBed.getState().feed.friends[FOLLOWED_ID]!.name).toBe(`name-${FOLLOWED_ID}`);
+  });
+
+  it('reports friends whose profile no key decrypts, so they can be repaired', async () => {
+    const testBed = ingestionTestBed([], [FOLLOWED_ID]);
+    testBed.services.encryptionService.decryptAesCbcAndVerifyRsa256PssAsync.mockImplementation(() =>
+      Promise.reject(new Error('wrong key')),
+    );
+
+    await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
+
+    expect(testBed.getDispatchedAction(repairFriends).payload).toEqual({ undecryptable: [FOLLOWED_ID] });
+  });
+
+  it('reports friends whose events no key decrypts, so they can be repaired', async () => {
+    const testBed = ingestionTestBed([{ eventId: 'e1', version: 3 }], [FOLLOWED_ID]);
+    testBed.services.feedApiService.getUsersAsync.mockResolvedValue(ApiResult.success({ users: {} }));
+    testBed.services.encryptionService.decryptAesCbcAndVerifyRsa256PssAsync.mockImplementation(() =>
+      Promise.reject(new Error('wrong key')),
+    );
+
+    await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
+
+    expect(testBed.getDispatchedAction(repairFriends).payload).toEqual({ undecryptable: [FOLLOWED_ID] });
+  });
+
+  it('does not treat an event from a newer app version as a key problem', async () => {
+    const testBed = ingestionTestBed([{ eventId: 'from-the-future', version: 999 }]);
+
+    await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
+
+    expect(testBed.getDispatchedAction(repairFriends).payload).toEqual({ undecryptable: [] });
+  });
+
+  it('does not repair a friend whose secret was revoked', async () => {
+    const testBed = ingestionTestBed([], [FOLLOWED_ID], { invalidFollowSecrets: [`their-secret-${FOLLOWED_ID}`] });
+    testBed.services.encryptionService.decryptAesCbcAndVerifyRsa256PssAsync.mockImplementation(() =>
+      Promise.reject(new Error('wrong key')),
+    );
+
+    await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
+
+    expect(testBed.getDispatchedAction(repairFriends).payload).toEqual({ undecryptable: [] });
+  });
+
+  it('has nothing to repair when a friend has published nothing to decrypt', async () => {
+    const testBed = ingestionTestBed([], [FOLLOWED_ID]);
+    testBed.services.feedApiService.getUsersAsync.mockResolvedValue(
+      ApiResult.success({ users: { [FOLLOWED_ID]: { encryptionIV: new Uint8Array() } } }),
+    );
+    testBed.services.encryptionService.decryptAesCbcAndVerifyRsa256PssAsync.mockImplementation(() =>
+      Promise.reject(new Error('wrong key')),
+    );
+
+    await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
+
+    expect(testBed.getDispatchedAction(repairFriends).payload).toEqual({ undecryptable: [] });
+  });
+
+  it('does not look for repairs when the fetch fails', async () => {
+    const testBed = ingestionTestBed([], [FOLLOWED_ID]);
+    testBed.services.feedApiService.getUserEventsAsync.mockResolvedValue(
+      ApiResult.fromError({ type: ApiErrorType.Unknown, message: 'offline', exception: undefined }),
+    );
+
+    await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
+
+    testBed.expectNotDispatched(repairFriends);
   });
 
   it('ends the friendship when the server says their secret was revoked', async () => {

@@ -22,6 +22,7 @@ import {
 } from '@/models/feed-models';
 import { readExistingSessionIds } from '@/db/sessions';
 import { feedInboxQueueSchema, feedInboxSeenSchema } from '@/db/schema';
+import { isAwaitingRepairReply } from '@/db/feed-friend-repair';
 import { inboxMessageMigrations } from '@/models/storage/versions/migrations';
 import { DecryptedInboxMessage } from '@/services/feed-inbox-decryption-service';
 import { FeedApiService } from '@/services/feed-api';
@@ -263,6 +264,7 @@ async function drainInboxQueue(
       getState,
       feedApiService,
       feedFollowService,
+      isAwaitingRepairReply: (friendId) => isAwaitingRepairReply(db, friendId),
       commit: (change) => {
         committed = true;
         commitFriendChange(db, dispatch, change, (tx) => removeRow(tx, row.messageId));

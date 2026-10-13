@@ -28,6 +28,7 @@ import { FeedApiService } from '@/services/feed-api';
 import { FeedFollowService } from '@/services/feed-follow-service';
 import { deleteOutboxMessagesTo, enqueueOutboxMessages, OutboxMessage } from '@/db/feed-outbox';
 import { deleteFriends, queueFollowSecretRevocationsIn, writeFriends } from '@/db/feed-friends';
+import { deleteFriendRepairs, markRepairsAnswered } from '@/db/feed-friend-repair';
 import { feedFollowRequestsSchema } from '@/db/schema';
 import { followRequestInboxMessageMigrations } from '@/models/storage/versions/migrations';
 
@@ -38,6 +39,7 @@ export interface FriendChange {
   outbox?: OutboxMessage[];
   revoke?: string[];
   rotate?: boolean;
+  answeredRepairs?: string[];
 }
 
 export function commitFriendChange(
@@ -46,10 +48,20 @@ export function commitFriendChange(
   change: FriendChange,
   inTransaction?: (tx: ExpoSQLiteDatabase) => void,
 ) {
-  const { put = [], remove = [], clearOutboxTo = [], outbox = [], revoke = [], rotate = false } = change;
+  const {
+    put = [],
+    remove = [],
+    clearOutboxTo = [],
+    outbox = [],
+    revoke = [],
+    rotate = false,
+    answeredRepairs = [],
+  } = change;
   db.transaction((tx) => {
     clearOutboxTo.forEach((id) => deleteOutboxMessagesTo(tx, id));
     deleteFriends(tx, remove);
+    deleteFriendRepairs(tx, remove);
+    markRepairsAnswered(tx, answeredRepairs);
     writeFriends(tx, put);
     enqueueOutboxMessages(tx, outbox);
     queueFollowSecretRevocationsIn(tx, revoke);
@@ -125,6 +137,7 @@ export interface InboxHandlerContext {
   getState: () => RootState;
   feedApiService: FeedApiService;
   feedFollowService: FeedFollowService;
+  isAwaitingRepairReply: (friendId: string) => boolean;
   commit: (change: FriendChange) => void;
 }
 
@@ -176,7 +189,7 @@ export async function handleFriendRequest(
 
 export async function handleFriendKeys(
   message: FriendKeysInboxMessage,
-  { identity, sentAtMs, getState, feedFollowService, commit }: InboxHandlerContext,
+  { identity, sentAtMs, getState, feedFollowService, isAwaitingRepairReply, commit }: InboxHandlerContext,
 ): Promise<InboxHandlerResult> {
   const friend = getState().feed.friends[message.senderUserId];
   if (!friend || friend.status === 'incoming') {
@@ -193,7 +206,8 @@ export async function handleFriendKeys(
     status: friend.status === 'pending' || friend.status === 'legacyFollower' ? 'friend' : friend.status,
   });
 
-  if (friend.status !== 'pending' || friend.mySecret) {
+  const answersRepair = isAwaitingRepairReply(friend.id);
+  if (!answersRepair && (friend.status !== 'pending' || friend.mySecret)) {
     commit({ put: [updated] });
     return 'done';
   }
@@ -202,7 +216,11 @@ export async function handleFriendKeys(
   if (!shared.isSuccess()) {
     return 'retry';
   }
-  commit({ put: [updated.with({ mySecret: shared.data.mySecret })], outbox: [shared.data.message] });
+  commit({
+    put: [updated.with({ mySecret: shared.data.mySecret })],
+    outbox: [shared.data.message],
+    answeredRepairs: answersRepair ? [friend.id] : [],
+  });
   return 'done';
 }
 

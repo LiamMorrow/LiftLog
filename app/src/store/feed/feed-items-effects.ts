@@ -8,6 +8,7 @@ import {
   patchFriendProfiles,
   removeFeedItems,
   removeFriend,
+  repairFriends,
   selectAcceptedFriends,
   upsertFeedItems,
 } from '@/store/feed';
@@ -47,10 +48,14 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
 
     try {
       dispatch(setIsFetching(true));
+      let undecryptable: string[] | undefined;
       do {
         fetchAgain = false;
-        await fetchOnce(action, dispatch, getState, feedApiService, encryptionService);
+        undecryptable = await fetchOnce(action, dispatch, getState, feedApiService, encryptionService);
       } while (fetchAgain);
+      if (undecryptable) {
+        dispatch(repairFriends({ undecryptable }));
+      }
     } finally {
       dispatch(setIsFetching(false));
     }
@@ -97,7 +102,7 @@ async function fetchOnce(
   getState: () => RootState,
   feedApiService: FeedApiService,
   encryptionService: EncryptionService,
-) {
+): Promise<string[] | undefined> {
   const state = getState();
   const friends = selectAcceptedFriends(state).filter((x) => x.theirSecret && x.theirKeys.length);
 
@@ -111,7 +116,7 @@ async function fetchOnce(
 
   if (friends.length === 0) {
     dispatch(removeFeedItems(state.feed.feed.map((x) => x.id)));
-    return;
+    return [];
   }
 
   const [feedResponse, usersResponse] = await Promise.all([
@@ -127,20 +132,22 @@ async function fetchOnce(
 
   if (!feedResponse.isSuccess()) {
     dispatch(feedApiError({ message: 'Failed to fetch feed items', error: feedResponse.error!, action }));
-    return;
+    return undefined;
   }
   if (!usersResponse.isSuccess()) {
     dispatch(feedApiError({ message: 'Failed to fetch users', error: usersResponse.error!, action }));
-    return;
+    return undefined;
   }
 
+  const undecryptable = new Set<string>();
   const profiles = await Promise.all(
     friends.map(async (friend) => {
       const response = usersResponse.data.users[friend.id];
       return response ? decryptProfileAsync(friend, response, encryptionService) : undefined;
     }),
   );
-  dispatch(patchFriendProfiles(profiles.filter((x) => x !== undefined)));
+  profiles.forEach((x, i) => x === 'undecryptable' && undecryptable.add(friends[i]!.id));
+  dispatch(patchFriendProfiles(profiles.filter((x) => x !== undefined && x !== 'undecryptable')));
 
   const invalidFollowSecrets = new Set(feedResponse.data.invalidFollowSecrets);
   for (const friend of selectAcceptedFriends(getState())) {
@@ -150,14 +157,14 @@ async function fetchOnce(
   }
 
   const friendsById = new Map(friends.map((x) => [x.id, x]));
-  const feedItems = (
-    await Promise.all(
-      feedResponse.data.events.map((event) => {
-        const friend = friendsById.get(event.userId);
-        return friend ? toFeedItemAsync(event, friend, encryptionService) : Promise.resolve(null);
-      }),
-    )
-  ).filter((item) => item !== null);
+  const decryptedEvents = await Promise.all(
+    feedResponse.data.events.map((event) => {
+      const friend = friendsById.get(event.userId);
+      return friend ? toFeedItemAsync(event, friend, encryptionService) : Promise.resolve(null);
+    }),
+  );
+  decryptedEvents.forEach((x, i) => x === 'undecryptable' && undecryptable.add(feedResponse.data.events[i]!.userId));
+  const feedItems = decryptedEvents.filter((item) => item !== null && item !== 'undecryptable');
 
   const now = Instant.now();
   const currentFriendIds = new Set(
@@ -191,6 +198,8 @@ async function fetchOnce(
 
   if (removedIds.length) dispatch(removeFeedItems(removedIds));
   dispatch(upsertFeedItems(sorted as SessionUserEvent[]));
+
+  return friends.filter((x) => undecryptable.has(x.id) && !invalidFollowSecrets.has(x.theirSecret!)).map((x) => x.id);
 }
 
 async function publishEvent(
@@ -258,12 +267,14 @@ async function removePublishedSessionAsync(
   );
 }
 
+class NoKeyDecrypts extends Error {}
+
 async function decryptWithKeysAsync(
   payload: AesEncryptedAndRsaSignedData,
   friend: Friend,
   encryptionService: EncryptionService,
 ): Promise<Uint8Array> {
-  let lastError: unknown = new Error('No keys to decrypt with');
+  let lastError: unknown;
   for (const key of friend.theirKeys) {
     try {
       return await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(payload, key, friend.publicKey);
@@ -271,14 +282,16 @@ async function decryptWithKeysAsync(
       lastError = error;
     }
   }
-  throw lastError;
+  throw new NoKeyDecrypts('None of the keys this friend shared decrypt it', { cause: lastError });
 }
 
 async function decryptProfileAsync(
   friend: Friend,
   response: GetUserResponse,
   encryptionService: EncryptionService,
-): Promise<{ id: string; name: string | undefined; currentPlan: ProgramBlueprint | undefined } | undefined> {
+): Promise<
+  { id: string; name: string | undefined; currentPlan: ProgramBlueprint | undefined } | 'undecryptable' | undefined
+> {
   try {
     const iv = { value: response.encryptionIV };
     const name = response.encryptedName?.length
@@ -302,7 +315,7 @@ async function decryptProfileAsync(
     return { id: friend.id, name, currentPlan };
   } catch (error) {
     console.warn('Could not decrypt a friend profile; keeping the last one', error);
-    return undefined;
+    return error instanceof NoKeyDecrypts ? 'undecryptable' : undefined;
   }
 }
 
@@ -310,7 +323,7 @@ async function toFeedItemAsync(
   userEvent: UserEventResponse,
   friend: Friend,
   encryptionService: EncryptionService,
-): Promise<FeedUserEvent | null> {
+): Promise<FeedUserEvent | 'undecryptable' | null> {
   try {
     const decryptedPayload = await decryptWithKeysAsync(
       { encryptedPayload: userEvent.encryptedEventPayload, iv: { value: userEvent.encryptedEventIV } },
@@ -321,6 +334,6 @@ async function toFeedItemAsync(
     return fromFeedUserEventJSON(userEventMigrations.migrate(payload));
   } catch (error) {
     console.error('Failed to decrypt feed item. Skipping.', error);
-    return null;
+    return error instanceof NoKeyDecrypts ? 'undecryptable' : null;
   }
 }
