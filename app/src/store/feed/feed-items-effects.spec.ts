@@ -12,7 +12,7 @@ import { SessionBlueprint } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { AesKey, RsaKeyPair } from '@/models/encryption-models';
 import { ApiResult } from '@/services/api-error';
-import { toJsonBytes } from '@/services/encryption-service';
+import { EncryptionService, toJsonBytes } from '@/services/encryption-service';
 import { SessionJSON } from '@/models/storage/versions/latest';
 
 // ─── Fixtures ───────────────────────────────────────────────────────────────
@@ -301,5 +301,55 @@ describe('fetchFeedItems ingestion', () => {
       notify: false,
       fromUserAction: false,
     });
+  });
+});
+
+describe('fetchFeedItems with real encryption', () => {
+  it('reads events published before a rotation with the older keys a friend shared', async () => {
+    const encryptionService = new EncryptionService();
+    const [oldKey, newKey, rsaKeyPair] = await Promise.all([
+      encryptionService.generateAesKey(),
+      encryptionService.generateAesKey(),
+      encryptionService.generateRsaKeys(),
+    ]);
+    const publisher = new FeedIdentity(FOLLOWED_ID, 'lookup', oldKey, rsaKeyPair, 'pw', 'Bob', false, false, true);
+    const putUserEventAsync = vi.fn().mockResolvedValue(ApiResult.success());
+    await publishSessionAsync(publisher, sessionWithBodyweight(undefined), encryptionService, {
+      putUserEventAsync,
+    } as never);
+    const published = putUserEventAsync.mock.calls[0]![0] as {
+      eventId: string;
+      encryptedEventPayload: Uint8Array;
+      encryptedEventIV: Uint8Array;
+      expiry: string;
+    };
+
+    const fetchWithKeys = async (theirKeys: AesKey[]) => {
+      const testBed = createAddEffectTestBed({
+        initialState: {
+          feed: {
+            friends: { [FOLLOWED_ID]: makeFriend(FOLLOWED_ID, { publicKey: rsaKeyPair.publicKey, theirKeys }) },
+          },
+        },
+        services: {
+          encryptionService,
+          feedApiService: {
+            getUserEventsAsync: vi
+              .fn()
+              .mockResolvedValue(
+                ApiResult.success({ events: [{ ...published, userId: FOLLOWED_ID }], invalidFollowSecrets: [] }),
+              ),
+            getUsersAsync: vi.fn().mockResolvedValue(ApiResult.success({ users: {} })),
+          },
+        },
+        reducer: combineReducers({ feed: feedReducer, storedSessions: storedSessionsReducer }),
+      });
+      addFeedItemEffects(testBed.addEffect);
+      await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
+      return testBed.getState().feed.feed.map((x) => x.eventId);
+    };
+
+    expect(await fetchWithKeys([newKey, oldKey])).toEqual(['session-1']);
+    expect(await fetchWithKeys([newKey])).toEqual([]);
   });
 });

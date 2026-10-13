@@ -362,6 +362,17 @@ export class FeedIdentity {
       other.previousAesKeys ?? this.previousAesKeys,
     );
   }
+
+  /** Keys superseded longer ago than the event retention window can no longer decrypt anything, so they are dropped. */
+  withRotatedAesKey(aesKey: AesKey, now: Instant): FeedIdentity {
+    const oldestUseful = now.minusSeconds(FEED_EVENT_RETENTION_SECONDS);
+    return this.with({
+      aesKey,
+      previousAesKeys: [{ key: this.aesKey, supersededAt: now }, ...this.previousAesKeys].filter((x) =>
+        x.supersededAt.isAfter(oldestUseful),
+      ),
+    });
+  }
 }
 
 // ---------------------------------------------------------------------------

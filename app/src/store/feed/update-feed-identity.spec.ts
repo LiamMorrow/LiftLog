@@ -75,6 +75,19 @@ describe('updateFeedIdentity', () => {
     expect(identity().aesKey).toBe(rotatedKey);
   });
 
+  it('keeps a rotated key when republishing it fails', async () => {
+    const { testBed, identity } = makeTestBed(
+      ApiResult.fromError({ type: ApiErrorType.Unknown, message: 'offline', exception: undefined }),
+    );
+    const rotated = identity().withRotatedAesKey({ value: new Uint8Array([7]) }, Instant.now());
+    testBed.dispatch(setIdentity(RemoteData.success(rotated)));
+
+    await testBed.dispatchHandled(updateFeedIdentity({ updates: {}, fromUserAction: false }));
+
+    expect(identity().aesKey).toBe(rotated.aesKey);
+    expect(identity().previousAesKeys).toBe(rotated.previousAesKeys);
+  });
+
   it('does not touch an identity that was replaced while publishing', async () => {
     const { testBed, feedIdentityService, identity } = makeTestBed();
     const replacement = new FeedIdentity(

@@ -16,6 +16,7 @@ import {
   removeRevokableFollowSecret,
   requestFriend,
   revokeFollowSecrets,
+  rotateFeedKey,
   selectFeedIdentityRemote,
   setSharedFeedUser,
   shareBackWithFriend,
@@ -36,6 +37,7 @@ export interface FriendChange {
   clearOutboxTo?: string[];
   outbox?: OutboxMessage[];
   revoke?: string[];
+  rotate?: boolean;
 }
 
 export function commitFriendChange(
@@ -44,7 +46,7 @@ export function commitFriendChange(
   change: FriendChange,
   inTransaction?: (tx: ExpoSQLiteDatabase) => void,
 ) {
-  const { put = [], remove = [], clearOutboxTo = [], outbox = [], revoke = [] } = change;
+  const { put = [], remove = [], clearOutboxTo = [], outbox = [], revoke = [], rotate = false } = change;
   db.transaction((tx) => {
     clearOutboxTo.forEach((id) => deleteOutboxMessagesTo(tx, id));
     deleteFriends(tx, remove);
@@ -66,6 +68,9 @@ export function commitFriendChange(
   if (outbox.length) {
     dispatch(flushOutbox());
   }
+  if (rotate) {
+    dispatch(rotateFeedKey());
+  }
 }
 
 export async function removalChange(
@@ -84,12 +89,15 @@ export async function removalChange(
     clearOutboxTo: [friend.id],
     outbox: notification ? [notification] : [],
     revoke: friend.mySecret ? [friend.mySecret] : [],
+    // Rotate the key if we ever actually became friends
+    rotate: !!friend.mySecret,
   };
 }
 
 async function shareKeysWith(
   friend: Friend,
   identity: FeedIdentity,
+  getState: () => RootState,
   feedFollowService: FeedFollowService,
 ): Promise<ApiResult<{ mySecret: string; message: OutboxMessage }>> {
   let mySecret = friend.mySecret;
@@ -100,10 +108,15 @@ async function shareKeysWith(
     }
     mySecret = issued.data;
   }
-  return ApiResult.success({
-    mySecret,
-    message: await feedFollowService.friendKeysMessage(identity, friend, mySecret),
-  });
+  let keysFrom = identity;
+  for (;;) {
+    const message = await feedFollowService.friendKeysMessage(keysFrom, friend, mySecret);
+    const current = selectFeedIdentityRemote(getState()).unwrapOr(undefined);
+    if (!current || current.id !== keysFrom.id || current.aesKey === keysFrom.aesKey) {
+      return ApiResult.success({ mySecret, message });
+    }
+    keysFrom = current;
+  }
 }
 
 export interface InboxHandlerContext {
@@ -153,7 +166,7 @@ export async function handleFriendRequest(
     return 'done';
   }
 
-  const shared = await shareKeysWith(friend, identity, feedFollowService);
+  const shared = await shareKeysWith(friend, identity, getState, feedFollowService);
   if (!shared.isSuccess()) {
     return 'retry';
   }
@@ -185,7 +198,7 @@ export async function handleFriendKeys(
     return 'done';
   }
 
-  const shared = await shareKeysWith(friend, identity, feedFollowService);
+  const shared = await shareKeysWith(friend, identity, getState, feedFollowService);
   if (!shared.isSuccess()) {
     return 'retry';
   }
@@ -287,7 +300,7 @@ export function addFriendEffects(addEffect: AddEffectFn) {
       return;
     }
 
-    const shared = await shareKeysWith(friend, identity, feedFollowService);
+    const shared = await shareKeysWith(friend, identity, getState, feedFollowService);
     if (!shared.isSuccess()) {
       dispatch(feedApiError({ message: 'Failed to accept friend request', error: shared.error!, action }));
       return;
@@ -309,7 +322,7 @@ export function addFriendEffects(addEffect: AddEffectFn) {
       return;
     }
 
-    const shared = await shareKeysWith(friend, identity, feedFollowService);
+    const shared = await shareKeysWith(friend, identity, getState, feedFollowService);
     if (!shared.isSuccess()) {
       dispatch(feedApiError({ message: 'Failed to share back', error: shared.error!, action }));
       return;

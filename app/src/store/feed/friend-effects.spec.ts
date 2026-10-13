@@ -9,8 +9,11 @@ import {
   removeFriend,
   requestFriend,
   revokeFollowSecrets,
+  rotateFeedKey,
+  setIdentity,
   shareBackWithFriend,
 } from '@/store/feed';
+import { RemoteData } from '@/models/remote';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { feedFollowRequestsSchema, feedRevokedFollowSecretsSchema } from '@/db/schema';
 import { readFriends } from '@/db/feed-friends';
@@ -28,6 +31,7 @@ import {
 const poll = (testBed: InboxTestBed['testBed']) => testBed.dispatchHandled(fetchInboxItems({ fromUserAction: false }));
 const friend = (testBed: InboxTestBed['testBed'], id: string) => testBed.getState().feed.friends[id];
 const sharedUser = (id: string) => ({ id, publicKey: { spkiPublicKeyBytes: new Uint8Array([1]) }, name: `name-${id}` });
+const rotations = (bed: InboxTestBed) => bed.testBed.dispatchedActions.filter(rotateFeedKey.match).length;
 const revoked = (bed: InboxTestBed) =>
   bed.db
     .select()
@@ -142,6 +146,49 @@ describe('friend actions', () => {
     expect(revoked(bed)).toEqual(['my-secret-bob']);
     expect(bed.testBed.getState().feed.revokedFollowSecrets).toEqual(['my-secret-bob']);
     bed.testBed.getDispatchedAction(revokeFollowSecrets);
+  });
+
+  it('removing someone who holds our key rotates it', async () => {
+    const bed = await makeInboxTestBed({
+      friends: [makeFriend('bob'), makeFriend('carol', { status: 'legacyFollower' })],
+    });
+
+    await bed.testBed.dispatchHandled(removeFriend({ friendId: 'bob', notify: true, fromUserAction: true }));
+    await bed.testBed.dispatchHandled(removeFriend({ friendId: 'carol', notify: true, fromUserAction: true }));
+
+    expect(rotations(bed)).toBe(2);
+  });
+
+  it('removing someone who never had our key does not rotate it', async () => {
+    const bed = await makeInboxTestBed({
+      friends: [
+        makeFriend('alice', { status: 'incoming', mySecret: undefined }),
+        makeFriend('bob', { status: 'pending', mySecret: undefined }),
+        makeFriend('carol', { status: 'legacyFollowing', mySecret: undefined }),
+      ],
+    });
+
+    for (const friendId of ['alice', 'bob', 'carol']) {
+      await bed.testBed.dispatchHandled(removeFriend({ friendId, notify: true, fromUserAction: true }));
+    }
+
+    expect(rotations(bed)).toBe(0);
+  });
+
+  it('rebuilds the keys it shares when our key rotates while they are being prepared', async () => {
+    const bed = await makeInboxTestBed({ friends: [makeFriend('alice', { status: 'incoming', mySecret: undefined })] });
+    const rotatedKey = { value: new Uint8Array([42]) };
+    const build = bed.services.feedFollowService.friendKeysMessage.getMockImplementation()!;
+    bed.services.feedFollowService.friendKeysMessage.mockImplementationOnce((...args) => {
+      bed.testBed.dispatch(setIdentity(RemoteData.success(identity.with({ aesKey: rotatedKey }))));
+      return build(...args);
+    });
+
+    await bed.testBed.dispatchHandled(acceptFriendRequest({ friendId: 'alice', fromUserAction: true }));
+
+    const calls = bed.services.feedFollowService.friendKeysMessage.mock.calls;
+    expect(calls.map(([sharedFrom]) => sharedFrom.aesKey)).toEqual([identity.aesKey, rotatedKey]);
+    expect(outboxRows(bed.db)).toEqual([['alice', 'FriendKeys']]);
   });
 
   it('sharing back turns a one-way follow into a friendship', async () => {
@@ -319,6 +366,7 @@ describe('friend messages', () => {
     expect(friend(bed.testBed, 'bob')).toBeUndefined();
     expect(outboxRows(bed.db)).toEqual([]);
     expect(revoked(bed)).toEqual(['my-secret-bob']);
+    expect(rotations(bed)).toBe(1);
   });
 
   it('treats an unfollow from an older app as being unfriended', async () => {

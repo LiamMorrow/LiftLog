@@ -1,3 +1,4 @@
+import { Instant } from '@js-joda/core';
 import { AddEffectFn, RootState } from '@/store/store';
 import {
   addUnpublishedSessionId,
@@ -33,6 +34,7 @@ import { addInboxEffects } from '@/store/feed/inbox-effects';
 import { addFriendEffects } from '@/store/feed/friend-effects';
 import { addReactionEffects } from '@/store/feed/reaction-effects';
 import { addOutboxEffects } from '@/store/feed/outbox-effects';
+import { addRotationEffects, keyHolders } from '@/store/feed/rotation-effects';
 import { selectActiveProgram } from '@/store/program';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { Platform } from 'react-native';
@@ -140,10 +142,13 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
 
   addEffect(
     restoreFeedBackup,
-    async (action, { dispatch, getState, extra: { db, feedIdentityService, feedFollowService } }) => {
-      const { identity, feedItems, friends } = action.payload;
+    async (
+      action,
+      { dispatch, getState, extra: { db, feedIdentityService, feedFollowService, encryptionService } },
+    ) => {
+      const { feedItems, friends } = action.payload;
       const current = selectFeedIdentityRemote(getState()).unwrapOr(undefined);
-      if (current && current.id !== identity.id) {
+      if (current && current.id !== action.payload.identity.id) {
         const result = await feedIdentityService.deleteFeedIdentityAsync(current);
         if (result.isError() && result.error.type !== ApiErrorType.NotFound) {
           dispatch(
@@ -153,11 +158,16 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
         }
       }
 
-      const reconnect = await Promise.all(
-        friends
+      const identity = action.payload.identity.withRotatedAesKey(
+        await encryptionService.generateAesKey(),
+        Instant.now(),
+      );
+      const outbox = await Promise.all([
+        ...friends
           .filter((friend) => friend.status === 'friend' || friend.status === 'pending')
           .map((friend) => feedFollowService.friendRequestMessage(identity, friend)),
-      );
+        ...keyHolders(friends).map((friend) => feedFollowService.friendKeysMessage(identity, friend, friend.mySecret)),
+      ]);
 
       db.transaction((tx) => {
         wipeFeedTables(tx);
@@ -168,7 +178,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
           feedItems.map((x) => ({ id: x.id, payload: x.toJSON() })),
         );
         writeFriends(tx, friends);
-        enqueueOutboxMessages(tx, reconnect);
+        enqueueOutboxMessages(tx, outbox);
       });
       dispatch(initializeFeedStateSlice());
     },
@@ -406,6 +416,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
   addInboxEffects(addEffect);
   addOutboxEffects(addEffect);
   addFriendEffects(addEffect);
+  addRotationEffects(addEffect);
   addReactionEffects(addEffect);
 }
 

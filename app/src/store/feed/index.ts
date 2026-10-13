@@ -274,6 +274,8 @@ export const removeFriend = createAction<{ friendId: string; notify: boolean } &
 
 export const rejectLegacyFollowRequests = createAction('rejectLegacyFollowRequests');
 
+export const rotateFeedKey = createAction('rotateFeedKey');
+
 export const restoreFeedBackup = createAction<FeedBackupData & FeedAction>('restoreFeedBackup');
 
 export const addUnpublishedSessionId = createAction<string>('addUnpublishedSessionId');
