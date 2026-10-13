@@ -3,7 +3,7 @@ import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { ReceivedReaction } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
-import { selectFeedFollowers, selectReceivedReactionsByEvent } from '@/store/feed';
+import { selectReceivedReactionsByEvent } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
@@ -16,14 +16,10 @@ interface ReactionSummaryProps {
   compact?: boolean;
 }
 
-/**
- * Author-only. The feed is end-to-end encrypted with one-way follows, so there is no channel by which anyone
- * but the author could learn who cheered - the copy has to say so, or it reads as a broken like count.
- */
 export function ReactionSummary({ eventId, animateOnMount, compact }: ReactionSummaryProps) {
   const { t } = useTranslate();
   const receivedByEvent = useAppSelector(selectReceivedReactionsByEvent);
-  const followers = useAppSelector(selectFeedFollowers);
+  const friends = useAppSelector((x) => x.feed.friends);
   const received = useMemo(() => receivedByEvent.get(eventId) ?? [], [receivedByEvent, eventId]);
 
   const [floating, setFloating] = useState<FloatingEmoji[]>([]);
@@ -58,8 +54,7 @@ export function ReactionSummary({ eventId, animateOnMount, compact }: ReactionSu
     totals.set(reaction.emoji, (totals.get(reaction.emoji) ?? 0) + reaction.count);
   }
 
-  const nameOf = (reaction: ReceivedReaction) =>
-    followers.find((x) => x.id === reaction.fromUserId)?.name ?? t('feed.anonymous_user.label');
+  const nameOf = (reaction: ReceivedReaction) => friends[reaction.fromUserId]?.name ?? t('feed.anonymous_user.label');
 
   const names = [...new Set(received.map(nameOf))];
 

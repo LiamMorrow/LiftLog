@@ -20,11 +20,13 @@ export const OWN_USER_KEY = 'me';
 const MAX_MARKERS_PER_CELL = 3;
 
 const selectAllFeedEvents = (state: RootState) => state.feed.feed;
-const selectFollowedUsers = (state: RootState) => state.feed.followedUsers;
+const selectFollowedUsers = createSelector([(state: RootState) => state.feed.friends], (friends) =>
+  Object.fromEntries(Object.entries(friends).filter(([, friend]) => friend.status === 'friend')),
+);
 const selectFirstDayOfWeek = (state: RootState) => state.settings.firstDayOfWeek;
 const selectOwnFeedUserId = (state: RootState) => state.feed.identity.unwrapOr(undefined)?.id;
 
-/** Own activity always comes from your own history, so a self-follow would otherwise count everything twice. */
+/** Own activity always comes from your own history */
 const selectFeedEvents = createSelector([selectAllFeedEvents, selectOwnFeedUserId], (feed, ownUserId) =>
   ownUserId === undefined ? feed : feed.filter((x) => x.userId !== ownUserId),
 );
@@ -89,10 +91,9 @@ const selectFollowedUserNames = createSelector(
   (followedUsers) => new Map(Object.entries(followedUsers).map(([userId, user]) => [userId, user.name])),
 );
 
-/** Self-follows don't count: they contribute no activity that isn't already yours. */
 export const selectFollowsOtherUsers = createSelector(
-  [selectFollowedUsers, selectOwnFeedUserId],
-  (followedUsers, ownUserId) => Object.keys(followedUsers).some((userId) => userId !== ownUserId),
+  [selectFollowedUsers],
+  (followedUsers) => Object.keys(followedUsers).length > 0,
 );
 
 interface CellContext {
@@ -251,34 +252,24 @@ export interface FollowingActivity {
 }
 
 /**
- * One seven-day row per followed user, including the ones who have gone quiet -- `selectActivityWeek` drops
- * those, but the Following tab has to say something about them, so they get a row of empty cells instead.
- *
- * A self-follow reads from your own history rather than the feed: your own events are filtered out of the
- * feed to stop them being counted twice, so sourcing this row from there would report you as never having
- * trained.
+ * One seven-day row per friend, including the ones who have gone quiet -- `selectActivityWeek` drops
+ * those, but the Friends tab has to say something about them, so they get a row of empty cells instead.
  */
 export const selectFollowingActivity = createSelector(
   [
     selectFeedEventsByDate,
     selectFeedVolumeScales,
     selectFollowedUsers,
-    selectOwnFeedUserId,
     (_: RootState, params: ActivityWeekParams) => params.today,
-    (_: RootState, params: ActivityWeekParams) => params.own,
   ],
-  (feedEvents, scales, followedUsers, ownUserId, today, own): Map<string, FollowingActivity> => {
+  (feedEvents, scales, followedUsers, today): Map<string, FollowingActivity> => {
     const days = Array.from({ length: 7 }, (_, index) => today.minusDays(6 - index));
 
     return new Map(
       Object.keys(followedUsers).map((userId) => {
-        const isOwn = userId === ownUserId;
-        const scale = isOwn ? own.volumeScale : scales.get(userId);
+        const scale = scales.get(userId);
 
         const activityOn = (date: LocalDate): DayActivity => {
-          if (isOwn) {
-            return own.days.get(date.toString()) ?? noActivity;
-          }
           const events = (feedEvents.get(date.toString()) ?? []).filter((event) => event.userId === userId);
           return {
             sessionCount: events.length,
@@ -302,11 +293,8 @@ export const selectFollowingActivity = createSelector(
           };
         });
 
-        const trainedOn = (date: string) =>
-          isOwn
-            ? (own.days.get(date)?.sessionCount ?? 0) > 0
-            : (feedEvents.get(date) ?? []).some((event) => event.userId === userId);
-        const lastWorkoutDate = [...(isOwn ? own.days : feedEvents).keys()]
+        const trainedOn = (date: string) => (feedEvents.get(date) ?? []).some((event) => event.userId === userId);
+        const lastWorkoutDate = [...feedEvents.keys()]
           .filter(trainedOn)
           .map((date) => LocalDate.parse(date))
           .reduce<LocalDate | undefined>(

@@ -1,4 +1,5 @@
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
+import { and, eq } from 'drizzle-orm';
 import { feedOutboxSchema } from '@/db/schema';
 import { InboxMessageJSON, toBase64Uint8ArrayJSON } from '@/models/storage/versions/latest';
 
@@ -25,4 +26,15 @@ export function enqueueOutboxMessages(db: ExpoSQLiteDatabase, messages: OutboxMe
       })),
     )
     .run();
+}
+
+export function deleteOutboxMessagesTo(db: ExpoSQLiteDatabase, recipientId: string) {
+  db.delete(feedOutboxSchema).where(eq(feedOutboxSchema.recipientId, recipientId)).run();
+}
+
+export function replaceOutboxMessage(db: ExpoSQLiteDatabase, message: OutboxMessage, nowMs = Date.now()) {
+  db.delete(feedOutboxSchema)
+    .where(and(eq(feedOutboxSchema.recipientId, message.recipientId), eq(feedOutboxSchema.type, message.type)))
+    .run();
+  enqueueOutboxMessages(db, [message], nowMs);
 }

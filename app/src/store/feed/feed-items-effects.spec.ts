@@ -3,13 +3,14 @@ import { combineReducers } from '@reduxjs/toolkit';
 import { Instant, LocalDate } from '@js-joda/core';
 import { addFeedItemEffects, publishSessionAsync } from '@/store/feed/feed-items-effects';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
-import feedReducer, { fetchFeedItems, putFollowedUser, putFollowedUsers } from '@/store/feed';
+import feedReducer, { fetchFeedItems, patchFriendProfiles, removeFriend } from '@/store/feed';
+import { makeFriend } from '@/store/feed/__test__/friends';
 import { storedSessionsReducer } from '@/store/stored-sessions';
-import { FeedIdentity, FEED_EVENT_RETENTION_SECONDS, FollowedFeedUser, SessionUserEvent } from '@/models/feed-models';
+import { FeedIdentity, FEED_EVENT_RETENTION_SECONDS, Friend, SessionUserEvent } from '@/models/feed-models';
 import { Session } from '@/models/session-models';
 import { SessionBlueprint } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
-import { AesKey, RsaKeyPair, RsaPublicKey } from '@/models/encryption-models';
+import { AesKey, RsaKeyPair } from '@/models/encryption-models';
 import { ApiResult } from '@/services/api-error';
 import { toJsonBytes } from '@/services/encryption-service';
 import { SessionJSON } from '@/models/storage/versions/latest';
@@ -136,11 +137,6 @@ describe('publishSessionAsync', () => {
 // ─── Ingestion ────────────────────────────────────────────────────────────────
 
 const FOLLOWED_ID = 'followed-1';
-const followedPublicKey: RsaPublicKey = { spkiPublicKeyBytes: new Uint8Array([1]) };
-
-function followedUser(id = FOLLOWED_ID): FollowedFeedUser {
-  return new FollowedFeedUser(id, followedPublicKey, 'Alice', undefined, {} as AesKey, `follow-secret-${id}`);
-}
 
 /** A session event payload as it arrives over the wire, at an arbitrary schema version. */
 function eventPayload(eventId: string, version: number): Uint8Array {
@@ -154,7 +150,12 @@ function eventPayload(eventId: string, version: number): Uint8Array {
   return toJsonBytes({ ...event.toJSON(), version });
 }
 
-function ingestionTestBed(events: { eventId: string; version: number }[], followedIds = [FOLLOWED_ID]) {
+function ingestionTestBed(
+  events: { eventId: string; version: number }[],
+  followedIds = [FOLLOWED_ID],
+  options: { friends?: Friend[]; invalidFollowSecrets?: string[] } = {},
+) {
+  const friends = options.friends ?? followedIds.map((id) => makeFriend(id));
   const services = {
     feedApiService: {
       getUserEventsAsync: vi.fn().mockResolvedValue(
@@ -167,15 +168,22 @@ function ingestionTestBed(events: { eventId: string; version: number }[], follow
             encryptedEventIV: new Uint8Array(),
             expiry: Instant.now().plusSeconds(FEED_EVENT_RETENTION_SECONDS).toString(),
           })),
-          invalidFollowSecrets: [],
+          invalidFollowSecrets: options.invalidFollowSecrets ?? [],
         }),
       ),
-      getUsersAsync: vi
-        .fn()
-        .mockResolvedValue(ApiResult.success({ users: Object.fromEntries(followedIds.map((id) => [id, {}])) })),
+      getUsersAsync: vi.fn().mockResolvedValue(
+        ApiResult.success({
+          users: Object.fromEntries(
+            followedIds.map((id) => [
+              id,
+              { encryptedName: new TextEncoder().encode(`fresh-${id}`), encryptionIV: new Uint8Array() },
+            ]),
+          ),
+        }),
+      ),
     },
     encryptionService: {
-      decryptAesCbcAndVerifyRsa256PssAsync: vi.fn((payload: { encryptedPayload: Uint8Array }) =>
+      decryptAesCbcAndVerifyRsa256PssAsync: vi.fn((payload: { encryptedPayload: Uint8Array }, _key: AesKey) =>
         Promise.resolve(payload.encryptedPayload),
       ),
     },
@@ -183,14 +191,14 @@ function ingestionTestBed(events: { eventId: string; version: number }[], follow
 
   const testBed = createAddEffectTestBed({
     initialState: {
-      feed: { followedUsers: Object.fromEntries(followedIds.map((id) => [id, followedUser(id)])) },
+      feed: { friends: Object.fromEntries(friends.map((friend) => [friend.id, friend])) },
     },
     services: services,
     reducer: combineReducers({ feed: feedReducer, storedSessions: storedSessionsReducer }),
   });
 
   addFeedItemEffects(testBed.addEffect);
-  return testBed;
+  return Object.assign(testBed, { services });
 }
 
 function ingestedEventIds(testBed: ReturnType<typeof ingestionTestBed>): string[] {
@@ -227,15 +235,71 @@ describe('fetchFeedItems ingestion', () => {
     expect(ingestedEventIds(testBed).sort()).toEqual(['good-1', 'good-2']);
   });
 
-  it('refreshes every followed user in a single dispatch', async () => {
+  it('refreshes every friend profile in a single dispatch', async () => {
     const testBed = ingestionTestBed([{ eventId: 'e1', version: 3 }], [FOLLOWED_ID, 'followed-2', 'followed-3']);
 
     await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
 
-    const puts = testBed.dispatchedActions.filter((x) => putFollowedUsers.match(x));
-    expect(puts.map((x) => x.payload.map((user) => user.id).sort())).toEqual([
+    const patches = testBed.dispatchedActions.filter((x) => patchFriendProfiles.match(x));
+    expect(patches.map((x) => x.payload.map((user) => user.id).sort())).toEqual([
       [FOLLOWED_ID, 'followed-2', 'followed-3'],
     ]);
-    testBed.expectNotDispatched(putFollowedUser);
+    expect(testBed.getState().feed.friends[FOLLOWED_ID]!.name).toBe(`fresh-${FOLLOWED_ID}`);
+  });
+
+  it('only fetches accepted friends whose keys have arrived', async () => {
+    const testBed = ingestionTestBed([], [FOLLOWED_ID], {
+      friends: [
+        makeFriend(FOLLOWED_ID),
+        makeFriend('pending', { status: 'pending' }),
+        makeFriend('legacy', { status: 'legacyFollowing' }),
+        makeFriend('accepted-without-keys', { theirSecret: undefined, theirKeys: [] }),
+      ],
+    });
+
+    await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
+
+    const request = testBed.services.feedApiService.getUserEventsAsync.mock.calls[0]![0] as {
+      users: { userId: string }[];
+    };
+    const requested = request.users.map((x) => x.userId);
+    expect(requested).toEqual([FOLLOWED_ID]);
+  });
+
+  it('tries every key a friend has shared until one decrypts', async () => {
+    const oldKey = { value: new Uint8Array([7]) };
+    const testBed = ingestionTestBed([{ eventId: 'e1', version: 3 }], [FOLLOWED_ID], {
+      friends: [makeFriend(FOLLOWED_ID, { theirKeys: [{ value: new Uint8Array([9]) }, oldKey] })],
+    });
+    testBed.services.encryptionService.decryptAesCbcAndVerifyRsa256PssAsync.mockImplementation((payload, key) =>
+      key === oldKey ? Promise.resolve(payload.encryptedPayload) : Promise.reject(new Error('wrong key')),
+    );
+
+    await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
+
+    expect(ingestedEventIds(testBed)).toEqual(['e1']);
+  });
+
+  it('keeps the last known profile when none of the keys decrypt it', async () => {
+    const testBed = ingestionTestBed([], [FOLLOWED_ID]);
+    testBed.services.encryptionService.decryptAesCbcAndVerifyRsa256PssAsync.mockImplementation(() =>
+      Promise.reject(new Error('wrong key')),
+    );
+
+    await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
+
+    expect(testBed.getState().feed.friends[FOLLOWED_ID]!.name).toBe(`name-${FOLLOWED_ID}`);
+  });
+
+  it('ends the friendship when the server says their secret was revoked', async () => {
+    const testBed = ingestionTestBed([], [FOLLOWED_ID], { invalidFollowSecrets: [`their-secret-${FOLLOWED_ID}`] });
+
+    await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
+
+    expect(testBed.getDispatchedAction(removeFriend).payload).toEqual({
+      friendId: FOLLOWED_ID,
+      notify: false,
+      fromUserAction: false,
+    });
   });
 });

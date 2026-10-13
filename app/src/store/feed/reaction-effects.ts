@@ -61,9 +61,9 @@ export function addReactionEffects(addEffect: AddEffectFn) {
 
       for (const cheer of toSend) {
         const event = state.feed.feed.find((x) => x.eventId === cheer.eventId);
-        const author = event && state.feed.followedUsers[event.userId];
+        const author = event && state.feed.friends[event.userId];
 
-        if (!author) {
+        if (author?.status !== 'friend') {
           dispatch(removeSentReaction(cheer.reactionId));
           continue;
         }

@@ -18,12 +18,10 @@ import { FeedIdentity, SessionUserEvent } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import { shareString } from '@/store/app';
 import {
-  fetchFeedItems,
   fetchInboxItems,
   getFeedShareUrl,
-  selectFeedFollowers,
-  selectFeedFollowing,
   selectFeedIdentityRemote,
+  selectFriendList,
   selectFeedSessionItems,
   selectOwnFeedUserId,
 } from '@/store/feed';
@@ -59,11 +57,10 @@ export default function Feed() {
       ListHeaderComponent={<FeedProfileHeader />}
       onRefresh={() => {
         dispatch(fetchInboxItems({ fromUserAction: true }));
-        dispatch(fetchFeedItems({ fromUserAction: true }));
       }}
       ListEmptyComponent={
         <EmptyInfo style={{ marginTop: spacing[8] }}>
-          <T keyName="feed.no_following_data.message" />
+          <T keyName="feed.no_friend_workouts.message" />
         </EmptyInfo>
       }
       refreshing={fetchingFeedItems}
@@ -94,10 +91,9 @@ function FeedProfileHeader() {
 function FeedProfile({ identity }: { identity: FeedIdentity }) {
   const dispatch = useDispatch();
   const { push } = useRouter();
-  const following = useAppSelector(selectFeedFollowing);
-  const followers = useAppSelector(selectFeedFollowers);
+  const friends = useAppSelector(selectFriendList);
   const shareUrl = getFeedShareUrl(identity);
-  const isAlone = following.length === 0 && followers.length === 0;
+  const isAlone = friends.length === 0;
 
   return (
     <>
@@ -137,7 +133,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
         <Card mode="contained" style={{ marginBottom: spacing[2] }}>
           <Card.Content style={{ gap: spacing[2] }}>
             <SurfaceText>
-              <T keyName="feed.explanation.body" />
+              <T keyName="feed.friends_explanation.body" />
             </SurfaceText>
           </Card.Content>
           <CardActions>
@@ -164,7 +160,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
 }
 
 function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
-  const users = useAppSelector(selectFeedFollowing);
+  const friends = useAppSelector((x) => x.feed.friends);
   const ownUserId = useAppSelector(selectOwnFeedUserId);
   const identity = useAppSelector((x) => x.feed.identity.unwrapOr(undefined));
   const { t } = useTranslate();
@@ -172,7 +168,7 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
   const isOwnItem = props.feedItem.userId === ownUserId;
   switch (props.feedItem.type) {
     case 'SessionUserEvent': {
-      const authorName = isOwnItem ? identity?.name : users.find((x) => x.userId === props.feedItem.userId)?.user.name;
+      const authorName = isOwnItem ? identity?.name : friends[props.feedItem.userId]?.name;
       const byline = isOwnItem ? t('feed.you.label') : (authorName ?? t('feed.anonymous_user.label'));
       return (
         <Card mode="contained" testID="feed-view-workout">

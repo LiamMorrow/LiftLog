@@ -1,12 +1,9 @@
 import {
   AnyVersionExerciseDescriptorJSON,
   AnyVersionFeedIdentityJSON,
-  AnyVersionFollowedFeedUserJSON,
-  AnyVersionFollowerFeedUserJSON,
   AnyVersionFollowRequestInboxMessageJSON,
   AnyVersionFriendJSON,
   AnyVersionInboxMessageJSON,
-  AnyVersionPendingFeedUserJSON,
   AnyVersionProgramBlueprintJSON,
   AnyVersionReceivedReactionJSON,
   AnyVersionSentReactionJSON,
@@ -240,22 +237,9 @@ export const feedIdentitySchema = sqliteTable(
   () => [check('single_feed_identity', sql`id = 0`)],
 );
 
-export const feedFollowedUsersSchema = sqliteTable('feed_followed_user', {
-  id: text().primaryKey(),
-  payload: text('payload', { mode: 'json' }).$type<AnyVersionFollowedFeedUserJSON>().notNull(),
-});
-export const feedPendingUsersSchema = sqliteTable('feed_pending_user', {
-  id: text().primaryKey(),
-  payload: text('payload', { mode: 'json' }).$type<AnyVersionPendingFeedUserJSON>().notNull(),
-});
 export const feedItemsSchema = sqliteTable('feed_items', {
   id: text().primaryKey(),
   payload: text('payload', { mode: 'json' }).$type<AnyVersionSessionUserEventJSON>().notNull(),
-});
-
-export const feedFollowerUsersSchema = sqliteTable('feed_follower_user', {
-  id: text().primaryKey(),
-  payload: text('payload', { mode: 'json' }).$type<AnyVersionFollowerFeedUserJSON>().notNull(),
 });
 
 export const feedFriendsSchema = sqliteTable('feed_friend', {

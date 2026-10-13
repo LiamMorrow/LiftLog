@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { DayOfWeek, Instant, LocalDate } from '@js-joda/core';
 import { ownHistoryOf, selectFollowingActivity } from '@/store/activity';
-import { FollowedFeedUser, SessionUserEvent } from '@/models/feed-models';
+import { SessionUserEvent } from '@/models/feed-models';
+import { makeFriend } from '@/store/feed/__test__/friends';
 import { RemoteData } from '@/models/remote';
-import { AesKey, RsaPublicKey } from '@/models/encryption-models';
 import { RootState } from '@/store/store';
 import { Session } from '@/models/session-models';
 import {
@@ -13,13 +13,6 @@ import {
 } from '@/models/session-models/__test__/helpers';
 
 const today = LocalDate.of(2025, 4, 10);
-
-const publicKey: RsaPublicKey = { spkiPublicKeyBytes: new Uint8Array([1]) };
-const aesKey: AesKey = { value: new Uint8Array([2]) };
-
-function followedUser(id: string) {
-  return new FollowedFeedUser(id, publicKey, 'Friend', undefined, aesKey, 'secret');
-}
 
 function startedSessionOn(date: LocalDate): Session {
   return createSession(createSessionBlueprint([createExerciseBlueprint(0, false)]), [0]).with({ date });
@@ -39,7 +32,7 @@ function stateWith(events: SessionUserEvent[], userIds: string[], ownUserId?: st
   return {
     feed: {
       feed: events,
-      followedUsers: Object.fromEntries(userIds.map((id) => [id, followedUser(id)])),
+      friends: Object.fromEntries(userIds.map((id) => [id, makeFriend(id)])),
       identity: ownUserId ? RemoteData.success({ id: ownUserId }) : RemoteData.notAsked(),
     },
   } as unknown as RootState;
@@ -76,15 +69,6 @@ describe('selectFollowingActivity', () => {
 
     expect(activity?.workoutsThisWeek).toBe(0);
     expect(activity?.lastWorkoutDate?.toString()).toBe(today.minusDays(20).toString());
-  });
-
-  it('reads a self-follow from your own history, which the feed filters out to avoid double-counting', () => {
-    const state = stateWith([], ['me'], 'me');
-
-    const activity = selectFollowingActivity(state, withOwn([today.minusDays(1)])).get('me');
-
-    expect(activity?.workoutsThisWeek).toBe(1);
-    expect(activity?.lastWorkoutDate?.toString()).toBe(today.minusDays(1).toString());
   });
 
   it('marks today so the strip can ring the current day', () => {

@@ -1,7 +1,5 @@
 import { AddEffectFn, RootState } from '@/store/store';
 import {
-  addFollower,
-  addRevokableFollowSecret,
   addUnpublishedSessionId,
   clearFeedState,
   createFeedIdentity,
@@ -9,21 +7,17 @@ import {
   fetchInboxItems,
   initializeFeedStateSlice,
   patchFeedState,
-  putFollowedUser,
-  putFollowedUsers,
   removeFeedItems,
-  removeFollowedUser,
-  removeFollower,
-  removeFollowRequest,
   removeReactionsForEvents,
   removeRevokableFollowSecret,
   removeSentReaction,
   removeUnpublishedSessionId,
+  rejectLegacyFollowRequests,
   resetFeedAccount,
+  restoreFeedBackup,
   revokeFollowSecrets,
   selectFeedIdentityRemote,
   selectOwnFeedUserId,
-  setFollowRequests,
   setIdentity,
   setIsHydrated,
   setSentReaction,
@@ -36,22 +30,20 @@ import { addSharedItemEffects } from '@/store/feed/shared-item-effects';
 import { showSnackbar } from '@/store/app';
 import { addFeedItemEffects } from '@/store/feed/feed-items-effects';
 import { addInboxEffects } from '@/store/feed/inbox-effects';
-import { addFollowingEffects } from '@/store/feed/following-effects';
+import { addFriendEffects } from '@/store/feed/friend-effects';
 import { addReactionEffects } from '@/store/feed/reaction-effects';
 import { addOutboxEffects } from '@/store/feed/outbox-effects';
 import { selectActiveProgram } from '@/store/program';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { Platform } from 'react-native';
 import {
-  feedFollowedUsersSchema,
-  feedFollowerUsersSchema,
   feedFollowRequestsSchema,
+  feedFriendsSchema,
   feedIdentitySchema,
   feedInboxQueueSchema,
   feedInboxSeenSchema,
   feedItemsSchema,
   feedOutboxSchema,
-  feedPendingUsersSchema,
   feedReactionsSchema,
   feedRevokedFollowSecretsSchema,
   feedSentReactionsSchema,
@@ -60,23 +52,15 @@ import {
 import { eq, inArray, sql } from 'drizzle-orm';
 import { upsert } from '@/db/helpers';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
-import {
-  FeedIdentity,
-  FeedUser,
-  FollowerFeedUser,
-  FollowRequestInboxMessage,
-  fromFeedUserJSON,
-  ReceivedReaction,
-  SentReaction,
-  SessionUserEvent,
-} from '@/models/feed-models';
+import { FeedIdentity, ReceivedReaction, SentReaction, SessionUserEvent } from '@/models/feed-models';
 import { Dispatch } from '@reduxjs/toolkit';
 import { EncryptionService } from '@/services/encryption-service';
 import { Logger } from '@/services/logger';
 import { toRecord } from '@/utils/reduce';
-import { FeedUserJSON } from '@/models/storage/versions/latest';
 import { feedIdentityMigrations, sessionUserEventMigrations } from '@/models/storage/versions/migrations';
 import { setBackendAssignment, switchFeedBackend } from '@/store/backends';
+import { readFriends, writeFriends } from '@/db/feed-friends';
+import { enqueueOutboxMessages } from '@/db/feed-outbox';
 
 export function applyFeedEffects(addEffect: AddEffectFn) {
   addEffect(
@@ -88,37 +72,20 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
         const identity = (await db.select().from(feedIdentitySchema)).at(0);
         dispatch(
           patchFeedState({
-            identity: identity ? RemoteData.success(FeedIdentity.fromJSON(feedIdentityMigrations.migrate(identity.payload))) : RemoteData.notAsked(),
+            identity: identity
+              ? RemoteData.success(FeedIdentity.fromJSON(feedIdentityMigrations.migrate(identity.payload)))
+              : RemoteData.notAsked(),
             feed: (await db.select().from(feedItemsSchema)).map((x) =>
               SessionUserEvent.fromJSON(sessionUserEventMigrations.migrate(x.payload)),
             ),
-            followRequests: (await db.select().from(feedFollowRequestsSchema)).map((x) =>
-              FollowRequestInboxMessage.fromJSON(x.payload),
+            friends: readFriends(db).reduce(
+              toRecord(
+                (x) => x.id,
+                (x) => x,
+              ),
+              {},
             ),
-            followedUsers: (
-              (await db.select().from(feedFollowedUsersSchema)) as {
-                payload: FeedUserJSON;
-              }[]
-            )
-              .concat(await db.select().from(feedPendingUsersSchema))
-              .map((x) => fromFeedUserJSON(x.payload))
-              .reduce(
-                toRecord(
-                  (x) => x.id,
-                  (x) => x,
-                ),
-                {},
-              ),
             revokedFollowSecrets: (await db.select().from(feedRevokedFollowSecretsSchema)).map((x) => x.secret),
-            followers: (await db.select().from(feedFollowerUsersSchema))
-              .map((x) => FollowerFeedUser.fromJSON(x.payload))
-              .reduce(
-                toRecord(
-                  (x) => x.id,
-                  (x) => x,
-                ),
-                {},
-              ),
             receivedReactions: (await db.select().from(feedReactionsSchema))
               .map((x) => ReceivedReaction.fromJSON(x.payload))
               .reduce(
@@ -157,6 +124,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
         dispatch(revokeFollowSecrets({ fromUserAction: false }));
         // Refreshes the identity if it no longer exists on the server
         dispatch(updateFeedIdentity({ fromUserAction: false, updates: {} }));
+        dispatch(rejectLegacyFollowRequests());
         dispatch(fetchInboxItems({ fromUserAction: false }));
         const elapsedMilliseconds = performance.now() - sw;
         logger.info(`Feed state initialized in ${elapsedMilliseconds}ms`);
@@ -167,25 +135,45 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     },
   );
   addEffect(clearFeedState, async (_, { extra: { db } }) => {
-    db.transaction((tx) => {
-      for (const table of [
-        feedIdentitySchema,
-        feedFollowedUsersSchema,
-        feedPendingUsersSchema,
-        feedFollowerUsersSchema,
-        feedFollowRequestsSchema,
-        feedItemsSchema,
-        feedReactionsSchema,
-        feedSentReactionsSchema,
-        feedRevokedFollowSecretsSchema,
-        feedOutboxSchema,
-        feedInboxQueueSchema,
-        feedInboxSeenSchema,
-      ]) {
-        tx.delete(table).run();
-      }
-    });
+    db.transaction((tx) => wipeFeedTables(tx));
   });
+
+  addEffect(
+    restoreFeedBackup,
+    async (action, { dispatch, getState, extra: { db, feedIdentityService, feedFollowService } }) => {
+      const { identity, feedItems, friends } = action.payload;
+      const current = selectFeedIdentityRemote(getState()).unwrapOr(undefined);
+      if (current && current.id !== identity.id) {
+        const result = await feedIdentityService.deleteFeedIdentityAsync(current);
+        if (result.isError() && result.error.type !== ApiErrorType.NotFound) {
+          dispatch(
+            feedApiError({ message: 'Failed to replace the current feed account', error: result.error, action }),
+          );
+          return;
+        }
+      }
+
+      const reconnect = await Promise.all(
+        friends
+          .filter((friend) => friend.status === 'friend' || friend.status === 'pending')
+          .map((friend) => feedFollowService.friendRequestMessage(identity, friend)),
+      );
+
+      db.transaction((tx) => {
+        wipeFeedTables(tx);
+        upsert(tx, feedIdentitySchema, [{ id: 0, payload: identity.toJSON() }]);
+        upsert(
+          tx,
+          feedItemsSchema,
+          feedItems.map((x) => ({ id: x.id, payload: x.toJSON() })),
+        );
+        writeFriends(tx, friends);
+        enqueueOutboxMessages(tx, reconnect);
+      });
+      dispatch(initializeFeedStateSlice());
+    },
+  );
+
   addEffect(setIdentity, async (action, { extra: { db } }) => {
     if (!action.payload.isSuccess()) {
       return;
@@ -198,44 +186,6 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     ]);
   });
 
-  addEffect(removeFollowedUser, async (action, { extra: { db } }) => {
-    await db.delete(feedFollowedUsersSchema).where(eq(feedFollowedUsersSchema.id, action.payload));
-    await db.delete(feedPendingUsersSchema).where(eq(feedPendingUsersSchema.id, action.payload));
-  });
-
-  addEffect(setFollowRequests, async (action, { extra: { db } }) => {
-    db.transaction((tx) => {
-      tx.delete(feedFollowRequestsSchema).run();
-      upsert(
-        tx,
-        feedFollowRequestsSchema,
-        action.payload.map((req) => ({
-          id: req.senderUserId,
-          payload: req.toJSON(),
-        })),
-      );
-    });
-  });
-  addEffect(addFollower, async (action, { extra: { db } }) => {
-    upsert(db, feedFollowerUsersSchema, [
-      {
-        id: action.payload.id,
-        payload: action.payload.toJSON(),
-      },
-    ]);
-  });
-  addEffect(removeFollower, async (action, { extra: { db } }) => {
-    await db.delete(feedFollowerUsersSchema).where(eq(feedFollowerUsersSchema.id, action.payload));
-  });
-  addEffect(removeFollowRequest, async (action, { extra: { db } }) => {
-    await db.delete(feedFollowRequestsSchema).where(eq(feedFollowRequestsSchema.id, action.payload.senderUserId));
-  });
-  addEffect(putFollowedUser, async (action, { extra: { db } }) => {
-    db.transaction((tx) => writeFollowedUser(tx, action.payload));
-  });
-  addEffect(putFollowedUsers, async (action, { extra: { db } }) => {
-    db.transaction((tx) => action.payload.forEach((user) => writeFollowedUser(tx, user)));
-  });
   addEffect(upsertFeedItems, async (action, { extra: { db } }) => {
     upsert(
       db,
@@ -276,12 +226,6 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     await db
       .delete(feedSentReactionsSchema)
       .where(inArray(sql`json_extract(${feedSentReactionsSchema.payload}, '$.eventId')`, action.payload));
-  });
-  addEffect(addRevokableFollowSecret, async (action, { extra: { db } }) => {
-    await db
-      .insert(feedRevokedFollowSecretsSchema)
-      .values([{ secret: action.payload }])
-      .onConflictDoNothing();
   });
   addEffect(removeRevokableFollowSecret, async (action, { extra: { db } }) => {
     await db.delete(feedRevokedFollowSecretsSchema).where(eq(feedRevokedFollowSecretsSchema.secret, action.payload));
@@ -461,23 +405,30 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
   addFeedItemEffects(addEffect);
   addInboxEffects(addEffect);
   addOutboxEffects(addEffect);
-  addFollowingEffects(addEffect);
+  addFriendEffects(addEffect);
   addReactionEffects(addEffect);
+}
+
+function wipeFeedTables(tx: ExpoSQLiteDatabase) {
+  for (const table of [
+    feedIdentitySchema,
+    feedFriendsSchema,
+    feedFollowRequestsSchema,
+    feedItemsSchema,
+    feedReactionsSchema,
+    feedSentReactionsSchema,
+    feedRevokedFollowSecretsSchema,
+    feedOutboxSchema,
+    feedInboxQueueSchema,
+    feedInboxSeenSchema,
+  ]) {
+    tx.delete(table).run();
+  }
 }
 
 function revertedFields(before: FeedIdentity, updates: Partial<FeedIdentity>): Partial<FeedIdentity> {
   const keys = Object.keys(updates) as (keyof FeedIdentity)[];
   return Object.fromEntries(keys.map((key) => [key, before[key]]));
-}
-
-function writeFollowedUser(tx: ExpoSQLiteDatabase, user: FeedUser) {
-  if (user.type === 'PendingFeedUser') {
-    upsert(tx, feedPendingUsersSchema, [{ id: user.id, payload: user.toJSON() }]);
-    tx.delete(feedFollowedUsersSchema).where(eq(feedFollowedUsersSchema.id, user.id)).run();
-  } else {
-    tx.delete(feedPendingUsersSchema).where(eq(feedPendingUsersSchema.id, user.id)).run();
-    upsert(tx, feedFollowedUsersSchema, [{ id: user.id, payload: user.toJSON() }]);
-  }
 }
 
 // There was a period of time where we generated bad keys on IOS

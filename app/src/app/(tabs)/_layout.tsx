@@ -1,13 +1,13 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
-import { selectFollowRequestCount } from '@/store/feed';
+import { selectIncomingFriendRequestCount } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabsLayout() {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
-  const followRequestCount = useAppSelector(selectFollowRequestCount);
+  const friendRequestCount = useAppSelector(selectIncomingFriendRequestCount);
   const showFeed = useAppSelector((x) => x.settings.showFeed);
   return (
     <NativeTabs
@@ -33,7 +33,9 @@ export default function TabsLayout() {
           md={{ default: 'forum', selected: 'forum' }}
         />
         <NativeTabs.Trigger.Label>{t('feed.feed.title')}</NativeTabs.Trigger.Label>
-        {followRequestCount && <NativeTabs.Trigger.Badge>{followRequestCount.toString()}</NativeTabs.Trigger.Badge>}
+        {friendRequestCount ? (
+          <NativeTabs.Trigger.Badge>{friendRequestCount.toString()}</NativeTabs.Trigger.Badge>
+        ) : null}
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="stats">
         <NativeTabs.Trigger.Icon

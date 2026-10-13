@@ -99,6 +99,13 @@
       "when": 1791885573474,
       "tag": "0013_feed_friend",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1791886390835,
+      "tag": "0014_drop_follow_tables",
+      "breakpoints": true
     }
   ]
 }

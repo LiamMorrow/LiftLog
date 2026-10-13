@@ -8,7 +8,7 @@ import { FeedPrBadges } from '@/components/smart/pr-badges';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useAppSelector } from '@/store';
-import { selectFeedFollowing, selectFeedSessionItems, selectOwnFeedUserId } from '@/store/feed';
+import { selectFeedSessionItems, selectOwnFeedUserId } from '@/store/feed';
 import { T, useTranslate } from '@tolgee/react';
 import { LocalDate } from '@js-joda/core';
 import { Href, Stack } from 'expo-router';
@@ -22,7 +22,7 @@ export function getFeedItemHref(eventId: string): Href {
 export function FeedItem({ eventId }: { eventId: string }) {
   const { colors } = useAppTheme();
   const feedItem = useAppSelector(selectFeedSessionItems).find((x) => x.eventId === eventId);
-  const users = useAppSelector(selectFeedFollowing);
+  const friends = useAppSelector((x) => x.feed.friends);
   const ownUserId = useAppSelector(selectOwnFeedUserId);
   const identity = useAppSelector((x) => x.feed.identity.unwrapOr(undefined));
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
@@ -42,7 +42,7 @@ export function FeedItem({ eventId }: { eventId: string }) {
   }
 
   const isOwnItem = feedItem.userId === ownUserId;
-  const authorName = isOwnItem ? identity?.name : users.find((x) => x.userId === feedItem.userId)?.user.name;
+  const authorName = isOwnItem ? identity?.name : friends[feedItem.userId]?.name;
   const userName = isOwnItem ? t('feed.you.label') : (authorName ?? t('feed.anonymous_user.label'));
   const formattedDate = formatDate(session.date, {
     year: session.date.year() !== LocalDate.now().year() ? 'numeric' : undefined,

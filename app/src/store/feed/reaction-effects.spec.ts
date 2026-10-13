@@ -4,9 +4,9 @@ import { Instant, LocalDate } from '@js-joda/core';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { addReactionEffects } from '@/store/feed/reaction-effects';
 import feedReducer, { cheerFeedItem, flushOutbox } from '@/store/feed';
-import { FeedIdentity, FollowedFeedUser, Reaction, SessionUserEvent } from '@/models/feed-models';
+import { FeedIdentity, Reaction, SessionUserEvent } from '@/models/feed-models';
+import { makeFriend } from '@/store/feed/__test__/friends';
 import { RemoteData } from '@/models/remote';
-import { AesKey, RsaPublicKey } from '@/models/encryption-models';
 import { createTestDb } from '@/utils/__test__/test-db';
 import { feedOutboxSchema } from '@/db/schema';
 import { InboxRecipient } from '@/services/feed-follow-service';
@@ -17,11 +17,6 @@ const AUTHOR_ID = 'author-1';
 const EVENT_ID = 'event-1';
 
 const identity = { id: 'me' } as FeedIdentity;
-const publicKey: RsaPublicKey = { spkiPublicKeyBytes: new Uint8Array([1]) };
-
-function author() {
-  return new FollowedFeedUser(AUTHOR_ID, publicKey, 'Alice', undefined, {} as AesKey, 'secret');
-}
 
 function feedEvent() {
   const session = new Session(
@@ -55,7 +50,7 @@ async function makeTestBed() {
       feed: {
         identity: RemoteData.success(identity),
         feed: [feedEvent()],
-        followedUsers: { [AUTHOR_ID]: author() },
+        friends: { [AUTHOR_ID]: makeFriend(AUTHOR_ID) },
       },
     },
     services: { ...services, db },

@@ -1,24 +1,19 @@
-import { asc, inArray, lt, sql } from 'drizzle-orm';
+import { asc, eq, inArray, lt, sql } from 'drizzle-orm';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { match } from 'ts-pattern';
 import { AddEffectFn, AppDispatch, RootState } from '@/store/store';
 import {
+  fetchFeedItems,
   fetchInboxItems,
   feedApiError,
   flushOutbox,
-  setFollowRequests,
-  processFollowResponses,
   selectFeedIdentityRemote,
-  selectFeedFollowRequests,
-  revokeFollowSecretAndRemoveFollower,
-  selectFeedFollowers,
+  selectAcceptedFriends,
   selectOwnFeedUserId,
   upsertReceivedReactions,
 } from '@/store/feed';
 import {
   FeedIdentity,
-  FollowRequestInboxMessage,
-  FollowResponseInboxMessage,
   fromInboxMessageJSON,
   InboxMessage,
   MAX_REACTIONS_PER_SENDER_PER_EVENT,
@@ -31,6 +26,16 @@ import { inboxMessageMigrations } from '@/models/storage/versions/migrations';
 import { DecryptedInboxMessage } from '@/services/feed-inbox-decryption-service';
 import { FeedApiService } from '@/services/feed-api';
 import { Logger } from '@/services/logger';
+import { Services } from '@/services';
+import {
+  commitFriendChange,
+  handleFriendEnded,
+  handleFriendKeys,
+  handleFriendRequest,
+  handleLegacyFollowRequest,
+  InboxHandlerContext,
+  InboxHandlerResult,
+} from '@/store/feed/friend-effects';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 export const INBOX_SEEN_RETENTION_MS = 60 * DAY_MS;
@@ -39,7 +44,7 @@ const MAX_ACK_IDS_PER_REQUEST = 500;
 /**
  * PUT /inbox is unauthenticated by design: anyone who knows your user id can post into your inbox, without
  * compromising the server. The signature proves *who* wrote a message, never that they were entitled to. So a
- * cheer is only accepted if it comes from a current follower and targets a workout you actually own.
+ * cheer is only accepted if it comes from a current friend and targets a workout you actually own.
  *
  * The emoji allowlist and the count bound are enforced earlier, in `Reaction.fromJSON`.
  */
@@ -48,7 +53,7 @@ function acceptableReactions(
   state: RootState,
   ownSessionIds: Set<string>,
 ): ReceivedReaction[] {
-  const followers = new Set(selectFeedFollowers(state).map((x) => x.id));
+  const friends = new Set(selectAcceptedFriends(state).map((x) => x.id));
   const existing = Object.values(state.feed.receivedReactions);
 
   const acceptedPerSender = new Map<string, number>();
@@ -62,7 +67,7 @@ function acceptableReactions(
   for (const message of messages) {
     const { senderUserId, payload } = message;
 
-    if (!followers.has(senderUserId)) {
+    if (!friends.has(senderUserId)) {
       continue;
     }
     if (!ownSessionIds.has(payload.eventId)) {
@@ -145,7 +150,11 @@ export function addInboxEffects(addEffect: AddEffectFn) {
           );
         }
 
-        drainInboxQueue(extra.db, extra.logger, dispatch, getState);
+        await drainInboxQueue(identity, dispatch, getState, extra);
+        if (!isCurrentIdentity()) {
+          return;
+        }
+        dispatch(fetchFeedItems({ fromUserAction: false }));
         extra.db
           .delete(feedInboxSeenSchema)
           .where(lt(feedInboxSeenSchema.seenAtMs, Date.now() - INBOX_SEEN_RETENTION_MS))
@@ -210,52 +219,91 @@ async function ackInboxMessages(
   }
 }
 
-function drainInboxQueue(db: ExpoSQLiteDatabase, logger: Logger, dispatch: AppDispatch, getState: () => RootState) {
+async function drainInboxQueue(
+  identity: FeedIdentity,
+  dispatch: AppDispatch,
+  getState: () => RootState,
+  {
+    db,
+    logger,
+    feedApiService,
+    feedFollowService,
+  }: Pick<Services, 'db' | 'logger' | 'feedApiService' | 'feedFollowService'>,
+) {
   const rows = db
     .select()
     .from(feedInboxQueueSchema)
     .orderBy(asc(feedInboxQueueSchema.sentAtMs), asc(sql`rowid`))
     .all();
-  const remove = (messageIds: string[]) => {
-    if (messageIds.length) {
-      db.delete(feedInboxQueueSchema).where(inArray(feedInboxQueueSchema.messageId, messageIds)).run();
-    }
-  };
+  const removeRow = (tx: ExpoSQLiteDatabase, messageId: string) =>
+    tx.delete(feedInboxQueueSchema).where(eq(feedInboxQueueSchema.messageId, messageId)).run();
+  const blockedSenders = new Set<string>();
 
-  const followResponses: { messageId: string; message: FollowResponseInboxMessage }[] = [];
   for (const row of rows) {
+    if (selectOwnFeedUserId(getState()) !== identity.id) {
+      return;
+    }
+
+    let message: InboxMessage;
     try {
-      const message: InboxMessage = fromInboxMessageJSON(inboxMessageMigrations.migrate(row.payload));
-      if (message.type === 'FollowResponse') {
-        followResponses.push({ messageId: row.messageId, message });
-        continue;
-      }
-      match(message)
-        .with({ type: 'FollowRequest' }, (x) => handleFollowRequest(x, dispatch, getState))
-        .with({ type: 'UnfollowNotification' }, (x) =>
-          dispatch(revokeFollowSecretAndRemoveFollower({ userId: x.senderUserId, fromUserAction: false })),
-        )
-        .with({ type: 'Reaction' }, (x) => handleReaction(x, db, dispatch, getState))
-        .exhaustive();
+      message = fromInboxMessageJSON(inboxMessageMigrations.migrate(row.payload));
+    } catch (error) {
+      logger.error('Dropping an inbox message that can no longer be read', error);
+      removeRow(db, row.messageId);
+      continue;
+    }
+    if (blockedSenders.has(message.senderUserId)) {
+      continue;
+    }
+
+    let committed = false;
+    const context: InboxHandlerContext = {
+      identity,
+      sentAtMs: row.sentAtMs,
+      getState,
+      feedApiService,
+      feedFollowService,
+      commit: (change) => {
+        committed = true;
+        commitFriendChange(db, dispatch, change, (tx) => removeRow(tx, row.messageId));
+      },
+    };
+
+    let result: InboxHandlerResult;
+    try {
+      result = await handleInboxMessage(message, context, db, dispatch);
     } catch (error) {
       logger.error('Failed to process inbox message', error);
+      result = 'done';
     }
-    remove([row.messageId]);
-  }
 
-  if (followResponses.length) {
-    dispatch(processFollowResponses({ responses: followResponses.map((x) => x.message) }));
-    remove(followResponses.map((x) => x.messageId));
+    if (result === 'retry') {
+      blockedSenders.add(message.senderUserId);
+    } else if (!committed) {
+      removeRow(db, row.messageId);
+    }
   }
 }
 
-function handleFollowRequest(request: FollowRequestInboxMessage, dispatch: AppDispatch, getState: () => RootState) {
-  // Someone who already follows us only asks again if they have lost their follow secret.
-  if (selectFeedFollowers(getState()).some((x) => x.id === request.senderUserId)) {
-    dispatch(revokeFollowSecretAndRemoveFollower({ userId: request.senderUserId, fromUserAction: false }));
-  }
-  const others = selectFeedFollowRequests(getState()).filter((x) => x.senderUserId !== request.senderUserId);
-  dispatch(setFollowRequests([...others, request]));
+function handleInboxMessage(
+  message: InboxMessage,
+  context: InboxHandlerContext,
+  db: ExpoSQLiteDatabase,
+  dispatch: AppDispatch,
+): Promise<InboxHandlerResult> {
+  return match(message)
+    .with({ type: 'FriendRequest' }, (x) => handleFriendRequest(x, context))
+    .with({ type: 'FriendKeys' }, (x) => handleFriendKeys(x, context))
+    .with({ type: 'FriendReject' }, (x) => handleFriendEnded(x.senderUserId, context, 'pending'))
+    .with({ type: 'Unfriend' }, (x) => handleFriendEnded(x.senderUserId, context))
+    .with({ type: 'UnfollowNotification' }, (x) => handleFriendEnded(x.senderUserId, context))
+    .with({ type: 'FollowRequest' }, (x) => handleLegacyFollowRequest(x.senderUserId, context))
+    .with({ type: 'FollowResponse' }, () => Promise.resolve<InboxHandlerResult>('done'))
+    .with({ type: 'Reaction' }, (x) => {
+      handleReaction(x, db, dispatch, context.getState);
+      return Promise.resolve<InboxHandlerResult>('done');
+    })
+    .exhaustive();
 }
 
 function handleReaction(

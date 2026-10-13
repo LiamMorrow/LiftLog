@@ -28,34 +28,6 @@ export interface FeedIdentityJSON {
   publishWorkouts: boolean;
 }
 
-export interface PendingFeedUserJSON {
-  type: 'PendingFeedUser';
-  id: string;
-  publicKey: RsaPublicKeyJSON;
-  name: string | undefined;
-}
-
-export interface FollowerFeedUserJSON {
-  type: 'FollowerFeedUser';
-  id: string;
-  publicKey: RsaPublicKeyJSON;
-  name: string | undefined;
-  followSecret: string;
-}
-
-export interface FollowedFeedUserJSON {
-  version: 3;
-  type: 'FollowedFeedUser';
-  id: string;
-  publicKey: RsaPublicKeyJSON;
-  name: string | undefined;
-  currentPlan: ProgramBlueprintJSON | undefined;
-  aesKey: AesKeyJSON;
-  followSecret: string;
-}
-
-export type FeedUserJSON = PendingFeedUserJSON | FollowedFeedUserJSON | FollowerFeedUserJSON;
-
 export type FriendStatusJSON = 'incoming' | 'pending' | 'friend' | 'legacyFollowing' | 'legacyFollower';
 
 export interface FriendJSON {
@@ -139,6 +111,19 @@ export interface InboxDeliveryJSON {
   sentAt: InstantJSON;
 }
 
+export interface FriendRequestJSON {
+  name: string | undefined;
+}
+
+export interface FriendKeysJSON {
+  aesKeys: AesKeyJSON[];
+  followSecret: string;
+}
+
+export type FriendRejectJSON = Record<string, never>;
+
+export type UnfriendJSON = Record<string, never>;
+
 export type FollowRequestInboxMessageJSON = InboxMessageBaseJSON<'FollowRequest', FollowRequestJSON>;
 export type FollowResponseInboxMessageJSON = InboxMessageBaseJSON<'FollowResponse', FollowResponseJSON>;
 export type UnfollowNotificationInboxMessageJSON = InboxMessageBaseJSON<
@@ -146,12 +131,20 @@ export type UnfollowNotificationInboxMessageJSON = InboxMessageBaseJSON<
   UnfollowNotificationJSON
 >;
 export type ReactionInboxMessageJSON = InboxMessageBaseJSON<'Reaction', ReactionJSON>;
+export type FriendRequestInboxMessageJSON = InboxMessageBaseJSON<'FriendRequest', FriendRequestJSON>;
+export type FriendKeysInboxMessageJSON = InboxMessageBaseJSON<'FriendKeys', FriendKeysJSON>;
+export type FriendRejectInboxMessageJSON = InboxMessageBaseJSON<'FriendReject', FriendRejectJSON>;
+export type UnfriendInboxMessageJSON = InboxMessageBaseJSON<'Unfriend', UnfriendJSON>;
 
 export type InboxMessageJSON =
   | FollowRequestInboxMessageJSON
   | FollowResponseInboxMessageJSON
   | UnfollowNotificationInboxMessageJSON
-  | ReactionInboxMessageJSON;
+  | ReactionInboxMessageJSON
+  | FriendRequestInboxMessageJSON
+  | FriendKeysInboxMessageJSON
+  | FriendRejectInboxMessageJSON
+  | UnfriendInboxMessageJSON;
 
 /** A cheer someone sent you. Only ever visible to the author of the cheered workout. */
 export interface ReceivedReactionJSON {

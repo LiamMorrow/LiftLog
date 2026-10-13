@@ -3,22 +3,16 @@ import { DecryptedInboxMessage, FeedInboxDecryptionService } from './feed-inbox-
 import { FeedFollowService } from './feed-follow-service';
 import { EncryptionService, toJsonBytes } from './encryption-service';
 import { type FeedApiService } from './feed-api';
-import { FeedUser, FeedIdentity, FollowedFeedUser } from '@/models/feed-models';
+import { FeedIdentity, SharedFeedUser } from '@/models/feed-models';
 import { GetInboxMessageResponse, GetUserResponse } from '@/models/feed-api-models';
 import { RsaPrivateKey } from '@/models/encryption-models';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
-import {
-  InboxMessageJSON,
-  toAesKeyJSON,
-  toBase64Uint8ArrayJSON,
-  toJsonString,
-  toRsaPublicKeyJSON,
-} from '@/models/storage/versions/latest';
+import { InboxMessageJSON, toBase64Uint8ArrayJSON, toJsonString } from '@/models/storage/versions/latest';
 
 const SERVER_ID = '00000000-0000-0000-0000-000000000000';
 
 interface UserAndPrivateKey {
-  user: FeedUser;
+  user: SharedFeedUser;
   identity: FeedIdentity;
   privateKey: RsaPrivateKey;
 }
@@ -76,7 +70,7 @@ describe('FeedInboxDecryptionService', () => {
 
   it('reads the message id and send time from the signed payload', async () => {
     const followService = new FeedFollowService(feedApiService, encryptionService);
-    const outgoing = await followService.followRequestMessage(thirdPartyUser.identity, victimUser.user);
+    const outgoing = await followService.friendRequestMessage(thirdPartyUser.identity, victimUser.user);
 
     const result = await sut.decrypt(victimUser.identity, {
       id: SERVER_ID,
@@ -87,7 +81,7 @@ describe('FeedInboxDecryptionService', () => {
     const ok = result as Extract<DecryptedInboxMessage, { kind: 'ok' }>;
     expect(ok.messageId).toBe(outgoing.messageId);
     expect(ok.sentAtMs).toBeGreaterThan(0);
-    expect(ok.json.type).toBe('FollowRequest');
+    expect(ok.json.type).toBe('FriendRequest');
     expect(ok.json.senderUserId).toBe(thirdPartyUser.user.id);
   });
 
@@ -129,32 +123,9 @@ async function createFeedUser(encryptionService: EncryptionService): Promise<Use
   const aesKey = await encryptionService.generateAesKey();
   const userId = crypto.randomUUID();
 
-  const feedUser = FollowedFeedUser.fromJSON({
-    version: 3,
-    id: userId,
-    publicKey: toRsaPublicKeyJSON(rsaKeyPair.publicKey),
-    name: 'Some user',
-    aesKey: toAesKeyJSON(aesKey),
-    currentPlan: undefined,
-    followSecret: '',
-    type: 'FollowedFeedUser',
-  });
-
-  const identity = new FeedIdentity(
-    feedUser.id,
-    feedUser.id,
-    feedUser.aesKey,
-    { publicKey: feedUser.publicKey, privateKey: rsaKeyPair.privateKey },
-    'password',
-    feedUser.name,
-    true,
-    true,
-    true,
-  );
-
   return {
-    user: feedUser,
-    identity: identity,
+    user: { id: userId, publicKey: rsaKeyPair.publicKey, name: 'Some user' },
+    identity: new FeedIdentity(userId, userId, aesKey, rsaKeyPair, 'password', 'Some user', true, true, true),
     privateKey: rsaKeyPair.privateKey,
   };
 }

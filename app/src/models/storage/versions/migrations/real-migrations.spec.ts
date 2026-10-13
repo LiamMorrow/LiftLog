@@ -11,7 +11,6 @@ import {
   RemovedSessionUserEventJSON as InitialRemovedSessionUserEventJSON,
   SharedSessionJSON as InitialSharedSessionJSON,
   SharedProgramBlueprintJSON as InitialSharedProgramBlueprintJSON,
-  FollowedFeedUserJSON as InitialFollowedFeedUserJSON,
   FeedIdentityJSON as InitialFeedIdentityJSON,
   FriendJSON as InitialFriendJSON,
 } from '@/models/storage/versions/initial';
@@ -30,7 +29,6 @@ import { aiPlanMigrations } from './ai-plan';
 import {
   feedIdentityMigrations,
   friendMigrations,
-  followedFeedUserMigrations,
   removedSessionUserEventMigrations,
   sessionUserEventMigrations,
   sharedProgramBlueprintMigrations,
@@ -336,19 +334,6 @@ describe('real migrations', () => {
       expect(result.programBlueprint.sessions.every((s) => s.version === 6)).toBe(true);
     });
 
-    it('followedFeedUser brings its currentPlan to latest', () => {
-      const result = followedFeedUserMigrations.migrate(initialFollowedFeedUser(initialProgramBlueprint()));
-      expect(result.version).toBe(3);
-      expect(result.currentPlan?.version).toBe(3);
-      expect(result.currentPlan?.sessions.every((s) => s.version === 6)).toBe(true);
-    });
-
-    it('followedFeedUser leaves an absent currentPlan absent', () => {
-      const result = followedFeedUserMigrations.migrate(initialFollowedFeedUser(undefined));
-      expect(result.version).toBe(3);
-      expect(result.currentPlan).toBeUndefined();
-    });
-
     it('friend brings its currentPlan to latest', () => {
       const result = friendMigrations.migrate(initialFriend(initialProgramBlueprint()));
       expect(result.currentPlan?.version).toBe(3);
@@ -454,18 +439,6 @@ function initialSessionUserEvent(): InitialSessionUserEventJSON {
     timestamp: instant('2024-01-01T00:00:00Z'),
     expiry: instant('2024-04-01T00:00:00Z'),
     session: initialSession(),
-  };
-}
-
-function initialFollowedFeedUser(currentPlan: InitialProgramBlueprintJSON | undefined): InitialFollowedFeedUserJSON {
-  return {
-    type: 'FollowedFeedUser',
-    id: 'user-1',
-    publicKey: 'public-key' as unknown as RsaPublicKeyJSON,
-    name: 'Bob',
-    currentPlan,
-    aesKey: 'aes-key' as unknown as AesKeyJSON,
-    followSecret: 'secret',
   };
 }
 

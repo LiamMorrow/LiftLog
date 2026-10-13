@@ -90,9 +90,7 @@ describe('import-backup-effects', () => {
     const mockFeed: FeedBackupData = {
       identity: {} as FeedIdentity,
       feedItems: [],
-      followRequests: [],
-      followed: [],
-      followers: [],
+      friends: [],
     };
 
     await testBed.dispatchHandled(
