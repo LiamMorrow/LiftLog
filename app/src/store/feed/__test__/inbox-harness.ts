@@ -29,7 +29,7 @@ export const OWN_SESSION_ID = 'session-1';
 export const identity = new FeedIdentity(
   'me',
   'lookup',
-  { value: new Uint8Array([5]) },
+  { value: new Uint8Array([5]), algorithm: 'AES-GCM' },
   {
     publicKey: { spkiPublicKeyBytes: new Uint8Array([6]) },
     privateKey: { pkcs8PrivateKeyBytes: new Uint8Array([7]) },

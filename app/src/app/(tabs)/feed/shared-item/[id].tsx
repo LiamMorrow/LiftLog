@@ -20,7 +20,7 @@ export default function SharedItemPage() {
   const fetch = useCallback(() => {
     const parsedKey = fromUrlSafeHexString(k);
     if (parsedKey) {
-      dispatch(fetchSharedItem({ id, key: { value: parsedKey } }));
+      dispatch(fetchSharedItem({ id, key: { value: parsedKey, algorithm: 'AES-CBC' } }));
     } else {
       dispatch(setSharedItem(RemoteData.error('Could not load shared item. Bad key provided.')));
     }

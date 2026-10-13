@@ -15,6 +15,7 @@ import {
   shareBackWithFriend,
 } from '@/store/feed';
 import { RemoteData } from '@/models/remote';
+import { AesKey } from '@/models/encryption-models';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { feedFollowRequestsSchema, feedRevokedFollowSecretsSchema } from '@/db/schema';
 import { readFriends } from '@/db/feed-friends';
@@ -180,7 +181,7 @@ describe('friend actions', () => {
 
   it('rebuilds the keys it shares when our key rotates while they are being prepared', async () => {
     const bed = await makeInboxTestBed({ friends: [makeFriend('alice', { status: 'incoming', mySecret: undefined })] });
-    const rotatedKey = { value: new Uint8Array([42]) };
+    const rotatedKey: AesKey = { value: new Uint8Array([42]), algorithm: 'AES-GCM' };
     const build = bed.services.feedFollowService.friendKeysMessage.getMockImplementation()!;
     bed.services.feedFollowService.friendKeysMessage.mockImplementationOnce((...args) => {
       bed.testBed.dispatch(setIdentity(RemoteData.success(identity.with({ aesKey: rotatedKey }))));

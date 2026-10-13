@@ -25,14 +25,14 @@ import {
 } from '@/models/feed-models';
 import { Session } from '@/models/session-models';
 import { GetUserResponse, UserEventResponse } from '@/models/feed-api-models';
-import { EncryptionService, fromJsonBytes, toJsonBytes } from '@/services/encryption-service';
+import { EncryptionService, fromJsonBytes, splitNonceAndCiphertext, toJsonBytes } from '@/services/encryption-service';
 import { FeedApiService } from '@/services/feed-api';
 import { readSession } from '@/db/sessions';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { feedUnpublishedSessionsSchema } from '@/db/schema';
 import { AnyVersionProgramBlueprintJSON, AnyVersionUserEventJSON } from '@/models/storage/versions/any';
 import { programBlueprintMigrations, userEventMigrations } from '@/models/storage/versions/migrations';
-import { AesEncryptedAndRsaSignedData } from '@/models/encryption-models';
+import { AesEncryptedAndRsaSignedData, AesKey } from '@/models/encryption-models';
 
 const MIN_TIMESTAMP = Instant.parse('2000-01-01T00:00:00Z');
 
@@ -210,7 +210,7 @@ async function publishEvent(
 ) {
   const payloadBytes = toJsonBytes(event.toJSON());
 
-  const encryptedData = await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
+  const encryptedData = await encryptionService.signAndEncryptAsync(
     payloadBytes,
     identity.aesKey,
     identity.rsaKeyPair.privateKey,
@@ -270,14 +270,14 @@ async function removePublishedSessionAsync(
 class NoKeyDecrypts extends Error {}
 
 async function decryptWithKeysAsync(
-  payload: AesEncryptedAndRsaSignedData,
+  payloadFor: (key: AesKey) => AesEncryptedAndRsaSignedData,
   friend: Friend,
   encryptionService: EncryptionService,
 ): Promise<Uint8Array> {
   let lastError: unknown;
   for (const key of friend.theirKeys) {
     try {
-      return await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(payload, key, friend.publicKey);
+      return await encryptionService.decryptAndVerifyAsync(payloadFor(key), key, friend.publicKey);
     } catch (error) {
       lastError = error;
     }
@@ -292,22 +292,23 @@ async function decryptProfileAsync(
 ): Promise<
   { id: string; name: string | undefined; currentPlan: ProgramBlueprint | undefined } | 'undecryptable' | undefined
 > {
+  const profileField =
+    (field: Uint8Array) =>
+    (key: AesKey): AesEncryptedAndRsaSignedData =>
+      key.algorithm === 'AES-GCM'
+        ? splitNonceAndCiphertext(field)
+        : { encryptedPayload: field, iv: { value: response.encryptionIV } };
   try {
-    const iv = { value: response.encryptionIV };
     const name = response.encryptedName?.length
       ? new TextDecoder().decode(
-          await decryptWithKeysAsync({ encryptedPayload: response.encryptedName, iv }, friend, encryptionService),
+          await decryptWithKeysAsync(profileField(response.encryptedName), friend, encryptionService),
         )
       : undefined;
     const currentPlan = response.encryptedCurrentPlan?.length
       ? ProgramBlueprint.fromJSON(
           programBlueprintMigrations.migrate(
             fromJsonBytes<AnyVersionProgramBlueprintJSON>(
-              await decryptWithKeysAsync(
-                { encryptedPayload: response.encryptedCurrentPlan, iv },
-                friend,
-                encryptionService,
-              ),
+              await decryptWithKeysAsync(profileField(response.encryptedCurrentPlan), friend, encryptionService),
             ),
           ),
         )
@@ -326,7 +327,7 @@ async function toFeedItemAsync(
 ): Promise<FeedUserEvent | 'undecryptable' | null> {
   try {
     const decryptedPayload = await decryptWithKeysAsync(
-      { encryptedPayload: userEvent.encryptedEventPayload, iv: { value: userEvent.encryptedEventIV } },
+      () => ({ encryptedPayload: userEvent.encryptedEventPayload, iv: { value: userEvent.encryptedEventIV } }),
       friend,
       encryptionService,
     );

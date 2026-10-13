@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { combineReducers } from '@reduxjs/toolkit';
 import { Instant, LocalDate } from '@js-joda/core';
 import { addFeedItemEffects, publishSessionAsync } from '@/store/feed/feed-items-effects';
@@ -8,11 +8,13 @@ import { makeFriend } from '@/store/feed/__test__/friends';
 import { storedSessionsReducer } from '@/store/stored-sessions';
 import { FeedIdentity, FEED_EVENT_RETENTION_SECONDS, Friend, SessionUserEvent } from '@/models/feed-models';
 import { Session } from '@/models/session-models';
-import { SessionBlueprint } from '@/models/blueprint-models';
+import { ProgramBlueprint, SessionBlueprint } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { AesKey, RsaKeyPair } from '@/models/encryption-models';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { EncryptionService, toJsonBytes } from '@/services/encryption-service';
+import { FeedIdentityService } from '@/services/feed-identity-service';
+import { PutUserDataRequest, UserEventResponse } from '@/models/feed-api-models';
 import { SessionJSON } from '@/models/storage/versions/latest';
 
 // ─── Fixtures ───────────────────────────────────────────────────────────────
@@ -50,7 +52,7 @@ function capturingServices() {
   let publishedPayload: { session: SessionJSON; expiry: string } | undefined;
 
   const encryptionService = {
-    signRsa256PssAndEncryptAesCbcAsync: vi.fn((payloadBytes: Uint8Array) => {
+    signAndEncryptAsync: vi.fn((payloadBytes: Uint8Array) => {
       publishedPayload = JSON.parse(new TextDecoder().decode(payloadBytes)) as typeof publishedPayload;
       return Promise.resolve({ encryptedPayload: new Uint8Array(), iv: { value: new Uint8Array() } });
     }),
@@ -183,7 +185,7 @@ function ingestionTestBed(
       ),
     },
     encryptionService: {
-      decryptAesCbcAndVerifyRsa256PssAsync: vi.fn((payload: { encryptedPayload: Uint8Array }, _key: AesKey) =>
+      decryptAndVerifyAsync: vi.fn((payload: { encryptedPayload: Uint8Array }, _key: AesKey) =>
         Promise.resolve(payload.encryptedPayload),
       ),
     },
@@ -267,11 +269,11 @@ describe('fetchFeedItems ingestion', () => {
   });
 
   it('tries every key a friend has shared until one decrypts', async () => {
-    const oldKey = { value: new Uint8Array([7]) };
+    const oldKey: AesKey = { value: new Uint8Array([7]), algorithm: 'AES-CBC' };
     const testBed = ingestionTestBed([{ eventId: 'e1', version: 3 }], [FOLLOWED_ID], {
-      friends: [makeFriend(FOLLOWED_ID, { theirKeys: [{ value: new Uint8Array([9]) }, oldKey] })],
+      friends: [makeFriend(FOLLOWED_ID, { theirKeys: [{ value: new Uint8Array([9]), algorithm: 'AES-CBC' }, oldKey] })],
     });
-    testBed.services.encryptionService.decryptAesCbcAndVerifyRsa256PssAsync.mockImplementation((payload, key) =>
+    testBed.services.encryptionService.decryptAndVerifyAsync.mockImplementation((payload, key) =>
       key === oldKey ? Promise.resolve(payload.encryptedPayload) : Promise.reject(new Error('wrong key')),
     );
 
@@ -282,7 +284,7 @@ describe('fetchFeedItems ingestion', () => {
 
   it('keeps the last known profile when none of the keys decrypt it', async () => {
     const testBed = ingestionTestBed([], [FOLLOWED_ID]);
-    testBed.services.encryptionService.decryptAesCbcAndVerifyRsa256PssAsync.mockImplementation(() =>
+    testBed.services.encryptionService.decryptAndVerifyAsync.mockImplementation(() =>
       Promise.reject(new Error('wrong key')),
     );
 
@@ -293,7 +295,7 @@ describe('fetchFeedItems ingestion', () => {
 
   it('reports friends whose profile no key decrypts, so they can be repaired', async () => {
     const testBed = ingestionTestBed([], [FOLLOWED_ID]);
-    testBed.services.encryptionService.decryptAesCbcAndVerifyRsa256PssAsync.mockImplementation(() =>
+    testBed.services.encryptionService.decryptAndVerifyAsync.mockImplementation(() =>
       Promise.reject(new Error('wrong key')),
     );
 
@@ -305,7 +307,7 @@ describe('fetchFeedItems ingestion', () => {
   it('reports friends whose events no key decrypts, so they can be repaired', async () => {
     const testBed = ingestionTestBed([{ eventId: 'e1', version: 3 }], [FOLLOWED_ID]);
     testBed.services.feedApiService.getUsersAsync.mockResolvedValue(ApiResult.success({ users: {} }));
-    testBed.services.encryptionService.decryptAesCbcAndVerifyRsa256PssAsync.mockImplementation(() =>
+    testBed.services.encryptionService.decryptAndVerifyAsync.mockImplementation(() =>
       Promise.reject(new Error('wrong key')),
     );
 
@@ -324,7 +326,7 @@ describe('fetchFeedItems ingestion', () => {
 
   it('does not repair a friend whose secret was revoked', async () => {
     const testBed = ingestionTestBed([], [FOLLOWED_ID], { invalidFollowSecrets: [`their-secret-${FOLLOWED_ID}`] });
-    testBed.services.encryptionService.decryptAesCbcAndVerifyRsa256PssAsync.mockImplementation(() =>
+    testBed.services.encryptionService.decryptAndVerifyAsync.mockImplementation(() =>
       Promise.reject(new Error('wrong key')),
     );
 
@@ -338,7 +340,7 @@ describe('fetchFeedItems ingestion', () => {
     testBed.services.feedApiService.getUsersAsync.mockResolvedValue(
       ApiResult.success({ users: { [FOLLOWED_ID]: { encryptionIV: new Uint8Array() } } }),
     );
-    testBed.services.encryptionService.decryptAesCbcAndVerifyRsa256PssAsync.mockImplementation(() =>
+    testBed.services.encryptionService.decryptAndVerifyAsync.mockImplementation(() =>
       Promise.reject(new Error('wrong key')),
     );
 
@@ -372,51 +374,106 @@ describe('fetchFeedItems ingestion', () => {
 });
 
 describe('fetchFeedItems with real encryption', () => {
-  it('reads events published before a rotation with the older keys a friend shared', async () => {
-    const encryptionService = new EncryptionService();
-    const [oldKey, newKey, rsaKeyPair] = await Promise.all([
-      encryptionService.generateAesKey(),
-      encryptionService.generateAesKey(),
+  const encryptionService = new EncryptionService();
+  let cbcKey: AesKey;
+  let gcmKey: AesKey;
+  let rsaKeyPair: RsaKeyPair;
+
+  beforeAll(async () => {
+    [cbcKey, gcmKey, rsaKeyPair] = await Promise.all([
+      encryptionService.generateAesKey('AES-CBC'),
+      encryptionService.generateAesKey('AES-GCM'),
       encryptionService.generateRsaKeys(),
     ]);
-    const publisher = new FeedIdentity(FOLLOWED_ID, 'lookup', oldKey, rsaKeyPair, 'pw', 'Bob', false, false, true);
+  });
+
+  const publisher = (aesKey: AesKey) =>
+    new FeedIdentity(FOLLOWED_ID, 'lookup', aesKey, rsaKeyPair, 'pw', 'Bob', false, true, true);
+
+  async function publishedEvent(aesKey: AesKey) {
     const putUserEventAsync = vi.fn().mockResolvedValue(ApiResult.success());
-    await publishSessionAsync(publisher, sessionWithBodyweight(undefined), encryptionService, {
+    await publishSessionAsync(publisher(aesKey), sessionWithBodyweight(undefined), encryptionService, {
       putUserEventAsync,
     } as never);
-    const published = putUserEventAsync.mock.calls[0]![0] as {
-      eventId: string;
-      encryptedEventPayload: Uint8Array;
-      encryptedEventIV: Uint8Array;
-      expiry: string;
-    };
+    return { ...(putUserEventAsync.mock.calls[0]![0] as Omit<UserEventResponse, 'userId'>), userId: FOLLOWED_ID };
+  }
 
-    const fetchWithKeys = async (theirKeys: AesKey[]) => {
-      const testBed = createAddEffectTestBed({
-        initialState: {
-          feed: {
-            friends: { [FOLLOWED_ID]: makeFriend(FOLLOWED_ID, { publicKey: rsaKeyPair.publicKey, theirKeys }) },
-          },
-        },
-        services: {
-          encryptionService,
-          feedApiService: {
-            getUserEventsAsync: vi
-              .fn()
-              .mockResolvedValue(
-                ApiResult.success({ events: [{ ...published, userId: FOLLOWED_ID }], invalidFollowSecrets: [] }),
-              ),
-            getUsersAsync: vi.fn().mockResolvedValue(ApiResult.success({ users: {} })),
-          },
-        },
-        reducer: combineReducers({ feed: feedReducer, storedSessions: storedSessionsReducer }),
-      });
-      addFeedItemEffects(testBed.addEffect);
-      await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
-      return testBed.getState().feed.feed.map((x) => x.eventId);
-    };
+  async function publishedProfile(aesKey: AesKey) {
+    const putUserDataAsync = vi.fn().mockResolvedValue(ApiResult.success());
+    await new FeedIdentityService({ putUserDataAsync } as never, encryptionService).publishProfileAsync(
+      publisher(aesKey),
+      new ProgramBlueprint('Shared plan', [], LocalDate.of(2026, 8, 6)),
+    );
+    return putUserDataAsync.mock.calls[0]![0] as PutUserDataRequest;
+  }
 
-    expect(await fetchWithKeys([newKey, oldKey])).toEqual(['session-1']);
-    expect(await fetchWithKeys([newKey])).toEqual([]);
+  async function fetchWithKeys(
+    theirKeys: AesKey[],
+    { events = [], profile }: { events?: UserEventResponse[]; profile?: PutUserDataRequest },
+  ) {
+    const testBed = createAddEffectTestBed({
+      initialState: {
+        feed: {
+          friends: { [FOLLOWED_ID]: makeFriend(FOLLOWED_ID, { publicKey: rsaKeyPair.publicKey, theirKeys }) },
+        },
+      },
+      services: {
+        encryptionService,
+        feedApiService: {
+          getUserEventsAsync: vi.fn().mockResolvedValue(ApiResult.success({ events, invalidFollowSecrets: [] })),
+          getUsersAsync: vi
+            .fn()
+            .mockResolvedValue(ApiResult.success({ users: profile ? { [FOLLOWED_ID]: profile } : {} })),
+        },
+      },
+      reducer: combineReducers({ feed: feedReducer, storedSessions: storedSessionsReducer }),
+    });
+    addFeedItemEffects(testBed.addEffect);
+    await testBed.dispatchHandled(fetchFeedItems({ fromUserAction: false }));
+    return testBed;
+  }
+
+  const eventIds = (testBed: Awaited<ReturnType<typeof fetchWithKeys>>) =>
+    testBed.getState().feed.feed.map((x) => x.eventId);
+
+  it('reads events published before a rotation with the older keys a friend shared', async () => {
+    const olderGcmKey = await encryptionService.generateAesKey('AES-GCM');
+    const events = [await publishedEvent(olderGcmKey)];
+
+    expect(eventIds(await fetchWithKeys([gcmKey, olderGcmKey], { events }))).toEqual(['session-1']);
+    expect(eventIds(await fetchWithKeys([gcmKey], { events }))).toEqual([]);
+  });
+
+  it.each(['AES-CBC', 'AES-GCM'] as const)('reads an event published with an %s key', async (algorithm) => {
+    const events = [await publishedEvent(algorithm === 'AES-CBC' ? cbcKey : gcmKey)];
+
+    expect(eventIds(await fetchWithKeys([gcmKey, cbcKey], { events }))).toEqual(['session-1']);
+  });
+
+  it('cannot read an AES-CBC event once only the AES-GCM key is left', async () => {
+    const events = [await publishedEvent(cbcKey)];
+
+    expect(eventIds(await fetchWithKeys([gcmKey], { events }))).toEqual([]);
+  });
+
+  it.each(['AES-CBC', 'AES-GCM'] as const)('reads a profile published with an %s key', async (algorithm) => {
+    const profile = await publishedProfile(algorithm === 'AES-CBC' ? cbcKey : gcmKey);
+
+    const testBed = await fetchWithKeys([gcmKey, cbcKey], { profile });
+
+    const friend = testBed.getState().feed.friends[FOLLOWED_ID]!;
+    expect(friend.name).toBe('Bob');
+    expect(friend.currentPlan?.name).toBe('Shared plan');
+    expect(testBed.getDispatchedAction(repairFriends).payload).toEqual({ undecryptable: [] });
+  });
+
+  it('reports a tampered AES-GCM profile field as undecryptable', async () => {
+    const profile = await publishedProfile(gcmKey);
+    const name = profile.encryptedName!;
+    const tampered = { ...profile, encryptedName: name.map((x, i) => (i === name.length - 1 ? x ^ 0x01 : x)) };
+
+    const testBed = await fetchWithKeys([gcmKey, cbcKey], { profile: tampered });
+
+    expect(testBed.getDispatchedAction(repairFriends).payload).toEqual({ undecryptable: [FOLLOWED_ID] });
   });
 });

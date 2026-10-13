@@ -1,4 +1,5 @@
 import {
+  AesAlgorithm,
   AesEncryptedAndRsaSignedData,
   AesIV,
   AesKey,
@@ -9,10 +10,12 @@ import {
 } from '@/models/encryption-models';
 import crypto from 'crypto';
 import type { webcrypto } from 'crypto';
+import { match } from 'ts-pattern';
 
 // SHA-256 hash length in bytes
 const HashLengthBytes = 32;
 const SignatureLengthBytes = 256;
+const IvLengthBytes: Record<AesAlgorithm, number> = { 'AES-CBC': 16, 'AES-GCM': 12 };
 
 export function toJsonBytes(object: unknown): Uint8Array {
   return new TextEncoder().encode(JSON.stringify(object));
@@ -21,26 +24,42 @@ export function fromJsonBytes<T>(jsonBytes: Uint8Array): T {
   return JSON.parse(new TextDecoder().decode(jsonBytes)) as T;
 }
 
+export function joinNonceAndCiphertext(data: AesEncryptedAndRsaSignedData): Uint8Array {
+  return new Uint8Array([...data.iv.value, ...data.encryptedPayload]);
+}
+export function splitNonceAndCiphertext(bytes: Uint8Array): AesEncryptedAndRsaSignedData {
+  const nonceLength = IvLengthBytes['AES-GCM'];
+  return { iv: { value: bytes.slice(0, nonceLength) }, encryptedPayload: bytes.slice(nonceLength) };
+}
+
+function randomIv(algorithm: AesAlgorithm): Uint8Array {
+  return crypto.getRandomValues(new Uint8Array(IvLengthBytes[algorithm]));
+}
+
+function aesParams(key: AesKey, iv: Uint8Array): webcrypto.AesCbcParams | webcrypto.AesGcmParams {
+  return match(key.algorithm)
+    .with('AES-CBC', (name) => ({ name, iv }))
+    .with('AES-GCM', (name) => ({ name, iv, tagLength: 128 }))
+    .exhaustive();
+}
+
 export class EncryptionService {
-  async generateAesKey(): Promise<AesKey> {
+  async generateAesKey(algorithm: AesAlgorithm = 'AES-GCM'): Promise<AesKey> {
     const params: webcrypto.AesKeyGenParams = {
-      name: 'AES-CBC',
+      name: algorithm,
       length: 128,
     };
     const key = await crypto.subtle.generateKey(params, true, ['encrypt', 'decrypt']);
 
-    return { value: new Uint8Array(await crypto.subtle.exportKey('raw', key)) };
+    return { value: new Uint8Array(await crypto.subtle.exportKey('raw', key)), algorithm };
   }
 
-  async decryptAesCbcAndVerifyRsa256PssAsync(
+  async decryptAndVerifyAsync(
     data: AesEncryptedAndRsaSignedData,
     key: AesKey,
     publicKey: RsaPublicKey,
   ): Promise<Uint8Array> {
-    const params: webcrypto.AesCbcParams = {
-      name: 'AES-CBC',
-      iv: data.iv.value,
-    };
+    const params = aesParams(key, data.iv.value);
     const cryptoKey = await crypto.subtle.importKey('raw', key.value, params, false, ['decrypt']);
     const decrypted = new Uint8Array(await crypto.subtle.decrypt(params, cryptoKey, data.encryptedPayload));
 
@@ -64,17 +83,34 @@ export class EncryptionService {
     return payload;
   }
 
-  async signRsa256PssAndEncryptAesCbcAsync(
+  async signAndEncryptAsync(
     data: Uint8Array,
     key: AesKey,
     privateKey: RsaPrivateKey,
-    aesIv?: AesIV | null,
   ): Promise<AesEncryptedAndRsaSignedData> {
-    const iv = aesIv?.value ?? crypto.getRandomValues(new Uint8Array(16));
-    const params: webcrypto.AesCbcParams = {
-      name: 'AES-CBC',
-      iv,
-    };
+    return this.signAndEncryptWithIvAsync(data, key, privateKey, randomIv(key.algorithm));
+  }
+
+  /** The legacy profile layout encrypts every field under one IV, which is only safe for AES-CBC. */
+  async signAndEncryptWithCbcIvAsync(
+    data: Uint8Array,
+    key: AesKey,
+    privateKey: RsaPrivateKey,
+    iv?: AesIV,
+  ): Promise<AesEncryptedAndRsaSignedData> {
+    if (key.algorithm !== 'AES-CBC') {
+      throw new Error(`Reusing an IV is only allowed for AES-CBC keys, not ${key.algorithm}`);
+    }
+    return this.signAndEncryptWithIvAsync(data, key, privateKey, iv?.value ?? randomIv(key.algorithm));
+  }
+
+  private async signAndEncryptWithIvAsync(
+    data: Uint8Array,
+    key: AesKey,
+    privateKey: RsaPrivateKey,
+    iv: Uint8Array,
+  ): Promise<AesEncryptedAndRsaSignedData> {
+    const params = aesParams(key, iv);
     const cryptoKey = await crypto.subtle.importKey('raw', key.value, params, false, ['encrypt']);
 
     const rsaParams: webcrypto.RsaHashedImportParams & webcrypto.RsaPssParams = {

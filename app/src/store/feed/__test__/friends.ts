@@ -7,7 +7,7 @@ export function makeFriend(id: string, overrides: Partial<Friend> = {}): Friend 
     `name-${id}`,
     undefined,
     'friend',
-    [{ value: new Uint8Array([2]) }],
+    [{ value: new Uint8Array([2]), algorithm: 'AES-CBC' }],
     undefined,
     `their-secret-${id}`,
     `my-secret-${id}`,

@@ -5,6 +5,7 @@ import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { applyFeedEffects } from '@/store/feed/effects';
 import feedReducer, { setIdentity, updateFeedIdentity } from '@/store/feed';
 import { FeedIdentity } from '@/models/feed-models';
+import { AesKey } from '@/models/encryption-models';
 import { RemoteData } from '@/models/remote';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 
@@ -17,14 +18,19 @@ function makeIdentity() {
   return new FeedIdentity(
     'me',
     'lookup',
-    { value: new Uint8Array([1]) },
+    { value: new Uint8Array([1]), algorithm: 'AES-GCM' },
     rsaKeyPair,
     'password',
     'Liam',
     false,
     false,
     false,
-    [{ key: { value: new Uint8Array([9]) }, supersededAt: Instant.parse('2026-01-01T00:00:00Z') }],
+    [
+      {
+        key: { value: new Uint8Array([9]), algorithm: 'AES-GCM' },
+        supersededAt: Instant.parse('2026-01-01T00:00:00Z'),
+      },
+    ],
   );
 }
 
@@ -61,7 +67,7 @@ describe('updateFeedIdentity', () => {
 
   it('reverts only the edited fields when publishing fails', async () => {
     const { testBed, feedIdentityService, identity } = makeTestBed();
-    const rotatedKey = { value: new Uint8Array([7]) };
+    const rotatedKey: AesKey = { value: new Uint8Array([7]), algorithm: 'AES-GCM' };
     feedIdentityService.publishProfileAsync.mockImplementation(() => {
       testBed.dispatch(setIdentity(RemoteData.success(identity().with({ aesKey: rotatedKey }))));
       return Promise.resolve(
@@ -79,7 +85,7 @@ describe('updateFeedIdentity', () => {
     const { testBed, identity } = makeTestBed(
       ApiResult.fromError({ type: ApiErrorType.Unknown, message: 'offline', exception: undefined }),
     );
-    const rotated = identity().withRotatedAesKey({ value: new Uint8Array([7]) }, Instant.now());
+    const rotated = identity().withRotatedAesKey({ value: new Uint8Array([7]), algorithm: 'AES-GCM' }, Instant.now());
     testBed.dispatch(setIdentity(RemoteData.success(rotated)));
 
     await testBed.dispatchHandled(updateFeedIdentity({ updates: {}, fromUserAction: false }));
@@ -93,7 +99,7 @@ describe('updateFeedIdentity', () => {
     const replacement = new FeedIdentity(
       'someone-else',
       'lookup-2',
-      { value: new Uint8Array([4]) },
+      { value: new Uint8Array([4]), algorithm: 'AES-GCM' },
       rsaKeyPair,
       'pw',
       'New',

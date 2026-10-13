@@ -20,7 +20,7 @@ function makeIdentity(): FeedIdentity {
   return new FeedIdentity(
     'user-id',
     'lookup',
-    { value: new Uint8Array([1]) },
+    { value: new Uint8Array([1]), algorithm: 'AES-GCM' },
     {
       publicKey: { spkiPublicKeyBytes: new Uint8Array([2]) },
       privateKey: { pkcs8PrivateKeyBytes: new Uint8Array([3]) },
@@ -147,7 +147,7 @@ describe('resetFeedAccount', () => {
     const restored = new FeedIdentity(
       'restored-id',
       'lookup',
-      { value: new Uint8Array() },
+      { value: new Uint8Array(), algorithm: 'AES-GCM' },
       makeIdentity().rsaKeyPair,
       'pw',
       'Liam',

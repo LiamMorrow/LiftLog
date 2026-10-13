@@ -12,7 +12,7 @@ import feedReducer, {
   setIdentity,
   updateFeedIdentity,
 } from '@/store/feed';
-import { FeedIdentity, FEED_EVENT_RETENTION_DAYS, Friend } from '@/models/feed-models';
+import { FeedIdentity, FEED_EVENT_RETENTION_DAYS, Friend, PreviousAesKey } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
 import { AesKey } from '@/models/encryption-models';
 import { InboxRecipient } from '@/services/feed-follow-service';
@@ -28,7 +28,9 @@ async function makeTestBed(options: { friends?: Friend[]; identity?: FeedIdentit
   let nextKey = 100;
   const services = {
     encryptionService: {
-      generateAesKey: vi.fn(() => Promise.resolve<AesKey>({ value: new Uint8Array([nextKey++]) })),
+      generateAesKey: vi.fn(() =>
+        Promise.resolve<AesKey>({ value: new Uint8Array([nextKey++]), algorithm: 'AES-GCM' }),
+      ),
     },
     feedFollowService: {
       friendKeysMessage: vi.fn((_: FeedIdentity, recipient: InboxRecipient, _secret: string) =>
@@ -92,6 +94,18 @@ describe('rotateFeedKey', () => {
     expect(secret).toBe('my-secret-bob');
   });
 
+  it('moves an AES-CBC identity onto a default key and keeps the CBC key for older items', async () => {
+    const cbcKey: AesKey = { value: new Uint8Array([5]), algorithm: 'AES-CBC' };
+    const bed = await makeTestBed({ identity: identity.with({ aesKey: cbcKey }) });
+
+    await rotate(bed.testBed);
+
+    expect(bed.services.encryptionService.generateAesKey).toHaveBeenCalledWith();
+    expect(bed.stored()?.aesKey.algorithm).toBe('AES-GCM');
+    expect(bed.stored()?.previousAesKeys.map((x) => x.key.algorithm)).toEqual(['AES-CBC']);
+    expect(bed.stored()?.previousAesKeys.map((x) => x.key.value)).toEqual([cbcKey.value]);
+  });
+
   it('commits locally before republishing the profile, so a failed publish cannot lose the key', async () => {
     const bed = await makeTestBed({ friends: [makeFriend('bob')] });
 
@@ -151,9 +165,12 @@ describe('rotateFeedKey', () => {
 
   it('forgets previous keys superseded longer ago than events are kept', async () => {
     const now = Instant.now();
-    const recent = { key: { value: new Uint8Array([8]) }, supersededAt: now.minusSeconds(10 * DAY_SECONDS) };
-    const expired = {
-      key: { value: new Uint8Array([9]) },
+    const recent: PreviousAesKey = {
+      key: { value: new Uint8Array([8]), algorithm: 'AES-GCM' },
+      supersededAt: now.minusSeconds(10 * DAY_SECONDS),
+    };
+    const expired: PreviousAesKey = {
+      key: { value: new Uint8Array([9]), algorithm: 'AES-GCM' },
       supersededAt: now.minusSeconds((FEED_EVENT_RETENTION_DAYS + 1) * DAY_SECONDS),
     };
     const bed = await makeTestBed({ identity: identity.with({ previousAesKeys: [recent, expired] }) });
@@ -169,7 +186,7 @@ describe('rotateFeedKey', () => {
     bed.services.encryptionService.generateAesKey.mockImplementationOnce(
       () =>
         new Promise((resolve) => {
-          release = () => resolve({ value: new Uint8Array([50]) });
+          release = () => resolve({ value: new Uint8Array([50]), algorithm: 'AES-GCM' });
         }),
     );
 
@@ -191,7 +208,7 @@ describe('rotateFeedKey', () => {
     const replacement = identity.with({ id: 'someone-else' });
     bed.services.encryptionService.generateAesKey.mockImplementationOnce(() => {
       bed.testBed.dispatch(setIdentity(RemoteData.success(replacement)));
-      return Promise.resolve({ value: new Uint8Array([50]) });
+      return Promise.resolve({ value: new Uint8Array([50]), algorithm: 'AES-GCM' });
     });
 
     await rotate(bed.testBed);

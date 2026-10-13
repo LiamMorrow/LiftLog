@@ -61,7 +61,7 @@ Personal Information that is NOT encrypted is limited to:
 - User ID (a UUID) - this is stored on the device, but is not linked to it (i.e. The LiftLog servers cannot trace userId to device)
 - The recipient of an inbox message, and when it was sent as a User ID. The sender is only named inside the encrypted message.
 
-Data is encrypted by the user before sending to the LiftLog server. It is encrypted via AES-CBC, and signed via RSA-PSS to guarantee authenticity (see [Payload Encryption](#payload-encryption)). At no point does the server store the unencrypted private keys.
+Data is encrypted by the user before sending to the LiftLog server. It is encrypted via AES-GCM, and signed via RSA-PSS to prove who wrote it (see [Payload Encryption](#payload-encryption)). At no point does the server store the unencrypted private keys.
 Public keys are stored alongside the user's information.
 
 ### Identity
@@ -69,7 +69,7 @@ Public keys are stored alongside the user's information.
 Each install generates an identity, which is stored on THEIR device. An identity consists of:
 
 - An optional name
-- An AES-128 key, plus the keys it replaced in the last 90 days ([see Key rotation](#key-rotation))
+- An AES-128-GCM key, plus the keys it replaced in the last 90 days ([see Key rotation](#key-rotation))
 - An RSA key pair (2048 key size)
 - A User ID (UUID)
 
@@ -203,26 +203,30 @@ Inbox messages are delivered at least once:
 
 ### Payload Encryption
 
-As mentioned, Feed Item payloads are first signed, then encrypted with AES-CBC. AES-CBC makes no guarantees about the authenticity of encrypted payloads, and as such it is possible for an attacker to modify messages without the original key assuming they know some constant part of the unencrypted payload. This is described well by [this post by Seald](https://www.seald.io/blog/3-common-mistakes-when-implementing-encryption).
+Feed item and profile payloads are signed, then encrypted with AES-GCM. AES-GCM authenticates the ciphertext, so a payload that was modified, or encrypted with a different key, fails to decrypt. That proves only that someone holding the key wrote it, and every friend holds the key, so the RSA signature is still what proves which user wrote it.
 
-Why not use AES-GCM, which DOES provide authenticity of messages? Simply because it was not available at the time of writing on iOS. This is tracked here https://github.com/dotnet/runtime/issues/94848. We may revisit this when it becomes available.
+On encryption:
 
-The method for providing authenticity of encrypted payloads is as such:
-
-1. The SHA256 hash of the unencrypted payload is calculated - Creating the PayloadHash
+1. The SHA256 hash of the payload is calculated - Creating the PayloadHash
 2. A signature of the PayloadHash is generated with the RSA private key
-3. This signature is appended to the end of the encrypted payload - creating the SignedPayload
-4. The SignedPayload is then encrypted with AES-CBC - creating the EncryptedSignedPayload
+3. The signature is appended to the end of the payload - Creating the SignedPayload
+4. The SignedPayload is encrypted with AES-GCM under a random 12-byte nonce, and the 16-byte authentication tag is appended - Creating the EncryptedSignedPayload
 
-On decryption:
+A nonce is never reused with the same key. A feed item sends its nonce in `encryptedEventIV`. A profile stores each field (name, current plan) as its own nonce, ciphertext and tag, and leaves `encryptionIV` empty.
 
-1. The EncryptedSignedPayload is decrypted with AES-CBC - Creating the SignedPayload
+On decryption, each key held for that user is tried, newest first:
+
+1. The EncryptedSignedPayload is decrypted with AES-GCM - Creating the SignedPayload
 2. The last 256 bytes of the SignedPayload are split off - Creating the UnverifiedPayload and the Signature
-3. The SHA256 hash of the UnverifiedPayload is calculated - Creating the UnverifiedPayloadHash (which should be identical to the original PayloadHash)
+3. The SHA256 hash of the UnverifiedPayload is calculated - Creating the UnverifiedPayloadHash
 4. The Signature is verified using the PublicKey and the UnverifiedPayloadHash
 5. If the signature is valid, then the payload is valid
 
-If an attacker was to attempt to create a modified payload, upon decryption a different SHA256 hash would be generated, which the signature would not be valid for - therefore invalidating the poison message.
+#### AES-CBC keys
+
+Keys created before AES-GCM are AES-CBC, and a key with no recorded algorithm is one of them. They use the same steps with a random 16-byte IV, and a profile encrypts every field under the one `encryptionIV`. AES-CBC does not authenticate ciphertext, so an attacker who knows part of the plaintext can modify it without the key, as described in [this post by Seald](https://www.seald.io/blog/3-common-mistakes-when-implementing-encryption). The signature covers this, because a modified payload hashes differently and its signature no longer verifies.
+
+Shared-item links carry a one-off AES-128-CBC key in the URL.
 
 ## Where the code is
 

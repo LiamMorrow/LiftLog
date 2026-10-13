@@ -17,6 +17,7 @@ import {
   resetFeedAccount,
   restoreFeedBackup,
   revokeFollowSecrets,
+  rotateFeedKey,
   selectFeedIdentityRemote,
   selectOwnFeedUserId,
   setIdentity,
@@ -122,6 +123,10 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
           );
         } else {
           await fixIosBadRSAKey(getState, dispatch, encryptionService, logger);
+          const loaded = selectFeedIdentityRemote(getState()).unwrapOr(undefined);
+          if (loaded && loaded.aesKey.algorithm !== 'AES-GCM') {
+            dispatch(rotateFeedKey());
+          }
         }
 
         dispatch(setIsHydrated(true));

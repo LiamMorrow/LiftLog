@@ -130,7 +130,7 @@ export class Friend {
       this.mySecret === other.mySecret &&
       equal(this.theirKeysSentAt, other.theirKeysSentAt) &&
       this.theirKeys.length === other.theirKeys.length &&
-      this.theirKeys.every((key, i) => equalBytes(key.value, other.theirKeys[i]!.value)) &&
+      this.theirKeys.every((key, i) => equalKeys(key, other.theirKeys[i]!)) &&
       equal(this.currentPlan, other.currentPlan)
     );
   }
@@ -150,8 +150,8 @@ export class Friend {
   }
 }
 
-function equalBytes(a: Uint8Array, b: Uint8Array) {
-  return a.length === b.length && a.every((x, i) => x === b[i]);
+function equalKeys(a: AesKey, b: AesKey) {
+  return a.algorithm === b.algorithm && a.value.length === b.value.length && a.value.every((x, i) => x === b.value[i]);
 }
 
 // ---------------------------------------------------------------------------
