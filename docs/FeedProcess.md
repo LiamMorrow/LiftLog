@@ -131,7 +131,14 @@ sequenceDiagram
 ### Inbox Message Encryption
 
 Inbox messages are aimed to be small messages which can be encoded and sent to a user with their RSA Public key.
-Since RSA has a rather small max payload length, these messages are split into chunks, then each chunk is encrypted. These chunks are then sent to the server. When a user requests their inbox messages, they are returned, then immediately deleted from the server. The user can use their private key to decrypt the chunks, then stitch them back together to form the original payload.
+Since RSA has a rather small max payload length, these messages are split into chunks, then each chunk is encrypted. These chunks are then sent to the server. The user can use their private key to decrypt the chunks, then stitch them back together to form the original payload.
+
+### Inbox Message Delivery
+
+Inbox messages are delivered at least once:
+
+- **Sending.** A message is signed and encrypted when it is created, then written to a local outbox (`feed_outbox`). The outbox sends each recipient's messages in order, and retries with backoff when the server cannot be reached.
+- **Deduplicating.** Every message carries a `messageId` and a `sentAt` inside its signed payload. Retries can deliver a message more than once, so the app remembers the ids it has queued for 60 days (`feed_inbox_seen`) and skips repeats.
 
 ### Payload Encryption
 

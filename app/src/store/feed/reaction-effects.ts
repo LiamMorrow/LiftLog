@@ -2,13 +2,14 @@ import { Instant } from '@js-joda/core';
 import { AddEffectFn } from '@/store/store';
 import {
   cheerFeedItem,
-  feedApiError,
+  flushOutbox,
   removeSentReaction,
   selectFeedIdentityRemote,
   setSentReaction,
 } from '@/store/feed';
 import { MAX_REACTION_COUNT, Reaction, ReactionEmoji, SentReaction } from '@/models/feed-models';
 import { uuid } from '@/utils/uuid';
+import { enqueueOutboxMessages } from '@/db/feed-outbox';
 
 /** Long enough to swallow a flurry of taps, short enough that the cheer still feels sent. */
 const BATCH_WINDOW_MS = 1000;
@@ -29,7 +30,7 @@ const pendingCheers = new Map<string, PendingCheer>();
 export function addReactionEffects(addEffect: AddEffectFn) {
   addEffect(
     cheerFeedItem,
-    async (action, { dispatch, getState, signal, cancelActiveListeners, extra: { feedFollowService } }) => {
+    async (action, { dispatch, getState, signal, cancelActiveListeners, extra: { db, feedFollowService, logger } }) => {
       const { eventId, emoji } = action.payload;
       const key = `${eventId}:${emoji}`;
 
@@ -67,23 +68,19 @@ export function addReactionEffects(addEffect: AddEffectFn) {
           continue;
         }
 
-        const result = await feedFollowService.sendReactionAsync(
-          identity,
-          author,
-          new Reaction(cheer.reactionId, cheer.eventId, cheer.emoji, cheer.count, Instant.now()),
-        );
-
-        if (result.isError()) {
-          dispatch(removeSentReaction(cheer.reactionId));
-          dispatch(
-            feedApiError({
-              message: 'Failed to send cheer',
-              error: result.error,
-              action,
-            }),
+        try {
+          const message = await feedFollowService.reactionMessage(
+            identity,
+            author,
+            new Reaction(cheer.reactionId, cheer.eventId, cheer.emoji, cheer.count, Instant.now()),
           );
+          enqueueOutboxMessages(db, [message]);
+        } catch (error) {
+          logger.error('Failed to encrypt cheer', error);
+          dispatch(removeSentReaction(cheer.reactionId));
         }
       }
+      dispatch(flushOutbox());
     },
   );
 }

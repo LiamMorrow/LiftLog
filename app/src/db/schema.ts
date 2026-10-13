@@ -4,6 +4,7 @@ import {
   AnyVersionFollowedFeedUserJSON,
   AnyVersionFollowerFeedUserJSON,
   AnyVersionFollowRequestInboxMessageJSON,
+  AnyVersionInboxMessageJSON,
   AnyVersionPendingFeedUserJSON,
   AnyVersionProgramBlueprintJSON,
   AnyVersionReceivedReactionJSON,
@@ -14,6 +15,7 @@ import {
 import { BackendFeature, BackendKind } from '@/models/backend';
 import { MovementKey, ProgressionKey } from '@/models/blueprint-models';
 import type {
+  Base64Uint8ArrayJSON,
   BigNumberJSON,
   CardioTargetJSON,
   DistanceUnitJSON,
@@ -276,6 +278,28 @@ export const feedRevokedFollowSecretsSchema = sqliteTable('feed_revoked_follow_s
 });
 export const feedUnpublishedSessionsSchema = sqliteTable('feed_unpublished_sessions', {
   sessionId: text().primaryKey(),
+});
+
+export const feedOutboxSchema = sqliteTable('feed_outbox', {
+  seq: integer().primaryKey({ autoIncrement: true }),
+  messageId: text().notNull(),
+  recipientId: text().notNull(),
+  type: text().notNull(),
+  encryptedMessage: text({ mode: 'json' }).$type<Base64Uint8ArrayJSON[]>().notNull(),
+  createdAtMs: integer().notNull(),
+  attempts: integer().notNull().default(0),
+  nextAttemptAtMs: integer().notNull(),
+});
+
+export const feedInboxQueueSchema = sqliteTable('feed_inbox_queue', {
+  messageId: text().primaryKey(),
+  sentAtMs: integer().notNull(),
+  payload: text('payload', { mode: 'json' }).$type<AnyVersionInboxMessageJSON>().notNull(),
+});
+
+export const feedInboxSeenSchema = sqliteTable('feed_inbox_seen', {
+  messageId: text().primaryKey(),
+  seenAtMs: integer().notNull(),
 });
 
 // Just a table we can use to keep track of which data migrations have been run

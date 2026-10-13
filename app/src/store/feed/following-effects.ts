@@ -20,11 +20,13 @@ import {
   revokeFollowSecrets,
   selectFeedIdentityRemote,
   removeRevokableFollowSecret,
+  flushOutbox,
 } from '@/store/feed';
 import { AcceptedFollowResponse, FollowedFeedUser, FollowerFeedUser, PendingFeedUser } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
 import { RsaPublicKey } from '@/models/encryption-models';
 import { ApiErrorType } from '@/services/api-error';
+import { enqueueOutboxMessages } from '@/db/feed-outbox';
 
 export function addFollowingEffects(addEffect: AddEffectFn) {
   addEffect(fetchAndSetSharedFeedUser, async (action, { dispatch, extra: { feedApiService } }) => {
@@ -51,7 +53,7 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
     }
   });
 
-  addEffect(requestFollowUser, async (action, { dispatch, getState, extra: { feedFollowService } }) => {
+  addEffect(requestFollowUser, async (action, { dispatch, getState, extra: { db, feedFollowService } }) => {
     const state = getState();
     const identityRemote = state.feed.identity;
 
@@ -61,22 +63,13 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
 
     const identity = identityRemote.data;
     const user = action.payload.user;
-    const result = await feedFollowService.requestToFollowAUserAsync(identity, user);
+    enqueueOutboxMessages(db, [await feedFollowService.followRequestMessage(identity, user)]);
 
-    if (result.isSuccess()) {
-      // A follower carries a follow secret granting them *our* feed; following them back is a separate
-      // grant that only exists once they accept, so they start out pending regardless of what they were.
-      dispatch(putFollowedUser(new PendingFeedUser(user.id, user.publicKey, user.name)));
-      dispatch(setSharedFeedUser(RemoteData.notAsked()));
-    } else {
-      dispatch(
-        feedApiError({
-          message: 'Failed to request follow user',
-          error: result.error!,
-          action,
-        }),
-      );
-    }
+    // A follower carries a follow secret granting them *our* feed; following them back is a separate
+    // grant that only exists once they accept, so they start out pending regardless of what they were.
+    dispatch(putFollowedUser(new PendingFeedUser(user.id, user.publicKey, user.name)));
+    dispatch(setSharedFeedUser(RemoteData.notAsked()));
+    dispatch(flushOutbox());
   });
 
   addEffect(processFollowResponses, async (action, { dispatch, getState }) => {
@@ -115,7 +108,7 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
     dispatch(fetchFeedItems({ fromUserAction: false }));
   });
 
-  addEffect(unfollowFeedUser, async (action, { getState, dispatch, extra: { feedFollowService } }) => {
+  addEffect(unfollowFeedUser, async (action, { getState, dispatch, extra: { db, feedFollowService } }) => {
     const state = getState();
     const identityRemote = state.feed.identity;
 
@@ -131,12 +124,13 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
     if (feedUser.type === 'PendingFeedUser') {
       return;
     }
-    await feedFollowService.unfollowUserAsync(identity, feedUser);
+    enqueueOutboxMessages(db, [await feedFollowService.unfollowMessage(identity, feedUser)]);
+    dispatch(flushOutbox());
   });
 
   addEffect(
     acceptFollowRequest,
-    async (action, { dispatch, getState, extra: { feedApiService, feedFollowService } }) => {
+    async (action, { dispatch, getState, extra: { db, feedApiService, feedFollowService } }) => {
       const state = getState();
       const identityRemote = state.feed.identity;
 
@@ -169,36 +163,33 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
       const user = userResponse.data;
       const publicKey: RsaPublicKey = { spkiPublicKeyBytes: user.rsaPublicKey };
 
-      // Accept the follow request
-      const followSecretResponse = await feedFollowService.acceptFollowRequestAsync(identity, request, publicKey);
+      const acceptResponse = await feedFollowService.acceptFollowRequestAsync(identity, request, publicKey);
 
-      if (!followSecretResponse.isSuccess()) {
+      if (!acceptResponse.isSuccess()) {
         dispatch(
           feedApiError({
             message: 'Failed to accept follow request',
-            error: followSecretResponse.error!,
+            error: acceptResponse.error!,
             action,
           }),
         );
         return;
       }
 
-      // Add as follower
-      const newFollower = new FollowerFeedUser(
-        request.senderUserId,
-        publicKey,
-        request.payload.name,
-        followSecretResponse.data,
+      enqueueOutboxMessages(db, [acceptResponse.data.message]);
+      dispatch(
+        addFollower(
+          new FollowerFeedUser(request.senderUserId, publicKey, request.payload.name, acceptResponse.data.followSecret),
+        ),
       );
-
-      dispatch(addFollower(newFollower));
       dispatch(removeFollowRequest(request));
+      dispatch(flushOutbox());
     },
   );
 
   addEffect(
     denyFollowRequest,
-    async (action, { dispatch, getState, extra: { feedApiService, feedFollowService, logger } }) => {
+    async (action, { dispatch, getState, extra: { db, feedApiService, feedFollowService, logger } }) => {
       const state = getState();
       const identityRemote = state.feed.identity;
 
@@ -221,13 +212,9 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
       const publicKey: RsaPublicKey = {
         spkiPublicKeyBytes: userResponse.data.rsaPublicKey,
       };
-      const result = await feedFollowService.denyFollowRequestAsync(identity, request, publicKey);
-
-      if (!result.isSuccess() && result.error?.type !== ApiErrorType.NotFound) {
-        logger.error('Failed to deny follow request with error. Removing request anyway.', { error: result.error });
-      }
-
+      enqueueOutboxMessages(db, [await feedFollowService.denyFollowRequestMessage(identity, request, publicKey)]);
       dispatch(removeFollowRequest(request));
+      dispatch(flushOutbox());
     },
   );
 

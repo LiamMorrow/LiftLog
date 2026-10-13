@@ -113,6 +113,11 @@ export interface ReactionJSON {
   reactedAt: InstantJSON;
 }
 
+export interface InboxDeliveryJSON {
+  messageId: string;
+  sentAt: InstantJSON;
+}
+
 export type FollowRequestInboxMessageJSON = InboxMessageBaseJSON<'FollowRequest', FollowRequestJSON>;
 export type FollowResponseInboxMessageJSON = InboxMessageBaseJSON<'FollowResponse', FollowResponseJSON>;
 export type UnfollowNotificationInboxMessageJSON = InboxMessageBaseJSON<

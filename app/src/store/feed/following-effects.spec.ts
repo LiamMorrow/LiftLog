@@ -10,6 +10,7 @@ import feedReducer, {
   feedApiError,
   fetchAndSetSharedFeedUser,
   fetchFeedItems,
+  flushOutbox,
   processFollowResponses,
   putFollowedUser,
   removeFollowedUser,
@@ -39,6 +40,9 @@ import { RemoteData } from '@/models/remote';
 import { AesKey, RsaPublicKey } from '@/models/encryption-models';
 import { ApiResult, ApiError, ApiErrorType } from '@/services/api-error';
 import { GetUserResponse } from '@/models/feed-api-models';
+import { createTestDb } from '@/utils/__test__/test-db';
+import { feedOutboxSchema } from '@/db/schema';
+import { OutboxMessage } from '@/db/feed-outbox';
 
 // ─── Fixtures ───────────────────────────────────────────────────────────────
 
@@ -89,16 +93,33 @@ function stateWith(feed: FeedStateShape): { feed: FeedStateShape } {
   };
 }
 
+function outboxMessage(recipientId: string, type: OutboxMessage['type']): OutboxMessage {
+  return { messageId: `${type}-${recipientId}`, recipientId, type, encryptedMessage: [new Uint8Array([1])] };
+}
+
 function defaultServices() {
   return {
     feedApiService: {
       getUserAsync: vi.fn<(id: string) => Promise<ApiResult<GetUserResponse>>>(),
     },
     feedFollowService: {
-      requestToFollowAUserAsync: vi.fn().mockResolvedValue(ApiResult.success()),
-      unfollowUserAsync: vi.fn().mockResolvedValue(ApiResult.success()),
-      acceptFollowRequestAsync: vi.fn().mockResolvedValue(ApiResult.success('follow-secret')),
-      denyFollowRequestAsync: vi.fn().mockResolvedValue(ApiResult.success()),
+      followRequestMessage: vi.fn((_: FeedIdentity, user: { id: string }) =>
+        Promise.resolve(outboxMessage(user.id, 'FollowRequest')),
+      ),
+      unfollowMessage: vi.fn((_: FeedIdentity, user: { id: string }) =>
+        Promise.resolve(outboxMessage(user.id, 'UnfollowNotification')),
+      ),
+      acceptFollowRequestAsync: vi.fn((_: FeedIdentity, request: FollowRequestInboxMessage) =>
+        Promise.resolve(
+          ApiResult.success({
+            followSecret: 'follow-secret',
+            message: outboxMessage(request.senderUserId, 'FollowResponse'),
+          }),
+        ),
+      ),
+      denyFollowRequestMessage: vi.fn((_: FeedIdentity, request: FollowRequestInboxMessage) =>
+        Promise.resolve(outboxMessage(request.senderUserId, 'FollowResponse')),
+      ),
       revokeFollowSecretAsync: vi.fn().mockResolvedValue(ApiResult.success()),
     },
   };
@@ -106,21 +127,25 @@ function defaultServices() {
 
 const rootReducer = combineReducers({ feed: feedReducer });
 
-function makeTestBed(feed: FeedStateShape, services = defaultServices()) {
+async function makeTestBed(feed: FeedStateShape, services = defaultServices()) {
+  const db = await createTestDb();
   const testBed = createAddEffectTestBed({
     initialState: stateWith(feed),
-    services: services,
+    services: { ...services, db },
     reducer: rootReducer,
   });
   addFollowingEffects(testBed.addEffect);
-  return { testBed, services };
+  const outbox = () => db.select().from(feedOutboxSchema).all();
+  return { testBed, services, outbox };
 }
 
-function feedState(testBed: ReturnType<typeof makeTestBed>['testBed']) {
+type TestBed = Awaited<ReturnType<typeof makeTestBed>>['testBed'];
+
+function feedState(testBed: TestBed) {
   return testBed.getState().feed;
 }
 
-function sharedFeedUserPayloads(testBed: ReturnType<typeof makeTestBed>['testBed']): RemoteData<PendingFeedUser>[] {
+function sharedFeedUserPayloads(testBed: TestBed): RemoteData<PendingFeedUser>[] {
   return testBed.dispatchedActions
     .filter((a) => a.type === setSharedFeedUser.type)
     .map((a) => (a as unknown as { payload: RemoteData<PendingFeedUser> }).payload);
@@ -131,7 +156,7 @@ function sharedFeedUserPayloads(testBed: ReturnType<typeof makeTestBed>['testBed
 describe('following-effects', () => {
   describe('fetchAndSetSharedFeedUser', () => {
     it('sets loading then a pending user on success', async () => {
-      const { testBed, services } = makeTestBed({});
+      const { testBed, services } = await makeTestBed({});
       services.feedApiService.getUserAsync.mockResolvedValue(ApiResult.success(userResponse('u1')));
 
       await testBed.dispatchHandled(fetchAndSetSharedFeedUser({ idOrLookup: 'u1', name: 'Bob', fromUserAction: true }));
@@ -147,7 +172,7 @@ describe('following-effects', () => {
     });
 
     it('dispatches feedApiError and an error state on failure', async () => {
-      const { testBed, services } = makeTestBed({});
+      const { testBed, services } = await makeTestBed({});
       services.feedApiService.getUserAsync.mockResolvedValue(ApiResult.fromError(apiError()));
 
       await testBed.dispatchHandled(fetchAndSetSharedFeedUser({ idOrLookup: 'u1', fromUserAction: true }));
@@ -160,21 +185,24 @@ describe('following-effects', () => {
 
   describe('requestFollowUser', () => {
     it('does nothing when identity is not loaded', async () => {
-      const { testBed, services } = makeTestBed({ identity: RemoteData.notAsked() });
+      const { testBed, services } = await makeTestBed({ identity: RemoteData.notAsked() });
 
       await testBed.dispatchHandled(
         requestFollowUser({ user: new PendingFeedUser('u1', publicKey, 'Bob'), fromUserAction: true }),
       );
 
-      expect(services.feedFollowService.requestToFollowAUserAsync).not.toHaveBeenCalled();
+      expect(services.feedFollowService.followRequestMessage).not.toHaveBeenCalled();
       testBed.expectNotDispatched(putFollowedUser);
     });
 
     it('follows the requested user and resets the shared slot on success', async () => {
       const sharedUser = new PendingFeedUser('u1', publicKey, 'Bob');
-      const { testBed } = makeTestBed({ sharedFeedUser: RemoteData.success(sharedUser) });
+      const { testBed, outbox } = await makeTestBed({ sharedFeedUser: RemoteData.success(sharedUser) });
 
       await testBed.dispatchHandled(requestFollowUser({ user: sharedUser, fromUserAction: true }));
+
+      expect(outbox().map((x) => [x.recipientId, x.type])).toEqual([['u1', 'FollowRequest']]);
+      testBed.getDispatchedAction(flushOutbox);
 
       const put = testBed.getDispatchedAction(putFollowedUser).payload;
       expect(put).toBeInstanceOf(PendingFeedUser);
@@ -189,11 +217,11 @@ describe('following-effects', () => {
 
     it('follows a follower back as a pending user, without their follow secret', async () => {
       const follower = new FollowerFeedUser('u1', publicKey, 'Bob', 'their-secret-to-read-my-feed');
-      const { testBed, services } = makeTestBed({ followers: { u1: follower } });
+      const { testBed, services } = await makeTestBed({ followers: { u1: follower } });
 
       await testBed.dispatchHandled(requestFollowUser({ user: follower, fromUserAction: true }));
 
-      expect(services.feedFollowService.requestToFollowAUserAsync).toHaveBeenCalledWith(identity, follower);
+      expect(services.feedFollowService.followRequestMessage).toHaveBeenCalledWith(identity, follower);
 
       const put = testBed.getDispatchedAction(putFollowedUser).payload;
       expect(put).toBeInstanceOf(PendingFeedUser);
@@ -205,23 +233,23 @@ describe('following-effects', () => {
       expect(feedState(testBed).followedUsers.u1).toBeInstanceOf(PendingFeedUser);
     });
 
-    it('reports an error and does not follow when the request fails', async () => {
+    it('does not follow when the request cannot be encrypted', async () => {
       const sharedUser = new PendingFeedUser('u1', publicKey, 'Bob');
       const services = defaultServices();
-      services.feedFollowService.requestToFollowAUserAsync.mockResolvedValue(ApiResult.fromError(apiError()));
-      const { testBed } = makeTestBed({ sharedFeedUser: RemoteData.success(sharedUser) }, services);
+      services.feedFollowService.followRequestMessage.mockRejectedValue(new Error('bad key'));
+      const { testBed, outbox } = await makeTestBed({ sharedFeedUser: RemoteData.success(sharedUser) }, services);
 
       await testBed.dispatchHandled(requestFollowUser({ user: sharedUser, fromUserAction: true }));
 
-      expect(testBed.getDispatchedAction(feedApiError).payload.message).toBe('Failed to request follow user');
       testBed.expectNotDispatched(putFollowedUser);
+      expect(outbox()).toEqual([]);
     });
   });
 
   describe('processFollowResponses', () => {
     it('upgrades accepted responses for known users to followed users', async () => {
       const existing = new PendingFeedUser('u1', publicKey, 'Bob');
-      const { testBed } = makeTestBed({ followedUsers: { u1: existing } });
+      const { testBed } = await makeTestBed({ followedUsers: { u1: existing } });
 
       await testBed.dispatchHandled(processFollowResponses({ responses: [acceptedResponse('u1')] }));
 
@@ -236,7 +264,7 @@ describe('following-effects', () => {
     });
 
     it('ignores accepted responses for unknown users', async () => {
-      const { testBed } = makeTestBed({ followedUsers: {} });
+      const { testBed } = await makeTestBed({ followedUsers: {} });
 
       await testBed.dispatchHandled(processFollowResponses({ responses: [acceptedResponse('ghost')] }));
 
@@ -244,7 +272,7 @@ describe('following-effects', () => {
     });
 
     it('removes users that rejected the request and always refetches the feed', async () => {
-      const { testBed } = makeTestBed({ followedUsers: {} });
+      const { testBed } = await makeTestBed({ followedUsers: {} });
 
       await testBed.dispatchHandled(processFollowResponses({ responses: [rejectedResponse('u2')] }));
 
@@ -255,7 +283,7 @@ describe('following-effects', () => {
 
   describe('unfollowFeedUser', () => {
     it('does nothing when identity is not loaded', async () => {
-      const { testBed } = makeTestBed({ identity: RemoteData.notAsked() });
+      const { testBed } = await makeTestBed({ identity: RemoteData.notAsked() });
 
       await testBed.dispatchHandled(unfollowFeedUser({ feedUser: new PendingFeedUser('u1', publicKey, 'Bob') }));
 
@@ -263,24 +291,25 @@ describe('following-effects', () => {
     });
 
     it('removes a pending user locally without calling the server', async () => {
-      const { testBed, services } = makeTestBed({});
+      const { testBed, services } = await makeTestBed({});
 
       await testBed.dispatchHandled(unfollowFeedUser({ feedUser: new PendingFeedUser('u1', publicKey, 'Bob') }));
 
       expect(testBed.getDispatchedAction(removeFollowedUser).payload).toBe('u1');
-      expect(services.feedFollowService.unfollowUserAsync).not.toHaveBeenCalled();
+      expect(services.feedFollowService.unfollowMessage).not.toHaveBeenCalled();
     });
 
     it('notifies the server when unfollowing a followed user', async () => {
       const followed = new FollowedFeedUser('u1', publicKey, 'Bob', undefined, aesKey, 'secret');
-      const { testBed, services } = makeTestBed({ followedUsers: { u1: followed } });
+      const { testBed, services, outbox } = await makeTestBed({ followedUsers: { u1: followed } });
 
       await testBed.dispatchHandled(unfollowFeedUser({ feedUser: followed }));
 
       expect(feedState(testBed).followedUsers.u1).toBeUndefined();
 
       expect(testBed.getDispatchedAction(removeFollowedUser).payload).toBe('u1');
-      expect(services.feedFollowService.unfollowUserAsync).toHaveBeenCalledWith(identity, followed);
+      expect(services.feedFollowService.unfollowMessage).toHaveBeenCalledWith(identity, followed);
+      expect(outbox().map((x) => [x.recipientId, x.type])).toEqual([['u1', 'UnfollowNotification']]);
     });
   });
 
@@ -290,9 +319,14 @@ describe('following-effects', () => {
       services.feedApiService.getUserAsync.mockResolvedValue(ApiResult.success(userResponse('u1')));
       const existingFollower = new FollowerFeedUser('u1', publicKey, 'Bob', 'old-secret');
       const request = followRequest('u1', 'Bob');
-      const { testBed } = makeTestBed({ followers: { u1: existingFollower }, followRequests: [request] }, services);
+      const { testBed, outbox } = await makeTestBed(
+        { followers: { u1: existingFollower }, followRequests: [request] },
+        services,
+      );
 
       await testBed.dispatchHandled(acceptFollowRequest({ request, fromUserAction: true }));
+
+      expect(outbox().map((x) => [x.recipientId, x.type])).toEqual([['u1', 'FollowResponse']]);
 
       expect(services.feedFollowService.revokeFollowSecretAsync).toHaveBeenCalledWith(identity, 'old-secret');
       expect(testBed.getDispatchedAction(addFollower).payload).toBeInstanceOf(FollowerFeedUser);
@@ -305,7 +339,7 @@ describe('following-effects', () => {
     it('reports an error and adds no follower when the user lookup fails', async () => {
       const services = defaultServices();
       services.feedApiService.getUserAsync.mockResolvedValue(ApiResult.fromError(apiError()));
-      const { testBed } = makeTestBed({}, services);
+      const { testBed } = await makeTestBed({}, services);
 
       await testBed.dispatchHandled(acceptFollowRequest({ request: followRequest('u1'), fromUserAction: true }));
 
@@ -317,7 +351,7 @@ describe('following-effects', () => {
       const services = defaultServices();
       services.feedApiService.getUserAsync.mockResolvedValue(ApiResult.success(userResponse('u1')));
       services.feedFollowService.acceptFollowRequestAsync.mockResolvedValue(ApiResult.fromError(apiError()));
-      const { testBed } = makeTestBed({}, services);
+      const { testBed } = await makeTestBed({}, services);
 
       await testBed.dispatchHandled(acceptFollowRequest({ request: followRequest('u1'), fromUserAction: true }));
 
@@ -330,44 +364,32 @@ describe('following-effects', () => {
     it('removes the request even when the user lookup fails', async () => {
       const services = defaultServices();
       services.feedApiService.getUserAsync.mockResolvedValue(ApiResult.fromError(apiError()));
-      const { testBed } = makeTestBed({}, services);
+      const { testBed } = await makeTestBed({}, services);
 
       await testBed.dispatchHandled(denyFollowRequest({ request: followRequest('u1'), fromUserAction: true }));
 
-      expect(services.feedFollowService.denyFollowRequestAsync).not.toHaveBeenCalled();
+      expect(services.feedFollowService.denyFollowRequestMessage).not.toHaveBeenCalled();
       expect(testBed.getDispatchedAction(removeFollowRequest).payload.senderUserId).toBe('u1');
     });
 
-    it('removes the request after a successful deny', async () => {
+    it('queues the rejection and removes the request', async () => {
       const services = defaultServices();
       services.feedApiService.getUserAsync.mockResolvedValue(ApiResult.success(userResponse('u1')));
-      const { testBed } = makeTestBed({}, services);
+      const { testBed, outbox } = await makeTestBed({}, services);
 
       await testBed.dispatchHandled(denyFollowRequest({ request: followRequest('u1'), fromUserAction: true }));
 
-      expect(services.feedFollowService.denyFollowRequestAsync).toHaveBeenCalled();
+      expect(services.feedFollowService.denyFollowRequestMessage).toHaveBeenCalled();
+      expect(outbox().map((x) => [x.recipientId, x.type])).toEqual([['u1', 'FollowResponse']]);
       expect(testBed.getDispatchedAction(removeFollowRequest).payload.senderUserId).toBe('u1');
-    });
-
-    it('treats a NotFound deny as success without logging an error', async () => {
-      const services = defaultServices();
-      services.feedApiService.getUserAsync.mockResolvedValue(ApiResult.success(userResponse('u1')));
-      services.feedFollowService.denyFollowRequestAsync.mockResolvedValue(
-        ApiResult.fromError(apiError(ApiErrorType.NotFound)),
-      );
-      const { testBed } = makeTestBed({}, services);
-
-      await testBed.dispatchHandled(denyFollowRequest({ request: followRequest('u1'), fromUserAction: true }));
-
-      expect(testBed.mockServices.logger.error).not.toHaveBeenCalled();
-      expect(testBed.getDispatchedAction(removeFollowRequest).payload.senderUserId).toBe('u1');
+      testBed.getDispatchedAction(flushOutbox);
     });
   });
 
   describe('revokeFollowSecretAndRemoveFollower', () => {
     it('queues the secret for revocation and removes the follower', async () => {
       const follower = new FollowerFeedUser('u1', publicKey, 'Bob', 'the-secret');
-      const { testBed } = makeTestBed({ followers: { u1: follower } });
+      const { testBed } = await makeTestBed({ followers: { u1: follower } });
 
       await testBed.dispatchHandled(revokeFollowSecretAndRemoveFollower({ userId: 'u1', fromUserAction: true }));
 
@@ -381,7 +403,7 @@ describe('following-effects', () => {
 
     it('removes the follower without queuing when there is no secret', async () => {
       const follower = new FollowerFeedUser('u1', publicKey, 'Bob', '');
-      const { testBed } = makeTestBed({ followers: { u1: follower } });
+      const { testBed } = await makeTestBed({ followers: { u1: follower } });
 
       await testBed.dispatchHandled(revokeFollowSecretAndRemoveFollower({ userId: 'u1', fromUserAction: true }));
 
@@ -392,7 +414,7 @@ describe('following-effects', () => {
 
   describe('revokeFollowSecrets', () => {
     it('does nothing when there are no queued secrets', async () => {
-      const { testBed, services } = makeTestBed({ revokedFollowSecrets: [] });
+      const { testBed, services } = await makeTestBed({ revokedFollowSecrets: [] });
 
       await testBed.dispatchHandled(revokeFollowSecrets({ fromUserAction: true }));
 
@@ -400,7 +422,7 @@ describe('following-effects', () => {
     });
 
     it('revokes each queued secret and clears it on success', async () => {
-      const { testBed } = makeTestBed({ revokedFollowSecrets: ['a', 'b'] });
+      const { testBed } = await makeTestBed({ revokedFollowSecrets: ['a', 'b'] });
 
       await testBed.dispatchHandled(revokeFollowSecrets({ fromUserAction: true }));
 
@@ -416,7 +438,7 @@ describe('following-effects', () => {
       services.feedFollowService.revokeFollowSecretAsync.mockResolvedValue(
         ApiResult.fromError(apiError(ApiErrorType.Unauthorized)),
       );
-      const { testBed } = makeTestBed({ revokedFollowSecrets: ['a'] }, services);
+      const { testBed } = await makeTestBed({ revokedFollowSecrets: ['a'] }, services);
 
       await testBed.dispatchHandled(revokeFollowSecrets({ fromUserAction: true }));
 
@@ -429,7 +451,7 @@ describe('following-effects', () => {
       services.feedFollowService.revokeFollowSecretAsync.mockResolvedValue(
         ApiResult.fromError(apiError(ApiErrorType.Unknown)),
       );
-      const { testBed } = makeTestBed({ revokedFollowSecrets: ['a', 'b'] }, services);
+      const { testBed } = await makeTestBed({ revokedFollowSecrets: ['a', 'b'] }, services);
 
       await testBed.dispatchHandled(revokeFollowSecrets({ fromUserAction: true }));
 

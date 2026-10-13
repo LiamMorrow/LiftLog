@@ -1,11 +1,21 @@
 import { EncryptionService, fromJsonBytes } from './encryption-service';
-import { RsaPublicKey } from '@/models/encryption-models';
 import { FeedApiService } from './feed-api';
-import { FeedIdentity, fromInboxMessageJSON, InboxMessage } from '@/models/feed-models';
+import { FeedIdentity, fromInboxMessageJSON } from '@/models/feed-models';
 import { GetInboxMessageResponse } from '@/models/feed-api-models';
-import { fromBase64Uint8ArrayJSON, InboxMessageJSON } from '@/models/storage/versions/latest';
+import {
+  fromBase64Uint8ArrayJSON,
+  fromInstantJson,
+  InboxDeliveryJSON,
+  InboxMessageJSON,
+} from '@/models/storage/versions/latest';
 import { AnyVersionInboxMessageJSON } from '@/models/storage/versions/any';
 import { inboxMessageMigrations } from '@/models/storage/versions/migrations';
+import { ApiErrorType } from '@/services/api-error';
+
+export type DecryptedInboxMessage =
+  | { kind: 'ok'; serverId: string; messageId: string; sentAtMs: number; json: AnyVersionInboxMessageJSON }
+  | { kind: 'invalid'; serverId: string }
+  | { kind: 'retry'; serverId: string };
 
 export class FeedInboxDecryptionService {
   constructor(
@@ -13,35 +23,57 @@ export class FeedInboxDecryptionService {
     private feedApiService: FeedApiService,
   ) {}
 
-  async decryptIfValid(identity: FeedIdentity, inboxMessage: GetInboxMessageResponse): Promise<InboxMessage | null> {
+  async decrypt(identity: FeedIdentity, inboxMessage: GetInboxMessageResponse): Promise<DecryptedInboxMessage> {
+    const serverId = inboxMessage.id;
+    const invalid = (reason: string, error?: unknown): DecryptedInboxMessage => {
+      console.warn(`Dropping inbox message: ${reason}`, error);
+      return { kind: 'invalid', serverId };
+    };
+
+    let unverified: AnyVersionInboxMessageJSON;
     try {
       const decrypted = await this.encryptionService.decryptRsaOaepSha256Async(
         { dataChunks: inboxMessage.encryptedMessage },
         identity.rsaKeyPair.privateKey,
       );
+      unverified = fromJsonBytes<AnyVersionInboxMessageJSON>(decrypted);
+    } catch (error) {
+      return invalid('could not decrypt', error);
+    }
 
-      const unverifiedInboxMessage = fromJsonBytes<AnyVersionInboxMessageJSON>(decrypted);
+    if (
+      typeof unverified?.senderUserId !== 'string' ||
+      typeof unverified.payloadJson !== 'string' ||
+      typeof unverified.signature !== 'string'
+    ) {
+      return invalid('malformed envelope');
+    }
 
-      // We know the message is delivered TO us (as we decrypted it with our private key)
-      // Now we need to verify that the sender is who they say they are by checking with the public key against their user
-      const signedPayload = FeedInboxDecryptionService.getSignaturePayload(unverifiedInboxMessage, identity.id);
-      const senderUserId = unverifiedInboxMessage.senderUserId;
-      const publicKey = await this.getUserPublicKey(senderUserId);
+    const sender = await this.feedApiService.getUserAsync(unverified.senderUserId);
+    if (!sender.isSuccess()) {
+      return sender.error?.type === ApiErrorType.NotFound
+        ? invalid('sender no longer exists')
+        : { kind: 'retry', serverId };
+    }
 
+    try {
       const verified = await this.encryptionService.verifyRsaPssSha256Async(
-        signedPayload,
-        fromBase64Uint8ArrayJSON(unverifiedInboxMessage.signature),
-        publicKey,
+        FeedInboxDecryptionService.getSignaturePayload(unverified, identity.id),
+        fromBase64Uint8ArrayJSON(unverified.signature),
+        { spkiPublicKeyBytes: sender.data.rsaPublicKey },
       );
-
       if (!verified) {
-        throw new Error('Failed to verify inbox message signature');
+        return invalid('bad signature');
       }
 
-      return fromInboxMessageJSON(inboxMessageMigrations.migrate(unverifiedInboxMessage));
+      fromInboxMessageJSON(inboxMessageMigrations.migrate(unverified));
+      const delivery = JSON.parse(unverified.payloadJson) as Partial<InboxDeliveryJSON>;
+      const messageId = typeof delivery.messageId === 'string' ? delivery.messageId : serverId;
+      const sentAtMs = delivery.sentAt ? fromInstantJson(delivery.sentAt).toEpochMilli() : 0;
+
+      return { kind: 'ok', serverId, messageId, sentAtMs, json: unverified };
     } catch (error) {
-      console.error('Failed to decrypt inbox message', error);
-      return null;
+      return invalid('unreadable payload', error);
     }
   }
 
@@ -50,20 +82,11 @@ export class FeedInboxDecryptionService {
     const senderUserIdBytes = new TextEncoder().encode(inboxMessage.senderUserId);
     const toUserIdBytes = new TextEncoder().encode(toUserId);
 
-    // Combine all bytes
     const combined = new Uint8Array(payloadBytes.length + senderUserIdBytes.length + toUserIdBytes.length);
     combined.set(payloadBytes, 0);
     combined.set(senderUserIdBytes, payloadBytes.length);
     combined.set(toUserIdBytes, payloadBytes.length + senderUserIdBytes.length);
 
     return combined;
-  }
-
-  private async getUserPublicKey(userId: string): Promise<RsaPublicKey> {
-    const userResponse = await this.feedApiService.getUserAsync(userId);
-    if (!userResponse.isSuccess()) {
-      throw new Error('Failed to fetch user for public key');
-    }
-    return { spkiPublicKeyBytes: userResponse.data.rsaPublicKey };
   }
 }

@@ -22,6 +22,7 @@ import {
   resetFeedAccount,
   revokeFollowSecrets,
   selectFeedIdentityRemote,
+  selectOwnFeedUserId,
   setFollowRequests,
   setIdentity,
   setIsHydrated,
@@ -37,6 +38,7 @@ import { addFeedItemEffects } from '@/store/feed/feed-items-effects';
 import { addInboxEffects } from '@/store/feed/inbox-effects';
 import { addFollowingEffects } from '@/store/feed/following-effects';
 import { addReactionEffects } from '@/store/feed/reaction-effects';
+import { addOutboxEffects } from '@/store/feed/outbox-effects';
 import { selectActiveProgram } from '@/store/program';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { Platform } from 'react-native';
@@ -45,7 +47,10 @@ import {
   feedFollowerUsersSchema,
   feedFollowRequestsSchema,
   feedIdentitySchema,
+  feedInboxQueueSchema,
+  feedInboxSeenSchema,
   feedItemsSchema,
+  feedOutboxSchema,
   feedPendingUsersSchema,
   feedReactionsSchema,
   feedRevokedFollowSecretsSchema,
@@ -161,6 +166,26 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
       }
     },
   );
+  addEffect(clearFeedState, async (_, { extra: { db } }) => {
+    db.transaction((tx) => {
+      for (const table of [
+        feedIdentitySchema,
+        feedFollowedUsersSchema,
+        feedPendingUsersSchema,
+        feedFollowerUsersSchema,
+        feedFollowRequestsSchema,
+        feedItemsSchema,
+        feedReactionsSchema,
+        feedSentReactionsSchema,
+        feedRevokedFollowSecretsSchema,
+        feedOutboxSchema,
+        feedInboxQueueSchema,
+        feedInboxSeenSchema,
+      ]) {
+        tx.delete(table).run();
+      }
+    });
+  });
   addEffect(setIdentity, async (action, { extra: { db } }) => {
     if (!action.payload.isSuccess()) {
       return;
@@ -350,36 +375,42 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     },
   );
 
-  addEffect(resetFeedAccount, async (action, { dispatch, stateAfterReduce, extra: { feedIdentityService } }) => {
-    const identityRemote = selectFeedIdentityRemote(stateAfterReduce);
+  addEffect(
+    resetFeedAccount,
+    async (action, { dispatch, getState, stateAfterReduce, extra: { feedIdentityService } }) => {
+      const identityRemote = selectFeedIdentityRemote(stateAfterReduce);
 
-    const result = await identityRemote
-      .map((i) => feedIdentityService.deleteFeedIdentityAsync(i))
-      .unwrapOr(Promise.resolve(ApiResult.success()));
-    if (result.isError() && result.error.type !== ApiErrorType.NotFound) {
+      const result = await identityRemote
+        .map((i) => feedIdentityService.deleteFeedIdentityAsync(i))
+        .unwrapOr(Promise.resolve(ApiResult.success()));
+      if (result.isError() && result.error.type !== ApiErrorType.NotFound) {
+        dispatch(
+          feedApiError({
+            message: 'Failed to reset account',
+            error: result.error,
+            action,
+          }),
+        );
+        return;
+      }
+      if (selectOwnFeedUserId(getState()) !== identityRemote.unwrapOr(undefined)?.id) {
+        return;
+      }
+      dispatch(clearFeedState());
+      if (action.payload.createNewIdentity === false) {
+        return;
+      }
       dispatch(
-        feedApiError({
-          message: 'Failed to reset account',
-          error: result.error,
-          action,
+        createFeedIdentity({
+          fromUserAction: true,
+          name: action.payload.newIdentity?.name,
+          publishBodyweight: action.payload.newIdentity?.publishBodyweight ?? false,
+          publishPlan: action.payload.newIdentity?.publishPlan ?? false,
+          publishWorkouts: action.payload.newIdentity?.publishWorkouts ?? false,
         }),
       );
-      return;
-    }
-    dispatch(clearFeedState());
-    if (action.payload.createNewIdentity === false) {
-      return;
-    }
-    dispatch(
-      createFeedIdentity({
-        fromUserAction: true,
-        name: action.payload.newIdentity?.name,
-        publishBodyweight: action.payload.newIdentity?.publishBodyweight ?? false,
-        publishPlan: action.payload.newIdentity?.publishPlan ?? false,
-        publishWorkouts: action.payload.newIdentity?.publishWorkouts ?? false,
-      }),
-    );
-  });
+    },
+  );
 
   addEffect(
     updateFeedIdentity,
@@ -443,6 +474,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
   addSharedItemEffects(addEffect);
   addFeedItemEffects(addEffect);
   addInboxEffects(addEffect);
+  addOutboxEffects(addEffect);
   addFollowingEffects(addEffect);
   addReactionEffects(addEffect);
 }

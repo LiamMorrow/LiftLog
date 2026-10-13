@@ -260,6 +260,8 @@ export const fetchFeedItems = createAction<FeedAction>('fetchFeedItems');
 
 export const fetchInboxItems = createAction<FeedAction>('fetchInboxItems');
 
+export const flushOutbox = createAction('flushOutbox');
+
 export const encryptAndShare = createAction<{
   item: SharedItem;
   title: string;

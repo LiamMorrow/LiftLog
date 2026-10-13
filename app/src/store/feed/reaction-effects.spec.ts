@@ -3,11 +3,13 @@ import { combineReducers } from '@reduxjs/toolkit';
 import { Instant, LocalDate } from '@js-joda/core';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { addReactionEffects } from '@/store/feed/reaction-effects';
-import feedReducer, { cheerFeedItem } from '@/store/feed';
+import feedReducer, { cheerFeedItem, flushOutbox } from '@/store/feed';
 import { FeedIdentity, FollowedFeedUser, Reaction, SessionUserEvent } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
 import { AesKey, RsaPublicKey } from '@/models/encryption-models';
-import { ApiErrorType, ApiResult } from '@/services/api-error';
+import { createTestDb } from '@/utils/__test__/test-db';
+import { feedOutboxSchema } from '@/db/schema';
+import { InboxRecipient } from '@/services/feed-follow-service';
 import { Session } from '@/models/session-models';
 import { SessionBlueprint } from '@/models/blueprint-models';
 
@@ -33,12 +35,20 @@ function feedEvent() {
   return new SessionUserEvent(AUTHOR_ID, EVENT_ID, Instant.now(), Instant.now().plusSeconds(60), session);
 }
 
-function makeTestBed() {
+async function makeTestBed() {
   const services = {
     feedFollowService: {
-      sendReactionAsync: vi.fn().mockResolvedValue(ApiResult.success()),
+      reactionMessage: vi.fn((_: FeedIdentity, recipient: InboxRecipient, reaction: Reaction) =>
+        Promise.resolve({
+          messageId: reaction.reactionId,
+          recipientId: recipient.id,
+          type: 'Reaction' as const,
+          encryptedMessage: [new Uint8Array([1])],
+        }),
+      ),
     },
   };
+  const db = await createTestDb();
 
   const testBed = createAddEffectTestBed({
     initialState: {
@@ -48,26 +58,28 @@ function makeTestBed() {
         followedUsers: { [AUTHOR_ID]: author() },
       },
     },
-    services: services,
+    services: { ...services, db },
     reducer: combineReducers({ feed: feedReducer }),
   });
 
   addReactionEffects(testBed.addEffect);
-  return { testBed, services };
+  return { testBed, services, db };
 }
 
-function sentReactions(testBed: ReturnType<typeof makeTestBed>['testBed']) {
+type TestBed = Awaited<ReturnType<typeof makeTestBed>>;
+
+function sentReactions(testBed: TestBed['testBed']) {
   return Object.values(testBed.getState().feed.sentReactions);
 }
 
-function sentPayloads(services: ReturnType<typeof makeTestBed>['services']): Reaction[] {
-  return services.feedFollowService.sendReactionAsync.mock.calls.map((call) => call[2] as Reaction);
+function sentPayloads(services: TestBed['services']): Reaction[] {
+  return services.feedFollowService.reactionMessage.mock.calls.map((call) => call[2]);
 }
 
 describe('reaction-effects', () => {
   it('sends a single cheer', async () => {
     vi.useFakeTimers();
-    const { testBed, services } = makeTestBed();
+    const { testBed, services } = await makeTestBed();
 
     const dispatched = testBed.dispatchHandled(cheerFeedItem({ eventId: EVENT_ID, emoji: '💪', fromUserAction: true }));
     await vi.advanceTimersByTimeAsync(1500);
@@ -83,7 +95,7 @@ describe('reaction-effects', () => {
   it('coalesces a flurry of taps into one message carrying the count', async () => {
     // Each message is an RSA encryption and a PUT, so ten taps must not become ten of them.
     vi.useFakeTimers();
-    const { testBed, services } = makeTestBed();
+    const { testBed, services } = await makeTestBed();
 
     const taps = Array.from({ length: 5 }, () =>
       testBed.dispatchHandled(cheerFeedItem({ eventId: EVENT_ID, emoji: '💪', fromUserAction: true })),
@@ -99,7 +111,7 @@ describe('reaction-effects', () => {
 
   it('sends different emoji as separate cheers', async () => {
     vi.useFakeTimers();
-    const { testBed, services } = makeTestBed();
+    const { testBed, services } = await makeTestBed();
 
     const taps = [
       testBed.dispatchHandled(cheerFeedItem({ eventId: EVENT_ID, emoji: '💪', fromUserAction: true })),
@@ -116,7 +128,7 @@ describe('reaction-effects', () => {
 
   it('shows the cheer immediately, before the network call', async () => {
     vi.useFakeTimers();
-    const { testBed } = makeTestBed();
+    const { testBed } = await makeTestBed();
 
     const dispatched = testBed.dispatchHandled(cheerFeedItem({ eventId: EVENT_ID, emoji: '🔥', fromUserAction: true }));
 
@@ -128,12 +140,30 @@ describe('reaction-effects', () => {
     vi.useRealTimers();
   });
 
-  it('rolls the cheer back when sending fails', async () => {
+  it('queues the cheer for delivery and asks the outbox to flush', async () => {
     vi.useFakeTimers();
-    const { testBed, services } = makeTestBed();
-    services.feedFollowService.sendReactionAsync.mockResolvedValue(
-      ApiResult.fromError({ type: ApiErrorType.Unknown, message: 'boom', exception: undefined }),
-    );
+    const { testBed, db } = await makeTestBed();
+
+    const dispatched = testBed.dispatchHandled(cheerFeedItem({ eventId: EVENT_ID, emoji: '💪', fromUserAction: true }));
+    await vi.advanceTimersByTimeAsync(1500);
+    await dispatched;
+
+    expect(
+      db
+        .select()
+        .from(feedOutboxSchema)
+        .all()
+        .map((x) => x.recipientId),
+    ).toEqual([AUTHOR_ID]);
+    expect(testBed.dispatchedActions.map((x) => x.type)).toContain(flushOutbox.type);
+    expect(sentReactions(testBed)).toHaveLength(1);
+    vi.useRealTimers();
+  });
+
+  it('rolls the cheer back when it cannot be encrypted', async () => {
+    vi.useFakeTimers();
+    const { testBed, services } = await makeTestBed();
+    services.feedFollowService.reactionMessage.mockRejectedValue(new Error('bad key'));
 
     const dispatched = testBed.dispatchHandled(cheerFeedItem({ eventId: EVENT_ID, emoji: '💪', fromUserAction: true }));
     await vi.advanceTimersByTimeAsync(1500);
@@ -145,7 +175,7 @@ describe('reaction-effects', () => {
 
   it('drops a cheer for an event whose author is not followed', async () => {
     vi.useFakeTimers();
-    const { testBed, services } = makeTestBed();
+    const { testBed, services } = await makeTestBed();
 
     const dispatched = testBed.dispatchHandled(
       cheerFeedItem({ eventId: 'unknown-event', emoji: '💪', fromUserAction: true }),
@@ -153,7 +183,7 @@ describe('reaction-effects', () => {
     await vi.advanceTimersByTimeAsync(1500);
     await dispatched;
 
-    expect(services.feedFollowService.sendReactionAsync).not.toHaveBeenCalled();
+    expect(services.feedFollowService.reactionMessage).not.toHaveBeenCalled();
     expect(sentReactions(testBed)).toHaveLength(0);
     vi.useRealTimers();
   });
