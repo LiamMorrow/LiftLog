@@ -369,7 +369,7 @@
   "stats.overview.title": "Overview",
   "stats.weighted_exercise_list.title": "Weighted Exercises",
   "stats.workout.exercise_progress.title": "Exercise Progress",
-  "stats.workout.exercise_progress.hint": "Tap an exercise below to highlight it",
+  "stats.workout.exercise_progress.hint": "Tap an exercise below to view its progress",
   "stats.workout_list.exercise_count.label": "{count} exercises",
   "stats.workout_list.title": "Workouts",
   "stats.stats.title": "Stats",
