@@ -4,6 +4,7 @@ import {
   AnyVersionFollowedFeedUserJSON,
   AnyVersionFollowerFeedUserJSON,
   AnyVersionFollowRequestInboxMessageJSON,
+  AnyVersionFriendJSON,
   AnyVersionInboxMessageJSON,
   AnyVersionPendingFeedUserJSON,
   AnyVersionProgramBlueprintJSON,
@@ -255,6 +256,11 @@ export const feedItemsSchema = sqliteTable('feed_items', {
 export const feedFollowerUsersSchema = sqliteTable('feed_follower_user', {
   id: text().primaryKey(),
   payload: text('payload', { mode: 'json' }).$type<AnyVersionFollowerFeedUserJSON>().notNull(),
+});
+
+export const feedFriendsSchema = sqliteTable('feed_friend', {
+  id: text().primaryKey(),
+  payload: text('payload', { mode: 'json' }).$type<AnyVersionFriendJSON>().notNull(),
 });
 
 export const feedFollowRequestsSchema = sqliteTable('feed_follow_request', {

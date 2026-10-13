@@ -9,10 +9,17 @@ import type {
 import type { ProgramBlueprintJSON } from '@/models/storage/versions/latest/blueprint';
 import type { SessionJSON } from '@/models/storage/versions/latest/session';
 
+export interface PreviousAesKeyJSON {
+  key: AesKeyJSON;
+  supersededAt: InstantJSON;
+}
+
 export interface FeedIdentityJSON {
+  version: 2;
   id: string;
   lookup: string;
   aesKey: AesKeyJSON;
+  previousAesKeys: PreviousAesKeyJSON[];
   rsaKeyPair: RsaKeyPairJSON;
   password: string;
   name: string | undefined;
@@ -48,6 +55,20 @@ export interface FollowedFeedUserJSON {
 }
 
 export type FeedUserJSON = PendingFeedUserJSON | FollowedFeedUserJSON | FollowerFeedUserJSON;
+
+export type FriendStatusJSON = 'incoming' | 'pending' | 'friend' | 'legacyFollowing' | 'legacyFollower';
+
+export interface FriendJSON {
+  id: string;
+  publicKey: RsaPublicKeyJSON;
+  name: string | undefined;
+  currentPlan: ProgramBlueprintJSON | undefined;
+  status: FriendStatusJSON;
+  theirKeys: AesKeyJSON[];
+  theirKeysSentAt: InstantJSON | undefined;
+  theirSecret: string | undefined;
+  mySecret: string | undefined;
+}
 
 interface UserEventBaseJSON {
   userId: string;

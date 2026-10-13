@@ -9,6 +9,7 @@ import {
   followRequestInboxMessageMigrations,
   followerFeedUserMigrations,
   followedFeedUserMigrations,
+  friendMigrations,
   pendingFeedUserMigrations,
   sessionUserEventMigrations,
   inboxMessageMigrations,
@@ -29,6 +30,7 @@ export type AnyVersionFollowRequestInboxMessageJSON = typeof followRequestInboxM
 export type AnyVersionFollowerFeedUserJSON = typeof followerFeedUserMigrations.$anyType;
 export type AnyVersionFollowedFeedUserJSON = typeof followedFeedUserMigrations.$anyType;
 export type AnyVersionPendingFeedUserJSON = typeof pendingFeedUserMigrations.$anyType;
+export type AnyVersionFriendJSON = typeof friendMigrations.$anyType;
 export type AnyVersionSessionUserEventJSON = typeof sessionUserEventMigrations.$anyType;
 export type AnyVersionUserEventJSON = typeof userEventMigrations.$anyType;
 

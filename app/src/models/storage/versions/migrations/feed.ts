@@ -9,6 +9,7 @@ import {
   FollowRequestInboxMessageJSON,
   FollowResponseInboxMessageJSON,
   FollowResponseJSON,
+  FriendJSON,
   PendingFeedUserJSON,
   ReactionInboxMessageJSON,
   ReactionJSON,
@@ -23,9 +24,24 @@ import {
   UnfollowNotificationJSON,
 } from '@/models/storage/versions/initial';
 import type * as Latest from '@/models/storage/versions/latest/feed';
+import type { AesKeyJSON, InstantJSON } from '@/models/storage/versions/libs';
 import { match } from 'ts-pattern';
 
-export const feedIdentityMigrations = createMigrations<FeedIdentityJSON>().build<Latest.FeedIdentityJSON>();
+export const feedIdentityMigrations = createMigrations<FeedIdentityJSON>()
+  .add((value) => ({
+    version: 2 as const,
+    id: value.id,
+    lookup: value.lookup,
+    aesKey: value.aesKey,
+    previousAesKeys: [] as { key: AesKeyJSON; supersededAt: InstantJSON }[],
+    rsaKeyPair: value.rsaKeyPair,
+    password: value.password,
+    name: value.name,
+    publishBodyweight: value.publishBodyweight,
+    publishPlan: value.publishPlan,
+    publishWorkouts: value.publishWorkouts,
+  }))
+  .build<Latest.FeedIdentityJSON>();
 
 export const followRequestInboxMessageMigrations =
   createMigrations<FollowRequestInboxMessageJSON>().build<Latest.FollowRequestInboxMessageJSON>();
@@ -85,6 +101,12 @@ export const followedFeedUserMigrations = createMigrations<FollowedFeedUserJSON>
     currentPlan: programBlueprintMigrations,
   })
   .build<Latest.FollowedFeedUserJSON>();
+
+export const friendMigrations = createMigrations<FriendJSON>()
+  .dependsOn({
+    currentPlan: programBlueprintMigrations,
+  })
+  .build<Latest.FriendJSON>();
 
 export const unfollowNotificationMigrations =
   createMigrations<UnfollowNotificationJSON>().build<Latest.UnfollowNotificationJSON>();

@@ -28,6 +28,20 @@ export interface FollowedFeedUserJSON {
 
 export type FeedUserJSON = FollowedFeedUserJSON | PendingFeedUserJSON | FollowerFeedUserJSON;
 
+export type FriendStatusJSON = 'incoming' | 'pending' | 'friend' | 'legacyFollowing' | 'legacyFollower';
+
+export interface FriendJSON {
+  id: string;
+  publicKey: RsaPublicKeyJSON;
+  name: string | undefined;
+  currentPlan: ProgramBlueprintJSON | undefined;
+  status: FriendStatusJSON;
+  theirKeys: AesKeyJSON[];
+  theirKeysSentAt: InstantJSON | undefined;
+  theirSecret: string | undefined;
+  mySecret: string | undefined;
+}
+
 interface UserEventBaseJSON {
   userId: string;
   eventId: string;

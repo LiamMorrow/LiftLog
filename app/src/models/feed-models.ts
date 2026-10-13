@@ -40,6 +40,8 @@ import {
   ReactionInboxMessageJSON,
   ReceivedReactionJSON,
   SentReactionJSON,
+  FriendJSON,
+  FriendStatusJSON,
 } from '@/models/storage/versions/latest';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { Instant } from '@js-joda/core';
@@ -196,6 +198,94 @@ export class FollowedFeedUser {
 
 export type FeedUser = PendingFeedUser | FollowedFeedUser | FollowerFeedUser;
 
+// ---------------------------------------------------------------------------
+// Friend
+// ---------------------------------------------------------------------------
+
+/**
+ * - `incoming`: they asked to be friends and are waiting on us.
+ * - `pending`: we asked and are waiting on them.
+ * - `legacyFollowing`: we followed them one-way before friends existed, and have not decided whether to share back.
+ * - `legacyFollower`: they followed us one-way before friends existed, and have not decided whether to share back.
+ */
+export type FriendStatus = FriendStatusJSON;
+
+export class Friend {
+  constructor(
+    readonly id: string,
+    readonly publicKey: RsaPublicKey,
+    readonly name: string | undefined,
+    readonly currentPlan: ProgramBlueprint | undefined,
+    readonly status: FriendStatus,
+    readonly theirKeys: AesKey[],
+    readonly theirKeysSentAt: Instant | undefined,
+    readonly theirSecret: string | undefined,
+    readonly mySecret: string | undefined,
+  ) {}
+
+  static fromJSON(json: FriendJSON): Friend {
+    return new Friend(
+      json.id,
+      fromRsaPublicKeyJSON(json.publicKey),
+      json.name,
+      json.currentPlan && ProgramBlueprint.fromJSON(json.currentPlan),
+      json.status,
+      json.theirKeys.map(fromAesKeyJSON),
+      fromInstantJson(json.theirKeysSentAt),
+      json.theirSecret,
+      json.mySecret,
+    );
+  }
+
+  toJSON(): FriendJSON {
+    return {
+      id: this.id,
+      publicKey: toRsaPublicKeyJSON(this.publicKey),
+      name: this.name,
+      currentPlan: this.currentPlan?.toJSON(),
+      status: this.status,
+      theirKeys: this.theirKeys.map(toAesKeyJSON),
+      theirKeysSentAt: toInstantJson(this.theirKeysSentAt),
+      theirSecret: this.theirSecret,
+      mySecret: this.mySecret,
+    };
+  }
+
+  equals(other: Friend | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    return (
+      this.id === other.id &&
+      this.name === other.name &&
+      this.status === other.status &&
+      this.theirSecret === other.theirSecret &&
+      this.mySecret === other.mySecret &&
+      equal(this.theirKeysSentAt, other.theirKeysSentAt) &&
+      this.theirKeys.length === other.theirKeys.length &&
+      this.theirKeys.every((key, i) => equalBytes(key.value, other.theirKeys[i]!.value)) &&
+      equal(this.currentPlan, other.currentPlan)
+    );
+  }
+
+  with(other: Partial<Friend>): Friend {
+    return new Friend(
+      other.id ?? this.id,
+      other.publicKey ?? this.publicKey,
+      'name' in other ? other.name : this.name,
+      'currentPlan' in other ? other.currentPlan : this.currentPlan,
+      other.status ?? this.status,
+      other.theirKeys ?? this.theirKeys,
+      'theirKeysSentAt' in other ? other.theirKeysSentAt : this.theirKeysSentAt,
+      'theirSecret' in other ? other.theirSecret : this.theirSecret,
+      'mySecret' in other ? other.mySecret : this.mySecret,
+    );
+  }
+}
+
+function equalBytes(a: Uint8Array, b: Uint8Array) {
+  return a.length === b.length && a.every((x, i) => x === b[i]);
+}
+
 export function fromFeedUserJSON(json: FeedUserJSON): FeedUser {
   return match(json)
     .with({ type: 'PendingFeedUser' }, PendingFeedUser.fromJSON)
@@ -330,6 +420,11 @@ export function fromFeedUserEventJSON(json: UserEventJSON): FeedUserEvent {
 // FeedIdentity
 // ---------------------------------------------------------------------------
 
+export interface PreviousAesKey {
+  key: AesKey;
+  supersededAt: Instant;
+}
+
 export class FeedIdentity {
   constructor(
     readonly id: string,
@@ -341,6 +436,7 @@ export class FeedIdentity {
     readonly publishBodyweight: boolean,
     readonly publishPlan: boolean,
     readonly publishWorkouts: boolean,
+    readonly previousAesKeys: PreviousAesKey[] = [],
   ) {}
 
   static fromJSON(json: FeedIdentityJSON): FeedIdentity {
@@ -354,14 +450,23 @@ export class FeedIdentity {
       json.publishBodyweight,
       json.publishPlan,
       json.publishWorkouts,
+      json.previousAesKeys.map((x) => ({
+        key: fromAesKeyJSON(x.key),
+        supersededAt: fromInstantJson(x.supersededAt),
+      })),
     );
   }
 
   toJSON(): FeedIdentityJSON {
     return {
+      version: 2,
       id: this.id,
       lookup: this.lookup,
       aesKey: toAesKeyJSON(this.aesKey),
+      previousAesKeys: this.previousAesKeys.map((x) => ({
+        key: toAesKeyJSON(x.key),
+        supersededAt: toInstantJson(x.supersededAt),
+      })),
       rsaKeyPair: toRsaKeyPairJSON(this.rsaKeyPair),
       password: this.password,
       name: this.name,
@@ -396,6 +501,7 @@ export class FeedIdentity {
       other.publishBodyweight ?? this.publishBodyweight,
       other.publishPlan ?? this.publishPlan,
       other.publishWorkouts ?? this.publishWorkouts,
+      other.previousAesKeys ?? this.previousAesKeys,
     );
   }
 }

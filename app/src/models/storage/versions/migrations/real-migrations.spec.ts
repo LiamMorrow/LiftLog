@@ -12,6 +12,8 @@ import {
   SharedSessionJSON as InitialSharedSessionJSON,
   SharedProgramBlueprintJSON as InitialSharedProgramBlueprintJSON,
   FollowedFeedUserJSON as InitialFollowedFeedUserJSON,
+  FeedIdentityJSON as InitialFeedIdentityJSON,
+  FriendJSON as InitialFriendJSON,
 } from '@/models/storage/versions/initial';
 import {
   AesKeyJSON,
@@ -26,6 +28,8 @@ import { programBlueprintMigrations, sessionBlueprintMigrations } from './bluepr
 import { sessionMigrations } from './session';
 import { aiPlanMigrations } from './ai-plan';
 import {
+  feedIdentityMigrations,
+  friendMigrations,
   followedFeedUserMigrations,
   removedSessionUserEventMigrations,
   sessionUserEventMigrations,
@@ -344,6 +348,23 @@ describe('real migrations', () => {
       expect(result.version).toBe(3);
       expect(result.currentPlan).toBeUndefined();
     });
+
+    it('friend brings its currentPlan to latest', () => {
+      const result = friendMigrations.migrate(initialFriend(initialProgramBlueprint()));
+      expect(result.currentPlan?.version).toBe(3);
+      expect(result.currentPlan?.sessions.every((s) => s.version === 6)).toBe(true);
+    });
+
+    it('feedIdentity starts with no previous keys', () => {
+      const initial = initialFeedIdentity();
+      const result = feedIdentityMigrations.migrate(initial);
+      expect(result).toEqual({ ...initial, version: 2, previousAesKeys: [] });
+    });
+
+    it('feedIdentity is idempotent', () => {
+      const once = feedIdentityMigrations.migrate(initialFeedIdentity());
+      expect(feedIdentityMigrations.migrate(once)).toEqual(once);
+    });
   });
 
   describe('intermediate-version inputs', () => {
@@ -445,5 +466,33 @@ function initialFollowedFeedUser(currentPlan: InitialProgramBlueprintJSON | unde
     currentPlan,
     aesKey: 'aes-key' as unknown as AesKeyJSON,
     followSecret: 'secret',
+  };
+}
+
+function initialFriend(currentPlan: InitialProgramBlueprintJSON | undefined): InitialFriendJSON {
+  return {
+    id: 'friend',
+    publicKey: { spkiPublicKeyBytes: 'cHVibGlj' } as unknown as RsaPublicKeyJSON,
+    name: 'Friend',
+    currentPlan,
+    status: 'friend',
+    theirKeys: ['aes-key' as unknown as AesKeyJSON],
+    theirKeysSentAt: undefined,
+    theirSecret: 'their-secret',
+    mySecret: 'my-secret',
+  };
+}
+
+function initialFeedIdentity(): InitialFeedIdentityJSON {
+  return {
+    id: 'me',
+    lookup: 'lookup',
+    aesKey: 'aes-key' as unknown as AesKeyJSON,
+    rsaKeyPair: 'rsa' as unknown as InitialFeedIdentityJSON['rsaKeyPair'],
+    password: 'password',
+    name: 'Me',
+    publishBodyweight: false,
+    publishPlan: true,
+    publishWorkouts: true,
   };
 }

@@ -14,6 +14,7 @@ import m0009 from './0009_relational_sessions.sql';
 import m0010 from './0010_effective_weight.sql';
 import m0011 from './0011_session_summary.sql';
 import m0012 from './0012_feed_inbox_delivery.sql';
+import m0013 from './0013_feed_friend.sql';
 
   export default {
     journal,
@@ -30,7 +31,8 @@ m0008,
 m0009,
 m0010,
 m0011,
-m0012
+m0012,
+m0013
     }
   }
   

@@ -136,7 +136,7 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
       let feed: FeedBackupData | undefined;
       if (feedIdentityDb) {
         feed = {
-          identity: FeedIdentity.fromJSON(feedIdentityDb.payload),
+          identity: FeedIdentity.fromJSON(feedIdentityMigrations.migrate(feedIdentityDb.payload)),
           feedItems: (await drizzleBackupDb.select().from(feedItemsSchema)).map((x) =>
             SessionUserEvent.fromJSON(sessionUserEventMigrations.migrate(x.payload)),
           ),

@@ -92,6 +92,13 @@
       "when": 1791884170795,
       "tag": "0012_feed_inbox_delivery",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1791885573474,
+      "tag": "0013_feed_friend",
+      "breakpoints": true
     }
   ]
 }

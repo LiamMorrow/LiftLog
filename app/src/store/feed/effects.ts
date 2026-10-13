@@ -75,7 +75,7 @@ import { EncryptionService } from '@/services/encryption-service';
 import { Logger } from '@/services/logger';
 import { toRecord } from '@/utils/reduce';
 import { FeedUserJSON } from '@/models/storage/versions/latest';
-import { sessionUserEventMigrations } from '@/models/storage/versions/migrations';
+import { feedIdentityMigrations, sessionUserEventMigrations } from '@/models/storage/versions/migrations';
 import { setBackendAssignment, switchFeedBackend } from '@/store/backends';
 
 export function applyFeedEffects(addEffect: AddEffectFn) {
@@ -88,7 +88,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
         const identity = (await db.select().from(feedIdentitySchema)).at(0);
         dispatch(
           patchFeedState({
-            identity: identity ? RemoteData.success(FeedIdentity.fromJSON(identity.payload)) : RemoteData.notAsked(),
+            identity: identity ? RemoteData.success(FeedIdentity.fromJSON(feedIdentityMigrations.migrate(identity.payload))) : RemoteData.notAsked(),
             feed: (await db.select().from(feedItemsSchema)).map((x) =>
               SessionUserEvent.fromJSON(sessionUserEventMigrations.migrate(x.payload)),
             ),
@@ -419,55 +419,41 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
       { stateAfterReduce, dispatch, getState, extra: { feedIdentityService }, cancelActiveListeners, signal },
     ) => {
       cancelActiveListeners();
-      const oldFeedIdentity = selectFeedIdentityRemote(stateAfterReduce);
-      if (!oldFeedIdentity.isSuccess()) {
+      const before = selectFeedIdentityRemote(stateAfterReduce).unwrapOr(undefined);
+      if (!before) {
         return;
       }
-      dispatch(setIdentity(oldFeedIdentity.map((x) => x.with(action.payload.updates))));
-      const feedIdentityRemote = selectFeedIdentityRemote(getState());
-      if (!feedIdentityRemote.isSuccess()) {
-        dispatch(setIdentity(oldFeedIdentity));
-        return;
-      }
-      const identity = feedIdentityRemote.data;
-      // We optimistically updated the identity, so now we can just use its values
-      const result = await feedIdentityService.updateFeedIdentityAsync(
-        identity.id,
-        identity.lookup,
-        identity.password,
-        identity.aesKey,
-        identity.rsaKeyPair,
-        identity.name,
-        identity.publishBodyweight,
-        identity.publishPlan,
-        identity.publishWorkouts,
+      const { updates } = action.payload;
+      const identity = before.with(updates);
+      dispatch(setIdentity(RemoteData.success(identity)));
+
+      const result = await feedIdentityService.publishProfileAsync(
+        identity,
         stateAfterReduce.program.isHydrated ? selectActiveProgram(stateAfterReduce) : undefined,
       );
-      if (signal.aborted) {
+      if (signal.aborted || !result.isError()) {
         return;
       }
 
-      if (result.isError()) {
-        if (result.error.type === ApiErrorType.NotFound) {
-          dispatch(
-            resetFeedAccount({
-              fromUserAction: action.payload.fromUserAction,
-              newIdentity: identity,
-            }),
-          );
-        }
+      if (result.error.type === ApiErrorType.NotFound) {
         dispatch(
-          feedApiError({
-            message: 'Failed to update profile',
-            error: result.error,
-            action,
+          resetFeedAccount({
+            fromUserAction: action.payload.fromUserAction,
+            newIdentity: identity,
           }),
         );
-        dispatch(setIdentity(oldFeedIdentity));
-        return;
       }
-
-      dispatch(setIdentity(RemoteData.success(result.data!)));
+      dispatch(
+        feedApiError({
+          message: 'Failed to update profile',
+          error: result.error,
+          action,
+        }),
+      );
+      const current = selectFeedIdentityRemote(getState()).unwrapOr(undefined);
+      if (current?.id === before.id) {
+        dispatch(setIdentity(RemoteData.success(current.with(revertedFields(before, updates)))));
+      }
     },
   );
 
@@ -477,6 +463,11 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
   addOutboxEffects(addEffect);
   addFollowingEffects(addEffect);
   addReactionEffects(addEffect);
+}
+
+function revertedFields(before: FeedIdentity, updates: Partial<FeedIdentity>): Partial<FeedIdentity> {
+  const keys = Object.keys(updates) as (keyof FeedIdentity)[];
+  return Object.fromEntries(keys.map((key) => [key, before[key]]));
 }
 
 function writeFollowedUser(tx: ExpoSQLiteDatabase, user: FeedUser) {

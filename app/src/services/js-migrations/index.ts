@@ -1,5 +1,6 @@
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { explodeSessions } from '@/services/js-migrations/explode-sessions';
+import { mergeFollowsIntoFriends } from '@/services/js-migrations/merge-follows-into-friends';
 
 export interface JsMigration {
   id: string;
@@ -7,4 +8,4 @@ export interface JsMigration {
   run: (tx: ExpoSQLiteDatabase) => void;
 }
 
-export const jsMigrations: JsMigration[] = [explodeSessions];
+export const jsMigrations: JsMigration[] = [explodeSessions, mergeFollowsIntoFriends];
