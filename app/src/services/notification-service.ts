@@ -4,6 +4,7 @@ import { Dispatch } from '@reduxjs/toolkit';
 import {
   AndroidImportance,
   AndroidNotificationVisibility,
+  deleteNotificationChannelAsync,
   setNotificationChannelAsync,
   setNotificationHandler,
 } from 'expo-notifications';
@@ -28,15 +29,21 @@ if (Platform.OS === 'android') {
     lockscreenVisibility: AndroidNotificationVisibility.PUBLIC,
     bypassDnd: false,
   });
-  void setNotificationChannelAsync('rest_channel', {
+  // The rest alert's sound is played by the workout worker as media, so it follows the media
+  // stream like any other audio app. This channel must stay silent to avoid a second alert; it
+  // keeps vibration, which is the only cue when the media stream is muted.
+  void setNotificationChannelAsync('rest_channel_silent', {
     name: 'Rest Notifications',
     description: 'A notification alerting you that your rest is over',
     importance: AndroidImportance.DEFAULT,
+    sound: null,
     enableVibrate: true,
     showBadge: true,
     lockscreenVisibility: AndroidNotificationVisibility.PUBLIC,
     bypassDnd: false,
   });
+  // Channel settings are immutable, so the pre-silent channel is replaced rather than edited.
+  void deleteNotificationChannelAsync('rest_channel');
 }
 /**
  * Notification service is used for displaying dumb notifications through expo notifications

@@ -4,11 +4,9 @@ import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
 import android.media.AudioAttributes
-import android.media.AudioDeviceInfo
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.AudioFormat
-import android.media.AudioRouting
 import android.media.AudioTrack
 import android.os.Build
 import android.os.Handler
@@ -59,15 +57,10 @@ class WorkoutNotificationManager(private val context: Context) {
         const val REST_NOTIFICATION_ID = 1234
 
         const val PERSISTENT_CHANNEL_ID = "workout_channel"
-        const val REST_CHANNEL_ID = "rest_channel"
 
-        private val HEADPHONE_AUDIO_DEVICE_TYPES = setOf(
-            AudioDeviceInfo.TYPE_BLE_HEADSET,
-            AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
-            AudioDeviceInfo.TYPE_USB_HEADSET,
-            AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
-            AudioDeviceInfo.TYPE_WIRED_HEADSET,
-        )
+        // Silent so the worker owns the rest sound (played as media); vibration is the only cue when
+        // the media stream is muted.
+        const val REST_CHANNEL_SILENT_ID = "rest_channel_silent"
 
         private val REST_TONE_AUDIO_ATTRIBUTES = AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_MEDIA)
@@ -134,7 +127,7 @@ class WorkoutNotificationManager(private val context: Context) {
     }
 
     fun createRestNotificationBuilder(): NotificationCompat.Builder {
-        return NotificationCompat.Builder(context, REST_CHANNEL_ID)
+        return NotificationCompat.Builder(context, REST_CHANNEL_SILENT_ID)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setForegroundServiceBehavior(FOREGROUND_SERVICE_IMMEDIATE)
             .setContentIntent(context.getLaunchAppAtWorkoutPagePendingIntent())
@@ -161,9 +154,12 @@ class WorkoutNotificationManager(private val context: Context) {
     }
 
     private fun playRestToneSequence(targetEpochMs: Long?, remainingSecs: Int) {
-        val outputs = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
-        if (audioManager.ringerMode == AudioManager.RINGER_MODE_NORMAL ||
-            outputs.none { it.type in HEADPHONE_AUDIO_DEVICE_TYPES }) {
+        // Treat the rest alert like media: audible whenever the media stream is, regardless of ringer
+        // mode or output device. Only a muted media stream keeps it silent, so a fully silenced phone
+        // stays silent while a silent-ringer phone that can still play media alerts as usual.
+        if (audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) == 0 ||
+            audioManager.isStreamMute(AudioManager.STREAM_MUSIC)
+        ) {
             releaseAllRestTones()
             return
         }
@@ -201,23 +197,12 @@ class WorkoutNotificationManager(private val context: Context) {
                 override fun onMarkerReached(track: AudioTrack) {
                     if (restTonePlaybacks[key] === playback) releaseRestTone(key)
                 }
-                override fun onPeriodicNotification(track: AudioTrack) {
-                    if (restTonePlaybacks[key] !== playback) return
-                    if (audioManager.ringerMode == AudioManager.RINGER_MODE_NORMAL) {
-                        releaseAllRestTones()
-                    }
-                }
-            }, restToneHandler)
-            audioTrack.addOnRoutingChangedListener(AudioRouting.OnRoutingChangedListener { routing ->
-                if (restTonePlaybacks[key] === playback) {
-                    val deviceType = routing.routedDevice?.type
-                    if (deviceType != null && deviceType !in HEADPHONE_AUDIO_DEVICE_TYPES) {
-                        releaseRestTone(key)
-                    }
-                }
+
+                // Only the completion marker matters; the alert follows the media stream for its whole
+                // duration instead of bailing out when the ringer changes.
+                override fun onPeriodicNotification(track: AudioTrack) = Unit
             }, restToneHandler)
             check(audioTrack.setNotificationMarkerPosition(samples.size - 1) == AudioTrack.SUCCESS)
-            check(audioTrack.setPositionNotificationPeriod(RestTonePcm.SAMPLE_RATE) == AudioTrack.SUCCESS)
             audioTrack.play()
             val returnedAt = SystemClock.uptimeMillis()
             val bufferMs = samples.size * 1_000L / RestTonePcm.SAMPLE_RATE
