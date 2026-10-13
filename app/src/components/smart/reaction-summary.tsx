@@ -53,7 +53,7 @@ export function ReactionSummary({ eventId, animateOnMount, compact }: ReactionSu
     return null;
   }
 
-  const totals = new Map<string, number>([['🎉', 2]]);
+  const totals = new Map<string, number>([]);
   for (const reaction of received) {
     totals.set(reaction.emoji, (totals.get(reaction.emoji) ?? 0) + reaction.count);
   }
