@@ -95,7 +95,7 @@ export function HistoryActivityCalendar({
         >
           <View style={{ width: 3, borderRadius: 2, backgroundColor: colors.tertiary }} />
           <SurfaceText font="text-xs" color="onSurfaceVariant" style={{ flex: 1 }}>
-            {t('history.calendar.feed_horizon.message')}
+            {t('history.calendar.feed_horizon.body')}
           </SurfaceText>
         </View>
       )}

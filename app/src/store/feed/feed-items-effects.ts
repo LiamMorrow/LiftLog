@@ -1,4 +1,4 @@
-import { Instant, ZoneId } from '@js-joda/core';
+import { Instant } from '@js-joda/core';
 import {
   publishUnpublishedSessions,
   removeUnpublishedSessionId,
@@ -12,6 +12,7 @@ import {
   upsertFeedItems,
 } from '@/store/feed';
 import { AddEffectFn, AppDispatch, RootState } from '@/store/store';
+import { compareFeedItems } from '@/store/feed/feed-timeline';
 import {
   FeedIdentity,
   Friend,
@@ -186,20 +187,7 @@ async function fetchOnce(
   const validIds = new Set(validItems.map((x) => x.id));
   const removedIds = existingFeedItems.filter((item) => !validIds.has(item.id)).map((item) => item.id);
 
-  const sorted = validItems.sort((a, b) => {
-    const aTime =
-      a.type === 'SessionUserEvent'
-        ? a.session.date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()
-        : a.timestamp;
-    const bTime =
-      b.type === 'SessionUserEvent'
-        ? b.session.date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()
-        : b.timestamp;
-
-    const result = bTime.compareTo(aTime);
-    if (result !== 0) return result;
-    return b.timestamp.compareTo(a.timestamp);
-  });
+  const sorted = validItems.sort(compareFeedItems);
 
   if (removedIds.length) dispatch(removeFeedItems(removedIds));
   dispatch(upsertFeedItems(sorted as SessionUserEvent[]));

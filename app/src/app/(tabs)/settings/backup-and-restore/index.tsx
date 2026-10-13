@@ -134,7 +134,7 @@ function ExportFeedDialog({ open, setOpen }: DialogProps) {
       headline={t('feed.backup_account.title')}
       textContent={
         <LimitedHtml
-          value={t('feed.backup_account.confirm.body')}
+          value={t('feed.backup_account_with_friends.confirm.body')}
           emStyles={{ color: colors.error, fontWeight: 'bold' }}
         />
       }

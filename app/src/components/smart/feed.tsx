@@ -11,9 +11,10 @@ import { getFeedProfileEditorHref } from '@/components/smart/feed-profile-editor
 import { FeedWeekStrip } from '@/components/smart/feed-week-strip';
 import { ReactionBar } from '@/components/smart/reaction-bar';
 import { ReactionSummary } from '@/components/smart/reaction-summary';
-import { FeedPrBadges } from '@/components/smart/pr-badges';
+import { FeedPrBadges, HistoryPrBadges } from '@/components/smart/pr-badges';
 import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
+import { useFeedTimeline } from '@/hooks/useFeedTimeline';
 import { FeedIdentity, SessionUserEvent } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import { shareString } from '@/store/app';
@@ -22,7 +23,6 @@ import {
   getFeedShareUrl,
   selectFeedIdentityRemote,
   selectFriendList,
-  selectFeedSessionItems,
   selectOwnFeedUserId,
 } from '@/store/feed';
 import { T, useTranslate } from '@tolgee/react';
@@ -37,7 +37,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import IconButton from '@/components/presentation/foundation/icon-button';
 
 export default function Feed() {
-  const feedItems = useAppSelector(selectFeedSessionItems);
+  const feedItems = useFeedTimeline();
   const { handleScroll } = useScroll();
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
@@ -193,7 +193,11 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
               mainContent={
                 <View style={{ gap: spacing[2] }}>
                   <SessionSummary session={props.feedItem.session} isFilled showWeight />
-                  <FeedPrBadges eventId={props.feedItem.eventId} />
+                  {isOwnItem ? (
+                    <HistoryPrBadges sessionId={props.feedItem.eventId} />
+                  ) : (
+                    <FeedPrBadges eventId={props.feedItem.eventId} />
+                  )}
                 </View>
               }
             />

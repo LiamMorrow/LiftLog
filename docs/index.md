@@ -8,8 +8,8 @@ work to find the docs relevant to your area, and update it whenever you add, rem
 - [Storage.md](./Storage.md) - the two on-device storage layers: preferences (`PreferenceService`, one
   file per key) and user data (SQLite via Drizzle). Both are injected into Redux effects via `extra`.
   Covers which to use, how to add to each, the startup hydration order, the SQL / JS / data migration
-  order, why transactions must be synchronous, the relational session tables, and why Redux holds only
-  the sessions being edited.
+  order, why transactions must be synchronous, queue tables for network work (outbox and inbox queue),
+  the relational session tables, and why Redux holds only the sessions being edited.
 - [Migrations.md](./Migrations.md) - the `createMigrations()` chain in `app/src/models/storage/versions/`
   that brings previously-persisted JSON up to the shape the app expects. Sessions on the device are
   relational and change through SQL migrations instead. Read alongside `Storage.md`.
@@ -19,8 +19,9 @@ work to find the docs relevant to your area, and update it whenever you add, rem
 
 ## Features
 
-- [FeedProcess.md](./FeedProcess.md) - the opt-in social feed: the follow/accept flow, what is and isn't
-  visible to the server, and the end-to-end encryption model (AES-CBC payloads, RSA-PSS signatures).
+- [FeedProcess.md](./FeedProcess.md) - the opt-in social feed: mutual friends (request, accept, remove),
+  the inbox message types, key rotation, at-least-once inbox delivery, what is and isn't visible to the
+  server, and the end-to-end encryption model (AES-CBC payloads, RSA-PSS signatures).
 - [Progression.md](./Progression.md) - how last session's
   numbers carry into today (and why weight carries but reps usually do not), and how the progressive
   overload rules move them. Covers rule order, limits and starting over, rules that can never run, and

@@ -111,7 +111,7 @@ export default function BackendsPage() {
       <ConfirmationDialog
         open={pendingFeedBackend !== undefined}
         headline={t('backends.feed_switch.title')}
-        textContent={<T keyName="backends.feed_switch.message" />}
+        textContent={<T keyName="backends.feed_switch.body" />}
         onCancel={() => setPendingFeedBackend(undefined)}
         onOk={() => {
           if (pendingFeedBackend) {

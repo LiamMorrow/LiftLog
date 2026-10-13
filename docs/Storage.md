@@ -180,6 +180,26 @@ other query, so transactions never nest.
 Drizzle throws on an `insert` with no values. Inside a transaction that rolls back everything before it,
 so guard a delete-then-reinsert with `if (rows.length)`.
 
+### Network work goes through a queue table
+
+A state change that must also reach the network cannot share a transaction with the request, and
+sending first or writing first each leaves a gap where the app can die. So the network half is written
+as a row in the same transaction as the state change, and an effect sends it afterwards. The feed
+does this both ways (protocol details in [FeedProcess.md](./FeedProcess.md#inbox-message-delivery)):
+
+- **Outbox (`feed_outbox`).** Each friend change writes its friend rows and the already-encrypted inbox
+  messages it sends together (`commitFriendChange` in `store/feed/friend-effects.ts`). Then
+  `flushOutbox` sends the rows in order, deletes each one once the server accepts it, and backs off
+  on failure. Because sending can repeat, every message carries an id the receiver dedupes on.
+- **Inbox queue (`feed_inbox_queue`, `feed_inbox_seen`).** Polled messages are written to the queue
+  before they are acknowledged to the server. Each queued message is then handled in two parts: any
+  async preparation (fetching a key, encrypting a reply), then one synchronous transaction that writes
+  the resulting state and outbox rows and deletes the queue row. A crash at any point either leaves the
+  message queued or has fully applied it.
+
+Do async work before the transaction, re-check that the state it was based on still holds, and only
+dispatch to Redux after the transaction commits.
+
 ### Testing
 
 Effects that touch the DB use a real in-memory SQLite rather than a mock - `openDatabaseAsync(':memory:')`,

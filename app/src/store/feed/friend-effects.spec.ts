@@ -415,4 +415,23 @@ describe('friend handshake end to end', () => {
     ]);
     expect(outboxRows(bob.db)).toEqual([['alice', 'FriendKeys']]);
   });
+
+  it('sharing back after an upgrade makes both sides friends without a reply', async () => {
+    const alice = await makeInboxTestBed({
+      friends: [makeFriend('bob', { status: 'legacyFollowing', mySecret: undefined, theirSecret: 'bobs-secret' })],
+    });
+    const bob = await makeInboxTestBed({
+      friends: [makeFriend('alice', { status: 'legacyFollower', theirSecret: undefined, theirKeys: [] })],
+    });
+
+    await alice.testBed.dispatchHandled(shareBackWithFriend({ friendId: 'bob', fromUserAction: true }));
+    const alicesSecret = friend(alice.testBed, 'bob')!.mySecret!;
+    deliver(bob.services, [{ json: inbox.friendKeys('alice', ['YWxpY2U='], alicesSecret), sentAtMs: 1 }]);
+    await poll(bob.testBed);
+
+    expect(friend(alice.testBed, 'bob')).toMatchObject({ status: 'friend', theirSecret: 'bobs-secret' });
+    expect(friend(bob.testBed, 'alice')).toMatchObject({ status: 'friend', theirSecret: alicesSecret });
+    expect(outboxRows(alice.db)).toEqual([['bob', 'FriendKeys']]);
+    expect(outboxRows(bob.db)).toEqual([]);
+  });
 });

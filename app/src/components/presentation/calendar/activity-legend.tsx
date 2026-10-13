@@ -48,7 +48,7 @@ export function ActivityLegend({ showFriends }: { showFriends: boolean }) {
           <View style={{ width: DOT_SIZE, height: DOT_SIZE, borderRadius: 1000, backgroundColor: colors.teal }} />
           <View style={{ width: DOT_SIZE, height: DOT_SIZE, borderRadius: 1000, backgroundColor: colors.orange }} />
           <SurfaceText font="text-xs" color="onSurfaceVariant">
-            {t('history.calendar.legend.friends')}
+            {t('history.calendar.legend.friends.label')}
           </SurfaceText>
         </View>
       )}
