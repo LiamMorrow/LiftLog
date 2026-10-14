@@ -1,5 +1,6 @@
 import { Remote } from '@/components/presentation/foundation/remote';
-import SharedItem from '@/components/smart/shared-item';
+import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import SharedItem, { SharedItemActions } from '@/components/smart/shared-item';
 import { RemoteData } from '@/models/remote';
 import { useAppSelector } from '@/store';
 import { fetchSharedItem, selectSharedItem, setSharedItem } from '@/store/feed';
@@ -28,14 +29,15 @@ export default function SharedItemPage() {
   useEffect(() => {
     fetch();
   }, [fetch]);
+  const sharedItem = sharedRemote.unwrapOr(undefined);
   return (
-    <>
+    <FullHeightScrollView floatingChildren={sharedItem && <SharedItemActions sharedItem={sharedItem} />}>
       <Stack.Screen
         options={{
           title: t('feed.shared_item.title'),
         }}
       />
       <Remote success={(x) => <SharedItem sharedItem={x} />} value={sharedRemote} retry={fetch} />
-    </>
+    </FullHeightScrollView>
   );
 }

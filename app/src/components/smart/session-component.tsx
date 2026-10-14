@@ -53,6 +53,8 @@ export default function SessionComponent(props: {
   showBodyweight: boolean;
   header?: ReactNode;
   openPostWorkoutSummary?: () => void;
+  /** Renders without its own scroll view, for a read-only session inside a page that scrolls. */
+  embedded?: boolean;
 }) {
   const { session, isActiveWorkout } = props;
   const { colors } = useAppTheme();
@@ -310,14 +312,20 @@ export default function SessionComponent(props: {
     </Card>
   );
 
-  return (
-    <FullHeightScrollView floatingChildren={floatingBottomContainer}>
+  const content = (
+    <>
       {props.header}
       {notesComponent}
       {emptyInfo}
       <ItemList items={session.recordedExercises} renderItem={renderItem} />
       {bodyweight}
       {workoutSummary}
-    </FullHeightScrollView>
+    </>
   );
+
+  if (props.embedded) {
+    return content;
+  }
+
+  return <FullHeightScrollView floatingChildren={floatingBottomContainer}>{content}</FullHeightScrollView>;
 }
