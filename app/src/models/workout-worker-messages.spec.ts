@@ -9,7 +9,6 @@ import {
   WeightedExerciseBlueprint,
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
-  NoProgressiveOverload,
 } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { Duration, Instant, OffsetDateTime, ZoneOffset } from '@js-joda/core';
@@ -59,6 +58,7 @@ const TRANSLATIONS: Translations = {
   workoutPersistentNotificationMinRestOverMessage: 'Min rest over',
   workoutPersistentNotificationMaxRestOverMessage: 'Max rest over',
   workoutPersistentNotificationCurrentExerciseMessage: 'Current exercise',
+  workoutPersistentNotificationCardioTargetReachedMessage: 'Target reached',
   workoutPersistentNotificationFinishedMessage: 'Finished',
   workoutPersistentNotificationInProgressMessage: 'Workout in progress',
   workoutPersistentNotificationFinishWorkoutAction: 'Finish',
@@ -75,7 +75,7 @@ function makeWeightedExercise(): RecordedWeightedExercise {
     name: 'Bench Press',
     sets: 3,
     repsPerSet: 10,
-    progressiveOverload: new NoProgressiveOverload(),
+    progression: [],
   };
   const blueprint = WeightedExerciseBlueprint.empty().with(blueprintJson);
   return RecordedWeightedExercise.empty(blueprint, 'kilograms');
@@ -167,7 +167,7 @@ describe('WorkoutMessage JSON schema validation', () => {
         cardioTimerInfo: undefined,
         currentExerciseDetails: undefined,
         totalWeightLifted: new Weight(0, 'kilograms').toJSON(),
-        workoutDuration: toDurationJSON(Duration.parse('PT0S')), // DurationJSON — ISO-8601 string
+        workoutDuration: toDurationJSON(Duration.parse('PT0S')), // DurationJSON - ISO-8601 string
       };
       expect(validate('WorkoutUpdatedEvent', payload)).toBe(true);
     });
@@ -315,7 +315,7 @@ describe('WorkoutMessage JSON schema validation', () => {
   });
 
   // -------------------------------------------------------------------------
-  // Sub-component schemas — useful for diagnosing failures in isolation
+  // Sub-component schemas - useful for diagnosing failures in isolation
   // -------------------------------------------------------------------------
 
   describe('RecordedWeightedExercise', () => {
@@ -360,7 +360,7 @@ describe('WorkoutMessage JSON schema validation', () => {
     });
   });
   // -------------------------------------------------------------------------
-  // Negative tests — invalid payloads that should fail validation
+  // Negative tests - invalid payloads that should fail validation
   // -------------------------------------------------------------------------
 
   describe('Invalid payloads (should fail validation)', () => {

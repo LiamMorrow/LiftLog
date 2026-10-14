@@ -20,6 +20,7 @@ class WorkoutStartedHandler(
         dispatch: (type: String, event: WorkoutMessage) -> Unit
     ) {
 
+        notificationManager.resetPromotion()
         val notifBuilder = notificationManager.createWorkoutNotificationBuilder()
             .setContentText(event.translations.workoutPersistentNotificationInProgressMessage)
         notificationManager.notifyPersistent(notifBuilder.build())

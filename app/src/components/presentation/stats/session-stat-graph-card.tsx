@@ -30,17 +30,15 @@ export default function SessionStatGraphCard(props: { sessionStats: OptionalStat
     colors.amber,
   ];
   const points: lineDataItem[][] = props.sessionStats.map((x) =>
-    x.statistics.map(
-      (stat): lineDataItem => ({
-        value: stat.value?.convertTo(weightUnit).value.toNumber()!,
-        dataPointText: stat.value?.shortLocaleFormat(2) ?? '',
-        textShiftY: -10,
-        label: formatDate(stat.dateTime.toLocalDate(), {
-          day: 'numeric',
-          month: 'short',
-        }),
+    x.statistics.map((stat): lineDataItem => ({
+      value: stat.value?.convertTo(weightUnit).value.toNumber(),
+      dataPointText: stat.value?.shortLocaleFormat(2) ?? '',
+      textShiftY: -10,
+      label: formatDate(stat.dateTime.toLocalDate(), {
+        day: 'numeric',
+        month: 'short',
       }),
-    ),
+    })),
   );
   const [width, setWidth] = useState(0);
   const legendItems = props.sessionStats.map((stat, i) => ({

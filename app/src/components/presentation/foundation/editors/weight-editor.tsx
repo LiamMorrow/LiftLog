@@ -2,13 +2,12 @@ import { spacing } from '@/hooks/useAppTheme';
 import { localeFormatBigNumber, localeParseBigNumber } from '@/utils/locale-bignumber';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
-import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
-import { TextInput, Tooltip, useTheme } from 'react-native-paper';
-import { Weight, WeightUnit } from '@/models/weight';
-import SelectButton from '@/components/presentation/foundation/select-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
+import { Text, TextInput, Tooltip, useTheme } from 'react-native-paper';
+import { shortFormatWeightUnit, Weight, WeightUnit } from '@/models/weight';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
+import { useDerivedState } from '@/hooks/useDerivedState';
 
 type WeightEditorProps = {
   increment: BigNumber;
@@ -31,15 +30,9 @@ export function WeightEditor(props: WeightEditorProps) {
   const theme = useTheme();
   const { t } = useTranslate();
   const preferredWeightUnit = usePreferredWeightUnit();
-  const [text, setText] = useState(localeFormatBigNumber(props.weight?.value));
-  const [editorWeightValue, setEditorWeightValue] = useState<BigNumber | undefined>(props.weight?.value);
-  const [editorWeightUnit, setEditorWeightUnit] = useState<WeightUnit>(props.weight?.unit ?? preferredWeightUnit);
-
-  useEffect(() => {
-    setText(localeFormatBigNumber(props.weight?.value));
-    setEditorWeightValue(props.weight?.value);
-    setEditorWeightUnit(props.weight?.unit ?? preferredWeightUnit);
-  }, [preferredWeightUnit, props.weight]);
+  const [text, setText] = useDerivedState(props.weight?.value, (weight) => localeFormatBigNumber(weight));
+  const [editorWeightValue, setEditorWeightValue] = useDerivedState(props.weight?.value);
+  const [editorWeightUnit, setEditorWeightUnit] = useDerivedState(props.weight?.unit ?? preferredWeightUnit);
 
   const nonZeroIncrement = props.increment.isZero() ? new BigNumber('2.5') : props.increment;
 
@@ -117,15 +110,12 @@ export function WeightEditor(props: WeightEditorProps) {
           }}
         />
 
-        <SelectButton
+        <IconButton
+          mode="outlined"
           testID="weight-dialog-unit-selector"
-          options={[
-            { label: 'kg', value: 'kilograms' },
-            { label: 'lbs', value: 'pounds' },
-            { label: 'Unit', value: 'nil', disabledAndHidden: true },
-          ]}
-          value={editorWeightUnit}
-          onChange={(unit) => {
+          icon={() => <Text>{shortFormatWeightUnit(editorWeightUnit)}</Text>}
+          onPress={() => {
+            const unit = editorWeightUnit === 'kilograms' ? 'pounds' : 'kilograms';
             setEditorWeightUnit(unit);
             emitCurrentValues(editorWeightValue, unit);
           }}

@@ -1,12 +1,14 @@
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { selectMuscles } from '@/store/stored-sessions';
-import { T } from '@tolgee/react';
+import { T, useTranslate } from '@tolgee/react';
+import { translateExerciseMeta } from '@/utils/exercise-meta';
 import { View } from 'react-native';
 import { Chip, Text } from 'react-native-paper';
 
 export default function ExerciseMuscleSelector(props: { muscles: string[]; onChange: (muscles: string[]) => void }) {
   const { muscles, onChange } = props;
+  const { t } = useTranslate();
   const muscleList = useAppSelector(selectMuscles);
   return (
     <View style={{ gap: spacing[2] }}>
@@ -31,7 +33,7 @@ export default function ExerciseMuscleSelector(props: { muscles: string[]; onCha
             selected={muscles.includes(x)}
             testID={`exercise-muscle-chip`}
           >
-            {x}
+            {translateExerciseMeta(t, 'muscle', x)}
           </Chip>
         ))}
       </View>

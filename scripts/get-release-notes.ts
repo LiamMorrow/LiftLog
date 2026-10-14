@@ -98,7 +98,10 @@ async function main() {
   let summary = "";
   try {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-    const prompt = `Summarize the following release notes for a GitHub release. Focus on user-facing changes and improvements. AVOID listing reasons for changes unless you are explicitly quoting a commit message. NEVER say stuff like "ensuring a smoother user experience." or "improving efficiency." or things like that. The change is the change, the reasons are either implicit from the commit, or you DEFINITELY DO NOT need to infer them to say what they improve."\n\n${allMessages.join(
+    const prompt = `Summarize the following release notes for a GitHub release. Focus on user-facing changes and improvements.
+    AVOID listing reasons for changes unless you are explicitly quoting a commit message.
+    NEVER say stuff like "ensuring a smoother user experience." or "improving efficiency." or things like that.
+    The change is the change, the reasons are either implicit from the commit, or you DEFINITELY DO NOT need to infer them to say what they improve."\n\n${allMessages.join(
       "\n",
     )}`;
     const message = await anthropic.messages.create({

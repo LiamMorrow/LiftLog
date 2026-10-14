@@ -1,11 +1,10 @@
 import { useTranslate } from '@tolgee/react';
 import { useDispatch } from 'react-redux';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
 import { Tooltip } from 'react-native-paper';
 import { useAppSelector } from '@/store';
 import { addMessage } from '@/store/ai-planner';
 import { uuid } from '@/utils/uuid';
-import { ProgramBlueprint } from '@/models/blueprint-models';
 
 export function ShareProgramButton({ disabled }: { disabled: boolean }) {
   const { t } = useTranslate();
@@ -22,7 +21,7 @@ export function ShareProgramButton({ disabled }: { disabled: boolean }) {
         id: uuid(),
         type: 'sharedProgram',
         programName: activeProgram.name,
-        blueprint: ProgramBlueprint.fromPOJO(activeProgram),
+        blueprint: activeProgram,
       }),
     );
   };

@@ -7,7 +7,7 @@ type JsonTableValue<T, K> = {
   payload: T;
 };
 
-export async function upsert<T, K>(
+export function upsert<T, K>(
   db: ExpoSQLiteDatabase,
   schema: AnySQLiteTable & {
     id: IndexColumn;
@@ -18,13 +18,13 @@ export async function upsert<T, K>(
   if (!values.length) {
     return;
   }
-  await db
-    .insert(schema)
+  db.insert(schema)
     .values(values)
     .onConflictDoUpdate({
       target: schema.id,
       set: {
         payload: sql.raw(`excluded.${schema.payload.name}`),
       },
-    });
+    })
+    .run();
 }

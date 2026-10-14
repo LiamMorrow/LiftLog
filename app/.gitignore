@@ -11,8 +11,8 @@ expo-env.d.ts
 
 coverage/
 
-android
-ios
+/android/
+/ios/
 
 # Native
 *.orig.*
@@ -46,3 +46,7 @@ app-example
 
 # Opinionated dev files
 shell.nix
+
+# Maestro local run output
+.maestro/**/screenshots
+.maestro/debug-output

@@ -69,7 +69,7 @@ describe('addExportBackupEffects', () => {
     });
     addExportBackupEffects(testBed.addEffect);
 
-    // Just assert it completes without error — the real assertion is that
+    // Just assert it completes without error - the real assertion is that
     // execAsync was called (covered by the db mock) and exportBytes still fires
     await testBed.dispatchHandled(exportData({ includeFeed: false }));
 

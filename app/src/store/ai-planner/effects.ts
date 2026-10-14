@@ -10,6 +10,7 @@ import {
 } from '@/store/ai-planner';
 import { setIsHydrated } from '@/store/ai-planner';
 
+import { clearBackendAssignment, removeBackend, selectAssignedBackendId, setBackendAssignment } from '@/store/backends';
 import { AddEffectFn } from '@/store/store';
 import { uuid } from '@/utils/uuid';
 
@@ -63,6 +64,20 @@ export function applyAiPlannerEffects(addEffect: AddEffectFn) {
   addEffect(stopAiGenerator, async (_, { extra: { aiChatService } }) => {
     await aiChatService.stopInProgress();
   });
+
+  // A chat lives on the server holding it, and the new server has never seen a word of it. Repointing
+  // the planner therefore starts the chat again rather than leaving a transcript nothing can continue.
+  addEffect(
+    [setBackendAssignment, clearBackendAssignment, removeBackend],
+    async (_, { dispatch, stateBeforeReduce, stateAfterReduce }) => {
+      const before = selectAssignedBackendId(stateBeforeReduce, 'aiPlanner');
+      const after = selectAssignedBackendId(stateAfterReduce, 'aiPlanner');
+      if (before === after || !stateAfterReduce.aiPlanner.plannerChat.length) {
+        return;
+      }
+      dispatch(restartChat());
+    },
+  );
 
   addEffect(initChat, async (_, { dispatch, getState }) => {
     if (getState().aiPlanner.plannerChat.length) {

@@ -1,4 +1,4 @@
-import ExerciseSummary from '@/components/presentation/summary/exercise-summary';
+import { ExerciseSummaryLine } from '@/components/presentation/summary/exercise-summary-line';
 import { ColorChoice, spacing } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { View } from 'react-native';
@@ -11,17 +11,15 @@ interface SessionSummaryProps {
 }
 export default function SessionSummary({ session, isFilled, showWeight, color = 'onSurface' }: SessionSummaryProps) {
   return (
-    <View style={{ gap: spacing[2], flex: 1 }} testID="session-summary">
+    <View style={{ gap: spacing[1] }} testID="session-summary">
       {session.recordedExercises
         .filter((x) => x.isStarted || !isFilled)
         .map((ex, index) => (
-          <ExerciseSummary
+          <ExerciseSummaryLine
             key={index}
             exercise={ex}
             isFilled={!!isFilled}
-            showName={true}
             showWeight={!!showWeight}
-            showDate={false}
             color={color}
           />
         ))}

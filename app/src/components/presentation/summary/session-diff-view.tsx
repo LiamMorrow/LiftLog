@@ -1,5 +1,6 @@
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { useDerivedState } from '@/hooks/useDerivedState';
 import {
   DiffChange,
   ExerciseModification,
@@ -9,7 +10,7 @@ import {
   SessionBlueprintDiff,
 } from '@/models/blueprint-diff';
 import { useTranslate } from '@tolgee/react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { View } from 'react-native';
 import { Checkbox, List, Text } from 'react-native-paper';
 import { match } from 'ts-pattern';
@@ -23,14 +24,10 @@ export default function SessionDiffView({ diff: fullDiff, onSelectedDiffChange }
   const { t } = useTranslate();
 
   // Track selected change IDs internally - default to all selected
-  const [selectedChangeIds, setSelectedChangeIds] = useState<Set<string>>(
-    () => new Set(fullDiff.allChanges.map((c) => c.id)),
+  const [selectedChangeIds, setSelectedChangeIds] = useDerivedState(
+    fullDiff,
+    (fd) => new Set(fd.allChanges.map((c) => c.id)),
   );
-
-  // Reset selection when the diff changes
-  useEffect(() => {
-    setSelectedChangeIds(new Set(fullDiff.allChanges.map((c) => c.id)));
-  }, [fullDiff]);
 
   // Compute the filtered diff based on selection
   const selectedDiff = filterDiff(fullDiff, selectedChangeIds);

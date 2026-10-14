@@ -2,20 +2,27 @@ import ItemTitle from '@/components/presentation/foundation/item-title';
 import { spacing } from '@/hooks/useAppTheme';
 import { RecordedExercise, RecordedWeightedExercise } from '@/models/session-models';
 import { ReactNode, useState } from 'react';
-import { Linking, View } from 'react-native';
-import { Menu, Tooltip } from 'react-native-paper';
+import { View } from 'react-native';
+import { openUrl } from '@/utils/open-url';
+import { Tooltip } from 'react-native-paper';
+import Menu, { MenuItem } from '@/components/presentation/foundation/menu';
 import { useTranslate } from '@tolgee/react';
-import PreviousExerciseViewer from '@/components/presentation/workout/weighted/previous-exercise-viewer';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import ExerciseNotesDisplay from '@/components/presentation/workout/exercise-notes-display';
 import RecordedExerciseNotesEditor from '@/components/presentation/workout/recorded-exercise-notes-editor';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
 import { useRouter } from 'expo-router';
+import { getExerciseHistoryHref } from '@/components/smart/exercise-history';
 import { Updater } from '@/utils/types';
+import Analytics from '@expo/material-symbols/analytics.xml';
+import Edit from '@expo/material-symbols/edit.xml';
+import Notes from '@expo/material-symbols/notes.xml';
+import Delete from '@expo/material-symbols/delete.xml';
+import OpenInBrowser from '@expo/material-symbols/open_in_browser.xml';
 
 interface ExerciseSectionProps<T extends RecordedExercise> {
   recordedExercise: T;
-  previousRecordedExercises: RecordedExercise[];
+  previousLineageExercise: RecordedExercise | undefined;
   toStartNext: boolean;
   isReadonly: boolean;
   showPreviousButton: boolean;
@@ -23,25 +30,20 @@ interface ExerciseSectionProps<T extends RecordedExercise> {
   children: ReactNode;
 
   updateExercise: (update: Updater<T>) => void;
-  onEditExercise: () => void;
+  onEditExercise: (() => void) | undefined;
   onRemoveExercise: () => void;
 }
 
 export default function ExerciseSection<T extends RecordedExercise>(props: ExerciseSectionProps<T>) {
   const { updateExercise, onRemoveExercise } = props;
-  const openUrl = (url: string) => {
-    void Linking.canOpenURL(url).then(() => Linking.openURL(url));
-  };
   const { t } = useTranslate();
   const { push } = useRouter();
   const { recordedExercise } = props;
-  const [menuVisible, setMenuVisible] = useState(false);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
-  const [previousDialogOpen, setPreviousDialogOpen] = useState(false);
   const [removeExerciseDialogOpen, setRemoveExerciseDialogOpen] = useState(false);
   const showStats = recordedExercise instanceof RecordedWeightedExercise;
   const showPrevious = () => {
-    setPreviousDialogOpen(true);
+    push(getExerciseHistoryHref(recordedExercise.blueprint), { withAnchor: true });
   };
 
   const interactiveButtons = props.isReadonly ? (
@@ -65,61 +67,57 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
       ) : null}
 
       <Menu
-        visible={menuVisible}
-        onDismiss={() => setMenuVisible(false)}
-        anchor={<IconButton testID="more-exercise-btn" onPress={() => setMenuVisible(true)} icon={'moreHoriz'} />}
-      >
-        <Menu.Item
-          onPress={() => {
-            props.onEditExercise();
-            setMenuVisible(false);
-          }}
-          testID="exercise-edit-menu-button"
-          leadingIcon={'edit'}
-          title={t('generic.edit.button')}
-        />
-        <Menu.Item
-          testID="exercise-notes-more-btn"
-          title={t('generic.notes.label')}
-          leadingIcon={'notes'}
-          onPress={() => {
-            setNotesDialogOpen(true);
-            setMenuVisible(false);
-          }}
-        />
-        {showStats ? (
-          <Menu.Item
-            onPress={() => {
-              push(
-                `/stats/expanded-weighted-exercise?exerciseName=${encodeURIComponent(recordedExercise.blueprint.name)}`,
-                { withAnchor: true },
-              );
-              setMenuVisible(false);
-            }}
-            testID="exercise-stats-menu-button"
-            leadingIcon={'analytics'}
-            title={t('stats.stats.title')}
-          />
-        ) : null}
-        <Menu.Item
-          onPress={() => {
-            setRemoveExerciseDialogOpen(true);
-            setMenuVisible(false);
-          }}
-          leadingIcon={'delete'}
-          title={t('generic.remove.button')}
-        />
-        {!!props.recordedExercise.blueprint.link && (
-          <Menu.Item
-            onPress={() => {
-              openUrl(props.recordedExercise.blueprint.link);
-              setMenuVisible(false);
-            }}
-            leadingIcon={'openInBrowser'}
-            title={t('generic.open_link.button')}
-          />
-        )}
-      </Menu>
+        trigger={(open) => <IconButton testID="more-exercise-btn" onPress={open} icon={'moreHoriz'} />}
+        items={[
+          // Absent for a session the user does not own, which has nothing to edit.
+          ...(props.onEditExercise
+            ? [
+                {
+                  label: t('generic.edit.button'),
+                  icon: Edit,
+                  systemImage: 'pencil',
+                  onPress: props.onEditExercise,
+                } satisfies MenuItem,
+              ]
+            : []),
+          {
+            label: t('generic.notes.label'),
+            icon: Notes,
+            systemImage: 'note.text',
+            onPress: () => setNotesDialogOpen(true),
+          },
+          ...(showStats
+            ? [
+                {
+                  label: t('stats.stats.title'),
+                  icon: Analytics,
+                  systemImage: 'chart.bar',
+                  onPress: () =>
+                    push(
+                      `/stats/expanded-weighted-exercise?exerciseName=${encodeURIComponent(recordedExercise.blueprint.name)}`,
+                      { withAnchor: true },
+                    ),
+                } satisfies MenuItem,
+              ]
+            : []),
+          {
+            label: t('generic.remove.button'),
+            icon: Delete,
+            systemImage: 'trash',
+            onPress: () => setRemoveExerciseDialogOpen(true),
+          },
+          ...(props.recordedExercise.blueprint.link
+            ? [
+                {
+                  label: t('generic.open_link.button'),
+                  icon: OpenInBrowser,
+                  systemImage: 'safari',
+                  onPress: () => openUrl(props.recordedExercise.blueprint.link),
+                } satisfies MenuItem,
+              ]
+            : []),
+        ]}
+      />
     </View>
   );
   return (
@@ -149,10 +147,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
           {interactiveButtons}
         </View>
         {props.children}
-        <ExerciseNotesDisplay
-          exercise={props.recordedExercise}
-          previousExercise={props.previousRecordedExercises.at(0)}
-        />
+        <ExerciseNotesDisplay exercise={props.recordedExercise} previousExercise={props.previousLineageExercise} />
       </View>
 
       <RecordedExerciseNotesEditor
@@ -173,12 +168,6 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
         }}
         onCancel={() => setRemoveExerciseDialogOpen(false)}
         preventCancel={false}
-      />
-      <PreviousExerciseViewer
-        name={recordedExercise.blueprint.name}
-        previousRecordedExercises={props.previousRecordedExercises}
-        close={() => setPreviousDialogOpen(false)}
-        open={previousDialogOpen}
       />
     </View>
   );

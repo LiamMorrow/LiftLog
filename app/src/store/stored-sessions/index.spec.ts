@@ -1,75 +1,57 @@
 import { describe, expect, it } from 'vitest';
-import { LocalDate, OffsetDateTime, ZoneOffset, YearMonth } from '@js-joda/core';
+import { LocalDate, OffsetDateTime, ZoneOffset } from '@js-joda/core';
 import { v4 as uuid } from 'uuid';
 import {
-  selectSessionsInMonth,
-  selectSessionsBy,
   selectSession,
-  selectSessions,
-  selectPreviousComparableSession,
-  selectRecentlyCompletedExercises,
   selectMuscles,
   selectExerciseById,
+  selectExercises,
   getSessionReferenceTime,
   storedSessionsReducer,
-  addStoredSession,
+  putStoredSession,
+  updateStoredSession,
+  setActiveSessionId,
   upsertStoredSessions,
-  setStoredSessions,
+  openSession,
+  closeSession,
   deleteStoredSession,
   updateExercise,
+  upsertExercises,
   deleteExercise,
+  restoreExercise,
   setExercises,
+  setBuiltInExercises,
+  setHiddenBuiltInIds,
 } from '@/store/stored-sessions';
-import { NoProgressiveOverload, Rest, SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
-import { PotentialSet, RecordedSet, RecordedWeightedExercise, Session } from '@/models/session-models';
+import { SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
+import { RecordedWeightedExercise, Session } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import { UnknownAction } from '@reduxjs/toolkit';
+import { emptyPotentialSet, filledPotentialSet, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
 
 function createSessionWithCompletionTime(sessionDate: LocalDate, completionTime: OffsetDateTime, name: string) {
   const blueprint = new SessionBlueprint(
     name,
-    [new WeightedExerciseBlueprint(`${name} Exercise`, 1, 5, new NoProgressiveOverload(), Rest.medium, false, '', '')],
+    [
+      makeWeightedBlueprint({
+        name: `${name} Exercise`,
+        sets: 1,
+        repsConfig: { type: 'fixed', reps: 5 },
+        progression: [],
+      }),
+    ],
     '',
   );
   const exerciseBlueprint = blueprint.exercises[0] as WeightedExerciseBlueprint;
   const recordedExercise = new RecordedWeightedExercise(
     exerciseBlueprint,
-    [new PotentialSet(new RecordedSet(exerciseBlueprint.repsPerSet, completionTime), new Weight(100, 'kilograms'))],
+    [filledPotentialSet(exerciseBlueprint.repsTargetForSet(0).max, completionTime, new Weight(100, 'kilograms'))],
     undefined,
   );
 
   return new Session(uuid(), blueprint, [recordedExercise], sessionDate, undefined, undefined);
 }
-
-describe('stored sessions sorting', () => {
-  it('sorts sessions in a month by the actual completion time, not only the date', () => {
-    const sameDay = LocalDate.of(2026, 4, 10);
-    const earlier = createSessionWithCompletionTime(
-      sameDay,
-      OffsetDateTime.of(2026, 4, 10, 8, 30, 0, 0, ZoneOffset.UTC),
-      'Morning',
-    );
-    const later = createSessionWithCompletionTime(
-      sameDay,
-      OffsetDateTime.of(2026, 4, 10, 18, 15, 0, 0, ZoneOffset.UTC),
-      'Evening',
-    );
-
-    const state = {
-      storedSessions: {
-        sessions: {
-          [earlier.id]: earlier,
-          [later.id]: later,
-        },
-      },
-    };
-
-    const ordered = selectSessionsInMonth(state, YearMonth.of(2026, 4));
-
-    expect(ordered.map((session) => session.blueprint.name)).toEqual(['Evening', 'Morning']);
-  });
-});
 
 // ─── Reducer ──────────────────────────────────────────────────────────────────
 
@@ -96,67 +78,124 @@ function exerciseDescriptor(overrides: Partial<ExerciseDescriptor> = {}): Exerci
 }
 
 describe('storedSessions reducer', () => {
-  it('addStoredSession stores the session and tracks derived values', () => {
+  it('putStoredSession opens the session', () => {
     const session = createSessionWithCompletionTime(
       LocalDate.of(2026, 4, 10),
       OffsetDateTime.of(2026, 4, 10, 10, 0, 0, 0, ZoneOffset.UTC),
       'Squat',
     );
 
-    const state = reduce(addStoredSession(session));
+    const state = reduce(putStoredSession(session));
 
-    expect(state.sessions[session.id]).toBe(session);
-    expect(state.earliestSession).toBe(session);
-    expect(Object.keys(state.latestExercises).length).toBe(1);
+    expect(state.openSessions[session.id]).toBe(session);
   });
 
-  it('upsertStoredSessions adds many and tracks the earliest session', () => {
-    const early = createSessionWithCompletionTime(
+  it('upsertStoredSessions refreshes an open session but opens none', () => {
+    const open = createSessionWithCompletionTime(
       LocalDate.of(2026, 1, 1),
       OffsetDateTime.of(2026, 1, 1, 10, 0, 0, 0, ZoneOffset.UTC),
       'A',
     );
-    const late = createSessionWithCompletionTime(
+    const closed = createSessionWithCompletionTime(
       LocalDate.of(2026, 4, 1),
       OffsetDateTime.of(2026, 4, 1, 10, 0, 0, 0, ZoneOffset.UTC),
       'B',
     );
+    const restored = open.withUpdatedDate(LocalDate.of(2026, 1, 2));
 
-    const state = reduce(upsertStoredSessions([late, early]));
+    const state = reduce(openSession(open), upsertStoredSessions([restored, closed]));
 
-    expect(Object.keys(state.sessions)).toHaveLength(2);
-    expect(state.earliestSession).toBe(early);
+    expect(state.openSessions[open.id]).toBe(restored);
+    expect(state.openSessions[closed.id]).toBeUndefined();
   });
 
-  it('setStoredSessions replaces sessions and rebuilds latestExercises', () => {
-    const first = createSessionWithCompletionTime(
+  it('closeSession drops a past session but keeps the workout in progress open', () => {
+    const past = createSessionWithCompletionTime(
+      LocalDate.of(2026, 4, 1),
+      OffsetDateTime.of(2026, 4, 1, 10, 0, 0, 0, ZoneOffset.UTC),
+      'Past',
+    );
+    const active = createSessionWithCompletionTime(
+      LocalDate.of(2026, 4, 10),
+      OffsetDateTime.of(2026, 4, 10, 10, 0, 0, 0, ZoneOffset.UTC),
+      'Active',
+    );
+
+    const state = reduce(
+      openSession(past),
+      openSession(active),
+      setActiveSessionId(active.id),
+      closeSession(past.id),
+      closeSession(active.id),
+    );
+
+    expect(state.openSessions[past.id]).toBeUndefined();
+    expect(state.openSessions[active.id]).toBe(active);
+  });
+
+  it('updateStoredSession edits the addressed session and leaves the others alone', () => {
+    const target = createSessionWithCompletionTime(
       LocalDate.of(2026, 4, 10),
       OffsetDateTime.of(2026, 4, 10, 10, 0, 0, 0, ZoneOffset.UTC),
       'Squat',
     );
-    const replacement = createSessionWithCompletionTime(
+    const bystander = createSessionWithCompletionTime(
       LocalDate.of(2026, 4, 11),
       OffsetDateTime.of(2026, 4, 11, 10, 0, 0, 0, ZoneOffset.UTC),
       'Bench',
     );
 
-    const state = reduce(addStoredSession(first), setStoredSessions({ [replacement.id]: replacement }));
+    const state = reduce(
+      putStoredSession(target),
+      putStoredSession(bystander),
+      updateStoredSession({ sessionId: target.id, update: (s) => s.withUpdatedDate(LocalDate.of(2026, 5, 1)) }),
+    );
 
-    expect(state.sessions[first.id]).toBeUndefined();
-    expect(state.sessions[replacement.id]).toBe(replacement);
+    expect(state.openSessions[target.id]!.date.toString()).toBe('2026-05-01');
+    expect(state.openSessions[bystander.id]).toBe(bystander);
   });
 
-  it('deleteStoredSession removes the session and recalculates latest exercises', () => {
+  it('updateStoredSession is a no-op for a session that is not open', () => {
+    const state = reduce(updateStoredSession({ sessionId: 'missing', update: (s) => s }));
+
+    expect(state.openSessions).toEqual({});
+  });
+
+  it('setActiveSessionId moves the pointer without touching what is stored', () => {
     const session = createSessionWithCompletionTime(
       LocalDate.of(2026, 4, 10),
       OffsetDateTime.of(2026, 4, 10, 10, 0, 0, 0, ZoneOffset.UTC),
       'Squat',
     );
 
-    const state = reduce(addStoredSession(session), deleteStoredSession(session.id));
+    const state = reduce(putStoredSession(session), setActiveSessionId(session.id));
 
-    expect(state.sessions[session.id]).toBeUndefined();
-    expect(Object.values(state.latestExercises).filter(Boolean)).toHaveLength(0);
+    expect(state.activeSessionId).toBe(session.id);
+    expect(state.openSessions[session.id]).toBe(session);
+  });
+
+  it('deleting the active session clears the pointer at it', () => {
+    const session = createSessionWithCompletionTime(
+      LocalDate.of(2026, 4, 10),
+      OffsetDateTime.of(2026, 4, 10, 10, 0, 0, 0, ZoneOffset.UTC),
+      'Squat',
+    );
+
+    const state = reduce(putStoredSession(session), setActiveSessionId(session.id), deleteStoredSession(session.id));
+
+    expect(state.activeSessionId).toBeUndefined();
+  });
+
+  it('deleteStoredSession removes the session', () => {
+    const session = createSessionWithCompletionTime(
+      LocalDate.of(2026, 4, 10),
+      OffsetDateTime.of(2026, 4, 10, 10, 0, 0, 0, ZoneOffset.UTC),
+      'Squat',
+    );
+
+    const state = reduce(putStoredSession(session), deleteStoredSession(session.id));
+
+    expect(state.openSessions[session.id]).toBeUndefined();
   });
 
   it('manages saved exercises', () => {
@@ -172,6 +211,56 @@ describe('storedSessions reducer', () => {
     state = storedSessionsReducer(state, setExercises({ '3': squat }));
     expect(Object.keys(state.savedExercises)).toEqual(['3']);
   });
+
+  it('upserts restored exercises without replacing existing ones', () => {
+    const existing = exerciseDescriptor({ name: 'Existing' });
+    const restored = exerciseDescriptor({ name: 'Restored' });
+
+    const state = reduce(updateExercise({ id: 'existing', exercise: existing }), upsertExercises({ restored }));
+
+    expect(state.savedExercises).toEqual({ existing, restored });
+  });
+
+  it('merges built-in and saved exercises, with saved overriding by id and sorted by name', () => {
+    const state = reduce(
+      setBuiltInExercises({
+        Squat: exerciseDescriptor({ name: 'Squat' }),
+        Bench: exerciseDescriptor({ name: 'Bench' }),
+      }),
+      updateExercise({ id: 'Squat', exercise: exerciseDescriptor({ name: 'Back Squat' }) }),
+      updateExercise({ id: 'uuid-1', exercise: exerciseDescriptor({ name: 'Deadlift' }) }),
+    );
+
+    const merged = selectExercises({ storedSessions: state });
+    expect(Object.values(merged).map((e) => e.name)).toEqual(['Back Squat', 'Bench', 'Deadlift']);
+    expect(merged['Squat']!.name).toBe('Back Squat');
+  });
+
+  it('deleting a built-in tombstones it, and restore brings it back', () => {
+    let state = reduce(setBuiltInExercises({ Squat: exerciseDescriptor({ name: 'Squat' }) }));
+
+    state = storedSessionsReducer(state, deleteExercise('Squat'));
+    expect(state.hiddenBuiltInIds).toEqual(['Squat']);
+    expect(selectExercises({ storedSessions: state })['Squat']).toBeUndefined();
+
+    state = storedSessionsReducer(state, restoreExercise('Squat'));
+    expect(state.hiddenBuiltInIds).toEqual([]);
+    expect(selectExercises({ storedSessions: state })['Squat']).toBeDefined();
+  });
+
+  it('editing a hidden built-in un-hides it', () => {
+    let state = reduce(
+      setBuiltInExercises({ Squat: exerciseDescriptor({ name: 'Squat' }) }),
+      setHiddenBuiltInIds(['Squat']),
+    );
+
+    state = storedSessionsReducer(
+      state,
+      updateExercise({ id: 'Squat', exercise: exerciseDescriptor({ name: 'Squat v2' }) }),
+    );
+    expect(state.hiddenBuiltInIds).toEqual([]);
+    expect(selectExercises({ storedSessions: state })['Squat']!.name).toBe('Squat v2');
+  });
 });
 
 // ─── Selectors ────────────────────────────────────────────────────────────────
@@ -180,45 +269,11 @@ describe('storedSessions selectors', () => {
   const squat = (date: LocalDate, time: OffsetDateTime, name = 'Squat') =>
     createSessionWithCompletionTime(date, time, name);
 
-  it('selectSessions and selectSession read the session map', () => {
+  it('selectSession finds an open session', () => {
     const session = squat(LocalDate.of(2026, 4, 10), OffsetDateTime.of(2026, 4, 10, 10, 0, 0, 0, ZoneOffset.UTC));
-    const state = { storedSessions: reduce(addStoredSession(session)) };
+    const state = { storedSessions: reduce(openSession(session)) };
 
-    expect(selectSessions(state)).toHaveLength(1);
     expect(selectSession(state, session.id)).toBe(session);
-  });
-
-  it('selectSessionsBy filters to an inclusive date range', () => {
-    const inRange = squat(LocalDate.of(2026, 4, 10), OffsetDateTime.of(2026, 4, 10, 10, 0, 0, 0, ZoneOffset.UTC), 'In');
-    const tooEarly = squat(
-      LocalDate.of(2026, 1, 1),
-      OffsetDateTime.of(2026, 1, 1, 10, 0, 0, 0, ZoneOffset.UTC),
-      'Early',
-    );
-    const state = { storedSessions: reduce(upsertStoredSessions([inRange, tooEarly])) };
-
-    const result = selectSessionsBy(state, LocalDate.of(2026, 4, 1), LocalDate.of(2026, 4, 30));
-
-    expect(result.map((s) => s.blueprint.name)).toEqual(['In']);
-  });
-
-  it('selectPreviousComparableSession finds the prior session of the same name', () => {
-    const older = squat(LocalDate.of(2026, 4, 1), OffsetDateTime.of(2026, 4, 1, 10, 0, 0, 0, ZoneOffset.UTC));
-    const newer = squat(LocalDate.of(2026, 4, 8), OffsetDateTime.of(2026, 4, 8, 10, 0, 0, 0, ZoneOffset.UTC));
-    const state = { storedSessions: reduce(upsertStoredSessions([older, newer])) };
-
-    expect(selectPreviousComparableSession(state, newer)).toBe(older);
-    expect(selectPreviousComparableSession(state, undefined)).toBeUndefined();
-  });
-
-  it('selectRecentlyCompletedExercises returns recorded exercises for a blueprint', () => {
-    const session = squat(LocalDate.of(2026, 4, 10), OffsetDateTime.of(2026, 4, 10, 10, 0, 0, 0, ZoneOffset.UTC));
-    const state = { storedSessions: reduce(addStoredSession(session)) };
-
-    const lookup = selectRecentlyCompletedExercises(state, 5);
-    const blueprint = session.recordedExercises[0]!.blueprint as WeightedExerciseBlueprint;
-
-    expect(lookup(blueprint)).toHaveLength(1);
   });
 
   it('selectMuscles returns sorted distinct muscles and selectExerciseById reads one', () => {
@@ -246,12 +301,19 @@ describe('getSessionReferenceTime', () => {
   it('falls back to the start of the session date when nothing is recorded', () => {
     const blueprint = new SessionBlueprint(
       'Empty',
-      [new WeightedExerciseBlueprint('Squat', 1, 5, new NoProgressiveOverload(), Rest.medium, false, '', '')],
+      [
+        makeWeightedBlueprint({
+          name: 'Squat',
+          sets: 1,
+          repsConfig: { type: 'fixed', reps: 5 },
+          progression: [],
+        }),
+      ],
       '',
     );
     const exercise = new RecordedWeightedExercise(
       blueprint.exercises[0] as WeightedExerciseBlueprint,
-      [new PotentialSet(undefined, new Weight(100, 'kilograms'))],
+      [emptyPotentialSet(100)],
       undefined,
     );
     const session = new Session(uuid(), blueprint, [exercise], LocalDate.of(2026, 4, 10), undefined, undefined);

@@ -7,9 +7,7 @@ const dryRun = argv["dry-run"] as boolean | undefined;
 
 async function collectIosScreenshot(fileName: string, simulatorId: string) {
   if (dryRun) {
-    console.log(
-      `[dry-run] xcrun simctl io ${simulatorId} screenshot ${fileName}`,
-    );
+    console.log(`[dry-run] xcrun simctl io ${simulatorId} screenshot ${fileName}`);
     return;
   }
   await $`xcrun simctl io ${simulatorId} screenshot ${fileName}`;
@@ -40,9 +38,7 @@ async function goToScreenshotUrlIos(coords: string, simulatorId: string) {
 }
 
 async function goToScreenshotUrlAndroid(coords: string) {
-  await $`adb shell am start -a android.intent.action.VIEW -d ${getScreenshotUrl(
-    coords,
-  )}`;
+  await $`adb shell am start -a android.intent.action.VIEW -d ${getScreenshotUrl(coords)}`;
 }
 
 async function startSimulator(device: string) {
@@ -76,10 +72,9 @@ async function getIosSimulatorId(device: string) {
 }
 
 const allScreenshotCoords = [
+  "home",
   "workoutpage",
   "exerciseeditor",
-  "ai-planner",
-  "home",
   "stats",
   "exercise-stats",
   "history",
@@ -87,21 +82,12 @@ const allScreenshotCoords = [
 
 const screenshotCoords = screenshotId ? [screenshotId] : allScreenshotCoords;
 
-const allIosDevices = [
-  "iPad Pro 13-inch (M5)",
-  "iPhone 17 Pro Max",
-  "iPhone 17",
-  "iPhone 16e",
-];
+const allIosDevices: string[] = ["iPad Pro 13-inch (M5)", "iPhone 17 Pro Max"];
 
 const allAndroidDevices = ["Pixel_9"];
 
 const iosDevices =
-  platform === "android"
-    ? []
-    : platform === "ios"
-      ? [allIosDevices[0]!]
-      : allIosDevices;
+  platform === "android" ? [] : platform === "ios" ? [allIosDevices[0]!] : allIosDevices;
 const androidDevices = platform === "ios" ? [] : [allAndroidDevices[0]!];
 
 for (const device of iosDevices) {

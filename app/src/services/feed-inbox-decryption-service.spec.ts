@@ -1,127 +1,120 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { FeedInboxDecryptionService } from './feed-inbox-decryption-service';
+import { DecryptedInboxMessage, FeedInboxDecryptionService } from './feed-inbox-decryption-service';
+import { FeedFollowService } from './feed-follow-service';
 import { EncryptionService, toJsonBytes } from './encryption-service';
 import { type FeedApiService } from './feed-api';
-import { FeedUser, FeedIdentity, FollowedFeedUser } from '@/models/feed-models';
+import { FeedIdentity, SharedFeedUser } from '@/models/feed-models';
 import { GetInboxMessageResponse, GetUserResponse } from '@/models/feed-api-models';
 import { RsaPrivateKey } from '@/models/encryption-models';
-import { ApiResult } from '@/services/api-error';
-import {
-  FollowRequestJSON,
-  InboxMessageJSON,
-  toAesKeyJSON,
-  toBase64Uint8ArrayJSON,
-  toJsonString,
-  toRsaPublicKeyJSON,
-} from '@/models/storage/versions/latest';
+import { ApiErrorType, ApiResult } from '@/services/api-error';
+import { InboxMessageJSON, toBase64Uint8ArrayJSON, toJsonString } from '@/models/storage/versions/latest';
+
+const SERVER_ID = '00000000-0000-0000-0000-000000000000';
 
 interface UserAndPrivateKey {
-  user: FeedUser;
+  user: SharedFeedUser;
   identity: FeedIdentity;
   privateKey: RsaPrivateKey;
 }
 describe('FeedInboxDecryptionService', () => {
-  describe('Malicious message protection', () => {
-    let sut: FeedInboxDecryptionService;
-    let encryptionService: EncryptionService;
-    let feedApiService: FeedApiService;
-    let maliciousUser: UserAndPrivateKey;
-    let victimUser: UserAndPrivateKey;
-    let thirdPartyUser: UserAndPrivateKey;
+  let sut: FeedInboxDecryptionService;
+  let encryptionService: EncryptionService;
+  let feedApiService: FeedApiService;
+  let maliciousUser: UserAndPrivateKey;
+  let victimUser: UserAndPrivateKey;
+  let thirdPartyUser: UserAndPrivateKey;
 
-    beforeEach(async () => {
-      encryptionService = new EncryptionService();
-      feedApiService = {
-        getUserAsync: vi.fn(),
-      } as Partial<FeedApiService> as FeedApiService;
+  beforeEach(async () => {
+    encryptionService = new EncryptionService();
+    feedApiService = {
+      getUserAsync: vi.fn(),
+    } as Partial<FeedApiService> as FeedApiService;
 
-      sut = new FeedInboxDecryptionService(encryptionService, feedApiService);
+    sut = new FeedInboxDecryptionService(encryptionService, feedApiService);
 
-      maliciousUser = await createFeedUser(encryptionService);
-      victimUser = await createFeedUser(encryptionService);
-      thirdPartyUser = await createFeedUser(encryptionService);
+    maliciousUser = await createFeedUser(encryptionService);
+    victimUser = await createFeedUser(encryptionService);
+    thirdPartyUser = await createFeedUser(encryptionService);
 
-      // Mock feed API service responses
-      vi.mocked(feedApiService.getUserAsync).mockImplementation(async (userId: string) => {
-        if (userId === thirdPartyUser.user.id) {
-          return ApiResult.success(toGetUserResponse(thirdPartyUser));
-        }
-        if (userId === maliciousUser.user.id) {
-          return ApiResult.success(toGetUserResponse(maliciousUser));
-        }
-        throw new Error(`Unexpected user ID: ${userId}`);
-      });
+    vi.mocked(feedApiService.getUserAsync).mockImplementation(async (userId: string) => {
+      if (userId === thirdPartyUser.user.id) {
+        return ApiResult.success(toGetUserResponse(thirdPartyUser));
+      }
+      if (userId === maliciousUser.user.id) {
+        return ApiResult.success(toGetUserResponse(maliciousUser));
+      }
+      throw new Error(`Unexpected user ID: ${userId}`);
+    });
+  });
+
+  async function legacyMessage(signer: UserAndPrivateKey, claimedSender: UserAndPrivateKey) {
+    const message: Omit<InboxMessageJSON, 'signature'> = {
+      senderUserId: claimedSender.user.id,
+      type: 'FollowRequest',
+      payloadJson: toJsonString({ name: claimedSender.user.name }),
+    };
+    const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(message, victimUser.user.id);
+    const signature = await encryptionService.signRsaPssSha256Async(signaturePayload, signer.privateKey);
+    const encrypted = await encryptionService.encryptRsaOaepSha256Async(
+      toJsonBytes({ ...message, signature: toBase64Uint8ArrayJSON(signature) }),
+      victimUser.user.publicKey,
+    );
+    return { id: SERVER_ID, encryptedMessage: encrypted.dataChunks } satisfies GetInboxMessageResponse;
+  }
+
+  it('rejects a message signed by someone other than its claimed sender', async () => {
+    const result = await sut.decrypt(victimUser.identity, await legacyMessage(maliciousUser, thirdPartyUser));
+
+    expect(result).toEqual({ kind: 'invalid', serverId: SERVER_ID });
+  });
+
+  it('reads the message id and send time from the signed payload', async () => {
+    const followService = new FeedFollowService(feedApiService, encryptionService);
+    const outgoing = await followService.friendRequestMessage(thirdPartyUser.identity, victimUser.user);
+
+    const result = await sut.decrypt(victimUser.identity, {
+      id: SERVER_ID,
+      encryptedMessage: outgoing.encryptedMessage,
     });
 
-    it('should not allow a malicious user to send a follow request to a victim user to try follow the third party user', async () => {
-      // Create a malicious message - the fromUserId claims to be from thirdPartyUser
-      // but the signature is created by maliciousUser
-      const maliciousMessage: Omit<InboxMessageJSON, 'signature'> = {
-        senderUserId: thirdPartyUser.user.id,
-        payloadJson: toJsonString({
-          name: maliciousUser.user.name || 'Malicious User',
-        }),
-        type: 'FollowRequest',
-      };
+    expect(result.kind).toBe('ok');
+    const ok = result as Extract<DecryptedInboxMessage, { kind: 'ok' }>;
+    expect(ok.messageId).toBe(outgoing.messageId);
+    expect(ok.sentAtMs).toBeGreaterThan(0);
+    expect(ok.json.type).toBe('FriendRequest');
+    expect(ok.json.senderUserId).toBe(thirdPartyUser.user.id);
+  });
 
-      // Sign with malicious user's private key (this is the attack - wrong signer)
-      const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(maliciousMessage, victimUser.user.id);
-      const signature = await encryptionService.signRsaPssSha256Async(signaturePayload, maliciousUser.privateKey);
-      (maliciousMessage as InboxMessageJSON).signature = toBase64Uint8ArrayJSON(signature);
+  it('falls back to the server id for a message from an older app', async () => {
+    const result = await sut.decrypt(victimUser.identity, await legacyMessage(thirdPartyUser, thirdPartyUser));
 
-      // Encrypt for victim user
-      const messageBytes = toJsonBytes(maliciousMessage);
-      const encryptedMaliciousMessage = await encryptionService.encryptRsaOaepSha256Async(
-        messageBytes,
-        victimUser.user.publicKey,
-      );
+    expect(result).toMatchObject({ kind: 'ok', messageId: SERVER_ID, sentAtMs: 0 });
+  });
 
-      const inboxMessageResponse: GetInboxMessageResponse = {
-        id: '00000000-0000-0000-0000-000000000000',
-        encryptedMessage: encryptedMaliciousMessage.dataChunks,
-      };
+  it('asks for a retry when the sender cannot be looked up', async () => {
+    vi.mocked(feedApiService.getUserAsync).mockResolvedValue(
+      ApiResult.fromError({ type: ApiErrorType.Unknown, message: 'offline', exception: undefined }),
+    );
 
-      // Attempt to decrypt - should fail because signature doesn't match claimed sender
-      const decryptedMaliciousMessage = await sut.decryptIfValid(victimUser.identity, inboxMessageResponse);
+    const result = await sut.decrypt(victimUser.identity, await legacyMessage(thirdPartyUser, thirdPartyUser));
 
-      expect(decryptedMaliciousMessage).toBeNull();
-    });
+    expect(result).toEqual({ kind: 'retry', serverId: SERVER_ID });
+  });
 
-    it('should allow a valid message to be decrypted', async () => {
-      // Create a valid message where fromUserId and signature match
-      const validMessage: Omit<InboxMessageJSON, 'signature'> = {
-        senderUserId: thirdPartyUser.user.id,
-        type: 'FollowRequest',
-        payloadJson: toJsonString({
-          name: thirdPartyUser.user.name || 'Third Party User',
-        }),
-      };
+  it('drops a message whose sender no longer exists', async () => {
+    vi.mocked(feedApiService.getUserAsync).mockResolvedValue(
+      ApiResult.fromError({ type: ApiErrorType.NotFound, message: 'gone', exception: undefined }),
+    );
 
-      // Sign with the correct user's private key
-      const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(validMessage, victimUser.user.id);
-      const signature = await encryptionService.signRsaPssSha256Async(signaturePayload, thirdPartyUser.privateKey);
-      (validMessage as InboxMessageJSON).signature = toBase64Uint8ArrayJSON(signature);
+    const result = await sut.decrypt(victimUser.identity, await legacyMessage(thirdPartyUser, thirdPartyUser));
 
-      // Encrypt for victim user
-      const messageBytes = toJsonBytes(validMessage);
-      const encryptedValidMessage = await encryptionService.encryptRsaOaepSha256Async(
-        messageBytes,
-        victimUser.user.publicKey,
-      );
+    expect(result).toEqual({ kind: 'invalid', serverId: SERVER_ID });
+  });
 
-      const inboxMessageResponse: GetInboxMessageResponse = {
-        id: '00000000-0000-0000-0000-000000000000',
-        encryptedMessage: encryptedValidMessage.dataChunks,
-      };
+  it('drops a message encrypted for someone else', async () => {
+    const result = await sut.decrypt(maliciousUser.identity, await legacyMessage(thirdPartyUser, thirdPartyUser));
 
-      // Decrypt - should succeed because signature matches claimed sender
-      const decryptedValidMessage = await sut.decryptIfValid(victimUser.identity, inboxMessageResponse);
-
-      expect(decryptedValidMessage).not.toBeNull();
-      expect((decryptedValidMessage?.payload as FollowRequestJSON)?.name)?.toBe(
-        thirdPartyUser.user.name || 'Third Party User',
-      );
-    });
+    expect(result).toEqual({ kind: 'invalid', serverId: SERVER_ID });
   });
 });
 
@@ -130,32 +123,9 @@ async function createFeedUser(encryptionService: EncryptionService): Promise<Use
   const aesKey = await encryptionService.generateAesKey();
   const userId = crypto.randomUUID();
 
-  const feedUser = FollowedFeedUser.fromJSON({
-    version: 2,
-    id: userId,
-    publicKey: toRsaPublicKeyJSON(rsaKeyPair.publicKey),
-    name: 'Some user',
-    aesKey: toAesKeyJSON(aesKey),
-    currentPlan: undefined,
-    followSecret: '',
-    type: 'FollowedFeedUser',
-  });
-
-  const identity = new FeedIdentity(
-    feedUser.id,
-    feedUser.id,
-    feedUser.aesKey,
-    { publicKey: feedUser.publicKey, privateKey: rsaKeyPair.privateKey },
-    'password',
-    feedUser.name,
-    true, // publishBodyweight
-    true, // publishPlan
-    true, // publishWorkouts
-  );
-
   return {
-    user: feedUser,
-    identity: identity,
+    user: { id: userId, publicKey: rsaKeyPair.publicKey, name: 'Some user' },
+    identity: new FeedIdentity(userId, userId, aesKey, rsaKeyPair, 'password', 'Some user', true, true, true),
     privateKey: rsaKeyPair.privateKey,
   };
 }

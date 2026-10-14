@@ -6,7 +6,7 @@ import { View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { lineGraphProps } from '@/components/presentation/stats/line-graph-props';
-import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { DataPointCallout } from '@/components/presentation/stats/data-point-callout';
 import { Text } from 'react-native-paper';
 import { Weight } from '@/models/weight';
@@ -40,7 +40,7 @@ export function MultiSeriesWeightLineChart(props: { title?: string; series: Opti
         month: 'short',
       });
       return {
-        value: stat.value?.convertTo(weightUnit).value.toNumber()!,
+        value: stat.value?.convertTo(weightUnit).value.toNumber(),
         label,
         focusedDataPointLabelComponent: () => (
           <DataPointCallout label={label} value={stat.value?.shortLocaleFormat(2) ?? ''} />

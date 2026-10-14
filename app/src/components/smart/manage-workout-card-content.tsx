@@ -1,4 +1,4 @@
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/icon-button';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
@@ -18,8 +18,11 @@ import {
 } from '@/store/program';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
-import { Menu } from 'react-native-paper';
+import Menu from '@/components/presentation/foundation/menu';
 import { useDispatch } from 'react-redux';
+import Delete from '@expo/material-symbols/delete.xml';
+import ContentCopy from '@expo/material-symbols/content_copy.xml';
+import CopyAll from '@expo/material-symbols/copy_all.xml';
 
 interface ManageWorkoutCardContentProps {
   sessionBlueprint: SessionBlueprint;
@@ -30,7 +33,7 @@ export default function ManageWorkoutCardContent({ sessionBlueprint, programId }
   const session = Session.getEmptySession(sessionBlueprint, preferredWeightUnit);
   return (
     <SplitCardControl
-      titleContent={<SessionSummaryTitle session={session} isFilled={false} />}
+      titleContent={<SessionSummaryTitle session={session} />}
       mainContent={<SessionSummary isFilled={false} session={session} showWeight={false} />}
       actions={<Actions programId={programId} sessionBlueprint={sessionBlueprint} />}
     />
@@ -41,7 +44,6 @@ function Actions({ programId, sessionBlueprint }: ManageWorkoutCardContentProps)
   const dispatch = useDispatch();
   const plan = useAppSelectorWithArg(selectProgram, programId);
   const { t } = useTranslate();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [copyDialogOpen, setCopyDialogOpen] = useState(false);
   const moveSessionUp = () =>
     dispatch(
@@ -102,35 +104,28 @@ function Actions({ programId, sessionBlueprint }: ManageWorkoutCardContentProps)
       <IconButton onPress={moveSessionUp} icon={'arrowUpward'} />
       <IconButton onPress={moveSessionDown} icon={'arrowDownward'} />
       <Menu
-        visible={menuOpen}
-        onDismiss={() => setMenuOpen(false)}
-        anchor={<IconButton onPress={() => setMenuOpen(true)} icon={'moreHoriz'} />}
-      >
-        <Menu.Item
-          onPress={() => {
-            setMenuOpen(false);
-            removeSession();
-          }}
-          leadingIcon={'delete'}
-          title={t('generic.remove.button')}
-        />
-        <Menu.Item
-          title={t('generic.duplicate.button')}
-          leadingIcon={'contentCopy'}
-          onPress={() => {
-            setMenuOpen(false);
-            duplicateSession();
-          }}
-        />
-        <Menu.Item
-          title={t('exercise.copy_to.button')}
-          leadingIcon={'copyAll'}
-          onPress={() => {
-            setMenuOpen(false);
-            setCopyDialogOpen(true);
-          }}
-        />
-      </Menu>
+        trigger={(open) => <IconButton onPress={open} icon={'moreHoriz'} />}
+        items={[
+          {
+            label: t('generic.remove.button'),
+            icon: Delete,
+            systemImage: 'trash',
+            onPress: removeSession,
+          },
+          {
+            label: t('generic.duplicate.button'),
+            icon: ContentCopy,
+            systemImage: 'doc.on.doc',
+            onPress: duplicateSession,
+          },
+          {
+            label: t('exercise.copy_to.button'),
+            icon: CopyAll,
+            systemImage: 'doc.on.clipboard',
+            onPress: () => setCopyDialogOpen(true),
+          },
+        ]}
+      />
       <CopyWorkoutDialog
         visible={copyDialogOpen}
         onDismiss={() => setCopyDialogOpen(false)}

@@ -1,5 +1,6 @@
 using FluentValidation;
 using LiftLog.Api.Db;
+using LiftLog.Api.Features;
 using LiftLog.Api.Models;
 using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
@@ -11,6 +12,7 @@ using Visus.Cuid;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
+[FeatureCheck(Feature.Sharing)]
 public class SharedItemController(UserDataContext db, PasswordService passwordService)
     : ControllerBase
 {

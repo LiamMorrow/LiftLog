@@ -1,5 +1,6 @@
 using FluentValidation;
 using LiftLog.Api.Db;
+using LiftLog.Api.Features;
 using LiftLog.Api.Models;
 using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
+[FeatureCheck(Feature.Feed)]
 public class InboxController(UserDataContext db) : ControllerBase
 {
     [HttpPut]
@@ -70,8 +72,11 @@ public class InboxController(UserDataContext db) : ControllerBase
         var inboxItems = await db
             .UserInboxItems.Where(x => x.UserId == request.UserId)
             .ToArrayAsync();
-        db.UserInboxItems.RemoveRange(inboxItems);
-        await db.SaveChangesAsync();
+        if (!request.ManualAck)
+        {
+            db.UserInboxItems.RemoveRange(inboxItems);
+            await db.SaveChangesAsync();
+        }
         return Ok(
             new GetInboxMessagesResponse(
                 inboxItems
@@ -82,5 +87,36 @@ public class InboxController(UserDataContext db) : ControllerBase
                     .ToArray()
             )
         );
+    }
+
+    [HttpPost]
+    [Route("[controller]/ack")]
+    public async Task<IActionResult> AckInboxItems(
+        AckInboxMessagesRequest request,
+        [FromServices] PasswordService passwordService,
+        [FromServices] IValidator<AckInboxMessagesRequest> validator
+    )
+    {
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.Errors);
+        }
+
+        var user = await db.Users.FindAsync(request.UserId);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        if (!passwordService.VerifyPassword(request.Password, user.HashedPassword, user.Salt))
+        {
+            return Unauthorized();
+        }
+
+        await db
+            .UserInboxItems.Where(x => x.UserId == request.UserId && request.Ids.Contains(x.Id))
+            .ExecuteDeleteAsync();
+        return Ok();
     }
 }

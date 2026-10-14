@@ -1,13 +1,17 @@
 package expo.modules.workoutworker
 
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import com.limajuice.liftlog.WorkoutMessage
 import expo.modules.workoutworker.handlers.WorkoutEndedHandler
 import expo.modules.workoutworker.handlers.WorkoutMessageHandler
@@ -51,11 +55,24 @@ class WorkoutWorkerService : Service() {
         )
     }
 
+    private val dismissReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            notificationManager.onLiveUpdateDismissed()
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         Log.d("WorkoutWorker", "Service created")
 
         notificationManager = WorkoutNotificationManager(this)
+
+        ContextCompat.registerReceiver(
+            this,
+            dismissReceiver,
+            IntentFilter(WorkoutConstants.ACTION_LIVE_UPDATE_DISMISSED),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
         scope.launch {
             events.collect { event ->
@@ -105,6 +122,7 @@ class WorkoutWorkerService : Service() {
     override fun onDestroy() {
         Log.d("WorkoutWorker", "Service destroyed")
         scope.cancel()
+        unregisterReceiver(dismissReceiver)
         handlers.forEach { it.onDestroy() }
         super.onDestroy()
     }

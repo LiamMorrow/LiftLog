@@ -2,25 +2,24 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { ExerciseEditor } from '@/components/presentation/workout-editor/exercise-editor';
 import { ExerciseBlueprint } from '@/models/blueprint-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { selectCurrentSession, SessionTarget, setCurrentSession } from '@/store/current-session';
+import { selectSession, updateStoredSession } from '@/store/stored-sessions';
 import { useTranslate } from '@tolgee/react';
 import { Href, Stack, useRouter } from 'expo-router';
 import { useEffect, useRef } from 'react';
-import { useDispatch, useStore } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useOnDismiss } from '@/hooks/useOnDismiss';
 
-export function getSessionExerciseEditorHref(target: SessionTarget, index: number, opts?: { isNew?: boolean }): Href {
-  const base = target === 'historySession' ? '/history/exercise-editor' : '/session/exercise-editor';
-  return `${base}?index=${index}${opts?.isNew ? '&isNew=1' : ''}` as Href;
+export function getSessionExerciseEditorHref(sessionId: string, index: number, opts?: { isNew?: boolean }): Href {
+  return `/exercise-editor?sessionId=${encodeURIComponent(sessionId)}&index=${index}${opts?.isNew ? '&isNew=1' : ''}`;
 }
 
-export function SessionExerciseEditor(props: { target: SessionTarget; index: number; isNew?: boolean }) {
+export function SessionExerciseEditor(props: { sessionId: string; index: number; isNew?: boolean }) {
   const { t } = useTranslate();
   const exerciseIndex = props.index;
   const isNew = props.isNew;
   const useImperialUnits = useAppSelector((x) => x.settings.useImperialUnits);
-  const session = useAppSelectorWithArg(selectCurrentSession, props.target);
+  const session = useAppSelectorWithArg(selectSession, props.sessionId);
   const dispatch = useDispatch();
-  const { getState } = useStore();
   const { dismiss } = useRouter();
 
   const exercise = session?.recordedExercises[exerciseIndex]?.blueprint;
@@ -33,23 +32,20 @@ export function SessionExerciseEditor(props: { target: SessionTarget; index: num
     draftRef.current = updated;
   };
 
-  const commitRef = useRef(() => {});
-  commitRef.current = () => {
+  useOnDismiss(() => {
     const updated = draftRef.current;
     if (!updated) {
       return;
     }
-    const latestSession = selectCurrentSession(getState(), props.target);
-    if (latestSession?.recordedExercises[exerciseIndex]) {
-      dispatch(
-        setCurrentSession({
-          session: latestSession.withEditedExercise(exerciseIndex, updated, useImperialUnits),
-          target: props.target,
-        }),
-      );
-    }
-  };
-  useEffect(() => () => commitRef.current(), []);
+    dispatch(
+      updateStoredSession({
+        sessionId: props.sessionId,
+        // The exercise can have been removed while the editor was open, in which case the edit is moot.
+        update: (s) =>
+          s.recordedExercises[exerciseIndex] ? s.withEditedExercise(exerciseIndex, updated, useImperialUnits) : s,
+      }),
+    );
+  });
 
   const hasExercise = !!exercise;
   useEffect(() => {
@@ -59,9 +55,9 @@ export function SessionExerciseEditor(props: { target: SessionTarget; index: num
   }, [hasExercise, dismiss]);
 
   return (
-    <FullHeightScrollView avoidKeyboard>
+    <FullHeightScrollView avoidKeyboard modal>
       <Stack.Screen options={{ title }} />
-      {exercise ? <ExerciseEditor exercise={exercise} updateExercise={saveExercise} /> : null}
+      {exercise && <ExerciseEditor exercise={exercise} updateExercise={saveExercise} />}
     </FullHeightScrollView>
   );
 }

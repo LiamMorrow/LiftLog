@@ -1,13 +1,16 @@
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { NativeScrollEvent, NativeSyntheticEvent, Platform, View } from 'react-native';
-import { AnimatedFAB, Icon, List, TextInput } from 'react-native-paper';
-import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Platform, View } from 'react-native';
+import { Icon, List, TextInput } from 'react-native-paper';
+import { PageActions } from '@/components/presentation/foundation/page-actions';
+import AddIcon from '@expo/material-symbols/add.xml';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { AccordionItem } from '@/components/presentation/foundation/accordion-item';
 import { useScroll } from '@/hooks/useScrollListener';
 import {
   deleteExercise as deleteExerciseAction,
+  restoreExercise,
   selectExerciseById,
   selectExercises,
   setFilteredExerciseIds as setFilteredExerciseIdsAction,
@@ -23,8 +26,8 @@ import ExerciseMuscleSelector from '@/components/presentation/workout-editor/exe
 import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
 import { LegendList } from '@legendapp/list';
 import { ExerciseDescriptor } from '@/models/exercise-models';
-import { HeaderHeightContext } from 'expo-router/react-navigation';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { translateExerciseMeta } from '@/utils/exercise-meta';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function ExerciseListItem({
   exerciseId,
@@ -36,6 +39,7 @@ function ExerciseListItem({
   onDelete: () => void;
 }) {
   const { colors } = useAppTheme();
+  const { t } = useTranslate();
   const exercise = useAppSelectorWithArg(selectExerciseById, exerciseId);
   const [expanded, setExpanded] = useState(expand);
   const [listExpanded, setListExpanded] = useState(expand);
@@ -77,7 +81,7 @@ function ExerciseListItem({
         title={exercise.name}
         // Important to have a space to ensure they are all the same size
         // Otherwise delete button can show through when there is no desc
-        description={exercise.muscles.join(', ') || ' '}
+        description={exercise.muscles.map((m) => translateExerciseMeta(t, 'muscle', m)).join(', ') || ' '}
         descriptionNumberOfLines={1}
         expanded={listExpanded}
         onPress={() => {
@@ -124,9 +128,8 @@ export default function ExerciseManager() {
     setFilteredExerciseIds(Object.keys(exercises));
   });
   const insets = useSafeAreaInsets();
-  const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
-  const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
-  const bottomInsetHeight = Platform.select({ ios: insets.bottom }) ?? 0;
+  const [floatingBottomSize, setFloatingBottomSize] = useState(0);
+  const bottomInsetHeight = floatingBottomSize + (Platform.select({ ios: insets.bottom }) ?? 0);
 
   const addExercise = () => {
     const newId = uuid();
@@ -149,38 +152,36 @@ export default function ExerciseManager() {
   };
 
   const deleteExercise = (id: string) => {
-    const exercise = getState().storedSessions.savedExercises[id];
+    const state = getState().storedSessions;
+    const isBuiltIn = !!state.builtInExercises[id];
+    const savedExercise = state.savedExercises[id];
+    const exercise = exercises[id];
     if (!exercise) {
       return;
     }
 
     setFilteredExerciseIds(filteredExerciseIds.filter((x) => x !== id));
     dispatch(deleteExerciseAction(id));
+    // Built-ins are tombstoned, so undo restores the tombstone; user exercises are re-inserted.
+    const undoAction =
+      isBuiltIn || !savedExercise ? restoreExercise(id) : updateExercise({ id, exercise: savedExercise });
     dispatch(
       showSnackbar({
         text: t('deletion.item_deleted.message', { name: exercise.name }),
         action: t('generic.undo.button'),
-        dispatchAction: [updateExercise({ id, exercise }), setFilteredExerciseIdsAction(filteredExerciseIds)],
+        dispatchAction: [undoAction, setFilteredExerciseIdsAction(filteredExerciseIds)],
       }),
     );
   };
 
   const flatListItems = useMemo(() => ['filter', ...filteredExerciseIds], [filteredExerciseIds]);
   const { handleScroll } = useScroll();
-  const [fabExtended, setFabExtended] = useState(true);
-  const [lastScrollPosition, setLastScrollPosition] = useState(0);
-  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    handleScroll(e);
-    setFabExtended(e.nativeEvent.contentOffset.y <= Math.max(lastScrollPosition, 0));
-    setLastScrollPosition(e.nativeEvent.contentOffset.y);
-  };
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }} edges={{ left: 'additive', right: 'additive', top: 'off', bottom: 'off' }}>
       <LegendList
-        onScroll={onScroll}
+        onScroll={handleScroll}
         contentContainerStyle={{
-          insetBlockStart: topInsetHeight,
-          insetBlockEnd: bottomInsetHeight,
+          paddingBottom: bottomInsetHeight,
         }}
         style={{ flex: 1 }}
         data={flatListItems}
@@ -205,19 +206,24 @@ export default function ExerciseManager() {
           );
         }}
       />
-      <AnimatedFAB
+      <View
+        onLayout={(event) => setFloatingBottomSize(event.nativeEvent.layout.height)}
         style={{
-          bottom: spacing.pageHorizontalMargin + bottomInsetHeight,
-          right: spacing.pageHorizontalMargin,
+          position: 'absolute',
+          bottom: Platform.select({ ios: insets.bottom }) ?? 0,
+          width: '100%',
         }}
-        extended={fabExtended}
-        variant="secondary"
-        label={t('exercise.add.button')}
-        onPress={addExercise}
-        icon={'add'}
-        testID="exercise-add-fab"
-      />
-    </View>
+      >
+        <PageActions
+          primary={{
+            label: t('exercise.add.button'),
+            icon: AddIcon,
+            systemImage: 'plus',
+            onPress: addExercise,
+          }}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 

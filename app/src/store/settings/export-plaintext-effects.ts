@@ -7,10 +7,16 @@ import BigNumber from 'bignumber.js';
 import { jsonToCSV } from 'react-native-csv';
 import { shortFormatWeightUnit } from '@/models/weight';
 import { DateTimeFormatter, LocalDateTime } from '@js-joda/core';
+import { readSessions } from '@/db/sessions';
+import { TemporalComparer } from '@/models/comparers';
+import { getSessionReferenceTime } from '@/store/stored-sessions';
 
 export function addExportPlaintextEffects(addEffect: AddEffectFn) {
-  addEffect(exportPlainText, async ({ payload: { format } }, { extra: { progressRepository, fileExportService } }) => {
-    const sessions = progressRepository.getOrderedSessions();
+  addEffect(exportPlainText, async ({ payload: { format } }, { extra: { db, fileExportService } }) => {
+    const sessions = Enumerable.from(readSessions(db).sessions).orderByDescending(
+      (x) => getSessionReferenceTime(x),
+      TemporalComparer,
+    );
     const now = LocalDateTime.now()
       .withNano(0)
       .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
@@ -54,7 +60,7 @@ class ExportedSetCsvRow {
     public SessionId: string,
     public Timestamp: string,
     public Exercise: string,
-    public Weight: BigNumber,
+    public Weight: BigNumber | '',
     public WeightUnit: string,
     public Reps: number,
     public TargetReps: number,
@@ -66,17 +72,19 @@ class ExportedSetCsvRow {
       return [];
     }
     return exercise.potentialSets
-      .filter((x) => x.set)
+      .map((set, index) => ({ set, index }))
+      .filter((x) => x.set.set)
       .map(
-        (set) =>
+        ({ set, index }) =>
           new ExportedSetCsvRow(
             session.id,
             set.set!.completionDateTime.toString(),
             exercise.blueprint.name,
-            set.weight.value,
-            shortFormatWeightUnit(set.weight.unit),
+            // An exercise with no load has no weight to report.
+            exercise.tracksResistance ? set.weight.value : '',
+            exercise.tracksResistance ? shortFormatWeightUnit(set.weight.unit) : '',
             set.set!.repsCompleted,
-            exercise.blueprint.repsPerSet,
+            exercise.repsTargetForSet(index).max,
             exercise.notes ?? '',
           ),
       );

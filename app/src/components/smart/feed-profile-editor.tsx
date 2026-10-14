@@ -13,11 +13,11 @@ import { Href, Stack } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { List, TextInput } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 
 export function getFeedProfileEditorHref(opts?: { focusPublish?: boolean }): Href {
-  return `/feed/profile-editor${opts?.focusPublish ? '?focusPublish=1' : ''}` as Href;
+  return `/feed/profile-editor${opts?.focusPublish ? '?focusPublish=1' : ''}`;
 }
 
 export function FeedProfileEditor({ focusPublish }: { focusPublish: boolean }) {
@@ -79,7 +79,7 @@ function FeedProfileForm({ identity, focusPublish }: { identity: FeedIdentity; f
         />
         <ListSwitch
           headline={t('feed.publish_plan.label')}
-          supportingText={t('feed.publish_plan.subtitle')}
+          supportingText={t('feed.publish_plan.friends.subtitle')}
           value={identity.publishPlan}
           onValueChange={(publishPlan) => updateProfile({ publishPlan })}
         />

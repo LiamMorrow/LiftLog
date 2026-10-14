@@ -14,9 +14,6 @@ public class PurchaseVerificationService(
             return await (
                 appStore switch
                 {
-                    AppStore.Web => services
-                        .GetRequiredService<WebAuthPurchaseVerificationService>()
-                        .IsValidPurchaseToken(proToken),
                     AppStore.RevenueCat => services
                         .GetRequiredService<IRevenueCatPurchaseVerificationService>()
                         .GetUserIdHasProEntitlementAsync(proToken),

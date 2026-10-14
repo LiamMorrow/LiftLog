@@ -1,0 +1,64 @@
+appId: com.limajuice.liftlog
+---
+# Start a freeform workout
+- launchApp
+# A cold dev-client launch can take up to a minute to fetch the bundle from Metro
+- extendedWaitUntil:
+    visible: 'Workout'
+    timeout: 60000
+- tapOn: 'Workout'
+# Text matching is case-insensitive by default, which would also match the "Freeform Workout"
+# cards in the list, so `(?-i)` pins this to the button's own casing.
+- tapOn: '(?-i)Freeform workout'
+# A session left in progress by an earlier run has to be replaced before a fresh one starts
+- runFlow:
+    when:
+      visible: 'Replace current workout?'
+    commands:
+      - tapOn: 'Replace'
+
+# Add an exercise (defaults to "New Exercise", 3 sets x 10 reps) and leave it as-is
+- tapOn: 'Add exercise'
+- back
+
+# Log the first set, which starts the rest timer
+- tapOn:
+    id: 'repcount'
+- assertVisible:
+    id: 'rest-timer'
+
+# Set the weight to 7.5kg (3 x 2.5kg increments) and save
+- tapOn:
+    id: 'repcount-weight'
+- tapOn:
+    id: 'increment-weight'
+- tapOn:
+    id: 'increment-weight'
+- tapOn:
+    id: 'increment-weight'
+- tapOn:
+    id: 'save'
+
+# Finish the (incomplete) session and confirm
+- tapOn:
+    id: 'finish-session-button'
+- tapOn:
+    id: 'action-ok'
+
+# A freeform session names itself and adds an exercise, so finishing it offers to fold both back into
+# the plan. This flow is not about that, so decline and leave the plan alone.
+- runFlow:
+    when:
+      visible: 'Would you like to save this workout to your plan?'
+    commands:
+      - back
+
+# It shows up in History with the logged weight, below the streak card and the calendar
+- tapOn: 'History'
+- assertVisible:
+    id: 'session-summary-title'
+# Summaries read "10 @ 7.5kg", and `text` is a full-string match, so anchor on the tail
+- scrollUntilVisible:
+    element:
+      text: '.*7\.5kg'
+    direction: DOWN

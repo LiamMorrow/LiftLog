@@ -3,7 +3,10 @@ import { Duration, LocalDate, OffsetDateTime } from '@js-joda/core';
 import { Weight } from '@/models/weight';
 import { LocalDateRange } from '@/models/time-models';
 import { RemoteData } from '@/models/remote';
-import { NormalizedName } from '@/models/blueprint-models';
+import { normalizeExerciseName } from '@/models/blueprint-models';
+import { StatAxis } from '@/store/stats/quantity';
+
+export type { StatAxis };
 
 interface StatsState {
   isDirty: boolean;
@@ -18,7 +21,7 @@ export interface TimeTrackedStatistic<T> {
 }
 
 // We use this to ensure that when showing multiple series with disparate data, we can ensure that the x axis points are properly aligned
-interface OptionalTimeTrackedStatistic<T> {
+export interface OptionalTimeTrackedStatistic<T> {
   dateTime: OffsetDateTime;
   value: T | undefined;
 }
@@ -32,10 +35,20 @@ export interface RepsBreakdownStatistics {
   >;
 }
 
+/** The best single set of each session, on each axis. */
+export interface ExerciseSeries {
+  load: StatisticOverTime<Weight>;
+  reps: StatisticOverTime<number>;
+}
+
 export interface WeightedExerciseStatistics {
   exerciseName: string;
   setsPerWeek: number;
+  /** Which axis this exercise is tracked on, and therefore how its chart is labelled. */
+  primary: StatAxis;
+  series: ExerciseSeries;
   maxLiftedPerSessionStatistics: WeightedStatisticOverTime;
+  /** Needs both axes, so an exercise that tracks no load has nothing to offer here. */
   max1RMPerSessionStatistics: WeightedStatisticOverTime;
   totalVolumeStatistics: WeightedStatisticOverTime;
   repsStatistics: RepsBreakdownStatistics;
@@ -50,13 +63,15 @@ export interface PinnedExerciseStatistic {
   exerciseName: string;
 }
 
-export interface WeightedStatisticOverTime {
-  statistics: TimeTrackedStatistic<Weight>[];
-  currentValue: Weight;
-  totalValue: Weight;
-  maxValue: Weight;
-  minValue: Weight;
+export interface StatisticOverTime<T> {
+  statistics: TimeTrackedStatistic<T>[];
+  currentValue: T;
+  totalValue: T;
+  maxValue: T;
+  minValue: T;
 }
+
+export type WeightedStatisticOverTime = StatisticOverTime<Weight>;
 
 export interface OptionalStatisticOverTime<T> {
   title: string;
@@ -120,8 +135,8 @@ export const selectExerciseView = createSelector(
   (_, exercise: string) => exercise,
   (state: RemoteData<GranularStatisticView>, exerciseName: string) =>
     state.map((x) =>
-      x.weightedExerciseStats.find((ex) =>
-        new NormalizedName(ex.exerciseName).equals(new NormalizedName(exerciseName)),
+      x.weightedExerciseStats.find(
+        (ex) => normalizeExerciseName(ex.exerciseName) === normalizeExerciseName(exerciseName),
       ),
     ),
 );

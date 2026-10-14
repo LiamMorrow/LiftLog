@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`export-plaintext-effects > addExportPlaintextEffects — CSV > CSV output includes header row and one row per completed set 1`] = `
+exports[`export-plaintext-effects > addExportPlaintextEffects - CSV > CSV output includes header row and one row per completed set 1`] = `
 [
   "SessionId,Timestamp,Exercise,Weight,WeightUnit,Reps,TargetReps,Notes
 ",
@@ -18,7 +18,7 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — CSV > CSV outp
 ]
 `;
 
-exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON output contains one entry per session 1`] = `
+exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON output contains one entry per session 1`] = `
 [
   {
     "blueprint": {
@@ -33,17 +33,42 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
           "link": "",
           "name": "Bench Press",
           "notes": "",
-          "progressiveOverload": {
-            "amount": "2.5",
-            "type": "IncreaseAllEvenlyProgressiveOverload",
-          },
-          "repsPerSet": 10,
+          "plannedSets": [
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+          ],
+          "progression": [
+            {
+              "axis": "load",
+              "scope": {
+                "type": "allSets",
+              },
+              "step": "2.5",
+              "trigger": "allSetsMetTarget",
+            },
+          ],
+          "resistance": "external",
           "restBetweenSets": {
             "failureRest": "PT5M",
             "maxRest": "PT3M",
             "minRest": "PT1M30S",
           },
-          "sets": 3,
           "supersetWithNext": false,
           "type": "WeightedExerciseBlueprint",
         },
@@ -52,6 +77,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
             "set": {
               "completionDateTime": "2024-01-15T10:00:00Z",
               "repsCompleted": 10,
+            },
+            "target": {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
             },
             "weight": {
               "unit": "kilograms",
@@ -63,6 +94,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
               "completionDateTime": "2024-01-15T10:01:00Z",
               "repsCompleted": 10,
             },
+            "target": {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
             "weight": {
               "unit": "kilograms",
               "value": "100",
@@ -72,6 +109,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
             "set": {
               "completionDateTime": "2024-01-15T10:02:00Z",
               "repsCompleted": 10,
+            },
+            "target": {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
             },
             "weight": {
               "unit": "kilograms",
@@ -96,17 +139,42 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
           "link": "",
           "name": "Squat",
           "notes": "",
-          "progressiveOverload": {
-            "amount": "2.5",
-            "type": "IncreaseAllEvenlyProgressiveOverload",
-          },
-          "repsPerSet": 10,
+          "plannedSets": [
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+            {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
+          ],
+          "progression": [
+            {
+              "axis": "load",
+              "scope": {
+                "type": "allSets",
+              },
+              "step": "2.5",
+              "trigger": "allSetsMetTarget",
+            },
+          ],
+          "resistance": "external",
           "restBetweenSets": {
             "failureRest": "PT5M",
             "maxRest": "PT3M",
             "minRest": "PT1M30S",
           },
-          "sets": 3,
           "supersetWithNext": false,
           "type": "WeightedExerciseBlueprint",
         },
@@ -115,6 +183,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
             "set": {
               "completionDateTime": "2024-01-15T10:00:00Z",
               "repsCompleted": 10,
+            },
+            "target": {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
             },
             "weight": {
               "unit": "kilograms",
@@ -126,6 +200,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
               "completionDateTime": "2024-01-15T10:01:00Z",
               "repsCompleted": 10,
             },
+            "target": {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
+            },
             "weight": {
               "unit": "kilograms",
               "value": "100",
@@ -135,6 +215,12 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
             "set": {
               "completionDateTime": "2024-01-15T10:02:00Z",
               "repsCompleted": 10,
+            },
+            "target": {
+              "reps": {
+                "max": 10,
+                "min": 10,
+              },
             },
             "weight": {
               "unit": "kilograms",

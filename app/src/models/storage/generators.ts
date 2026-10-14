@@ -1,5 +1,4 @@
 import {
-  ProgramBlueprintPOJO,
   Rest,
   WeightedExerciseBlueprint,
   SessionBlueprint,
@@ -70,7 +69,7 @@ const WeightedExerciseBlueprintGenerator = fc
     type: fc.constant('WeightedExerciseBlueprint'),
     name: fc.string(),
     sets: fc.integer({ min: 1, max: 10 }),
-    repsPerSet: fc.integer({ min: 1, max: 20 }),
+    repsConfig: fc.record({ type: fc.constant('fixed' as const), reps: fc.integer({ min: 1, max: 20 }) }),
     weightIncreaseOnSuccess: BigNumberGenerator,
     restBetweenSets: RestGenerator,
     supersetWithNext: fc.boolean(),
@@ -93,6 +92,7 @@ const CardioExerciseSetBlueprintGenerator = fc
     trackIncline: fc.boolean(),
     trackWeight: fc.boolean(),
     trackSteps: fc.boolean(),
+    restBetweenSets: fc.option(RestGenerator, { nil: undefined }),
   })
   .map(
     (x) =>
@@ -104,6 +104,7 @@ const CardioExerciseSetBlueprintGenerator = fc
         x.trackIncline,
         x.trackWeight,
         x.trackSteps,
+        x.restBetweenSets,
       ),
   );
 
@@ -127,20 +128,19 @@ export const SessionBlueprintGenerator = fc
   .map((x) => new SessionBlueprint(x.name, x.exercises, x.notes));
 
 export const ProgramBlueprintGenerator = fc
-  .record<ProgramBlueprintPOJO>({
-    type: fc.constant('ProgramBlueprint'),
+  .record({
     name: fc.string(),
     sessions: fc.array(SessionBlueprintGenerator, { maxLength: 5 }),
     lastEdited: LocalDateGenerator,
   })
-  .map(ProgramBlueprint.fromPOJO);
+  .map((x) => new ProgramBlueprint(x.name, x.sessions, x.lastEdited));
 
 const RecordedSetGenerator = fc
   .record({
     repsCompleted: fc.integer({ min: 0, max: 100 }),
     completionDateTime: OffsetDateTimeGenerator,
   })
-  .map((x) => new RecordedSet(x.repsCompleted, x.completionDateTime));
+  .map(RecordedSet.of);
 
 const PotentialSetGenerator = fc
   .record({
@@ -149,7 +149,7 @@ const PotentialSetGenerator = fc
     }),
     weight: WeightGenerator,
   })
-  .map((x) => new PotentialSet(x.set, x.weight));
+  .map(PotentialSet.of);
 
 const DistanceUnitGenerator = fc.oneof(...DistanceUnits.map(fc.constant));
 
@@ -209,7 +209,7 @@ export const SessionGenerator = fc
       blueprint: SessionBlueprintGenerator,
       date: LocalDateGenerator,
       bodyweight: fc.option(WeightGenerator, { nil: undefined }),
-      restTimerStartTime: fc.constant(undefined),
+      restTimer: fc.constant(undefined),
     }),
     fc.array(fc.oneof(RecordedWeightedExerciseGenerator, RecordedCardioExerciseGenerator), { maxLength: 10 }),
   )
@@ -223,6 +223,6 @@ export const SessionGenerator = fc
         exercises,
         session.date,
         session.bodyweight,
-        session.restTimerStartTime,
+        session.restTimer,
       ),
   );

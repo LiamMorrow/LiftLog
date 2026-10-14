@@ -9,10 +9,17 @@ import type {
 import type { ProgramBlueprintJSON } from '@/models/storage/versions/latest/blueprint';
 import type { SessionJSON } from '@/models/storage/versions/latest/session';
 
+export interface PreviousAesKeyJSON {
+  key: AesKeyJSON;
+  supersededAt: InstantJSON;
+}
+
 export interface FeedIdentityJSON {
+  version: 2;
   id: string;
   lookup: string;
   aesKey: AesKeyJSON;
+  previousAesKeys: PreviousAesKeyJSON[];
   rsaKeyPair: RsaKeyPairJSON;
   password: string;
   name: string | undefined;
@@ -21,33 +28,19 @@ export interface FeedIdentityJSON {
   publishWorkouts: boolean;
 }
 
-export interface PendingFeedUserJSON {
-  type: 'PendingFeedUser';
-  id: string;
-  publicKey: RsaPublicKeyJSON;
-  name: string | undefined;
-}
+export type FriendStatusJSON = 'incoming' | 'pending' | 'friend' | 'legacyFollowing' | 'legacyFollower';
 
-export interface FollowerFeedUserJSON {
-  type: 'FollowerFeedUser';
-  id: string;
-  publicKey: RsaPublicKeyJSON;
-  name: string | undefined;
-  followSecret: string;
-}
-
-export interface FollowedFeedUserJSON {
-  version: 2;
-  type: 'FollowedFeedUser';
+export interface FriendJSON {
   id: string;
   publicKey: RsaPublicKeyJSON;
   name: string | undefined;
   currentPlan: ProgramBlueprintJSON | undefined;
-  aesKey: AesKeyJSON;
-  followSecret: string;
+  status: FriendStatusJSON;
+  theirKeys: AesKeyJSON[];
+  theirKeysSentAt: InstantJSON | undefined;
+  theirSecret: string | undefined;
+  mySecret: string | undefined;
 }
-
-export type FeedUserJSON = PendingFeedUserJSON | FollowedFeedUserJSON | FollowerFeedUserJSON;
 
 interface UserEventBaseJSON {
   userId: string;
@@ -57,7 +50,7 @@ interface UserEventBaseJSON {
 }
 
 export interface SessionUserEventJSON extends UserEventBaseJSON {
-  version: 2;
+  version: 3;
   type: 'SessionUserEvent';
   session: SessionJSON;
 }
@@ -102,26 +95,84 @@ export interface UnfollowNotificationJSON {
   followSecret: string;
 }
 
+export interface ReactionJSON {
+  reactionId: string;
+  // The id of the SessionUserEvent being cheered
+  eventId: string;
+  // Permissive here, narrowed to the allowlist in the domain model. Persisted data must survive values the
+  // current app version doesn't recognise.
+  emoji: string;
+  count: number;
+  reactedAt: InstantJSON;
+}
+
+export interface InboxDeliveryJSON {
+  messageId: string;
+  sentAt: InstantJSON;
+}
+
+export interface FriendRequestJSON {
+  name: string | undefined;
+}
+
+export interface FriendKeysJSON {
+  aesKeys: AesKeyJSON[];
+  followSecret: string;
+}
+
+export type FriendRejectJSON = Record<string, never>;
+
+export type UnfriendJSON = Record<string, never>;
+
 export type FollowRequestInboxMessageJSON = InboxMessageBaseJSON<'FollowRequest', FollowRequestJSON>;
 export type FollowResponseInboxMessageJSON = InboxMessageBaseJSON<'FollowResponse', FollowResponseJSON>;
 export type UnfollowNotificationInboxMessageJSON = InboxMessageBaseJSON<
   'UnfollowNotification',
   UnfollowNotificationJSON
 >;
+export type ReactionInboxMessageJSON = InboxMessageBaseJSON<'Reaction', ReactionJSON>;
+export type FriendRequestInboxMessageJSON = InboxMessageBaseJSON<'FriendRequest', FriendRequestJSON>;
+export type FriendKeysInboxMessageJSON = InboxMessageBaseJSON<'FriendKeys', FriendKeysJSON>;
+export type FriendRejectInboxMessageJSON = InboxMessageBaseJSON<'FriendReject', FriendRejectJSON>;
+export type UnfriendInboxMessageJSON = InboxMessageBaseJSON<'Unfriend', UnfriendJSON>;
 
 export type InboxMessageJSON =
   | FollowRequestInboxMessageJSON
   | FollowResponseInboxMessageJSON
-  | UnfollowNotificationInboxMessageJSON;
+  | UnfollowNotificationInboxMessageJSON
+  | ReactionInboxMessageJSON
+  | FriendRequestInboxMessageJSON
+  | FriendKeysInboxMessageJSON
+  | FriendRejectInboxMessageJSON
+  | UnfriendInboxMessageJSON;
+
+/** A cheer someone sent you. Only ever visible to the author of the cheered workout. */
+export interface ReceivedReactionJSON {
+  id: string;
+  eventId: string;
+  fromUserId: string;
+  emoji: string;
+  count: number;
+  reactedAt: InstantJSON;
+}
+
+/** A cheer you sent. The server deletes inbox messages on read, so this is the only record of it. */
+export interface SentReactionJSON {
+  id: string;
+  eventId: string;
+  emoji: string;
+  count: number;
+  reactedAt: InstantJSON;
+}
 
 export interface SharedProgramBlueprintJSON {
-  version: 2;
+  version: 3;
   type: 'SharedProgramBlueprint';
   programBlueprint: ProgramBlueprintJSON;
 }
 
 export interface SharedSessionJSON {
-  version: 2;
+  version: 3;
   type: 'SharedSession';
   session: SessionJSON;
 }

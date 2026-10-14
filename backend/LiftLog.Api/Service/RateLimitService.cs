@@ -38,8 +38,7 @@ public class RateLimitService(RateLimitContext rateLimitContext)
 
         var limit = appStore switch
         {
-            AppStore.Web => 100,
-            _ => 20,
+            AppStore.RevenueCat => 20,
         };
 
         if (requestsInLastDay.Count < limit)

@@ -1,0 +1,32 @@
+# Overrides the SQLite default with Postgres. Layer it over docker-compose.yml:
+#   docker compose -f docker-compose.yml -f docker-compose.postgres.yml up
+# Port 5400 is published so a host-side `dotnet run` can use the same database.
+services:
+  api:
+    environment:
+      Database__Provider: Postgres
+      Database__ConnectionString: "Host=postgres;Port=5432;Database=liftlog;Username=postgres;Password=password"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: liftlog
+    ports:
+      - "5400:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d liftlog"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local

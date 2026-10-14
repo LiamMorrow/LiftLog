@@ -3,11 +3,12 @@ import BigNumber from 'bignumber.js';
 import { v4 as uuid } from 'uuid';
 import {
   WeightedExerciseBlueprint,
-  Rest,
+  RepsTarget,
+  WeightedExerciseBlueprintInit,
   SessionBlueprint,
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
-  IncreaseAllEvenlyProgressiveOverload,
+  ProgressionRule,
 } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { Session } from '@/models/session-models/session';
@@ -27,17 +28,17 @@ export function tickAt(h: number, m: number, s: number = 0): OffsetDateTime {
   return OffsetDateTime.of(2025, 4, 5, h, m, s, 0, ZoneOffset.UTC);
 }
 
-export function makeWeightedBlueprint(name = 'Squat', supersetWithNext = false) {
-  return new WeightedExerciseBlueprint(
-    name,
-    3,
-    10,
-    new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-    Rest.medium,
-    supersetWithNext,
-    '',
-    '',
-  );
+/**
+ * The blueprint most specs want: a named 3×10 movement that progresses 2.5 a session. Override any
+ * field by name. Every spec builds its blueprints through here rather than the constructor, so a
+ * change to the blueprint's shape lands in one place.
+ */
+export function makeWeightedBlueprint(init: WeightedExerciseBlueprintInit = {}) {
+  return WeightedExerciseBlueprint.of({
+    name: 'Squat',
+    progression: [ProgressionRule.load(BigNumber(2.5))],
+    ...init,
+  });
 }
 
 export function makeCardioSetBlueprint(
@@ -51,10 +52,11 @@ export function makeCardioSetBlueprint(
     { type: 'distance', value: { unit: 'kilometre', value: BigNumber(1000) } },
     overrides.trackDuration ?? true,
     overrides.trackDistance ?? false,
-    overrides.trackSteps ?? false,
     false, // trackResistance
     false, // trackIncline
     false, // trackWeight
+    overrides.trackSteps ?? false,
+    undefined, // restBetweenSets
   );
 }
 
@@ -80,22 +82,46 @@ export function makeSession(
   return new Session(uuid(), new SessionBlueprint('Test', exercises, ''), recorded, date, undefined, undefined);
 }
 
-export function filledPotentialSet(reps: number, time: OffsetDateTime, weight = new Weight(100, 'kilograms')) {
-  return new PotentialSet(new RecordedSet(reps, time), weight);
+export function filledPotentialSet(
+  reps: number,
+  time: OffsetDateTime,
+  weight = new Weight(100, 'kilograms'),
+  target: RepsTarget = { min: 10, max: 10 },
+) {
+  return PotentialSet.of({ set: RecordedSet.of({ repsCompleted: reps, completionDateTime: time }), weight, target });
+}
+
+/** A set loaded but not yet logged — the state every set starts a session in. */
+export function emptyPotentialSet(weight: Weight | number = 100, target: RepsTarget = { min: 10, max: 10 }) {
+  return PotentialSet.of({
+    weight: typeof weight === 'number' ? new Weight(weight, 'kilograms') : weight,
+    target,
+  });
+}
+
+/**
+ * An exercise with the given reps logged against its blueprint's targets, the way the app seeds a
+ * session. Pass `undefined` for a set that was never filled out.
+ */
+export function makeRecordedExercise(
+  blueprint: WeightedExerciseBlueprint,
+  reps: (number | undefined)[],
+  weight = new Weight(100, 'kilograms'),
+  at: (index: number) => OffsetDateTime = () => tick(),
+) {
+  return new RecordedWeightedExercise(
+    blueprint,
+    reps.map((r, index) => {
+      const target = blueprint.repsTargetForSet(index);
+      return r === undefined ? emptyPotentialSet(weight, target) : filledPotentialSet(r, at(index), weight, target);
+    }),
+    undefined,
+  );
 }
 
 // Helper functions to match the C# test structure
 export function createExerciseBlueprint(index: number, supersetWithNext: boolean): WeightedExerciseBlueprint {
-  return new WeightedExerciseBlueprint(
-    `Ex${index}`,
-    3, // sets
-    10, // repsPerSet
-    new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
-    Rest.medium,
-    supersetWithNext,
-    '', // notes
-    '', // link
-  );
+  return makeWeightedBlueprint({ name: `Ex${index}`, supersetWithNext });
 }
 
 export function createSessionBlueprint(exercises: WeightedExerciseBlueprint[]): SessionBlueprint {
@@ -105,14 +131,16 @@ export function createSessionBlueprint(exercises: WeightedExerciseBlueprint[]): 
 export function createSession(sessionBlueprint: SessionBlueprint, fillSets: number[] = []): Session {
   const recordedExercises = (sessionBlueprint.exercises as WeightedExerciseBlueprint[]).map(
     (exerciseBlueprint, exerciseIndex) => {
-      const potentialSets = Array.from({ length: exerciseBlueprint.sets }).map((_, setIndex) => {
-        const shouldFillSet = fillSets.includes(exerciseIndex);
-        const set = shouldFillSet
-          ? new RecordedSet(exerciseBlueprint.repsPerSet, tick().plusSeconds(exerciseIndex * 60 + setIndex * 10))
-          : undefined;
-
-        return new PotentialSet(set, new Weight(100, 'kilograms'));
-      });
+      const potentialSets = exerciseBlueprint.plannedSets.map((planned, setIndex) =>
+        fillSets.includes(exerciseIndex)
+          ? filledPotentialSet(
+              planned.reps.max,
+              tick().plusSeconds(exerciseIndex * 60 + setIndex * 10),
+              new Weight(100, 'kilograms'),
+              planned.reps,
+            )
+          : emptyPotentialSet(100, planned.reps),
+      );
 
       return new RecordedWeightedExercise(
         exerciseBlueprint,

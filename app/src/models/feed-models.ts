@@ -1,9 +1,6 @@
 import { Session } from '@/models/session-models/session';
 import { match } from 'ts-pattern';
 import {
-  PendingFeedUserJSON,
-  FollowedFeedUserJSON,
-  FeedUserJSON,
   SessionUserEventJSON,
   FeedIdentityJSON,
   InboxMessageJSON,
@@ -27,7 +24,6 @@ import {
   toJsonString,
   fromInstantJson,
   toInstantJson,
-  FollowerFeedUserJSON,
   UserEventJSON,
   RemovedSessionUserEventJSON,
   AcceptedFollowResponseJSON,
@@ -36,161 +32,126 @@ import {
   UnfollowNotificationJSON,
   FollowResponseInboxMessageJSON,
   UnfollowNotificationInboxMessageJSON,
+  ReactionJSON,
+  ReactionInboxMessageJSON,
+  ReceivedReactionJSON,
+  SentReactionJSON,
+  FriendJSON,
+  FriendStatusJSON,
+  FriendRequestInboxMessageJSON,
+  FriendKeysInboxMessageJSON,
+  FriendRejectInboxMessageJSON,
+  UnfriendInboxMessageJSON,
 } from '@/models/storage/versions/latest';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { Instant } from '@js-joda/core';
 import { equal } from '@/models/session-models/helpers';
 
+/**
+ * How long a published feed event lives on the server before it expires. Followed users' sessions are
+ * therefore only knowable for this window - beyond it their absence means "expired", not "didn't train".
+ */
+export const FEED_EVENT_RETENTION_DAYS = 90;
+export const FEED_EVENT_RETENTION_SECONDS = FEED_EVENT_RETENTION_DAYS * 24 * 60 * 60;
+
+export type FriendRepairKind = 'staleKeys' | 'missingKeys' | 'staleRequest';
+
 // ---------------------------------------------------------------------------
 // FeedUser
 // ---------------------------------------------------------------------------
 
-export class FollowerFeedUser {
-  readonly type = 'PendingFeedUser' as const;
+// ---------------------------------------------------------------------------
+// Friend
+// ---------------------------------------------------------------------------
 
-  constructor(
-    readonly id: string,
-    readonly publicKey: RsaPublicKey,
-    readonly name: string | undefined,
-    readonly followSecret: string,
-  ) {}
+/**
+ * - `incoming`: they asked to be friends and are waiting on us.
+ * - `pending`: we asked and are waiting on them.
+ * - `legacyFollowing`: we followed them one-way before friends existed, and have not decided whether to share back.
+ * - `legacyFollower`: they followed us one-way before friends existed, and have not decided whether to share back.
+ */
+export type FriendStatus = FriendStatusJSON;
 
-  static fromJSON(json: FollowerFeedUserJSON): FollowerFeedUser {
-    return new FollowerFeedUser(json.id, fromRsaPublicKeyJSON(json.publicKey), json.name, json.followSecret);
-  }
-
-  toJSON(): FollowerFeedUserJSON {
-    return {
-      type: 'FollowerFeedUser',
-      id: this.id,
-      publicKey: toRsaPublicKeyJSON(this.publicKey),
-      name: this.name,
-      followSecret: this.followSecret,
-    };
-  }
-
-  equals(other: FollowerFeedUser | undefined): boolean {
-    if (!other) return false;
-    if (other === this) return true;
-    if (other.type !== this.type) return false;
-    return this.id === other.id && this.name === other.name && this.followSecret === other.followSecret;
-  }
-
-  with(other: Partial<FollowerFeedUser>): FollowerFeedUser {
-    return new FollowerFeedUser(
-      other.id ?? this.id,
-      other.publicKey ?? this.publicKey,
-      'name' in other ? other.name : this.name,
-      other.followSecret ?? this.followSecret,
-    );
-  }
-}
-export class PendingFeedUser {
-  readonly type = 'PendingFeedUser' as const;
-
-  constructor(
-    readonly id: string,
-    readonly publicKey: RsaPublicKey,
-    readonly name: string | undefined,
-  ) {}
-
-  static fromJSON(json: PendingFeedUserJSON): PendingFeedUser {
-    return new PendingFeedUser(json.id, fromRsaPublicKeyJSON(json.publicKey), json.name);
-  }
-
-  toJSON(): PendingFeedUserJSON {
-    return {
-      type: 'PendingFeedUser',
-      id: this.id,
-      publicKey: toRsaPublicKeyJSON(this.publicKey),
-      name: this.name,
-    };
-  }
-
-  equals(other: FeedUser | undefined): boolean {
-    if (!other) return false;
-    if (other === this) return true;
-    if (other.type !== this.type) return false;
-    return this.id === other.id && this.name === other.name;
-  }
-
-  with(other: Partial<PendingFeedUser>): PendingFeedUser {
-    return new PendingFeedUser(
-      other.id ?? this.id,
-      other.publicKey ?? this.publicKey,
-      'name' in other ? other.name : this.name,
-    );
-  }
+export interface SharedFeedUser {
+  id: string;
+  publicKey: RsaPublicKey;
+  name: string | undefined;
 }
 
-export class FollowedFeedUser {
-  readonly type = 'FollowedFeedUser' as const;
-
+export class Friend {
   constructor(
     readonly id: string,
     readonly publicKey: RsaPublicKey,
     readonly name: string | undefined,
     readonly currentPlan: ProgramBlueprint | undefined,
-    readonly aesKey: AesKey,
-    readonly followSecret: string,
+    readonly status: FriendStatus,
+    readonly theirKeys: AesKey[],
+    readonly theirKeysSentAt: Instant | undefined,
+    readonly theirSecret: string | undefined,
+    readonly mySecret: string | undefined,
   ) {}
 
-  static fromJSON(json: FollowedFeedUserJSON): FollowedFeedUser {
-    return new FollowedFeedUser(
+  static fromJSON(json: FriendJSON): Friend {
+    return new Friend(
       json.id,
       fromRsaPublicKeyJSON(json.publicKey),
       json.name,
       json.currentPlan && ProgramBlueprint.fromJSON(json.currentPlan),
-      fromAesKeyJSON(json.aesKey),
-      json.followSecret,
+      json.status,
+      json.theirKeys.map(fromAesKeyJSON),
+      fromInstantJson(json.theirKeysSentAt),
+      json.theirSecret,
+      json.mySecret,
     );
   }
 
-  toJSON(): FollowedFeedUserJSON {
+  toJSON(): FriendJSON {
     return {
-      version: 2,
-      type: 'FollowedFeedUser',
       id: this.id,
       publicKey: toRsaPublicKeyJSON(this.publicKey),
       name: this.name,
       currentPlan: this.currentPlan?.toJSON(),
-      aesKey: toAesKeyJSON(this.aesKey),
-      followSecret: this.followSecret,
+      status: this.status,
+      theirKeys: this.theirKeys.map(toAesKeyJSON),
+      theirKeysSentAt: toInstantJson(this.theirKeysSentAt),
+      theirSecret: this.theirSecret,
+      mySecret: this.mySecret,
     };
   }
 
-  equals(other: FeedUser | undefined): boolean {
+  equals(other: Friend | undefined): boolean {
     if (!other) return false;
     if (other === this) return true;
-    if (other.type !== this.type) return false;
     return (
       this.id === other.id &&
       this.name === other.name &&
-      this.followSecret === other.followSecret &&
+      this.status === other.status &&
+      this.theirSecret === other.theirSecret &&
+      this.mySecret === other.mySecret &&
+      equal(this.theirKeysSentAt, other.theirKeysSentAt) &&
+      this.theirKeys.length === other.theirKeys.length &&
+      this.theirKeys.every((key, i) => equalKeys(key, other.theirKeys[i]!)) &&
       equal(this.currentPlan, other.currentPlan)
     );
   }
 
-  with(other: Partial<FollowedFeedUser>): FollowedFeedUser {
-    return new FollowedFeedUser(
+  with(other: Partial<Friend>): Friend {
+    return new Friend(
       other.id ?? this.id,
       other.publicKey ?? this.publicKey,
       'name' in other ? other.name : this.name,
-      other.currentPlan ?? this.currentPlan,
-      other.aesKey ?? this.aesKey,
-      other.followSecret ?? this.followSecret,
+      'currentPlan' in other ? other.currentPlan : this.currentPlan,
+      other.status ?? this.status,
+      other.theirKeys ?? this.theirKeys,
+      'theirKeysSentAt' in other ? other.theirKeysSentAt : this.theirKeysSentAt,
+      'theirSecret' in other ? other.theirSecret : this.theirSecret,
+      'mySecret' in other ? other.mySecret : this.mySecret,
     );
   }
 }
 
-export type FeedUser = PendingFeedUser | FollowedFeedUser | FollowerFeedUser;
-
-export function fromFeedUserJSON(json: FeedUserJSON): FeedUser {
-  return match(json)
-    .with({ type: 'PendingFeedUser' }, PendingFeedUser.fromJSON)
-    .with({ type: 'FollowedFeedUser' }, FollowedFeedUser.fromJSON)
-    .with({ type: 'FollowerFeedUser' }, FollowerFeedUser.fromJSON)
-    .exhaustive();
+function equalKeys(a: AesKey, b: AesKey) {
+  return a.algorithm === b.algorithm && a.value.length === b.value.length && a.value.every((x, i) => x === b.value[i]);
 }
 
 // ---------------------------------------------------------------------------
@@ -224,7 +185,7 @@ export class SessionUserEvent {
 
   toJSON(): SessionUserEventJSON {
     return {
-      version: 2,
+      version: 3,
       type: 'SessionUserEvent',
       userId: this.userId,
       eventId: this.eventId,
@@ -319,6 +280,11 @@ export function fromFeedUserEventJSON(json: UserEventJSON): FeedUserEvent {
 // FeedIdentity
 // ---------------------------------------------------------------------------
 
+export interface PreviousAesKey {
+  key: AesKey;
+  supersededAt: Instant;
+}
+
 export class FeedIdentity {
   constructor(
     readonly id: string,
@@ -330,6 +296,7 @@ export class FeedIdentity {
     readonly publishBodyweight: boolean,
     readonly publishPlan: boolean,
     readonly publishWorkouts: boolean,
+    readonly previousAesKeys: PreviousAesKey[] = [],
   ) {}
 
   static fromJSON(json: FeedIdentityJSON): FeedIdentity {
@@ -343,14 +310,23 @@ export class FeedIdentity {
       json.publishBodyweight,
       json.publishPlan,
       json.publishWorkouts,
+      json.previousAesKeys.map((x) => ({
+        key: fromAesKeyJSON(x.key),
+        supersededAt: fromInstantJson(x.supersededAt),
+      })),
     );
   }
 
   toJSON(): FeedIdentityJSON {
     return {
+      version: 2,
       id: this.id,
       lookup: this.lookup,
       aesKey: toAesKeyJSON(this.aesKey),
+      previousAesKeys: this.previousAesKeys.map((x) => ({
+        key: toAesKeyJSON(x.key),
+        supersededAt: toInstantJson(x.supersededAt),
+      })),
       rsaKeyPair: toRsaKeyPairJSON(this.rsaKeyPair),
       password: this.password,
       name: this.name,
@@ -385,7 +361,19 @@ export class FeedIdentity {
       other.publishBodyweight ?? this.publishBodyweight,
       other.publishPlan ?? this.publishPlan,
       other.publishWorkouts ?? this.publishWorkouts,
+      other.previousAesKeys ?? this.previousAesKeys,
     );
+  }
+
+  /** Keys superseded longer ago than the event retention window can no longer decrypt anything, so they are dropped. */
+  withRotatedAesKey(aesKey: AesKey, now: Instant): FeedIdentity {
+    const oldestUseful = now.minusSeconds(FEED_EVENT_RETENTION_SECONDS);
+    return this.with({
+      aesKey,
+      previousAesKeys: [{ key: this.aesKey, supersededAt: now }, ...this.previousAesKeys].filter((x) =>
+        x.supersededAt.isAfter(oldestUseful),
+      ),
+    });
   }
 }
 
@@ -404,7 +392,7 @@ export class SharedProgramBlueprint {
 
   toJSON(): SharedProgramBlueprintJSON {
     return {
-      version: 2,
+      version: 3,
       type: 'SharedProgramBlueprint',
       programBlueprint: this.programBlueprint.toJSON(),
     };
@@ -433,7 +421,7 @@ export class SharedSession {
 
   toJSON(): SharedSessionJSON {
     return {
-      version: 2,
+      version: 3,
       type: 'SharedSession',
       session: this.session.toJSON(),
     };
@@ -602,7 +590,84 @@ export class UnfollowNotification {
   }
 }
 
-export type InboxMessagePayload = FollowRequest | FollowResponse | UnfollowNotification;
+/**
+ * A fixed allowlist. The emoji arrives from another user over an unauthenticated inbox, so it is
+ * attacker-controlled: it must be validated on receipt, not merely constrained on send.
+ */
+export const REACTION_EMOJIS = ['💪', '🔥', '👏', '🎉', '🫡'] as const;
+export type ReactionEmoji = (typeof REACTION_EMOJIS)[number];
+
+/** Cheers accumulate, so a single message can carry several taps of the same emoji. */
+export const MAX_REACTION_COUNT = 50;
+/** Bounds how much a hostile follower can grow your database. */
+export const MAX_REACTIONS_PER_SENDER_PER_EVENT = 20;
+
+export function isReactionEmoji(value: string): value is ReactionEmoji {
+  return (REACTION_EMOJIS as readonly string[]).includes(value);
+}
+
+export function isValidReactionCount(value: number): boolean {
+  return Number.isInteger(value) && value >= 1 && value <= MAX_REACTION_COUNT;
+}
+
+export class Reaction {
+  readonly type = 'Reaction' as const;
+
+  constructor(
+    readonly reactionId: string,
+    readonly eventId: string,
+    readonly emoji: ReactionEmoji,
+    readonly count: number,
+    readonly reactedAt: Instant,
+  ) {}
+
+  // Both fields arrive from another user over an unauthenticated inbox. Rejecting here means a hostile
+  // payload is dropped at the parse boundary, before it can reach the database or the screen.
+  static fromJSON(json: ReactionJSON): Reaction {
+    if (!isReactionEmoji(json.emoji)) {
+      throw new Error('Unrecognised reaction emoji');
+    }
+    if (!isValidReactionCount(json.count)) {
+      throw new Error('Reaction count out of range');
+    }
+    return new Reaction(json.reactionId, json.eventId, json.emoji, json.count, fromInstantJson(json.reactedAt));
+  }
+
+  toJSON(): ReactionJSON {
+    return {
+      reactionId: this.reactionId,
+      eventId: this.eventId,
+      emoji: this.emoji,
+      count: this.count,
+      reactedAt: toInstantJson(this.reactedAt),
+    };
+  }
+
+  equals(other: InboxMessagePayload | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return (
+      this.reactionId === other.reactionId &&
+      this.eventId === other.eventId &&
+      this.emoji === other.emoji &&
+      this.count === other.count &&
+      this.reactedAt.equals(other.reactedAt)
+    );
+  }
+
+  with(other: Partial<Reaction>): Reaction {
+    return new Reaction(
+      other.reactionId ?? this.reactionId,
+      other.eventId ?? this.eventId,
+      other.emoji ?? this.emoji,
+      other.count ?? this.count,
+      other.reactedAt ?? this.reactedAt,
+    );
+  }
+}
+
+export type InboxMessagePayload = FollowRequest | FollowResponse | UnfollowNotification | Reaction;
 
 // ---------------------------------------------------------------------------
 // InboxMessage
@@ -734,12 +799,183 @@ export class UnfollowNotificationInboxMessage {
   }
 }
 
-export type InboxMessage = FollowRequestInboxMessage | FollowResponseInboxMessage | UnfollowNotificationInboxMessage;
+export class ReactionInboxMessage {
+  readonly type = 'Reaction' as const;
+
+  constructor(
+    readonly senderUserId: string,
+    readonly signature: Uint8Array,
+    readonly payload: Reaction,
+  ) {}
+
+  static fromJSON(json: ReactionInboxMessageJSON): ReactionInboxMessage {
+    return new ReactionInboxMessage(
+      json.senderUserId,
+      fromBase64Uint8ArrayJSON(json.signature),
+      Reaction.fromJSON(fromJsonString(json.payloadJson)),
+    );
+  }
+
+  toJSON(): ReactionInboxMessageJSON {
+    return {
+      type: 'Reaction',
+      senderUserId: this.senderUserId,
+      signature: toBase64Uint8ArrayJSON(this.signature),
+      payloadJson: toJsonString(this.payload.toJSON()),
+    };
+  }
+
+  equals(other: InboxMessage | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return this.senderUserId === other.senderUserId && this.payload.equals(other.payload);
+  }
+
+  with(other: Partial<ReactionInboxMessage>): ReactionInboxMessage {
+    return new ReactionInboxMessage(
+      other.senderUserId ?? this.senderUserId,
+      other.signature ?? this.signature,
+      other.payload ?? this.payload,
+    );
+  }
+}
+
+export class FriendRequestInboxMessage {
+  readonly type = 'FriendRequest' as const;
+
+  constructor(
+    readonly senderUserId: string,
+    readonly name: string | undefined,
+  ) {}
+
+  static fromJSON(json: FriendRequestInboxMessageJSON): FriendRequestInboxMessage {
+    return new FriendRequestInboxMessage(json.senderUserId, fromJsonString(json.payloadJson).name);
+  }
+}
+
+export class FriendKeysInboxMessage {
+  readonly type = 'FriendKeys' as const;
+
+  constructor(
+    readonly senderUserId: string,
+    readonly aesKeys: AesKey[],
+    readonly followSecret: string,
+  ) {}
+
+  static fromJSON(json: FriendKeysInboxMessageJSON): FriendKeysInboxMessage {
+    const payload = fromJsonString(json.payloadJson);
+    if (!payload.aesKeys.length || !payload.followSecret) {
+      throw new Error('FriendKeys without a key or follow secret');
+    }
+    return new FriendKeysInboxMessage(json.senderUserId, payload.aesKeys.map(fromAesKeyJSON), payload.followSecret);
+  }
+}
+
+export class FriendRejectInboxMessage {
+  readonly type = 'FriendReject' as const;
+
+  constructor(readonly senderUserId: string) {}
+
+  static fromJSON(json: FriendRejectInboxMessageJSON): FriendRejectInboxMessage {
+    return new FriendRejectInboxMessage(json.senderUserId);
+  }
+}
+
+export class UnfriendInboxMessage {
+  readonly type = 'Unfriend' as const;
+
+  constructor(readonly senderUserId: string) {}
+
+  static fromJSON(json: UnfriendInboxMessageJSON): UnfriendInboxMessage {
+    return new UnfriendInboxMessage(json.senderUserId);
+  }
+}
+
+export type InboxMessage =
+  | FollowRequestInboxMessage
+  | FollowResponseInboxMessage
+  | UnfollowNotificationInboxMessage
+  | ReactionInboxMessage
+  | FriendRequestInboxMessage
+  | FriendKeysInboxMessage
+  | FriendRejectInboxMessage
+  | UnfriendInboxMessage;
 
 export function fromInboxMessageJSON(json: InboxMessageJSON): InboxMessage {
   return match(json)
     .with({ type: 'FollowRequest' }, FollowRequestInboxMessage.fromJSON)
     .with({ type: 'FollowResponse' }, FollowResponseInboxMessage.fromJSON)
     .with({ type: 'UnfollowNotification' }, UnfollowNotificationInboxMessage.fromJSON)
+    .with({ type: 'Reaction' }, ReactionInboxMessage.fromJSON)
+    .with({ type: 'FriendRequest' }, FriendRequestInboxMessage.fromJSON)
+    .with({ type: 'FriendKeys' }, FriendKeysInboxMessage.fromJSON)
+    .with({ type: 'FriendReject' }, FriendRejectInboxMessage.fromJSON)
+    .with({ type: 'Unfriend' }, UnfriendInboxMessage.fromJSON)
     .exhaustive();
+}
+
+/** A cheer someone sent you. Author-only: nobody else can see who cheered your workout. */
+export class ReceivedReaction {
+  constructor(
+    readonly id: string,
+    readonly eventId: string,
+    readonly fromUserId: string,
+    readonly emoji: ReactionEmoji,
+    readonly count: number,
+    readonly reactedAt: Instant,
+  ) {}
+
+  static fromJSON(json: ReceivedReactionJSON): ReceivedReaction {
+    if (!isReactionEmoji(json.emoji)) {
+      throw new Error('Unrecognised reaction emoji');
+    }
+    return new ReceivedReaction(
+      json.id,
+      json.eventId,
+      json.fromUserId,
+      json.emoji,
+      json.count,
+      fromInstantJson(json.reactedAt),
+    );
+  }
+
+  toJSON(): ReceivedReactionJSON {
+    return {
+      id: this.id,
+      eventId: this.eventId,
+      fromUserId: this.fromUserId,
+      emoji: this.emoji,
+      count: this.count,
+      reactedAt: toInstantJson(this.reactedAt),
+    };
+  }
+}
+
+/** A cheer you sent. The server deletes inbox messages on read, so this is the only record you'll ever have. */
+export class SentReaction {
+  constructor(
+    readonly id: string,
+    readonly eventId: string,
+    readonly emoji: ReactionEmoji,
+    readonly count: number,
+    readonly reactedAt: Instant,
+  ) {}
+
+  static fromJSON(json: SentReactionJSON): SentReaction {
+    if (!isReactionEmoji(json.emoji)) {
+      throw new Error('Unrecognised reaction emoji');
+    }
+    return new SentReaction(json.id, json.eventId, json.emoji, json.count, fromInstantJson(json.reactedAt));
+  }
+
+  toJSON(): SentReactionJSON {
+    return {
+      id: this.id,
+      eventId: this.eventId,
+      emoji: this.emoji,
+      count: this.count,
+      reactedAt: toInstantJson(this.reactedAt),
+    };
+  }
 }

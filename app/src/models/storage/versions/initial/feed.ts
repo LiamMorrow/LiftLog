@@ -28,6 +28,20 @@ export interface FollowedFeedUserJSON {
 
 export type FeedUserJSON = FollowedFeedUserJSON | PendingFeedUserJSON | FollowerFeedUserJSON;
 
+export type FriendStatusJSON = 'incoming' | 'pending' | 'friend' | 'legacyFollowing' | 'legacyFollower';
+
+export interface FriendJSON {
+  id: string;
+  publicKey: RsaPublicKeyJSON;
+  name: string | undefined;
+  currentPlan: ProgramBlueprintJSON | undefined;
+  status: FriendStatusJSON;
+  theirKeys: AesKeyJSON[];
+  theirKeysSentAt: InstantJSON | undefined;
+  theirSecret: string | undefined;
+  mySecret: string | undefined;
+}
+
 interface UserEventBaseJSON {
   userId: string;
   eventId: string;
@@ -69,17 +83,65 @@ interface InboxMessageBaseJSON<TType extends string, T> {
   signature: Base64Uint8ArrayJSON;
 }
 
+export interface ReactionJSON {
+  reactionId: string;
+  eventId: string;
+  emoji: string;
+  count: number;
+  reactedAt: InstantJSON;
+}
+
+export interface FriendRequestJSON {
+  name: string | undefined;
+}
+
+export interface FriendKeysJSON {
+  aesKeys: AesKeyJSON[];
+  followSecret: string;
+}
+
+export type FriendRejectJSON = Record<string, never>;
+
+export type UnfriendJSON = Record<string, never>;
+
 export type FollowRequestInboxMessageJSON = InboxMessageBaseJSON<'FollowRequest', FollowRequestJSON>;
 export type FollowResponseInboxMessageJSON = InboxMessageBaseJSON<'FollowResponse', FollowResponseJSON>;
 export type UnfollowNotificationInboxMessageJSON = InboxMessageBaseJSON<
   'UnfollowNotification',
   UnfollowNotificationJSON
 >;
+export type ReactionInboxMessageJSON = InboxMessageBaseJSON<'Reaction', ReactionJSON>;
+export type FriendRequestInboxMessageJSON = InboxMessageBaseJSON<'FriendRequest', FriendRequestJSON>;
+export type FriendKeysInboxMessageJSON = InboxMessageBaseJSON<'FriendKeys', FriendKeysJSON>;
+export type FriendRejectInboxMessageJSON = InboxMessageBaseJSON<'FriendReject', FriendRejectJSON>;
+export type UnfriendInboxMessageJSON = InboxMessageBaseJSON<'Unfriend', UnfriendJSON>;
 
 export type InboxMessageJSON =
   | FollowRequestInboxMessageJSON
   | FollowResponseInboxMessageJSON
-  | UnfollowNotificationInboxMessageJSON;
+  | UnfollowNotificationInboxMessageJSON
+  | ReactionInboxMessageJSON
+  | FriendRequestInboxMessageJSON
+  | FriendKeysInboxMessageJSON
+  | FriendRejectInboxMessageJSON
+  | UnfriendInboxMessageJSON;
+
+export interface ReceivedReactionJSON {
+  id: string;
+  eventId: string;
+  fromUserId: string;
+  emoji: string;
+  count: number;
+  reactedAt: InstantJSON;
+}
+
+export interface SentReactionJSON {
+  id: string;
+  eventId: string;
+  emoji: string;
+  count: number;
+  reactedAt: InstantJSON;
+}
 
 export interface FollowRequestJSON {
   name: string | undefined;

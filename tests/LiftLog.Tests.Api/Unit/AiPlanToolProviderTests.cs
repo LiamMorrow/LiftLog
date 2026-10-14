@@ -46,6 +46,6 @@ public class AiPlanToolProviderTests
     [Category("Unit")]
     public async Task CurrentAiPlanVersion_IsReadFromSchema()
     {
-        await Assert.That(new AiPlanToolProvider().CurrentAiPlanVersion).IsEqualTo(2);
+        await Assert.That(new AiPlanToolProvider().CurrentAiPlanVersion).IsEqualTo(3);
     }
 }

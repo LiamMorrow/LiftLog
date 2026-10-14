@@ -11,14 +11,16 @@ import {
   PutInboxMessageRequest,
   GetInboxMessagesRequest,
   GetInboxMessagesResponse,
+  AckInboxMessagesRequest,
   PutUserFollowSecretRequest,
   DeleteUserFollowSecretRequest,
   CreateSharedItemRequest,
   CreateSharedItemResponse,
   GetSharedItemResponse,
 } from '@/models/feed-api-models';
-import { apiBaseUrl } from '@/services/api-consts';
 import { ApiErrorType, ApiResult, ResponseError } from '@/services/api-error';
+import { selectBackendForFeature } from '@/store/backends';
+import type { RootState } from '@/store/store';
 import type { FetchResponse } from 'expo/build/winter/fetch/FetchResponse';
 import { fetch } from 'expo/fetch';
 
@@ -32,21 +34,37 @@ type Base64Response<T> = T extends Uint8Array
         ? { [K in keyof T]: Base64Response<T[K]> }
         : T;
 
-export class FeedApiService {
-  private readonly baseUrl: string;
-
+/** Thrown when the feed has no usable backend - unhydrated, or pointed somewhere that has no feed. */
+export class NoFeedBackendError extends Error {
   constructor() {
-    this.baseUrl = apiBaseUrl;
+    super('No backend is configured for the feed');
+  }
+}
+
+export class FeedApiService {
+  constructor(private readonly getState: () => RootState) {}
+
+  private async request(path: `/${string}`, init?: { method?: string; body?: unknown }): Promise<FetchResponse> {
+    const resolved = selectBackendForFeature(this.getState(), 'feed');
+    if (!resolved) {
+      throw new NoFeedBackendError();
+    }
+    const hasBody = init?.body !== undefined;
+    const response = await fetch(`${resolved.url}${path}`, {
+      method: init?.method ?? 'GET',
+      headers: {
+        ...(hasBody ? { 'Content-Type': 'application/json' } : {}),
+        ...resolved.headers,
+      },
+      body: hasBody ? stringify(init.body) : undefined,
+    });
+    this.ensureSuccessStatusCode(response);
+    return response;
   }
 
   async getUserEventsAsync(request: GetEventsRequest): Promise<ApiResult<GetEventsResponse>> {
     return this.getApiResultAsync(async () => {
-      const response = await fetch(`${this.baseUrl}/events`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: stringify(request),
-      });
-      this.ensureSuccessStatusCode(response);
+      const response = await this.request(`/events`, { method: 'POST', body: request });
       const base64Response = (await response.json()) as Base64Response<GetEventsResponse>;
       return {
         events: base64Response.events.map((event) => ({
@@ -64,20 +82,14 @@ export class FeedApiService {
 
   async createUserAsync(): Promise<ApiResult<CreateUserResponse>> {
     return this.getApiResultAsync(async () => {
-      const response = await fetch(`${this.baseUrl}/user/create`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: '{}',
-      });
-      this.ensureSuccessStatusCode(response);
+      const response = await this.request(`/user/create`, { method: 'POST', body: {} });
       return (await response.json()) as Base64Response<CreateUserResponse>;
     });
   }
 
   async getUserAsync(idOrLookup: string): Promise<ApiResult<GetUserResponse>> {
     return this.getApiResultAsync(async () => {
-      const response = await fetch(`${this.baseUrl}/user/${idOrLookup}`);
-      this.ensureSuccessStatusCode(response);
+      const response = await this.request(`/user/${idOrLookup}`);
       const base64Response = (await response.json()) as Base64Response<GetUserResponse>;
       return {
         id: base64Response.id,
@@ -94,34 +106,19 @@ export class FeedApiService {
 
   async putUserDataAsync(request: PutUserDataRequest): Promise<ApiResult<void>> {
     return this.getApiResultAsync(async () => {
-      const response = await fetch(`${this.baseUrl}/user`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: stringify(request),
-      });
-      this.ensureSuccessStatusCode(response);
+      await this.request(`/user`, { method: 'PUT', body: request });
     });
   }
 
   async putUserEventAsync(request: PutUserEventRequest): Promise<ApiResult<void>> {
     return this.getApiResultAsync(async () => {
-      const response = await fetch(`${this.baseUrl}/event`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: stringify(request),
-      });
-      this.ensureSuccessStatusCode(response);
+      await this.request(`/event`, { method: 'PUT', body: request });
     });
   }
 
   async getUsersAsync(request: GetUsersRequest): Promise<ApiResult<GetUsersResponse>> {
     return this.getApiResultAsync(async () => {
-      const response = await fetch(`${this.baseUrl}/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: stringify(request),
-      });
-      this.ensureSuccessStatusCode(response);
+      const response = await this.request(`/users`, { method: 'POST', body: request });
       const base64Response = (await response.json()) as Base64Response<GetUsersResponse>;
       return {
         users: Object.fromEntries(
@@ -145,34 +142,19 @@ export class FeedApiService {
 
   async deleteUserAsync(request: DeleteUserRequest): Promise<ApiResult<void>> {
     return this.getApiResultAsync(async () => {
-      const response = await fetch(`${this.baseUrl}/user/delete`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: stringify(request),
-      });
-      this.ensureSuccessStatusCode(response);
+      await this.request(`/user/delete`, { method: 'POST', body: request });
     });
   }
 
   async putInboxMessageAsync(request: PutInboxMessageRequest): Promise<ApiResult<void>> {
     return this.getApiResultAsync(async () => {
-      const response = await fetch(`${this.baseUrl}/inbox`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: stringify(request),
-      });
-      this.ensureSuccessStatusCode(response);
+      await this.request(`/inbox`, { method: 'PUT', body: request });
     });
   }
 
   async getInboxMessagesAsync(request: GetInboxMessagesRequest): Promise<ApiResult<GetInboxMessagesResponse>> {
     return this.getApiResultAsync(async () => {
-      const response = await fetch(`${this.baseUrl}/inbox`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: stringify(request),
-      });
-      this.ensureSuccessStatusCode(response);
+      const response = await this.request(`/inbox`, { method: 'POST', body: request });
       const base64Response = (await response.json()) as Base64Response<GetInboxMessagesResponse>;
       return {
         inboxMessages: base64Response.inboxMessages.map((message) => ({
@@ -183,44 +165,34 @@ export class FeedApiService {
     });
   }
 
+  async ackInboxMessagesAsync(request: AckInboxMessagesRequest): Promise<ApiResult<void>> {
+    return this.getApiResultAsync(async () => {
+      await this.request(`/inbox/ack`, { method: 'POST', body: request });
+    });
+  }
+
   async putUserFollowSecretAsync(request: PutUserFollowSecretRequest): Promise<ApiResult<void>> {
     return this.getApiResultAsync(async () => {
-      const response = await fetch(`${this.baseUrl}/follow-secret`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: stringify(request),
-      });
-      this.ensureSuccessStatusCode(response);
+      await this.request(`/follow-secret`, { method: 'PUT', body: request });
     });
   }
 
   async deleteUserFollowSecretAsync(request: DeleteUserFollowSecretRequest): Promise<ApiResult<void>> {
     return this.getApiResultAsync(async () => {
-      const response = await fetch(`${this.baseUrl}/follow-secret/delete`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: stringify(request),
-      });
-      this.ensureSuccessStatusCode(response);
+      await this.request(`/follow-secret/delete`, { method: 'POST', body: request });
     });
   }
 
   async postSharedItemAsync(request: CreateSharedItemRequest): Promise<ApiResult<CreateSharedItemResponse>> {
     return this.getApiResultAsync(async () => {
-      const response = await fetch(`${this.baseUrl}/shareditem`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: stringify(request),
-      });
-      this.ensureSuccessStatusCode(response);
+      const response = await this.request(`/shareditem`, { method: 'POST', body: request });
       return (await response.json()) as Base64Response<CreateSharedItemResponse>;
     });
   }
 
   async getSharedItemAsync(sharedItemId: string): Promise<ApiResult<GetSharedItemResponse>> {
     return this.getApiResultAsync(async () => {
-      const response = await fetch(`${this.baseUrl}/shareditem/${sharedItemId}`);
-      this.ensureSuccessStatusCode(response);
+      const response = await this.request(`/shareditem/${sharedItemId}`);
       const base4Response = (await response.json()) as Base64Response<GetSharedItemResponse>;
       return {
         encryptedPayload: {
@@ -246,7 +218,13 @@ export class FeedApiService {
         console.debug('Error response', response, await response.text());
         const status = response.status;
 
-        if (status === 404) {
+        if (status === 400) {
+          return ApiResult.fromError({
+            type: ApiErrorType.BadRequest,
+            message: response.statusText,
+            exception: error,
+          });
+        } else if (status === 404) {
           return ApiResult.fromError({
             type: ApiErrorType.NotFound,
             message: response.statusText,

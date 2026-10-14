@@ -173,7 +173,7 @@ Avoid translating numbers unless they are explicitly written-out labels.
 - Do **not** embed English wording in keys
 - Do **not** delete existing keys without checking usage
 - Prefer **clarity over brevity**
-- Assume translators do **not** see the UI — context matters
+- Assume translators do **not** see the UI - context matters
 - When in doubt, create a **new, context-specific key**
 
 ---

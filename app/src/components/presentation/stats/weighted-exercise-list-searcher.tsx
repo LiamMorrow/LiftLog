@@ -28,6 +28,7 @@ export function WeightedExerciseListSearcher({
       style={{
         paddingHorizontal: spacing.pageHorizontalMargin,
         gap: spacing[2],
+        flex: 1,
       }}
     >
       <Searchbar

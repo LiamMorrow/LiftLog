@@ -1,26 +1,28 @@
-import Icon from '@/components/presentation/foundation/gesture-wrappers/icon';
-import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
+import Icon from '@/components/presentation/foundation/icon';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
-import { rounding, spacing } from '@/hooks/useAppTheme';
-import { useBottomSheetScrollableCreator } from '@gorhom/bottom-sheet';
+import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { LegendList } from '@legendapp/list';
-import { ReactNode } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { Children, isValidElement, ReactNode } from 'react';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 import { match } from 'ts-pattern';
 type TupleKeysNum<T extends readonly unknown[]> = Exclude<Partial<T>['length'], T['length']>;
-export function SegmentedList<TItems extends readonly unknown[]>(props: {
-  renderItem: (item: TItems[number], index: TupleKeysNum<TItems>) => ReactNode;
+
+type SegmentedListProps<TItems extends readonly unknown[]> = {
   itemKey?: (item: TItems[number], index: TupleKeysNum<TItems>) => string;
   items: TItems;
   scrollable?: boolean;
-  isInBottomSheet?: boolean;
-  renderScrollComponent?: ScrollView;
   style?: ViewStyle;
-}) {
-  const BottomSheetScrollable = useBottomSheetScrollableCreator();
+} & (TItems[number] extends ReactNode
+  ? { renderItem?: (item: TItems[number], index: TupleKeysNum<TItems>) => ReactNode }
+  : { renderItem: (item: TItems[number], index: TupleKeysNum<TItems>) => ReactNode });
+
+export function SegmentedList<TItems extends readonly unknown[]>(props: SegmentedListProps<TItems>) {
   const itemKey = props.itemKey ?? ((_, index) => String(index));
+  const renderItem =
+    (props as { renderItem?: (item: TItems[number], index: TupleKeysNum<TItems>) => ReactNode }).renderItem ??
+    ((item: TItems[number]) => item as ReactNode);
   if (!props.scrollable) {
     return (
       <View style={[{ gap: spacing[0.5] }, props.style]}>
@@ -30,7 +32,7 @@ export function SegmentedList<TItems extends readonly unknown[]>(props: {
             isFirst={index === 0}
             isLast={index === props.items.length - 1}
           >
-            {props.renderItem(item, index as TupleKeysNum<TItems>)}
+            {renderItem(item, index as TupleKeysNum<TItems>)}
           </SegmentedListItem>
         ))}
       </View>
@@ -41,7 +43,6 @@ export function SegmentedList<TItems extends readonly unknown[]>(props: {
       contentContainerStyle={[props.style]}
       ItemSeparatorComponent={() => <View style={{ height: spacing[0.5] }}></View>}
       data={props.items}
-      renderScrollComponent={props.isInBottomSheet ? BottomSheetScrollable : undefined!}
       keyExtractor={(i, index) => itemKey(i, index as TupleKeysNum<TItems>)}
       renderItem={({ item, index }) => (
         <SegmentedListItem
@@ -49,24 +50,46 @@ export function SegmentedList<TItems extends readonly unknown[]>(props: {
           isFirst={index === 0}
           isLast={index === props.items.length - 1}
         >
-          {props.renderItem(item, index as TupleKeysNum<TItems>)}
+          {renderItem(item, index as TupleKeysNum<TItems>)}
         </SegmentedListItem>
       )}
     />
   );
 }
 
+export function SegmentedGroup(props: { children: ReactNode; style?: ViewStyle }) {
+  const items = Children.toArray(props.children);
+  return (
+    <View style={[{ gap: spacing[0.5] }, props.style]}>
+      {items.map((child, index) => (
+        <SegmentedListItem
+          key={isValidElement(child) && child.key !== null ? child.key : index}
+          isFirst={index === 0}
+          isLast={index === items.length - 1}
+        >
+          {child}
+        </SegmentedListItem>
+      ))}
+    </View>
+  );
+}
+
 export function SegmentListFormElement(props: {
-  label: string;
-  icon: AppIconSource;
+  label: ReactNode;
+  icon?: AppIconSource;
   onPress?: () => void;
+  onLongPress?: () => void;
+  supportingText?: ReactNode;
   line2?: ReactNode | string;
   right?: ReactNode | string;
+  style?: StyleProp<ViewStyle>;
 }) {
-  const Wrapper = props.onPress ? TouchableRipple : View;
+  const { colors } = useAppTheme();
+  const pressable = props.onPress ?? props.onLongPress;
+  const Wrapper = pressable ? TouchableRipple : View;
   return (
-    <Wrapper onPress={props.onPress}>
-      <View style={{ padding: spacing[4] }}>
+    <Wrapper onPress={props.onPress} onLongPress={props.onLongPress}>
+      <View style={[{ padding: spacing[4] }, props.style]}>
         <View
           style={{
             flexDirection: 'row',
@@ -76,20 +99,30 @@ export function SegmentListFormElement(props: {
         >
           <View
             style={{
+              flex: 1,
               flexDirection: 'row',
               gap: spacing[2],
               alignItems: 'center',
             }}
           >
-            <Icon size={20} source={props.icon} />
+            {props.icon ? <Icon size={20} source={props.icon} /> : undefined}
             <Text variant="labelLarge">{props.label}</Text>
           </View>
           {typeof props.right === 'string' ? <Text variant="labelLarge">{props.right}</Text> : props.right}
         </View>
+        {props.supportingText ? (
+          <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginBlockStart: spacing[2] }}>
+            {props.supportingText}
+          </Text>
+        ) : undefined}
         {props.line2}
       </View>
     </Wrapper>
   );
+}
+
+export function SegmentedListRowAction(props: { children: ReactNode }) {
+  return <View style={styles.rowAction}>{props.children}</View>;
 }
 
 function SegmentedListItem(props: { isFirst: boolean; isLast: boolean; children: ReactNode }) {
@@ -113,6 +146,10 @@ function SegmentedListItem(props: { isFirst: boolean; isLast: boolean; children:
 }
 
 const styles = StyleSheet.create({
+  rowAction: {
+    marginBlock: -spacing[4],
+    marginInlineEnd: -spacing[4],
+  },
   onlyItem: {},
   firstItem: {
     borderBottomLeftRadius: rounding.segmentedBetweenRadius,

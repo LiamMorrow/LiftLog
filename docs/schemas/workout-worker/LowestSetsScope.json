@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "lowestSets"
+    },
+    "pick": {
+      "type": "string",
+      "enum": [
+        "first",
+        "middle",
+        "last",
+        "all"
+      ]
+    }
+  },
+  "required": [
+    "type",
+    "pick"
+  ],
+  "description": "Ranks by the rule's own axis, so a reps rule picks the smallest target rather than the smallest weight."
+}

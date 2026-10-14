@@ -1,6 +1,10 @@
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
-import ListSwitch from '@/components/presentation/foundation/list-switch';
-import SelectButton, { SelectButtonOption } from '@/components/presentation/foundation/select-button';
+import Button from '@/components/presentation/foundation/button';
+import { Pager } from '@/components/presentation/foundation/pager';
+import { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
+import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
+import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
+import { SegmentedListSelect } from '@/components/presentation/foundation/segmented-list-select';
+import Icon from '@/components/presentation/foundation/icon';
 import ThemeChooser from '@/components/presentation/foundation/editors/theme-chooser';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { supportedLanguages } from '@/services/tolgee';
@@ -8,29 +12,33 @@ import { useAppSelector } from '@/store';
 import {
   setColorSchemeSeed,
   setFirstDayOfWeek,
+  setLastSeenWhatsNewId,
   setPreferredLanguage,
   setRestNotifications,
   setShowFeed,
+  setThemeMode,
   setTrueBlackDarkTheme,
   setUseImperialUnits,
   setWelcomeWizardCompleted,
 } from '@/store/settings';
+import { latestWhatsNewId } from '@/models/whats-new';
 import { getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { useMemo, useState } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
-import { List, Portal, Text } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Portal, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
+import { openUrl } from '@/utils/open-url';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { requestPermissionsAsync } from 'expo-notifications';
-import { HealthExportSwitch } from './health-export-switch';
+import { HealthExportSwitch, useCanExportHealth } from './health-export-switch';
 
 export function WelcomeWizard() {
   const notificationsEnabled = useAppSelector((x) => x.settings.restNotifications);
   const formatDate = useFormatDate();
-  const daysOfWeekOptions: SelectButtonOption<DayOfWeek>[] = [
+  const daysOfWeekOptions: SelectPickerOption<DayOfWeek>[] = [
     {
       value: DayOfWeek.SUNDAY,
       label: formatDate(getDateOnDay(DayOfWeek.SUNDAY), { weekday: 'long' }),
@@ -67,11 +75,9 @@ export function WelcomeWizard() {
   const welcomeWizardCompleted = settings.welcomeWizardCompleted;
   const { colors } = useAppTheme();
   const [currentPage, setCurrentPage] = useState(0);
-  const openUrl = (url: string) => {
-    void Linking.canOpenURL(url).then(() => Linking.openURL(url));
-  };
+  const canExportHealth = useCanExportHealth();
 
-  const languageOptions: SelectButtonOption<string | undefined>[] = useMemo(
+  const languageOptions: SelectPickerOption<string | undefined>[] = useMemo(
     () => [
       {
         value: undefined,
@@ -89,6 +95,7 @@ export function WelcomeWizard() {
       setCurrentPage(currentPage + 1);
     } else {
       dispatch(setWelcomeWizardCompleted(true));
+      dispatch(setLastSeenWhatsNewId(latestWhatsNewId));
       if (notificationsEnabled) {
         await requestPermissionsAsync();
       }
@@ -113,18 +120,24 @@ export function WelcomeWizard() {
       </View>
 
       <View style={styles.settingsSection}>
-        <Text variant="titleMedium" style={styles.sectionTitle}>
-          {t('onboarding.open_source.title')}
-        </Text>
+        <Text variant="titleMedium">{t('onboarding.open_source.title')}</Text>
         <Text variant="bodyMedium" style={styles.sectionDescription}>
           {t('onboarding.open_source.body')}
         </Text>
-        <Button onPress={() => openUrl('https://github.com/LiamMorrow/LiftLog')}>
-          {t('onboarding.open_source.button')}
-        </Button>
-        <Button onPress={() => openUrl('https://liftlog.online/privacy.html')}>
-          {t('onboarding.privacy_policy.button')}
-        </Button>
+        <SegmentedGroup>
+          <SegmentListFormElement
+            label={t('onboarding.open_source.button')}
+            icon={'link'}
+            onPress={() => openUrl('https://github.com/LiamMorrow/LiftLog')}
+            right={<Icon source="openInBrowser" size={20} />}
+          />
+          <SegmentListFormElement
+            label={t('onboarding.privacy_policy.button')}
+            icon={'description'}
+            onPress={() => openUrl('https://liftlog.online/privacy.html')}
+            right={<Icon source="openInBrowser" size={20} />}
+          />
+        </SegmentedGroup>
       </View>
     </View>
   );
@@ -141,39 +154,38 @@ export function WelcomeWizard() {
       </View>
 
       <View style={styles.settingsSection}>
-        <ListSwitch
-          headline={t('settings.use_imperial_units.label')}
-          supportingText={t('settings.use_imperial_units.subtitle')}
-          value={settings.useImperialUnits}
-          onValueChange={(value) => dispatch(setUseImperialUnits(value))}
-        />
-        <List.Item
-          title={t('settings.first_day_of_week.label')}
-          description={t('settings.first_day_of_week.subtitle')}
-          right={() => (
-            <SelectButton
-              value={settings.firstDayOfWeek}
-              options={daysOfWeekOptions}
-              onChange={(value) => dispatch(setFirstDayOfWeek(value))}
-            />
-          )}
-        />
-        <List.Item
-          title={t('settings.set_language.button')}
-          description={t('settings.set_language.subtitle')}
-          right={() => (
-            <SelectButton
-              value={settings.preferredLanguage}
-              options={languageOptions}
-              onChange={(value) => dispatch(setPreferredLanguage(value))}
-            />
-          )}
-        />
+        <SegmentedGroup>
+          <SegmentedListSwitch
+            label={t('settings.use_imperial_units.label')}
+            icon={'weight'}
+            supportingText={t('settings.use_imperial_units.subtitle')}
+            value={settings.useImperialUnits}
+            onValueChange={(value) => dispatch(setUseImperialUnits(value))}
+          />
+          <SegmentedListSelect
+            label={t('settings.first_day_of_week.label')}
+            icon={'calendar'}
+            supportingText={t('settings.first_day_of_week.subtitle')}
+            value={settings.firstDayOfWeek}
+            options={daysOfWeekOptions}
+            onChange={(value) => dispatch(setFirstDayOfWeek(value))}
+          />
+          <SegmentedListSelect
+            label={t('settings.set_language.button')}
+            icon={'language'}
+            supportingText={t('settings.set_language.subtitle')}
+            value={settings.preferredLanguage}
+            options={languageOptions}
+            onChange={(value) => dispatch(setPreferredLanguage(value))}
+          />
+        </SegmentedGroup>
         <ThemeChooser
           seed={settings.colorSchemeSeed}
           onUpdateTheme={(x) => dispatch(setColorSchemeSeed(x))}
           setTrueBlack={(b) => dispatch(setTrueBlackDarkTheme(b))}
           trueBlack={settings.trueBlackDarkTheme}
+          themeMode={settings.themeMode}
+          setThemeMode={(m) => dispatch(setThemeMode(m))}
         />
       </View>
     </View>
@@ -191,66 +203,51 @@ export function WelcomeWizard() {
       </View>
 
       <View style={styles.settingsSection}>
-        <Text variant="titleMedium" style={styles.sectionTitle}>
-          {t('settings.notifications.title')}
-        </Text>
-        <ListSwitch
-          headline={t('rest.notifications.title')}
-          supportingText={t('rest.notifications.subtitle')}
-          value={settings.restNotifications}
-          onValueChange={(value) => dispatch(setRestNotifications(value))}
-        />
+        <Text variant="titleMedium">{t('settings.notifications.title')}</Text>
+        <SegmentedGroup>
+          <SegmentedListSwitch
+            label={t('rest.notifications.title')}
+            icon={'notifications'}
+            supportingText={t('rest.notifications.subtitle')}
+            value={settings.restNotifications}
+            onValueChange={(value) => dispatch(setRestNotifications(value))}
+          />
+        </SegmentedGroup>
 
-        <Text variant="titleMedium" style={[styles.sectionTitle, styles.topSpacing]}>
+        <Text variant="titleMedium" style={styles.topSpacing}>
           {t('feed.feed.title')}
         </Text>
-        <ListSwitch
-          headline={t('feed.show_feed.label')}
-          supportingText={t('feed.show_feed.subtitle')}
-          value={settings.showFeed}
-          onValueChange={(value) => dispatch(setShowFeed(value))}
-        />
-        <HealthExportSwitch />
+        <SegmentedGroup>
+          <SegmentedListSwitch
+            label={t('feed.show_feed.label')}
+            icon={'forum'}
+            supportingText={t('feed.show_feed.subtitle')}
+            value={settings.showFeed}
+            onValueChange={(value) => dispatch(setShowFeed(value))}
+          />
+          {canExportHealth ? <HealthExportSwitch /> : undefined}
+        </SegmentedGroup>
       </View>
     </View>
   );
 
-  const renderPage = () => {
-    switch (currentPage) {
-      case 0:
-        return renderCrashReportsPage();
-      case 1:
-        return renderLocalizationPage();
-      case 2:
-        return renderNotificationsAndFeedPage();
-      default:
-        return null;
-    }
-  };
   return (
     !welcomeWizardCompleted && (
       <Portal>
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface }}>
           <View style={[styles.container]}>
-            {renderPage()}
+            <Pager fill page={currentPage} onPageChange={setCurrentPage}>
+              {renderCrashReportsPage()}
+              {renderLocalizationPage()}
+              {renderNotificationsAndFeedPage()}
+            </Pager>
 
             <View style={styles.footer}>
-              <View style={styles.pageIndicator}>
-                {Array.from({ length: totalPages }).map((_, index) => (
-                  <View key={index} style={[styles.dot, currentPage === index && styles.activeDot]} />
-                ))}
-              </View>
-
               <View style={styles.buttonRow}>
                 <Button mode="text" onPress={handlePrevious} disabled={currentPage === 0} style={styles.button}>
                   {t('generic.previous.button')}
                 </Button>
-                <Button
-                  mode="contained"
-                  testID="welcome-wizard-next"
-                  onPress={() => void handleNext()}
-                  style={styles.button}
-                >
+                <Button mode="contained" onPress={() => void handleNext()} style={styles.button}>
                   {currentPage === totalPages - 1 ? t('onboarding.get_started.button') : t('generic.next.button')}
                 </Button>
               </View>
@@ -284,16 +281,11 @@ const styles = StyleSheet.create({
   },
   settingsSection: {
     flex: 1,
-  },
-  sectionTitle: {
-    marginBottom: spacing[2],
-    marginTop: spacing[4],
-    marginHorizontal: spacing.pageHorizontalMargin,
+    paddingHorizontal: spacing.pageHorizontalMargin,
+    gap: spacing[4],
   },
   sectionDescription: {
     opacity: 0.7,
-    marginBottom: spacing[4],
-    marginHorizontal: spacing.pageHorizontalMargin,
   },
   topSpacing: {
     marginTop: spacing[6],
@@ -301,23 +293,6 @@ const styles = StyleSheet.create({
   footer: {
     padding: spacing.pageHorizontalMargin,
     paddingBottom: spacing[8],
-    marginTop: 'auto',
-  },
-  pageIndicator: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: spacing[4],
-    gap: spacing[2],
-  },
-  dot: {
-    width: spacing[2],
-    height: spacing[2],
-    borderRadius: spacing[1],
-    backgroundColor: 'rgba(128, 128, 128, 0.3)',
-  },
-  activeDot: {
-    backgroundColor: 'rgba(128, 128, 128, 0.8)',
-    width: spacing[6],
   },
   buttonRow: {
     flexDirection: 'row',

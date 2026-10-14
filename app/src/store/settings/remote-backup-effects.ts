@@ -1,6 +1,8 @@
+import { backendHeaderRecord, backupUrl } from '@/models/backend';
 import { RemoteData } from '@/models/remote';
-import { AddEffectFn } from '@/store/store';
-import { executeRemoteBackup, remoteBackupSucceeded, setLastBackup, setRemoteBackupSettings } from '@/store/settings';
+import { selectBackendForFeature } from '@/store/backends';
+import { AddEffectFn, RootState } from '@/store/store';
+import { executeRemoteBackup, remoteBackupSucceeded, setLastBackup } from '@/store/settings';
 import { showSnackbar } from '@/store/app';
 import { toUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
 import { Instant } from '@js-joda/core';
@@ -12,7 +14,7 @@ export function addRemoteBackupEffects(addEffect: AddEffectFn) {
   addEffect(
     executeRemoteBackup,
     async (
-      { payload: { settings, force } },
+      { payload: { backend, force } },
       {
         getState,
         dispatch,
@@ -23,12 +25,15 @@ export function addRemoteBackupEffects(addEffect: AddEffectFn) {
     ) => {
       cancelActiveListeners();
       const start = performance.now();
-      settings ??= getState().settings.remoteBackupSettings;
-      const { endpoint, apiKey, includeFeedAccount } = settings;
 
-      if (!endpoint?.trim()) {
+      const target = backend
+        ? { backend, url: backupUrl(backend), headers: backendHeaderRecord(backend) }
+        : resolveBackendTarget(getState());
+      if (!target) {
         return;
       }
+
+      const includeFeedAccount = getState().settings.backupIncludeFeedAccount;
 
       try {
         throwIfCancelled();
@@ -54,27 +59,17 @@ export function addRemoteBackupEffects(addEffect: AddEffectFn) {
           loading: () => null,
           notAsked: () => null,
         });
-        console.log(`Calculated Hash ${hashString} in `, performance.now() - start);
 
-        if (!force && lastBackupData?.lastSuccessfulRemoteBackupHash === hashString) {
+        const sameBackend = lastBackupData?.backendId === target.backend.id;
+        if (!force && sameBackend && lastBackupData?.lastSuccessfulRemoteBackupHash === hashString) {
           return;
         }
 
         throwIfCancelled();
 
-        // Prepare HTTP request
-        const headers: Record<string, string> = {
-          'Content-Type': 'application/octet-stream',
-        };
-
-        if (apiKey?.trim()) {
-          headers['X-Api-Key'] = apiKey;
-        }
-
-        // Send backup request with abort signal
-        const response = await fetch(endpoint, {
+        const response = await fetch(target.url, {
           method: 'POST',
-          headers,
+          headers: { 'Content-Type': 'application/octet-stream', ...target.headers },
           body: daoBytes,
         });
 
@@ -84,25 +79,17 @@ export function addRemoteBackupEffects(addEffect: AddEffectFn) {
 
         throwIfCancelled();
 
-        // Update state on success
-        const now = Instant.now();
         dispatch(
           setLastBackup(
             RemoteData.success({
               lastSuccessfulRemoteBackupHash: hashString,
-              lastBackupTime: now,
-              settings,
+              lastBackupTime: Instant.now(),
+              backendId: target.backend.id,
             }),
           ),
         );
         if (force) {
-          dispatch(
-            showSnackbar({
-              text: 'Success!',
-              action: tolgee.t('generic.save.button'),
-              dispatchAction: setRemoteBackupSettings(settings),
-            }),
-          );
+          dispatch(showSnackbar({ text: tolgee.t('backup.sent_successfully.message') }));
         }
         dispatch(remoteBackupSucceeded());
 
@@ -138,6 +125,15 @@ export function addRemoteBackupEffects(addEffect: AddEffectFn) {
         // Update state to indicate failure
         dispatch(setLastBackup(RemoteData.error(errorMessage)));
       }
+      logger.log(`executeRemoteBackup took ${(performance.now() - start).toFixed(2)}ms`);
     },
   );
+}
+
+function resolveBackendTarget(state: RootState) {
+  const resolved = selectBackendForFeature(state, 'backup');
+  if (!resolved) {
+    return undefined;
+  }
+  return { backend: resolved.backend, url: backupUrl(resolved.backend), headers: resolved.headers };
 }

@@ -1,12 +1,12 @@
 import {
-  KeyedExerciseBlueprint,
+  ProgressionKey,
   SessionBlueprint,
   ExerciseBlueprint,
   CardioExerciseBlueprint,
+  applyProgression,
 } from '@/models/blueprint-models';
 import { Weight, WeightUnit } from '@/models/weight';
 import {
-  EmptySession,
   PotentialSet,
   RecordedCardioExercise,
   RecordedCardioExerciseSet,
@@ -14,84 +14,51 @@ import {
   RecordedWeightedExercise,
   Session,
 } from '@/models/session-models';
-import { ProgressRepository } from '@/services/progress-repository';
+import { readLatestExercises, readSessionToContinueFrom } from '@/db/sessions';
 import type { RootState } from '@/store';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
+import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { match } from 'ts-pattern';
 
 export class SessionService {
   constructor(
-    private progressRepository: ProgressRepository,
+    private db: ExpoSQLiteDatabase,
     private getState: () => RootState,
   ) {}
 
-  async *getUpcomingSessions(
-    sessionBlueprints: SessionBlueprint[],
-    latestExercises: Record<string, RecordedExercise | undefined>, // KeyedExerciseBlueprint -> Exercise
-  ): AsyncIterableIterator<Session> {
-    const currentState = this.getState();
-    const currentSession = currentState.currentSession.workoutSession;
-
-    const firstSessionBlueprint = sessionBlueprints[0];
-    if (!firstSessionBlueprint) {
+  async *getUpcomingSessions(sessionBlueprints: SessionBlueprint[]): AsyncIterableIterator<Session> {
+    if (!sessionBlueprints.length) {
       return;
     }
-    await yieldToEventLoop();
 
-    let latestSession =
-      currentSession ?? this.progressRepository.getOrderedSessions().firstOrDefault((x) => !x.isFreeform);
+    const latestExercises = readLatestExercises(
+      this.db,
+      sessionBlueprints.flatMap((session) => session.exercises.map((exercise) => exercise.progressionKey())),
+    );
+    const previousSession = readSessionToContinueFrom(this.db);
 
-    await yieldToEventLoop();
-    if (!latestSession) {
-      latestSession = this.createNewSession(firstSessionBlueprint, latestExercises);
-      yield latestSession;
-    }
+    // Track the plan position by index so progression walks the plan in order.
+    // Matching only by name would stall on duplicate-named workouts, always
+    // resolving to the first one and never advancing past it.
+    let index = previousSession ? sessionBlueprints.findIndex((x) => x.name === previousSession.name) : -1;
 
     while (true) {
-      latestSession = this.getNextSession(latestSession, sessionBlueprints, latestExercises);
-      yield latestSession;
+      index = (index + 1) % sessionBlueprints.length;
+      yield this.createNewSession(sessionBlueprints[index]!, latestExercises).with({
+        bodyweight: previousSession?.bodyweight,
+      });
     }
-  }
-
-  public hydrateSessionFromBlueprint(
-    blueprint: SessionBlueprint,
-    latestExercises: Record<string, RecordedExercise | undefined>, // KeyedExerciseBlueprint -> Exercise
-  ): Session {
-    return this.createNewSession(blueprint, latestExercises);
-  }
-
-  private getNextSession(
-    previousSession: Session,
-    sessionBlueprints: SessionBlueprint[],
-    latestRecordedExercises: Record<
-      string, //KeyedExerciseBlueprint,
-      RecordedExercise | undefined
-    >,
-  ): Session {
-    const lastBlueprint = previousSession.blueprint;
-    const lastBlueprintIndex = sessionBlueprints.findIndex((x) => x.name === lastBlueprint.name);
-    const nextBlueprint = sessionBlueprints[(lastBlueprintIndex + 1) % sessionBlueprints.length];
-    if (!nextBlueprint) {
-      return EmptySession.with({ id: uuid() });
-    }
-
-    return this.createNewSession(nextBlueprint, latestRecordedExercises).with({
-      bodyweight: previousSession.bodyweight,
-    });
   }
 
   private createNewSession(
     sessionBlueprint: SessionBlueprint,
-    latestRecordedExercises: Record<
-      string, //KeyedExerciseBlueprint,
-      RecordedExercise | undefined
-    >,
+    latestRecordedExercises: Record<ProgressionKey, RecordedExercise | undefined>,
   ): Session {
     // oxlint-disable-next-line typescript/no-this-alias
     const $this = this;
     function getNextExercise(e: ExerciseBlueprint): RecordedExercise {
-      const lastExercise = latestRecordedExercises[KeyedExerciseBlueprint.fromExerciseBlueprint(e).toString()];
+      const lastExercise = latestRecordedExercises[e.progressionKey()];
       if (e instanceof CardioExerciseBlueprint) {
         const cardioLastExercise = lastExercise instanceof RecordedCardioExercise ? lastExercise : undefined;
         return RecordedCardioExercise.empty(e).with({
@@ -107,18 +74,22 @@ export class SessionService {
       const potentialSets: PotentialSet[] = match(weightedLastExercise)
         .returnType<PotentialSet[]>()
         .with(undefined, () =>
-          Array.from(
-            { length: e.sets },
-            () => new PotentialSet(undefined, new Weight(0, $this.getDefaultWeightUnit())),
-          ),
+          e.plannedSets.map((s) => new PotentialSet(undefined, new Weight(0, $this.getDefaultWeightUnit()), s.reps)),
         )
-        .otherwise((x) => x.potentialSets.map((x) => new PotentialSet(undefined, x.weight)));
-      let newExercise = new RecordedWeightedExercise(e, potentialSets, undefined);
-      if (weightedLastExercise?.isSuccessForProgressiveOverload) {
-        newExercise = newExercise.blueprint.progressiveOverload.applyProgressiveOverload(newExercise);
-      }
-
-      return newExercise;
+        // Where reps are what advances, the target carries forward alongside the weight so the
+        // lineage keeps what a rule won for it. Where they are a fixed prescription it is re-seeded
+        // from the plan, because the only thing that could have changed it is an edit to the plan -
+        // and that edit already had its own say in the save-changes dialog.
+        .otherwise((x) =>
+          x.potentialSets.map(
+            (ps, index) =>
+              new PotentialSet(undefined, ps.weight, e.repsAreProgressed ? ps.target : e.repsTargetForSet(index)),
+          ),
+        );
+      const newExercise = new RecordedWeightedExercise(e, potentialSets, undefined);
+      return weightedLastExercise?.isSuccessForProgressiveOverload
+        ? applyProgression(e.progression, newExercise)
+        : newExercise;
     }
     return new Session(
       uuid(),
@@ -134,6 +105,3 @@ export class SessionService {
     return this.getState().settings.useImperialUnits ? 'pounds' : 'kilograms';
   }
 }
-
-// Helper function to yield control back to the event loop
-const yieldToEventLoop = () => new Promise((resolve) => setTimeout(resolve, 5));

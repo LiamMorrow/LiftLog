@@ -1,10 +1,9 @@
 import { registerTranslation } from 'react-native-paper-dates';
-import { resolveServices } from '@/services';
+import { TolgeeInstance } from '@tolgee/react';
 
-registerTranslation('default', () => {
-  // I don't expect this to cause issues because it will only resolve after rendering, and we should have the services by then
-  const t = resolveServices(null!, null!, null!).tolgee.t;
-  return {
+export function registerDateTranslations(tolgee: TolgeeInstance) {
+  const t = tolgee.t;
+  registerTranslation('default', {
     save: t('generic.save.button'),
     selectSingle: t('date.select.button'),
     selectMultiple: t('date.select_multiple.button'),
@@ -21,5 +20,5 @@ registerTranslation('default', () => {
     close: t('generic.close.button'),
     minute: t('generic.minute.label'),
     hour: t('generic.hour.label'),
-  };
-});
+  });
+}

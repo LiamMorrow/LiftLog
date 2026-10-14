@@ -1,33 +1,48 @@
-import { RecordedExercise, Session } from '@/models/session-models';
-import {
-  NormalizedName,
-  NormalizedNameKey,
-  ExerciseBlueprint,
-  KeyedExerciseBlueprint,
-} from '@/models/blueprint-models';
-import { LocalDate, OffsetDateTime, YearMonth, ZoneId } from '@js-joda/core';
-import { createAction, createSelector, createSlice, PayloadAction, WritableDraft } from '@reduxjs/toolkit';
+import { Session } from '@/models/session-models';
+import { OffsetDateTime, ZoneId } from '@js-joda/core';
+import { createAction, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import Enumerable from 'linq';
-import { TemporalComparer } from '@/models/comparers';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 
 interface StoredSessionState {
   isHydrated: boolean;
-  sessions: Record<string, Session>;
-  latestExercises: Record<string, RecordedExercise | undefined>; // KeyedExerciseBlueprint -> RecordedExercise
+  // Sessions being edited: the workout in progress, and a past one while it is open in History. Edits land
+  // here first and are written through to the database. Every other session is only in the database.
+  openSessions: Record<string, Session>;
+  // The workout in progress. It lives in `openSessions` like any other; this only says which one it is.
+  activeSessionId: string | undefined;
+  // Read-only catalog resolved for the current locale, keyed by the exercise's English name.
+  builtInExercises: Record<string, ExerciseDescriptor>;
+  // User-created exercises and copy-on-write edits of built-ins.
   savedExercises: Record<string, ExerciseDescriptor>;
+  // Built-in ids the user deleted, hidden from the merged list.
+  hiddenBuiltInIds: string[];
   filteredExerciseIds: string[];
-  earliestSession: Session | undefined;
+  // Bumped once a write that changes the set of finished sessions has landed in the database, so screens
+  // that read them from there know to read again.
+  sessionsRevision: number;
 }
 
 const initialState: StoredSessionState = {
   isHydrated: false,
-  sessions: {},
-  latestExercises: {},
+  openSessions: {},
+  activeSessionId: undefined,
+  builtInExercises: {},
   savedExercises: {},
+  hiddenBuiltInIds: [],
   filteredExerciseIds: [],
-  earliestSession: undefined,
+  sessionsRevision: 0,
 };
+
+function mergeExercises(
+  builtIn: Record<string, ExerciseDescriptor>,
+  saved: Record<string, ExerciseDescriptor>,
+  hidden: string[],
+): Record<string, ExerciseDescriptor> {
+  const merged: Record<string, ExerciseDescriptor> = { ...builtIn, ...saved };
+  hidden.forEach((id) => delete merged[id]);
+  return Object.fromEntries(Object.entries(merged).sort((a, b) => a[1].name.localeCompare(b[1].name)));
+}
 
 const storedSessionsSlice = createSlice({
   name: 'storedSessions',
@@ -36,56 +51,90 @@ const storedSessionsSlice = createSlice({
     setIsHydrated(state, action: PayloadAction<boolean>) {
       state.isHydrated = action.payload;
     },
-    setStoredSessions(state, action: PayloadAction<Record<string, Session>>) {
-      state.sessions = action.payload;
-      state.latestExercises = {};
-      Object.values(action.payload).forEach((session) => {
-        updateDerivatives(state, session);
-      });
+    /** Opens a session for editing without writing it, for one that came from the database. */
+    openSession(state, action: PayloadAction<Session>) {
+      state.openSessions[action.payload.id] = action.payload;
     },
 
+    /** The workout in progress stays open, so closing it is a no-op until it is finished. */
+    closeSession(state, action: PayloadAction<string>) {
+      if (state.activeSessionId !== action.payload) {
+        delete state.openSessions[action.payload];
+      }
+    },
+
+    /** Writes sessions without opening them. One that is already open takes the written content. */
     upsertStoredSessions(state, action: PayloadAction<Session[]>) {
       action.payload.forEach((session) => {
-        state.sessions[session.id] = session;
-        updateDerivatives(state, session);
+        if (state.openSessions[session.id]) {
+          state.openSessions[session.id] = session;
+        }
       });
     },
 
-    addStoredSession(state, action: PayloadAction<Session>) {
-      state.sessions[action.payload.id] = action.payload;
-      updateDerivatives(state, action.payload);
+    /** Opens a session and writes it. */
+    putStoredSession(state, action: PayloadAction<Session>) {
+      state.openSessions[action.payload.id] = action.payload;
+    },
+
+    /** Applies an edit to one session, addressed by id so it cannot land on the wrong one. */
+    updateStoredSession(
+      state,
+      action: PayloadAction<{
+        sessionId: string;
+        update: (session: Session) => Session;
+      }>,
+    ) {
+      const session = state.openSessions[action.payload.sessionId] as Session | undefined;
+      if (!session) {
+        return;
+      }
+      state.openSessions[action.payload.sessionId] = action.payload.update(session);
+    },
+
+    sessionsChanged(state) {
+      state.sessionsRevision += 1;
+    },
+
+    setActiveSessionId(state, action: PayloadAction<string | undefined>) {
+      state.activeSessionId = action.payload;
     },
 
     deleteStoredSession(state, action: PayloadAction<string>) {
-      const deletedSession = state.sessions[action.payload];
-      delete state.sessions[action.payload];
-
-      if (!deletedSession) return;
-
-      // Collect the exercise keys that were in the deleted session
-      const affectedKeys = new Set(
-        deletedSession.recordedExercises.map((e) =>
-          KeyedExerciseBlueprint.fromExerciseBlueprint(e.blueprint as ExerciseBlueprint).toString(),
-        ),
-      );
-
-      // For each affected key, clear and recalculate from remaining sessions
-      affectedKeys.forEach((key) => {
-        delete state.latestExercises[key];
-      });
-
-      Object.values(state.sessions).forEach((session) => {
-        updateDerivatives(state, session as Session);
-      });
+      delete state.openSessions[action.payload];
+      if (state.activeSessionId === action.payload) {
+        state.activeSessionId = undefined;
+      }
     },
     updateExercise(state, action: PayloadAction<{ id: string; exercise: ExerciseDescriptor }>) {
       state.savedExercises[action.payload.id] = action.payload.exercise;
+      state.hiddenBuiltInIds = state.hiddenBuiltInIds.filter((x) => x !== action.payload.id);
+    },
+    upsertExercises(state, action: PayloadAction<Record<string, ExerciseDescriptor>>) {
+      Object.assign(state.savedExercises, action.payload);
+      state.hiddenBuiltInIds = state.hiddenBuiltInIds.filter((x) => !action.payload[x]);
     },
     deleteExercise(state, action: PayloadAction<string>) {
-      delete state.savedExercises[action.payload];
+      if (state.builtInExercises[action.payload]) {
+        // Deleting a built-in tombstones it (its override row, if any, is kept for undo).
+        if (!state.hiddenBuiltInIds.includes(action.payload)) {
+          state.hiddenBuiltInIds.push(action.payload);
+        }
+      } else {
+        delete state.savedExercises[action.payload];
+      }
+    },
+    restoreExercise(state, action: PayloadAction<string>) {
+      state.hiddenBuiltInIds = state.hiddenBuiltInIds.filter((x) => x !== action.payload);
     },
     setExercises(state, action: PayloadAction<Record<string, ExerciseDescriptor>>) {
       state.savedExercises = action.payload;
+    },
+    setBuiltInExercises(state, action: PayloadAction<Record<string, ExerciseDescriptor>>) {
+      state.builtInExercises = action.payload;
+    },
+    setHiddenBuiltInIds(state, action: PayloadAction<string[]>) {
+      state.hiddenBuiltInIds = action.payload;
     },
     setFilteredExerciseIds(state, action: PayloadAction<string[]>) {
       state.filteredExerciseIds = action.payload;
@@ -93,128 +142,60 @@ const storedSessionsSlice = createSlice({
   },
 
   selectors: {
-    selectLatestExercises: createSelector([(state: StoredSessionState) => state.latestExercises], (exercises) =>
-      Object.fromEntries(Object.entries(exercises).map(([key, exercise]) => [key, exercise ? exercise : undefined])),
-    ),
-    selectSessions: createSelector([(state: StoredSessionState) => state.sessions], (sessions) =>
-      Object.values(sessions),
-    ),
+    /** Only finds an open session. Any other is read from the database. */
     selectSession: createSelector(
-      [(state: StoredSessionState) => state.sessions, (_, id: string) => id],
+      [(state: StoredSessionState) => state.openSessions, (_, id: string) => id],
       (sessions, id) => sessions[id],
     ),
-    selectCompletedDistinctSessionNames: createSelector(
-      [(state: StoredSessionState) => state.sessions, (_, since: LocalDate) => since],
-      (sessions, since) =>
-        Enumerable.from(Object.values(sessions))
-          .where((x) => x.date.isAfter(since) || x.date.isEqual(since))
-          .select((x) => x.blueprint.name)
-          .distinct()
-          .toArray(),
-    ),
+    selectActiveSessionId: (state: StoredSessionState) => state.activeSessionId,
 
-    selectExercises: (state: StoredSessionState) => state.savedExercises,
-    selectExerciseById: createSelector(
-      [(state: StoredSessionState) => state.savedExercises, (_, id: string) => id],
-      (exercises, id) => exercises[id],
-    ),
+    selectSessionsRevision: (state: StoredSessionState) => state.sessionsRevision,
 
-    selectExerciseIds: (state: StoredSessionState) => Object.keys(state.savedExercises),
+    selectActiveSession: (state: StoredSessionState) =>
+      state.activeSessionId === undefined ? undefined : state.openSessions[state.activeSessionId],
+
+    selectExercises: createSelector(
+      [
+        (state: StoredSessionState) => state.builtInExercises,
+        (state: StoredSessionState) => state.savedExercises,
+        (state: StoredSessionState) => state.hiddenBuiltInIds,
+      ],
+      mergeExercises,
+    ),
   },
 });
-
-function updateDerivatives(state: WritableDraft<StoredSessionState>, session: Session) {
-  if (!state.earliestSession || state.earliestSession.date.isAfter(session.date)) {
-    state.earliestSession = session;
-  }
-  session.recordedExercises.forEach((exercise) => {
-    const key = KeyedExerciseBlueprint.fromExerciseBlueprint(exercise.blueprint).toString();
-    const latestExercise = state.latestExercises[key];
-    if (!latestExercise || latestExercise.latestTime?.isBefore(exercise.latestTime ?? OffsetDateTime.MIN)) {
-      state.latestExercises[key] = exercise;
-    }
-  });
-}
-
-export const selectSessionsBy = createSelector(
-  [
-    storedSessionsSlice.selectors.selectSessions,
-    (_, minDate: LocalDate) => minDate,
-    (_, __, maxDate: LocalDate) => maxDate,
-  ],
-  (sessions, minDate, maxDate) =>
-    Object.values(sessions).filter(
-      (x) =>
-        (x.date.isAfter(minDate) || x.date.isEqual(minDate)) && (x.date.isBefore(maxDate) || x.date.isEqual(maxDate)),
-    ),
-);
 
 export const initializeStoredSessionsStateSlice = createAction('initializeStoredSessionsStateSlice');
 
 export const {
   setIsHydrated,
-  setStoredSessions,
+  openSession,
+  closeSession,
   upsertStoredSessions,
-  addStoredSession,
+  putStoredSession,
+  updateStoredSession,
+  sessionsChanged,
+  setActiveSessionId,
   deleteStoredSession,
   updateExercise,
+  upsertExercises,
   deleteExercise,
+  restoreExercise,
   setExercises,
+  setBuiltInExercises,
+  setHiddenBuiltInIds,
   setFilteredExerciseIds,
 } = storedSessionsSlice.actions;
 
-export const { selectSessions, selectSession, selectExercises, selectLatestExercises, selectExerciseById } =
+export const { selectSession, selectActiveSession, selectActiveSessionId, selectSessionsRevision, selectExercises } =
   storedSessionsSlice.selectors;
 
-const selectLatestOrderedRecordedExercises = createSelector(
-  [storedSessionsSlice.selectors.selectSessions, (_, maxRecordsPerExercise: number) => maxRecordsPerExercise],
-  (sessions, maxRecordsPerExercise): Record<NormalizedNameKey, RecordedExercise[]> => {
-    return Enumerable.from(sessions)
-      .selectMany((x) => x.recordedExercises.filter((x) => x.isStarted))
-      .groupBy((x) => NormalizedName.fromExerciseBlueprint(x.blueprint).toString())
-      .toObject(
-        (x) => x.key(),
-        (x) =>
-          x
-            .orderByDescending((x) => x.latestTime, TemporalComparer)
-            .take(maxRecordsPerExercise)
-            .toArray(),
-      );
-  },
-);
+/** Fired when a session is done being edited: publish it, export it, and re-derive what depends on it. */
+export const sessionFinished = createAction<string>('sessionFinished');
 
-export const selectRecentlyCompletedExercises = createSelector(
-  selectLatestOrderedRecordedExercises,
-  (recentlyCompletedExercises) =>
-    (blueprint: ExerciseBlueprint): RecordedExercise[] =>
-      recentlyCompletedExercises[NormalizedName.fromExerciseBlueprint(blueprint).toString()] ?? [],
-);
-
-export const selectPreviousComparableSession = createSelector(
-  [selectSessions, (_, session: Session | undefined) => session],
-  (sessions, session) => {
-    if (!session) {
-      return undefined;
-    }
-
-    const sessionReferenceTime = getSessionReferenceTime(session);
-    const previousSessions = Enumerable.from(sessions)
-      .where((storedSession) => storedSession.id !== session.id)
-      .where(
-        (storedSession) =>
-          getSessionReferenceTime(storedSession).toEpochSecond() < sessionReferenceTime.toEpochSecond(),
-      )
-      .orderByDescending((storedSession) => getSessionReferenceTime(storedSession), TemporalComparer);
-
-    return previousSessions.firstOrDefault((storedSession) => storedSession.blueprint.name === session.blueprint.name);
-  },
-);
-
-export const selectSessionsInMonth = createSelector([selectSessions, (_, ym: YearMonth) => ym], (sessions, ym) =>
-  Enumerable.from(sessions)
-    .where((x) => x.date.year() === ym.year() && x.date.month().equals(ym.month()))
-    .orderByDescending((x) => getSessionReferenceTime(x), TemporalComparer)
-    .toArray(),
+export const selectExerciseById = createSelector(
+  [selectExercises, (_, id: string) => id],
+  (exercises, id) => exercises[id],
 );
 
 export const selectMuscles = createSelector([selectExercises], (exercises) =>

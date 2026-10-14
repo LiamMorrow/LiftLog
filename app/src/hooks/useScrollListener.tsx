@@ -1,10 +1,12 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react';
 import { Animated, ColorValue, NativeScrollEvent, NativeSyntheticEvent, useAnimatedValue } from 'react-native';
 
 type ScrollContextValues = {
   isScrolled: boolean;
   setScrolled: (_: boolean) => void;
+  isScrollingDown: boolean;
+  setScrollingDown: (_: boolean) => void;
   handleScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 };
 
@@ -12,6 +14,8 @@ type ScrollContextValues = {
 const ScrollContext = createContext<ScrollContextValues>({
   isScrolled: false,
   setScrolled: (_: boolean) => {},
+  isScrollingDown: false,
+  setScrollingDown: (_: boolean) => {},
   handleScroll: (_event: NativeSyntheticEvent<NativeScrollEvent>) => {},
 });
 
@@ -36,12 +40,15 @@ export const ScrollProvider = ({
   setScrolled: setScrolledOverride,
 }: ScrollProviderProps) => {
   const [isScrolledGlobal, setScrolledGlobal] = useState(false);
+  const [isScrollingDown, setScrollingDown] = useState(false);
 
   return (
     <ScrollContext.Provider
       value={{
         isScrolled: isScrolledOverride ?? isScrolledGlobal,
         setScrolled: setScrolledOverride ?? setScrolledGlobal,
+        isScrollingDown,
+        setScrollingDown,
         handleScroll: () => {},
       }}
     >
@@ -54,11 +61,17 @@ export const ScrollProvider = ({
 export const useScroll = (invertedScroll?: boolean): ScrollContextValues => {
   const ctx = useContext(ScrollContext);
   const [scrollHandlerLastFired, setScrollHandlerLastFired] = useState<boolean | undefined>(undefined);
+  const lastOffset = useRef(0);
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetY = event.nativeEvent.contentOffset.y;
     const contentHeight = event.nativeEvent.contentSize.height;
     const layoutHeight = event.nativeEvent.layoutMeasurement.height;
     const scrollHeight = contentHeight - layoutHeight;
+
+    // Clamp so that an overscroll bounce past the top doesn't read as scrolling down on the way back.
+    ctx.setScrollingDown(offsetY > Math.max(lastOffset.current, 0));
+    lastOffset.current = offsetY;
+
     const isScrolled = invertedScroll ? offsetY < scrollHeight : offsetY > 0;
     if (scrollHandlerLastFired === isScrolled) {
       return;

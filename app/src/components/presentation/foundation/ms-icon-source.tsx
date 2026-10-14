@@ -9,7 +9,9 @@ import { msContentCopy } from '@material-symbols-react-native/outlined-400/msCon
 import { msDelete } from '@material-symbols-react-native/outlined-400/msDelete';
 import { msEdit } from '@material-symbols-react-native/outlined-400/msEdit';
 import { msFitnessCenter } from '@material-symbols-react-native/outlined-400/msFitnessCenter';
+import { msVisibility } from '@material-symbols-react-native/outlined-400/msVisibility';
 import { msBolt } from '@material-symbols-react-native/outlined-400/msBolt';
+import { msLocalFireDepartment } from '@material-symbols-react-native/outlined-400/msLocalFireDepartment';
 import { msStar } from '@material-symbols-react-native/outlined-400/msStar';
 import { msPromptSuggestion } from '@material-symbols-react-native/outlined-400/msPromptSuggestion';
 import { msCancel } from '@material-symbols-react-native/outlined-400/msCancel';
@@ -19,6 +21,7 @@ import { msHistory } from '@material-symbols-react-native/outlined-400/msHistory
 import { msInfo } from '@material-symbols-react-native/outlined-400/msInfo';
 import { msMoreHoriz } from '@material-symbols-react-native/outlined-400/msMoreHoriz';
 import { msMoreVert } from '@material-symbols-react-native/outlined-400/msMoreVert';
+import { msPersonAdd } from '@material-symbols-react-native/outlined-400/msPersonAdd';
 import { msPersonRemove } from '@material-symbols-react-native/outlined-400/msPersonRemove';
 import { msNotes } from '@material-symbols-react-native/outlined-400/msNotes';
 import { msPlayCircle } from '@material-symbols-react-native/outlined-400/msPlayCircle';
@@ -38,6 +41,8 @@ import { msSettingsBackupRestore } from '@material-symbols-react-native/outlined
 import { msShare } from '@material-symbols-react-native/outlined-400/msShare';
 import { msIosShare } from '@material-symbols-react-native/outlined-400/msIosShare';
 import { msShareWindows } from '@material-symbols-react-native/outlined-400/msShareWindows';
+import { msUpload } from '@material-symbols-react-native/outlined-400/msUpload';
+import { msDownload } from '@material-symbols-react-native/outlined-400/msDownload';
 import { msTextAd } from '@material-symbols-react-native/outlined-400/msTextAd';
 import { msTranslate } from '@material-symbols-react-native/outlined-400/msTranslate';
 import { msWeight } from '@material-symbols-react-native/outlined-400/msWeight';
@@ -55,6 +60,10 @@ import { msDescription } from '@material-symbols-react-native/outlined-400/msDes
 import { msDescriptionFill } from '@material-symbols-react-native/outlined-400/msDescriptionFill';
 import { msVpnKey } from '@material-symbols-react-native/outlined-400/msVpnKey';
 import { msVpnKeyFill } from '@material-symbols-react-native/outlined-400/msVpnKeyFill';
+import { msCloudUploadFill } from '@material-symbols-react-native/outlined-400/msCloudUploadFill';
+import { msDnsFill } from '@material-symbols-react-native/outlined-400/msDnsFill';
+import { msBoltFill } from '@material-symbols-react-native/outlined-400/msBoltFill';
+import { msDns } from '@material-symbols-react-native/outlined-400/msDns';
 import { msPublic } from '@material-symbols-react-native/outlined-400/msPublic';
 import { msPublicFill } from '@material-symbols-react-native/outlined-400/msPublicFill';
 import { msPhysicalTherapy } from '@material-symbols-react-native/outlined-400/msPhysicalTherapy';
@@ -116,6 +125,9 @@ import { msElevation } from '@material-symbols-react-native/outlined-400/msEleva
 import { msAssignmentTurnedIn } from '@material-symbols-react-native/outlined-400/msAssignmentTurnedIn';
 import { msTerminal } from '@material-symbols-react-native/outlined-400/msTerminal';
 import { msTrendingUp } from '@material-symbols-react-native/outlined-400/msTrendingUp';
+import { msCampaign } from '@material-symbols-react-native/outlined-400/msCampaign';
+import { msVisibilityOff } from '@material-symbols-react-native/outlined-400/msVisibilityOff';
+import { msOpenInNew } from '@material-symbols-react-native/outlined-400/msOpenInNew';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -133,6 +145,7 @@ const MaterialSymbols = {
   assignment: msAssignment,
   assignmentFill: msAssignmentFill,
   bugReport: msBugReport,
+  campaign: msCampaign,
   close: msClose,
   contentCopy: msContentCopy,
   copyAll: msCopyAll,
@@ -142,13 +155,17 @@ const MaterialSymbols = {
   edit: msEdit,
   error: msError,
   history: msHistory,
+  openInNew: msOpenInNew,
   info: msInfo,
+  visibility: msVisibility,
+  visibilityOff: msVisibilityOff,
   minus: msRemove,
   trendingUp: msTrendingUp,
   moreHoriz: msMoreHoriz,
   playArrow: msPlayArrow,
   moreVert: msMoreVert,
   notes: msNotes,
+  personAdd: msPersonAdd,
   personRemove: msPersonRemove,
   heartCheck: msHeartCheck,
   cancel: msCancel,
@@ -164,6 +181,7 @@ const MaterialSymbols = {
   promptSuggestion: msPromptSuggestion,
   send: msSend,
   bolt: msBolt,
+  localFireDepartment: msLocalFireDepartment,
   link: msLink,
   steps: msSteps,
   elevation: msElevation,
@@ -189,6 +207,10 @@ const MaterialSymbols = {
   stop: msStop,
   replay: msReplay,
   vpnKeyFill: msVpnKeyFill,
+  cloudUploadFill: msCloudUploadFill,
+  dnsFill: msDnsFill,
+  boltFill: msBoltFill,
+  dns: msDns,
   share: Platform.select({
     ios: msIosShare,
     android: msShare,
@@ -215,6 +237,8 @@ const MaterialSymbols = {
   calendar: msCalendarMonth,
   'calendar-blank': msCalendarToday,
   cloudUpload: msCloudUpload,
+  upload: msUpload,
+  download: msDownload,
   translate: msTranslate,
   weight: msWeight,
   avgTime: msAvgTime,

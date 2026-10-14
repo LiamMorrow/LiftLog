@@ -98,8 +98,12 @@ export interface RsaPublicKeyJSON {
   spkiPublicKeyBytes: Base64Uint8ArrayJSON;
 }
 
+export type AesAlgorithm = 'AES-CBC' | 'AES-GCM';
+
 export interface AesKeyJSON {
   value: Base64Uint8ArrayJSON;
+  /** Absent on keys written before the algorithm was recorded, which are all AES-CBC. */
+  algorithm?: AesAlgorithm;
 }
 
 export interface RsaPrivateKeyJSON {
@@ -130,6 +134,7 @@ export interface RsaPublicKey {
 
 export interface AesKey {
   value: Uint8Array;
+  algorithm: AesAlgorithm;
 }
 
 export interface RsaPrivateKey {
@@ -166,10 +171,10 @@ export function toRsaPublicKeyJSON(value: RsaPublicKey): RsaPublicKeyJSON {
 }
 
 export function fromAesKeyJSON(json: AesKeyJSON): AesKey {
-  return { value: fromBase64Uint8ArrayJSON(json.value) };
+  return { value: fromBase64Uint8ArrayJSON(json.value), algorithm: json.algorithm ?? 'AES-CBC' };
 }
 export function toAesKeyJSON(value: AesKey): AesKeyJSON {
-  return { value: toBase64Uint8ArrayJSON(value.value) };
+  return { value: toBase64Uint8ArrayJSON(value.value), algorithm: value.algorithm };
 }
 
 export function fromRsaPrivateKeyJSON(json: RsaPrivateKeyJSON): RsaPrivateKey {

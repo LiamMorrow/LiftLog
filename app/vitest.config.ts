@@ -1,5 +1,4 @@
 import { defineConfig, Plugin } from 'vitest/config';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { resolve } from 'path';
 const sqlShim: Plugin = {
   name: 'sql-files',
@@ -13,27 +12,22 @@ const sqlShim: Plugin = {
 const expoSqliteShim: Plugin = {
   name: 'expo-sqlite-shim',
   enforce: 'pre',
-  resolveId(id, importer) {
-    if (id === 'drizzle-orm/expo-sqlite') {
-      return this.resolve('drizzle-orm/libsql', importer, {
-        skipSelf: true,
-      });
-    }
-    if (id === 'drizzle-orm/expo-sqlite/migrator') {
-      return resolve(__dirname, 'test/shims/migrator.ts');
-    }
-    if (id === 'expo-sqlite' || id.startsWith('expo-sqlite/') || id.includes('expo-sqlite')) {
+  resolveId(id) {
+    if (id === 'expo-sqlite' || id.startsWith('expo-sqlite/')) {
       return resolve(__dirname, 'test/shims/expo-sqlite.ts');
     }
   },
 };
 
 export default defineConfig({
+  // Metro injects this; without it anything importing `services/api-consts` throws on load.
+  define: { __DEV__: 'false' },
   test: {
     globals: false,
     environment: 'jsdom',
     include: ['**/*.spec.ts', '**/*.spec.tsx'],
     setupFiles: ['./test/setup.ts'],
+    server: { deps: { inline: [/drizzle-orm\/expo-sqlite/] } },
     coverage: {
       provider: 'v8',
       reporter: ['text-summary', 'html', 'json-summary'],
@@ -54,5 +48,8 @@ export default defineConfig({
       ],
     },
   },
-  plugins: [sqlShim, expoSqliteShim, tsconfigPaths()],
+  resolve: {
+    tsconfigPaths: true,
+  },
+  plugins: [sqlShim, expoSqliteShim],
 });

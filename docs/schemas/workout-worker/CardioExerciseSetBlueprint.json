@@ -22,6 +22,10 @@
     },
     "trackSteps": {
       "type": "boolean"
+    },
+    "restBetweenSets": {
+      "$ref": "./Rest.json",
+      "description": "Absent when the set has no rest - steady-state cardio does not need one."
     }
   },
   "required": [

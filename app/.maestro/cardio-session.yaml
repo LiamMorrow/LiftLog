@@ -1,0 +1,58 @@
+appId: com.limajuice.liftlog
+---
+# Start a freeform workout and add a cardio exercise
+- launchApp
+# A cold dev-client launch can take up to a minute to fetch the bundle from Metro
+- extendedWaitUntil:
+    visible: 'Workout'
+    timeout: 60000
+- tapOn: 'Workout'
+# Text matching is case-insensitive by default, which would also match the "Freeform Workout"
+# cards in the list, so `(?-i)` pins this to the button's own casing.
+- tapOn: '(?-i)Freeform workout'
+# A session left in progress by an earlier run has to be replaced before a fresh one starts
+- runFlow:
+    when:
+      visible: 'Replace current workout?'
+    commands:
+      - tapOn: 'Replace'
+- tapOn: 'Add exercise'
+- tapOn:
+    id: 'cardio-button'
+- back
+
+# The plan says which metrics the set tracks, so its tiles are there before anything is entered.
+- assertVisible:
+    id: 'cardio-duration-tile'
+- assertVisible:
+    id: 'cardio-distance-tile'
+- assertNotVisible:
+    id: 'add-tracker-button'
+
+# Running the clock docks the timer pane; stopping it puts the pane away again.
+- tapOn:
+    id: 'cardio-timer-play-pause'
+- assertVisible:
+    id: 'cardio-timer'
+- tapOn:
+    id: 'cardio-timer-play-pause'
+- assertNotVisible:
+    id: 'cardio-timer'
+
+# Typing is always available: the time tile takes a value without the clock being involved.
+- tapOn:
+    id: 'cardio-duration-tile'
+- tapOn:
+    id: 'duration-editor-seconds'
+- eraseText
+- inputText: '45'
+- hideKeyboard
+- tapOn:
+    id: 'cardio-value-save'
+- assertVisible: '45'
+
+# Finish the (incomplete) session and confirm
+- tapOn:
+    id: 'finish-session-button'
+- tapOn:
+    id: 'action-ok'

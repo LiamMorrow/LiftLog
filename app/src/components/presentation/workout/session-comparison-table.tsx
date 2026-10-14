@@ -1,7 +1,7 @@
-import { NormalizedName } from '@/models/blueprint-models';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { RecordedWeightedExercise, Session } from '@/models/session-models';
+import { MovementKey } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { formatDuration } from '@/utils/format-date';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
@@ -341,7 +341,7 @@ function getWeightedExerciseComparisons(session: Session, previousSession: Sessi
   const currentExerciseTotals = getWeightedExerciseTotals(session);
   const previousExerciseTotals = previousSession
     ? getWeightedExerciseTotals(previousSession)
-    : new Map<string, { name: string; weight: Weight }>();
+    : new Map<MovementKey, { name: string; weight: Weight }>();
 
   return Array.from(currentExerciseTotals.entries()).map(([key, value]) => ({
     key,
@@ -352,14 +352,14 @@ function getWeightedExerciseComparisons(session: Session, previousSession: Sessi
 }
 
 function getWeightedExerciseTotals(session: Session) {
-  const totals = new Map<string, { name: string; weight: Weight }>();
+  const totals = new Map<MovementKey, { name: string; weight: Weight }>();
 
   for (const exercise of session.recordedExercises) {
     if (!(exercise instanceof RecordedWeightedExercise)) {
       continue;
     }
 
-    const key = NormalizedName.fromExerciseBlueprint(exercise.blueprint).toString();
+    const key = exercise.movementKey();
     const existing = totals.get(key);
     totals.set(key, {
       name: existing?.name ?? exercise.blueprint.name,

@@ -1,7 +1,7 @@
 import type { LocalDateJSON, DurationJSON, BigNumberJSON } from '@/models/storage/versions/libs';
 
 export interface ProgramBlueprintJSON {
-  version: 2;
+  version: 3;
   /**
    * Name of the workout program; typically matches the plan name.
    */
@@ -11,7 +11,7 @@ export interface ProgramBlueprintJSON {
 }
 
 export interface SessionBlueprintJSON {
-  version: 2;
+  version: 6;
   name: string;
   exercises: ExerciseBlueprintJSON[];
   notes: string;
@@ -52,6 +52,8 @@ export interface CardioExerciseSetBlueprintJSON {
   trackIncline: boolean;
   trackWeight: boolean;
   trackSteps: boolean;
+  /** Absent when the set has no rest - steady-state cardio does not need one. */
+  restBetweenSets?: RestJSON | undefined;
 }
 
 export interface CardioExerciseBlueprintJSON {
@@ -65,14 +67,8 @@ export interface CardioExerciseBlueprintJSON {
 export interface WeightedExerciseBlueprintJSON {
   type: 'WeightedExerciseBlueprint';
   name: string;
-  /**
-   * @asType integer
-   */
-  sets: number;
-  /**
-   * @asType integer
-   */
-  repsPerSet: number;
+  /** What the plan asks for, one entry per set. */
+  plannedSets: PlannedSetJSON[];
   restBetweenSets: RestJSON;
   /**
    * When true, this exercise is performed back-to-back with the following one
@@ -85,7 +81,32 @@ export interface WeightedExerciseBlueprintJSON {
    * We should not fill this unless the user has explicitly given us a link to fill
    */
   link: string;
-  progressiveOverload: ProgressiveOverloadJSON;
+  /** Ordered; the first rule that can still move, moves. Empty means no automatic progression. */
+  progression: ProgressionRuleJSON[];
+  /**
+   * Where this movement's load comes from: the whole stored weight (`external`), what is added on
+   * top of the lifter (`bodyweight`), or nothing at all (`none`, e.g. crunches).
+   */
+  resistance: ResistanceJSON;
+}
+
+export type ResistanceJSON = 'none' | 'external' | 'bodyweight';
+
+/** What the plan asks for on one set. */
+export interface PlannedSetJSON {
+  reps: RepsTargetJSON;
+}
+
+/** Always a band; `min === max` is a point target. */
+export interface RepsTargetJSON {
+  /**
+   * @asType integer
+   */
+  min: number;
+  /**
+   * @asType integer
+   */
+  max: number;
 }
 
 export interface RestJSON {
@@ -97,39 +118,44 @@ export interface RestJSON {
   failureRest: DurationJSON;
 }
 
-/**
- * Used when the user does not want progressive overload at all. Potentially with bodyweight exercises.
- */
-export interface NoProgressiveOverloadJSON {
-  readonly type: 'NoProgressiveOverload';
-}
-/**
- * The standard "increase every set across the board" progressive overload. Usually 2.5kg, or 5lb.
- */
-export interface IncreaseAllEvenlyProgressiveOverloadJSON {
-  readonly type: 'IncreaseAllEvenlyProgressiveOverload';
-  readonly amount: BigNumberJSON;
+/** Which number a rule moves. */
+export type ProgressionAxisJSON = 'reps' | 'load';
+
+export interface AllSetsScopeJSON {
+  readonly type: 'allSets';
 }
 
-type IncreaseStrategyJSON = 'first' | 'middle' | 'last' | 'all';
+/** Ranks by the rule's own axis, so a reps rule picks the smallest target rather than the smallest weight. */
+export interface LowestSetsScopeJSON {
+  readonly type: 'lowestSets';
+  readonly pick: 'first' | 'middle' | 'last' | 'all';
+}
 
 /**
- * A more complex progressive overload which allows the user to increase only a single set,
- * or all sets which have the lowest weight.
+ * Which sets a rule moves.
  *
- * A user might want to increase the middle weight for exercises where going up
- * across the board would be too much e.g. lateral raises, or other shoulder exercises
- */
-export interface IncreaseLowestSetProgressiveOverloadJSON {
-  readonly type: 'IncreaseLowestSetProgressiveOverload';
-  readonly amount: BigNumberJSON;
-  readonly increaseStrategy: IncreaseStrategyJSON;
-}
-
-/**
  * @discriminator type
  */
-export type ProgressiveOverloadJSON =
-  | NoProgressiveOverloadJSON
-  | IncreaseAllEvenlyProgressiveOverloadJSON
-  | IncreaseLowestSetProgressiveOverloadJSON;
+export type SetScopeJSON = AllSetsScopeJSON | LowestSetsScopeJSON;
+
+/** What has to happen for a rule to fire. */
+export type SuccessRuleJSON = 'allSetsMetTarget';
+
+/**
+ * One step of automatic progression. An exercise carries an ordered list of these, and the first
+ * rule that can still move is the one that moves.
+ *
+ * `step` and `ceiling` are in the axis's own unit - whole reps, or plate increments in whatever unit
+ * the lifter works in. Deliberately not a weight: 2.5 in a kilogram gym and 5 in a pound gym are the
+ * same step, not conversions of one another, and a blueprint has no unit to be expressed in.
+ */
+export interface ProgressionRuleJSON {
+  readonly axis: ProgressionAxisJSON;
+  readonly step: BigNumberJSON;
+  readonly scope: SetScopeJSON;
+  /** Where the axis stops climbing. Above this the rule can no longer move, so the next one is tried. */
+  readonly ceiling?: BigNumberJSON;
+  /** Drop the axis back to what the plan asks for once a later rule fires. */
+  readonly onCeiling?: 'reset';
+  readonly trigger: SuccessRuleJSON;
+}

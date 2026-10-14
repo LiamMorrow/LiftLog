@@ -12,7 +12,8 @@ import {
   DurationJSON,
   ExerciseBlueprintJSON,
   ProgramBlueprintJSON,
-  ProgressiveOverloadJSON,
+  ProgressionRuleJSON,
+  PlannedSetJSON,
   RestJSON,
   SessionBlueprintJSON,
   toLocalDateJSON,
@@ -65,7 +66,7 @@ export function describeSharedProgramForAi(programName: string, blueprint: Progr
   return (
     `Here is my current workout program, named "${programName}". ` +
     `It uses the same JSON structure as the "blueprint" field of your create_workout_plan tool. ` +
-    `Use it as the basis for my requests — when I ask for changes, return an updated plan with the create_workout_plan tool.\n\n` +
+    `Use it as the basis for my requests - when I ask for changes, return an updated plan with the create_workout_plan tool.\n\n` +
     JSON.stringify(blueprint.toJSON())
   );
 }
@@ -101,6 +102,7 @@ const emptyWeightedExercise = WeightedExerciseBlueprint.empty().toJSON();
 const emptyCardioExercise = CardioExerciseBlueprint.empty().toJSON();
 const emptyCardioSet = emptyCardioExercise.sets[0]!;
 const defaultIncreaseAmount = '2.5' as BigNumberJSON;
+const defaultRepsTarget = emptyWeightedExercise.plannedSets[0]?.reps ?? { min: 10, max: 10 };
 
 function fillRest(partial: DeepPartial<RestJSON> = {}): RestJSON {
   const { restBetweenSets } = emptyWeightedExercise;
@@ -111,35 +113,49 @@ function fillRest(partial: DeepPartial<RestJSON> = {}): RestJSON {
   };
 }
 
-function fillProgressiveOverload(partial: DeepPartial<ProgressiveOverloadJSON> = {}): ProgressiveOverloadJSON {
-  switch (partial.type) {
-    case 'IncreaseAllEvenlyProgressiveOverload':
-      return {
-        type: partial.type,
-        amount: partial.amount ?? defaultIncreaseAmount,
-      };
-    case 'IncreaseLowestSetProgressiveOverload':
-      return {
-        type: partial.type,
-        amount: partial.amount ?? defaultIncreaseAmount,
-        increaseStrategy: partial.increaseStrategy ?? 'all',
-      };
-    default:
-      return { type: 'NoProgressiveOverload' };
+/**
+ * An absent list means no automatic progression, which is the safe reading of a model that simply
+ * didn't mention it - a rule invented here would move somebody's weights unasked.
+ */
+function fillProgression(partial: DeepPartial<ProgressionRuleJSON>[] | undefined): ProgressionRuleJSON[] {
+  return (partial ?? []).map((rule) => ({
+    axis: rule?.axis ?? 'load',
+    step: rule?.step ?? defaultIncreaseAmount,
+    scope:
+      rule?.scope?.type === 'lowestSets' ? { type: 'lowestSets', pick: rule.scope.pick ?? 'all' } : { type: 'allSets' },
+    ...(rule?.ceiling === undefined ? {} : { ceiling: rule.ceiling }),
+    ...(rule?.onCeiling === undefined ? {} : { onCeiling: rule.onCeiling }),
+    trigger: rule?.trigger ?? 'allSetsMetTarget',
+  }));
+}
+
+/**
+ * The model emits a list of planned sets. An empty or absent list would render a tile with no sets
+ * at all, so it falls back to the default prescription rather than to nothing.
+ */
+function fillPlannedSets(partial: DeepPartial<PlannedSetJSON>[] | undefined): PlannedSetJSON[] {
+  if (!partial?.length) {
+    return emptyWeightedExercise.plannedSets.map((s) => ({ reps: { ...s.reps } }));
   }
+  return partial.map((set) => ({
+    reps: {
+      min: set?.reps?.min ?? set?.reps?.max ?? defaultRepsTarget.min,
+      max: set?.reps?.max ?? set?.reps?.min ?? defaultRepsTarget.max,
+    },
+  }));
 }
 
 function fillWeightedExercise(partial: DeepPartial<WeightedExerciseBlueprintJSON> = {}): WeightedExerciseBlueprintJSON {
   return {
     type: 'WeightedExerciseBlueprint',
     name: partial.name ?? emptyWeightedExercise.name,
-    sets: partial.sets ?? emptyWeightedExercise.sets,
-    repsPerSet: partial.repsPerSet ?? emptyWeightedExercise.repsPerSet,
+    plannedSets: fillPlannedSets(partial.plannedSets),
     restBetweenSets: fillRest(partial.restBetweenSets),
     supersetWithNext: partial.supersetWithNext ?? emptyWeightedExercise.supersetWithNext,
     notes: partial.notes ?? emptyWeightedExercise.notes,
     link: partial.link ?? emptyWeightedExercise.link,
-    progressiveOverload: fillProgressiveOverload(partial.progressiveOverload),
+    progression: fillProgression(partial.progression),
+    resistance: partial.resistance ?? emptyWeightedExercise.resistance,
   };
 }
 
@@ -195,7 +211,7 @@ function fillExercise(partial: DeepPartial<ExerciseBlueprintJSON> = {}): Exercis
 
 function fillSession(partial: DeepPartial<SessionBlueprintJSON> = {}): SessionBlueprintJSON {
   return {
-    version: 2,
+    version: 6,
     name: partial.name ?? emptySessionBlueprint.name,
     exercises: (partial.exercises ?? []).map(fillExercise),
     notes: partial.notes ?? emptySessionBlueprint.notes,
@@ -204,7 +220,7 @@ function fillSession(partial: DeepPartial<SessionBlueprintJSON> = {}): SessionBl
 
 function fillBlueprint(partial: DeepPartial<ProgramBlueprintJSON> = {}): ProgramBlueprintJSON {
   return {
-    version: 2,
+    version: 3,
     name: partial.name ?? '',
     sessions: (partial.sessions ?? []).map(fillSession),
     lastEdited: toLocalDateJSON(LocalDate.now()),
@@ -213,7 +229,7 @@ function fillBlueprint(partial: DeepPartial<ProgramBlueprintJSON> = {}): Program
 
 /**
  * Builds a complete latest {@link AiPlanJSON} from a possibly-incomplete wire
- * plan — the JSON streams top-to-bottom, so trailing fields may be missing —
+ * plan - the JSON streams top-to-bottom, so trailing fields may be missing -
  * filling any absent fields with empty defaults, then maps it into the domain
  * {@link ProgramBlueprint}.
  */
@@ -222,12 +238,14 @@ export function aiPlanFromJSON(partialJson: DeepPartial<AnyVersionAiPlanJSON>): 
     throw new Error('Cannot parse partial json');
   }
   const plan = aiPlanMigrations.migrate(
-    partialJson.version === 2
+    partialJson.version === 3
       ? {
-          version: 2,
+          version: 3,
           name: partialJson.name ?? '',
           description: partialJson.description ?? '',
-          blueprint: fillBlueprint(partialJson.blueprint),
+          // The any-version plan type no longer couples the outer version to the embedded
+          // blueprint's, so `version === 3` can't narrow it - but a v3 wire plan is latest-shaped.
+          blueprint: fillBlueprint(partialJson.blueprint as DeepPartial<ProgramBlueprintJSON>),
         }
       : (partialJson as AnyVersionAiPlanJSON),
   );

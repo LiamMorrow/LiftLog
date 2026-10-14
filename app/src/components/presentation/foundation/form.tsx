@@ -9,6 +9,7 @@ export default function Form(props: { children: ReactNode }) {
         paddingHorizontal: spacing.pageHorizontalMargin,
         justifyContent: 'space-between',
         gap: spacing[4],
+        paddingBottom: spacing[4],
       }}
     >
       {props.children}

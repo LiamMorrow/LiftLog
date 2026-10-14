@@ -2,12 +2,14 @@ using System.Text.Json.Serialization;
 using FluentValidation;
 using LiftLog.Api.Authentication;
 using LiftLog.Api.Db;
+using LiftLog.Api.Features;
 using LiftLog.Api.Hubs;
 using LiftLog.Api.Service;
+using LiftLog.Api.Service.Backup;
 using LiftLog.Api.Validators;
 using LiftLog.Lib.Serialization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,18 +19,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateUserRequestValidator>
 
 // Add services to the container.
 
-builder.Services.AddDbContext<UserDataContext>(options =>
-    options
-        .UseNpgsql(builder.Configuration.GetConnectionString("UserDataContext"))
-        .ReplaceService<IHistoryRepository, CamelCaseHistoryContext>()
-        .UseSnakeCaseNamingConvention()
-);
-builder.Services.AddDbContext<RateLimitContext>(options =>
-    options
-        .UseNpgsql(builder.Configuration.GetConnectionString("RateLimitContext"))
-        .ReplaceService<IHistoryRepository, CamelCaseHistoryContext>()
-        .UseSnakeCaseNamingConvention()
-);
+builder.Services.AddLiftLogDbContexts(builder.Configuration);
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -36,6 +27,8 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
     });
 });
+
+builder.Services.AddFeatureGating();
 
 builder.Services.AddSignalR(s =>
 {
@@ -45,13 +38,11 @@ builder.Services.AddSignalR(s =>
     s.HandshakeTimeout = TimeSpan.FromSeconds(60);
 });
 
-// Add Authentication
 builder
     .Services.AddAuthentication(PurchaseTokenAuthenticationSchemeOptions.SchemeName)
-    .AddScheme<PurchaseTokenAuthenticationSchemeOptions, PurchaseTokenAuthenticationHandler>(
-        PurchaseTokenAuthenticationSchemeOptions.SchemeName,
-        options => { }
-    );
+    .AddPurchaseToken()
+    .AddApiKey()
+    .AddForwardAuth();
 
 builder.Services.AddAuthorization();
 
@@ -59,12 +50,11 @@ builder.Services.AddSingleton<PasswordService>();
 builder.Services.AddScoped<RateLimitService>();
 
 builder.Services.AddHostedService<CleanupExpiredDataHostedService>();
+builder.Services.AddHostedService<ConfigurationLogger>();
 
-builder.Services.AddScoped<PurchaseVerificationService>();
+builder.AddBackupSink();
 builder.Services.AddAnthropicWorkoutPlanner();
 builder.Services.AddAnthropicWorkoutPlannerV2();
-builder.Services.AddWebAuthPurchaseVerification();
-builder.Services.AddRevenueCatPurchaseVerification();
 
 builder
     .Services.AddControllers()
@@ -90,9 +80,22 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Map SignalR Hubs
-app.MapHub<AiWorkoutChatHub>("/ai-chat");
-app.MapHub<AiWorkoutChatHubV2>("/ai-chat-v2");
+MapAiChatHub<AiWorkoutChatHub>("/ai-chat");
+MapAiChatHub<AiWorkoutChatHubV2>("/ai-chat-v2");
+
+void MapAiChatHub<THub>(string path)
+    where THub : Hub
+{
+    if (app.Services.GetRequiredService<IFeatureGate>().IsEnabled(Feature.AiPlanner))
+    {
+        app.MapHub<THub>(path);
+        return;
+    }
+
+    var locked = () => Results.StatusCode(StatusCodes.Status423Locked);
+    app.Map(path, locked);
+    app.Map($"{path}/{{**rest}}", locked);
+}
 
 app.MapMethods(
     "/health",

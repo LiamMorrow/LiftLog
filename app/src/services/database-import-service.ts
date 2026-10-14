@@ -15,6 +15,15 @@ import {
   migrateNilWeightUnits,
   migrateNilWeightUnitsDataMigration,
 } from '@/services/data-migrations/migrate-nil-weight-units';
+import {
+  dedupeBuiltInExercises,
+  dedupeBuiltInExercisesDataMigration,
+} from '@/services/data-migrations/dedupe-builtin-exercises';
+import { importBackends, importBackendsDataMigration } from '@/services/data-migrations/import-backends';
+import {
+  seedBackendAssignments,
+  seedBackendAssignmentsDataMigration,
+} from '@/services/data-migrations/seed-backend-assignments';
 
 export interface DatabaseImporter {
   importOldData(): Promise<void>;
@@ -49,6 +58,15 @@ export class DatabaseImportService implements DatabaseImporter {
     }
     if (!dataMigrationsRun.includes(migrateNilWeightUnitsDataMigration)) {
       await migrateNilWeightUnits(this.db, this.preferenceService);
+    }
+    if (!dataMigrationsRun.includes(dedupeBuiltInExercisesDataMigration)) {
+      await dedupeBuiltInExercises(this.db, this.keyValueStore);
+    }
+    if (!dataMigrationsRun.includes(importBackendsDataMigration)) {
+      await importBackends(this.db, this.preferenceService);
+    }
+    if (!dataMigrationsRun.includes(seedBackendAssignmentsDataMigration)) {
+      await seedBackendAssignments(this.db);
     }
 
     console.info('Imported old data to DB in ' + (performance.now() - now) + 'ms');

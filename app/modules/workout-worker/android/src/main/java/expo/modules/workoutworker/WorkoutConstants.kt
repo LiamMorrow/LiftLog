@@ -12,6 +12,20 @@ object WorkoutConstants {
 
     const val SESSION_PAGE_URI = "liftlog://session"
 
+    // Fired when the user swipes away the promoted Live Update; re-promoting after this would make
+    // Android revoke our promotion permission, so we downgrade to a plain ongoing notification.
+    const val ACTION_LIVE_UPDATE_DISMISSED = "expo.modules.workoutworker.LIVE_UPDATE_DISMISSED"
+
+    fun Context.getLiveUpdateDeleteIntent(): PendingIntent {
+        val intent = Intent(ACTION_LIVE_UPDATE_DISMISSED).setPackage(packageName)
+        return PendingIntent.getBroadcast(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
     fun Context.getLaunchAppAtWorkoutPagePendingIntent(
         message: WorkoutMessage? = null
     ): PendingIntent {

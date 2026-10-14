@@ -19,7 +19,7 @@
           "launchMode": "most-recent"
         }
       ],
-      "expo-health-connect",
+      "react-native-health-connect",
       [
         "@kingstinct/react-native-healthkit",
         {
@@ -33,6 +33,8 @@
       "./plugins/override-health-connect-min-version.js",
       "./plugins/android-signing.js",
       "./plugins/android-gradle-properties.js",
+      "./plugins/android-react-native-feature-flags.js",
+      "./plugins/android-nav-bar-contrast.js",
       [
         "expo-notifications",
         {
@@ -77,6 +79,26 @@
             }
           ],
           "category": ["BROWSABLE", "DEFAULT"]
+        },
+        {
+          "action": "VIEW",
+          "category": ["DEFAULT", "BROWSABLE"],
+          "data": [
+            { "scheme": "content", "mimeType": "application/octet-stream" },
+            { "scheme": "content", "mimeType": "application/json" },
+            { "scheme": "content", "mimeType": "text/plain" },
+            { "scheme": "file", "mimeType": "application/octet-stream" },
+            { "scheme": "file", "mimeType": "application/json" },
+            { "scheme": "file", "mimeType": "text/plain" }
+          ]
+        },
+        {
+          "action": "VIEW",
+          "category": ["DEFAULT", "BROWSABLE"],
+          "data": [
+            { "scheme": "content", "host": "*", "mimeType": "*/*", "pathPattern": ".*\\.liftlogplan" },
+            { "scheme": "file", "host": "*", "mimeType": "*/*", "pathPattern": ".*\\.liftlogplan" }
+          ]
         }
       ],
       "adaptiveIcon": {
@@ -92,6 +114,24 @@
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true,
         "ITSAppUsesNonExemptEncryption": false,
+        "LSSupportsOpeningDocumentsInPlace": true,
+        "CFBundleDocumentTypes": [
+          {
+            "CFBundleTypeName": "LiftLog Plan",
+            "LSHandlerRank": "Owner",
+            "LSItemContentTypes": ["com.limajuice.liftlog.plan"]
+          }
+        ],
+        "UTExportedTypeDeclarations": [
+          {
+            "UTTypeIdentifier": "com.limajuice.liftlog.plan",
+            "UTTypeDescription": "LiftLog Plan",
+            "UTTypeConformsTo": ["public.json"],
+            "UTTypeTagSpecification": {
+              "public.filename-extension": ["liftlogplan"]
+            }
+          }
+        ],
         "CFBundleLocalizations": [
           "ar",
           "cs",

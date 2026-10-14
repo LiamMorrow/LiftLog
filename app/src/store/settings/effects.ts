@@ -2,38 +2,49 @@ import { RemoteData } from '@/models/remote';
 import { AddEffectFn } from '@/store/store';
 import {
   initializeSettingsStateSlice,
-  setBackupReminder,
-  setColorSchemeSeed,
-  setCrashReportsEnabled,
   setExportToHealthAggregator,
-  setFirstDayOfWeek,
   setIsHydrated,
-  setKeepScreenAwakeDuringWorkout,
   setLastBackup,
-  setNotesExpandedByDefault,
   setPreferredLanguage,
   setProToken,
-  setRemoteBackupSettings,
-  setRestNotifications,
-  setShowBodyweight,
-  setShowFeed,
-  setShowPostWorkoutSummary,
-  setShowTips,
-  setTipToShow,
-  setTrueBlackDarkTheme,
-  setUseImperialUnits,
-  setWelcomeWizardCompleted,
 } from '@/store/settings';
+import {
+  buildPreferenceAction,
+  isPreferenceAction,
+  preferenceKeys,
+  preferenceRegistry,
+  PrefKey,
+  PrefValue,
+  setterForKey,
+} from '@/store/settings/registry';
 import { addExportBackupEffects } from '@/store/settings/export-backup-effects';
 import { addExportPlaintextEffects } from '@/store/settings/export-plaintext-effects';
 import { addImportBackupEffects } from '@/store/settings/import-backup-effects';
+import { addImportExternalEffects } from '@/store/settings/import-external-effects';
 import { addRemoteBackupEffects } from '@/store/settings/remote-backup-effects';
+
 import Purchases from 'react-native-purchases';
 import { I18nManager, Platform } from 'react-native';
 import { detectLanguageFromDateLocale } from '@/utils/language-detector';
 import { supportedLanguages } from '@/services/tolgee';
 import { initializeStoredSessionsStateSlice } from '@/store/stored-sessions';
-import { initializeCurrentSessionStateSlice } from '@/store/current-session';
+import { builtInBackendId } from '@/models/backend';
+
+// Read every generically-hydrated key, then dispatch its setter.
+async function hydrateGenericPreferences(
+  preferenceService: { getPreference: <K extends PrefKey>(key: K) => Promise<PrefValue<K>> },
+  dispatch: (action: unknown) => void,
+) {
+  const keys = preferenceKeys.filter(
+    (key) => preferenceRegistry[key].codec && (preferenceRegistry[key].hydrate ?? 'generic') === 'generic',
+  );
+  await Promise.all(
+    keys.map(async (key) => {
+      const value = await preferenceService.getPreference(key);
+      dispatch(buildPreferenceAction(key, value));
+    }),
+  );
+}
 
 export function applySettingsEffects(addEffect: AddEffectFn) {
   addEffect(
@@ -42,88 +53,41 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
       const start = performance.now();
       cancelActiveListeners();
 
-      const [
-        useImperialUnits,
-        showBodyweight,
-        showTips,
-        tipToShow,
-        showFeed,
-        restNotifications,
-        crashReportsEnabled,
-        welcomeWizardCompleted,
-        remoteBackupSettings,
-        lastSuccessfulRemoteBackupHash,
-        lastBackupTime,
-        backupReminder,
-        firstDayOfWeek,
-        colorSchemeSeed,
-        proToken,
-        notesExpandedByDefault,
-        keepScreenAwakeDuringWorkout,
-        exportToHealthAggregator,
-        showPostWorkoutSummary,
-        trueBlackDarkTheme,
-      ] = await Promise.all([
-        preferenceService.getUseImperialUnits(),
-        preferenceService.getShowBodyweight(),
-        preferenceService.getShowTips(),
-        preferenceService.getTipToShow(),
-        preferenceService.getShowFeed(),
-        preferenceService.getRestNotifications(),
-        preferenceService.getCrashReportsEnabled(),
-        preferenceService.getWelcomeWizardCompleted(),
-        preferenceService.getRemoteBackupSettings(),
+      await hydrateGenericPreferences(preferenceService, dispatch);
+
+      // Bespoke hydration: sync read, composite keys, and composed values.
+      dispatch(setPreferredLanguage(preferenceService.getPreferredLanguage()));
+
+      const [lastSuccessfulRemoteBackupHash, lastBackupTime, lastBackupBackendId] = await Promise.all([
         preferenceService.getLastSuccessfulRemoteBackupHash(),
         preferenceService.getLastBackupTime(),
-        preferenceService.getBackupReminder(),
-        preferenceService.getFirstDayOfWeek(),
-        preferenceService.getColorSchemeSeed(),
-        preferenceService.getProToken(),
-        preferenceService.getNotesExpandedByDefault(),
-        preferenceService.getKeepScreenAwakeDuringWorkout(),
-        preferenceService.getExportToHealthAggregator(),
-        preferenceService.getShowPostWorkoutSummary(),
-        preferenceService.getTrueBlackDarkTheme(),
+        preferenceService.getLastBackupBackendId(),
       ]);
-      dispatch(setColorSchemeSeed(colorSchemeSeed));
-      dispatch(setUseImperialUnits(useImperialUnits));
-      dispatch(setShowBodyweight(showBodyweight));
-      dispatch(setShowTips(showTips));
-      dispatch(setTipToShow(tipToShow));
-      dispatch(setShowFeed(showFeed));
-      dispatch(setRestNotifications(restNotifications));
-      dispatch(setCrashReportsEnabled(crashReportsEnabled));
-      dispatch(setWelcomeWizardCompleted(welcomeWizardCompleted));
-      dispatch(setRemoteBackupSettings(remoteBackupSettings));
-      dispatch(setPreferredLanguage(preferenceService.getPreferredLanguage()));
       dispatch(
         setLastBackup(
           lastSuccessfulRemoteBackupHash
             ? RemoteData.success({
                 lastSuccessfulRemoteBackupHash: lastSuccessfulRemoteBackupHash,
                 lastBackupTime: lastBackupTime,
-                settings: remoteBackupSettings,
+                backendId: lastBackupBackendId ?? builtInBackendId,
               })
             : RemoteData.notAsked(),
         ),
       );
-      dispatch(setBackupReminder(backupReminder));
-      dispatch(setFirstDayOfWeek(firstDayOfWeek));
-      dispatch(setProToken(proToken));
-      dispatch(setNotesExpandedByDefault(notesExpandedByDefault));
-      dispatch(setKeepScreenAwakeDuringWorkout(keepScreenAwakeDuringWorkout));
-      dispatch(setExportToHealthAggregator(exportToHealthAggregator));
-      dispatch(setShowPostWorkoutSummary(showPostWorkoutSummary));
-      dispatch(setTrueBlackDarkTheme(trueBlackDarkTheme));
 
-      if (Platform.OS === 'ios') {
-        Purchases.configure({
-          apiKey: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY!,
-        });
-      } else if (Platform.OS === 'android') {
-        Purchases.configure({
-          apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY!,
-        });
+      const proToken = await preferenceService.getProToken();
+      dispatch(setProToken(proToken));
+
+      if (!__DEV__) {
+        if (Platform.OS === 'ios') {
+          Purchases.configure({
+            apiKey: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY!,
+          });
+        } else if (Platform.OS === 'android') {
+          Purchases.configure({
+            apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY!,
+          });
+        }
       }
       // migrate pro token to a revenuecat
       if (proToken && !proToken.startsWith('$RCAnonymousID')) {
@@ -138,57 +102,33 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
       }
       dispatch(setIsHydrated(true));
       dispatch(initializeStoredSessionsStateSlice());
-      dispatch(initializeCurrentSessionStateSlice());
       const end = performance.now();
       logger.log(`initializeSettingsStateSlice effect took ${(end - start).toFixed(2)}ms`);
     },
   );
 
-  addEffect(setUseImperialUnits, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setUseImperialUnits(action.payload);
+  // Generic persistence: one matcher over every key that opts into auto write-back.
+  // The isHydrated guard stops the hydration dispatches above from writing straight
+  // back what they just read.
+  const persistedSetters = preferenceKeys
+    .filter((key) => preferenceRegistry[key].codec && preferenceRegistry[key].persist !== false)
+    .map((key) => setterForKey(key));
+  addEffect(persistedSetters, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+    if (!stateAfterReduce.settings.isHydrated || !isPreferenceAction(action)) {
+      return;
     }
-  });
-  addEffect(setShowBodyweight, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setShowBodyweight(action.payload);
-    }
-  });
-  addEffect(setShowTips, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setShowTips(action.payload);
-    }
+    await preferenceService.setPreference(action.meta.prefKey, action.payload as PrefValue<PrefKey>);
   });
 
+  // Bespoke write-back for keys the generic effect skips (persist: false).
   addEffect(setPreferredLanguage, async (action, { stateAfterReduce, extra: { preferenceService, tolgee } }) => {
     if (stateAfterReduce.settings.isHydrated) {
       await preferenceService.setPreferredLanguage(action.payload);
     }
-    const languageCode = action.payload ?? detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code));
+    const languageCode = action.payload ?? detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code)) ?? 'en';
     const languageSettings = supportedLanguages.find((x) => x.code === languageCode);
     await tolgee.changeLanguage(languageCode);
     I18nManager.forceRTL(!!languageSettings?.isRTL);
-  });
-
-  addEffect(setTipToShow, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setTipToShow(action.payload);
-    }
-  });
-  addEffect(setShowFeed, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setShowFeed(action.payload);
-    }
-  });
-  addEffect(setRestNotifications, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setRestNotifications(action.payload);
-    }
-  });
-  addEffect(setCrashReportsEnabled, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setCrashReportsEnabled(action.payload);
-    }
   });
 
   addEffect(
@@ -202,72 +142,28 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
         if (action.payload) {
           await healthExportService.requestPermission();
         }
-        await preferenceService.setExportToHealthAggregator(action.payload);
+        await preferenceService.setPreference('exportToHealthAggregator', action.payload);
       }
     },
   );
-  addEffect(setWelcomeWizardCompleted, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setWelcomeWizardCompleted(action.payload);
-    }
-  });
-  addEffect(setShowPostWorkoutSummary, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setShowPostWorkoutSummary(action.payload);
-    }
-  });
-  addEffect(setTrueBlackDarkTheme, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setTrueBlackDarkTheme(action.payload);
-    }
-  });
-  addEffect(setRemoteBackupSettings, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setRemoteBackupSettings(action.payload);
-    }
-  });
+
   addEffect(setProToken, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
     if (stateAfterReduce.settings.isHydrated) {
       await preferenceService.setProToken(action.payload);
     }
   });
+
   addEffect(setLastBackup, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
     if (stateAfterReduce.settings.isHydrated && action.payload.isSuccess()) {
       await preferenceService.setLastBackupTime(action.payload.data.lastBackupTime);
       await preferenceService.setLastSuccessfulRemoteBackupHash(action.payload.data.lastSuccessfulRemoteBackupHash);
-    }
-  });
-  addEffect(setBackupReminder, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setBackupReminder(action.payload);
-    }
-  });
-  addEffect(setFirstDayOfWeek, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setFirstDayOfWeek(action.payload);
-    }
-  });
-
-  addEffect(setColorSchemeSeed, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setColorSchemeSeed(action.payload);
-    }
-  });
-
-  addEffect(setNotesExpandedByDefault, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setNotesExpandedByDefault(action.payload);
-    }
-  });
-
-  addEffect(setKeepScreenAwakeDuringWorkout, async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-    if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setKeepScreenAwakeDuringWorkout(action.payload);
+      await preferenceService.setLastBackupBackendId(action.payload.data.backendId);
     }
   });
 
   addExportPlaintextEffects(addEffect);
   addExportBackupEffects(addEffect);
   addImportBackupEffects(addEffect);
+  addImportExternalEffects(addEffect);
   addRemoteBackupEffects(addEffect);
 }

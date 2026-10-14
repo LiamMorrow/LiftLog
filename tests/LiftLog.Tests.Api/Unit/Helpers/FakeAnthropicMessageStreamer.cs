@@ -6,7 +6,7 @@ namespace LiftLog.Tests.Api.Unit.Helpers;
 
 /// <summary>
 /// Test double for <see cref="IAnthropicMessageStreamer"/> that replays a scripted
-/// sequence of stream events — no network or API key. <paramref name="beforeEach"/>
+/// sequence of stream events - no network or API key. <paramref name="beforeEach"/>
 /// runs before each yield (with the event index) so tests can, e.g., trigger
 /// cancellation mid-stream.
 /// </summary>

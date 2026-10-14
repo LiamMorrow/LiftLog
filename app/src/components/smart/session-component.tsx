@@ -1,12 +1,21 @@
-import { selectCurrentSession, SessionTarget, setCurrentSession } from '@/store/current-session';
+import { showSnackbar } from '@/store/app';
 import { Card, Icon, Text } from 'react-native-paper';
-import { useDispatch, useStore } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { View } from 'react-native';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/foundation/item-list';
-import { RecordedCardioExercise, RecordedExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
+import {
+  RecordedCardioExercise,
+  RecordedCardioExerciseSet,
+  RecordedExercise,
+  RecordedWeightedExercise,
+  RestTimer as RestTimerModel,
+  Session,
+} from '@/models/session-models';
+import { Updater } from '@/utils/types';
+import { CardioTimer } from '@/components/presentation/workout/cardio/cardio-timer';
 import WeightedExercise from '@/components/presentation/workout/weighted/weighted-exercise';
 import WeightDisplay from '@/components/presentation/foundation/editors/weight-display';
 import BigNumber from 'bignumber.js';
@@ -16,55 +25,85 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { getSessionExerciseEditorHref } from '@/components/smart/session-exercise-editor';
 import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
 import { useRouter } from 'expo-router';
-import { useAppSelectorWithArg } from '@/store';
-import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
-import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
+import { useAppSelector } from '@/store';
+import { readPreviousExercises } from '@/db/sessions';
+import { useSessionsQuery } from '@/hooks/useSessionsQuery';
+import { PageActions } from '@/components/presentation/foundation/page-actions';
+import AddIcon from '@expo/material-symbols/add.xml';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { match, P } from 'ts-pattern';
 import { CardioExercise } from '@/components/presentation/workout/cardio/cardio-exercise';
 import WeightFormat from '../presentation/foundation/weight-format';
 import { formatDuration } from '@/utils/format-date';
+import { useAddExercise } from '@/hooks/useAddExercise';
+
+function withRestTimerAt(session: Session, time: OffsetDateTime | undefined) {
+  return session.with({ restTimer: time ? new RestTimerModel(time) : undefined });
+}
 
 export default function SessionComponent(props: {
-  target: SessionTarget;
+  session: Session;
+  /**
+   * Takes a reducer rather than a value so consecutive edits compose against whatever the owner
+   * currently holds. Omit it for a session the user does not own, which makes the screen read-only.
+   */
+  updateSession?: (update: (session: Session) => Session) => void;
+  /** The workout being performed right now: rest timers, live timestamps, previous performances. */
+  isActiveWorkout?: boolean;
   showBodyweight: boolean;
   header?: ReactNode;
   openPostWorkoutSummary?: () => void;
+  /** Renders without its own scroll view, for a read-only session inside a page that scrolls. */
+  embedded?: boolean;
 }) {
+  const { session, isActiveWorkout } = props;
   const { colors } = useAppTheme();
   const { t } = useTranslate();
-  const { getState } = useStore();
   const { push } = useRouter();
-  const session = useAppSelectorWithArg(selectCurrentSession, props.target);
+  const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
   const dispatch = useDispatch();
-  const recentlyCompletedExercises = useAppSelectorWithArg(selectRecentlyCompletedExercises, 10);
+  const isReadonly = !props.updateSession;
+  const editableSessionId = isReadonly ? undefined : session.id;
+  const progressionKeys = [...new Set(session.recordedExercises.map((x) => x.progressionKey()))];
+  const previousExercises = useSessionsQuery(
+    (db) => readPreviousExercises(db, progressionKeys, session.id),
+    `${session.id}:${progressionKeys.join('\n')}`,
+  );
+  const addExercise = useAddExercise(editableSessionId);
+  const updateSession = (reducer: (session: Session) => Session) => props.updateSession?.(reducer);
   const resetTimer = (time: OffsetDateTime | undefined) => {
-    updateSession((s) => s.with({ restTimerStartTime: time }));
+    updateSession((s) => withRestTimerAt(s, time));
   };
-  const withLatestSession = (callback: (session: Session) => void) => {
-    // Ensure we always have the latest session, allows us to call callbacks consecutively
-    const latestSession = selectCurrentSession(getState(), props.target);
-    if (!latestSession) {
-      return;
-    }
-    callback(latestSession);
+  const dismissTimer = () => {
+    const dismissedTimer = session.restTimer;
+    resetTimer(undefined);
+    dispatch(
+      showSnackbar({
+        text: t('rest_timer.dismissed.message'),
+        action: t('generic.undo.button'),
+        onAction: () => updateSession((s) => s.with({ restTimer: dismissedTimer })),
+      }),
+    );
   };
-  const updateSession = (reducer: (session: Session) => Session) => {
-    withLatestSession((latestSession) => {
-      dispatch(
-        setCurrentSession({
-          session: reducer(latestSession),
-          target: props.target,
-        }),
-      );
+  const toggleRestTimerPaused = () => {
+    updateSession((s) => s.with({ restTimer: s.restTimer?.togglePause(OffsetDateTime.now()) }));
+  };
+
+  // Both the set's own tiles and the docked clock write through here, so a set earns its rest
+  // whichever way it was filled in.
+  const updateCardioSet = (exerciseIndex: number) => (setIndex: number, update: Updater<RecordedCardioExerciseSet>) => {
+    const now = OffsetDateTime.now();
+    updateSession((s) => {
+      const before = s.cardioSetAt(exerciseIndex, setIndex);
+      const updated = s.withCardioSet(exerciseIndex, setIndex, update, now);
+      return updated.cardioSetAt(exerciseIndex, setIndex)?.earnsRest(before)
+        ? withRestTimerAt(updated, updated.lastExercise?.latestTime)
+        : updated;
     });
   };
 
-  const isReadonly = props.target === 'feedSession' || props.target === 'sharedSession';
-
-  if (!session) {
-    return <Text>Loading</Text>;
-  }
+  const startCardioTimer = (exerciseIndex: number) => (setIndex: number) =>
+    updateSession((s) => s.withCardioTimerStarted(exerciseIndex, setIndex, OffsetDateTime.now()));
 
   const notesComponent = session.blueprint.notes ? (
     <Card
@@ -104,22 +143,24 @@ export default function SessionComponent(props: {
       .with(P.instanceOf(RecordedWeightedExercise), (item) => (
         <WeightedExercise
           timeProvider={() =>
-            props.target === 'workoutSession'
+            isActiveWorkout
               ? OffsetDateTime.now()
               : (session.lastExercise?.latestTime ??
                 session.date.atTime(LocalTime.now()).atZone(ZoneId.systemDefault()).toOffsetDateTime())
           }
-          resetSetTimer={() => withLatestSession((s) => resetTimer(s.lastExercise?.latestTime))}
+          resetSetTimer={() => updateSession((s) => withRestTimerAt(s, s.lastExercise?.latestTime))}
           recordedExercise={item}
           toStartNext={session.nextExercise === item}
           updateExercise={(update) =>
             updateSession((s) => s.withExercise(index, update(s.recordedExercises[index] as RecordedWeightedExercise)))
           }
-          onEditExercise={() => push(getSessionExerciseEditorHref(props.target, index))}
+          onEditExercise={
+            editableSessionId ? () => push(getSessionExerciseEditorHref(editableSessionId, index)) : undefined
+          }
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
           isReadonly={isReadonly}
-          showPreviousButton={props.target === 'workoutSession'}
-          previousRecordedExercises={recentlyCompletedExercises(item.blueprint) as RecordedWeightedExercise[]}
+          showPreviousButton={!!isActiveWorkout}
+          previousLineageExercise={previousExercises?.[item.progressionKey()] as RecordedWeightedExercise | undefined}
         />
       ))
       .with(P.instanceOf(RecordedCardioExercise), (item) => (
@@ -128,12 +169,16 @@ export default function SessionComponent(props: {
           updateExercise={(ex) =>
             updateSession((s) => s.withExercise(index, ex(s.recordedExercises[index] as RecordedCardioExercise)))
           }
+          updateSet={updateCardioSet(index)}
+          onStartTimer={startCardioTimer(index)}
           toStartNext={session.nextExercise === item}
-          onEditExercise={() => push(getSessionExerciseEditorHref(props.target, index))}
+          onEditExercise={
+            editableSessionId ? () => push(getSessionExerciseEditorHref(editableSessionId, index)) : undefined
+          }
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
           isReadonly={isReadonly}
-          showPreviousButton={props.target === 'workoutSession'}
-          previousRecordedExercises={recentlyCompletedExercises(item.blueprint) as RecordedCardioExercise[]}
+          showPreviousButton={!!isActiveWorkout}
+          previousLineageExercise={previousExercises?.[item.progressionKey()] as RecordedCardioExercise | undefined}
         />
       ))
       .exhaustive();
@@ -171,49 +216,69 @@ export default function SessionComponent(props: {
   const lastExercise = session.lastExercise;
   const lastRecordedSet = lastExercise instanceof RecordedWeightedExercise ? lastExercise?.lastRecordedSet : undefined;
   const nextExercise = session.nextExercise;
-  // We only want to show the rest timer - which is primarily for weights
-  // When we are currently working out, and the exercises we are on (or were just on) are weighted - rests for cardio aren't implemented
-  const showRestTimer =
-    props.target === 'workoutSession' &&
-    nextExercise &&
-    nextExercise instanceof RecordedWeightedExercise &&
-    lastExercise &&
-    lastExercise instanceof RecordedWeightedExercise &&
-    session.restTimerStartTime;
+
+  // A weighted exercise rests per exercise; cardio rests per set, and may not rest at all.
+  const restBetweenSets = match(lastExercise)
+    .with(P.instanceOf(RecordedWeightedExercise), (exercise) => exercise.blueprint.restBetweenSets)
+    .with(P.instanceOf(RecordedCardioExercise), (exercise) => exercise.lastCompletedSet?.blueprint.restBetweenSets)
+    .otherwise(() => undefined);
+
+  const showRestTimer = restTimersEnabled && isActiveWorkout && nextExercise && restBetweenSets && session.restTimer;
+  // Only a weighted set can be failed - cardio has no rep count to fall short of.
   const lastSetFailed =
     lastRecordedSet?.set &&
-    lastExercise &&
     lastExercise instanceof RecordedWeightedExercise &&
-    lastRecordedSet.set.repsCompleted < lastExercise.blueprint.repsPerSet;
+    lastRecordedSet.set.repsCompleted <
+      lastExercise.repsTargetForSet(lastExercise.potentialSets.indexOf(lastRecordedSet)).min;
   const restTimer = showRestTimer ? (
-    <View style={{ flex: 1 }}>
-      <RestTimer
-        rest={lastExercise.blueprint.restBetweenSets}
-        startTime={session.restTimerStartTime}
-        failed={!!lastSetFailed}
-        resetTimer={() => resetTimer(OffsetDateTime.now())}
-      />
-    </View>
+    <RestTimer
+      rest={restBetweenSets}
+      startTime={session.restTimer.startedAt}
+      pausedAt={session.restTimer.pausedAt}
+      failed={!!lastSetFailed}
+      onRestart={() => resetTimer(OffsetDateTime.now())}
+      onDismiss={dismissTimer}
+      onTogglePause={toggleRestTimerPaused}
+    />
   ) : undefined;
 
-  const floatingBottomContainer = isReadonly ? null : (
-    <FloatingBottomContainer
-      additionalContent={
-        <View
-          style={{
-            alignItems: 'center',
-          }}
-        >
-          {restTimer}
-        </View>
+  const runningCardio = isActiveWorkout ? session.runningCardioSet : undefined;
+  const cardioTimer = runningCardio ? (
+    <CardioTimer
+      set={runningCardio.set}
+      onPersist={() =>
+        updateCardioSet(runningCardio.exerciseIndex)(runningCardio.setIndex, (s) =>
+          s.withTimerReanchored(OffsetDateTime.now()),
+        )
       }
+      onStop={() =>
+        updateCardioSet(runningCardio.exerciseIndex)(runningCardio.setIndex, (s) =>
+          s.withTimerStopped(OffsetDateTime.now()),
+        )
+      }
+    />
+  ) : undefined;
+
+  const timer = cardioTimer ?? restTimer;
+
+  // The timer rides above the action, so the action stays put whether or not a rest is running.
+  const floatingBottomContainer = isReadonly ? null : (
+    <PageActions
+      accessory={timer}
+      primaryExpanded={!timer}
+      primary={{
+        label: t('exercise.add.title'),
+        icon: AddIcon,
+        systemImage: 'plus',
+        onPress: addExercise,
+      }}
     />
   );
 
   const workoutSummary = (
     <Card
       mode="contained"
-      onPress={props.target === 'workoutSession' ? props.openPostWorkoutSummary : undefined}
+      onPress={isActiveWorkout ? props.openPostWorkoutSummary : undefined}
       style={{ margin: spacing.pageHorizontalMargin }}
     >
       <Card.Content>
@@ -227,7 +292,7 @@ export default function SessionComponent(props: {
           <Text variant="bodyMedium">
             <T keyName="workout.total_weight_lifted.label" />
           </Text>
-          <WeightFormat fontWeight="bold" color="primary" weight={session.totalWeightLifted} decimalPlaces={0}/>
+          <WeightFormat fontWeight="bold" color="primary" weight={session.totalWeightLifted} decimalPlaces={0} />
         </View>
         <View
           style={{
@@ -247,14 +312,20 @@ export default function SessionComponent(props: {
     </Card>
   );
 
-  return (
-    <FullHeightScrollView floatingChildren={floatingBottomContainer}>
+  const content = (
+    <>
       {props.header}
       {notesComponent}
       {emptyInfo}
       <ItemList items={session.recordedExercises} renderItem={renderItem} />
       {bodyweight}
       {workoutSummary}
-    </FullHeightScrollView>
+    </>
   );
+
+  if (props.embedded) {
+    return content;
+  }
+
+  return <FullHeightScrollView floatingChildren={floatingBottomContainer}>{content}</FullHeightScrollView>;
 }

@@ -3,50 +3,54 @@ import { SharedProgramBlueprint } from '@/models/feed-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { showSnackbar } from '@/store/app';
 import { encryptAndShare } from '@/store/feed';
-import { deleteSavedPlan, savePlan, selectProgram, setActivePlan } from '@/store/program';
+import { deleteSavedPlan, exportPlan, savePlan, selectProgram } from '@/store/program';
 import { uuid } from '@/utils/uuid';
-import { DateTimeFormatter } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
-import { List, Menu, RadioButton } from 'react-native-paper';
+import IconButton from '@/components/presentation/foundation/icon-button';
+import { SegmentedListRowAction, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
+import Menu from '@/components/presentation/foundation/menu';
 import { useDispatch } from 'react-redux';
+import Edit from '@expo/material-symbols/edit.xml';
+import Delete from '@expo/material-symbols/delete.xml';
+import ContentCopy from '@expo/material-symbols/content_copy.xml';
+import Share from '@expo/material-symbols/share.xml';
+import Upload from '@expo/material-symbols/upload.xml';
 
 interface ProgramListItemProps {
   id: string;
   isFocused: boolean;
+  onSelect: () => void;
 }
 
 interface ItemProps {
   id: string;
+  mode?: 'contained' | 'contained-tonal' | 'outlined';
 }
 
-function ItemMenu({ id }: ItemProps) {
+export function ItemMenu({ id, mode }: ItemProps) {
   const thisProgram = useAppSelectorWithArg(selectProgram, id);
   const isActive = useAppSelector((x) => x.program.activePlanId) === id;
-  const [menuVisible, setMenuVisible] = useState(false);
   const dispatch = useDispatch();
   const { push } = useRouter();
   const { t } = useTranslate();
   return (
     <Menu
-      visible={menuVisible}
-      onDismiss={() => setMenuVisible(false)}
-      anchor={<IconButton testID="more-program-btn" onPress={() => setMenuVisible(true)} icon={'moreHoriz'} />}
-    >
-      <Menu.Item
-        onPress={() => {
-          push(`/settings/manage-workouts/${id}`);
-          setMenuVisible(false);
-        }}
-        leadingIcon={'edit'}
-        title={t('generic.edit.button')}
-      />
-      <Menu.Item
-        onPress={() => {
-          if (!isActive) {
+      trigger={(open) => <IconButton testID="more-program-btn" mode={mode} onPress={open} icon={'moreHoriz'} />}
+      items={[
+        {
+          label: t('generic.edit.button'),
+          icon: Edit,
+          systemImage: 'pencil',
+          onPress: () => push(`/settings/manage-workouts/${id}`),
+        },
+        {
+          label: t('generic.remove.button'),
+          icon: Delete,
+          systemImage: 'trash',
+          disabled: isActive,
+          onPress: () => {
             dispatch(
               showSnackbar({
                 text: t('plan.deleted.message'),
@@ -58,43 +62,39 @@ function ItemMenu({ id }: ItemProps) {
               }),
             );
             dispatch(deleteSavedPlan({ programId: id }));
-          }
-          setMenuVisible(false);
-        }}
-        leadingIcon={'delete'}
-        disabled={isActive}
-        title={t('generic.remove.button')}
-      />
-      <Menu.Item
-        title={t('generic.duplicate.button')}
-        leadingIcon={'contentCopy'}
-        onPress={() => {
-          setMenuVisible(false);
-          dispatch(savePlan({ programId: uuid(), programBlueprint: thisProgram }));
-        }}
-      />
-      <Menu.Item
-        leadingIcon={'share'}
-        title={t('generic.share.button')}
-        onPress={() => {
-          setMenuVisible(false);
-          dispatch(
-            encryptAndShare({
-              title: t('plan.shared_item.title'),
-              item: new SharedProgramBlueprint(thisProgram),
-            }),
-          );
-        }}
-      />
-    </Menu>
+          },
+        },
+        {
+          label: t('generic.duplicate.button'),
+          icon: ContentCopy,
+          systemImage: 'doc.on.doc',
+          onPress: () => dispatch(savePlan({ programId: uuid(), programBlueprint: thisProgram })),
+        },
+        {
+          label: t('generic.share.button'),
+          icon: Share,
+          systemImage: 'square.and.arrow.up',
+          onPress: () =>
+            dispatch(
+              encryptAndShare({
+                title: t('plan.shared_item.title'),
+                item: new SharedProgramBlueprint(thisProgram),
+              }),
+            ),
+        },
+        {
+          label: t('plan.export.button'),
+          icon: Upload,
+          systemImage: 'arrow.up.doc',
+          onPress: () => dispatch(exportPlan({ programId: id })),
+        },
+      ]}
+    />
   );
 }
 
-export default function ProgramListItem({ id, isFocused }: ProgramListItemProps) {
+export default function ProgramListItem({ id, isFocused, onSelect }: ProgramListItemProps) {
   const program = useAppSelectorWithArg(selectProgram, id);
-  const activeProgramId = useAppSelector((state) => state.program.activePlanId);
-  const dispatch = useDispatch();
-  const { t } = useTranslate();
   const { push } = useRouter();
   const { colors } = useAppTheme();
   const [focusStyle, setFocusStyle] = useState({});
@@ -103,14 +103,7 @@ export default function ProgramListItem({ id, isFocused }: ProgramListItemProps)
     let timeout: NodeJS.Timeout;
     const handleTimes = () => {
       times++;
-      setFocusStyle(
-        times % 2 === 0
-          ? {
-              backgroundColor: colors.secondaryContainer,
-              color: colors.onSecondaryContainer,
-            }
-          : {},
-      );
+      setFocusStyle(times % 2 === 0 ? { backgroundColor: colors.secondaryContainer } : {});
       if (times < 10) {
         timeout = setTimeout(handleTimes, 150);
       }
@@ -121,34 +114,18 @@ export default function ProgramListItem({ id, isFocused }: ProgramListItemProps)
         clearTimeout(timeout);
       };
     }
-  }, [isFocused, colors.onSecondaryContainer, colors.secondaryContainer]);
+  }, [isFocused, colors.secondaryContainer]);
   return (
-    <List.Item
-      title={program.name}
-      description={t('date.edited_on.label', {
-        date: program.lastEdited.format(DateTimeFormatter.ISO_DATE),
-      })}
+    <SegmentListFormElement
+      label={program.name}
+      style={focusStyle}
       onLongPress={() => push(`/settings/manage-workouts/${id}`)}
-      titleStyle={focusStyle}
-      descriptionStyle={focusStyle}
-      contentStyle={focusStyle}
-      right={() => (
-        <View style={{ flexDirection: 'row', alignItems: 'center', ...focusStyle }}>
-          <RadioButton
-            value={id}
-            status={activeProgramId === id ? 'checked' : 'unchecked'}
-            onPress={() => dispatch(setActivePlan({ activePlanId: id }))}
-          />
+      right={
+        <SegmentedListRowAction>
           <ItemMenu id={id} />
-        </View>
-      )}
-      onPress={() => {
-        if (activeProgramId === id) {
-          push(`/settings/manage-workouts/${id}`);
-        }
-        dispatch(setActivePlan({ activePlanId: id }));
-      }}
-      style={{}}
-    ></List.Item>
+        </SegmentedListRowAction>
+      }
+      onPress={onSelect}
+    />
   );
 }

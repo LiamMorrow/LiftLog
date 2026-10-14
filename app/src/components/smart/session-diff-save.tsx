@@ -1,7 +1,8 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
+import { PageActions } from '@/components/presentation/foundation/page-actions';
+import SaveIcon from '@expo/material-symbols/save.xml';
 import SessionDiffView from '@/components/presentation/summary/session-diff-view';
 import { spacing } from '@/hooks/useAppTheme';
 import {
@@ -11,15 +12,22 @@ import {
   SessionBlueprintDiff,
 } from '@/models/blueprint-diff';
 import { EmptySession } from '@/models/session-models';
-import { useAppSelector } from '@/store';
-import { setCurrentPlanDiff } from '@/store/current-session';
-import { applyDiffToPlan, fetchUpcomingSessions, selectNewWorkoutName } from '@/store/program';
+import { useAppSelector, useAppSelectorWithArg } from '@/store';
+import {
+  applyDiffToPlan,
+  fetchUpcomingSessions,
+  selectNewWorkoutName,
+  selectPendingPlanDiff,
+  setPendingPlanDiff,
+} from '@/store/program';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { View } from 'react-native';
-import { FAB, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useOnDismiss } from '@/hooks/useOnDismiss';
 
 /**
  * Creates a diff for updating an existing workout in the plan.
@@ -52,9 +60,9 @@ export function SessionDiffSaveEditor() {
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const { dismiss } = useRouter();
-  const currentPlanDiff = useAppSelector((x) => x.currentSession.currentPlanDiff);
+  const currentPlanDiff = useAppSelector(selectPendingPlanDiff);
   const [selectedDiff, setSelectedDiff] = useState<SessionBlueprintDiff>();
-  const newWorkoutName = useAppSelector(selectNewWorkoutName);
+  const newWorkoutName = useAppSelectorWithArg(selectNewWorkoutName, currentPlanDiff?.programId ?? '');
 
   // Track whether user has opted to create a new workout instead of updating existing
   const [isCreatingNewWorkout, setIsCreatingNewWorkout] = useState(false);
@@ -66,7 +74,7 @@ export function SessionDiffSaveEditor() {
   const saveAsNewWorkout = isCreatingNewWorkout || !canEditExistingWorkout;
 
   // Clear the diff on any exit so the trigger can reopen for a later diff
-  useEffect(() => () => void dispatch(setCurrentPlanDiff(undefined)), [dispatch]);
+  useOnDismiss(() => dispatch(setPendingPlanDiff(undefined)));
 
   /**
    * Handles toggling between "update existing workout" and "save as new workout" modes.
@@ -83,7 +91,7 @@ export function SessionDiffSaveEditor() {
       ? createAddNewWorkoutDiff(currentPlanDiff, newWorkoutName)
       : createUpdateExistingWorkoutDiff(currentPlanDiff);
 
-    dispatch(setCurrentPlanDiff({ ...currentPlanDiff, diff: newDiff }));
+    dispatch(setPendingPlanDiff({ ...currentPlanDiff, diff: newDiff }));
   };
 
   const getSwitchSubtitle = (): string => {
@@ -98,10 +106,12 @@ export function SessionDiffSaveEditor() {
   };
 
   const save = () => {
-    if (selectedDiff) {
+    if (selectedDiff && currentPlanDiff) {
       dispatch(
         applyDiffToPlan(
-          saveAsNewWorkout ? { type: 'add', diff: selectedDiff } : { ...currentPlanDiff, diff: selectedDiff },
+          saveAsNewWorkout
+            ? { type: 'add', programId: currentPlanDiff.programId, diff: selectedDiff }
+            : { ...currentPlanDiff, diff: selectedDiff },
         ),
       );
     }
@@ -110,45 +120,55 @@ export function SessionDiffSaveEditor() {
   };
 
   const floatingBottomContainer = (
-    <FloatingBottomContainer fab={<FAB icon={'save'} label={t('generic.save.button')} onPress={save} />} />
+    <PageActions
+      primaryKind="commit"
+      primary={{
+        label: t('generic.save.button'),
+        icon: SaveIcon,
+        systemImage: 'square.and.arrow.down',
+        onPress: save,
+      }}
+    />
   );
 
   return (
-    <FullHeightScrollView
-      floatingChildren={floatingBottomContainer}
-      scrollStyle={{ padding: spacing.pageHorizontalMargin }}
-    >
-      <Stack.Screen options={{ title: t('plan.diff.dialog.title') }} />
-      <Text
-        style={{
-          paddingBlockEnd: spacing[2],
-        }}
-        variant="bodyMedium"
+    <SafeAreaView edges={{ bottom: 'additive', top: 'off' }} style={{ flex: 1 }}>
+      <FullHeightScrollView
+        floatingChildren={floatingBottomContainer}
+        scrollStyle={{ padding: spacing.pageHorizontalMargin }}
       >
-        {currentPlanDiff?.type === 'diff' ? (
-          <LimitedHtml
-            value={t('plan.diff.dialog_update.body', {
-              originalSessionName: currentPlanDiff?.diff.originalSession.name,
-            })}
-          />
-        ) : (
-          t('plan.diff.dialog_add.body')
-        )}
-      </Text>
-      <View style={{ marginHorizontal: -spacing.pageHorizontalMargin }}>
-        {canEditExistingWorkout && (
-          <ListSwitch
-            value={isCreatingNewWorkout}
-            supportingText={<LimitedHtml value={getSwitchSubtitle()} />}
-            onValueChange={handleSaveModeChange}
-            headline={t('plan.diff.dialog_save_as_new_switch.title')}
-          />
-        )}
-      </View>
-      <SessionDiffView
-        diff={currentPlanDiff?.diff ?? EmptySessionBlueprintDiff}
-        onSelectedDiffChange={setSelectedDiff}
-      />
-    </FullHeightScrollView>
+        <Stack.Screen options={{ title: t('plan.diff.dialog.title') }} />
+        <Text
+          style={{
+            paddingBlockEnd: spacing[2],
+          }}
+          variant="bodyMedium"
+        >
+          {currentPlanDiff?.type === 'diff' ? (
+            <LimitedHtml
+              value={t('plan.diff.dialog_update.body', {
+                originalSessionName: currentPlanDiff?.diff.originalSession.name,
+              })}
+            />
+          ) : (
+            t('plan.diff.dialog_add.body')
+          )}
+        </Text>
+        <View style={{ marginHorizontal: -spacing.pageHorizontalMargin }}>
+          {canEditExistingWorkout && (
+            <ListSwitch
+              value={isCreatingNewWorkout}
+              supportingText={<LimitedHtml value={getSwitchSubtitle()} />}
+              onValueChange={handleSaveModeChange}
+              headline={t('plan.diff.dialog_save_as_new_switch.title')}
+            />
+          )}
+        </View>
+        <SessionDiffView
+          diff={currentPlanDiff?.diff ?? EmptySessionBlueprintDiff}
+          onSelectedDiffChange={setSelectedDiff}
+        />
+      </FullHeightScrollView>
+    </SafeAreaView>
   );
 }

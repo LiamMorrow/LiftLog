@@ -32,14 +32,14 @@ public class PurchaseTokenAuthenticationHandler
         // Check for Authorization header
         if (!Request.Headers.ContainsKey("Authorization"))
         {
-            return AuthenticateResult.Fail("Missing Authorization header");
+            return AuthenticateResult.NoResult();
         }
 
         var authHeader = Request.Headers.Authorization.FirstOrDefault();
         if (string.IsNullOrEmpty(authHeader))
         {
             _logger.LogWarning("Empty Authorization header");
-            return AuthenticateResult.Fail("Empty Authorization header");
+            return AuthenticateResult.NoResult();
         }
 
         // Parse the authorization header
@@ -51,7 +51,7 @@ public class PurchaseTokenAuthenticationHandler
         if (authParts.Length != 2)
         {
             _logger.LogWarning("Invalid Authorization header format");
-            return AuthenticateResult.Fail("Invalid Authorization header format");
+            return AuthenticateResult.NoResult();
         }
 
         AppStore appStore;
@@ -65,7 +65,7 @@ public class PurchaseTokenAuthenticationHandler
         catch (JsonException)
         {
             _logger.LogWarning("Invalid AppStore in Authorization header");
-            return AuthenticateResult.Fail("Invalid AppStore in Authorization header");
+            return AuthenticateResult.NoResult();
         }
 
         var proToken = authParts[1];

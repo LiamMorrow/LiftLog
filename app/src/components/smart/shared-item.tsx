@@ -1,29 +1,26 @@
 import CardList from '@/components/presentation/foundation/card-list';
-import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { PageActions } from '@/components/presentation/foundation/page-actions';
+import AssignmentAddIcon from '@expo/material-symbols/assignment_add.xml';
+import PlayCircleIcon from '@expo/material-symbols/play_circle.xml';
 import { spacing } from '@/hooks/useAppTheme';
 import { SharedItem, SharedProgramBlueprint, SharedSession } from '@/models/feed-models';
 import { addProgramSession, savePlan } from '@/store/program';
 import { showSnackbar } from '@/store/app';
-import { T } from '@tolgee/react';
-import { Animated, View } from 'react-native';
+import { T, useTranslate } from '@tolgee/react';
+import { View } from 'react-native';
 import { Card, Text } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import { uuid } from '@/utils/uuid';
 import { useRouter } from 'expo-router';
 import { Session } from '@/models/session-models';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
-import { useMountEffect } from '@/hooks/useMountEffect';
-import { setCurrentSession } from '@/store/current-session';
 import SessionComponent from '@/components/smart/session-component';
 import { useAppSelector } from '@/store';
-import { useScrollHeaderColor } from '@/hooks/useScrollListener';
-import { useState } from 'react';
-import { CurrentWorkoutReplacer } from '@/components/smart/current-workout-replacer';
+import { useStartWorkoutWithConfirmation } from '@/hooks/useStartWorkoutWithConfirmation';
 
 interface SharedItemProps {
   sharedItem: SharedItem;
@@ -31,59 +28,21 @@ interface SharedItemProps {
 
 function SharedProgramBlueprintContent({ sharedItem }: { sharedItem: SharedProgramBlueprint }) {
   const program = sharedItem.programBlueprint;
-  const dispatch = useDispatch();
   const preferredWeightUnit = usePreferredWeightUnit();
-  const { push } = useRouter();
 
   // Convert session blueprints to sessions for display
   const sessions = program.sessions.map((sessionBlueprint) =>
     Session.getEmptySession(sessionBlueprint, preferredWeightUnit),
   );
 
-  const handleSave = () => {
-    const programId = uuid();
-    dispatch(
-      savePlan({
-        programId,
-        programBlueprint: program,
-      }),
-    );
-    push(`/settings/program-list?focusprogramId=${programId}`, {
-      withAnchor: true,
-    });
-    dispatch(
-      showSnackbar({
-        text: `"${program.name}" saved to your plans`,
-      }),
-    );
-  };
-
   return (
-    <FullHeightScrollView
-      contentContainerStyle={{
-        padding: spacing.pageHorizontalMargin,
-        gap: spacing[2],
-      }}
-    >
+    <View style={{ padding: spacing.pageHorizontalMargin, gap: spacing[2] }}>
       {/* Header section */}
-      <View style={{ gap: spacing[2] }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-          }}
-        >
-          <View style={{ flex: 1 }}>
-            <Text variant="titleLarge">{program.name}</Text>
-            <Text variant="bodyMedium" style={{ opacity: 0.7 }}>
-              {program.sessions.length} {program.sessions.length === 1 ? 'workout' : 'workouts'}
-            </Text>
-          </View>
-          <Button mode="contained" icon="save" style={{ alignSelf: 'center' }} onPress={handleSave}>
-            <T keyName="generic.save.button" />
-          </Button>
-        </View>
+      <View>
+        <Text variant="titleLarge">{program.name}</Text>
+        <Text variant="bodyMedium" style={{ opacity: 0.7 }}>
+          {program.sessions.length} {program.sessions.length === 1 ? 'workout' : 'workouts'}
+        </Text>
       </View>
 
       <View style={{ flex: 1, gap: spacing[2] }}>
@@ -109,61 +68,102 @@ function SharedProgramBlueprintContent({ sharedItem }: { sharedItem: SharedProgr
           }
         />
       </View>
-    </FullHeightScrollView>
+    </View>
+  );
+}
+
+function SharedProgramBlueprintActions({ sharedItem }: { sharedItem: SharedProgramBlueprint }) {
+  const program = sharedItem.programBlueprint;
+  const dispatch = useDispatch();
+  const { t } = useTranslate();
+  const { push } = useRouter();
+
+  const handleSave = () => {
+    const programId = uuid();
+    dispatch(
+      savePlan({
+        programId,
+        programBlueprint: program,
+      }),
+    );
+    push(`/settings/program-list?focusprogramId=${programId}`, {
+      withAnchor: true,
+    });
+    dispatch(
+      showSnackbar({
+        text: `"${program.name}" saved to your plans`,
+      }),
+    );
+  };
+
+  return (
+    <PageActions
+      primaryKind="commit"
+      primary={{
+        label: t('plan.import.save.button'),
+        icon: AssignmentAddIcon,
+        systemImage: 'plus',
+        onPress: handleSave,
+      }}
+    />
   );
 }
 
 function SharedSessionContent({ sharedItem }: { sharedItem: SharedSession }) {
+  const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
+  return <SessionComponent session={sharedItem.session} showBodyweight={showBodyweight} embedded />;
+}
+
+function SharedSessionActions({ sharedItem }: { sharedItem: SharedSession }) {
   const session = sharedItem.session;
   const dispatch = useDispatch();
-  const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
-  const headerColor = useScrollHeaderColor();
+  const { t } = useTranslate();
   const activeProgramId = useAppSelector((x) => x.program.activePlanId);
   const { push } = useRouter();
-  const [sessionToReplace, setSessionToReplace] = useState<Session | undefined>(undefined);
+  const { start, confirmationDialog } = useStartWorkoutWithConfirmation();
 
-  useMountEffect(() => {
-    dispatch(setCurrentSession({ target: 'sharedSession', session }));
-  });
+  const saveToPlan = () => {
+    dispatch(
+      addProgramSession({
+        programId: activeProgramId,
+        sessionBlueprint: session.blueprint,
+      }),
+    );
+    push(`/settings/manage-workouts/${activeProgramId}`);
+  };
+
   return (
-    <View style={{ flex: 1 }}>
-      <Animated.View
-        style={{
-          flexDirection: 'row',
-          gap: spacing[2],
-          padding: spacing.pageHorizontalMargin,
-          backgroundColor: headerColor,
+    <>
+      {confirmationDialog}
+      <PageActions
+        primaryKind="commit"
+        primary={{
+          label: t('feed.shared_session.start_workout.button'),
+          icon: PlayCircleIcon,
+          systemImage: 'play.circle',
+          onPress: () => start(session.with({ id: uuid() })),
         }}
-      >
-        <Button
-          icon={'assignment'}
-          onPress={() => {
-            dispatch(
-              addProgramSession({
-                programId: activeProgramId,
-                sessionBlueprint: session.blueprint,
-              }),
-            );
-            push(`/settings/manage-workouts/${activeProgramId}`);
-          }}
-          mode="outlined"
-          style={{ flex: 1 }}
-        >
-          <T keyName="feed.shared_session.save_to_plan.button" />
-        </Button>
-        <Button
-          icon={'playCircle'}
-          onPress={() => setSessionToReplace(session.with({ id: uuid() }))}
-          mode="contained"
-          style={{ flex: 1 }}
-        >
-          <T keyName="feed.shared_session.start_workout.button" />
-        </Button>
-      </Animated.View>
-      <CurrentWorkoutReplacer session={sessionToReplace} clearSession={() => setSessionToReplace(undefined)} />
-      <SessionComponent target="sharedSession" showBodyweight={showBodyweight} />
-    </View>
+        secondary={[
+          {
+            label: t('feed.shared_session.save_to_plan.button'),
+            icon: AssignmentAddIcon,
+            systemImage: 'plus',
+            onPress: saveToPlan,
+          },
+        ]}
+      />
+    </>
   );
+}
+
+export function SharedItemActions({ sharedItem }: SharedItemProps) {
+  if (sharedItem instanceof SharedProgramBlueprint) {
+    return <SharedProgramBlueprintActions sharedItem={sharedItem} />;
+  }
+  if (sharedItem instanceof SharedSession) {
+    return <SharedSessionActions sharedItem={sharedItem} />;
+  }
+  return null;
 }
 
 export default function SharedItemComponent({ sharedItem }: SharedItemProps) {

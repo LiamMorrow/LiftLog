@@ -6,6 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 const string ApiKeyHeaderName = "X-API-Key";
 const string ApiKeyName = "ApiKey";
 
+// The app checks its backup target by posting an empty body with this header. Answer it, but do not
+// store it - see docs/RemoteBackup.md.
+const string ProbeHeaderName = "X-LiftLog-Probe";
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
@@ -23,12 +27,16 @@ app.MapPost(
     async (
         Stream body,
         [FromHeader(Name = ApiKeyHeaderName)] string? apiKey,
+        [FromHeader(Name = ProbeHeaderName)] string? probe,
         [FromQuery] string? user,
         IConfiguration configuration
     ) =>
     {
         if (configuration.GetValue<string>(ApiKeyName) != apiKey)
             return Results.Unauthorized();
+
+        if (probe is not null)
+            return Results.Ok();
 
         var backupDirectory = configuration.GetValue<string>("BackupDirectory");
 

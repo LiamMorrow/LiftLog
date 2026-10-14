@@ -1,6 +1,7 @@
 import {
   CardioExerciseBlueprint,
   ExerciseBlueprint,
+  repsTargetsEqual,
   SessionBlueprint,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
@@ -21,7 +22,10 @@ import {
   fromRecordedExerciseJSON,
 } from '@/models/session-models/recorded-exercise';
 import { PotentialSet, RecordedWeightedExercise } from '@/models/session-models/recorded-weighted-exercise';
+import { RestTimer } from '@/models/session-models/rest-timer';
 import { IndexOutOfBoundsError } from '@/utils/index-out-of-bounds';
+
+export const freeformSessionName = 'Freeform Workout';
 
 export class Session {
   constructor(
@@ -30,7 +34,7 @@ export class Session {
     readonly recordedExercises: RecordedExercise[],
     readonly date: LocalDate,
     readonly bodyweight: Weight | undefined,
-    readonly restTimerStartTime: OffsetDateTime | undefined,
+    readonly restTimer: RestTimer | undefined,
   ) {}
   get duration(): Duration | undefined {
     return this.lastExercise?.latestTime && this.firstExercise?.earliestTime
@@ -43,7 +47,7 @@ export class Session {
       json.id,
       SessionBlueprint.fromJSON({
         ...json.blueprint,
-        version: 2,
+        version: 6,
         exercises: json.recordedExercises.map((x) => x.blueprint),
       }),
       json.recordedExercises.map(fromRecordedExerciseJSON),
@@ -61,7 +65,7 @@ export class Session {
           (we) =>
             new RecordedWeightedExercise(
               we,
-              Array.from({ length: we.sets }).map(() => new PotentialSet(undefined, new Weight(0, defaultWeightUnit))),
+              we.plannedSets.map((s) => new PotentialSet(undefined, new Weight(0, defaultWeightUnit), s.reps)),
               undefined,
             ),
         )
@@ -78,7 +82,7 @@ export class Session {
     );
   }
 
-  withNoNilWeights(fallbackWeightUnit: WeightUnit): Session | undefined {
+  withNoNilWeights(fallbackWeightUnit: WeightUnit): Session {
     return this.with({
       recordedExercises: this.recordedExercises.map((re) =>
         re instanceof RecordedWeightedExercise
@@ -118,7 +122,7 @@ export class Session {
       'recordedExercises' in other ? (other.recordedExercises ?? this.recordedExercises) : this.recordedExercises,
       'date' in other ? (other.date ?? this.date) : this.date,
       'bodyweight' in other ? other.bodyweight : this.bodyweight,
-      'restTimerStartTime' in other ? other.restTimerStartTime : this.restTimerStartTime,
+      'restTimer' in other ? other.restTimer : this.restTimer,
     );
   }
 
@@ -150,13 +154,21 @@ export class Session {
           exerciseIndex,
           weightedExistingExercise.with({
             blueprint: newBlueprint as WeightedExerciseBlueprint,
-            potentialSets: Enumerable.range(0, (newBlueprint as WeightedExerciseBlueprint).sets)
-              .select(
-                (index) =>
-                  weightedExistingExercise.potentialSets.at(index) ??
-                  new PotentialSet(undefined, weightedExistingExercise.maxWeight),
-              )
-              .toArray(),
+            // A set you already logged was chasing the target it was chasing, so only unrecorded
+            // sets take the edited blueprint's targets - and only where the edit actually moved
+            // them. A carried target can sit above what the plan asks for, and changing the notes
+            // is not a request to hand that back.
+            potentialSets: (newBlueprint as WeightedExerciseBlueprint).plannedSets.map((planned, index) => {
+              const existing = weightedExistingExercise.potentialSets.at(index);
+              if (!existing) {
+                return new PotentialSet(undefined, weightedExistingExercise.maxWeight, planned.reps);
+              }
+              const plannedBefore = weightedExistingExercise.blueprint.repsTargetForSet(index);
+              if (existing.set || repsTargetsEqual(planned.reps, plannedBefore)) {
+                return existing;
+              }
+              return existing.with({ target: planned.reps });
+            }),
           }),
         );
       }
@@ -310,7 +322,7 @@ export class Session {
 
   toJSON(): SessionJSON {
     return {
-      version: 2,
+      version: 7,
       blueprint: this.blueprint.toJSON(),
       bodyweight: this.bodyweight?.toJSON(),
       date: toLocalDateJSON(this.date),
@@ -324,7 +336,7 @@ export class Session {
       id: uuid(),
       date: date,
       bodyweight,
-      blueprint: EmptySession.blueprint.with({ name: 'Freeform Workout' }),
+      blueprint: EmptySession.blueprint.with({ name: freeformSessionName }),
     });
   }
 
@@ -335,14 +347,7 @@ export class Session {
   get totalWeightLifted(): Weight {
     return this.recordedExercises.reduce(
       (b, ex) =>
-        b.plus(
-          ex instanceof RecordedWeightedExercise
-            ? ex.potentialSets.reduce(
-                (c, set) => c.plus(set.weight.multipliedBy(set.set?.repsCompleted ?? 0)),
-                Weight.NIL,
-              )
-            : Weight.NIL,
-        ),
+        b.plus(ex instanceof RecordedWeightedExercise ? ex.totalWeightLiftedWith(this.bodyweight) : Weight.NIL),
       Weight.NIL,
     );
   }
@@ -355,11 +360,68 @@ export class Session {
     return this.recordedExercises.some((x) => x.isStarted);
   }
 
+  get runningCardioSet():
+    | { exerciseIndex: number; setIndex: number; exercise: RecordedCardioExercise; set: RecordedCardioExerciseSet }
+    | undefined {
+    for (const [exerciseIndex, exercise] of this.recordedExercises.entries()) {
+      if (!(exercise instanceof RecordedCardioExercise)) {
+        continue;
+      }
+      const setIndex = exercise.sets.findIndex((set) => set.isTimerRunning);
+      const set = exercise.sets[setIndex];
+      if (set) {
+        return { exerciseIndex, setIndex, exercise, set };
+      }
+    }
+    return undefined;
+  }
+
+  cardioSetAt(exerciseIndex: number, setIndex: number): RecordedCardioExerciseSet | undefined {
+    const exercise = this.recordedExercises[exerciseIndex];
+    return exercise instanceof RecordedCardioExercise ? exercise.sets[setIndex] : undefined;
+  }
+
+  withCardioSet(
+    exerciseIndex: number,
+    setIndex: number,
+    update: (set: RecordedCardioExerciseSet) => RecordedCardioExerciseSet,
+    now: OffsetDateTime,
+  ): Session {
+    const exercise = this.recordedExercises[exerciseIndex];
+    if (!(exercise instanceof RecordedCardioExercise)) {
+      return this;
+    }
+    return this.withExercise(
+      exerciseIndex,
+      exercise.withSet(setIndex, (set) => update(set).withCompletionTimeIfCompleted(now)),
+    );
+  }
+
+  /** Only one cardio clock runs at a time, so whatever another set had going is banked first. */
+  withCardioTimerStarted(exerciseIndex: number, setIndex: number, now: OffsetDateTime): Session {
+    const running = this.runningCardioSet;
+    const banked = running
+      ? this.withExercise(
+          running.exerciseIndex,
+          running.exercise.withAllSets((set) =>
+            set.isTimerRunning ? set.withTimerStopped(now).withCompletionTimeIfCompleted(now) : set,
+          ),
+        )
+      : this;
+
+    const exercise = banked.recordedExercises[exerciseIndex];
+    if (!(exercise instanceof RecordedCardioExercise)) {
+      return banked;
+    }
+    return banked.withExercise(
+      exerciseIndex,
+      exercise.withSet(setIndex, (set) => set.withTimerStarted(now)),
+    );
+  }
+
   get nextExercise(): RecordedExercise | undefined {
     const recordedExercises = this.recordedExercises;
-    const cardioExerciseWithRunningTimer = recordedExercises.find(
-      (x) => x instanceof RecordedCardioExercise && x.sets.some((s) => s.currentBlockStartTime),
-    );
+    const cardioExerciseWithRunningTimer = this.runningCardioSet?.exercise;
     if (cardioExerciseWithRunningTimer) {
       return cardioExerciseWithRunningTimer;
     }
@@ -433,23 +495,24 @@ export class Session {
   }
 
   get restTimerEndTime(): OffsetDateTime | undefined {
-    if (!this.restTimerStartTime) {
+    if (!this.restTimer || this.restTimer.isPaused) {
       return undefined;
     }
     const exercise = this.lastExercise;
     if (this.nextExercise && exercise && exercise.latestTime && exercise instanceof RecordedWeightedExercise) {
-      const repsPerSet = exercise.blueprint.repsPerSet;
       const { minRest, failureRest } = exercise.blueprint.restBetweenSets;
 
-      const rest = match(exercise.lastRecordedSet)
-        .with({ set: { repsCompleted: P.when((x) => x >= repsPerSet) } }, () => minRest)
-        .with({ set: { repsCompleted: P.when((x) => x < repsPerSet) } }, () => failureRest)
-        .otherwise(() => Duration.ZERO);
+      const lastSet = exercise.lastRecordedSet;
+      const targetMin = lastSet?.set
+        ? exercise.repsTargetForSet(exercise.potentialSets.indexOf(lastSet)).min
+        : undefined;
+      const rest =
+        targetMin === undefined ? Duration.ZERO : lastSet!.set!.repsCompleted >= targetMin ? minRest : failureRest;
 
       if (rest.equals(Duration.ZERO)) {
         return undefined;
       }
-      return this.restTimerStartTime.plus(rest);
+      return this.restTimer.startedAt.plus(rest);
     }
   }
 
@@ -476,7 +539,7 @@ export class Session {
   }
 
   get isFreeform(): boolean {
-    return this.blueprint.name === 'Freeform Workout';
+    return this.blueprint.name === freeformSessionName;
   }
 }
 

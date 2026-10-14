@@ -19,7 +19,7 @@ export class Logger {
     timestamp: Date;
   }[] = [];
 
-  // Serialized write queue — appends never race each other
+  // Serialized write queue - appends never race each other
   public writeQueue: Promise<void> = Promise.resolve();
 
   private serializeValue(value: unknown): unknown {

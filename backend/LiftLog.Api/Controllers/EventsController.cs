@@ -1,5 +1,6 @@
 using FluentValidation;
 using LiftLog.Api.Db;
+using LiftLog.Api.Features;
 using LiftLog.Api.Models;
 using LiftLog.Lib.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
+[FeatureCheck(Feature.Feed)]
 public class EventsController(UserDataContext db) : ControllerBase
 {
     [HttpPost]
@@ -32,22 +34,27 @@ public class EventsController(UserDataContext db) : ControllerBase
             .Users.Select(x => x.FollowSecret)
             .Except(validFollowSecrets.Select(x => x.Value))
             .ToArray();
+        var sinceByFollowSecret = request
+            .Users.GroupBy(x => x.FollowSecret)
+            .ToDictionary(x => x.Key, x => x.Min(y => y.Since));
         var userIdsAndSince = validFollowSecrets
             .Select(x => new UserEventFilter
             {
                 UserId = x.UserId,
-                Since = request.Users.Single(y => y.UserId == x.UserId).Since,
+                Since = sinceByFollowSecret[x.Value],
             })
             .ToArray();
 
+        var now = DateTimeOffset.UtcNow;
+
         var events = await db
             .UserEvents.Join(
-                db.UserEventFilterStubDbSet.CreateResultSetFromData(userIdsAndSince),
+                db.CreateUserEventFilterResultSet(userIdsAndSince),
                 x => x.UserId,
                 x => x.UserId,
                 (Event, Request) => new { Event, Request }
             )
-            .Where(x => x.Event.Expiry > DateTimeOffset.UtcNow)
+            .Where(x => x.Event.Expiry > now)
             .Where(x => x.Event.Timestamp > x.Request.Since)
             .Select(x => x.Event)
             .ToArrayAsync();
@@ -64,7 +71,7 @@ public class EventsController(UserDataContext db) : ControllerBase
             .ToArray();
         foreach (var userEvent in events)
         {
-            userEvent.LastAccessed = DateTimeOffset.UtcNow;
+            userEvent.LastAccessed = now;
         }
 
         await db.SaveChangesAsync();

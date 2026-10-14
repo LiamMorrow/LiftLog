@@ -1,23 +1,23 @@
 import ItemTitle from '@/components/presentation/foundation/item-title';
-import { formatTimeSpan } from '@/components/presentation/foundation/rest-format';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
-import { useState } from 'react';
 import { View } from 'react-native';
-import { Menu } from 'react-native-paper';
-import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
-import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
+import Menu from '@/components/presentation/foundation/menu';
+import IconButton from '@/components/presentation/foundation/icon-button';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { useTranslate } from '@tolgee/react';
 import {
   CardioExerciseBlueprint,
-  CardioTarget,
   ExerciseBlueprint,
+  formatRepsTarget,
+  uniformTarget,
   matchCardioTarget,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { match, P } from 'ts-pattern';
-import { formatDistance } from '@/utils/distance';
+import { formatCardioTarget } from '@/utils/format-cardio-target';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
+import CopyAll from '@expo/material-symbols/copy_all.xml';
 
 interface ExerciseBlueprintSummaryProps {
   blueprint: ExerciseBlueprint;
@@ -37,7 +37,6 @@ export default function ExerciseBlueprintSummary({
   onCopyTo,
 }: ExerciseBlueprintSummaryProps) {
   const { t } = useTranslate();
-  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <TouchableRipple
@@ -62,19 +61,16 @@ export default function ExerciseBlueprintSummary({
             <IconButton onPress={onMoveDown} icon={'arrowDownward'} />
             <IconButton onPress={onRemove} icon={'delete'} />
             <Menu
-              visible={menuOpen}
-              onDismiss={() => setMenuOpen(false)}
-              anchor={<IconButton onPress={() => setMenuOpen(true)} icon={'moreHoriz'} />}
-            >
-              <Menu.Item
-                title={t('exercise.copy_to.button')}
-                leadingIcon={'copyAll'}
-                onPress={() => {
-                  setMenuOpen(false);
-                  onCopyTo();
-                }}
-              />
-            </Menu>
+              trigger={(open) => <IconButton onPress={open} icon={'moreHoriz'} />}
+              items={[
+                {
+                  label: t('exercise.copy_to.button'),
+                  icon: CopyAll,
+                  systemImage: 'doc.on.clipboard',
+                  onPress: onCopyTo,
+                },
+              ]}
+            />
           </View>
         </View>
         {match(blueprint)
@@ -108,19 +104,28 @@ function CardioExerciseBlueprintSummary({ blueprint }: { blueprint: CardioExerci
   );
 }
 
-export function formatCardioTarget(target: CardioTarget): string {
-  return matchCardioTarget(target, {
-    distance: (t) => formatDistance(t.value),
-    time: (t) => formatTimeSpan(t.value),
-  });
-}
+export { formatCardioTarget };
 
 function WeightedExerciseBlueprintSummary({ blueprint }: { blueprint: WeightedExerciseBlueprint }) {
+  const sets = blueprint.plannedSets.length;
+  const uniform = uniformTarget(blueprint.plannedSets);
   return (
     <View style={{ gap: spacing[1], alignItems: 'flex-start' }}>
       <SurfaceText>
-        <SurfaceText color="primary">{blueprint.sets}</SurfaceText> {pluralize(blueprint.sets, 'set')} of{' '}
-        <SurfaceText color="primary">{blueprint.repsPerSet}</SurfaceText> {pluralize(blueprint.repsPerSet, 'rep')}
+        {uniform ? (
+          <>
+            <SurfaceText color="primary">{sets}</SurfaceText> {pluralize(sets, 'set')} of{' '}
+            <SurfaceText color="primary">{formatRepsTarget(uniform)}</SurfaceText> {pluralize(uniform.max, 'rep')}
+          </>
+        ) : (
+          <>
+            <SurfaceText color="primary">{sets}</SurfaceText> {pluralize(sets, 'set')}:{' '}
+            <SurfaceText color="primary">
+              {blueprint.plannedSets.map((s) => formatRepsTarget(s.reps)).join(' / ')}
+            </SurfaceText>{' '}
+            reps
+          </>
+        )}
       </SurfaceText>
     </View>
   );

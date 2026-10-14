@@ -2,14 +2,13 @@ import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { KeyValueStore } from '../key-value-store';
 import {
   dataMigrationsSchema,
-  feedFollowedUsersSchema,
-  feedFollowerUsersSchema,
   feedFollowRequestsSchema,
+  feedFriendsSchema,
   feedIdentitySchema,
   feedItemsSchema,
-  feedPendingUsersSchema,
   feedRevokedFollowSecretsSchema,
 } from '@/db/schema';
+import { mergeLegacyRelationships } from '@/models/storage/versions/migrations/steps/merge-legacy-relationships';
 import { LiftLog } from '@/gen/proto';
 import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/initial/protobuf-migrator';
 import { SessionUserEvent } from '@/models/feed-models';
@@ -17,9 +16,6 @@ import {
   followRequestInboxMessageMigrations,
   feedIdentityMigrations,
   sessionUserEventMigrations,
-  followedFeedUserMigrations,
-  followerFeedUserMigrations,
-  pendingFeedUserMigrations,
 } from '@/models/storage/versions/migrations';
 
 export const importFeedDataMigration = 'IMPORT_FEED';
@@ -32,35 +28,37 @@ export async function importFeed(db: ExpoSQLiteDatabase, keyValueStore: KeyValue
   }
   const decoded = LiftLog.Ui.Models.FeedStateDaoV1.decode(feedStateBytes);
   const convertedIdentity = getIdentity(decoded);
-  const convertedFollowers = getFollowers(decoded);
-  const convertedPending = getPendingUsers(decoded);
-  const convertedFollowedUsers = getFollowedUsers(decoded);
+  const { friends, secretsToRevoke } = mergeLegacyRelationships({
+    ownId: convertedIdentity?.payload.id,
+    followed: decoded.followedUsers.map((x) => ProtobufToJsonV1Migrator.migrateFollowedUser(x)),
+    pending: [],
+    followers: decoded.followers.map((x) => ProtobufToJsonV1Migrator.migrateFollowerUser(x)),
+  });
   const convertedFeedItems = getFeedItems(decoded);
   const convertedFollowRequests = getFollowRequests(decoded);
+  const revokedSecrets = [...new Set([...decoded.revokedFollowSecrets, ...secretsToRevoke])];
 
-  await db.transaction(async (tx) => {
+  db.transaction((tx) => {
     if (convertedIdentity) {
-      await tx.insert(feedIdentitySchema).values(convertedIdentity);
+      tx.insert(feedIdentitySchema).values(convertedIdentity).run();
     }
-    if (convertedFollowers.length) {
-      await tx.insert(feedFollowerUsersSchema).values(convertedFollowers);
-    }
-    if (convertedPending.length) {
-      await tx.insert(feedPendingUsersSchema).values(convertedPending);
-    }
-    if (convertedFollowedUsers.length) {
-      await tx.insert(feedFollowedUsersSchema).values(convertedFollowedUsers);
+    if (friends.length) {
+      tx.insert(feedFriendsSchema)
+        .values(friends.map((payload) => ({ id: payload.id, payload })))
+        .run();
     }
     if (convertedFeedItems.length) {
-      await tx.insert(feedItemsSchema).values(convertedFeedItems);
+      tx.insert(feedItemsSchema).values(convertedFeedItems).run();
     }
     if (convertedFollowRequests.length) {
-      await tx.insert(feedFollowRequestsSchema).values(convertedFollowRequests);
+      tx.insert(feedFollowRequestsSchema).values(convertedFollowRequests).run();
     }
-    if (decoded.revokedFollowSecrets.length) {
-      await tx.insert(feedRevokedFollowSecretsSchema).values(decoded.revokedFollowSecrets.map((x) => ({ secret: x })));
+    if (revokedSecrets.length) {
+      tx.insert(feedRevokedFollowSecretsSchema)
+        .values(revokedSecrets.map((x) => ({ secret: x })))
+        .run();
     }
-    await tx.insert(dataMigrationsSchema).values({ id: importFeedDataMigration });
+    tx.insert(dataMigrationsSchema).values({ id: importFeedDataMigration }).run();
   });
 }
 
@@ -71,40 +69,6 @@ function getIdentity(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
       payload: feedIdentityMigrations.migrate(ProtobufToJsonV1Migrator.migrateFeedIdentity(decoded.identity)),
     }
   );
-}
-
-function getFollowers(decoded: LiftLog.Ui.Models.FeedStateDaoV1): (typeof feedFollowerUsersSchema.$inferInsert)[] {
-  return decoded.followers.map((x) => ({
-    id: ProtobufToJsonV1Migrator.migrateUuid(x.id),
-    payload: followerFeedUserMigrations.migrate(ProtobufToJsonV1Migrator.migrateFollowerUser(x)),
-  }));
-}
-
-function getFollowedUsers(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
-  return decoded.followedUsers
-    .map((x) => ProtobufToJsonV1Migrator.migrateFollowedUser(x))
-    .map((x) =>
-      x.type === 'FollowedFeedUser'
-        ? {
-            id: x.id,
-            payload: followedFeedUserMigrations.migrate(x),
-          }
-        : undefined,
-    )
-    .filter((x): x is NonNullable<typeof x> => !!x);
-}
-function getPendingUsers(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
-  return decoded.followedUsers
-    .map((x) => ProtobufToJsonV1Migrator.migrateFollowedUser(x))
-    .map((x) =>
-      x.type === 'PendingFeedUser'
-        ? {
-            id: x.id,
-            payload: pendingFeedUserMigrations.migrate(x),
-          }
-        : undefined,
-    )
-    .filter((x): x is NonNullable<typeof x> => !!x);
 }
 
 function getFollowRequests(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {

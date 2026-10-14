@@ -6,12 +6,13 @@ const { join, dirname } = require('node:path');
 
 const modelsDir = join(__dirname, '../src/models');
 const docsSchemasPath = join(__dirname, '../../docs/schemas/');
+const planBuilderSkillDir = join(__dirname, '../../plugins/liftlog-plan-builder/skills/create-liftlog-plan');
 // Create schemas for storage
 
-// Create schema for workout-worker — one file per definition
+// Create schema for workout-worker - one file per definition
 createSplitSchemas(join(modelsDir, 'workout-worker-messages.ts'), join(docsSchemasPath, 'workout-worker'));
 
-// Create schema for the AI plan generator — a single self-contained file
+// Create schema for the AI plan generator - a single self-contained file
 // rooted at AiPlan, with referenced types under `definitions`.
 createSingleSchema(
   join(modelsDir, 'storage/versions/latest/ai-plan.ts'),
@@ -19,11 +20,29 @@ createSingleSchema(
   'AiPlan',
 );
 
+// Create schema for an importable/exportable program blueprint file. The docs
+// copy is published for users to author plans against; the app copy is bundled
+// so it can be loaded at runtime for validation (Metro can't reach docs/); the
+// skill copy ships inside the plan-builder skill, which is installed standalone
+// into ~/.claude or a claude.ai container and so can reach neither of the above.
+createSingleSchema(
+  join(modelsDir, 'storage/versions/latest/blueprint.ts'),
+  [
+    join(docsSchemasPath, 'program-blueprint/ProgramBlueprint.json'),
+    join(modelsDir, 'generated/program-blueprint.schema.json'),
+    join(planBuilderSkillDir, 'reference/ProgramBlueprint.json'),
+  ],
+  'ProgramBlueprint',
+);
+
 /**
  * Write a single self-contained JSON Schema file rooted at `rootType`.
  * The root definition's body becomes the top-level schema; every other
  * definition is kept under `definitions` with internal `#/definitions/...`
  * refs preserved (as produced by `buildSchema`).
+ *
+ * `outputPath` may be a single path or an array of paths to write the same
+ * schema to.
  */
 function createSingleSchema(inputFile, outputPath, rootType) {
   const schema = buildSchema(inputFile);
@@ -41,9 +60,12 @@ function createSingleSchema(inputFile, outputPath, rootType) {
     definitions: restDefs,
   };
 
-  fs.mkdirSync(dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, JSON.stringify(fileSchema, null, 2));
-  console.log(`Wrote schema to ${outputPath}`);
+  const contents = JSON.stringify(fileSchema, null, 2);
+  for (const path of Array.isArray(outputPath) ? outputPath : [outputPath]) {
+    fs.mkdirSync(dirname(path), { recursive: true });
+    fs.writeFileSync(path, contents);
+    console.log(`Wrote schema to ${path}`);
+  }
 }
 
 /**

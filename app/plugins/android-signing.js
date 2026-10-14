@@ -34,14 +34,13 @@ module.exports = function withAndroidSigningConfig(config, signingConfig) {
     config.modResults.contents = config.modResults.contents.replace(
       /buildTypes \{([\s\S]*?)release \{([\s\S]*?)signingConfig signingConfigs\.debug/, // Ensure release config uses signingConfigs.release
       `buildTypes { $1release { $2if (project.hasProperty('ANDROID_UPLOAD_STORE_FILE')) {
-      signingConfig signingConfigs.release
-    } else {
-            signingConfig signingConfigs.debug`,
-    );
-    config.modResults.contents = config.modResults.contents.replace(
-      /packagingOptions/, // Ensure release config uses signingConfigs.release
-      `}
-      packagingOptions`,
+                signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
+            }
+            ndk {
+                debugSymbolLevel 'SYMBOL_TABLE'
+            }`,
     );
 
     return config;

@@ -1,1 +1,4 @@
 https://github.com/wrkout/exercises.json
+
+Exercise translations (assets/exercises/<locale>.json), built with scripts/build-exercise-locales.mjs:
+ru: https://github.com/M1ST0R/ru_exercises.json

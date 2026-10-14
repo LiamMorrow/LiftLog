@@ -21,9 +21,7 @@
   "backup.plaintext_export.subtitle": "Verilerinizi diğer uygulamalarda kullanılmak üzere CSV gibi düz metin formatında dışa aktarın",
   "backup.plaintext_export.title": "düz metin olarak çıkar",
   "backup.reminder.body": "Son yedeklemeniz üzerinden çok zaman geçti. Veri kaybını önlemek için verilerinizi düzenli olarak yedeklemeniz önerilir. Verilerinizi şimdi yedeklemek ister misiniz?",
-  "backup.reminders.subtitle": "Düzenli olarak yedekleme yapmanız tavsiye edilir",
-  "backup.reminders.title": "Yedekleme hatırlatıcıları",
-  "backup.remote.explanation": "Bu gelişmiş özellik Liftlog'un yedekleri uzak sunucuda saklamasını sağlar. <br> Uzak sunucunun nasıl kurulacağını öğrenmek için dökümanını okuyunuz.",
+  "backup.remote.explanation": "Bu gelişmiş özellik Liftlog'un yedekleri uzak sunucuda saklamasını sağlar.",
   "backup.restore_data.subtitle": "Geri yüklemek için dosyayı içe aktar",
   "backup.restore_data.title": "Veriyi geri yükle",
   "backup.sent_successfully.message": "Yedekleme başarıyla gönderildi",
@@ -61,5 +59,11 @@
   "exercise.no_exercises_found.message": "Egzersiz bulunamadı.",
   "exercise.previous_sessions_for.title": "{exercise} için önceki çalışmalar",
   "exercise.remove.confirm.body": "Egzersiz bu çalışma planından çıkarılacak, diğer çalışma planları etkilenmeyecek.",
-  "exercise.remove.confirm.title": "Egzersizi sil?"
+  "exercise.remove.confirm.title": "Egzersizi sil?",
+  "settings.notifications.title": "Dinlenme ve bildirimler",
+  "settings.notifications.subtitle": "Dinlenme zamanlayıcılarını ve dinlenme bittiğinde gösterilen bildirimleri kontrol edin",
+  "rest.notifications.subtitle": "Uygulama arka planda olsa bile dinlenme zamanlayıcısı bittiğinde bir bildirim göster",
+  "workout.rest_timers.label": "Dinlenme zamanlayıcıları",
+  "workout.rest_timers.subtitle": "Setler arasındaki dinlenmeni otomatik olarak zamanla. Bunu kapatmak tüm dinlenme zamanlayıcılarını gizler ve dinlenme bildirimlerini devre dışı bırakır",
+  "rest.notifications.title": "Dinlenme bildirimleri"
 }

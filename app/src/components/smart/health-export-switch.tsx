@@ -3,41 +3,33 @@ import { useDispatch } from 'react-redux';
 import { useServices } from './services-provider';
 import { useAppSelector } from '@/store';
 import { Platform } from 'react-native';
-import { List } from 'react-native-paper';
 import { setExportToHealthAggregator } from '@/store/settings';
-import ListSwitch from '../presentation/foundation/list-switch';
+import { SegmentedListSwitch } from '../presentation/foundation/segmented-list-switch';
+
+/**
+ * Lets a caller leave the switch out of a segmented group entirely: a child that renders nothing
+ * still takes up a segment, so the group needs to know before it lays out.
+ */
+export function useCanExportHealth() {
+  const { healthExportService } = useServices();
+  return healthExportService.canExport() && (Platform.OS === 'android' || Platform.OS === 'ios');
+}
 
 export function HealthExportSwitch() {
   const { t } = useTranslate();
   const dispatch = useDispatch();
-  const { healthExportService } = useServices();
-  const canExport = healthExportService.canExport();
+  const canExport = useCanExportHealth();
   const exportToHealthAggregator = useAppSelector((x) => x.settings.exportToHealthAggregator);
   if (!canExport) {
     return undefined;
   }
-  return Platform.select({
-    android: (
-      <ListSwitch
-        headline={t('export.health_connect.title')}
-        supportingText={t('export.health_connect.subtitle')}
-        left={(props) => <List.Icon icon={'heartCheck'} {...props} />}
-        onValueChange={(val) => {
-          dispatch(setExportToHealthAggregator(val));
-        }}
-        value={exportToHealthAggregator}
-      />
-    ),
-    ios: (
-      <ListSwitch
-        headline={t('export.healthkit.title')}
-        supportingText={t('export.healthkit.subtitle')}
-        left={(props) => <List.Icon icon={'heartCheck'} {...props} />}
-        onValueChange={(val) => {
-          dispatch(setExportToHealthAggregator(val));
-        }}
-        value={exportToHealthAggregator}
-      />
-    ),
-  });
+  return (
+    <SegmentedListSwitch
+      label={Platform.OS === 'ios' ? t('export.healthkit.title') : t('export.health_connect.title')}
+      supportingText={Platform.OS === 'ios' ? t('export.healthkit.subtitle') : t('export.health_connect.subtitle')}
+      icon={'heartCheck'}
+      value={exportToHealthAggregator}
+      onValueChange={(val) => dispatch(setExportToHealthAggregator(val))}
+    />
+  );
 }

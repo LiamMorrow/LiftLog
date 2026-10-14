@@ -4,7 +4,7 @@ import { font } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
-import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/button';
 import { Weight } from '@/models/weight';
 
 type WeightDisplayProps = {
@@ -46,8 +46,9 @@ export default function WeightDisplay(props: WeightDisplayProps) {
           increment={props.increment}
           allowNegative={props.allowNegative}
           label={props.label ?? t('weight.weight.label')}
-          allowNull={props.allowNull as false}
-          updateWeight={props.updateWeight}
+          allowNull={props.allowNull}
+          // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
+          updateWeight={props.updateWeight as (weight: Weight | undefined) => void}
           onClose={() => setDialogOpen(false)}
         />
       )}

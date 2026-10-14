@@ -14,7 +14,8 @@ public class AiChatDirectoryV2(
     private readonly ConcurrentDictionary<string, IAiChatPlannerV2> chatSessions = new();
 
     private readonly string modelId =
-        configuration.GetValue<string?>("AnthropicModelId") ?? "claude-sonnet-4-6";
+        configuration.GetValue<string?>(AiPlannerConfiguration.AnthropicModelIdPath)
+        ?? "claude-sonnet-4-6";
 
     public IAiChatPlannerV2 GetChat(string connectionId)
     {

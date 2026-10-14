@@ -1,7 +1,7 @@
 import type { ProgramBlueprintJSON } from './blueprint';
 
 export interface AiPlanJSON {
-  version: 2;
+  version: 3;
   /**
    * A short name for the plan.
    */

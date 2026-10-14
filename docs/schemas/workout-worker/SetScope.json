@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "discriminator": {
+    "propertyName": "type"
+  },
+  "required": [
+    "type"
+  ],
+  "oneOf": [
+    {
+      "$ref": "./AllSetsScope.json"
+    },
+    {
+      "$ref": "./LowestSetsScope.json"
+    }
+  ],
+  "description": "Which sets a rule moves."
+}

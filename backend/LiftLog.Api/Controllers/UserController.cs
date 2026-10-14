@@ -1,5 +1,6 @@
 using FluentValidation;
 using LiftLog.Api.Db;
+using LiftLog.Api.Features;
 using LiftLog.Api.Models;
 using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
@@ -10,6 +11,7 @@ using Visus.Cuid;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
+[FeatureCheck(Feature.Feed, Feature.Sharing)]
 public class UserController(UserDataContext db, PasswordService passwordService) : ControllerBase
 {
     [Route("[controller]/create")]

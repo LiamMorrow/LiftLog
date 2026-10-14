@@ -78,6 +78,13 @@ export type PutInboxMessageRequest = {
 export type GetInboxMessagesRequest = {
   userId: string;
   password: string;
+  manualAck?: boolean;
+};
+
+export type AckInboxMessagesRequest = {
+  userId: string;
+  password: string;
+  ids: string[];
 };
 
 export type GetInboxMessageResponse = {

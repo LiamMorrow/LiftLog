@@ -9,7 +9,7 @@ import { Updater } from '@/utils/types';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedWeightedExercise;
-  previousRecordedExercises: RecordedWeightedExercise[];
+  previousLineageExercise: RecordedWeightedExercise | undefined;
   toStartNext: boolean;
   isReadonly: boolean;
   showPreviousButton: boolean;
@@ -17,7 +17,7 @@ interface WeightedExerciseProps {
   timeProvider: () => OffsetDateTime;
   updateExercise: (update: Updater<RecordedWeightedExercise>) => void;
   resetSetTimer: () => void;
-  onEditExercise: () => void;
+  onEditExercise: (() => void) | undefined;
   onRemoveExercise: () => void;
 }
 
@@ -31,7 +31,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
   return (
     <ExerciseSection
       recordedExercise={props.recordedExercise}
-      previousRecordedExercises={props.previousRecordedExercises}
+      previousLineageExercise={props.previousLineageExercise}
       toStartNext={props.toStartNext}
       isReadonly={props.isReadonly}
       showPreviousButton={props.showPreviousButton}
@@ -44,7 +44,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           <PotentialSetCounter
             isReadonly={props.isReadonly}
             key={index}
-            maxReps={recordedExercise.blueprint.repsPerSet}
+            repsTarget={recordedExercise.repsTargetForSet(index)}
             onTap={() => {
               const previousSet = set.set;
               const newSet = recordedExercise.withCycledRepCount(index, timeProvider()).getSet(index).set;
@@ -55,7 +55,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
                 resetSetTimer();
               }
             }}
-            previousRepCount={props.previousRecordedExercises.at(0)?.potentialSets[index]?.set?.repsCompleted}
+            previousRepCount={props.previousLineageExercise?.potentialSets[index]?.set?.repsCompleted}
             onUpdateReps={(reps) => {
               updateExercise((ex) => ex.withRepCount(index, reps, timeProvider()));
               resetSetTimer();
@@ -63,7 +63,8 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             onUpdateWeight={(w, applyTo) => updateExercise((ex) => ex.withWeight(index, w, applyTo))}
             set={set}
             toStartNext={props.toStartNext && setToStartNext === index && !props.isReadonly}
-            weightIncrement={recordedExercise.blueprint.progressiveOverload.weightIncrement}
+            resistance={recordedExercise.blueprint.resistance}
+            weightIncrement={recordedExercise.blueprint.weightIncrement}
           />
         ))}
       </View>
