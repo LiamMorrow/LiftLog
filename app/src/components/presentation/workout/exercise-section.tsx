@@ -18,6 +18,8 @@ import Analytics from '@expo/material-symbols/analytics.xml';
 import Edit from '@expo/material-symbols/edit.xml';
 import Notes from '@expo/material-symbols/notes.xml';
 import Delete from '@expo/material-symbols/delete.xml';
+import ArrowUpward from '@expo/material-symbols/arrow_upward.xml';
+import ArrowDownward from '@expo/material-symbols/arrow_downward.xml';
 import OpenInBrowser from '@expo/material-symbols/open_in_browser.xml';
 
 interface ExerciseSectionProps<T extends RecordedExercise> {
@@ -32,6 +34,8 @@ interface ExerciseSectionProps<T extends RecordedExercise> {
   updateExercise: (update: Updater<T>) => void;
   onEditExercise: (() => void) | undefined;
   onRemoveExercise: () => void;
+  onMoveExerciseUp: (() => void) | undefined;
+  onMoveExerciseDown: (() => void) | undefined;
 }
 
 export default function ExerciseSection<T extends RecordedExercise>(props: ExerciseSectionProps<T>) {
@@ -77,6 +81,26 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
                   icon: Edit,
                   systemImage: 'pencil',
                   onPress: props.onEditExercise,
+                } satisfies MenuItem,
+              ]
+            : []),
+          ...(props.onMoveExerciseUp
+            ? [
+                {
+                  label: t('exercise.move_up.button'),
+                  icon: ArrowUpward,
+                  systemImage: 'arrow.up',
+                  onPress: props.onMoveExerciseUp,
+                } satisfies MenuItem,
+              ]
+            : []),
+          ...(props.onMoveExerciseDown
+            ? [
+                {
+                  label: t('exercise.move_down.button'),
+                  icon: ArrowDownward,
+                  systemImage: 'arrow.down',
+                  onPress: props.onMoveExerciseDown,
                 } satisfies MenuItem,
               ]
             : []),
