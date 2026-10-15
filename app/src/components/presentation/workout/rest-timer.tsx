@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ColorChoice } from '@/hooks/useAppTheme';
 import { Rest } from '@/models/blueprint-models';
 import { Duration, OffsetDateTime } from '@js-joda/core';
@@ -7,7 +7,6 @@ import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { RestTimerControls } from '@/components/presentation/workout/rest-timer-controls';
 import { formatTimeSpan, TimerPane, TimerSegment } from '@/components/presentation/workout/timer-pane';
 import { useTranslate } from '@tolgee/react';
-import { useDerivedState } from '@/hooks/useDerivedState';
 
 interface RestTimerProps {
   rest: Rest;
@@ -40,7 +39,7 @@ export default function RestTimer({
 }: RestTimerProps) {
   const { t } = useTranslate();
   const paused = pausedAt !== undefined;
-  const [jiggled, setJiggled] = useDerivedState(startTime, () => [] as string[]);
+  const jiggled = useRef(new Set<string>());
 
   const getTimerState = useCallback(() => {
     const now = pausedAt ?? OffsetDateTime.now();
@@ -85,24 +84,29 @@ export default function RestTimer({
 
   const triggerJiggle = useCallback(
     (milestone: string) => {
-      if (jiggled.includes(milestone)) return;
+      if (jiggled.current.has(milestone)) return;
+      jiggled.current.add(milestone);
       impactAsync(ImpactFeedbackStyle.Heavy).catch(console.log);
       setJiggling(true);
       setTimeout(() => setJiggling(false), 10);
-      setJiggled((j) => [...j, milestone]);
     },
-    [jiggled, setJiggled],
+    [jiggled],
   );
 
   useEffect(() => {
     const timer = setInterval(() => {
       const state = getTimerState();
       setTimerState(state);
+      // An edit can move an elapsed deadline back into the future. Rearm only those
+      // milestones, so the longer rest alerts again without replaying past alerts.
+      if (state.phase === 'resting') jiggled.current.delete('ready');
+      if (state.phase !== 'over') jiggled.current.delete('over');
+      if (paused) return;
       if (state.phase !== 'resting') triggerJiggle('ready');
       if (state.phase === 'over') triggerJiggle('over');
     }, 200);
     return () => clearInterval(timer);
-  }, [getTimerState, triggerJiggle]);
+  }, [getTimerState, triggerJiggle, paused]);
 
   const { phase, windowStart, windowEnd } = timerState;
   const accent = phaseColor[phase];
@@ -146,6 +150,7 @@ export default function RestTimer({
           paused={paused}
           onRestart={() => {
             onRestart();
+            jiggled.current.clear();
             triggerJiggle('reset');
           }}
           onTogglePause={onTogglePause}

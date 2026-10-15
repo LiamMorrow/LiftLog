@@ -76,8 +76,7 @@ function getRestWindow(lastExercise: RecordedExercise) {
     return { partialRest: Duration.ZERO, fullRest: Duration.ZERO };
   }
 
-  const targetMin = lastExercise.repsTargetForSet(lastExercise.potentialSets.indexOf(lastSet)).min;
-  return lastSet.set.repsCompleted >= targetMin
+  return !lastExercise.lastSetFailed
     ? { partialRest: minRest, fullRest: maxRest }
     : { partialRest: failureRest, fullRest: failureRest };
 }
