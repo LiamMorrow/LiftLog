@@ -1,11 +1,11 @@
-import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { ReactNode } from 'react';
+import { ImageSourcePropType } from 'react-native';
 import { SFSymbol } from 'sf-symbols-typescript';
 
 export interface MenuItem {
   label: string;
   onPress: () => void;
-  icon?: AppIconSource;
+  icon?: ImageSourcePropType;
   systemImage?: SFSymbol;
   destructive?: boolean;
   disabled?: boolean;

@@ -1,10 +1,10 @@
 import Feed from '@/components/smart/feed';
-import { FeedFollowers } from '@/components/smart/feed-followers';
-import { FeedFollowing } from '@/components/smart/feed-following';
+import { FeedFriends } from '@/components/smart/feed-friends';
 import { FeedMenu } from '@/components/smart/feed-menu';
+import { OwnHistoryProvider } from '@/components/smart/own-history-provider';
 import { ScrollProvider, useScroll, useScrollHeaderColor } from '@/hooks/useScrollListener';
 import { useAppSelector } from '@/store';
-import { selectFollowRequestCount } from '@/store/feed';
+import { selectIncomingFriendRequestCount } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
 import { HeaderHeightContext } from 'expo-router/react-navigation';
@@ -14,7 +14,7 @@ import { Tabs, TabScreen, TabsProvider } from 'react-native-paper-tabs';
 
 export default function FeedIndexPage() {
   const { t } = useTranslate();
-  const followRequestBadgeCount = useAppSelector(selectFollowRequestCount) || undefined;
+  const friendRequestBadgeCount = useAppSelector(selectIncomingFriendRequestCount) || undefined;
 
   const { setScrolled } = useScroll();
   const headerColor = useScrollHeaderColor();
@@ -34,7 +34,7 @@ export default function FeedIndexPage() {
   const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
   const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
   return (
-    <>
+    <OwnHistoryProvider>
       <Stack.Screen options={{ title: t('feed.feed.title') }} />
       <FeedMenu />
       <TabsProvider onChangeIndex={setActiveTabIndex}>
@@ -52,18 +52,13 @@ export default function FeedIndexPage() {
               <Feed />
             </ScrollProvider>
           </TabScreen>
-          <TabScreen label={t('feed.following.title')}>
+          <TabScreen label={t('feed.friends.title')} badge={friendRequestBadgeCount}>
             <ScrollProvider isScrolled={!!tabScrolls[activeTabIndex]} setScrolled={(s) => setTabScrolled(s, 1)}>
-              <FeedFollowing />
-            </ScrollProvider>
-          </TabScreen>
-          <TabScreen label={t('feed.followers.title')} badge={followRequestBadgeCount}>
-            <ScrollProvider isScrolled={!!tabScrolls[activeTabIndex]} setScrolled={(s) => setTabScrolled(s, 2)}>
-              <FeedFollowers />
+              <FeedFriends />
             </ScrollProvider>
           </TabScreen>
         </Tabs>
       </TabsProvider>
-    </>
+    </OwnHistoryProvider>
   );
 }

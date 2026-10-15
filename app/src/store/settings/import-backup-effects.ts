@@ -3,51 +3,38 @@ import { Logger } from '@/services/logger';
 import { showSnackbar } from '@/store/app';
 import { AddEffectFn } from '@/store/store';
 import { upsertSavedPlans } from '@/store/program';
-import { beginFeedImport, importBackupData, importData, importDataProto, importDataSql } from '@/store/settings';
+import {
+  beginFeedImport,
+  importBackupData,
+  importData,
+  importDataProto,
+  importDataSql,
+  selectPreferredWeightUnit,
+} from '@/store/settings';
 import { upsertExercises, upsertStoredSessions } from '@/store/stored-sessions';
 import { streamToUint8Array, writeInChunks } from '@/utils/stream';
 import { sleep } from '@/utils/sleep';
 import { Session } from '@/models/session-models';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/initial/protobuf-migrator';
-import {
-  FeedIdentity,
-  FollowerFeedUser,
-  FollowRequestInboxMessage,
-  fromFeedUserJSON,
-  SessionUserEvent,
-} from '@/models/feed-models';
+import { FeedIdentity, Friend, SessionUserEvent } from '@/models/feed-models';
 import { deserializeDatabaseAsync } from 'expo-sqlite';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
-import { eq } from 'drizzle-orm';
 import { DatabaseMigrationService } from '@/services/database-migration-service';
 import { FeedBackupData } from '@/models/backup';
-import {
-  dataMigrationsSchema,
-  exercisesSchema,
-  feedFollowedUsersSchema,
-  feedFollowerUsersSchema,
-  feedFollowRequestsSchema,
-  feedIdentitySchema,
-  feedItemsSchema,
-  feedPendingUsersSchema,
-  programsSchema,
-  sessionsSchema,
-} from '@/db/schema';
-import { migrateNilWeightUnitsDataMigration } from '@/services/data-migrations/migrate-nil-weight-units';
+import { exercisesSchema, feedIdentitySchema, feedItemsSchema, programsSchema } from '@/db/schema';
+import { readFriends } from '@/db/feed-friends';
+import { mergeLegacyRelationships } from '@/models/storage/versions/migrations/steps/merge-legacy-relationships';
+import { readSessions } from '@/db/sessions';
 import { toRecord } from '@/utils/reduce';
 import {
-  followRequestInboxMessageMigrations,
   feedIdentityMigrations,
   sessionUserEventMigrations,
-  followedFeedUserMigrations,
-  followerFeedUserMigrations,
   exerciseDescriptorMigrations,
+  friendMigrations,
   programBlueprintMigrations,
   sessionMigrations,
-  pendingFeedUserMigrations,
 } from '@/models/storage/versions/migrations';
-import { FeedUserJSON } from '@/models/storage/versions/latest';
 import { fromExerciseDescriptorJSON } from '@/models/exercise-models';
 
 export function addImportBackupEffects(addEffect: AddEffectFn) {
@@ -83,9 +70,10 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
     }
   });
 
-  addEffect(importBackupData, async ({ payload }, { dispatch, extra: { db, databaseMigrationService } }) => {
+  addEffect(importBackupData, async ({ payload }, { dispatch, getState }) => {
     const { workouts, programs, exercises, feed, successMessage } = payload;
-    dispatch(upsertStoredSessions(workouts));
+    const preferredWeightUnit = selectPreferredWeightUnit(getState());
+    dispatch(upsertStoredSessions(workouts.map((x) => x.withNoNilWeights(preferredWeightUnit))));
     dispatch(upsertSavedPlans(programs));
     if (exercises) {
       dispatch(upsertExercises(exercises));
@@ -95,9 +83,6 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
         text: successMessage,
       }),
     );
-    // Let the data migration re-run on next launch so imported nil-unit weights get coalesced
-    await db.delete(dataMigrationsSchema).where(eq(dataMigrationsSchema.id, migrateNilWeightUnitsDataMigration));
-    await databaseMigrationService.migrate();
     if (feed) {
       dispatch(beginFeedImport(feed));
     }
@@ -114,9 +99,7 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
       });
 
       await migrator.migrate();
-      const workouts = (await drizzleBackupDb.select().from(sessionsSchema)).map((x) =>
-        Session.fromJSON(sessionMigrations.migrate(x.payload)),
-      );
+      const workouts = readSessions(drizzleBackupDb).sessions;
       const programs = (await drizzleBackupDb.select().from(programsSchema)).reduce(
         toRecord(
           (x) => x.id,
@@ -136,23 +119,11 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
       let feed: FeedBackupData | undefined;
       if (feedIdentityDb) {
         feed = {
-          identity: FeedIdentity.fromJSON(feedIdentityDb.payload),
+          identity: FeedIdentity.fromJSON(feedIdentityMigrations.migrate(feedIdentityDb.payload)),
           feedItems: (await drizzleBackupDb.select().from(feedItemsSchema)).map((x) =>
             SessionUserEvent.fromJSON(sessionUserEventMigrations.migrate(x.payload)),
           ),
-          followRequests: (await drizzleBackupDb.select().from(feedFollowRequestsSchema)).map((x) =>
-            FollowRequestInboxMessage.fromJSON(x.payload),
-          ),
-          followed: (
-            (await drizzleBackupDb.select().from(feedFollowedUsersSchema)) as {
-              payload: FeedUserJSON;
-            }[]
-          )
-            .concat(await drizzleBackupDb.select().from(feedPendingUsersSchema))
-            .map((x) => fromFeedUserJSON(x.payload)),
-          followers: (await drizzleBackupDb.select().from(feedFollowerUsersSchema)).map((x) =>
-            FollowerFeedUser.fromJSON(x.payload),
-          ),
+          friends: readFriends(drizzleBackupDb),
         };
       }
 
@@ -187,33 +158,22 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
     );
     let feed: FeedBackupData | undefined;
     if (dao.feedState?.identity) {
+      const identity = FeedIdentity.fromJSON(
+        feedIdentityMigrations.migrate(ProtobufToJsonV1Migrator.migrateFeedIdentity(dao.feedState.identity)),
+      );
       feed = {
-        identity: FeedIdentity.fromJSON(
-          feedIdentityMigrations.migrate(ProtobufToJsonV1Migrator.migrateFeedIdentity(dao.feedState.identity)),
-        ),
+        identity,
         feedItems: (dao.feedState.feedItems ?? []).map((x) =>
           SessionUserEvent.fromJSON(
             sessionUserEventMigrations.migrate(ProtobufToJsonV1Migrator.migrateSessionUserEvent(x)),
           ),
         ),
-        followed: (dao.feedState.followedUsers ?? []).map((x) => {
-          const json = ProtobufToJsonV1Migrator.migrateFollowedUser(x);
-          return fromFeedUserJSON(
-            json.type === 'FollowedFeedUser'
-              ? followedFeedUserMigrations.migrate(json)
-              : pendingFeedUserMigrations.migrate(json),
-          );
-        }),
-        followers: (dao.feedState.followers ?? []).map((x) =>
-          FollowerFeedUser.fromJSON(
-            followerFeedUserMigrations.migrate(ProtobufToJsonV1Migrator.migrateFollowerUser(x)),
-          ),
-        ),
-        followRequests: (dao.feedState.followRequests ?? []).map((x) =>
-          FollowRequestInboxMessage.fromJSON(
-            followRequestInboxMessageMigrations.migrate(ProtobufToJsonV1Migrator.migrateFollowRequest(x)),
-          ),
-        ),
+        friends: mergeLegacyRelationships({
+          ownId: identity.id,
+          followed: (dao.feedState.followedUsers ?? []).map((x) => ProtobufToJsonV1Migrator.migrateFollowedUser(x)),
+          pending: [],
+          followers: (dao.feedState.followers ?? []).map((x) => ProtobufToJsonV1Migrator.migrateFollowerUser(x)),
+        }).friends.map((x) => Friend.fromJSON(friendMigrations.migrate(x))),
       };
     }
     dispatch(

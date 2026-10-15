@@ -20,6 +20,9 @@ import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import Menu from '@/components/presentation/foundation/menu';
 import { useDispatch } from 'react-redux';
+import Delete from '@expo/material-symbols/delete.xml';
+import ContentCopy from '@expo/material-symbols/content_copy.xml';
+import CopyAll from '@expo/material-symbols/copy_all.xml';
 
 interface ManageWorkoutCardContentProps {
   sessionBlueprint: SessionBlueprint;
@@ -105,19 +108,19 @@ function Actions({ programId, sessionBlueprint }: ManageWorkoutCardContentProps)
         items={[
           {
             label: t('generic.remove.button'),
-            icon: 'delete',
+            icon: Delete,
             systemImage: 'trash',
             onPress: removeSession,
           },
           {
             label: t('generic.duplicate.button'),
-            icon: 'contentCopy',
+            icon: ContentCopy,
             systemImage: 'doc.on.doc',
             onPress: duplicateSession,
           },
           {
             label: t('exercise.copy_to.button'),
-            icon: 'copyAll',
+            icon: CopyAll,
             systemImage: 'doc.on.clipboard',
             onPress: () => setCopyDialogOpen(true),
           },

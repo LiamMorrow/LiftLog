@@ -1,6 +1,6 @@
 import Button from '@/components/presentation/foundation/button';
+import { useDerivedState } from '@/hooks/useDerivedState';
 import { T } from '@tolgee/react';
-import { useEffect, useState } from 'react';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 import { Portal, Dialog, TextInput } from 'react-native-paper';
@@ -13,11 +13,8 @@ export default function RecordedExerciseNotesEditor(props: {
   onDismiss: () => void;
 }) {
   const { open, notes, onUpdateNotes, onDismiss, exerciseName } = props;
-  const [editorNotes, setEditorNotes] = useState(notes ?? '');
+  const [editorNotes, setEditorNotes] = useDerivedState(notes, (notes) => notes ?? '');
 
-  useEffect(() => {
-    setEditorNotes(notes || '');
-  }, [notes]);
   return (
     open && (
       <Portal>

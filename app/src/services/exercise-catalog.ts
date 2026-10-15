@@ -77,7 +77,7 @@ const localeLoaders: Record<string, () => Promise<{ default: ExerciseTranslation
 
 async function loadBaseCatalog(): Promise<BuiltInExerciseJSON[]> {
   const { exercises } = await import('../../assets/exercises.json');
-  return exercises as BuiltInExerciseJSON[];
+  return exercises;
 }
 
 async function loadEnglishOverlay(): Promise<ExerciseTranslationMap> {

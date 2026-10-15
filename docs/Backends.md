@@ -55,7 +55,7 @@ Pro unlocks the planner **we** host. However it is not required if you are hosti
 Changing the feed backend:
 
 1. deletes your account on the old server,
-2. wipes your local feed data - followers, follow requests, and every feed item,
+2. wipes your local feed data - friends, friend requests, and every feed item,
 3. creates a fresh account on the new server, keeping your display name and publish settings.
 
 The app confirms before doing any of this. If the old server cannot be reached the switch still goes

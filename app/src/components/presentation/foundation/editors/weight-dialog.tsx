@@ -2,7 +2,7 @@ import { spacing } from '@/hooks/useAppTheme';
 import { localeFormatBigNumber, localeParseBigNumber } from '@/utils/locale-bignumber';
 import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 import { View } from 'react-native';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import Button from '@/components/presentation/foundation/button';
@@ -10,6 +10,7 @@ import { Dialog, Portal, Text, TextInput, Tooltip, useTheme } from 'react-native
 import { shortFormatWeightUnit, Weight, WeightUnit } from '@/models/weight';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { useDerivedState } from '@/hooks/useDerivedState';
 
 type WeightDialogProps = {
   open: boolean;
@@ -35,15 +36,11 @@ export default function WeightDialog(props: WeightDialogProps) {
   const theme = useTheme();
   const { t } = useTranslate();
   const preferredWeightUnit = usePreferredWeightUnit();
-  const [text, setText] = useState(localeFormatBigNumber(props.weight?.value));
-  const [editorWeightValue, setEditorWeightValue] = useState<BigNumber | undefined>(props.weight?.value);
-  const [editorWeightUnit, setEditorWeightUnit] = useState<WeightUnit>(props.weight?.unit ?? preferredWeightUnit);
-
-  useEffect(() => {
-    setText(localeFormatBigNumber(props.weight?.value));
-    setEditorWeightValue(props.weight?.value);
-    setEditorWeightUnit(props.weight?.unit ?? preferredWeightUnit);
-  }, [preferredWeightUnit, props.open, props.weight]);
+  const [text, setText] = useDerivedState(localeFormatBigNumber(props.weight?.value));
+  const [editorWeightValue, setEditorWeightValue] = useDerivedState<BigNumber | undefined>(props.weight?.value);
+  const [editorWeightUnit, setEditorWeightUnit] = useDerivedState<WeightUnit>(
+    props.weight?.unit ?? preferredWeightUnit,
+  );
 
   const nonZeroIncrement = props.increment.isZero() ? new BigNumber('2.5') : props.increment;
 

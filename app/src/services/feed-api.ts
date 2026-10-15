@@ -11,6 +11,7 @@ import {
   PutInboxMessageRequest,
   GetInboxMessagesRequest,
   GetInboxMessagesResponse,
+  AckInboxMessagesRequest,
   PutUserFollowSecretRequest,
   DeleteUserFollowSecretRequest,
   CreateSharedItemRequest,
@@ -164,6 +165,12 @@ export class FeedApiService {
     });
   }
 
+  async ackInboxMessagesAsync(request: AckInboxMessagesRequest): Promise<ApiResult<void>> {
+    return this.getApiResultAsync(async () => {
+      await this.request(`/inbox/ack`, { method: 'POST', body: request });
+    });
+  }
+
   async putUserFollowSecretAsync(request: PutUserFollowSecretRequest): Promise<ApiResult<void>> {
     return this.getApiResultAsync(async () => {
       await this.request(`/follow-secret`, { method: 'PUT', body: request });
@@ -211,7 +218,13 @@ export class FeedApiService {
         console.debug('Error response', response, await response.text());
         const status = response.status;
 
-        if (status === 404) {
+        if (status === 400) {
+          return ApiResult.fromError({
+            type: ApiErrorType.BadRequest,
+            message: response.statusText,
+            exception: error,
+          });
+        } else if (status === 404) {
           return ApiResult.fromError({
             type: ApiErrorType.NotFound,
             message: response.statusText,

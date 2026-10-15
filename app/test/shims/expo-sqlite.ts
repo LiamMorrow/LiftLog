@@ -1,119 +1,141 @@
-import { Client, createClient } from '@libsql/client';
-import { writeFileSync, unlinkSync, readFileSync } from 'node:fs';
+import type { DatabaseSync as DatabaseSyncType, StatementSync } from 'node:sqlite';
+import { readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { randomUUID } from 'node:crypto';
 import type {
   openDatabaseAsync as expoOpenDatabaseAsync,
   openDatabaseSync as expoOpenDatabaseSync,
   backupDatabaseAsync as expoBackupDatabaseAsync,
+  deserializeDatabaseAsync as expoDeserializeDatabaseAsync,
 } from 'expo-sqlite';
-import { join } from 'node:path';
-import { randomUUID } from 'node:crypto';
 
-export const openDatabaseSync: typeof expoOpenDatabaseSync = () => {
-  const tmpPath = join(tmpdir(), `liftlog-test-${randomUUID()}.db`);
-  const client = withSerialize(createClient({ url: `file:${tmpPath}` }));
-  (client as unknown as { closeAsync: () => Promise<void> }).closeAsync = async () => {
-    client.close();
-    try {
-      unlinkSync(tmpPath);
-    } catch {}
-  };
-  return client as unknown as ReturnType<typeof expoOpenDatabaseSync>;
-};
-export const openDatabaseAsync: typeof expoOpenDatabaseAsync = async () => {
-  const tmpPath = join(tmpdir(), `liftlog-test-${randomUUID()}.db`);
-  const client = withSerialize(createClient({ url: `file:${tmpPath}` }));
-  (client as unknown as { closeAsync: () => Promise<void> }).closeAsync = async () => {
-    client.close();
-    try {
-      unlinkSync(tmpPath);
-    } catch {}
-  };
-  return client as unknown as ReturnType<typeof expoOpenDatabaseAsync>;
-};
-export const backupDatabaseAsync: typeof expoBackupDatabaseAsync = async (opts) => {
-  const src = opts.sourceDatabase as unknown as Client;
-  const dst = opts.destDatabase as unknown as Client;
+const { DatabaseSync } = process.getBuiltinModule('node:sqlite');
+type DatabaseSync = DatabaseSyncType;
 
-  // Get all user tables from source
-  const tablesResult = await src.execute(
-    `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name`,
-  );
-  const tables = tablesResult.rows.map((r) => r[0] as string);
+type Param = string | number | bigint | null | Uint8Array;
 
-  // Collect all DDL (tables, indexes, triggers, views) in creation order
-  const schemaResult = await src.execute(
-    `SELECT sql FROM sqlite_master WHERE sql IS NOT NULL AND name NOT LIKE 'sqlite_%' ORDER BY rootpage`,
+const toParams = (params: unknown): Param[] =>
+  (Array.isArray(params) ? params : params === undefined ? [] : [params]).map((value: unknown) =>
+    value === undefined ? null : typeof value === 'boolean' ? Number(value) : (value as Param),
   );
 
-  const stmts: string[] = [];
+function executeSync(statement: StatementSync, params: unknown) {
+  const args = toParams(params);
+  if (statement.columns().length) {
+    const rows = statement.all(...args);
+    return { changes: 0, lastInsertRowId: 0, getAllSync: () => rows, getFirstSync: () => rows[0] ?? null };
+  }
+  const { changes, lastInsertRowid } = statement.run(...args);
+  return {
+    changes: Number(changes),
+    lastInsertRowId: Number(lastInsertRowid),
+    getAllSync: () => [],
+    getFirstSync: () => null,
+  };
+}
 
-  // Recreate schema on dest
-  for (const row of schemaResult.rows) {
-    stmts.push(row[0] as string);
+function prepareSync(raw: DatabaseSync, source: string) {
+  const statement = raw.prepare(source);
+  return {
+    executeSync: (params?: unknown) => executeSync(statement, params),
+    executeForRawResultSync: (params?: unknown) => {
+      statement.setReturnArrays(true);
+      try {
+        const rows = statement.all(...toParams(params));
+        return { getAllSync: () => rows, getFirstSync: () => rows[0] ?? null };
+      } finally {
+        statement.setReturnArrays(false);
+      }
+    },
+    finalizeSync: () => {},
+  };
+}
+
+const temporaryPath = () => join(tmpdir(), `liftlog-test-${randomUUID()}.db`);
+const removeQuietly = (path: string) => {
+  try {
+    unlinkSync(path);
+  } catch {}
+};
+
+class TestDatabase {
+  constructor(
+    public raw: DatabaseSync,
+    private path?: string,
+  ) {}
+
+  prepareSync(source: string) {
+    return prepareSync(this.raw, source);
   }
 
-  // Copy rows for each table
-  for (const table of tables) {
-    const rows = await src.execute(`SELECT * FROM "${table}"`);
-    if (rows.rows.length === 0) continue;
+  execSync(source: string) {
+    this.raw.exec(source);
+  }
 
-    const cols = rows.columns.map((c) => `"${c}"`).join(', ');
-    for (const row of rows.rows) {
-      const values = rows.columns
-        .map((_, i) => {
-          const v = row[i];
-          if (v === null) return 'NULL';
-          if (typeof v === 'number' || typeof v === 'bigint') return String(v);
-          if (v instanceof Uint8Array) return `X'${Buffer.from(v).toString('hex')}'`;
-          // oxlint-disable-next-line typescript/no-base-to-string
-          return `'${String(v).replace(/'/g, "''")}'`;
-        })
-        .join(', ');
-      stmts.push(`INSERT INTO "${table}" (${cols}) VALUES (${values})`);
+  async execAsync(source: string) {
+    this.raw.exec(source);
+  }
+
+  async getAllAsync<T>(source: string, params?: unknown): Promise<T[]> {
+    return this.raw.prepare(source).all(...toParams(params)) as T[];
+  }
+
+  async getFirstAsync<T>(source: string, params?: unknown): Promise<T | null> {
+    return (this.raw.prepare(source).get(...toParams(params)) as T | undefined) ?? null;
+  }
+
+  async runAsync(source: string, params?: unknown) {
+    const { changes, lastInsertRowid } = this.raw.prepare(source).run(...toParams(params));
+    return { changes: Number(changes), lastInsertRowId: Number(lastInsertRowid) };
+  }
+
+  async serializeAsync(): Promise<Uint8Array> {
+    const path = temporaryPath();
+    try {
+      this.raw.exec(`VACUUM INTO '${path}'`);
+      return new Uint8Array(readFileSync(path));
+    } finally {
+      removeQuietly(path);
     }
   }
 
-  await dst.batch(stmts, 'write');
+  replaceWith(raw: DatabaseSync, path: string) {
+    this.closeSync();
+    this.raw = raw;
+    this.path = path;
+  }
+
+  closeSync() {
+    this.raw.close();
+    if (this.path) {
+      removeQuietly(this.path);
+    }
+  }
+
+  async closeAsync() {
+    this.closeSync();
+  }
+}
+
+const open = (path: string) => new DatabaseSync(path, { enableForeignKeyConstraints: false });
+
+export const openDatabaseSync: typeof expoOpenDatabaseSync = () =>
+  new TestDatabase(open(':memory:')) as unknown as ReturnType<typeof expoOpenDatabaseSync>;
+
+export const openDatabaseAsync: typeof expoOpenDatabaseAsync = async () =>
+  new TestDatabase(open(':memory:')) as unknown as Awaited<ReturnType<typeof expoOpenDatabaseAsync>>;
+
+export const deserializeDatabaseAsync: typeof expoDeserializeDatabaseAsync = async (data) => {
+  const path = temporaryPath();
+  writeFileSync(path, data);
+  return new TestDatabase(open(path), path) as unknown as Awaited<ReturnType<typeof expoDeserializeDatabaseAsync>>;
 };
 
-export async function deserializeDatabaseAsync(data: Uint8Array) {
-  const tmpPath = join(tmpdir(), `liftlog-test-${randomUUID()}.db`);
-  writeFileSync(tmpPath, data);
+export const backupDatabaseAsync: typeof expoBackupDatabaseAsync = async ({ sourceDatabase, destDatabase }) => {
+  const path = temporaryPath();
+  (sourceDatabase as unknown as TestDatabase).raw.exec(`VACUUM INTO '${path}'`);
+  (destDatabase as unknown as TestDatabase).replaceWith(open(path), path);
+};
 
-  const client = withSerialize(createClient({ url: `file:${tmpPath}` }));
-
-  // Attach cleanup so callers using closeAsync (expo-sqlite compat) tidy up the temp file
-  (client as unknown as { closeAsync: () => Promise<void> }).closeAsync = async () => {
-    client.close();
-    try {
-      unlinkSync(tmpPath);
-    } catch {}
-  };
-
-  return client;
-}
-function withSerialize(client: Client): Client & { serializeAsync: () => Promise<Uint8Array> } {
-  return Object.assign(client, {
-    serializeAsync: async (): Promise<Uint8Array> => {
-      const tmpPath = join(tmpdir(), `liftlog-serialize-${randomUUID()}.db`);
-      try {
-        await client.execute(`VACUUM INTO '${tmpPath}'`);
-        return new Uint8Array(readFileSync(tmpPath));
-      } finally {
-        try {
-          unlinkSync(tmpPath);
-        } catch {}
-      }
-    },
-    // expo-sqlite's execAsync runs every statement in the string; libsql's execute runs only the
-    // first, which would silently skip all but the first DELETE in a cleanup block.
-    execAsync: async (sql: string): Promise<void> => {
-      await client.executeMultiple(sql);
-    },
-    getAllAsync: async <T>(sql: string, params: unknown[] = []): Promise<T[]> => {
-      const result = await client.execute({ sql, args: params as never });
-      return result.rows as unknown as T[];
-    },
-  });
-}
+export const addDatabaseChangeListener = () => ({ remove: () => {} });

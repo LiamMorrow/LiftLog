@@ -5,14 +5,12 @@ import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { selectSession, updateStoredSession } from '@/store/stored-sessions';
 import { useTranslate } from '@tolgee/react';
 import { Href, Stack, useRouter } from 'expo-router';
-import { HeaderHeightContext } from 'expo-router/react-navigation';
-import { useContext, useEffect, useRef } from 'react';
-import { Platform } from 'react-native';
+import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { useOnDismiss } from '@/hooks/useOnDismiss';
 
 export function getSessionExerciseEditorHref(sessionId: string, index: number, opts?: { isNew?: boolean }): Href {
-  return `/exercise-editor?sessionId=${encodeURIComponent(sessionId)}&index=${index}${opts?.isNew ? '&isNew=1' : ''}` as Href;
+  return `/exercise-editor?sessionId=${encodeURIComponent(sessionId)}&index=${index}${opts?.isNew ? '&isNew=1' : ''}`;
 }
 
 export function SessionExerciseEditor(props: { sessionId: string; index: number; isNew?: boolean }) {
@@ -33,8 +31,6 @@ export function SessionExerciseEditor(props: { sessionId: string; index: number;
   const saveExercise = (updated: ExerciseBlueprint) => {
     draftRef.current = updated;
   };
-  const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
-  const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
 
   useOnDismiss(() => {
     const updated = draftRef.current;
@@ -59,18 +55,9 @@ export function SessionExerciseEditor(props: { sessionId: string; index: number;
   }, [hasExercise, dismiss]);
 
   return (
-    <FullHeightScrollView
-      safeAreaEdges={{
-        left: 'additive',
-        right: 'additive',
-        top: 'off',
-        bottom: 'additive',
-      }}
-      avoidKeyboard
-      contentContainerStyle={{ insetBlockStart: topInsetHeight }}
-    >
+    <FullHeightScrollView avoidKeyboard modal>
       <Stack.Screen options={{ title }} />
-      {exercise ? <ExerciseEditor exercise={exercise} updateExercise={saveExercise} /> : null}
+      {exercise && <ExerciseEditor exercise={exercise} updateExercise={saveExercise} />}
     </FullHeightScrollView>
   );
 }

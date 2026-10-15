@@ -1,9 +1,13 @@
 # Storage Migrations
 
-LiftLog stores everything on-device as JSON (sessions, programs, the social
-feed, etc.). Those shapes change over time, but data already on a user's phone
-does not. **Migrations** bring any previously-persisted value up to the shape the
-app currently expects.
+LiftLog stores most models on-device as JSON (programs, the social feed, etc.),
+and sessions travel as JSON in feed items and backups. Those shapes change over
+time, but data already on a user's phone does not. **Migrations** bring any
+previously-persisted value up to the shape the app currently expects.
+
+Sessions on the device are relational tables rather than JSON, so changing how
+they are stored is a SQL migration instead - see
+[Storage.md](./Storage.md#sessions-are-relational).
 
 All of this lives in
 [`app/src/models/storage/versions/`](../app/src/models/storage/versions).
@@ -66,7 +70,7 @@ could be any persisted version. Code that turns a stored row into a domain model
 migrates it first:
 
 ```ts
-Session.fromJSON(sessionMigrations.migrate(row.payload));
+ProgramBlueprint.fromJSON(programBlueprintMigrations.migrate(row.payload));
 ```
 
 Because the payload is typed as the any-version union rather than the latest

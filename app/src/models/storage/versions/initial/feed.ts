@@ -28,6 +28,20 @@ export interface FollowedFeedUserJSON {
 
 export type FeedUserJSON = FollowedFeedUserJSON | PendingFeedUserJSON | FollowerFeedUserJSON;
 
+export type FriendStatusJSON = 'incoming' | 'pending' | 'friend' | 'legacyFollowing' | 'legacyFollower';
+
+export interface FriendJSON {
+  id: string;
+  publicKey: RsaPublicKeyJSON;
+  name: string | undefined;
+  currentPlan: ProgramBlueprintJSON | undefined;
+  status: FriendStatusJSON;
+  theirKeys: AesKeyJSON[];
+  theirKeysSentAt: InstantJSON | undefined;
+  theirSecret: string | undefined;
+  mySecret: string | undefined;
+}
+
 interface UserEventBaseJSON {
   userId: string;
   eventId: string;
@@ -77,6 +91,19 @@ export interface ReactionJSON {
   reactedAt: InstantJSON;
 }
 
+export interface FriendRequestJSON {
+  name: string | undefined;
+}
+
+export interface FriendKeysJSON {
+  aesKeys: AesKeyJSON[];
+  followSecret: string;
+}
+
+export type FriendRejectJSON = Record<string, never>;
+
+export type UnfriendJSON = Record<string, never>;
+
 export type FollowRequestInboxMessageJSON = InboxMessageBaseJSON<'FollowRequest', FollowRequestJSON>;
 export type FollowResponseInboxMessageJSON = InboxMessageBaseJSON<'FollowResponse', FollowResponseJSON>;
 export type UnfollowNotificationInboxMessageJSON = InboxMessageBaseJSON<
@@ -84,12 +111,20 @@ export type UnfollowNotificationInboxMessageJSON = InboxMessageBaseJSON<
   UnfollowNotificationJSON
 >;
 export type ReactionInboxMessageJSON = InboxMessageBaseJSON<'Reaction', ReactionJSON>;
+export type FriendRequestInboxMessageJSON = InboxMessageBaseJSON<'FriendRequest', FriendRequestJSON>;
+export type FriendKeysInboxMessageJSON = InboxMessageBaseJSON<'FriendKeys', FriendKeysJSON>;
+export type FriendRejectInboxMessageJSON = InboxMessageBaseJSON<'FriendReject', FriendRejectJSON>;
+export type UnfriendInboxMessageJSON = InboxMessageBaseJSON<'Unfriend', UnfriendJSON>;
 
 export type InboxMessageJSON =
   | FollowRequestInboxMessageJSON
   | FollowResponseInboxMessageJSON
   | UnfollowNotificationInboxMessageJSON
-  | ReactionInboxMessageJSON;
+  | ReactionInboxMessageJSON
+  | FriendRequestInboxMessageJSON
+  | FriendKeysInboxMessageJSON
+  | FriendRejectInboxMessageJSON
+  | UnfriendInboxMessageJSON;
 
 export interface ReceivedReactionJSON {
   id: string;

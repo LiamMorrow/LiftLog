@@ -19,7 +19,7 @@ jobs:
 
             A few things that help this get reviewed:
 
-            - Describe your changes clearly in the PR description, in your own words. AI-generated summaries tend to be more verbose than necessary and [frustrating to read](https://www.seangoedecke.com/dont-feed-me-slop/).
+            - Describe your changes clearly in the PR description, in your own words. AI-generated summaries tend to be more verbose than necessary.
             - Read the [AI Usage Policy](https://github.com/LiamMorrow/LiftLog/blob/main/CONTRIBUTING.md#ai-usage-policy).
             - Attach screenshots of any visual changes.
             - Make sure this PR follows an issue/feature request that's already been accepted as wanted (see [Contributing](https://github.com/LiamMorrow/LiftLog/blob/main/CONTRIBUTING.md)).

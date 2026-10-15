@@ -343,7 +343,7 @@ describe('migrator', () => {
       });
 
       it('rejects a wrapper value from a newer app version', () => {
-        expect(() => gadgetMigrations.migrate({ version: 4, name: 'g', widget: latestWidget } as never)).toThrow();
+        expect(() => gadgetMigrations.migrate({ version: 4, name: 'g', widget: latestWidget })).toThrow();
       });
     });
 

@@ -33,7 +33,7 @@ function makeTestBed(isHydrated: boolean, extraServices?: Record<string, unknown
   };
   const testBed = createAddEffectTestBed({
     initialState: { settings: { isHydrated } },
-    services: { preferenceService, ...extraServices } as never,
+    services: { preferenceService, ...extraServices },
   });
   applySettingsEffects(testBed.addEffect);
   return { testBed, preferenceService };

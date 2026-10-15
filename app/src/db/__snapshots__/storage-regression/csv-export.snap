@@ -1,0 +1,10 @@
+{
+  "digest": "42b6e0871c9c",
+  "head": [
+    "SessionId,Timestamp,Exercise,Weight,WeightUnit,Reps,TargetReps,Notes",
+    "395b0272-1341-458c-8c4b-664237e77d5c,2026-10-06T12:34:32.245+11:00,Squat,102.5,kg,5,5,",
+    "395b0272-1341-458c-8c4b-664237e77d5c,2026-10-06T12:36:52.225+11:00,Squat,102.5,kg,5,5,",
+    "395b0272-1341-458c-8c4b-664237e77d5c,2026-10-06T12:39:37.507+11:00,Squat,102.5,kg,5,5,",
+  ],
+  "lines": 7213,
+}

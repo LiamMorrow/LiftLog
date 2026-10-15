@@ -14,10 +14,17 @@ import IconButton from '@/components/presentation/foundation/icon-button';
 import { useRouter } from 'expo-router';
 import { getExerciseHistoryHref } from '@/components/smart/exercise-history';
 import { Updater } from '@/utils/types';
+import Analytics from '@expo/material-symbols/analytics.xml';
+import Edit from '@expo/material-symbols/edit.xml';
+import Notes from '@expo/material-symbols/notes.xml';
+import Delete from '@expo/material-symbols/delete.xml';
+import ArrowUpward from '@expo/material-symbols/arrow_upward.xml';
+import ArrowDownward from '@expo/material-symbols/arrow_downward.xml';
+import OpenInBrowser from '@expo/material-symbols/open_in_browser.xml';
 
 interface ExerciseSectionProps<T extends RecordedExercise> {
   recordedExercise: T;
-  previousRecordedExercises: RecordedExercise[];
+  previousLineageExercise: RecordedExercise | undefined;
   toStartNext: boolean;
   isReadonly: boolean;
   showPreviousButton: boolean;
@@ -71,7 +78,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             ? [
                 {
                   label: t('generic.edit.button'),
-                  icon: 'edit',
+                  icon: Edit,
                   systemImage: 'pencil',
                   onPress: props.onEditExercise,
                 } satisfies MenuItem,
@@ -81,7 +88,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             ? [
                 {
                   label: t('exercise.move_up.button'),
-                  icon: 'arrowUpward',
+                  icon: ArrowUpward,
                   systemImage: 'arrow.up',
                   onPress: props.onMoveExerciseUp,
                 } satisfies MenuItem,
@@ -91,7 +98,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             ? [
                 {
                   label: t('exercise.move_down.button'),
-                  icon: 'arrowDownward',
+                  icon: ArrowDownward,
                   systemImage: 'arrow.down',
                   onPress: props.onMoveExerciseDown,
                 } satisfies MenuItem,
@@ -99,7 +106,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             : []),
           {
             label: t('generic.notes.label'),
-            icon: 'notes',
+            icon: Notes,
             systemImage: 'note.text',
             onPress: () => setNotesDialogOpen(true),
           },
@@ -107,7 +114,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             ? [
                 {
                   label: t('stats.stats.title'),
-                  icon: 'analytics',
+                  icon: Analytics,
                   systemImage: 'chart.bar',
                   onPress: () =>
                     push(
@@ -119,7 +126,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             : []),
           {
             label: t('generic.remove.button'),
-            icon: 'delete',
+            icon: Delete,
             systemImage: 'trash',
             onPress: () => setRemoveExerciseDialogOpen(true),
           },
@@ -127,7 +134,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             ? [
                 {
                   label: t('generic.open_link.button'),
-                  icon: 'openInBrowser',
+                  icon: OpenInBrowser,
                   systemImage: 'safari',
                   onPress: () => openUrl(props.recordedExercise.blueprint.link),
                 } satisfies MenuItem,
@@ -164,10 +171,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
           {interactiveButtons}
         </View>
         {props.children}
-        <ExerciseNotesDisplay
-          exercise={props.recordedExercise}
-          previousExercise={props.previousRecordedExercises.at(0)}
-        />
+        <ExerciseNotesDisplay exercise={props.recordedExercise} previousExercise={props.previousLineageExercise} />
       </View>
 
       <RecordedExerciseNotesEditor

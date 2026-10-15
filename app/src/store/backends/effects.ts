@@ -48,17 +48,17 @@ export function applyBackendsEffects(addEffect: AddEffectFn) {
       return;
     }
     const { id, name, url, kind, headers } = action.payload;
-    await db.transaction(async (tx) => {
-      await tx
-        .insert(backendsSchema)
+    db.transaction((tx) => {
+      tx.insert(backendsSchema)
         .values({ id, name, url, kind })
-        .onConflictDoUpdate({ target: backendsSchema.id, set: { name, url, kind } });
-      await tx.delete(backendHeadersSchema).where(eq(backendHeadersSchema.backendId, id));
+        .onConflictDoUpdate({ target: backendsSchema.id, set: { name, url, kind } })
+        .run();
+      tx.delete(backendHeadersSchema).where(eq(backendHeadersSchema.backendId, id)).run();
       const rows = headers.filter((header) => header.name.trim());
       if (rows.length) {
-        await tx
-          .insert(backendHeadersSchema)
-          .values(rows.map(({ name: headerName, value }) => ({ backendId: id, name: headerName.trim(), value })));
+        tx.insert(backendHeadersSchema)
+          .values(rows.map(({ name: headerName, value }) => ({ backendId: id, name: headerName.trim(), value })))
+          .run();
       }
     });
   });
@@ -67,10 +67,10 @@ export function applyBackendsEffects(addEffect: AddEffectFn) {
     if (!stateAfterReduce.backends.isHydrated) {
       return;
     }
-    await db.transaction(async (tx) => {
-      await tx.delete(backendHeadersSchema).where(eq(backendHeadersSchema.backendId, action.payload));
-      await tx.delete(backendsSchema).where(eq(backendsSchema.id, action.payload));
-      await tx.delete(backendAssignmentsSchema).where(eq(backendAssignmentsSchema.backendId, action.payload));
+    db.transaction((tx) => {
+      tx.delete(backendHeadersSchema).where(eq(backendHeadersSchema.backendId, action.payload)).run();
+      tx.delete(backendsSchema).where(eq(backendsSchema.id, action.payload)).run();
+      tx.delete(backendAssignmentsSchema).where(eq(backendAssignmentsSchema.backendId, action.payload)).run();
     });
   });
 

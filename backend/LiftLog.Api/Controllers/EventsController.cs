@@ -34,11 +34,14 @@ public class EventsController(UserDataContext db) : ControllerBase
             .Users.Select(x => x.FollowSecret)
             .Except(validFollowSecrets.Select(x => x.Value))
             .ToArray();
+        var sinceByFollowSecret = request
+            .Users.GroupBy(x => x.FollowSecret)
+            .ToDictionary(x => x.Key, x => x.Min(y => y.Since));
         var userIdsAndSince = validFollowSecrets
             .Select(x => new UserEventFilter
             {
                 UserId = x.UserId,
-                Since = request.Users.Single(y => y.UserId == x.UserId).Since,
+                Since = sinceByFollowSecret[x.Value],
             })
             .ToArray();
 

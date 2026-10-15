@@ -5,7 +5,7 @@ import { useAppSelector } from '@/store';
 import { clearExerciseSearchResult } from '@/store/app';
 import { uuid } from '@/utils/uuid';
 import { useRouter } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useDispatch } from 'react-redux';
 
@@ -17,19 +17,16 @@ interface ExerciseSearcherProps {
 export function ExerciseSearcher({ currentExercise, onSelectExercise }: ExerciseSearcherProps) {
   const { push } = useRouter();
   const dispatch = useDispatch();
-  const requestId = useRef(uuid()).current;
+  const [requestId] = useState(() => uuid());
   const searchResult = useAppSelector((x) => x.app.exerciseSearchResult);
-
-  const onSelectRef = useRef(onSelectExercise);
-  onSelectRef.current = onSelectExercise;
 
   useEffect(() => {
     if (searchResult?.requestId !== requestId) {
       return;
     }
-    onSelectRef.current(searchResult.exercise);
+    onSelectExercise(searchResult.exercise);
     dispatch(clearExerciseSearchResult());
-  }, [searchResult, requestId, dispatch]);
+  }, [onSelectExercise, searchResult, requestId, dispatch]);
 
   const openSearch = () => {
     Keyboard.dismiss();

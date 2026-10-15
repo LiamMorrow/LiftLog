@@ -226,14 +226,22 @@ describe('libs', () => {
   });
 
   describe('AesKey', () => {
-    it('round-trips', () => {
-      const key: AesKey = { value: bytes([0, 128, 255]) };
+    it.each(['AES-CBC', 'AES-GCM'] as const)('round-trips an %s key', (algorithm) => {
+      const key: AesKey = { value: bytes([0, 128, 255]), algorithm };
       expect(fromAesKeyJSON(toAesKeyJSON(key))).toEqual(key);
     });
 
     it('deserializes value from base64', () => {
       const result = fromAesKeyJSON({ value: b64([0, 128, 255]) });
       expect(result.value).toEqual(bytes([0, 128, 255]));
+    });
+
+    it('reads a key without an algorithm as AES-CBC', () => {
+      expect(fromAesKeyJSON({ value: b64([1]) }).algorithm).toBe('AES-CBC');
+    });
+
+    it('always writes the algorithm', () => {
+      expect(toAesKeyJSON({ value: bytes([1]), algorithm: 'AES-CBC' }).algorithm).toBe('AES-CBC');
     });
   });
 

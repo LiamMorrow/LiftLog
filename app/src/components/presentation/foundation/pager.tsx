@@ -8,6 +8,7 @@ import {
   ScrollView,
   StyleProp,
   StyleSheet,
+  useAnimatedValue,
   View,
   ViewStyle,
 } from 'react-native';
@@ -38,7 +39,7 @@ export function Pager({
 }: PagerProps) {
   const { colors } = useAppTheme();
   const [pageWidth, setPageWidth] = useState(0);
-  const scrollX = useRef(new Animated.Value(0)).current;
+  const scrollX = useAnimatedValue(0);
   const scrollRef = useRef<ScrollView>(null);
   const pages = Children.toArray(children);
 

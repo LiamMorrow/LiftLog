@@ -97,7 +97,6 @@ function makeProgramState(savedPrograms: Record<string, ProgramBlueprint> = {}, 
       savedPrograms,
       upcomingSessions: RemoteData.notAsked(),
     },
-    storedSessions: { latestExercises: {} },
   } as Partial<RootState>;
 }
 

@@ -6,12 +6,10 @@ import { ExerciseSearcher } from '@/components/presentation/workout-editor/exerc
 import { WeightedExerciseEditor } from '@/components/presentation/workout-editor/weighted-exercise-editor';
 import DirectionsRunIcon from '@expo/material-symbols/directions_run.xml';
 import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
-import { spacing } from '@/hooks/useAppTheme';
 import { CardioExerciseBlueprint, ExerciseBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { ExerciseDescriptor } from '@/models/exercise-models';
-import { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
 import { match, P } from 'ts-pattern';
+import { useDerivedState } from '@/hooks/useDerivedState';
 
 interface ExerciseEditorProps {
   exercise: ExerciseBlueprint;
@@ -23,37 +21,28 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
     updateExercise({ name: ex.name });
   };
   const { exercise: propsExercise, updateExercise: updatePropsExercise } = props;
-  const [exercise, setExercise] = useState(propsExercise);
-  const exerciseRef = useRef(exercise);
-  exerciseRef.current = exercise;
-
-  // Bit of a hack to let us update exercise immediately without going through the whole props loop
-  useEffect(() => {
-    setExercise(propsExercise);
-  }, [propsExercise]);
+  const [exercise, setExercise] = useDerivedState(propsExercise, (p) => p);
   const commit = (next: CardioExerciseBlueprint | WeightedExerciseBlueprint) => {
-    exerciseRef.current = next;
     setExercise(next);
     updatePropsExercise(next);
   };
   const updateExercise = (ex: Partial<WeightedExerciseBlueprint | CardioExerciseBlueprint>) => {
-    commit(exerciseRef.current.with(ex as unknown as Partial<WeightedExerciseBlueprint & CardioExerciseBlueprint>));
+    commit(exercise.with(ex as unknown as Partial<WeightedExerciseBlueprint & CardioExerciseBlueprint>));
   };
 
   const handleTypeChange = (type: string) => {
-    const current = exerciseRef.current;
-    let newExercise: CardioExerciseBlueprint | WeightedExerciseBlueprint = current;
+    let newExercise: CardioExerciseBlueprint | WeightedExerciseBlueprint = exercise;
     if (type === 'weighted') {
       newExercise = WeightedExerciseBlueprint.empty().with({
-        name: current.name,
-        notes: current.notes,
-        link: current.link,
+        name: exercise.name,
+        notes: exercise.notes,
+        link: exercise.link,
       });
     } else {
       newExercise = CardioExerciseBlueprint.empty().with({
-        name: current.name,
-        notes: current.notes,
-        link: current.link,
+        name: exercise.name,
+        notes: exercise.notes,
+        link: exercise.link,
       });
     }
     commit(newExercise);
@@ -69,35 +58,33 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
     .exhaustive();
 
   return (
-    <View style={{ paddingVertical: spacing.pageHorizontalMargin }}>
-      <Form>
-        <FormRow>
-          <ExerciseSearcher currentExercise={exercise} onSelectExercise={selectExerciseFromSearch} />
-        </FormRow>
-        <FormRow>
-          <SegmentedPicker
-            value={exercise instanceof WeightedExerciseBlueprint ? 'weighted' : 'cardio'}
-            options={[
-              {
-                value: 'weighted',
-                label: 'Weighted',
-                icon: FitnessCenterIcon,
-                systemImage: 'dumbbell',
-                testID: 'weighted-button',
-              },
-              {
-                value: 'cardio',
-                label: 'Cardio/Time',
-                icon: DirectionsRunIcon,
-                systemImage: 'figure.run',
-                testID: 'cardio-button',
-              },
-            ]}
-            onChange={handleTypeChange}
-          />
-        </FormRow>
-        {exerciseEditor}
-      </Form>
-    </View>
+    <Form>
+      <FormRow>
+        <ExerciseSearcher currentExercise={exercise} onSelectExercise={selectExerciseFromSearch} />
+      </FormRow>
+      <FormRow>
+        <SegmentedPicker
+          value={exercise instanceof WeightedExerciseBlueprint ? 'weighted' : 'cardio'}
+          options={[
+            {
+              value: 'weighted',
+              label: 'Weighted',
+              icon: FitnessCenterIcon,
+              systemImage: 'dumbbell',
+              testID: 'weighted-button',
+            },
+            {
+              value: 'cardio',
+              label: 'Cardio/Time',
+              icon: DirectionsRunIcon,
+              systemImage: 'figure.run',
+              testID: 'cardio-button',
+            },
+          ]}
+          onChange={handleTypeChange}
+        />
+      </FormRow>
+      {exerciseEditor}
+    </Form>
   );
 }

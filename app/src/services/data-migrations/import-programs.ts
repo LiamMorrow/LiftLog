@@ -23,10 +23,10 @@ export async function importPrograms(db: ExpoSQLiteDatabase, keyValueStore: KeyV
       }) satisfies typeof programsSchema.$inferInsert,
   );
 
-  await db.transaction(async (tx) => {
+  db.transaction((tx) => {
     if (converted.length) {
-      await tx.insert(programsSchema).values(converted);
+      tx.insert(programsSchema).values(converted).run();
     }
-    await tx.insert(dataMigrationsSchema).values({ id: importProgramsDataMigration });
+    tx.insert(dataMigrationsSchema).values({ id: importProgramsDataMigration }).run();
   });
 }

@@ -1,31 +1,35 @@
 import BigNumber from 'bignumber.js';
-import { getLocales } from 'expo-localization';
+import { getLocales, Locale } from 'expo-localization';
 
-let usesComma: boolean | undefined;
+let locale: Locale | undefined;
 
-function localeUsesComma(): boolean {
-  usesComma ??= getLocales()[0].decimalSeparator === ',';
-  return usesComma;
+function getLocale() {
+  locale ??= getLocales()[0];
+  return locale;
 }
 
 export function localeParseBigNumber(numStr: string): BigNumber {
-  if (localeUsesComma()) {
-    return new BigNumber(numStr.replace('.', '').replace(',', '.'));
+  const locale = getLocale();
+  try {
+    return BigNumber.fromFormat(numStr, {
+      decimalSeparator: locale.decimalSeparator ?? '.',
+      groupSeparator: locale.digitGroupingSeparator ?? ',',
+    });
+  } catch {
+    return new BigNumber(Number.NaN);
   }
-  return new BigNumber(numStr);
 }
 
 export function localeFormatBigNumber(num: BigNumber | undefined, decimalPlaces?: number): string {
   if (!num) {
     return '';
   }
+  const locale = getLocale();
   const format = {
-    groupSeparator: localeUsesComma() ? ' ' : ',',
+    groupSeparator: locale?.digitGroupingSeparator ? ' ' : ',',
     groupSize: 3,
-    decimalSeparator: localeUsesComma() ? ',' : '.',
+    decimalSeparator: locale.decimalSeparator ?? '.',
   };
-  if (localeUsesComma()) {
-    return decimalPlaces !== undefined ? num.toFormat(decimalPlaces, format) : num.toFormat(format);
-  }
+
   return decimalPlaces !== undefined ? num.toFormat(decimalPlaces, format) : num.toFormat(format);
 }

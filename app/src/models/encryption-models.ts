@@ -1,9 +1,14 @@
+import type { AesAlgorithm } from '@/models/storage/versions/libs';
+
+export type { AesAlgorithm };
+
 export interface RsaPublicKey {
   spkiPublicKeyBytes: Uint8Array;
 }
 
 export interface AesKey {
   value: Uint8Array;
+  algorithm: AesAlgorithm;
 }
 
 export interface RsaPrivateKey {

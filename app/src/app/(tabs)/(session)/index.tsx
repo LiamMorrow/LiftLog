@@ -122,7 +122,7 @@ function ListUpcomingWorkouts({
         renderItemActions={(session) => {
           const sessionPlanIndex = plan.sessions.findIndex((x) => x.equals(session.blueprint));
           const handleEditPress = () => {
-            push(`/settings/manage-workouts/${planId}/manage-session/${sessionPlanIndex}`, { withAnchor: true });
+            push(`/plan-workout-editor/${planId}/${sessionPlanIndex}`);
           };
           return (
             <CardActions style={{ marginTop: spacing[2] }}>

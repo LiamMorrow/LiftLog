@@ -15,7 +15,7 @@ interface PersonCardProps {
   children?: ReactNode;
 }
 
-/** The one row shape the Following and Followers tabs share, so they can't drift apart again. */
+/** The one row shape every section of the friends list shares, so they can't drift apart. */
 export function PersonCard({ userId, name, subtitle, trailing, children }: PersonCardProps) {
   const { t } = useTranslate();
 

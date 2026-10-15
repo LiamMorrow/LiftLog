@@ -759,14 +759,14 @@ describe('Session.withNoNilWeights', () => {
       undefined,
     );
 
-    const result = session.withNoNilWeights('kilograms')!;
+    const result = session.withNoNilWeights('kilograms');
 
     expect((result.recordedExercises[0] as RecordedWeightedExercise).potentialSets[0]!.weight.unit).toBe('kilograms');
   });
 
   it('leaves non-nil units untouched', () => {
     const session = makeSession([makeWeightedBlueprint()]);
-    const result = session.withNoNilWeights('pounds')!;
+    const result = session.withNoNilWeights('pounds');
     const sets = (result.recordedExercises[0] as RecordedWeightedExercise).potentialSets;
     expect(sets.every((s) => s.weight.unit === 'kilograms')).toBe(true);
   });

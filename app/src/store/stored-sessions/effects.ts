@@ -1,18 +1,20 @@
 import { AddEffectFn } from '@/store/store';
 import {
+  closeSession,
   deleteExercise,
   deleteStoredSession,
   initializeStoredSessionsStateSlice,
+  openSession,
   putStoredSession,
   restoreExercise,
   selectSession,
   sessionFinished,
+  sessionsChanged,
   setActiveSessionId,
   setBuiltInExercises,
   setExercises,
   setHiddenBuiltInIds,
   setIsHydrated,
-  setStoredSessions,
   updateExercise,
   updateStoredSession,
   upsertExercises,
@@ -22,9 +24,8 @@ import { fetchUpcomingSessions } from '@/store/program';
 import { addUnpublishedSessionId } from '@/store/feed';
 import { setStatsIsDirty } from '@/store/stats';
 import { setPreferredLanguage } from '@/store/settings';
-import { Session } from '@/models/session-models';
-import { sessionMigrations } from '@/models/storage/versions/migrations';
-import { exercisesSchema, sessionsSchema } from '@/db/schema';
+import { exercisesSchema } from '@/db/schema';
+import { deleteSession, readActiveSession, setActiveSession, writeSession } from '@/db/sessions';
 import { eq, sql } from 'drizzle-orm';
 import { toRecord } from '@/utils/reduce';
 import { fromExerciseDescriptorJSON, toExerciseDescriptorJSON } from '@/models/exercise-models';
@@ -43,20 +44,12 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
         throw new Error('Settings must be hydrated before stored sessions');
       }
       await logger.time('initializeStoredSessions', async () => {
-        const rows = await db.select().from(sessionsSchema);
-        const storedSessions = rows.reduce(
-          toRecord(
-            (x) => x.id,
-            (row) => Session.fromJSON(sessionMigrations.migrate(row.payload)),
-          ),
-          {},
-        );
-        dispatch(setStoredSessions(storedSessions));
+        const activeSession = readActiveSession(db);
         // Only when there is one: dispatching `undefined` would clear every flag in the table, and a
         // kill between that write and the migration below would lose the workout in progress.
-        const activeRowId = rows.find((x) => x.active)?.id;
-        if (activeRowId) {
-          dispatch(setActiveSessionId(activeRowId));
+        if (activeSession) {
+          dispatch(openSession(activeSession));
+          dispatch(setActiveSessionId(activeSession.id));
         }
       });
 
@@ -94,7 +87,7 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
 
   // Completion, not content: a session is only exported and queued for the feed once the user is done
   // with it, otherwise every recorded set would fire a health export.
-  addEffect(sessionFinished, async (action, { getState, dispatch, extra: { healthExportService, logger } }) => {
+  addEffect(sessionFinished, async (action, { getState, dispatch, extra: { db, healthExportService, logger } }) => {
     const state = getState();
     const workout = selectSession(state, action.payload);
     if (!workout) {
@@ -104,6 +97,10 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
     if (state.storedSessions.activeSessionId === workout.id) {
       dispatch(setActiveSessionId(undefined));
     }
+    // Written here rather than left to the persist effect, so whoever re-reads on the revision bump sees it.
+    db.transaction((tx) => writeSession(tx, workout));
+    dispatch(sessionsChanged());
+    dispatch(closeSession(workout.id));
     dispatch(addUnpublishedSessionId(workout.id));
     dispatch(setStatsIsDirty(true));
     dispatch(fetchUpcomingSessions());
@@ -118,10 +115,11 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
     }
   });
 
-  addEffect(deleteStoredSession, async (action, { extra: { logger, db } }) => {
+  addEffect(deleteStoredSession, async (action, { dispatch, extra: { logger, db } }) => {
     await logger.time('deleteStoredSession', async () => {
-      await db.delete(sessionsSchema).where(eq(sessionsSchema.id, action.payload));
+      db.transaction((tx) => deleteSession(tx, action.payload));
     });
+    dispatch(sessionsChanged());
   });
   addEffect(deleteStoredSession, async (action, { stateAfterReduce, extra: { healthExportService, logger } }) => {
     const workoutId = action.payload;
@@ -143,70 +141,34 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
         ? action.payload.sessionId
         : undefined;
     // Read at write time rather than from stateAfterReduce, so a slow write still stores the newest
-    // payload if a later edit overtakes it.
+    // content if a later edit overtakes it.
     const session = sessionId === undefined ? undefined : selectSession(getState(), sessionId);
     if (!session) {
       return;
     }
     await logger.time('persistStoredSession', async () => {
-      await db
-        .insert(sessionsSchema)
-        .values({
-          id: session.id,
-          active: false,
-          payload: session.toJSON(),
-        })
-        .onConflictDoUpdate({
-          target: sessionsSchema.id,
-          set: {
-            payload: sql.raw(`excluded.${sessionsSchema.payload.name}`),
-          },
-        });
+      db.transaction((tx) => writeSession(tx, session));
     });
   });
 
-  // The only writer of `active`. It upserts rather than updates so it does not depend on the row having
-  // been written by the effect above first - the two are dispatched together and race.
-  addEffect(setActiveSessionId, async (action, { getState, extra: { db, logger } }) => {
+  // The only writer of `active`. It writes the session's content too, so it does not depend on the effect
+  // above having written the row first - the two are dispatched together and race.
+  addEffect(setActiveSessionId, async (action, { getState, dispatch, extra: { db, logger } }) => {
     await logger.time('setActiveSessionId', async () => {
-      await db.transaction(async (tx) => {
-        await tx.update(sessionsSchema).set({ active: false }).where(eq(sessionsSchema.active, true));
-        const sessionId = action.payload;
-        if (sessionId === undefined) {
-          return;
-        }
-        const session = selectSession(getState(), sessionId);
-        if (!session) {
-          return;
-        }
-        await tx
-          .insert(sessionsSchema)
-          .values({ id: session.id, active: true, payload: session.toJSON() })
-          .onConflictDoUpdate({ target: sessionsSchema.id, set: { active: true } });
-      });
+      const session = action.payload === undefined ? undefined : selectSession(getState(), action.payload);
+      db.transaction((tx) => setActiveSession(tx, session));
     });
+    dispatch(sessionsChanged());
   });
 
-  addEffect(upsertStoredSessions, async (action, { cancelActiveListeners, extra: { db, logger } }) => {
+  addEffect(upsertStoredSessions, async (action, { cancelActiveListeners, dispatch, extra: { db, logger } }) => {
     cancelActiveListeners();
     await logger.time('upsertStoredSessions', async () => {
       // Restored sessions are never active - a backup should not resume someone else's workout, and an
-      // in-progress workout on this device keeps its flag because the conflict path only sets payload.
-      const toUpsert = action.payload.map((x) => ({
-        id: x.id,
-        active: false,
-        payload: x.toJSON(),
-      }));
-      await db
-        .insert(sessionsSchema)
-        .values(toUpsert)
-        .onConflictDoUpdate({
-          target: sessionsSchema.id,
-          set: {
-            payload: sql.raw(`excluded.${sessionsSchema.payload.name}`),
-          },
-        });
+      // in-progress workout on this device keeps its flag because writing content never touches it.
+      db.transaction((tx) => action.payload.forEach((session) => writeSession(tx, session)));
     });
+    dispatch(sessionsChanged());
   });
 
   addEffect(deleteExercise, async (action, { stateAfterReduce, extra: { db, keyValueStore } }) => {
@@ -266,14 +228,15 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
     if (!stateAfterReduce.storedSessions.isHydrated) {
       return;
     }
-    await db.transaction(async (tx) => {
-      await tx.delete(exercisesSchema);
-      await tx.insert(exercisesSchema).values(
-        Object.entries(action.payload).map(([id, exercise]) => ({
-          id,
-          payload: toExerciseDescriptorJSON(exercise),
-        })),
-      );
+    const rows = Object.entries(action.payload).map(([id, exercise]) => ({
+      id,
+      payload: toExerciseDescriptorJSON(exercise),
+    }));
+    db.transaction((tx) => {
+      tx.delete(exercisesSchema).run();
+      if (rows.length) {
+        tx.insert(exercisesSchema).values(rows).run();
+      }
     });
   });
 }

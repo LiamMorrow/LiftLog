@@ -21,7 +21,7 @@ export default function ManageWorkouts() {
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const selectSession = (index: number) => {
-    push(`/settings/manage-workouts/${programId}/manage-session/${index}`);
+    push(`/plan-workout-editor/${programId}/${index}`);
   };
 
   const addWorkout = () => {

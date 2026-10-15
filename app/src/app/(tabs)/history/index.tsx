@@ -13,23 +13,26 @@ import SplitCardControl from '@/components/presentation/foundation/split-card-co
 import { StreakCard } from '@/components/presentation/summary/streak-card';
 import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
-import { useToday } from '@/hooks/useToday';
 import { Session } from '@/models/session-models';
-import { selectStreakStats } from '@/store/activity';
-import { useAppSelector, useAppSelectorWhenFocused, useAppSelectorWhenFocusedWithArg } from '@/store';
+import { useAppSelector } from '@/store';
+import { OwnHistoryProvider, useOwnHistory } from '@/components/smart/own-history-provider';
+import { useSessionsQuery } from '@/hooks/useSessionsQuery';
+import { readSessionsBetween } from '@/db/sessions';
+import { TemporalComparer } from '@/models/comparers';
+import Enumerable from 'linq';
 import { addUnpublishedSessionId, encryptAndShare, removeReactionsForEvents } from '@/store/feed';
 import {
   deleteStoredSession,
+  getSessionReferenceTime,
+  openSession,
   putStoredSession,
   selectActiveSession,
-  selectSessionsBy,
-  selectSessionsInMonth,
 } from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
 import { LocalDate, YearMonth } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useDeferredValue, useState } from 'react';
 import { View } from 'react-native';
 import { LegendList } from '@legendapp/list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -40,7 +43,17 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import { useStartWorkout } from '@/hooks/useStartWorkout';
 import { SharedSession } from '@/models/feed-models';
 
-export default function History() {
+const noSessions: Session[] = [];
+
+export default function HistoryPage() {
+  return (
+    <OwnHistoryProvider>
+      <History />
+    </OwnHistoryProvider>
+  );
+}
+
+function History() {
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const formatDate = useFormatDate();
@@ -51,19 +64,24 @@ export default function History() {
     x.program.upcomingSessions.map((x) => x.at(0)?.bodyweight).unwrapOr(undefined),
   );
   const [selectedDate, setSelectedDate] = useState<LocalDate>();
-  // These sweep the whole history, and this screen stays mounted under /history/edit - so they must
-  // not recompute while a session is being edited on top of it.
-  const sessionsInMonth = useAppSelectorWhenFocusedWithArg(selectSessionsInMonth, currentYearMonth);
-  const sessionsOnSelectedDate = useAppSelectorWhenFocused((state) =>
-    selectedDate ? selectSessionsBy(state, selectedDate, selectedDate) : undefined,
-  );
-  const visibleSessions = sessionsOnSelectedDate ?? sessionsInMonth;
-  const today = useToday();
-  const streakStats = useAppSelectorWhenFocusedWithArg(selectStreakStats, today);
+  const listedYearMonth = useDeferredValue(currentYearMonth);
+  const listedDate = useDeferredValue(selectedDate);
+  const from = listedDate ?? listedYearMonth.atDay(1);
+  const to = listedDate ?? listedYearMonth.atEndOfMonth();
+  const visibleSessions =
+    useSessionsQuery(
+      (db) =>
+        Enumerable.from(readSessionsBetween(db, from, to))
+          .orderByDescending((x) => getSessionReferenceTime(x), TemporalComparer)
+          .toArray(),
+      `${from.toString()}:${to.toString()}`,
+    ) ?? noSessions;
+  const streakStats = useOwnHistory().streak;
   const { push } = useRouter();
   const currentWorkoutSession = useAppSelector(selectActiveSession);
   const startWorkoutSession = useStartWorkout();
   const onSelectSession = (session: Session) => {
+    dispatch(openSession(session));
     push(`/history/edit?sessionId=${encodeURIComponent(session.id)}`);
   };
   const createSessionAtDate = (date: LocalDate) => {
@@ -176,12 +194,12 @@ export default function History() {
           </Card>
         )}
         ListEmptyComponent={
-          selectedDate ? (
+          listedDate ? (
             <View style={{ gap: spacing[4], alignItems: 'center' }}>
               <EmptyInfo>
                 <LimitedHtml
                   value={t('history.calendar.no_sessions_on_day.message', {
-                    date: formatDate(selectedDate, { day: 'numeric', month: 'long' }),
+                    date: formatDate(listedDate, { day: 'numeric', month: 'long' }),
                   })}
                 />
               </EmptyInfo>
@@ -189,7 +207,7 @@ export default function History() {
                 mode="contained"
                 icon="plus"
                 testID="history-add-workout-on-day"
-                onPress={() => createSessionAtDate(selectedDate)}
+                onPress={() => createSessionAtDate(listedDate)}
               >
                 <T keyName="history.calendar.add_workout.button" />
               </Button>
@@ -198,7 +216,7 @@ export default function History() {
             <EmptyInfo>
               <LimitedHtml
                 value={t('workout.no_sessions_in_month.message', {
-                  month: formatDate(currentYearMonth.atDay(1), {
+                  month: formatDate(listedYearMonth.atDay(1), {
                     month: 'long',
                   }),
                 })}

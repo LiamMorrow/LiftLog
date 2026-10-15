@@ -14,62 +14,41 @@ import {
   RecordedWeightedExercise,
   Session,
 } from '@/models/session-models';
-import { ProgressRepository } from '@/services/progress-repository';
+import { readLatestExercises, readSessionToContinueFrom } from '@/db/sessions';
 import type { RootState } from '@/store';
-import { selectActiveSession } from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
+import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { match } from 'ts-pattern';
 
 export class SessionService {
   constructor(
-    private progressRepository: ProgressRepository,
+    private db: ExpoSQLiteDatabase,
     private getState: () => RootState,
   ) {}
 
-  async *getUpcomingSessions(
-    sessionBlueprints: SessionBlueprint[],
-    latestExercises: Record<ProgressionKey, RecordedExercise | undefined>,
-  ): AsyncIterableIterator<Session> {
-    const currentState = this.getState();
-    const currentSession = selectActiveSession(currentState);
-
-    const firstSessionBlueprint = sessionBlueprints[0];
-    if (!firstSessionBlueprint) {
+  async *getUpcomingSessions(sessionBlueprints: SessionBlueprint[]): AsyncIterableIterator<Session> {
+    if (!sessionBlueprints.length) {
       return;
     }
-    await yieldToEventLoop();
 
-    let latestSession =
-      currentSession ?? this.progressRepository.getOrderedSessions().firstOrDefault((x) => !x.isFreeform);
+    const latestExercises = readLatestExercises(
+      this.db,
+      sessionBlueprints.flatMap((session) => session.exercises.map((exercise) => exercise.progressionKey())),
+    );
+    const previousSession = readSessionToContinueFrom(this.db);
 
-    await yieldToEventLoop();
     // Track the plan position by index so progression walks the plan in order.
     // Matching only by name would stall on duplicate-named workouts, always
     // resolving to the first one and never advancing past it.
-    let index: number;
-    if (!latestSession) {
-      latestSession = this.createNewSession(firstSessionBlueprint, latestExercises);
-      index = 0;
-      yield latestSession;
-    } else {
-      index = sessionBlueprints.findIndex((x) => x.name === latestSession!.blueprint.name);
-    }
+    let index = previousSession ? sessionBlueprints.findIndex((x) => x.name === previousSession.name) : -1;
 
     while (true) {
       index = (index + 1) % sessionBlueprints.length;
-      latestSession = this.createNewSession(sessionBlueprints[index]!, latestExercises).with({
-        bodyweight: latestSession.bodyweight,
+      yield this.createNewSession(sessionBlueprints[index]!, latestExercises).with({
+        bodyweight: previousSession?.bodyweight,
       });
-      yield latestSession;
     }
-  }
-
-  public hydrateSessionFromBlueprint(
-    blueprint: SessionBlueprint,
-    latestExercises: Record<ProgressionKey, RecordedExercise | undefined>,
-  ): Session {
-    return this.createNewSession(blueprint, latestExercises);
   }
 
   private createNewSession(
@@ -126,6 +105,3 @@ export class SessionService {
     return this.getState().settings.useImperialUnits ? 'pounds' : 'kilograms';
   }
 }
-
-// Helper function to yield control back to the event loop
-const yieldToEventLoop = () => new Promise((resolve) => setTimeout(resolve, 5));

@@ -4,9 +4,8 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { ActivityCell } from '@/store/activity';
 import { memo } from 'react';
-import { Animated, View } from 'react-native';
+import { View } from 'react-native';
 import { levelColor, markerColor } from '@/components/presentation/calendar/activity-colors';
-import { CellEntrance } from '@/components/presentation/calendar/activity-entrance';
 
 const MARKER_SIZE = 4;
 /** Tall enough for the "+N" glyph, which is what sets the row's height -- not the dots. */
@@ -17,16 +16,10 @@ const MAX_VISIBLE_MARKERS_WITH_COUNT = 2;
 interface ActivityDayCellProps {
   cell: ActivityCell;
   isSelected: boolean;
-  entrance: CellEntrance;
   onPress?: (cell: ActivityCell) => void;
 }
 
-export const ActivityDayCell = memo(function ActivityDayCell({
-  cell,
-  isSelected,
-  entrance,
-  onPress,
-}: ActivityDayCellProps) {
+export const ActivityDayCell = memo(function ActivityDayCell({ cell, isSelected, onPress }: ActivityDayCellProps) {
   const { colors } = useAppTheme();
   const formatDate = useFormatDate();
 
@@ -45,14 +38,7 @@ export const ActivityDayCell = memo(function ActivityDayCell({
   const overflowCount = cell.overflowMarkers + (cell.markers.length - visibleMarkers.length);
 
   return (
-    <Animated.View
-      style={{
-        flex: 1,
-        aspectRatio: 1,
-        opacity: cell.isOutsideFocus ? Animated.multiply(entrance.opacity, 0.4) : entrance.opacity,
-        transform: [{ scale: entrance.scale }],
-      }}
-    >
+    <View style={{ flex: 1, aspectRatio: 1, opacity: cell.isOutsideFocus ? 0.4 : 1 }}>
       <TouchableRipple
         onPress={onPress && !cell.isFuture ? () => onPress(cell) : undefined}
         disabled={cell.isFuture}
@@ -104,6 +90,6 @@ export const ActivityDayCell = memo(function ActivityDayCell({
           )}
         </View>
       </TouchableRipple>
-    </Animated.View>
+    </View>
   );
 });

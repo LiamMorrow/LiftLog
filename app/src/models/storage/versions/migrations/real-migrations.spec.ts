@@ -11,7 +11,8 @@ import {
   RemovedSessionUserEventJSON as InitialRemovedSessionUserEventJSON,
   SharedSessionJSON as InitialSharedSessionJSON,
   SharedProgramBlueprintJSON as InitialSharedProgramBlueprintJSON,
-  FollowedFeedUserJSON as InitialFollowedFeedUserJSON,
+  FeedIdentityJSON as InitialFeedIdentityJSON,
+  FriendJSON as InitialFriendJSON,
 } from '@/models/storage/versions/initial';
 import {
   AesKeyJSON,
@@ -26,7 +27,8 @@ import { programBlueprintMigrations, sessionBlueprintMigrations } from './bluepr
 import { sessionMigrations } from './session';
 import { aiPlanMigrations } from './ai-plan';
 import {
-  followedFeedUserMigrations,
+  feedIdentityMigrations,
+  friendMigrations,
   removedSessionUserEventMigrations,
   sessionUserEventMigrations,
   sharedProgramBlueprintMigrations,
@@ -236,7 +238,7 @@ describe('real migrations', () => {
           name: 'future',
           lastEdited: date('2024-01-01'),
           sessions: [],
-        } as never),
+        }),
       ).toThrow();
     });
   });
@@ -332,17 +334,21 @@ describe('real migrations', () => {
       expect(result.programBlueprint.sessions.every((s) => s.version === 6)).toBe(true);
     });
 
-    it('followedFeedUser brings its currentPlan to latest', () => {
-      const result = followedFeedUserMigrations.migrate(initialFollowedFeedUser(initialProgramBlueprint()));
-      expect(result.version).toBe(3);
+    it('friend brings its currentPlan to latest', () => {
+      const result = friendMigrations.migrate(initialFriend(initialProgramBlueprint()));
       expect(result.currentPlan?.version).toBe(3);
       expect(result.currentPlan?.sessions.every((s) => s.version === 6)).toBe(true);
     });
 
-    it('followedFeedUser leaves an absent currentPlan absent', () => {
-      const result = followedFeedUserMigrations.migrate(initialFollowedFeedUser(undefined));
-      expect(result.version).toBe(3);
-      expect(result.currentPlan).toBeUndefined();
+    it('feedIdentity starts with no previous keys', () => {
+      const initial = initialFeedIdentity();
+      const result = feedIdentityMigrations.migrate(initial);
+      expect(result).toEqual({ ...initial, version: 2, previousAesKeys: [] });
+    });
+
+    it('feedIdentity is idempotent', () => {
+      const once = feedIdentityMigrations.migrate(initialFeedIdentity());
+      expect(feedIdentityMigrations.migrate(once)).toEqual(once);
     });
   });
 
@@ -373,7 +379,7 @@ describe('real migrations', () => {
     });
 
     it('rejects a feed event whose own version is from the future', () => {
-      expect(() => sessionUserEventMigrations.migrate({ ...initialSessionUserEvent(), version: 9 } as never)).toThrow();
+      expect(() => sessionUserEventMigrations.migrate({ ...initialSessionUserEvent(), version: 9 })).toThrow();
     });
 
     it('rejects a feed event whose embedded session is from the future', () => {
@@ -436,14 +442,30 @@ function initialSessionUserEvent(): InitialSessionUserEventJSON {
   };
 }
 
-function initialFollowedFeedUser(currentPlan: InitialProgramBlueprintJSON | undefined): InitialFollowedFeedUserJSON {
+function initialFriend(currentPlan: InitialProgramBlueprintJSON | undefined): InitialFriendJSON {
   return {
-    type: 'FollowedFeedUser',
-    id: 'user-1',
-    publicKey: 'public-key' as unknown as RsaPublicKeyJSON,
-    name: 'Bob',
+    id: 'friend',
+    publicKey: { spkiPublicKeyBytes: 'cHVibGlj' } as unknown as RsaPublicKeyJSON,
+    name: 'Friend',
     currentPlan,
+    status: 'friend',
+    theirKeys: ['aes-key' as unknown as AesKeyJSON],
+    theirKeysSentAt: undefined,
+    theirSecret: 'their-secret',
+    mySecret: 'my-secret',
+  };
+}
+
+function initialFeedIdentity(): InitialFeedIdentityJSON {
+  return {
+    id: 'me',
+    lookup: 'lookup',
     aesKey: 'aes-key' as unknown as AesKeyJSON,
-    followSecret: 'secret',
+    rsaKeyPair: 'rsa' as unknown as InitialFeedIdentityJSON['rsaKeyPair'],
+    password: 'password',
+    name: 'Me',
+    publishBodyweight: false,
+    publishPlan: true,
+    publishWorkouts: true,
   };
 }

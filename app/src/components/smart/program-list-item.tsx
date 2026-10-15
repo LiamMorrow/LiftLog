@@ -12,6 +12,11 @@ import IconButton from '@/components/presentation/foundation/icon-button';
 import { SegmentedListRowAction, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import Menu from '@/components/presentation/foundation/menu';
 import { useDispatch } from 'react-redux';
+import Edit from '@expo/material-symbols/edit.xml';
+import Delete from '@expo/material-symbols/delete.xml';
+import ContentCopy from '@expo/material-symbols/content_copy.xml';
+import Share from '@expo/material-symbols/share.xml';
+import Upload from '@expo/material-symbols/upload.xml';
 
 interface ProgramListItemProps {
   id: string;
@@ -36,13 +41,13 @@ export function ItemMenu({ id, mode }: ItemProps) {
       items={[
         {
           label: t('generic.edit.button'),
-          icon: 'edit',
+          icon: Edit,
           systemImage: 'pencil',
           onPress: () => push(`/settings/manage-workouts/${id}`),
         },
         {
           label: t('generic.remove.button'),
-          icon: 'delete',
+          icon: Delete,
           systemImage: 'trash',
           disabled: isActive,
           onPress: () => {
@@ -61,13 +66,13 @@ export function ItemMenu({ id, mode }: ItemProps) {
         },
         {
           label: t('generic.duplicate.button'),
-          icon: 'contentCopy',
+          icon: ContentCopy,
           systemImage: 'doc.on.doc',
           onPress: () => dispatch(savePlan({ programId: uuid(), programBlueprint: thisProgram })),
         },
         {
           label: t('generic.share.button'),
-          icon: 'share',
+          icon: Share,
           systemImage: 'square.and.arrow.up',
           onPress: () =>
             dispatch(
@@ -79,7 +84,7 @@ export function ItemMenu({ id, mode }: ItemProps) {
         },
         {
           label: t('plan.export.button'),
-          icon: 'upload',
+          icon: Upload,
           systemImage: 'arrow.up.doc',
           onPress: () => dispatch(exportPlan({ programId: id })),
         },

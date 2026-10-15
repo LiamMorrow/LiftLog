@@ -12,7 +12,7 @@ import { useOnDismiss } from '@/hooks/useOnDismiss';
 import { HeaderHeightContext } from 'expo-router/react-navigation';
 
 export function getSessionWorkoutEditorHref(sessionId: string): Href {
-  return `/workout-editor?sessionId=${encodeURIComponent(sessionId)}` as Href;
+  return `/workout-editor?sessionId=${encodeURIComponent(sessionId)}`;
 }
 
 export function SessionWorkoutEditor(props: { sessionId: string }) {

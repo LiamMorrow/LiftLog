@@ -1,15 +1,21 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { EncryptionService, fromJsonBytes, toJsonBytes } from './encryption-service';
-import type { AesKey, RsaKeyPair } from '@/models/encryption-models';
+import {
+  EncryptionService,
+  fromJsonBytes,
+  joinNonceAndCiphertext,
+  splitNonceAndCiphertext,
+  toJsonBytes,
+} from './encryption-service';
+import type { AesEncryptedAndRsaSignedData, AesKey, RsaKeyPair } from '@/models/encryption-models';
+import { Base64Uint8ArrayJSON, fromAesKeyJSON } from '@/models/storage/versions/libs';
 
 describe('EncryptionService', () => {
   let svc: EncryptionService;
-  let aesKey: AesKey;
   let rsaKeyPair: RsaKeyPair;
 
   beforeAll(async () => {
     svc = new EncryptionService();
-    [aesKey, rsaKeyPair] = await Promise.all([svc.generateAesKey(), svc.generateRsaKeys()]);
+    rsaKeyPair = await svc.generateRsaKeys();
   });
 
   // ---------------------------------------------------------------------------
@@ -17,9 +23,16 @@ describe('EncryptionService', () => {
   // ---------------------------------------------------------------------------
 
   describe('generateAesKey', () => {
-    it('returns a 16-byte (128-bit) key', async () => {
+    it('returns a 16-byte (128-bit) AES-GCM key by default', async () => {
       const key = await svc.generateAesKey();
+      expect(key.algorithm).toBe('AES-GCM');
       expect(key.value).toBeInstanceOf(Uint8Array);
+      expect(key.value.byteLength).toBe(16);
+    });
+
+    it('returns a 16-byte AES-CBC key when asked for one', async () => {
+      const key = await svc.generateAesKey('AES-CBC');
+      expect(key.algorithm).toBe('AES-CBC');
       expect(key.value.byteLength).toBe(16);
     });
 
@@ -75,68 +88,165 @@ describe('EncryptionService', () => {
   });
 
   // ---------------------------------------------------------------------------
-  // AES-CBC encrypt / decrypt (via the signed+encrypted round-trip)
+  // AES encrypt / decrypt (via the signed+encrypted round-trip)
   // ---------------------------------------------------------------------------
 
-  describe('signRsa256PssAndEncryptAesCbcAsync / decryptAesCbcAndVerifyRsa256PssAsync', () => {
+  describe.each([
+    { algorithm: 'AES-GCM' as const, ivLength: 12 },
+    { algorithm: 'AES-CBC' as const, ivLength: 16 },
+  ])('signAndEncryptAsync / decryptAndVerifyAsync with $algorithm', ({ algorithm, ivLength }) => {
+    let key: AesKey;
+
+    beforeAll(async () => {
+      key = await svc.generateAesKey(algorithm);
+    });
+
     it('round-trips arbitrary data', async () => {
       const plaintext = new TextEncoder().encode('hello liftlog');
-      const encrypted = await svc.signRsa256PssAndEncryptAesCbcAsync(plaintext, aesKey, rsaKeyPair.privateKey);
-      const decrypted = await svc.decryptAesCbcAndVerifyRsa256PssAsync(encrypted, aesKey, rsaKeyPair.publicKey);
+      const encrypted = await svc.signAndEncryptAsync(plaintext, key, rsaKeyPair.privateKey);
+      const decrypted = await svc.decryptAndVerifyAsync(encrypted, key, rsaKeyPair.publicKey);
       expect(Array.from(decrypted)).toEqual(Array.from(plaintext));
     });
 
     it('round-trips empty data', async () => {
       const plaintext = new Uint8Array(0);
-      const encrypted = await svc.signRsa256PssAndEncryptAesCbcAsync(plaintext, aesKey, rsaKeyPair.privateKey);
-      const decrypted = await svc.decryptAesCbcAndVerifyRsa256PssAsync(encrypted, aesKey, rsaKeyPair.publicKey);
+      const encrypted = await svc.signAndEncryptAsync(plaintext, key, rsaKeyPair.privateKey);
+      const decrypted = await svc.decryptAndVerifyAsync(encrypted, key, rsaKeyPair.publicKey);
       expect(decrypted).toEqual(plaintext);
     });
 
-    it('respects a caller-supplied IV', async () => {
-      const plaintext = new TextEncoder().encode('deterministic');
-      const iv = { value: new Uint8Array(16).fill(0xab) };
-
-      const encrypted = await svc.signRsa256PssAndEncryptAesCbcAsync(plaintext, aesKey, rsaKeyPair.privateKey, iv);
-      const decrypted = await svc.decryptAesCbcAndVerifyRsa256PssAsync(
-        { encryptedPayload: encrypted.encryptedPayload, iv },
-        aesKey,
-        rsaKeyPair.publicKey,
-      );
-      expect(Array.from(plaintext)).toEqual(Array.from(decrypted));
+    it('handles binary data (not just text)', async () => {
+      const binary = new Uint8Array(256).map((_, i) => i);
+      const encrypted = await svc.signAndEncryptAsync(binary, key, rsaKeyPair.privateKey);
+      const decrypted = await svc.decryptAndVerifyAsync(encrypted, key, rsaKeyPair.publicKey);
+      expect(decrypted).toEqual(binary);
     });
 
-    it('produces different ciphertexts when IV is random (no IV supplied)', async () => {
+    it(`draws a fresh ${ivLength}-byte IV for every encryption`, async () => {
       const plaintext = new TextEncoder().encode('same data');
-      const a = await svc.signRsa256PssAndEncryptAesCbcAsync(plaintext, aesKey, rsaKeyPair.privateKey);
-      const b = await svc.signRsa256PssAndEncryptAesCbcAsync(plaintext, aesKey, rsaKeyPair.privateKey);
-      // IVs should differ (astronomically unlikely to collide)
+      const a = await svc.signAndEncryptAsync(plaintext, key, rsaKeyPair.privateKey);
+      const b = await svc.signAndEncryptAsync(plaintext, key, rsaKeyPair.privateKey);
+      expect(a.iv.value.byteLength).toBe(ivLength);
       expect(a.iv.value).not.toEqual(b.iv.value);
     });
 
     it('throws when the wrong AES key is used to decrypt', async () => {
       const plaintext = new TextEncoder().encode('wrong key test');
-      const encrypted = await svc.signRsa256PssAndEncryptAesCbcAsync(plaintext, aesKey, rsaKeyPair.privateKey);
-      const otherKey = await svc.generateAesKey();
-      await expect(
-        svc.decryptAesCbcAndVerifyRsa256PssAsync(encrypted, otherKey, rsaKeyPair.publicKey),
-      ).rejects.toThrow();
+      const encrypted = await svc.signAndEncryptAsync(plaintext, key, rsaKeyPair.privateKey);
+      const otherKey = await svc.generateAesKey(algorithm);
+      await expect(svc.decryptAndVerifyAsync(encrypted, otherKey, rsaKeyPair.publicKey)).rejects.toThrow();
     });
 
     it('throws on signature verification failure (wrong public key)', async () => {
       const plaintext = new TextEncoder().encode('sig check');
-      const encrypted = await svc.signRsa256PssAndEncryptAesCbcAsync(plaintext, aesKey, rsaKeyPair.privateKey);
+      const encrypted = await svc.signAndEncryptAsync(plaintext, key, rsaKeyPair.privateKey);
       const otherPair = await svc.generateRsaKeys();
-      await expect(svc.decryptAesCbcAndVerifyRsa256PssAsync(encrypted, aesKey, otherPair.publicKey)).rejects.toThrow(
+      await expect(svc.decryptAndVerifyAsync(encrypted, key, otherPair.publicKey)).rejects.toThrow(
         'Signature verification failed',
       );
     });
 
-    it('handles binary data (not just text)', async () => {
-      const binary = new Uint8Array(256).map((_, i) => i);
-      const encrypted = await svc.signRsa256PssAndEncryptAesCbcAsync(binary, aesKey, rsaKeyPair.privateKey);
-      const decrypted = await svc.decryptAesCbcAndVerifyRsa256PssAsync(encrypted, aesKey, rsaKeyPair.publicKey);
-      expect(decrypted).toEqual(binary);
+    it('throws when the key bytes are read as the other algorithm', async () => {
+      const plaintext = new TextEncoder().encode('mode check');
+      const encrypted = await svc.signAndEncryptAsync(plaintext, key, rsaKeyPair.privateKey);
+      const otherAlgorithm = algorithm === 'AES-GCM' ? 'AES-CBC' : 'AES-GCM';
+      await expect(
+        svc.decryptAndVerifyAsync(encrypted, { ...key, algorithm: otherAlgorithm }, rsaKeyPair.publicKey),
+      ).rejects.toThrow();
+    });
+  });
+
+  describe('AES-GCM tamper detection', () => {
+    let key: AesKey;
+    let encrypted: AesEncryptedAndRsaSignedData;
+
+    beforeAll(async () => {
+      key = await svc.generateAesKey('AES-GCM');
+      encrypted = await svc.signAndEncryptAsync(new TextEncoder().encode('do not touch'), key, rsaKeyPair.privateKey);
+    });
+
+    const flip = (bytes: Uint8Array, index: number) => bytes.map((x, i) => (i === index ? x ^ 0x01 : x));
+
+    it.each([
+      ['a ciphertext byte', () => ({ ...encrypted, encryptedPayload: flip(encrypted.encryptedPayload, 0) })],
+      [
+        'a tag byte',
+        () => ({
+          ...encrypted,
+          encryptedPayload: flip(encrypted.encryptedPayload, encrypted.encryptedPayload.length - 1),
+        }),
+      ],
+      ['a nonce byte', () => ({ ...encrypted, iv: { value: flip(encrypted.iv.value, 0) } })],
+      ['a truncated tag', () => ({ ...encrypted, encryptedPayload: encrypted.encryptedPayload.slice(0, -1) })],
+    ])('rejects %s', async (_, tampered: () => AesEncryptedAndRsaSignedData) => {
+      await expect(svc.decryptAndVerifyAsync(tampered(), key, rsaKeyPair.publicKey)).rejects.toThrow();
+    });
+  });
+
+  describe('decryptAndVerifyAsync with an unknown algorithm', () => {
+    it('rejects rather than guessing', async () => {
+      const key = await svc.generateAesKey();
+      const encrypted = await svc.signAndEncryptAsync(new Uint8Array([1]), key, rsaKeyPair.privateKey);
+      const unknown = { ...key, algorithm: 'AES-SIV' } as unknown as AesKey;
+      await expect(svc.decryptAndVerifyAsync(encrypted, unknown, rsaKeyPair.publicKey)).rejects.toThrow();
+    });
+  });
+
+  describe('signAndEncryptWithCbcIvAsync', () => {
+    it('respects a caller-supplied IV', async () => {
+      const key = await svc.generateAesKey('AES-CBC');
+      const plaintext = new TextEncoder().encode('deterministic');
+      const iv = { value: new Uint8Array(16).fill(0xab) };
+
+      const encrypted = await svc.signAndEncryptWithCbcIvAsync(plaintext, key, rsaKeyPair.privateKey, iv);
+      expect(encrypted.iv).toEqual(iv);
+      const decrypted = await svc.decryptAndVerifyAsync(
+        { encryptedPayload: encrypted.encryptedPayload, iv },
+        key,
+        rsaKeyPair.publicKey,
+      );
+      expect(Array.from(decrypted)).toEqual(Array.from(plaintext));
+    });
+
+    it('refuses an AES-GCM key, where reusing a nonce is fatal', async () => {
+      const key = await svc.generateAesKey('AES-GCM');
+      await expect(svc.signAndEncryptWithCbcIvAsync(new Uint8Array([1]), key, rsaKeyPair.privateKey)).rejects.toThrow();
+    });
+  });
+
+  describe('a payload published before keys recorded their algorithm', () => {
+    const fixture = {
+      key: '7T3cGxlN0ctyJv0Ok7c4iQ==',
+      iv: 'QsZJA0vbHDmQAeJq6m56Mw==',
+      publicKey:
+        'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwHVzGViQK6eZbOGpC4PjRPUoKsUje/SqMi1Tep9lu+hfbZvRE0XxgucnDj/8xeTtkSvI+F0lrwe/4puhwT3S7WQmxe8UOvpwgUu1++258/1G05UQxQOAyOiO+TXyrahu2mk3WNYpOwPMKz4GvBT/2IHGg8nI9w6rRCmC6rRh6qwe1YrECK8LSGxeil2HeLgDTiC9PgERt+BE6RPLKs5uh3b+rgbUSAeCkQEs4FcnnnxKKoAx2//czCMQj+i8oVaPRP4TXwPCQQgWbOPIKnegR542w4Jdup9rlB0kbZOaDbUeRbcDUcjD9rkpLbK3a69lVjxmaBSarXfAZjr5Nkw4gQIDAQAB',
+      encryptedPayload:
+        'Jjh6QpI/XDDvJB+Cqgc/DiNR4cgT0t0fBY8U344/uHhKO8kyz93XTG5OtMU4Pgs7O8md/feb8OujaN8fHaQIHf6kPhLWGn/fDH0Z8KABBo04mCccR9L31g+ZJ2OZmEIhbZv+T1hCKtu/MfCSRtYP6hlQcJin+objSPyhfTVEqd4GhBTI+fS8p0H1tqjhaRLO8Hbx7dL+y5voaXgLFsZwv+YkADIVpuXvZSGkbZMy86ig7z5JXoZ3XA+hylp2boGkMIDikWeYEHQk5IpOh1501EkP79r/94FG5DZxoNi+FVozAorxsNPnDs3yeUwVIUacgWpZvufA8bLOxof9YOdztj0mjhPy+KAarQI1K1z3YaMaS419k7YthajyEb7jexlFzNKcJHnDw3sf4mGwh16udT4O8UsncHLN7HO279FdqjQ=',
+      plaintext: '{"type":"SessionUserEvent","note":"made before AES-GCM"}',
+    };
+    const bytes = (b64: string) => new Uint8Array(Buffer.from(b64, 'base64'));
+
+    it('still decrypts with the stored key read as AES-CBC', async () => {
+      const decrypted = await svc.decryptAndVerifyAsync(
+        { encryptedPayload: bytes(fixture.encryptedPayload), iv: { value: bytes(fixture.iv) } },
+        fromAesKeyJSON({ value: fixture.key as Base64Uint8ArrayJSON }),
+        { spkiPublicKeyBytes: bytes(fixture.publicKey) },
+      );
+      expect(new TextDecoder().decode(decrypted)).toBe(fixture.plaintext);
+    });
+  });
+
+  describe('joinNonceAndCiphertext / splitNonceAndCiphertext', () => {
+    it('round-trips an AES-GCM payload through one field', async () => {
+      const key = await svc.generateAesKey('AES-GCM');
+      const plaintext = new TextEncoder().encode('one field');
+      const encrypted = await svc.signAndEncryptAsync(plaintext, key, rsaKeyPair.privateKey);
+
+      const split = splitNonceAndCiphertext(joinNonceAndCiphertext(encrypted));
+
+      expect(split).toEqual(encrypted);
+      const decrypted = await svc.decryptAndVerifyAsync(split, key, rsaKeyPair.publicKey);
+      expect(Array.from(decrypted)).toEqual(Array.from(plaintext));
     });
   });
 

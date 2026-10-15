@@ -1,9 +1,9 @@
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { useAppSelector, useAppSelectorWhenFocused } from '@/store';
+import { useAppSelector } from '@/store';
 import { selectFeedPersonalRecords } from '@/store/activity';
 import { PersonalRecord } from '@/store/stats/personal-records';
-import { selectHistoryPersonalRecords } from '@/store/stored-sessions';
+import { useOwnHistory } from '@/components/smart/own-history-provider';
 import { useTranslate } from '@tolgee/react';
 import { View } from 'react-native';
 import { Icon } from 'react-native-paper';
@@ -16,7 +16,7 @@ export function FeedPrBadges({ eventId }: { eventId: string }) {
 }
 
 export function HistoryPrBadges({ sessionId }: { sessionId: string }) {
-  const records = useAppSelectorWhenFocused(selectHistoryPersonalRecords).get(sessionId);
+  const records = useOwnHistory().personalRecords.get(sessionId);
 
   return <PrBadges records={records} labelKey="history.pr_badge.label" />;
 }

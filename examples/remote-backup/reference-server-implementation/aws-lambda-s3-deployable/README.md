@@ -123,7 +123,23 @@ There is also an optional `delete_after_days` variable. Uncomment this to set an
 
 ## Configuring LiftLog to use the remote backup
 
-Save the file `output.txt` somewhere safe. Open it and note the url and api key. Add these to the remote backup configuration in LiftLog and when you click 'Test', it should work.
+Save the file `output.txt` somewhere safe. Under **Settings → Backends**, add a
+**Backup endpoint only** backend using the complete API URL (including
+`/prod/backup`). Add an `X-API-Key` header with the API key, then select this
+backend for automatic remote backup.
+
+The **Test** button sends an empty POST with `X-LiftLog-Probe: true`. API Gateway
+checks the API key as usual, and the Lambda returns `200` without writing a file.
+This checks connectivity and authentication; it does not exercise S3 uploads.
+An empty request without the probe header is rejected.
+
+If Test reports **No file uploaded or body is empty**, an older Lambda may still
+be deployed. Updating your checkout alone does not update AWS: rebuild the package
+and follow the Terraform upgrade steps above. See [the backup protocol](../../../../docs/RemoteBackup.md).
+
+To verify storage after upgrading, perform a real backup, download the new S3
+object, and check that it decompresses successfully. For current SQLite backups,
+`PRAGMA integrity_check` on the decompressed database should return `ok`.
 
 To access your backup, log into the AWS Console, navigate to S3, find your bucket and your files will be organised into folders by date. Object versioning is enabled so accidental overwrites and deletes can be recovered from S3.
 

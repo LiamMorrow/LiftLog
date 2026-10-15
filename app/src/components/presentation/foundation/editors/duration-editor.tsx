@@ -54,8 +54,9 @@ export default function DurationEditor(props: DurationEditorProps) {
     setHours(components.hours.toString());
     setMinutes(components.minutes.toString());
     setSeconds(components.seconds.toString());
-  }, [duration]);
+  }, [duration, setHours, setMinutes, setSeconds]);
   useEffect(() => {
+    // oxlint-disable-next-line react/set-state-in-effect -- TODO
     resetValues();
   }, [readonly, resetValues]);
 

@@ -1,144 +1,73 @@
-import { describe, expect, it, vi } from 'vitest';
-import { combineReducers } from '@reduxjs/toolkit';
-import { Instant, LocalDate } from '@js-joda/core';
-import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
-import { addInboxEffects } from '@/store/feed/inbox-effects';
-import feedReducer, { fetchInboxItems, upsertReceivedReactions } from '@/store/feed';
-import { storedSessionsReducer } from '@/store/stored-sessions';
-import {
-  FeedIdentity,
-  FollowerFeedUser,
-  MAX_REACTIONS_PER_SENDER_PER_EVENT,
-  Reaction,
-  ReactionInboxMessage,
-  ReceivedReaction,
-} from '@/models/feed-models';
+import { describe, expect, it } from 'vitest';
+import { INBOX_SEEN_RETENTION_MS } from '@/store/feed/inbox-effects';
+import { fetchFeedItems, fetchInboxItems, removeFriends, setIdentity, upsertReceivedReactions } from '@/store/feed';
+import { FeedIdentity, MAX_REACTIONS_PER_SENDER_PER_EVENT, ReceivedReaction } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
-import { RsaPublicKey } from '@/models/encryption-models';
-import { ApiResult } from '@/services/api-error';
-import { Session } from '@/models/session-models';
-import { SessionBlueprint } from '@/models/blueprint-models';
+import { ApiErrorType, ApiResult } from '@/services/api-error';
+import { feedInboxQueueSchema, feedInboxSeenSchema } from '@/db/schema';
+import { makeFriend } from '@/store/feed/__test__/friends';
+import { deliver, identity, inbox, InboxTestBed, makeInboxTestBed } from '@/store/feed/__test__/inbox-harness';
 
-// ─── Fixtures ───────────────────────────────────────────────────────────────
+const FRIEND_ID = 'friend-1';
 
-const OWN_SESSION_ID = 'session-1';
-const FOLLOWER_ID = 'follower-1';
-
-const identity = { id: 'me', password: 'pw' } as FeedIdentity;
-const publicKey: RsaPublicKey = { spkiPublicKeyBytes: new Uint8Array([1]) };
-
-function ownSession(): Session {
-  return new Session(
-    OWN_SESSION_ID,
-    new SessionBlueprint('Push', [], ''),
-    [],
-    LocalDate.of(2026, 7, 13),
-    undefined,
-    undefined,
-  );
+function makeTestBed(options?: Parameters<typeof makeInboxTestBed>[0]) {
+  return makeInboxTestBed({ friends: [makeFriend(FRIEND_ID)], ...options });
 }
 
-function cheer(overrides?: { senderUserId?: string; eventId?: string; reactionId?: string; count?: number }) {
-  return new ReactionInboxMessage(
-    overrides?.senderUserId ?? FOLLOWER_ID,
-    new Uint8Array(),
-    new Reaction(
-      overrides?.reactionId ?? 'reaction-1',
-      overrides?.eventId ?? OWN_SESSION_ID,
-      '💪',
-      overrides?.count ?? 1,
-      Instant.parse('2026-07-13T10:00:00Z'),
-    ),
-  );
-}
-
-function makeTestBed(options?: {
-  followers?: Record<string, FollowerFeedUser>;
-  receivedReactions?: Record<string, ReceivedReaction>;
-  sessions?: Record<string, Session>;
-}) {
-  const services = {
-    feedApiService: {
-      getInboxMessagesAsync: vi.fn().mockResolvedValue(ApiResult.success({ inboxMessages: [{}] })),
-    },
-    feedInboxDecryptionService: {
-      decryptIfValid: vi.fn(),
-    },
-  };
-
-  const testBed = createAddEffectTestBed({
-    initialState: {
-      feed: {
-        identity: RemoteData.success(identity),
-        followers: options?.followers ?? { [FOLLOWER_ID]: new FollowerFeedUser(FOLLOWER_ID, publicKey, 'Bob', 's') },
-        receivedReactions: options?.receivedReactions ?? {},
-      },
-      storedSessions: {
-        sessions: options?.sessions ?? { [OWN_SESSION_ID]: ownSession() },
-      },
-    } as never,
-    services: services as never,
-    reducer: combineReducers({ feed: feedReducer, storedSessions: storedSessionsReducer }),
-  });
-
-  addInboxEffects(testBed.addEffect);
-  return { testBed, services };
-}
-
-/** The decryption service is what yields InboxMessages; stub it to return exactly these. */
-function deliver(services: ReturnType<typeof makeTestBed>['services'], messages: ReactionInboxMessage[]) {
-  services.feedApiService.getInboxMessagesAsync.mockResolvedValue(
-    ApiResult.success({ inboxMessages: messages.map(() => ({})) }),
-  );
-  let index = 0;
-  services.feedInboxDecryptionService.decryptIfValid.mockImplementation(() =>
-    Promise.resolve(messages[index++] ?? null),
-  );
-}
-
-function acceptedReactions(testBed: ReturnType<typeof makeTestBed>['testBed']): ReceivedReaction[] {
+function acceptedReactions(testBed: InboxTestBed['testBed']): ReceivedReaction[] {
   return Object.values(testBed.getState().feed.receivedReactions);
 }
 
-// ─── Tests ──────────────────────────────────────────────────────────────────
+const poll = (testBed: InboxTestBed['testBed']) => testBed.dispatchHandled(fetchInboxItems({ fromUserAction: true }));
 
 describe('inbox-effects reactions', () => {
-  it('accepts a cheer from a follower on a session you own', async () => {
-    const { testBed, services } = makeTestBed();
-    deliver(services, [cheer({ count: 5 })]);
+  it('accepts a cheer from a friend on a session you own', async () => {
+    const { testBed, services } = await makeTestBed();
+    deliver(services, [inbox.cheer(FRIEND_ID, { count: 5 })]);
 
-    await testBed.dispatchHandled(fetchInboxItems({ fromUserAction: true }));
+    await poll(testBed);
 
     const accepted = acceptedReactions(testBed);
     expect(accepted).toHaveLength(1);
     expect(accepted[0]!.count).toBe(5);
-    expect(accepted[0]!.fromUserId).toBe(FOLLOWER_ID);
+    expect(accepted[0]!.fromUserId).toBe(FRIEND_ID);
   });
 
-  it('drops a cheer from someone who is not a follower', async () => {
-    // PUT /inbox is unauthenticated, so any stranger who knows the user id can post one of these.
-    const { testBed, services } = makeTestBed({ followers: {} });
-    deliver(services, [cheer()]);
+  it('drops a cheer from someone who is not a friend', async () => {
+    const { testBed, services } = await makeTestBed({ friends: [] });
+    deliver(services, [inbox.cheer(FRIEND_ID)]);
 
-    await testBed.dispatchHandled(fetchInboxItems({ fromUserAction: true }));
+    await poll(testBed);
+
+    expect(acceptedReactions(testBed)).toHaveLength(0);
+  });
+
+  it('drops a cheer from someone who has not accepted yet', async () => {
+    const { testBed, services } = await makeTestBed({ friends: [makeFriend(FRIEND_ID, { status: 'pending' })] });
+    deliver(services, [inbox.cheer(FRIEND_ID)]);
+
+    await poll(testBed);
 
     expect(acceptedReactions(testBed)).toHaveLength(0);
   });
 
   it('drops a cheer targeting a session you do not own', async () => {
-    const { testBed, services } = makeTestBed();
-    deliver(services, [cheer({ eventId: 'someone-elses-session' })]);
+    const { testBed, services } = await makeTestBed();
+    deliver(services, [inbox.cheer(FRIEND_ID, { eventId: 'someone-elses-session' })]);
 
-    await testBed.dispatchHandled(fetchInboxItems({ fromUserAction: true }));
+    await poll(testBed);
 
     expect(acceptedReactions(testBed)).toHaveLength(0);
   });
 
   it('does not double count a redelivered cheer', async () => {
-    const { testBed, services } = makeTestBed();
-    deliver(services, [cheer({ reactionId: 'r1', count: 3 }), cheer({ reactionId: 'r1', count: 3 })]);
+    const { testBed, services } = await makeTestBed();
+    deliver(services, [
+      inbox.cheer(FRIEND_ID, { reactionId: 'r1', count: 3 }),
+      inbox.cheer(FRIEND_ID, { reactionId: 'r1', count: 3 }),
+    ]);
 
-    await testBed.dispatchHandled(fetchInboxItems({ fromUserAction: true }));
+    await poll(testBed);
 
     const accepted = acceptedReactions(testBed);
     expect(accepted).toHaveLength(1);
@@ -146,24 +75,202 @@ describe('inbox-effects reactions', () => {
   });
 
   it('caps how many cheers one sender can store against a single event', async () => {
-    const { testBed, services } = makeTestBed();
-    const flood = Array.from({ length: MAX_REACTIONS_PER_SENDER_PER_EVENT + 10 }, (_, i) =>
-      cheer({ reactionId: `r${i}` }),
+    const { testBed, services } = await makeTestBed();
+    deliver(
+      services,
+      Array.from({ length: MAX_REACTIONS_PER_SENDER_PER_EVENT + 10 }, (_, i) =>
+        inbox.cheer(FRIEND_ID, { reactionId: `r${i}` }),
+      ),
     );
-    deliver(services, flood);
 
-    await testBed.dispatchHandled(fetchInboxItems({ fromUserAction: true }));
+    await poll(testBed);
 
     expect(acceptedReactions(testBed)).toHaveLength(MAX_REACTIONS_PER_SENDER_PER_EVENT);
   });
 
-  it('persists cheers before doing anything else, since the server has already deleted them', async () => {
-    const { testBed, services } = makeTestBed();
-    deliver(services, [cheer()]);
+  it('dispatches accepted cheers so they are persisted', async () => {
+    const { testBed, services } = await makeTestBed();
+    deliver(services, [inbox.cheer(FRIEND_ID)]);
 
-    await testBed.dispatchHandled(fetchInboxItems({ fromUserAction: true }));
+    await poll(testBed);
 
-    const dispatched = testBed.dispatchedActions.map((x) => x.type);
-    expect(dispatched).toContain(upsertReceivedReactions.type);
+    testBed.getDispatchedAction(upsertReceivedReactions);
+  });
+});
+
+describe('inbox-effects delivery', () => {
+  it('asks the server to keep messages until they are acked', async () => {
+    const { testBed, services } = await makeTestBed();
+
+    await poll(testBed);
+
+    expect(services.feedApiService.getInboxMessagesAsync).toHaveBeenCalledWith({
+      userId: identity.id,
+      password: identity.password,
+      manualAck: true,
+    });
+  });
+
+  it('acks processed and unreadable messages, but leaves ones to retry on the server', async () => {
+    const { testBed, services } = await makeTestBed();
+    const [ok, invalid] = deliver(services, [
+      { json: inbox.cheer(FRIEND_ID, { reactionId: 'r1' }) },
+      { json: inbox.cheer(FRIEND_ID, { reactionId: 'r2' }), kind: 'invalid' },
+      { json: inbox.cheer(FRIEND_ID, { reactionId: 'r3' }), kind: 'retry' },
+    ]);
+
+    await poll(testBed);
+
+    expect(services.feedApiService.ackInboxMessagesAsync).toHaveBeenCalledWith({
+      userId: identity.id,
+      password: identity.password,
+      ids: [ok, invalid],
+    });
+    expect(acceptedReactions(testBed).map((x) => x.id)).toEqual(['r1']);
+  });
+
+  it('processes a message delivered twice only once', async () => {
+    const { testBed, services } = await makeTestBed({ friends: [] });
+    deliver(services, [{ json: inbox.friendRequest('alice'), messageId: 'm1' }]);
+    await poll(testBed);
+    testBed.dispatch(removeFriends(['alice']));
+
+    deliver(services, [{ json: inbox.friendRequest('alice'), messageId: 'm1' }]);
+    await poll(testBed);
+
+    expect(testBed.getState().feed.friends.alice).toBeUndefined();
+  });
+
+  it('processes messages in the order they were sent', async () => {
+    const { testBed, services } = await makeTestBed({ friends: [] });
+    deliver(services, [
+      { json: inbox.unfriend('alice'), sentAtMs: 2000 },
+      { json: inbox.friendRequest('alice'), sentAtMs: 1000 },
+    ]);
+
+    await poll(testBed);
+
+    expect(testBed.getState().feed.friends.alice).toBeUndefined();
+  });
+
+  it('processes messages a previous run queued but never handled', async () => {
+    const { testBed, db } = await makeTestBed({ friends: [] });
+    db.insert(feedInboxQueueSchema)
+      .values({ messageId: 'left-over', sentAtMs: 0, payload: inbox.friendRequest('alice') })
+      .run();
+
+    await poll(testBed);
+
+    expect(testBed.getState().feed.friends.alice?.status).toBe('incoming');
+    expect(db.select().from(feedInboxQueueSchema).all()).toEqual([]);
+  });
+
+  it('still drains the local queue when the server cannot be reached', async () => {
+    const { testBed, services, db } = await makeTestBed({ friends: [] });
+    db.insert(feedInboxQueueSchema)
+      .values({ messageId: 'left-over', sentAtMs: 0, payload: inbox.friendRequest('alice') })
+      .run();
+    services.feedApiService.getInboxMessagesAsync.mockResolvedValue(
+      ApiResult.fromError({ type: ApiErrorType.Unknown, message: 'offline', exception: undefined }),
+    );
+
+    await testBed.dispatchHandled(fetchInboxItems({ fromUserAction: false }));
+
+    expect(testBed.getState().feed.friends.alice?.status).toBe('incoming');
+  });
+
+  it('keeps a message queued when handling it needs the network and the network is down', async () => {
+    const { testBed, services, db } = await makeTestBed({ friends: [] });
+    deliver(services, [inbox.friendRequest('alice')]);
+    services.feedApiService.getUserAsync.mockResolvedValue(
+      ApiResult.fromError({ type: ApiErrorType.Unknown, message: 'offline', exception: undefined }),
+    );
+
+    await poll(testBed);
+
+    expect(testBed.getState().feed.friends.alice).toBeUndefined();
+    expect(db.select().from(feedInboxQueueSchema).all()).toHaveLength(1);
+  });
+
+  it('holds back a sender’s later messages while an earlier one waits to retry', async () => {
+    const { testBed, services, db } = await makeTestBed({ friends: [] });
+    deliver(services, [
+      { json: inbox.friendRequest('alice'), sentAtMs: 1000 },
+      { json: inbox.unfriend('alice'), sentAtMs: 2000 },
+    ]);
+    services.feedApiService.getUserAsync.mockResolvedValueOnce(
+      ApiResult.fromError({ type: ApiErrorType.Unknown, message: 'offline', exception: undefined }),
+    );
+
+    await poll(testBed);
+    expect(db.select().from(feedInboxQueueSchema).all()).toHaveLength(2);
+
+    deliver(services, []);
+    await poll(testBed);
+
+    expect(testBed.getState().feed.friends.alice).toBeUndefined();
+    expect(db.select().from(feedInboxQueueSchema).all()).toEqual([]);
+  });
+
+  it('refreshes the feed after every poll', async () => {
+    const { testBed } = await makeTestBed();
+
+    await poll(testBed);
+
+    testBed.getDispatchedAction(fetchFeedItems);
+  });
+
+  it('forgets seen message ids once they are past the retention window', async () => {
+    const { testBed, db } = await makeTestBed();
+    db.insert(feedInboxSeenSchema)
+      .values([
+        { messageId: 'old', seenAtMs: Date.now() - INBOX_SEEN_RETENTION_MS - 1000 },
+        { messageId: 'recent', seenAtMs: Date.now() },
+      ])
+      .run();
+
+    await poll(testBed);
+
+    expect(
+      db
+        .select()
+        .from(feedInboxSeenSchema)
+        .all()
+        .map((x) => x.messageId),
+    ).toEqual(['recent']);
+  });
+
+  it('stops without queueing anything when the identity changes mid-poll', async () => {
+    const { testBed, services, db } = await makeTestBed();
+    deliver(services, [inbox.friendRequest('alice')]);
+    services.feedApiService.getInboxMessagesAsync.mockImplementation(async () => {
+      testBed.dispatch(setIdentity(RemoteData.success({ id: 'someone-else', password: 'pw' } as FeedIdentity)));
+      return ApiResult.success({ inboxMessages: [{ id: 'server-x', encryptedMessage: [] }] });
+    });
+
+    await poll(testBed);
+
+    expect(services.feedInboxDecryptionService.decrypt).not.toHaveBeenCalled();
+    expect(db.select().from(feedInboxQueueSchema).all()).toEqual([]);
+  });
+
+  it('runs one poll at a time, and polls again if asked while busy', async () => {
+    const { testBed, services } = await makeTestBed();
+    let release!: () => void;
+    services.feedApiService.getInboxMessagesAsync.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          release = () => resolve(ApiResult.success({ inboxMessages: [] }));
+        }),
+    );
+
+    const first = poll(testBed);
+    await poll(testBed);
+    expect(services.feedApiService.getInboxMessagesAsync).toHaveBeenCalledTimes(1);
+
+    release();
+    await first;
+
+    expect(services.feedApiService.getInboxMessagesAsync).toHaveBeenCalledTimes(2);
   });
 });

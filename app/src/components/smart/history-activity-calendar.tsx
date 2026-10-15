@@ -6,6 +6,7 @@ import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useToday } from '@/hooks/useToday';
 import { useAppSelector, useAppSelectorWhenFocusedWithArg } from '@/store';
+import { useOwnHistory } from '@/components/smart/own-history-provider';
 import { ActivityCell, selectActivityMonth, selectFollowsOtherUsers } from '@/store/activity';
 import { LocalDate, Year, YearMonth } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
@@ -33,7 +34,8 @@ export function HistoryActivityCalendar({
   const firstDayOfWeek = useAppSelector((x) => x.settings.firstDayOfWeek);
   const followsOthers = useAppSelector(selectFollowsOtherUsers);
 
-  const params = useMemo(() => ({ yearMonth: currentYearMonth, today }), [currentYearMonth, today]);
+  const own = useOwnHistory();
+  const params = useMemo(() => ({ yearMonth: currentYearMonth, today, own }), [currentYearMonth, today, own]);
   const { rows, crossesFeedHorizon } = useAppSelectorWhenFocusedWithArg(selectActivityMonth, params);
 
   const firstOfMonth = currentYearMonth.atDay(1);
@@ -93,7 +95,7 @@ export function HistoryActivityCalendar({
         >
           <View style={{ width: 3, borderRadius: 2, backgroundColor: colors.tertiary }} />
           <SurfaceText font="text-xs" color="onSurfaceVariant" style={{ flex: 1 }}>
-            {t('history.calendar.feed_horizon.message')}
+            {t('history.calendar.feed_horizon.body')}
           </SurfaceText>
         </View>
       )}

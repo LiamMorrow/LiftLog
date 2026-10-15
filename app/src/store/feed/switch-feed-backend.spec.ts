@@ -1,7 +1,16 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { applyFeedEffects } from '@/store/feed/effects';
-import { clearFeedState, createFeedIdentity } from '@/store/feed';
+import feedReducer, { clearFeedState, createFeedIdentity, resetFeedAccount, setIdentity } from '@/store/feed';
+import { combineReducers } from '@reduxjs/toolkit';
+import { createTestDb } from '@/utils/__test__/test-db';
+import { enqueueOutboxMessages } from '@/db/feed-outbox';
+import {
+  feedInboxSeenSchema,
+  feedOutboxSchema,
+  feedRevokedFollowSecretsSchema,
+  feedUnpublishedSessionsSchema,
+} from '@/db/schema';
 import { setBackendAssignment, switchFeedBackend } from '@/store/backends';
 import { FeedIdentity } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
@@ -11,7 +20,7 @@ function makeIdentity(): FeedIdentity {
   return new FeedIdentity(
     'user-id',
     'lookup',
-    { value: new Uint8Array([1]) },
+    { value: new Uint8Array([1]), algorithm: 'AES-GCM' },
     {
       publicKey: { spkiPublicKeyBytes: new Uint8Array([2]) },
       privateKey: { pkcs8PrivateKeyBytes: new Uint8Array([3]) },
@@ -90,5 +99,69 @@ describe('switchFeedBackend', () => {
 
     expect(feedIdentityService.deleteFeedIdentityAsync).not.toHaveBeenCalled();
     expect(testBed.getDispatchedAction(setBackendAssignment)).toBeDefined();
+  });
+});
+
+describe('clearFeedState', () => {
+  it('wipes the stored feed account, keeping only sessions still waiting to be published', async () => {
+    const db = await createTestDb();
+    enqueueOutboxMessages(db, [{ messageId: 'm1', recipientId: 'u1', type: 'Reaction', encryptedMessage: [] }]);
+    db.insert(feedRevokedFollowSecretsSchema).values({ secret: 'secret' }).run();
+    db.insert(feedInboxSeenSchema).values({ messageId: 'seen', seenAtMs: 0 }).run();
+    db.insert(feedUnpublishedSessionsSchema).values({ sessionId: 'session-1' }).run();
+    const testBed = createAddEffectTestBed({ services: { db } });
+    applyFeedEffects(testBed.addEffect);
+
+    await testBed.dispatchHandled(clearFeedState());
+
+    expect(db.select().from(feedOutboxSchema).all()).toEqual([]);
+    expect(db.select().from(feedRevokedFollowSecretsSchema).all()).toEqual([]);
+    expect(db.select().from(feedInboxSeenSchema).all()).toEqual([]);
+    expect(db.select().from(feedUnpublishedSessionsSchema).all()).toEqual([{ sessionId: 'session-1' }]);
+  });
+});
+
+describe('resetFeedAccount', () => {
+  function makeResetTestBed() {
+    const identity = makeIdentity();
+    const feedIdentityService = { deleteFeedIdentityAsync: vi.fn().mockResolvedValue(ApiResult.success()) };
+    const testBed = createAddEffectTestBed({
+      initialState: { feed: { identity: RemoteData.success(identity) } },
+      services: { feedIdentityService },
+      reducer: combineReducers({ feed: feedReducer }),
+    });
+    applyFeedEffects(testBed.addEffect);
+    return { testBed, feedIdentityService };
+  }
+
+  it('clears the account it deleted', async () => {
+    const { testBed } = makeResetTestBed();
+
+    await testBed.dispatchHandled(resetFeedAccount({ fromUserAction: true, createNewIdentity: false }));
+
+    testBed.getDispatchedAction(clearFeedState);
+  });
+
+  it('leaves alone an account restored while the old one was being deleted', async () => {
+    const { testBed, feedIdentityService } = makeResetTestBed();
+    const restored = new FeedIdentity(
+      'restored-id',
+      'lookup',
+      { value: new Uint8Array(), algorithm: 'AES-GCM' },
+      makeIdentity().rsaKeyPair,
+      'pw',
+      'Liam',
+      true,
+      true,
+      true,
+    );
+    feedIdentityService.deleteFeedIdentityAsync.mockImplementation(() => {
+      testBed.dispatch(setIdentity(RemoteData.success(restored)));
+      return Promise.resolve(ApiResult.success());
+    });
+
+    await testBed.dispatchHandled(resetFeedAccount({ fromUserAction: true, createNewIdentity: false }));
+
+    testBed.expectNotDispatched(clearFeedState);
   });
 });

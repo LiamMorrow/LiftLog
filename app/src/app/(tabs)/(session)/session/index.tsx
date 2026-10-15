@@ -52,6 +52,7 @@ export default function Index() {
       <Stack.Screen
         options={{
           title: session.blueprint.name,
+          headerTitleAlign: 'left',
         }}
       />
       <SessionMoreMenuComponent session={session} isActiveWorkout save={save} />

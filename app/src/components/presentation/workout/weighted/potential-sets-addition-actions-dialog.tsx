@@ -1,12 +1,12 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { PotentialSet } from '@/models/session-models';
 import { T } from '@tolgee/react';
-import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { Dialog, Portal, Text, TextInput } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
+import { useDerivedState } from '@/hooks/useDerivedState';
 
 interface PotentialSetAdditionalActionsDialogProps {
   open: boolean;
@@ -26,12 +26,9 @@ export default function PotentialSetAdditionalActionsDialog({
   const { colors } = useAppTheme();
   const originalReps = set?.set?.repsCompleted;
 
-  const [repCountText, setRepCountText] = useState<string>(originalReps?.toString() ?? '');
+  const [repCountText, setRepCountText] = useDerivedState(originalReps, (r) => r?.toString() ?? '');
   const parsedRepCount = Number(repCountText);
   const isValid = !repCountText || (Number.isInteger(parsedRepCount) && parsedRepCount >= 0);
-  useEffect(() => {
-    setRepCountText(originalReps?.toString() ?? '');
-  }, [originalReps]);
 
   const save = () => {
     if (!isValid) {

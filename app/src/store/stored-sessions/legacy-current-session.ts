@@ -8,7 +8,7 @@ import { KeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
 import { copyLogs, showSnackbar } from '@/store/app';
 import { selectPreferredWeightUnit } from '@/store/settings';
-import { putStoredSession, setActiveSessionId } from '@/store/stored-sessions';
+import { putStoredSession, setActiveSessionId, upsertStoredSessions } from '@/store/stored-sessions';
 import { AppDispatch, RootState } from '@/store/store';
 
 /**
@@ -41,7 +41,7 @@ export async function migrateLegacyCurrentSession(
     // An edit that was open when the app last closed. It shares its id with the row it came from, so
     // storing it preserves the user's work rather than duplicating it.
     if (sessions.historySession) {
-      dispatch(putStoredSession(sessions.historySession));
+      dispatch(upsertStoredSessions([sessions.historySession]));
     }
 
     await keyValueStore.removeItem(storageKey);

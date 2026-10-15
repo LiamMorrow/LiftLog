@@ -6,6 +6,7 @@ export enum ApiErrorType {
   Unauthorized = 2,
   RateLimited = 3,
   EncryptionError = 4,
+  BadRequest = 5,
 }
 
 export interface ApiError {
