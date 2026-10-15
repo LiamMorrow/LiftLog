@@ -3,20 +3,21 @@ import { Remote } from '@/components/presentation/foundation/remote';
 import { RepsBarChart } from '@/components/presentation/stats/reps-bar-chart';
 import SingleValueStatisticCard from '@/components/presentation/stats/single-value-statistic-card';
 import { SingleValueStatisticsGrid } from '@/components/presentation/stats/single-value-statistics-grid';
+import { StatCardWithTitle } from '@/components/presentation/stats/stat-card-with-title';
 import { TimePeriodSelector } from '@/components/presentation/stats/time-period-selector';
 import { TitledSection } from '@/components/presentation/stats/titled-section';
 import { StatisticBarChart } from '@/components/presentation/stats/statistic-bar-chart';
 import { StatisticLineChart } from '@/components/presentation/stats/statistic-line-chart';
 import { useLoadAxis, useRepsAxis } from '@/components/presentation/stats/quantity-axis';
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { fetchOverallStats, selectExerciseView, setOverallViewTime, WeightedExerciseStatistics } from '@/store/stats';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect } from 'expo-router';
 import { useLocalSearchParams, useRouter } from 'expo-router/build/hooks';
-import { ReactNode, useEffect } from 'react';
+import { useEffect } from 'react';
 import { View } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export default function ExpandedExercisePage() {
@@ -90,22 +91,6 @@ function LoadedStatsFilled({ stats }: { stats: WeightedExerciseStatistics }) {
         <Text style={{ textAlign: 'center' }}>{t('stats.exercise.reps_breakdown_sets_x_axis.label')}</Text>
       </StatCardWithTitle>
     </View>
-  );
-}
-
-function StatCardWithTitle(props: { title: string; children: ReactNode }) {
-  const { colors } = useAppTheme();
-  return (
-    <TitledSection title={props.title}>
-      <Card
-        mode="contained"
-        style={{
-          backgroundColor: colors.surfaceContainer,
-        }}
-      >
-        <Card.Content style={{ paddingVertical: spacing[8] }}>{props.children}</Card.Content>
-      </Card>
-    </TitledSection>
   );
 }
 
