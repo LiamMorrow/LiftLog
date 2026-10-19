@@ -50,8 +50,7 @@ Regenerate with `npm run json-schema`; don't hand-edit.
 - **Test:** `npm test` (Vitest watch) / `npm run test:coverage`. Runner is **Vitest**, not Jest - with
   jsdom, `@testing-library/react`, and fast-check for property tests.
 - **Typecheck:** `npm run typecheck` (`tsgo --noEmit`, the native-preview compiler - not plain `tsc`).
-- **Lint:** `npm run lint` (`oxlint && eslint .`). The oxc toolchain (oxlint/oxfmt) is primary; ESLint
-  runs only the react-compiler rule.
+- **Lint:** `npm run lint` (`oxlint`).
 - **Format:** `npm run format` (`oxfmt --write .`) / `npm run format:check`.
 - **E2E:** `npm run e2e` (Maestro; flows live in `app/.maestro/`).
 

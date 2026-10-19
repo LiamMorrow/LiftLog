@@ -1,7 +1,7 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { useHeaderInset } from '@/hooks/useHeaderInset';
 import { useScroll } from '@/hooks/useScrollListener';
-import { HeaderHeightContext } from 'expo-router/react-navigation';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { View, StyleProp, ViewStyle, Platform } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -30,8 +30,8 @@ export default function FullHeightScrollView({
   const insets = useSafeAreaInsets();
   const bottomInsetHeight = floatingBottomSize;
 
-  const headerHeight = useContext(HeaderHeightContext);
-  const topInsetHeight = modal ? (Platform.select({ ios: headerHeight }) ?? 0) : 0;
+  const headerInset = useHeaderInset();
+  const topInsetHeight = modal ? headerInset : 0;
 
   return (
     <SafeAreaView

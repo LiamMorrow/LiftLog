@@ -2,14 +2,13 @@ import Feed from '@/components/smart/feed';
 import { FeedFriends } from '@/components/smart/feed-friends';
 import { FeedMenu } from '@/components/smart/feed-menu';
 import { OwnHistoryProvider } from '@/components/smart/own-history-provider';
+import { useHeaderInset } from '@/hooks/useHeaderInset';
 import { ScrollProvider, useScroll, useScrollHeaderColor } from '@/hooks/useScrollListener';
 import { useAppSelector } from '@/store';
 import { selectIncomingFriendRequestCount } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
-import { HeaderHeightContext } from 'expo-router/react-navigation';
-import { useContext, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { useEffect, useState } from 'react';
 import { Tabs, TabScreen, TabsProvider } from 'react-native-paper-tabs';
 
 export default function FeedIndexPage() {
@@ -31,8 +30,7 @@ export default function FeedIndexPage() {
     setScrolled(!!tabScrolls[activeTabIndex]);
   }, [tabScrolls, activeTabIndex, setScrolled]);
 
-  const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
-  const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
+  const headerInset = useHeaderInset();
   return (
     <OwnHistoryProvider>
       <Stack.Screen options={{ title: t('feed.feed.title') }} />
@@ -41,7 +39,7 @@ export default function FeedIndexPage() {
         <Tabs
           tabHeaderStyle={{
             backgroundColor: headerColor,
-            paddingTop: topInsetHeight,
+            paddingTop: headerInset,
           }}
           style={{
             backgroundColor: 'transparent',
