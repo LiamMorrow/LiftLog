@@ -29,4 +29,25 @@ describe('fuzzyMatchScore', () => {
   it('ignores accents when matching', () => {
     expect(fuzzyMatchScore('epee', 'Épée')).not.toBeNull();
   });
+
+  it('scores a lift on the word the query names, not an earlier stray letter', () => {
+    const library = [
+      'Barbell Bench Press - Medium Grip',
+      'Bench Sprint',
+      'Bench Dips',
+      'Bench Jump',
+      'Flat Bench Leg Pull-In',
+    ];
+    const ranked = library
+      .map((name) => ({ name, score: fuzzyMatchScore('bench p', name)! }))
+      .sort((a, b) => b.score - a.score);
+
+    expect(ranked[0]?.name).toBe('Barbell Bench Press - Medium Grip');
+  });
+
+  it('ranks a whole-word match above the same letters inside a word', () => {
+    expect(fuzzyMatchScore('row', 'Barbell Row')!).toBeGreaterThan(
+      fuzzyMatchScore('row', 'Arrows')!,
+    );
+  });
 });

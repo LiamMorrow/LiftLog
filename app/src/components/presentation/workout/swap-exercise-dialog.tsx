@@ -3,13 +3,19 @@ import { fuzzyMatchScore } from '@/components/presentation/workout-editor/exerci
 import { spacing } from '@/hooks/useAppTheme';
 import { relatedExercises } from '@/models/related-exercises';
 import { useAppSelector } from '@/store';
-import { selectExercises } from '@/store/stored-sessions';
+import { selectExercises, selectSessions } from '@/store/stored-sessions';
 import { useTranslate } from '@tolgee/react';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { List, TextInput } from 'react-native-paper';
 
 const shown = 15;
+// The library has 21 bench presses, so a search can match more lifts than
+// fit on a screen. Typed searches list this many; the dialog scrolls.
+const searchShown = 60;
+// Enough to lift a lift already in the log above unlogged variants that
+// match the same letters, without lifting a poor match over a good one.
+const loggedBonus = 3;
 
 /**
  * Picks a lift to swap in: the closest library matches for the planned lift,
@@ -23,7 +29,17 @@ export function SwapExerciseDialog(props: {
   const { t } = useTranslate();
   const exercises = useAppSelector(selectExercises);
   const [search, setSearch] = useState('');
+  const sessions = useAppSelector(selectSessions);
   const library = useMemo(() => Object.values(exercises), [exercises]);
+  const logged = useMemo(
+    () =>
+      new Set(
+        sessions.flatMap((s) =>
+          s.recordedExercises.map((x) => x.blueprint.name.toLowerCase()),
+        ),
+      ),
+    [sessions],
+  );
 
   const options = useMemo(() => {
     if (!props.exerciseName) {
@@ -37,15 +53,24 @@ export function SwapExerciseDialog(props: {
       });
     }
     return library
-      .map((x) => ({ x, score: fuzzyMatchScore(search, x.name) }))
+      .map((x) => {
+        const score = fuzzyMatchScore(search, x.name);
+        return {
+          x,
+          score:
+            score === null
+              ? null
+              : score + (logged.has(x.name.toLowerCase()) ? loggedBonus : 0),
+        };
+      })
       .filter(
         (m): m is { x: (typeof library)[number]; score: number } =>
           m.score !== null,
       )
       .sort((a, b) => b.score - a.score)
-      .slice(0, shown)
+      .slice(0, searchShown)
       .map(({ x }) => x);
-  }, [props.exerciseName, search, library]);
+  }, [props.exerciseName, search, library, logged]);
 
   const close = () => {
     setSearch('');
