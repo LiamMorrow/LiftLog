@@ -11,6 +11,12 @@ function getLocale() {
 export function localeParseBigNumber(numStr: string): BigNumber {
   const locale = getLocale();
   try {
+    // In comma-decimal locales, fromFormat treats a typed dot as a grouping
+    // separator. Accept a single dot as decimal input from numeric keyboards.
+    const input = numStr.trim();
+    if (locale.decimalSeparator === ',' && /^[+-]?(?:\d+)?\.\d+$/.test(input)) {
+      return new BigNumber(input);
+    }
     return BigNumber.fromFormat(numStr, {
       decimalSeparator: locale.decimalSeparator ?? '.',
       groupSeparator: locale.digitGroupingSeparator ?? ',',
