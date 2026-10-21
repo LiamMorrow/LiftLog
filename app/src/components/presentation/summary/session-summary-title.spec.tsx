@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import type { Session } from '@/models/session-models';
 import SessionSummaryTitle from './session-summary-title';
 
-const { layout } = vi.hoisted(() => ({ layout: { value: {} as Record<string, unknown> } }));
+const { layout } = vi.hoisted(() => ({ layout: { value: {} } }));
 
 vi.mock('react-native', async () => {
   const { createElement } = await import('react');
