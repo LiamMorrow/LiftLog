@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest';
-import { renderToStaticMarkup } from 'react-dom/server';
+import { render } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import type { Session } from '@/models/session-models';
 import SessionSummaryTitle from './session-summary-title';
@@ -33,9 +33,9 @@ it('renders the complete workout name without clipping the title container (#914
     blueprint: { name: 'GTP 32b UK' },
     date: { year: () => 2026 },
   } as unknown as Session;
-  const html = renderToStaticMarkup(<SessionSummaryTitle session={session} />);
+  const { container } = render(<SessionSummaryTitle session={session} />);
 
-  expect(html).toContain('GTP 32b UK');
+  expect(container.textContent).toContain('GTP 32b UK');
   expect(layout.value).toMatchObject({ flexShrink: 1, minWidth: 0, alignItems: 'stretch' });
   expect(layout.value).not.toHaveProperty('overflow', 'hidden');
 });
