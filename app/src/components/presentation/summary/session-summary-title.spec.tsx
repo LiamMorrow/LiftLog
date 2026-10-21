@@ -33,9 +33,9 @@ it('renders the complete workout name without clipping the title container (#914
     blueprint: { name: 'GTP 32b UK' },
     date: { year: () => 2026 },
   } as unknown as Session;
-  const { container } = render(<SessionSummaryTitle session={session} />);
+  const { getByText } = render(<SessionSummaryTitle session={session} />);
 
-  expect(container.textContent).toContain('GTP 32b UK');
+  expect(getByText('GTP 32b UK')).toBeTruthy();
   expect(layout.value).toMatchObject({ flexShrink: 1, minWidth: 0, alignItems: 'stretch' });
   expect(layout.value).not.toHaveProperty('overflow', 'hidden');
 });
