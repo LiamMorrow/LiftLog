@@ -9,7 +9,7 @@ import { RecordedWeightedExercise } from '@/models/session-models';
 import { formatCardioTarget } from '@/utils/format-cardio-target';
 import { formatDistance } from '@/utils/distance';
 import { formatDuration } from '@/utils/format-duration';
-import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
 import { T, useTranslate } from '@tolgee/react';
 import { LegendList } from '@legendapp/list';
 import { StyleProp, View, ViewStyle } from 'react-native';
@@ -111,7 +111,7 @@ function CardioSetTiles(props: { set: RecordedCardioExerciseSet }) {
         <CardioValueTile
           isReadonly
           value={set.incline}
-          format={localeFormatBigNumber}
+          format={localeDisplayFormatBigNumber}
           label={t('exercise.incline.label')}
         />
       )}
@@ -119,7 +119,7 @@ function CardioSetTiles(props: { set: RecordedCardioExerciseSet }) {
         <CardioValueTile
           isReadonly
           value={set.resistance}
-          format={localeFormatBigNumber}
+          format={localeDisplayFormatBigNumber}
           label={t('exercise.resistance.label')}
         />
       )}

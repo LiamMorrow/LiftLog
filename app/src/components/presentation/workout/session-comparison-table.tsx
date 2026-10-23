@@ -4,7 +4,7 @@ import { RecordedWeightedExercise, Session } from '@/models/session-models';
 import { MovementKey } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { formatDuration } from '@/utils/format-date';
-import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
 import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { View } from 'react-native';
@@ -399,7 +399,7 @@ function ComparisonBadge(props: { current: Weight; previous: Weight | undefined 
           fontVariant: ['tabular-nums'],
         }}
       >
-        +{localeFormatBigNumber(increasePercentage, 0)}%
+        +{localeDisplayFormatBigNumber(increasePercentage, 0)}%
       </Text>
     </View>
   ) : null;

@@ -6,7 +6,7 @@ import { ViewStyle } from 'react-native';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { formatTimeSpan, TimerPane, TimerSegment } from '@/components/presentation/workout/timer-pane';
 import { CardioTimerControls } from '@/components/presentation/workout/cardio/cardio-timer-controls';
-import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
 import { getShortUnit, toMetres } from '@/utils/unit';
 import { useTranslate } from '@tolgee/react';
 import { ColorChoice } from '@/hooks/useAppTheme';
@@ -58,11 +58,13 @@ export function CardioTimer({ set, onPersist, onStop, style }: CardioTimerProps)
         const reached = !!doneMetres && doneMetres.gte(targetMetres);
         const progress =
           doneMetres && targetMetres.gt(0) ? Math.min(1, doneMetres.dividedBy(targetMetres).toNumber()) : 0;
-        const done = set.distance ? localeFormatBigNumber(set.distance.value) + getShortUnit(set.distance.unit) : '-';
+        const done = set.distance
+          ? localeDisplayFormatBigNumber(set.distance.value) + getShortUnit(set.distance.unit)
+          : '-';
         return {
           reached,
           time: formatTimeSpan(elapsedMs),
-          status: `${done} / ${localeFormatBigNumber(target.value.value) + getShortUnit(target.value.unit)}`,
+          status: `${done} / ${localeDisplayFormatBigNumber(target.value.value) + getShortUnit(target.value.unit)}`,
           accent: reached ? 'green' : 'onSurfaceVariant',
           segments: [
             {

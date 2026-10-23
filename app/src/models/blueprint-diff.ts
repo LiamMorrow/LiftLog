@@ -19,7 +19,7 @@ import {
 import { TranslationKey, UseTranslateResult } from '@tolgee/react';
 import { uuid } from '@/utils/uuid';
 import { EmptySession } from '@/models/session-models';
-import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
 
 // ============================================================================
 // Change Types
@@ -1188,7 +1188,7 @@ function stringifyProgression(t: UseTranslateResult['t'], progression: Progressi
 }
 
 function stringifyProgressionRule(t: UseTranslateResult['t'], rule: ProgressionRule): string {
-  const amount = localeFormatBigNumber(rule.step);
+  const amount = localeDisplayFormatBigNumber(rule.step);
   const axis = t(
     rule.axis === 'reps' ? 'exercise.progression.axis.reps.label' : 'exercise.progression.axis.load.label',
   );
@@ -1202,7 +1202,7 @@ function stringifyProgressionRule(t: UseTranslateResult['t'], rule: ProgressionR
         });
   return rule.ceiling === undefined
     ? move
-    : t('plan.diff.progression_rule_ceiling.label', { move, ceiling: localeFormatBigNumber(rule.ceiling) });
+    : t('plan.diff.progression_rule_ceiling.label', { move, ceiling: localeDisplayFormatBigNumber(rule.ceiling) });
 }
 
 function stringifyIncreaseStrategy(t: UseTranslateResult['t'], strategy: IncreaseStrategy) {

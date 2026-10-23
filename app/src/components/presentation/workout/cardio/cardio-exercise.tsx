@@ -2,7 +2,7 @@ import { RecordedCardioExercise, RecordedCardioExerciseSet } from '@/models/sess
 import ExerciseSection from '@/components/presentation/workout/exercise-section';
 import { CardioTarget, Distance, DistanceUnit } from '@/models/blueprint-models';
 import { T, useTranslate } from '@tolgee/react';
-import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
 import { Duration, OffsetDateTime } from '@js-joda/core';
 import { useEffect, useState } from 'react';
 
@@ -143,7 +143,7 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
             isReadonly={isReadonly}
             value={set.incline}
             emptyValue={BigNumber(0)}
-            format={localeFormatBigNumber}
+            format={localeDisplayFormatBigNumber}
             label={t('exercise.incline.label')}
             testID="cardio-incline-tile"
             onSave={(incline) => updateSet((s) => s.with({ incline }))}
@@ -156,7 +156,7 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
             isReadonly={isReadonly}
             value={set.resistance}
             emptyValue={BigNumber(0)}
-            format={localeFormatBigNumber}
+            format={localeDisplayFormatBigNumber}
             label={t('exercise.resistance.label')}
             testID="cardio-resistance-tile"
             onSave={(resistance) => updateSet((s) => s.with({ resistance }))}
@@ -249,7 +249,7 @@ function CardioDistanceTile(props: {
       isReadonly={props.isReadonly}
       value={props.distance}
       emptyValue={props.emptyValue}
-      format={(distance) => localeFormatBigNumber(distance.value) + getShortUnit(distance.unit)}
+      format={(distance) => localeDisplayFormatBigNumber(distance.value) + getShortUnit(distance.unit)}
       label={t('exercise.distance.label')}
       testID="cardio-distance-tile"
       onSave={props.onSave}
@@ -301,7 +301,7 @@ function CardioTargetHandler(props: { target: CardioTarget }) {
       </Text>
       <Text variant="bodyLarge" style={{ color: colors.primary }}>
         {props.target.type === 'distance'
-          ? localeFormatBigNumber(props.target.value.value) + getShortUnit(props.target.value.unit)
+          ? localeDisplayFormatBigNumber(props.target.value.value) + getShortUnit(props.target.value.unit)
           : formatDuration(props.target.value)}
       </Text>
     </View>
