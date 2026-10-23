@@ -362,7 +362,7 @@ describe('migrator', () => {
       });
 
       // The type-only `expectTypeOf<T>()` form is used so nothing dereferences the phantom
-      // `$finalType`/`$anyType` at runtime. These are checked by `tsc`/`tsgo` at typecheck time;
+      // `$finalType`/`$anyType` at runtime. These are checked by `tsc` at typecheck time;
       // a regression in the array-vs-single-vs-optional derivation is a compile error.
       it('derives an array field as an array of the child type', () => {
         expectTypeOf<(typeof toolboxMigrations.$finalType)['widgets']>().toEqualTypeOf<WidgetV3[]>();

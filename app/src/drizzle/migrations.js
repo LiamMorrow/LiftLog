@@ -17,6 +17,7 @@ import m0012 from './0012_feed_inbox_delivery.sql';
 import m0013 from './0013_feed_friend.sql';
 import m0014 from './0014_drop_follow_tables.sql';
 import m0015 from './0015_feed_friend_repair.sql';
+import m0016 from './0016_personal_record_summary.sql';
 
   export default {
     journal,
@@ -36,7 +37,8 @@ m0011,
 m0012,
 m0013,
 m0014,
-m0015
+m0015,
+m0016
     }
   }
   

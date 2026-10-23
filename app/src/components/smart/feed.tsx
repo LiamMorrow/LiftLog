@@ -11,7 +11,7 @@ import { getFeedProfileEditorHref } from '@/components/smart/feed-profile-editor
 import { FeedWeekStrip } from '@/components/smart/feed-week-strip';
 import { ReactionBar } from '@/components/smart/reaction-bar';
 import { ReactionSummary } from '@/components/smart/reaction-summary';
-import { FeedPrBadges, HistoryPrBadges } from '@/components/smart/pr-badges';
+import { PrStrip, useEventRecords } from '@/components/smart/pr-badges';
 import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
 import { useFeedTimeline } from '@/hooks/useFeedTimeline';
@@ -166,6 +166,7 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
   const { t } = useTranslate();
   const { push } = useRouter();
   const isOwnItem = props.feedItem.userId === ownUserId;
+  const records = useEventRecords(props.feedItem.eventId, isOwnItem);
   switch (props.feedItem.type) {
     case 'SessionUserEvent': {
       const authorName = isOwnItem ? identity?.name : friends[props.feedItem.userId]?.name;
@@ -191,13 +192,9 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
                 />
               }
               mainContent={
-                <View style={{ gap: spacing[2] }}>
+                <View style={{ gap: spacing[3] }}>
                   <SessionSummary session={props.feedItem.session} isFilled showWeight />
-                  {isOwnItem ? (
-                    <HistoryPrBadges sessionId={props.feedItem.eventId} />
-                  ) : (
-                    <FeedPrBadges eventId={props.feedItem.eventId} />
-                  )}
+                  <PrStrip {...records} />
                 </View>
               }
             />

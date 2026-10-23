@@ -10,7 +10,7 @@ import {
   readEarliestSessionDate,
   readExerciseHistory,
   readLatestExercises,
-  readPersonalRecords,
+  readPerformances,
   readPreviousComparableSession,
   readPreviousExercises,
   readSessions,
@@ -32,6 +32,7 @@ import { exportPlainText, settingsReducer } from '@/store/settings';
 import { addExportPlaintextEffects } from '@/store/settings/export-plaintext-effects';
 import { GranularStatisticView } from '@/store/stats';
 import { calculateStats } from '@/store/stats/calculate-stats';
+import { PersonalRecord, personalRecordsOf } from '@/store/stats/personal-records';
 import { getSessionReferenceTime } from '@/store/stored-sessions';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { toRecord } from '@/utils/reduce';
@@ -40,10 +41,9 @@ export const regressionBackupPath = resolve(__dirname, 'export.liftlogbackup.202
 
 export type FixtureSource = 'migrated' | 'restored';
 
-export interface PersonalRecordKg {
+export interface SessionPersonalRecord {
   sessionId: string;
-  exerciseName: string;
-  oneRepMaxKg: number;
+  record: PersonalRecord;
 }
 
 export interface OwnHistorySummary {
@@ -63,7 +63,7 @@ export interface RegressionFixture {
   previousExercises(session: Session): Record<ProgressionKey, RecordedExercise | undefined>;
   exerciseHistory(movementKey: MovementKey): RecordedExercise[];
   previousComparableSession(session: Session): Session | undefined;
-  personalRecords(): PersonalRecordKg[];
+  personalRecords(): SessionPersonalRecord[];
   ownHistory(firstDayOfWeek: DayOfWeek, today: LocalDate): OwnHistorySummary;
   allTimeStats(today: LocalDate): GranularStatisticView;
   upcomingSessions(programId: string, count: number): Promise<Session[]>;
@@ -157,11 +157,14 @@ export async function openRegressionFixture(source: FixtureSource): Promise<Regr
         before: getSessionReferenceTime(session),
       }),
 
-    personalRecords: () => readPersonalRecords(db),
+    personalRecords: () =>
+      [...personalRecordsOf(readPerformances(db))].flatMap(([sessionId, records]) =>
+        records.map((record) => ({ sessionId, record })),
+      ),
 
     ownHistory: (firstDayOfWeek, today) => {
       const startedSessionVolumes = readStartedSessionVolumes(db);
-      const history = ownHistoryOf(startedSessionVolumes, readPersonalRecords(db), firstDayOfWeek, today);
+      const history = ownHistoryOf(startedSessionVolumes, readPerformances(db), firstDayOfWeek, today);
       return {
         startedSessionVolumes: startedSessionVolumes.map(({ id, volumeKg }) => ({ id, volumeKg })),
         days: history.days,

@@ -5,7 +5,7 @@ import {
   readEarliestSessionDate,
   readExistingSessionIds,
   readLatestExercises,
-  readPersonalRecords,
+  readPerformances,
   readPreviousComparableSession,
   readExerciseHistory,
   readPreviousExercises,
@@ -32,6 +32,8 @@ import {
   Session,
 } from '@/models/session-models';
 import {
+  emptyPotentialSet,
+  filledPotentialSet,
   makeCardioBlueprint,
   makeRecordedExercise,
   makeSession,
@@ -41,7 +43,7 @@ import {
 import { SessionGenerator } from '@/models/storage/generators';
 import { TemporalComparer } from '@/models/comparers';
 import { sessionVolume } from '@/store/activity/volume';
-import { findPersonalRecords } from '@/store/stats/personal-records';
+import { findPersonalRecords, performancesOf, PersonalRecord, personalRecordsOf } from '@/store/stats/personal-records';
 import { getSessionReferenceTime } from '@/store/stored-sessions';
 import { DatabaseMigrationService } from '@/services/database-migration-service';
 import { Weight } from '@/models/weight';
@@ -564,6 +566,74 @@ describe('aggregating effective weight in SQL', () => {
     .uniqueArray(SessionGenerator, { selector: (x) => x.id, maxLength: 4 })
     .map((sessions) => sessions.map(canonical));
 
+  const movements = [
+    { name: 'Squat', resistance: 'external' },
+    { name: 'Pull up', resistance: 'bodyweight' },
+    { name: 'Crunch', resistance: 'none' },
+  ] as const;
+  const loads = [0, 20, 22.5, -10].map((kg) => new Weight(kg, 'kilograms')).concat(new Weight(50, 'pounds'));
+  const comparableSessions = fc
+    .uniqueArray(
+      fc.record({
+        id: fc.uuid(),
+        minute: fc.integer({ min: 0, max: 5 }),
+        bodyweight: fc.option(fc.constantFrom(70, 80), { nil: undefined }),
+        exercises: fc.array(
+          fc.record({
+            movement: fc.constantFrom(...movements),
+            sets: fc.array(
+              fc.record({
+                reps: fc.option(fc.integer({ min: 0, max: 12 }), { nil: undefined }),
+                load: fc.constantFrom(...loads),
+              }),
+              { minLength: 1, maxLength: 3 },
+            ),
+          }),
+          { maxLength: 3 },
+        ),
+      }),
+      { selector: (x) => x.id, maxLength: 6 },
+    )
+    .map((generated) =>
+      generated.map(({ id, minute, bodyweight, exercises }) => {
+        const recorded = exercises.map(({ movement, sets }) => {
+          const blueprint = makeWeightedBlueprint({ ...movement, sets: sets.length });
+          return new RecordedWeightedExercise(
+            blueprint,
+            sets.map(({ reps, load }) =>
+              reps === undefined ? emptyPotentialSet(load) : filledPotentialSet(reps, tickAt(9, minute), load),
+            ),
+            undefined,
+          );
+        });
+        return canonical(
+          new Session(
+            id,
+            new SessionBlueprint(
+              'Workout',
+              recorded.map((x) => x.blueprint),
+              '',
+            ),
+            recorded,
+            LocalDate.of(2025, 4, 5),
+            bodyweight === undefined ? undefined : new Weight(bodyweight, 'kilograms'),
+            undefined,
+          ),
+        );
+      }),
+    );
+  const describeRecords = (recordsBySession: Map<string, PersonalRecord[]>) =>
+    [...recordsBySession]
+      .flatMap(([id, records]) =>
+        records.map((x) =>
+          x.kind === 'heaviest' || x.kind === 'oneRepMax'
+            ? `${id}:${x.exerciseOrd}:${x.kind}:${x.value.value.toNumber()}:${x.previous.value.toNumber()}`
+            : `${id}:${x.exerciseOrd}:${x.kind}:${x.value}:${x.previous}:${x.weight.value.toNumber()}`,
+        ),
+      )
+      .sort();
+  const sessionsWithRecords = () => [...personalRecordsOf(readPerformances(db)).keys()];
+
   beforeEach(async () => {
     db = await createDb();
   });
@@ -585,20 +655,30 @@ describe('aggregating effective weight in SQL', () => {
     );
   });
 
-  it('finds the same records as findPersonalRecords', () => {
+  const byCompletion = (a: Session, b: Session) =>
+    TemporalComparer(getSessionReferenceTime(a), getSessionReferenceTime(b)) || (a.id < b.id ? -1 : 1);
+
+  it('reads the same performances as performancesOf, oldest first', () => {
     fc.assert(
-      fc.property(generatedSessions, (sessions) => {
+      fc.property(comparableSessions, (sessions) => {
         store(...sessions);
         try {
-          const expected = findPersonalRecords(
-            [...sessions].sort((a, b) => TemporalComparer(getSessionReferenceTime(a), getSessionReferenceTime(b))),
-          );
+          expect(readPerformances(db)).toEqual([...sessions].sort(byCompletion).flatMap(performancesOf));
+        } finally {
+          forget(...sessions);
+        }
+      }),
+    );
+  });
 
-          expect(
-            readPersonalRecords(db)
-              .map((x) => `${x.sessionId}:${x.exerciseName}`)
-              .sort(),
-          ).toEqual([...expected].flatMap(([id, records]) => records.map((x) => `${id}:${x.exerciseName}`)).sort());
+  it('finds the same records as findPersonalRecords', () => {
+    fc.assert(
+      fc.property(comparableSessions, (sessions) => {
+        store(...sessions);
+        try {
+          expect(describeRecords(personalRecordsOf(readPerformances(db)))).toEqual(
+            describeRecords(findPersonalRecords([...sessions].sort(byCompletion))),
+          );
         } finally {
           forget(...sessions);
         }
@@ -629,17 +709,17 @@ describe('aggregating effective weight in SQL', () => {
     db.transaction((tx) => setActiveSession(tx, inProgress));
 
     expect(readStartedSessionVolumes(db).map((x) => x.id)).toEqual([before.id]);
-    expect(readPersonalRecords(db)).toEqual([]);
+    expect(sessionsWithRecords()).toEqual([]);
   });
 
   it('follows a session that is written again', () => {
     const before = sessionOf('Push', [squatAt(tickAt(9, 0), 100)]);
     const after = sessionOf('Push', [squatAt(tickAt(10, 0), 110)]);
     store(before, after);
-    expect(readPersonalRecords(db).map((x) => x.sessionId)).toEqual([after.id]);
+    expect(sessionsWithRecords()).toEqual([after.id]);
 
     store(after.with({ recordedExercises: [squatAt(tickAt(10, 0), 90)] }));
-    expect(readPersonalRecords(db)).toEqual([]);
+    expect(sessionsWithRecords()).toEqual([]);
     closeTo(new Map(readStartedSessionVolumes(db).map((x) => [x.id, x.volumeKg])).get(after.id), 900);
 
     store(after.with({ recordedExercises: [makeRecordedExercise(makeWeightedBlueprint(), [undefined])] }));

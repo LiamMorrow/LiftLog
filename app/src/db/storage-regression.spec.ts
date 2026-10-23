@@ -15,6 +15,7 @@ import { AnyVersionSessionJSON } from '@/models/storage/versions/any';
 import { sessionMigrations } from '@/models/storage/versions/migrations';
 import { Weight } from '@/models/weight';
 import { sessionVolume } from '@/store/activity';
+import { findPersonalRecords, PersonalRecord } from '@/store/stats/personal-records';
 import { getSessionReferenceTime } from '@/store/stored-sessions';
 import {
   FixtureSource,
@@ -72,6 +73,14 @@ function plain(value: unknown): unknown {
     return Object.fromEntries(Object.entries(value).map(([key, field]) => [key, plain(field)]));
   }
   return value;
+}
+
+function describeRecord(record: PersonalRecord): string {
+  const amount =
+    record.kind === 'heaviest' || record.kind === 'oneRepMax'
+      ? `${rounded(record.value.value.toNumber())}kg from ${rounded(record.previous.value.toNumber())}kg`
+      : `${record.value} from ${record.previous} at ${rounded(record.weight.value.toNumber())}kg`;
+  return `#${record.exerciseOrd} ${record.exerciseName} ${record.kind} ${amount}`;
 }
 
 function describeExercise(exercise: RecordedExercise | undefined): string {
@@ -178,9 +187,24 @@ for (const source of ['migrated', 'restored'] satisfies FixtureSource[]) {
       await matchesSnapshot(
         fixture
           .personalRecords()
-          .sort((a, b) => a.sessionId.localeCompare(b.sessionId) || a.exerciseName.localeCompare(b.exerciseName))
-          .map((record) => `${short(record.sessionId)} ${record.exerciseName} ${rounded(record.oneRepMaxKg)}kg`),
+          .map(({ sessionId, record }) => `${short(sessionId)} ${describeRecord(record)}`)
+          .sort(),
         'personal-records',
+      );
+    });
+
+    it('finds the same personal records in SQL as findPersonalRecords', () => {
+      const finished = sessionsInOrder.filter((session) => session.id !== fixture.activeSessionId);
+
+      expect(
+        fixture
+          .personalRecords()
+          .map(({ sessionId, record }) => `${sessionId} ${describeRecord(record)}`)
+          .sort(),
+      ).toEqual(
+        [...findPersonalRecords(finished)]
+          .flatMap(([sessionId, records]) => records.map((record) => `${sessionId} ${describeRecord(record)}`))
+          .sort(),
       );
     });
 

@@ -1,6 +1,6 @@
 import migrations from '@/drizzle/migrations';
 import { sessionLegacySchema } from '@/db/schema';
-import { readPersonalRecords, readSessions, readStartedSessionVolumes } from '@/db/sessions';
+import { readPerformances, readSessions, readStartedSessionVolumes } from '@/db/sessions';
 import { Rest } from '@/models/blueprint-models';
 import { RecordedCardioExercise, Session } from '@/models/session-models';
 import {
@@ -13,6 +13,7 @@ import {
 import { Weight } from '@/models/weight';
 import { migrateDatabase, type MigrationBundle } from '@/services/database-migration-service';
 import { jsMigrations } from '@/services/js-migrations';
+import { personalRecordsOf } from '@/store/stats/personal-records';
 import { sql } from 'drizzle-orm';
 import { drizzle, type ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { openDatabaseAsync } from 'expo-sqlite';
@@ -103,6 +104,10 @@ describe('0011_session_summary', () => {
         [later.id, 550],
       ]),
     );
-    expect(readPersonalRecords(db).map((x) => `${x.sessionId}:${x.exerciseName}`)).toEqual([`${later.id}:Squat`]);
+    expect(
+      [...personalRecordsOf(readPerformances(db))].flatMap(([id, records]) =>
+        records.map((x) => `${id}:${x.exerciseName}:${x.kind}`),
+      ),
+    ).toEqual([`${later.id}:Squat:heaviest`, `${later.id}:Squat:oneRepMax`]);
   });
 });

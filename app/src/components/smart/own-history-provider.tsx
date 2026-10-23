@@ -1,4 +1,4 @@
-import { readPersonalRecords, readStartedSessionVolumes } from '@/db/sessions';
+import { readPerformances, readStartedSessionVolumes } from '@/db/sessions';
 import { useSessionsQuery } from '@/hooks/useSessionsQuery';
 import { useToday } from '@/hooks/useToday';
 import { useAppSelector } from '@/store';
@@ -15,7 +15,7 @@ export function OwnHistoryProvider({ children }: { children: ReactNode }) {
   const today = useToday();
   const firstDayOfWeek = useAppSelector((x) => x.settings.firstDayOfWeek);
   const ownHistory = useSessionsQuery(
-    (db) => ownHistoryOf(readStartedSessionVolumes(db), readPersonalRecords(db), firstDayOfWeek, today),
+    (db) => ownHistoryOf(readStartedSessionVolumes(db), readPerformances(db), firstDayOfWeek, today),
     `${firstDayOfWeek.toString()}:${today.toString()}`,
   );
 

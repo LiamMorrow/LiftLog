@@ -103,6 +103,10 @@ export const recordedExercisesSchema = sqliteTable(
     plannedSets: text({ mode: 'json' }).$type<PlannedSetJSON[]>(),
     progression: text({ mode: 'json' }).$type<ProgressionRuleJSON[]>(),
     bestOneRepMaxKg: real(),
+    topWeightKg: real(),
+    workingWeightKg: real(),
+    totalReps: integer(),
+    bestSetReps: integer(),
   },
   (table) => [
     primaryKey({ columns: [table.sessionId, table.ord] }),

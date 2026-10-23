@@ -230,9 +230,9 @@ A session is spread over four tables, so its history can be queried in SQL:
     `readExerciseHistory` (every performance of one `movementKey`) for the exercise history sheet;
   - `readSessionToContinueFrom` and `readLatestExercises` (the most recently completed performance per
     `progressionKey`), which `SessionService` builds upcoming sessions from;
-  - `readStartedSessionVolumes` and `readPersonalRecords`, which read the whole history's summaries for
+  - `readStartedSessionVolumes` and `readPerformances`, which read the whole history's summaries for
     the activity views. Each one has a spec that checks it against the JS it replaces (`sessionVolume`,
-    `findPersonalRecords`) over generated sessions.
+    `performancesOf`) over generated sessions.
 
   It maps through `SessionJSON`, so `toJSON` / `fromJSON` stay the source of truth for the shape.
 

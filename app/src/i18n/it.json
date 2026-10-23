@@ -512,7 +512,6 @@
   "feed.you.label": "Tu",
   "feed.cheers.from.message": "Acclamato da {names}",
   "feed.cheers.private.explanation": "Solo tu puoi vedere chi ha acclamato il tuo allenamento.",
-  "feed.pr_badge.label": "Migliore {exercise} in 90 giorni",
   "feed.requests.title": "Richieste",
   "feed.wants_to_follow_you.subtitle": "Vuole seguirti",
   "feed.following_back.label": "Vi seguite a vicenda",
@@ -565,6 +564,5 @@
   "exercise.level.intermediate": "Intermedio",
   "exercise.mechanic.compound": "Composto",
   "exercise.mechanic.isolation": "Isolamento",
-  "cardio_timer.status.working": "Allenamento",
-  "history.pr_badge.label": "Migliore di sempre {exercise}"
+  "cardio_timer.status.working": "Allenamento"
 }

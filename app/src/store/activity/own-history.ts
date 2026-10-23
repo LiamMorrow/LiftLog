@@ -1,10 +1,9 @@
 import { DayOfWeek, LocalDate } from '@js-joda/core';
-import { PersonalRecordRow, SessionVolume } from '@/db/sessions';
-import { Weight } from '@/models/weight';
+import { SessionVolume } from '@/db/sessions';
 import { VolumeScale } from '@/store/activity/activity-types';
 import { calculateStreak, StreakStats } from '@/store/activity/streak';
 import { volumeScaleOf } from '@/store/activity/volume';
-import { PersonalRecord } from '@/store/stats/personal-records';
+import { Performance, PersonalRecord, personalRecordsOf } from '@/store/stats/personal-records';
 
 export interface DayActivity {
   sessionCount: number;
@@ -26,7 +25,7 @@ export interface OwnHistory {
 
 export function ownHistoryOf(
   startedSessions: SessionVolume[],
-  records: PersonalRecordRow[],
+  performances: Performance[],
   firstDayOfWeek: DayOfWeek,
   today: LocalDate,
 ): OwnHistory {
@@ -37,14 +36,6 @@ export function ownHistoryOf(
     days.set(key, { sessionCount: (day?.sessionCount ?? 0) + 1, volume: (day?.volume ?? 0) + session.volumeKg });
   }
 
-  const personalRecords = new Map<string, PersonalRecord[]>();
-  for (const record of records) {
-    personalRecords.set(record.sessionId, [
-      ...(personalRecords.get(record.sessionId) ?? []),
-      { exerciseName: record.exerciseName, oneRepMax: new Weight(record.oneRepMaxKg, 'kilograms') },
-    ]);
-  }
-
   return {
     days,
     volumeScale: startedSessions.length ? volumeScaleOf(startedSessions.map((x) => x.volumeKg)) : undefined,
@@ -53,6 +44,6 @@ export function ownHistoryOf(
       firstDayOfWeek,
       today,
     ),
-    personalRecords,
+    personalRecords: personalRecordsOf(performances),
   };
 }

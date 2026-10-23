@@ -7,7 +7,7 @@ import { useSessionsQuery } from '@/hooks/useSessionsQuery';
 import { Href } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export function getExerciseHistoryHref(blueprint: ExerciseBlueprint): Href {
+export function getExerciseHistoryHref(blueprint: Pick<ExerciseBlueprint, 'name' | 'type'>): Href {
   return `/exercise-history?name=${encodeURIComponent(blueprint.name)}&type=${blueprint.type}`;
 }
 

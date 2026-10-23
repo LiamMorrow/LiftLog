@@ -9,6 +9,7 @@ import { MovementKey, ProgressionKey } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
 import { freeformSessionName, fromRecordedExerciseJSON, RecordedExercise, Session } from '@/models/session-models';
 import { Weight } from '@/models/weight';
+import type { Performance } from '@/store/stats/personal-records';
 import {
   CardioExerciseSetBlueprintJSON,
   CardioTargetJSON,
@@ -56,10 +57,11 @@ type CardioSetRow = typeof cardioSetsSchema.$inferSelect;
 
 const summaryColumns = ['volumeKg', 'lastCompletedAtMs'] as const;
 type SummaryColumn = (typeof summaryColumns)[number];
+type ExerciseSummaryColumn = 'bestOneRepMaxKg' | 'topWeightKg' | 'workingWeightKg' | 'totalReps' | 'bestSetReps';
 
 export interface SessionRows {
   session: Omit<SessionRow, 'active' | 'bodyweightKg' | SummaryColumn>;
-  exercises: Omit<RecordedExerciseRow, 'bestOneRepMaxKg'>[];
+  exercises: Omit<RecordedExerciseRow, ExerciseSummaryColumn>[];
   weightedSets: Omit<WeightedSetRow, 'weightKg'>[];
   cardioSets: CardioSetRow[];
 }
@@ -521,53 +523,47 @@ export function readStartedSessionVolumes(db: ExpoSQLiteDatabase): SessionVolume
     .map((row) => ({ id: row.id, date: fromLocalDateJSON(row.date), volumeKg: row.volumeKg }));
 }
 
-export interface PersonalRecordRow {
-  sessionId: string;
-  exerciseName: string;
-  oneRepMaxKg: number;
-}
-
 /**
- * Records across every finished session: the SQL form of `findPersonalRecords`. A session holds one for a
- * movement when its best estimated one-rep max beats every earlier session's, and only if an earlier session
- * did that movement at all. Sessions are ordered by their last completed set.
+ * Every finished performance, oldest first by its session's last completed set: the SQL form of `performancesOf`,
+ * read from the summaries, for `personalRecordsOf`.
  */
-export function readPersonalRecords(db: ExpoSQLiteDatabase): PersonalRecordRow[] {
+export function readPerformances(db: ExpoSQLiteDatabase): Performance[] {
   const exercises = recordedExercisesSchema;
-  const best = db
+  return db
     .select({
       sessionId: exercises.sessionId,
+      ord: exercises.ord,
+      name: exercises.name,
       movementKey: exercises.movementKey,
-      exerciseOrd: exercises.ord,
-      exerciseName: exercises.name,
-      oneRepMaxKg: sql<number>`max(${exercises.bestOneRepMaxKg})`.as('oneRepMaxKg'),
+      progressionKey: exercises.progressionKey,
+      resistance: exercises.resistance,
+      topWeightKg: exercises.topWeightKg,
+      workingWeightKg: exercises.workingWeightKg,
+      totalReps: exercises.totalReps,
+      bestSetReps: exercises.bestSetReps,
+      bestOneRepMaxKg: exercises.bestOneRepMaxKg,
     })
     .from(exercises)
-    .where(isNotNull(exercises.bestOneRepMaxKg))
-    .groupBy(exercises.sessionId, exercises.movementKey)
-    .as('best');
-  const ranked = db
-    .select({
-      sessionId: best.sessionId,
-      exerciseOrd: best.exerciseOrd,
-      exerciseName: best.exerciseName,
-      oneRepMaxKg: best.oneRepMaxKg,
-      previousBestKg: sql<number | null>`max(${best.oneRepMaxKg}) over (
-        partition by ${best.movementKey}
-        order by ${sessionsSchema.lastCompletedAtMs}, ${best.sessionId}
-        rows between unbounded preceding and 1 preceding
-      )`.as('previousBestKg'),
-    })
-    .from(best)
-    .innerJoin(sessionsSchema, eq(sessionsSchema.id, best.sessionId))
-    .where(isFinished)
-    .as('ranked');
-  return db
-    .select({ sessionId: ranked.sessionId, exerciseName: ranked.exerciseName, oneRepMaxKg: ranked.oneRepMaxKg })
-    .from(ranked)
-    .where(gt(ranked.oneRepMaxKg, ranked.previousBestKg))
-    .orderBy(ranked.sessionId, ranked.exerciseOrd)
-    .all();
+    .innerJoin(sessionsSchema, eq(sessionsSchema.id, exercises.sessionId))
+    .where(and(isFinished, isNotNull(exercises.totalReps)))
+    .orderBy(sessionsSchema.lastCompletedAtMs, exercises.sessionId, exercises.ord)
+    .all()
+    .map((row) => {
+      const resistance = required(row.resistance, 'resistance');
+      return {
+        sessionId: row.sessionId,
+        exerciseOrd: row.ord,
+        exerciseName: row.name,
+        movementKey: row.movementKey,
+        progressionKey: row.progressionKey,
+        resistance,
+        topWeightKg: required(row.topWeightKg, 'topWeightKg'),
+        workingWeightKg: required(row.workingWeightKg, 'workingWeightKg'),
+        totalReps: required(row.totalReps, 'totalReps'),
+        bestSetReps: required(row.bestSetReps, 'bestSetReps'),
+        oneRepMaxKg: resistance === 'external' ? required(row.bestOneRepMaxKg, 'bestOneRepMaxKg') : null,
+      };
+    });
 }
 
 export function readSessionToContinueFrom(
@@ -688,6 +684,33 @@ function writeSummary(tx: ExpoSQLiteDatabase, sessionId: string) {
     tx.update(recordedExercisesSchema)
       .set({ bestOneRepMaxKg: best.oneRepMaxKg })
       .where(and(eq(recordedExercisesSchema.sessionId, sessionId), eq(recordedExercisesSchema.ord, best.ord)))
+      .run();
+  }
+
+  const loadKg = sql<number>`CASE ${recordedExercisesSchema.resistance} WHEN 'none' THEN 0 ELSE ${weightedSetsSchema.weightKg} END`;
+  const performances = tx
+    .select({
+      ord: weightedSetsSchema.exerciseOrd,
+      topWeightKg: sql<number>`max(${loadKg})`,
+      workingWeightKg: sql<number>`min(${loadKg})`,
+      totalReps: sql<number>`sum(${weightedSetsSchema.repsCompleted})`,
+      bestSetReps: sql<number>`max(${weightedSetsSchema.repsCompleted})`,
+    })
+    .from(weightedSetsSchema)
+    .innerJoin(recordedExercisesSchema, ofExercise(weightedSetsSchema))
+    .where(
+      and(
+        eq(weightedSetsSchema.sessionId, sessionId),
+        isNotNull(weightedSetsSchema.completedAtMs),
+        gt(weightedSetsSchema.repsCompleted, 0),
+      ),
+    )
+    .groupBy(weightedSetsSchema.exerciseOrd)
+    .all();
+  for (const { ord, ...summary } of performances) {
+    tx.update(recordedExercisesSchema)
+      .set(summary)
+      .where(and(eq(recordedExercisesSchema.sessionId, sessionId), eq(recordedExercisesSchema.ord, ord)))
       .run();
   }
 

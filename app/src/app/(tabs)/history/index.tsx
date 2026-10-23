@@ -3,7 +3,7 @@ import ConfirmationDialog from '@/components/presentation/foundation/confirmatio
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { HistoryActivityCalendar } from '@/components/smart/history-activity-calendar';
-import { HistoryPrBadges } from '@/components/smart/pr-badges';
+import { PrStrip } from '@/components/smart/pr-badges';
 import { WhoElseTrainedCard } from '@/components/smart/who-else-trained-card';
 import { ReactionSummary } from '@/components/smart/reaction-summary';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
@@ -76,7 +76,7 @@ function History() {
           .toArray(),
       `${from.toString()}:${to.toString()}`,
     ) ?? noSessions;
-  const streakStats = useOwnHistory().streak;
+  const { streak: streakStats, personalRecords } = useOwnHistory();
   const { push } = useRouter();
   const currentWorkoutSession = useAppSelector(selectActiveSession);
   const startWorkoutSession = useStartWorkout();
@@ -164,9 +164,9 @@ function History() {
               <SplitCardControl
                 titleContent={<SessionSummaryTitle showDate session={session} />}
                 mainContent={
-                  <View style={{ gap: spacing[2] }}>
+                  <View style={{ gap: spacing[3] }}>
                     <SessionSummary isFilled showWeight session={session} />
-                    <HistoryPrBadges sessionId={session.id} />
+                    <PrStrip records={personalRecords.get(session.id)} scope="history" />
                   </View>
                 }
               />

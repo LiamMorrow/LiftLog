@@ -4,7 +4,7 @@ import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import SessionComponent from '@/components/smart/session-component';
 import { ReactionBar } from '@/components/smart/reaction-bar';
 import { ReactionSummary } from '@/components/smart/reaction-summary';
-import { FeedPrBadges, HistoryPrBadges } from '@/components/smart/pr-badges';
+import { PrRecordList, useEventRecords } from '@/components/smart/pr-badges';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useFeedTimeline } from '@/hooks/useFeedTimeline';
@@ -30,6 +30,7 @@ export function FeedItem({ eventId }: { eventId: string }) {
   const formatDate = useFormatDate();
   const { t } = useTranslate();
   const session = feedItem?.session;
+  const records = useEventRecords(eventId, feedItem?.userId === ownUserId);
 
   if (!feedItem || !session) {
     return (
@@ -73,11 +74,7 @@ export function FeedItem({ eventId }: { eventId: string }) {
                     </SurfaceText>
                   </View>
                 </View>
-                {isOwnItem ? (
-                  <HistoryPrBadges sessionId={feedItem.eventId} />
-                ) : (
-                  <FeedPrBadges eventId={feedItem.eventId} />
-                )}
+                <PrRecordList {...records} />
                 <View style={{ paddingTop: spacing[2], borderTopWidth: 1, borderTopColor: colors.outlineVariant }}>
                   {isOwnItem ? (
                     <ReactionSummary eventId={feedItem.eventId} animateOnMount />

@@ -27,6 +27,8 @@ import { msNotes } from '@material-symbols-react-native/outlined-400/msNotes';
 import { msPlayCircle } from '@material-symbols-react-native/outlined-400/msPlayCircle';
 import { msPlayArrow } from '@material-symbols-react-native/outlined-400/msPlayArrow';
 import { msRefresh } from '@material-symbols-react-native/outlined-400/msRefresh';
+import { msStacks } from '@material-symbols-react-native/outlined-400/msStacks';
+import { msTrophy } from '@material-symbols-react-native/outlined-400/msTrophy';
 import { msNotesFill } from '@material-symbols-react-native/outlined-400/msNotesFill';
 import { msNotifications } from '@material-symbols-react-native/outlined-400/msNotifications';
 import { msRemove } from '@material-symbols-react-native/outlined-400/msRemove';
@@ -117,6 +119,7 @@ import { msDoNotDisturbOn } from '@material-symbols-react-native/outlined-400/ms
 import { msAvgTime } from '@material-symbols-react-native/outlined-400/msAvgTime';
 import { msAnchor } from '@material-symbols-react-native/outlined-400/msAnchor';
 import { msFunction } from '@material-symbols-react-native/outlined-400/msFunction';
+import { msFunctions } from '@material-symbols-react-native/outlined-400/msFunctions';
 import { msHeartCheck } from '@material-symbols-react-native/outlined-400/msHeartCheck';
 import { msContentPasteSearch } from '@material-symbols-react-native/outlined-400/msContentPasteSearch';
 import { msLink } from '@material-symbols-react-native/outlined-400/msLink';
@@ -128,6 +131,7 @@ import { msTrendingUp } from '@material-symbols-react-native/outlined-400/msTren
 import { msCampaign } from '@material-symbols-react-native/outlined-400/msCampaign';
 import { msVisibilityOff } from '@material-symbols-react-native/outlined-400/msVisibilityOff';
 import { msOpenInNew } from '@material-symbols-react-native/outlined-400/msOpenInNew';
+import { msCalculate } from '@material-symbols-react-native/outlined-400/msCalculate';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -161,6 +165,8 @@ const MaterialSymbols = {
   visibilityOff: msVisibilityOff,
   minus: msRemove,
   trendingUp: msTrendingUp,
+  stacks: msStacks,
+  trophy: msTrophy,
   moreHoriz: msMoreHoriz,
   playArrow: msPlayArrow,
   moreVert: msMoreVert,
