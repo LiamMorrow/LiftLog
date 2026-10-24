@@ -92,6 +92,7 @@
   "backup.import_from_other_apps.already_imported.message": "Those workouts are already in History",
   "backup.import_from_other_apps.failed.message": "Could not import: {error}",
   "backup.sent_successfully.message": "Backup sent successfully",
+  "backup.generating.message": "Generating backup…",
   "cardio_timer.status.over_target": "Over target",
   "cardio_timer.status.working": "Working",
   "cardio_timer.stop": "Stop timer and log time",
