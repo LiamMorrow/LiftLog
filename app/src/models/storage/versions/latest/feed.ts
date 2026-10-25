@@ -60,7 +60,12 @@ export interface RemovedSessionUserEventJSON extends UserEventBaseJSON {
   sessionId: string;
 }
 
-export type UserEventJSON = SessionUserEventJSON | RemovedSessionUserEventJSON;
+export interface LiveSessionUserEventJSON extends UserEventBaseJSON {
+  type: 'LiveSessionUserEvent';
+  session: SessionJSON;
+}
+
+export type UserEventJSON = SessionUserEventJSON | RemovedSessionUserEventJSON | LiveSessionUserEventJSON;
 
 interface InboxMessageBaseJSON<TType extends string, T> {
   senderUserId: string;

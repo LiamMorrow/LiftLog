@@ -49,10 +49,15 @@ interface UserEventBaseJSON {
   expiry: InstantJSON;
 }
 
-export type UserEventJSON = SessionUserEventJSON | RemovedSessionUserEventJSON;
+export type UserEventJSON = SessionUserEventJSON | RemovedSessionUserEventJSON | LiveSessionUserEventJSON;
 
 export interface SessionUserEventJSON extends UserEventBaseJSON {
   type: 'SessionUserEvent';
+  session: SessionJSON;
+}
+
+export interface LiveSessionUserEventJSON extends UserEventBaseJSON {
+  type: 'LiveSessionUserEvent';
   session: SessionJSON;
 }
 

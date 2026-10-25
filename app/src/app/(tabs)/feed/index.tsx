@@ -3,6 +3,7 @@ import { FeedFriends } from '@/components/smart/feed-friends';
 import { FeedMenu } from '@/components/smart/feed-menu';
 import { OwnHistoryProvider } from '@/components/smart/own-history-provider';
 import { useHeaderInset } from '@/hooks/useHeaderInset';
+import { useInboxPolling } from '@/hooks/useInboxPolling';
 import { ScrollProvider, useScroll, useScrollHeaderColor } from '@/hooks/useScrollListener';
 import { useAppSelector } from '@/store';
 import { selectIncomingFriendRequestCount } from '@/store/feed';
@@ -31,6 +32,7 @@ export default function FeedIndexPage() {
   }, [tabScrolls, activeTabIndex, setScrolled]);
 
   const headerInset = useHeaderInset();
+  useInboxPolling(true);
   return (
     <OwnHistoryProvider>
       <Stack.Screen options={{ title: t('feed.feed.title') }} />

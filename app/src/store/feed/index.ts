@@ -3,6 +3,7 @@ import { ProgramBlueprint } from '@/models/blueprint-models';
 import {
   FeedIdentity,
   Friend,
+  LiveSessionUserEvent,
   ReactionEmoji,
   ReceivedReaction,
   SentReaction,
@@ -19,6 +20,8 @@ type FeedState = {
   isHydrated: boolean;
   identity: RemoteData<FeedIdentity>;
   feed: SessionUserEvent[];
+  /** Friends' workouts in progress. Only as fresh as the last fetch, so never persisted. */
+  liveSessions: LiveSessionUserEvent[];
   friends: Record<string, Friend>;
   sharedFeedUser: RemoteData<SharedFeedUser>;
   /**
@@ -39,6 +42,7 @@ const initialState: FeedState = {
   identity: RemoteData.notAsked(),
   isFetching: false,
   feed: [],
+  liveSessions: [],
   friends: {},
   sharedFeedUser: RemoteData.notAsked(),
   revokedFollowSecrets: [],
@@ -103,6 +107,9 @@ const feedSlice = createSlice({
     removeFeedItems(state, action: PayloadAction<string[]>) {
       state.feed = state.feed.filter((x) => !action.payload.includes(x.id));
     },
+    setLiveSessions(state, action: PayloadAction<LiveSessionUserEvent[]>) {
+      state.liveSessions = action.payload;
+    },
     queueFollowSecretRevocations(state, action: PayloadAction<string[]>) {
       state.revokedFollowSecrets = [...new Set([...state.revokedFollowSecrets, ...action.payload])];
     },
@@ -149,6 +156,7 @@ const feedSlice = createSlice({
       (x) => Object.values(x).filter((friend) => friend.status === 'incoming').length,
     ),
     selectFeedSessionItems: (state: FeedState) => state.feed,
+    selectLiveSessions: (state: FeedState) => state.liveSessions,
     selectFeedIdentityRemote: (state: FeedState) => state.identity,
     selectOwnFeedUserId: (state: FeedState) => state.identity.unwrapOr(undefined)?.id,
     selectReceivedReactionsByEvent: createSelector(
@@ -199,6 +207,7 @@ export const {
   queueFollowSecretRevocations,
   removeRevokableFollowSecret,
   removeFeedItems,
+  setLiveSessions,
   upsertReceivedReactions,
   setSentReaction,
   removeSentReaction,
@@ -209,6 +218,7 @@ export const {
   selectSharedFeedUser,
   selectSharedItem,
   selectFeedSessionItems,
+  selectLiveSessions,
   selectFriendList,
   selectAcceptedFriends,
   selectIncomingFriendRequestCount,
@@ -241,7 +251,8 @@ export const createFeedIdentity = createAction<
 
 export const fetchFeedItems = createAction<FeedAction>('fetchFeedItems');
 
-export const fetchInboxItems = createAction<FeedAction>('fetchInboxItems');
+/** `inboxOnly` skips refreshing the feed afterwards, for polls that are only waiting on messages such as cheers. */
+export const fetchInboxItems = createAction<FeedAction & { inboxOnly?: boolean }>('fetchInboxItems');
 
 export const flushOutbox = createAction('flushOutbox');
 

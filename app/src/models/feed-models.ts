@@ -26,6 +26,7 @@ import {
   toInstantJson,
   UserEventJSON,
   RemovedSessionUserEventJSON,
+  LiveSessionUserEventJSON,
   AcceptedFollowResponseJSON,
   RejectedFollowResponseJSON,
   FollowResponseJSON,
@@ -53,6 +54,11 @@ import { equal } from '@/models/session-models/helpers';
  */
 export const FEED_EVENT_RETENTION_DAYS = 90;
 export const FEED_EVENT_RETENTION_SECONDS = FEED_EVENT_RETENTION_DAYS * 24 * 60 * 60;
+
+/** Refreshed on every live publish, so it only lapses for a workout that stopped publishing (crashed, abandoned). */
+export const LIVE_EVENT_EXPIRY_SECONDS = 3 * 60 * 60;
+/** A live workout that has not been published for this long is hidden, as its owner has probably stopped. */
+export const LIVE_EVENT_STALE_SECONDS = 30 * 60;
 
 export type FriendRepairKind = 'staleKeys' | 'missingKeys' | 'staleRequest';
 
@@ -267,12 +273,71 @@ export class RemovedSessionUserEvent {
   }
 }
 
-export type FeedUserEvent = SessionUserEvent | RemovedSessionUserEvent;
+/**
+ * A workout still in progress. Its own type, rather than a flag on SessionUserEvent, so that apps which predate
+ * it drop it instead of showing a half-done workout as finished. The finished SessionUserEvent replaces it, as
+ * both are published under the session's id.
+ */
+export class LiveSessionUserEvent {
+  readonly type = 'LiveSessionUserEvent' as const;
+
+  constructor(
+    readonly userId: string,
+    readonly eventId: string,
+    readonly timestamp: Instant,
+    readonly expiry: Instant,
+    readonly session: Session,
+  ) {}
+
+  get id() {
+    return this.userId + this.eventId;
+  }
+
+  isStale(now: Instant): boolean {
+    return this.timestamp.plusSeconds(LIVE_EVENT_STALE_SECONDS).isBefore(now) || !this.expiry.isAfter(now);
+  }
+
+  static fromJSON(json: LiveSessionUserEventJSON): LiveSessionUserEvent {
+    return new LiveSessionUserEvent(
+      json.userId,
+      json.eventId,
+      fromInstantJson(json.timestamp),
+      fromInstantJson(json.expiry),
+      Session.fromJSON(json.session),
+    );
+  }
+
+  toJSON(): LiveSessionUserEventJSON {
+    return {
+      type: 'LiveSessionUserEvent',
+      userId: this.userId,
+      eventId: this.eventId,
+      timestamp: toInstantJson(this.timestamp),
+      expiry: toInstantJson(this.expiry),
+      session: this.session.toJSON(),
+    };
+  }
+
+  equals(other: FeedUserEvent | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return (
+      this.userId === other.userId &&
+      this.eventId === other.eventId &&
+      this.timestamp.equals(other.timestamp) &&
+      this.session.equals(other.session)
+    );
+  }
+}
+
+export type FeedUserEvent = SessionUserEvent | RemovedSessionUserEvent | LiveSessionUserEvent;
 
 export function fromFeedUserEventJSON(json: UserEventJSON): FeedUserEvent {
   return match(json)
     .with({ type: 'SessionUserEvent' }, SessionUserEvent.fromJSON)
     .with({ type: 'RemovedSessionUserEvent' }, RemovedSessionUserEvent.fromJSON)
+    .with({ type: 'LiveSessionUserEvent' }, LiveSessionUserEvent.fromJSON)
     .exhaustive();
 }
 
@@ -597,9 +662,15 @@ export class UnfollowNotification {
 export const REACTION_EMOJIS = ['💪', '🔥', '👏', '🎉', '🫡'] as const;
 export type ReactionEmoji = (typeof REACTION_EMOJIS)[number];
 
-/** Cheers accumulate, so a single message can carry several taps of the same emoji. */
+/**
+ * A cheer is the running total of one emoji on one workout, so this is how many times a friend can tap each
+ * emoji per workout. Raising it would make apps that predate the raise reject the cheer.
+ */
 export const MAX_REACTION_COUNT = 50;
-/** Bounds how much a hostile follower can grow your database. */
+/**
+ * Each friend keeps one cheer per emoji on a workout, so stays well below this. It stops a tampered app, or one
+ * that sends every burst as its own cheer as 4.24 does, from growing your database without bound.
+ */
 export const MAX_REACTIONS_PER_SENDER_PER_EVENT = 20;
 
 export function isReactionEmoji(value: string): value is ReactionEmoji {

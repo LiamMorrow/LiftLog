@@ -3,8 +3,8 @@ import { combineReducers } from '@reduxjs/toolkit';
 import { Instant, LocalDate } from '@js-joda/core';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { addReactionEffects } from '@/store/feed/reaction-effects';
-import feedReducer, { cheerFeedItem, flushOutbox } from '@/store/feed';
-import { FeedIdentity, Reaction, SessionUserEvent } from '@/models/feed-models';
+import feedReducer, { cheerFeedItem, flushOutbox, setSentReaction } from '@/store/feed';
+import { FeedIdentity, MAX_REACTION_COUNT, Reaction, SentReaction, SessionUserEvent } from '@/models/feed-models';
 import { makeFriend } from '@/store/feed/__test__/friends';
 import { RemoteData } from '@/models/remote';
 import { createTestDb } from '@/utils/__test__/test-db';
@@ -165,6 +165,53 @@ describe('reaction-effects', () => {
     await dispatched;
 
     expect(sentReactions(testBed)).toHaveLength(0);
+    vi.useRealTimers();
+  });
+
+  it('keeps one running total per emoji, under one id, across bursts', async () => {
+    vi.useFakeTimers();
+    const { testBed, services } = await makeTestBed();
+
+    for (const taps of [2, 3]) {
+      const burst = Array.from({ length: taps }, () =>
+        testBed.dispatchHandled(cheerFeedItem({ eventId: EVENT_ID, emoji: '💪', fromUserAction: true })),
+      );
+      await vi.advanceTimersByTimeAsync(1500);
+      await Promise.all(burst);
+    }
+
+    const payloads = sentPayloads(services);
+    expect(payloads.map((x) => x.count)).toEqual([2, 5]);
+    expect(new Set(payloads.map((x) => x.reactionId)).size).toBe(1);
+    expect(sentReactions(testBed).map((x) => x.count)).toEqual([5]);
+    vi.useRealTimers();
+  });
+
+  it('stops counting at the most one cheer can carry', async () => {
+    vi.useFakeTimers();
+    const { testBed, services } = await makeTestBed();
+    testBed.dispatch(setSentReaction(new SentReaction('r1', EVENT_ID, '💪', MAX_REACTION_COUNT, Instant.now())));
+
+    const dispatched = testBed.dispatchHandled(cheerFeedItem({ eventId: EVENT_ID, emoji: '💪', fromUserAction: true }));
+    await vi.advanceTimersByTimeAsync(1500);
+    await dispatched;
+
+    expect(services.feedFollowService.reactionMessage).not.toHaveBeenCalled();
+    expect(sentReactions(testBed).map((x) => x.count)).toEqual([MAX_REACTION_COUNT]);
+    vi.useRealTimers();
+  });
+
+  it('rolls a running total back to what was sent before when it cannot be encrypted', async () => {
+    vi.useFakeTimers();
+    const { testBed, services } = await makeTestBed();
+    testBed.dispatch(setSentReaction(new SentReaction('r1', EVENT_ID, '💪', 4, Instant.now())));
+    services.feedFollowService.reactionMessage.mockRejectedValue(new Error('bad key'));
+
+    const dispatched = testBed.dispatchHandled(cheerFeedItem({ eventId: EVENT_ID, emoji: '💪', fromUserAction: true }));
+    await vi.advanceTimersByTimeAsync(1500);
+    await dispatched;
+
+    expect(sentReactions(testBed).map((x) => [x.id, x.count])).toEqual([['r1', 4]]);
     vi.useRealTimers();
   });
 

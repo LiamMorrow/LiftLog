@@ -211,6 +211,10 @@ export class RecordedWeightedExercise {
     return this.potentialSets.some((x) => x.set !== undefined);
   }
 
+  get completedSetCount() {
+    return this.potentialSets.filter((x) => x.set !== undefined).length;
+  }
+
   get lastRecordedSet(): PotentialSet | undefined {
     let best: PotentialSet | undefined;
     for (const ps of this.potentialSets) {

@@ -10,6 +10,7 @@ import {
   removeFriend,
   repairFriends,
   selectAcceptedFriends,
+  setLiveSessions,
   upsertFeedItems,
 } from '@/store/feed';
 import { AddEffectFn, AppDispatch, RootState } from '@/store/store';
@@ -20,9 +21,12 @@ import {
   FeedUserEvent,
   FEED_EVENT_RETENTION_SECONDS,
   fromFeedUserEventJSON,
+  LIVE_EVENT_EXPIRY_SECONDS,
+  LiveSessionUserEvent,
   RemovedSessionUserEvent,
   SessionUserEvent,
 } from '@/models/feed-models';
+import { settleLivePublish } from '@/store/feed/live-publish-queue';
 import { Session } from '@/models/session-models';
 import { GetUserResponse, UserEventResponse } from '@/models/feed-api-models';
 import { EncryptionService, fromJsonBytes, splitNonceAndCiphertext, toJsonBytes } from '@/services/encryption-service';
@@ -76,6 +80,7 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
         return;
       }
 
+      await settleLivePublish();
       const unpublishedSessionIds = await db.select().from(feedUnpublishedSessionsSchema);
 
       for (const { sessionId } of unpublishedSessionIds) {
@@ -116,6 +121,7 @@ async function fetchOnce(
 
   if (friends.length === 0) {
     dispatch(removeFeedItems(state.feed.feed.map((x) => x.id)));
+    dispatch(setLiveSessions([]));
     return [];
   }
 
@@ -164,7 +170,9 @@ async function fetchOnce(
     }),
   );
   decryptedEvents.forEach((x, i) => x === 'undecryptable' && undecryptable.add(feedResponse.data.events[i]!.userId));
-  const feedItems = decryptedEvents.filter((item) => item !== null && item !== 'undecryptable');
+  const fetchedItems = decryptedEvents.filter((item) => item !== null && item !== 'undecryptable');
+  const liveItems = fetchedItems.filter((item) => item.type === 'LiveSessionUserEvent');
+  const feedItems = fetchedItems.filter((item) => item.type !== 'LiveSessionUserEvent');
 
   const now = Instant.now();
   const currentFriendIds = new Set(
@@ -199,7 +207,57 @@ async function fetchOnce(
   if (removedIds.length) dispatch(removeFeedItems(removedIds));
   dispatch(upsertFeedItems(sorted as SessionUserEvent[]));
 
+  const settledKeys = new Set(deduped.map((item) => `${item.userId}-${item.eventId}`));
+  dispatch(
+    setLiveSessions(
+      liveItems.filter(
+        (item) =>
+          currentFriendIds.has(item.userId) && !item.isStale(now) && !settledKeys.has(`${item.userId}-${item.eventId}`),
+      ),
+    ),
+  );
+
   return friends.filter((x) => undecryptable.has(x.id) && !invalidFollowSecrets.has(x.theirSecret!)).map((x) => x.id);
+}
+
+export async function publishLiveSessionAsync(
+  identity: FeedIdentity,
+  session: Session,
+  encryptionService: EncryptionService,
+  feedApiService: FeedApiService,
+) {
+  return publishEvent(
+    identity,
+    new LiveSessionUserEvent(
+      identity.id,
+      session.id,
+      Instant.now(),
+      Instant.now().plusSeconds(LIVE_EVENT_EXPIRY_SECONDS),
+      identity.publishBodyweight ? session : session.with({ bodyweight: undefined }),
+    ),
+    encryptionService,
+    feedApiService,
+  );
+}
+
+export async function removeLiveSessionAsync(
+  identity: FeedIdentity,
+  sessionId: string,
+  encryptionService: EncryptionService,
+  feedApiService: FeedApiService,
+) {
+  return publishEvent(
+    identity,
+    new RemovedSessionUserEvent(
+      identity.id,
+      sessionId,
+      Instant.now(),
+      Instant.now().plusSeconds(LIVE_EVENT_EXPIRY_SECONDS),
+      sessionId,
+    ),
+    encryptionService,
+    feedApiService,
+  );
 }
 
 async function publishEvent(

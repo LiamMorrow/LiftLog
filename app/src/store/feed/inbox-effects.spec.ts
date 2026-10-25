@@ -74,6 +74,45 @@ describe('inbox-effects reactions', () => {
     expect(accepted[0]!.count).toBe(3);
   });
 
+  it('raises a running total under the same id, keeping the highest count', async () => {
+    const { testBed, services } = await makeTestBed();
+    deliver(services, [
+      inbox.cheer(FRIEND_ID, { reactionId: 'r1', count: 3 }),
+      inbox.cheer(FRIEND_ID, { reactionId: 'r1', count: 7 }),
+      inbox.cheer(FRIEND_ID, { reactionId: 'r1', count: 5 }),
+    ]);
+
+    await poll(testBed);
+
+    expect(acceptedReactions(testBed).map((x) => [x.id, x.count])).toEqual([['r1', 7]]);
+  });
+
+  it('does not let another friend overwrite a cheer by reusing its id', async () => {
+    const { testBed, services } = await makeTestBed({ friends: [makeFriend(FRIEND_ID), makeFriend('mallory')] });
+    deliver(services, [
+      inbox.cheer(FRIEND_ID, { reactionId: 'r1', count: 3 }),
+      inbox.cheer('mallory', { reactionId: 'r1', count: 50 }),
+    ]);
+
+    await poll(testBed);
+
+    expect(acceptedReactions(testBed).map((x) => [x.fromUserId, x.count])).toEqual([[FRIEND_ID, 3]]);
+  });
+
+  it('does not count a raised running total against the cap', async () => {
+    const { testBed, services } = await makeTestBed();
+    deliver(services, [
+      ...Array.from({ length: MAX_REACTIONS_PER_SENDER_PER_EVENT }, (_, i) =>
+        inbox.cheer(FRIEND_ID, { reactionId: `r${i}`, count: 1 }),
+      ),
+      inbox.cheer(FRIEND_ID, { reactionId: 'r0', count: 9 }),
+    ]);
+
+    await poll(testBed);
+
+    expect(acceptedReactions(testBed).find((x) => x.id === 'r0')!.count).toBe(9);
+  });
+
   it('caps how many cheers one sender can store against a single event', async () => {
     const { testBed, services } = await makeTestBed();
     deliver(
@@ -212,12 +251,22 @@ describe('inbox-effects delivery', () => {
     expect(db.select().from(feedInboxQueueSchema).all()).toEqual([]);
   });
 
-  it('refreshes the feed after every poll', async () => {
+  it('refreshes the feed after a poll', async () => {
     const { testBed } = await makeTestBed();
 
     await poll(testBed);
 
     testBed.getDispatchedAction(fetchFeedItems);
+  });
+
+  it('leaves the feed alone after an inbox-only poll, but still takes its cheers', async () => {
+    const { testBed, services } = await makeTestBed();
+    deliver(services, [inbox.cheer(FRIEND_ID)]);
+
+    await testBed.dispatchHandled(fetchInboxItems({ fromUserAction: false, inboxOnly: true }));
+
+    testBed.expectNotDispatched(fetchFeedItems);
+    expect(acceptedReactions(testBed)).toHaveLength(1);
   });
 
   it('forgets seen message ids once they are past the retention window', async () => {

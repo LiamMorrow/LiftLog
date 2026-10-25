@@ -1,12 +1,11 @@
 import React, { ReactNode, useEffect } from 'react';
 import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { Animated, Platform, useAnimatedValue, useWindowDimensions, View, ViewStyle } from 'react-native';
-import { GlassBackground } from '@/components/presentation/foundation/glass-background';
-import { floatingShadowStyle } from '@/components/presentation/foundation/floating-shadow';
+import { Animated, StyleSheet, useAnimatedValue, View, ViewStyle } from 'react-native';
+import { FloatingPane } from '@/components/presentation/workout/floating-pane';
+import { Reveal } from '@/components/presentation/foundation/reveal';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { Jiggler } from '@/components/presentation/foundation/jiggler';
 
-const barRadius = spacing[5];
 const trackHeight = 6;
 const pipWidth = 2;
 
@@ -23,84 +22,70 @@ interface TimerPaneProps {
   accent: ColorChoice;
   segments: TimerSegment[];
   controls: ReactNode;
+  /** A row above the clock, for news that arrives while the timer runs. */
+  banner?: ReactNode;
   jiggling?: boolean;
   testID?: string;
   style?: ViewStyle;
 }
 
 /** The chrome shared by every timer that runs against a target. */
-export function TimerPane({ time, status, accent, segments, controls, jiggling, testID, style }: TimerPaneProps) {
+export function TimerPane({
+  time,
+  status,
+  accent,
+  segments,
+  controls,
+  banner,
+  jiggling,
+  testID,
+  style,
+}: TimerPaneProps) {
   const { colors } = useAppTheme();
-  const { width, height } = useWindowDimensions();
-  const isLandscape = width > height;
 
   return (
-    // The bar clips its glass to the radius, and a clipping layer cannot cast a shadow - so the lift
-    // has to come from a wrapper. Android separates itself with a hairline instead.
-    <View
-      style={[
-        {
-          alignSelf: isLandscape ? 'flex-end' : 'stretch',
-          // Separates the bar from the action floating above it, which the shared gap alone leaves too tight.
-          marginTop: spacing[2],
-        },
-        Platform.OS === 'ios' ? floatingShadowStyle : undefined,
-        style,
-      ]}
-    >
-      <View
-        testID={testID}
-        style={{
-          borderRadius: barRadius,
-          overflow: 'hidden',
-          paddingVertical: spacing[2],
-          paddingLeft: spacing[4],
-          paddingRight: spacing[2],
-          gap: spacing[1],
-          borderColor: colors.outlineVariant,
-          borderWidth: Platform.OS === 'android' ? 1 : 0,
-        }}
-      >
-        <GlassBackground
-          radius={barRadius}
-          color={colors.surfaceContainerHigh}
-          tintColor={withAlpha(colors.surfaceContainerHigh, 0.75)}
-        />
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Jiggler jiggling={!!jiggling}>
-            <SurfaceText style={{ fontVariant: ['tabular-nums'] }} font="text-3xl" weight="bold" color={accent}>
-              {time}
-            </SurfaceText>
-          </Jiggler>
-          <SurfaceText
+    <FloatingPane testID={testID} style={style}>
+      <Reveal>
+        {banner ? (
+          <View
             style={{
-              marginLeft: spacing[2],
-              textTransform: 'uppercase',
-              letterSpacing: 0.8,
-              marginRight: 'auto',
+              paddingBottom: spacing[2],
+              marginBottom: spacing[1],
+              borderBottomWidth: StyleSheet.hairlineWidth,
+              borderBottomColor: colors.outlineVariant,
             }}
-            numberOfLines={1}
-            font="text-xs"
-            weight="bold"
-            color={accent}
           >
-            {status}
+            {banner}
+          </View>
+        ) : undefined}
+      </Reveal>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Jiggler jiggling={!!jiggling}>
+          <SurfaceText style={{ fontVariant: ['tabular-nums'] }} font="text-3xl" weight="bold" color={accent}>
+            {time}
           </SurfaceText>
-          {controls}
-        </View>
-        <View style={{ paddingBottom: spacing[2] }}>
-          <ProgressBar segments={segments} colors={colors} trackColor={colors.outlineVariant} />
-        </View>
+        </Jiggler>
+        <SurfaceText
+          style={{
+            marginLeft: spacing[2],
+            textTransform: 'uppercase',
+            letterSpacing: 0.8,
+            marginRight: 'auto',
+          }}
+          numberOfLines={1}
+          font="text-xs"
+          weight="bold"
+          color={accent}
+        >
+          {status}
+        </SurfaceText>
+        {controls}
       </View>
-    </View>
+      <View style={{ paddingBottom: spacing[2] }}>
+        <ProgressBar segments={segments} colors={colors} trackColor={colors.outlineVariant} />
+      </View>
+    </FloatingPane>
   );
-}
-
-function withAlpha(hex: string, alpha: number): string {
-  const a = Math.round(alpha * 255)
-    .toString(16)
-    .padStart(2, '0');
-  return `${hex}${a}`;
 }
 
 export function formatTimeSpan(ms: number): string {

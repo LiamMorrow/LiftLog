@@ -20,6 +20,9 @@ import WeightedExercise from '@/components/presentation/workout/weighted/weighte
 import WeightDisplay from '@/components/presentation/foundation/editors/weight-display';
 import BigNumber from 'bignumber.js';
 import RestTimer from '@/components/presentation/workout/rest-timer';
+import { FloatingPane } from '@/components/presentation/workout/floating-pane';
+import { CheerBanner } from '@/components/smart/cheer-banner';
+import { useArrivingCheers } from '@/hooks/useArrivingCheers';
 import { ReactNode } from 'react';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { getSessionExerciseEditorHref } from '@/components/smart/session-exercise-editor';
@@ -61,6 +64,9 @@ export default function SessionComponent(props: {
   const { t } = useTranslate();
   const { push } = useRouter();
   const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
+  const { cheers: arrivingCheers, dismiss: dismissCheers } = useArrivingCheers(
+    isActiveWorkout ? session.id : undefined,
+  );
   const dispatch = useDispatch();
   const isReadonly = !props.updateSession;
   const editableSessionId = isReadonly ? undefined : session.id;
@@ -246,8 +252,12 @@ export default function SessionComponent(props: {
     lastExercise instanceof RecordedWeightedExercise &&
     lastRecordedSet.set.repsCompleted <
       lastExercise.repsTargetForSet(lastExercise.potentialSets.indexOf(lastRecordedSet)).min;
+  const cheerBanner = arrivingCheers.length ? (
+    <CheerBanner cheers={arrivingCheers} onDismiss={dismissCheers} />
+  ) : undefined;
   const restTimer = showRestTimer ? (
     <RestTimer
+      banner={cheerBanner}
       rest={restBetweenSets}
       startTime={session.restTimer.startedAt}
       pausedAt={session.restTimer.pausedAt}
@@ -261,6 +271,7 @@ export default function SessionComponent(props: {
   const runningCardio = isActiveWorkout ? session.runningCardioSet : undefined;
   const cardioTimer = runningCardio ? (
     <CardioTimer
+      banner={cheerBanner}
       set={runningCardio.set}
       onPersist={() =>
         updateCardioSet(runningCardio.exerciseIndex)(runningCardio.setIndex, (s) =>
@@ -276,11 +287,12 @@ export default function SessionComponent(props: {
   ) : undefined;
 
   const timer = cardioTimer ?? restTimer;
+  const accessory = timer ?? (cheerBanner ? <FloatingPane>{cheerBanner}</FloatingPane> : undefined);
 
   // The timer rides above the action, so the action stays put whether or not a rest is running.
   const floatingBottomContainer = isReadonly ? null : (
     <PageActions
-      accessory={timer}
+      accessory={accessory}
       primaryExpanded={!timer}
       primary={{
         label: t('exercise.add.title'),

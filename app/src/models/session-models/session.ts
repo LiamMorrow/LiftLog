@@ -390,6 +390,18 @@ export class Session {
     return this.recordedExercises.some((x) => x.isStarted);
   }
 
+  get startedAt(): OffsetDateTime | undefined {
+    return this.recordedExercises
+      .map((x) => x.earliestTime)
+      .filter((x) => x !== undefined)
+      .sort(TemporalComparer)
+      .at(0);
+  }
+
+  get completedSetCount(): number {
+    return this.recordedExercises.reduce((total, x) => total + x.completedSetCount, 0);
+  }
+
   get runningCardioSet():
     | { exerciseIndex: number; setIndex: number; exercise: RecordedCardioExercise; set: RecordedCardioExerciseSet }
     | undefined {

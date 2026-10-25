@@ -1,6 +1,6 @@
 # Feed Process
 
-LiftLog gives users the option of publishing their workouts to a feed that their friends can see. Friends see each other's workouts, plan, weekly activity, and can cheer each other's workouts. This is entirely opt in.
+LiftLog gives users the option of publishing their workouts to a feed that their friends can see. Friends see each other's workouts, including ones still in progress, plan, weekly activity, and can cheer each other's workouts. This is entirely opt in.
 
 Privacy is extremely important to preserve here. Data is end to end encrypted ([see Technical Details](#technical-details)), and users are in full control of who their friends are. Friendship is always mutual, and it always starts with a link and an explicit accept:
 
@@ -58,6 +58,7 @@ As mentioned, personal information (including workouts) is end to end encrypted.
 Personal Information that is NOT encrypted is limited to:
 
 - Timestamp of request - this is the timestamp of when a feed item was submitted. This could correlate to a time of workout, and therefore could be considered PII.
+- Expiry of a feed item. A live workout expires hours after it is published rather than 90 days, so the server can tell that its author is probably training ([see Live workouts](#live-workouts)).
 - User ID (a UUID) - this is stored on the device, but is not linked to it (i.e. The LiftLog servers cannot trace userId to device)
 - The recipient of an inbox message, and when it was sent as a User ID. The sender is only named inside the encrypted message.
 
@@ -168,6 +169,23 @@ sequenceDiagram
     Bob->>Bob: Remove Alice
 ```
 
+### Live workouts
+
+While a workout is open and **Publish workouts** is on, the app publishes it as a `LiveSessionUserEvent`: the workout so far, under the session's id, signed and encrypted like any other feed item, and expiring 3 hours later. It publishes again whenever the workout changes, at most once a minute.
+
+- **Finishing** publishes the `SessionUserEvent` under the same id, which replaces the live one on the server.
+- **Discarding** the workout, or turning **Publish workouts** off during it, publishes a `RemovedSessionUserEvent` in its place.
+- Live publishes and the finished workout go out one after another, so a slow live publish cannot land on top of the finished workout.
+
+A live workout is its own event type, rather than a flag on `SessionUserEvent`, so that apps from before it drop it instead of showing a half-done workout as finished.
+
+Friends keep live workouts in memory only, replaced on every fetch, and hide one that has not been published for 30 minutes. They appear as **Training now** above the week's activity and open on the normal workout page, where friends can cheer them. The cheer is keyed by the session id, so it stays with the workout once it is finished.
+
+Nothing pushes these to anyone, so the app polls:
+
+- The feed fetches when it is opened, and every minute while it stays open.
+- While a workout is open with **Publish workouts** on, the app checks its inbox every minute, without refreshing the feed, so cheers reach the workout screen while you train. Development builds check every 15 seconds.
+
 ### Key rotation
 
 Revoking a `FollowSecret` stops a removed friend fetching new feed items, in addition, we rotate the AES keys used for encrypting our feed items.
@@ -238,6 +256,7 @@ All paths are under `app/src/`.
 - `store/feed/rotation-effects.ts` - key rotation.
 - `store/feed/repair-effects.ts` - repairing friendships that drifted out of sync.
 - `store/feed/feed-items-effects.ts` - publishing workouts, fetching friends' feed items and profiles.
+- `store/feed/live-session-effects.ts` - publishing the workout in progress, and withdrawing it when discarded.
 - `store/feed/feed-timeline.ts` - merging your own sessions into the feed.
 - `services/feed-follow-service.ts` - building and encrypting inbox messages.
 - `services/js-migrations/merge-follows-into-friends.ts` - turning follows into friends.

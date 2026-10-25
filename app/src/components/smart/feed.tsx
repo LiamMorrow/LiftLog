@@ -9,6 +9,7 @@ import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { getFeedItemHref } from '@/components/smart/feed-item';
 import { getFeedProfileEditorHref } from '@/components/smart/feed-profile-editor';
 import { FeedWeekStrip } from '@/components/smart/feed-week-strip';
+import { TrainingNow } from '@/components/smart/training-now';
 import { ReactionBar } from '@/components/smart/reaction-bar';
 import { ReactionSummary } from '@/components/smart/reaction-summary';
 import { PrStrip, useEventRecords } from '@/components/smart/pr-badges';
@@ -83,6 +84,7 @@ function FeedProfileHeader() {
   return (
     <>
       <Remote value={identityRemote} success={(identity) => <FeedProfile identity={identity} />} />
+      <TrainingNow />
       <FeedWeekStrip />
     </>
   );

@@ -20,8 +20,8 @@ work to find the docs relevant to your area, and update it whenever you add, rem
 ## Features
 
 - [FeedProcess.md](./FeedProcess.md) - the opt-in social feed: mutual friends (request, accept, remove),
-  the inbox message types, key rotation, repairing friendships that drift out of sync, at-least-once
-  inbox delivery, what is and isn't visible to the
+  the inbox message types, live workouts (what friends see while you train), key rotation, repairing
+  friendships that drift out of sync, at-least-once inbox delivery, what is and isn't visible to the
   server, and the end-to-end encryption model (AES-GCM payloads, RSA-PSS signatures).
 - [Progression.md](./Progression.md) - how last session's
   numbers carry into today (and why weight carries but reps usually do not), and how the progressive

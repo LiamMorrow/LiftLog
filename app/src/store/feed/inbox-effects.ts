@@ -76,11 +76,21 @@ function acceptableReactions(
     }
 
     const key = `${payload.eventId}:${senderUserId}`;
-    const alreadyStored = existing.some((x) => x.id === payload.reactionId);
-    if (!alreadyStored && (acceptedPerSender.get(key) ?? 0) >= MAX_REACTIONS_PER_SENDER_PER_EVENT) {
+    const stored = existing.find((x) => x.id === payload.reactionId);
+    if (stored) {
+      // A cheer is a running total, so a redelivered or out-of-order copy must not lower it, and only the
+      // friend who started it can raise it.
+      const raisesOwnTotal =
+        stored.fromUserId === senderUserId &&
+        stored.eventId === payload.eventId &&
+        stored.emoji === payload.emoji &&
+        payload.count > stored.count;
+      if (!raisesOwnTotal) {
+        continue;
+      }
+    } else if ((acceptedPerSender.get(key) ?? 0) >= MAX_REACTIONS_PER_SENDER_PER_EVENT) {
       continue;
-    }
-    if (!alreadyStored) {
+    } else {
       acceptedPerSender.set(key, (acceptedPerSender.get(key) ?? 0) + 1);
     }
 
@@ -102,8 +112,10 @@ function acceptableReactions(
 export function addInboxEffects(addEffect: AddEffectFn) {
   let isPolling = false;
   let pollAgain = false;
+  let refreshFeed = false;
 
   addEffect(fetchInboxItems, async (action, { dispatch, getState, extra }) => {
+    refreshFeed ||= !action.payload.inboxOnly;
     if (isPolling) {
       pollAgain = true;
       return;
@@ -112,6 +124,8 @@ export function addInboxEffects(addEffect: AddEffectFn) {
     try {
       do {
         pollAgain = false;
+        const refreshFeedAfter = refreshFeed;
+        refreshFeed = false;
         const identity = selectFeedIdentityRemote(getState()).unwrapOr(undefined);
         if (!identity) {
           return;
@@ -155,7 +169,9 @@ export function addInboxEffects(addEffect: AddEffectFn) {
         if (!isCurrentIdentity()) {
           return;
         }
-        dispatch(fetchFeedItems({ fromUserAction: false }));
+        if (refreshFeedAfter) {
+          dispatch(fetchFeedItems({ fromUserAction: false }));
+        }
         extra.db
           .delete(feedInboxSeenSchema)
           .where(lt(feedInboxSeenSchema.seenAtMs, Date.now() - INBOX_SEEN_RETENTION_MS))

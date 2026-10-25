@@ -8,6 +8,7 @@ import {
   fetchInboxItems,
   initializeFeedStateSlice,
   patchFeedState,
+  publishUnpublishedSessions,
   removeFeedItems,
   removeReactionsForEvents,
   removeRevokableFollowSecret,
@@ -37,6 +38,7 @@ import { addReactionEffects } from '@/store/feed/reaction-effects';
 import { addOutboxEffects } from '@/store/feed/outbox-effects';
 import { addRotationEffects, keyHolders } from '@/store/feed/rotation-effects';
 import { addRepairEffects } from '@/store/feed/repair-effects';
+import { addLiveSessionEffects } from '@/store/feed/live-session-effects';
 import { selectActiveProgram } from '@/store/program';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { Platform } from 'react-native';
@@ -248,11 +250,12 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     await db.delete(feedRevokedFollowSecretsSchema).where(eq(feedRevokedFollowSecretsSchema.secret, action.payload));
   });
 
-  addEffect(addUnpublishedSessionId, async (action, { extra: { db } }) => {
+  addEffect(addUnpublishedSessionId, async (action, { dispatch, extra: { db } }) => {
     await db
       .insert(feedUnpublishedSessionsSchema)
       .values([{ sessionId: action.payload }])
       .onConflictDoNothing();
+    dispatch(publishUnpublishedSessions());
   });
   addEffect(removeUnpublishedSessionId, async (action, { extra: { db } }) => {
     await db.delete(feedUnpublishedSessionsSchema).where(eq(feedUnpublishedSessionsSchema.sessionId, action.payload));
@@ -426,6 +429,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
   addRotationEffects(addEffect);
   addRepairEffects(addEffect);
   addReactionEffects(addEffect);
+  addLiveSessionEffects(addEffect);
 }
 
 function wipeFeedTables(tx: ExpoSQLiteDatabase) {

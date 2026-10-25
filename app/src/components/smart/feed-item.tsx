@@ -8,8 +8,12 @@ import { PrRecordList, useEventRecords } from '@/components/smart/pr-badges';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useFeedTimeline } from '@/hooks/useFeedTimeline';
+import { useInboxPolling } from '@/hooks/useInboxPolling';
+import { useLiveLabel } from '@/hooks/useLiveLabel';
+import { LiveChip } from '@/components/presentation/feed/live-chip';
+import { LiveSessionUserEvent } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
-import { selectOwnFeedUserId } from '@/store/feed';
+import { selectLiveSessions, selectOwnFeedUserId } from '@/store/feed';
 import { T, useTranslate } from '@tolgee/react';
 import { LocalDate } from '@js-joda/core';
 import { Href, Stack } from 'expo-router';
@@ -22,7 +26,10 @@ export function getFeedItemHref(eventId: string): Href {
 
 export function FeedItem({ eventId }: { eventId: string }) {
   const { colors } = useAppTheme();
-  const feedItem = useFeedTimeline().find((x) => x.eventId === eventId);
+  const finishedItem = useFeedTimeline().find((x) => x.eventId === eventId);
+  const liveItem = useAppSelector(selectLiveSessions).find((x) => x.eventId === eventId);
+  const feedItem = finishedItem ?? liveItem;
+  useInboxPolling(!finishedItem && !!liveItem);
   const friends = useAppSelector((x) => x.feed.friends);
   const ownUserId = useAppSelector(selectOwnFeedUserId);
   const identity = useAppSelector((x) => x.feed.identity.unwrapOr(undefined));
@@ -65,14 +72,23 @@ export function FeedItem({ eventId }: { eventId: string }) {
               <View style={{ gap: spacing[2] }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}>
                   <PersonAvatar userId={feedItem.userId} name={authorName} size={40} />
-                  <View style={{ gap: spacing[1], flexShrink: 1 }}>
-                    <SurfaceText>
-                      <SurfaceText weight="bold">{userName}</SurfaceText> completed a workout
-                    </SurfaceText>
-                    <SurfaceText font="text-sm" color="onSurfaceVariant">
-                      {formattedDate}
-                    </SurfaceText>
-                  </View>
+                  {feedItem.type === 'LiveSessionUserEvent' ? (
+                    <View style={{ gap: spacing[1], flexShrink: 1 }}>
+                      <SurfaceText>
+                        <SurfaceText weight="bold">{userName}</SurfaceText> {t('feed.item.training.message')}
+                      </SurfaceText>
+                      <LiveItemChip item={feedItem} />
+                    </View>
+                  ) : (
+                    <View style={{ gap: spacing[1], flexShrink: 1 }}>
+                      <SurfaceText>
+                        <SurfaceText weight="bold">{userName}</SurfaceText> completed a workout
+                      </SurfaceText>
+                      <SurfaceText font="text-sm" color="onSurfaceVariant">
+                        {formattedDate}
+                      </SurfaceText>
+                    </View>
+                  )}
                 </View>
                 <PrRecordList {...records} />
                 <View style={{ paddingTop: spacing[2], borderTopWidth: 1, borderTopColor: colors.outlineVariant }}>
@@ -89,4 +105,9 @@ export function FeedItem({ eventId }: { eventId: string }) {
       />
     </>
   );
+}
+
+function LiveItemChip({ item }: { item: LiveSessionUserEvent }) {
+  const label = useLiveLabel(item);
+  return <LiveChip label={label} style={{ alignSelf: 'flex-start' }} />;
 }

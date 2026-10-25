@@ -20,7 +20,7 @@ service-account.json
 # Mono auto generated files
 mono_crash.*
 
-
+*.lscache
 
 # Build results
 build/

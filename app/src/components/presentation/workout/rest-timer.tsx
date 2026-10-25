@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { ColorChoice } from '@/hooks/useAppTheme';
 import { Rest } from '@/models/blueprint-models';
 import { Duration, OffsetDateTime } from '@js-joda/core';
@@ -14,6 +14,7 @@ interface RestTimerProps {
   startTime: OffsetDateTime;
   pausedAt: OffsetDateTime | undefined;
   failed: boolean;
+  banner?: ReactNode;
   style?: ViewStyle;
   onRestart: () => void;
   onDismiss: () => void;
@@ -33,6 +34,7 @@ export default function RestTimer({
   startTime,
   pausedAt,
   failed,
+  banner,
   style,
   onRestart,
   onDismiss,
@@ -140,6 +142,7 @@ export default function RestTimer({
       accent={accent}
       segments={segments}
       jiggling={jiggling}
+      banner={banner}
       style={style}
       controls={
         <RestTimerControls

@@ -11,6 +11,7 @@ import {
   FriendKeysInboxMessageJSON,
   FriendRejectInboxMessageJSON,
   FriendRequestInboxMessageJSON,
+  LiveSessionUserEventJSON,
   ReactionInboxMessageJSON,
   ReactionJSON,
   ReceivedReactionJSON,
@@ -74,17 +75,31 @@ export const sessionUserEventMigrations = createMigrations<SessionUserEventJSON>
 export const removedSessionUserEventMigrations =
   createMigrations<RemovedSessionUserEventJSON>().build<Latest.RemovedSessionUserEventJSON>();
 
+export const liveSessionUserEventMigrations = createMigrations<LiveSessionUserEventJSON>()
+  .dependsOn({
+    session: sessionMigrations,
+  })
+  .build<Latest.LiveSessionUserEventJSON>();
+
 export const userEventMigrations = {
   $anyType: undefined! as
     | typeof sessionUserEventMigrations.$anyType
-    | typeof removedSessionUserEventMigrations.$anyType,
+    | typeof removedSessionUserEventMigrations.$anyType
+    | typeof liveSessionUserEventMigrations.$anyType,
   $finalType: undefined! as
     | typeof sessionUserEventMigrations.$finalType
-    | typeof removedSessionUserEventMigrations.$finalType,
-  migrate: (value: typeof sessionUserEventMigrations.$anyType | typeof removedSessionUserEventMigrations.$anyType) => {
+    | typeof removedSessionUserEventMigrations.$finalType
+    | typeof liveSessionUserEventMigrations.$finalType,
+  migrate: (
+    value:
+      | typeof sessionUserEventMigrations.$anyType
+      | typeof removedSessionUserEventMigrations.$anyType
+      | typeof liveSessionUserEventMigrations.$anyType,
+  ) => {
     return match(value)
       .with({ type: 'SessionUserEvent' }, (x) => sessionUserEventMigrations.migrate(x))
       .with({ type: 'RemovedSessionUserEvent' }, (x) => removedSessionUserEventMigrations.migrate(x))
+      .with({ type: 'LiveSessionUserEvent' }, (x) => liveSessionUserEventMigrations.migrate(x))
       .exhaustive();
   },
 };
