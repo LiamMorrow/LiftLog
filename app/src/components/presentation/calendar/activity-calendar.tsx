@@ -49,13 +49,15 @@ export function ActivityCalendar({
         getDateOnDay(DayOfWeek.of((((firstDayOfWeek ?? DayOfWeek.MONDAY).ordinal() + offset) % 7) + 1)),
       );
 
+  const cellGap = isWeek ? spacing[1] : spacing[2];
+
   return (
-    <View style={{ alignItems: 'stretch', gap: spacing[1] }}>
+    <View style={{ alignItems: 'stretch', gap: cellGap }}>
       {header}
 
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
         {isWeek && <View style={{ width: LABEL_WIDTH }} />}
-        <ForceLTRRow style={{ flex: 1, gap: spacing[1] }}>
+        <ForceLTRRow style={{ flex: 1, gap: cellGap }}>
           {headerDates.map((date, index) => (
             <SurfaceText
               key={index}
@@ -72,7 +74,7 @@ export function ActivityCalendar({
 
       {rows.map((row) => {
         const cells = (
-          <ForceLTRRow style={{ flex: 1, gap: spacing[1] }}>
+          <ForceLTRRow style={{ flex: 1, gap: cellGap }}>
             {row.cells.map((cell, columnIndex) =>
               // Position, not date: keying by date would remount all 42 cells on every month change.
               isWeek ? (
@@ -108,7 +110,7 @@ export function ActivityCalendar({
         }
 
         return (
-          <View key={row.key} style={{ gap: spacing[1] }}>
+          <View key={row.key} style={{ gap: cellGap }}>
             {cells}
           </View>
         );

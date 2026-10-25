@@ -19,6 +19,7 @@ export function FeedWeekStrip() {
   const rows = useAppSelectorWithArg(selectActivityWeek, { today, own });
   const streak = own.streak;
   const followsAnyone = useAppSelector(selectFollowsOtherUsers);
+  const showAccomplishments = useAppSelector((x) => x.settings.showAccomplishments);
 
   if (!followsAnyone) {
     return null;
@@ -40,7 +41,7 @@ export function FeedWeekStrip() {
           <SurfaceText font="text-lg" weight="bold" numberOfLines={1}>
             {t('feed.this_week.title')}
           </SurfaceText>
-          {streak.state !== 'none' && (
+          {showAccomplishments && streak.state !== 'none' && (
             <SurfaceText font="text-sm" color="onSurfaceVariant" numberOfLines={1} style={{ flexShrink: 1 }}>
               {streak.weeks + (streak.state === 'secured' ? 1 : 0) === 1
                 ? t('stats.streak.weeks.one')

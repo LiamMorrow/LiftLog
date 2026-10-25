@@ -4,6 +4,7 @@ import {
   setColorSchemeSeed,
   setKeepScreenAwakeDuringWorkout,
   setNotesExpandedByDefault,
+  setShowAccomplishments,
   setShowBodyweight,
   setShowFeed,
   setShowPostWorkoutSummary,
@@ -40,6 +41,14 @@ export default function AppConfigurationPage() {
           supportingText={t('feed.show_feed.subtitle')}
           value={settings.showFeed}
           onValueChange={(value) => dispatch(setShowFeed(value))}
+        />
+        <SegmentedListSwitch
+          testID="setShowAccomplishments"
+          label={t('settings.show_accomplishments.label')}
+          icon={'trophy'}
+          supportingText={t('settings.show_accomplishments.subtitle')}
+          value={settings.showAccomplishments}
+          onValueChange={(value) => dispatch(setShowAccomplishments(value))}
         />
         <SegmentedListSwitch
           label={t('workout.show_post_workout_summary.label')}

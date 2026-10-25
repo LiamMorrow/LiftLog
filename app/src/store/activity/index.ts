@@ -1,8 +1,8 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { LocalDate, YearMonth } from '@js-joda/core';
-import { FEED_EVENT_RETENTION_DAYS, SessionUserEvent } from '@/models/feed-models';
+import { SessionUserEvent } from '@/models/feed-models';
 import { RootState } from '@/store/store';
-import { ActivityCell, ActivityMarker, ActivityRow, VolumeScale } from '@/store/activity/activity-types';
+import { ActivityCell, ActivityRow, VolumeScale } from '@/store/activity/activity-types';
 import { levelFor, sessionVolume, volumeScaleOf } from '@/store/activity/volume';
 import { DayActivity, OwnHistory } from '@/store/activity/own-history';
 import { findPersonalRecords, PersonalRecord } from '@/store/stats/personal-records';
@@ -15,9 +15,6 @@ export * from '@/store/activity/own-history';
 
 /** Identifies the current user's own row/scale, which has no feed userId of its own. */
 export const OWN_USER_KEY = 'me';
-
-/** How many friend markers fit under a day number before we collapse the rest into a "+N" dot. */
-const MAX_MARKERS_PER_CELL = 3;
 
 const selectAllFeedEvents = (state: RootState) => state.feed.feed;
 const selectFollowedUsers = createSelector([(state: RootState) => state.feed.friends], (friends) =>
@@ -73,19 +70,6 @@ export const selectFeedVolumeScales = createSelector([selectFeedEvents], (feed):
   return new Map([...volumesByUser].map(([userId, volumes]) => [userId, volumeScaleOf(volumes)]));
 });
 
-function markersFor(events: SessionUserEvent[], names: Map<string, string | undefined>) {
-  const markers: ActivityMarker[] = events.map((event) => ({
-    userId: event.userId,
-    name: names.get(event.userId),
-    eventId: event.eventId,
-  }));
-
-  return {
-    markers: markers.slice(0, MAX_MARKERS_PER_CELL),
-    overflowMarkers: Math.max(0, markers.length - MAX_MARKERS_PER_CELL),
-  };
-}
-
 const selectFollowedUserNames = createSelector(
   [selectFollowedUsers],
   (followedUsers) => new Map(Object.entries(followedUsers).map(([userId, user]) => [userId, user.name])),
@@ -96,47 +80,21 @@ export const selectFollowsOtherUsers = createSelector(
   (followedUsers) => Object.keys(followedUsers).length > 0,
 );
 
-interface CellContext {
-  own: OwnHistory;
-  feedEvents: Map<string, SessionUserEvent[]>;
-  scales: Map<string, VolumeScale>;
-  names: Map<string, string | undefined>;
-  today: LocalDate;
-  horizon: LocalDate;
-}
-
-function buildCell(
-  date: LocalDate,
-  context: CellContext,
-  options: { isOutsideFocus: boolean; includeMarkers: boolean },
-): ActivityCell {
-  const key = date.toString();
-  const day = context.own.days.get(key) ?? noActivity;
-  const scale = context.own.volumeScale;
-
-  const isBeyondFeedHorizon = date.isBefore(context.horizon);
-  const events = options.includeMarkers && !isBeyondFeedHorizon ? (context.feedEvents.get(key) ?? []) : [];
-  const { markers, overflowMarkers } = markersFor(events, context.names);
+function buildOwnCell(date: LocalDate, own: OwnHistory, today: LocalDate, isOutsideFocus: boolean): ActivityCell {
+  const day = own.days.get(date.toString()) ?? noActivity;
+  const scale = own.volumeScale;
 
   return {
     date,
     level: day.sessionCount === 0 || !scale ? 0 : levelFor(day.volume, scale),
     sessionCount: day.sessionCount,
-    markers,
-    overflowMarkers,
-    isToday: date.isEqual(context.today),
-    isFuture: date.isAfter(context.today),
-    isOutsideFocus: options.isOutsideFocus,
-    isBeyondFeedHorizon,
+    isToday: date.isEqual(today),
+    isFuture: date.isAfter(today),
+    isOutsideFocus,
   };
 }
 
 const noActivity: DayActivity = { sessionCount: 0, volume: 0 };
-
-const selectFeedCellContext = createSelector(
-  [selectFeedEventsByDate, selectFeedVolumeScales, selectFollowedUserNames],
-  (feedEvents, scales, names) => ({ feedEvents, scales, names }),
-);
 
 export interface ActivityWeekParams {
   today: LocalDate;
@@ -147,24 +105,15 @@ export interface ActivityMonthParams extends ActivityWeekParams {
   yearMonth: YearMonth;
 }
 
-export interface ActivityMonth {
-  rows: ActivityRow[];
-  /** True when the month reaches past the feed horizon *and* there is friend data that could have been lost. */
-  crossesFeedHorizon: boolean;
-}
-
 /** `today` is an argument rather than read from the clock, so memoization can't go stale across midnight. */
 export const selectActivityMonth = createSelector(
   [
-    selectFeedCellContext,
     selectFirstDayOfWeek,
-    selectFollowsOtherUsers,
     (_: RootState, params: ActivityMonthParams) => params.yearMonth,
     (_: RootState, params: ActivityMonthParams) => params.today,
     (_: RootState, params: ActivityMonthParams) => params.own,
   ],
-  (feedContext, firstDayOfWeek, followsOthers, yearMonth, today, own): ActivityMonth => {
-    const context = withHorizon({ ...feedContext, own }, today);
+  (firstDayOfWeek, yearMonth, today, own): ActivityRow[] => {
     const firstOfMonth = LocalDate.of(yearMonth.year(), yearMonth.monthValue(), 1);
 
     const leadingDays = (firstOfMonth.dayOfWeek().value() - firstDayOfWeek.value() + 7) % 7;
@@ -173,10 +122,7 @@ export const selectActivityMonth = createSelector(
 
     const cells = Array.from({ length: totalDays }, (_, index) => {
       const date = firstOfMonth.plusDays(index - leadingDays);
-      return buildCell(date, context, {
-        isOutsideFocus: index < leadingDays || index >= leadingDays + yearMonth.lengthOfMonth(),
-        includeMarkers: true,
-      });
+      return buildOwnCell(date, own, today, index < leadingDays || index >= leadingDays + yearMonth.lengthOfMonth());
     });
 
     const rows: ActivityRow[] = [];
@@ -184,57 +130,47 @@ export const selectActivityMonth = createSelector(
       rows.push({ key: `week-${start / 7}`, cells: cells.slice(start, start + 7) });
     }
 
-    return {
-      rows,
-      crossesFeedHorizon: firstOfMonth.isBefore(context.horizon) && followsOthers,
-    };
+    return rows;
   },
 );
-
-function withHorizon(context: Omit<CellContext, 'today' | 'horizon'>, today: LocalDate): CellContext {
-  return { ...context, today, horizon: today.minusDays(FEED_EVENT_RETENTION_DAYS) };
-}
 
 /** The seven days ending on `today`, as one row per user - you first, then whoever else trained. */
 export const selectActivityWeek = createSelector(
   [
-    selectFeedCellContext,
+    selectFeedEventsByDate,
+    selectFeedVolumeScales,
     selectFollowedUserNames,
     (_: RootState, params: ActivityWeekParams) => params.today,
     (_: RootState, params: ActivityWeekParams) => params.own,
   ],
-  (feedContext, names, today, own): ActivityRow[] => {
-    const context = withHorizon({ ...feedContext, own }, today);
+  (feedEvents, scales, names, today, own): ActivityRow[] => {
     const days = Array.from({ length: 7 }, (_, index) => today.minusDays(6 - index));
 
     const ownRow: ActivityRow = {
       key: OWN_USER_KEY,
-      cells: days.map((date) => buildCell(date, context, { isOutsideFocus: false, includeMarkers: false })),
+      cells: days.map((date) => buildOwnCell(date, own, today, false)),
     };
 
     const userIdsWithActivity = new Set(
-      days.flatMap((date) => (context.feedEvents.get(date.toString()) ?? []).map((event) => event.userId)),
+      days.flatMap((date) => (feedEvents.get(date.toString()) ?? []).map((event) => event.userId)),
     );
 
     const friendRows = [...userIdsWithActivity].map((userId): ActivityRow => {
-      const scale = context.scales.get(userId);
+      const scale = scales.get(userId);
       return {
         key: userId,
         label: names.get(userId),
         cells: days.map((date) => {
-          const events = (context.feedEvents.get(date.toString()) ?? []).filter((event) => event.userId === userId);
+          const events = (feedEvents.get(date.toString()) ?? []).filter((event) => event.userId === userId);
           const volume = events.reduce((total, event) => total + sessionVolume(event.session), 0);
 
           return {
             date,
             level: events.length === 0 || !scale ? 0 : levelFor(volume, scale),
             sessionCount: events.length,
-            markers: [],
-            overflowMarkers: 0,
             isToday: date.isEqual(today),
             isFuture: false,
             isOutsideFocus: false,
-            isBeyondFeedHorizon: false,
           } satisfies ActivityCell;
         }),
       };
@@ -284,12 +220,9 @@ export const selectFollowingActivity = createSelector(
             date,
             level: day.sessionCount === 0 || !scale ? 0 : levelFor(day.volume, scale),
             sessionCount: day.sessionCount,
-            markers: [],
-            overflowMarkers: 0,
             isToday: date.isEqual(today),
             isFuture: false,
             isOutsideFocus: false,
-            isBeyondFeedHorizon: false,
           };
         });
 

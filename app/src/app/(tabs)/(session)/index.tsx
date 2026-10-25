@@ -32,6 +32,8 @@ import { WelcomeWizard } from '@/components/smart/welcome-wizard';
 import { WhatsNewBanner } from '@/components/smart/whats-new-banner';
 import { SharedSession } from '@/models/feed-models';
 import { useStartWorkoutWithConfirmation } from '@/hooks/useStartWorkoutWithConfirmation';
+import { useStreakStats } from '@/hooks/useStreakStats';
+import { useStreakToolbarItem } from '@/components/smart/streak-toolbar-item';
 
 function ListUpcomingWorkouts({
   upcoming,
@@ -232,6 +234,7 @@ export default function Index() {
   const { t } = useTranslate();
   const currentBodyweight = upcomingSessions.map((x) => x.at(0)?.bodyweight).unwrapOr(undefined);
   const { start, confirmationDialog } = useStartWorkoutWithConfirmation();
+  const streakToolbarItem = useStreakToolbarItem(useStreakStats());
 
   useFocusEffect(() => {
     dispatch(fetchUpcomingSessions());
@@ -266,7 +269,7 @@ export default function Index() {
           headerBackVisible: false,
         }}
       />
-      <PlanMenu />
+      <PlanMenu actions={streakToolbarItem} />
       <Remote
         value={upcomingSessions}
         success={(upcoming) => {

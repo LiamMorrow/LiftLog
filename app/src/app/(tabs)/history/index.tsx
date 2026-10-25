@@ -4,14 +4,16 @@ import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { HistoryActivityCalendar } from '@/components/smart/history-activity-calendar';
 import { PrStrip } from '@/components/smart/pr-badges';
-import { WhoElseTrainedCard } from '@/components/smart/who-else-trained-card';
+import { WhoElseTrained } from '@/components/smart/who-else-trained';
 import { ReactionSummary } from '@/components/smart/reaction-summary';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
-import { StreakCard } from '@/components/presentation/summary/streak-card';
-import { spacing } from '@/hooks/useAppTheme';
+import { useStreakToolbarItem } from '@/components/smart/streak-toolbar-item';
+import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
 import { Session } from '@/models/session-models';
 import { useAppSelector } from '@/store';
@@ -36,7 +38,7 @@ import { useDeferredValue, useState } from 'react';
 import { View } from 'react-native';
 import { LegendList } from '@legendapp/list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Card, Tooltip } from 'react-native-paper';
+import { Card, Icon, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -77,6 +79,8 @@ function History() {
       `${from.toString()}:${to.toString()}`,
     ) ?? noSessions;
   const { streak: streakStats, personalRecords } = useOwnHistory();
+  const listedMonthName = formatDate(listedYearMonth.atDay(1), { month: 'long' });
+  const streakToolbarItem = useStreakToolbarItem(streakStats);
   const { push } = useRouter();
   const currentWorkoutSession = useAppSelector(selectActiveSession);
   const startWorkoutSession = useStartWorkout();
@@ -132,10 +136,12 @@ function History() {
           title: t('generic.history.title'),
         }}
       />
+      <Stack.Toolbar placement="right">{streakToolbarItem}</Stack.Toolbar>
       <LegendList
         testID="history-list"
         maintainVisibleContentPosition={false}
         data={visibleSessions}
+        extraData={personalRecords}
         keyExtractor={(session) => session.id}
         onScroll={handleScroll}
         contentContainerStyle={{
@@ -144,8 +150,7 @@ function History() {
         }}
         ItemSeparatorComponent={() => <View style={{ height: spacing[2] }} />}
         ListHeaderComponent={
-          <View style={{ gap: spacing[4], marginBottom: spacing[4] }}>
-            <StreakCard stats={streakStats} />
+          <View style={{ gap: spacing[4], marginBottom: spacing[2] }}>
             <HistoryActivityCalendar
               currentYearMonth={currentYearMonth}
               selectedDate={selectedDate}
@@ -155,7 +160,23 @@ function History() {
               }}
               onDateSelect={setSelectedDate}
             />
-            {selectedDate && <WhoElseTrainedCard date={selectedDate} />}
+            {selectedDate ? (
+              <View style={{ gap: spacing[1] }}>
+                <SelectedDayChip date={selectedDate} onClear={() => setSelectedDate(undefined)} />
+                <WhoElseTrained date={selectedDate} />
+              </View>
+            ) : (
+              visibleSessions.length > 0 && (
+                <SurfaceText font="text-sm" weight="500" color="onSurfaceVariant" testID="history-month-count">
+                  {visibleSessions.length === 1
+                    ? t('history.month.workouts.one', { month: listedMonthName })
+                    : t('history.month.workouts.other', {
+                        count: visibleSessions.length.toString(),
+                        month: listedMonthName,
+                      })}
+                </SurfaceText>
+              )
+            )}
           </View>
         }
         renderItem={({ item: session }) => (
@@ -259,5 +280,50 @@ function History() {
         }}
       />
     </>
+  );
+}
+
+function SelectedDayChip({ date, onClear }: { date: LocalDate; onClear: () => void }) {
+  const { t } = useTranslate();
+  const { colors } = useAppTheme();
+  const formatDate = useFormatDate();
+
+  return (
+    <View
+      style={{
+        alignSelf: 'flex-start',
+        borderRadius: 8,
+        overflow: 'hidden',
+        backgroundColor: colors.secondaryContainer,
+      }}
+    >
+      <TouchableRipple
+        onPress={onClear}
+        accessibilityRole="button"
+        accessibilityHint={t('history.calendar.clear_day.button')}
+        testID="history-clear-day"
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: spacing[1],
+            height: 32,
+            paddingLeft: spacing[3],
+            paddingRight: spacing[2],
+          }}
+        >
+          <SurfaceText font="text-sm" weight="500" color="onSecondaryContainer">
+            {formatDate(date, {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              year: date.year() !== LocalDate.now().year() ? 'numeric' : undefined,
+            })}
+          </SurfaceText>
+          <Icon source="close" size={18} color={colors.onSecondaryContainer} />
+        </View>
+      </TouchableRipple>
+    </View>
   );
 }

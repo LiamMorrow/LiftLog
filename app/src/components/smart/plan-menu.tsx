@@ -2,6 +2,7 @@ import PageMenu from '@/components/presentation/foundation/page-menu';
 import { useAppSelector } from '@/store';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
+import { ReactNode } from 'react';
 import Edit from '@expo/material-symbols/edit.xml';
 import Assignment from '@expo/material-symbols/assignment.xml';
 
@@ -15,13 +16,14 @@ export function usePlanNavigation() {
   };
 }
 
-export default function PlanMenu() {
+export default function PlanMenu({ actions }: { actions?: ReactNode }) {
   const { t } = useTranslate();
   const { choosePlan, editWorkouts } = usePlanNavigation();
 
   return (
     <PageMenu
       testID="plan-menu"
+      actions={actions}
       items={[
         {
           label: t('plan.choose.button'),

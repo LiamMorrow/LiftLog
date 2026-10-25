@@ -39,7 +39,7 @@ describe('ownHistoryOf', () => {
   });
 
   it('counts this week towards the streak', () => {
-    expect(ownHistoryOf([trained('a', today, 100)], [], DayOfWeek.MONDAY, today).streak.currentWeekCount).toBe(1);
+    expect(ownHistoryOf([trained('a', today, 100)], [], DayOfWeek.MONDAY, today).streak.state).toBe('secured');
   });
 
   it('groups records by session', () => {

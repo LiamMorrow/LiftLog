@@ -100,14 +100,14 @@ function RecordRows({ records, scope }: { records: PersonalRecord[]; scope: Reco
   const { label, amount, gain } = useRecordFormat(scope);
   return records.map((record) => (
     <View key={record.kind} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
-      <Icon source={icons[record.kind]} size={16} color={colors.tertiary} />
+      <Icon source={icons[record.kind]} size={16} color={colors.amber} />
       <SurfaceText font="text-sm" style={{ flex: 1 }}>
         {label(record)}
       </SurfaceText>
       <SurfaceText font="text-sm" weight="bold">
         {amount(record)}
       </SurfaceText>
-      <SurfaceText font="text-sm" weight="500" color="tertiary">
+      <SurfaceText font="text-sm" weight="500" color="amber">
         {gain(record)}
       </SurfaceText>
     </View>
@@ -152,8 +152,9 @@ function RecordPopoverContent({
 export function PrStrip({ records, scope }: ScopedRecords) {
   const { colors } = useAppTheme();
   const { label } = useRecordFormat(scope);
+  const showAccomplishments = useAppSelector((x) => x.settings.showAccomplishments);
 
-  if (!records?.length) {
+  if (!showAccomplishments || !records?.length) {
     return null;
   }
 
@@ -175,7 +176,7 @@ export function PrStrip({ records, scope }: ScopedRecords) {
             key={exerciseOrd}
             accessibilityLabel={exerciseName}
             trigger={(open) => (
-              <View style={{ borderRadius: 8, overflow: 'hidden', backgroundColor: colors.tertiaryContainer }}>
+              <View style={{ borderRadius: 8, overflow: 'hidden', backgroundColor: colors.surface }}>
                 <TouchableRipple
                   onPress={open}
                   accessibilityRole="button"
@@ -191,11 +192,10 @@ export function PrStrip({ records, scope }: ScopedRecords) {
                       paddingRight: spacing[3],
                     }}
                   >
-                    <Icon source="trophy" size={16} color={colors.onTertiaryContainer} />
+                    <Icon source="trophy" size={16} color={colors.amber} />
                     <SurfaceText
                       font="text-sm"
                       weight="500"
-                      color="onTertiaryContainer"
                       numberOfLines={1}
                       style={{ flexShrink: 1, marginLeft: spacing[0.5] }}
                     >
@@ -216,7 +216,9 @@ export function PrStrip({ records, scope }: ScopedRecords) {
 
 /** Every record a session set, under each exercise's name. */
 export function PrRecordList({ records, scope }: ScopedRecords) {
-  if (!records?.length) {
+  const showAccomplishments = useAppSelector((x) => x.settings.showAccomplishments);
+
+  if (!showAccomplishments || !records?.length) {
     return null;
   }
 
