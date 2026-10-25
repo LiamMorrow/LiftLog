@@ -26,7 +26,6 @@ const metrics = {
   default: {
     repsHeight: spacing[15],
     minWidth: spacing[15],
-    maxWidth: undefined,
     repsFont: font['text-xl'],
     targetFont: font['text-base'],
     weightFont: font['text-sm'],
@@ -35,7 +34,6 @@ const metrics = {
   compact: {
     repsHeight: spacing[9],
     minWidth: spacing[11],
-    maxWidth: spacing[16],
     repsFont: font['text-lg'],
     targetFont: font['text-xs'],
     weightFont: font['text-xs'],
@@ -65,10 +63,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
       style={{
         userSelect: 'none',
         minWidth: size.minWidth,
-        maxWidth: size.maxWidth,
         gap: 2,
-        flexGrow: size.maxWidth === undefined ? undefined : 1,
-        flexBasis: size.maxWidth === undefined ? undefined : size.minWidth,
       }}
     >
       <View
@@ -89,6 +84,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: setColors.background,
+            paddingHorizontal: spacing[2],
           }}
         >
           <View style={{ alignItems: 'center' }}>

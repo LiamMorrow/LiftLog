@@ -41,31 +41,33 @@ export const ActivityDayCell = memo(function ActivityDayCell({ cell, isSelected,
         opacity: cell.isOutsideFocus ? 0.4 : 1,
       }}
     >
-      <TouchableRipple
-        onPress={onPress && !cell.isFuture ? () => onPress(cell) : undefined}
-        disabled={cell.isFuture}
-        style={{ flex: 1, borderRadius: TILE_RADIUS, overflow: 'hidden' }}
-      >
-        <View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: TILE_RADIUS,
-            backgroundColor: isEmpty ? emptyBackground : background,
-            borderColor: outlineToday ? colors.onSurface : 'transparent',
-            borderWidth: 1.5,
-          }}
+      <View style={{ borderRadius: TILE_RADIUS, overflow: 'hidden', flex: 1 }}>
+        <TouchableRipple
+          onPress={onPress && !cell.isFuture ? () => onPress(cell) : undefined}
+          disabled={cell.isFuture}
+          style={{ flex: 1 }}
         >
-          <SurfaceText
-            font="text-sm"
-            weight={cell.isToday ? 'bold' : undefined}
-            style={{ color: isEmpty ? (outlineToday ? colors.onSurface : emptyForeground) : foreground }}
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: TILE_RADIUS,
+              backgroundColor: isEmpty ? emptyBackground : background,
+              borderColor: outlineToday ? colors.onSurface : 'transparent',
+              borderWidth: 1.5,
+            }}
           >
-            {formatDate(cell.date, { day: 'numeric' })}
-          </SurfaceText>
-        </View>
-      </TouchableRipple>
+            <SurfaceText
+              font="text-sm"
+              weight={cell.isToday ? 'bold' : undefined}
+              style={{ color: isEmpty ? (outlineToday ? colors.onSurface : emptyForeground) : foreground }}
+            >
+              {formatDate(cell.date, { day: 'numeric' })}
+            </SurfaceText>
+          </View>
+        </TouchableRipple>
+      </View>
     </FocusRing>
   );
 });
