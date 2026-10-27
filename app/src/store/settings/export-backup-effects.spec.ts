@@ -3,6 +3,7 @@ import { exportData } from '@/store/settings';
 import { addExportBackupEffects } from '@/store/settings/export-backup-effects';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { FileExportService } from '@/services/file-export-service';
+import { showSnackbar } from '@/store/app';
 import { deserializeDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
 import { readFile } from 'fs/promises';
 import { resolve } from 'node:path';
@@ -21,12 +22,18 @@ describe('addExportBackupEffects', () => {
 
     expoDb = await deserializeDatabaseAsync(gunzipSync(bytes));
   });
-  it('calls exportBytes with a .sqlite.gz filename and application/octet-stream content type', async () => {
+
+  function makeTestBed() {
     const fileExportService = makeFileExportService();
     const testBed = createAddEffectTestBed({
-      services: { fileExportService, expoDb },
+      services: { fileExportService, expoDb, tolgee: { t: (s: string) => s } },
     });
     addExportBackupEffects(testBed.addEffect);
+    return { fileExportService, testBed };
+  }
+
+  it('calls exportBytes with a .sqlite.gz filename and application/octet-stream content type', async () => {
+    const { fileExportService, testBed } = makeTestBed();
 
     await testBed.dispatchHandled(exportData({ includeFeed: true }));
 
@@ -37,11 +44,7 @@ describe('addExportBackupEffects', () => {
   });
 
   it('exports a non-empty gzip payload', async () => {
-    const fileExportService = makeFileExportService();
-    const testBed = createAddEffectTestBed({
-      services: { fileExportService, expoDb },
-    });
-    addExportBackupEffects(testBed.addEffect);
+    const { fileExportService, testBed } = makeTestBed();
 
     await testBed.dispatchHandled(exportData({ includeFeed: true }));
 
@@ -50,38 +53,24 @@ describe('addExportBackupEffects', () => {
     expect(bytes.length).toBeGreaterThan(0);
   });
 
-  it('does not dispatch any actions', async () => {
-    const fileExportService = makeFileExportService();
-    const testBed = createAddEffectTestBed({
-      services: { fileExportService, expoDb },
-    });
-    addExportBackupEffects(testBed.addEffect);
+  it('shows the generating snackbar', async () => {
+    const { testBed } = makeTestBed();
 
     await testBed.dispatchHandled(exportData({ includeFeed: true }));
 
-    expect(testBed.dispatchedActions).toHaveLength(0);
+    expect(testBed.getDispatchedAction(showSnackbar).payload.text).toBe('backup.generating.message');
   });
 
   it('with includeFeed=false, executes feed table deletions on the backup db', async () => {
-    const fileExportService = makeFileExportService();
-    const testBed = createAddEffectTestBed({
-      services: { fileExportService, expoDb },
-    });
-    addExportBackupEffects(testBed.addEffect);
+    const { fileExportService, testBed } = makeTestBed();
 
-    // Just assert it completes without error - the real assertion is that
-    // execAsync was called (covered by the db mock) and exportBytes still fires
     await testBed.dispatchHandled(exportData({ includeFeed: false }));
 
     expect(fileExportService.exportBytes).toHaveBeenCalledOnce();
   });
 
   it('with includeFeed=true, skips the feed table deletions', async () => {
-    const fileExportService = makeFileExportService();
-    const testBed = createAddEffectTestBed({
-      services: { fileExportService, expoDb },
-    });
-    addExportBackupEffects(testBed.addEffect);
+    const { fileExportService, testBed } = makeTestBed();
 
     await testBed.dispatchHandled(exportData({ includeFeed: true }));
 
