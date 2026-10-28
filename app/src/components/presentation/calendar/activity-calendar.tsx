@@ -6,7 +6,7 @@ import { getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek, LocalDate } from '@js-joda/core';
 import { ReactNode } from 'react';
 import { I18nManager, View, ViewStyle } from 'react-native';
-import { ActivityDayCell } from '@/components/presentation/calendar/activity-day-cell';
+import { ActivityDayCell, TILE_HEIGHT } from '@/components/presentation/calendar/activity-day-cell';
 import { ActivityWeekCell } from '@/components/presentation/calendar/activity-week-cell';
 
 /** Keeps every row's cells aligned under one another regardless of how long the names are. */
@@ -17,7 +17,9 @@ export type ActivityDensity = 'month' | 'week';
 
 interface ActivityCalendarProps {
   density: ActivityDensity;
-  rows: ActivityRow[];
+  rows?: ActivityRow[];
+  /** Drawn in place of the month grid built from `rows`, e.g. to page between months. */
+  monthBody?: ReactNode;
   /** Only the month grid needs it; a week row is a rolling window, so its columns are named by their own dates. */
   firstDayOfWeek?: DayOfWeek;
   selectedDate?: LocalDate;
@@ -29,7 +31,8 @@ interface ActivityCalendarProps {
 
 export function ActivityCalendar({
   density,
-  rows,
+  rows = [],
+  monthBody,
   firstDayOfWeek,
   selectedDate,
   header,
@@ -72,32 +75,17 @@ export function ActivityCalendar({
         {isWeek && renderRowTrailing && <View style={{ width: TRAILING_WIDTH }} />}
       </View>
 
-      {rows.map((row) => {
-        const cells = (
-          <ForceLTRRow style={{ flex: 1, gap: cellGap }}>
-            {row.cells.map((cell, columnIndex) =>
-              // Position, not date: keying by date would remount all 42 cells on every month change.
-              isWeek ? (
-                <ActivityWeekCell key={columnIndex} cell={cell} />
-              ) : (
-                <ActivityDayCell
-                  key={columnIndex}
-                  cell={cell}
-                  isSelected={!!selectedDate?.isEqual(cell.date)}
-                  onPress={onCellPress}
-                />
-              ),
-            )}
-          </ForceLTRRow>
-        );
-
-        if (isWeek) {
-          return (
+      {isWeek
+        ? rows.map((row) => (
             <View key={row.key} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
               <SurfaceText font="text-sm" weight="bold" numberOfLines={1} style={{ width: LABEL_WIDTH }}>
                 {row.label}
               </SurfaceText>
-              {cells}
+              <ForceLTRRow style={{ flex: 1, gap: cellGap }}>
+                {row.cells.map((cell, columnIndex) => (
+                  <ActivityWeekCell key={columnIndex} cell={cell} />
+                ))}
+              </ForceLTRRow>
               {renderRowTrailing && (
                 <View style={{ width: TRAILING_WIDTH }}>
                   <SurfaceText font="text-xs" color="onSurfaceVariant" numberOfLines={1}>
@@ -106,17 +94,39 @@ export function ActivityCalendar({
                 </View>
               )}
             </View>
-          );
-        }
-
-        return (
-          <View key={row.key} style={{ gap: cellGap }}>
-            {cells}
-          </View>
-        );
-      })}
+          ))
+        : (monthBody ?? <ActivityMonthRows rows={rows} selectedDate={selectedDate} onCellPress={onCellPress} />)}
 
       {footer}
+    </View>
+  );
+}
+
+interface ActivityMonthRowsProps {
+  rows: ActivityRow[];
+  selectedDate?: LocalDate;
+  onCellPress?: (cell: ActivityCell) => void;
+}
+
+export function activityMonthRowsHeight(rowCount: number) {
+  return rowCount * TILE_HEIGHT + (rowCount - 1) * spacing[2];
+}
+
+export function ActivityMonthRows({ rows, selectedDate, onCellPress }: ActivityMonthRowsProps) {
+  return (
+    <View style={{ gap: spacing[2] }}>
+      {rows.map((row) => (
+        <ForceLTRRow key={row.key} style={{ gap: spacing[2] }}>
+          {row.cells.map((cell, columnIndex) => (
+            <ActivityDayCell
+              key={columnIndex}
+              cell={cell}
+              isSelected={!!selectedDate?.isEqual(cell.date)}
+              onPress={onCellPress}
+            />
+          ))}
+        </ForceLTRRow>
+      ))}
     </View>
   );
 }

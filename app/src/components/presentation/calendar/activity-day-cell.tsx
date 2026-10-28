@@ -8,7 +8,7 @@ import { View } from 'react-native';
 import { levelColor } from '@/components/presentation/calendar/activity-colors';
 import FocusRing from '@/components/presentation/foundation/focus-ring';
 
-const TILE_HEIGHT = 40;
+export const TILE_HEIGHT = 40;
 const TILE_RADIUS = 14;
 const SELECTED_RING_PADDING = 3;
 

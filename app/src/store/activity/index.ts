@@ -5,6 +5,7 @@ import { RootState } from '@/store/store';
 import { ActivityCell, ActivityRow, VolumeScale } from '@/store/activity/activity-types';
 import { levelFor, sessionVolume, volumeScaleOf } from '@/store/activity/volume';
 import { DayActivity, OwnHistory } from '@/store/activity/own-history';
+import { weeksInMonth } from '@/store/activity/week-start';
 import { findPersonalRecords, PersonalRecord } from '@/store/stats/personal-records';
 
 export * from '@/store/activity/activity-types';
@@ -117,8 +118,7 @@ export const selectActivityMonth = createSelector(
     const firstOfMonth = LocalDate.of(yearMonth.year(), yearMonth.monthValue(), 1);
 
     const leadingDays = (firstOfMonth.dayOfWeek().value() - firstDayOfWeek.value() + 7) % 7;
-    const trailingDays = (7 - ((leadingDays + yearMonth.lengthOfMonth()) % 7)) % 7;
-    const totalDays = leadingDays + yearMonth.lengthOfMonth() + trailingDays;
+    const totalDays = weeksInMonth(yearMonth, firstDayOfWeek) * 7;
 
     const cells = Array.from({ length: totalDays }, (_, index) => {
       const date = firstOfMonth.plusDays(index - leadingDays);

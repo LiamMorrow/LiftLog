@@ -158,7 +158,7 @@ function History() {
                 setCurrentYearMonth(yearMonth);
                 setSelectedDate(undefined);
               }}
-              onDateSelect={setSelectedDate}
+              onDateToggle={(date) => setSelectedDate((current) => (current?.isEqual(date) ? undefined : date))}
             />
             {selectedDate ? (
               <View style={{ gap: spacing[1] }}>
