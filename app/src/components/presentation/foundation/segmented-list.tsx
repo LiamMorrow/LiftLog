@@ -125,7 +125,7 @@ export function SegmentedListRowAction(props: { children: ReactNode }) {
   return <View style={styles.rowAction}>{props.children}</View>;
 }
 
-function SegmentedListItem(props: { isFirst: boolean; isLast: boolean; children: ReactNode }) {
+export function SegmentedListItem(props: { isFirst: boolean; isLast: boolean; children: ReactNode }) {
   const style = match(props)
     .with(
       {

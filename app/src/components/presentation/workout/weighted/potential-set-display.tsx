@@ -8,38 +8,16 @@ import TouchableRipple from '@/components/presentation/foundation/touchable-ripp
 import Icon from '@/components/presentation/foundation/icon';
 import { match } from 'ts-pattern';
 
-export type PotentialSetSize = 'default' | 'compact';
-
 interface PotentialSetDisplayProps {
   set: PotentialSet;
   repsTarget: RepsTarget;
   resistance: Resistance;
   previousRepCount?: number | undefined;
-  size?: PotentialSetSize;
 
   /** Omit to render a static tile - a tile with no handler mounts no gesture detector at all. */
   onPressReps?: () => void;
   onPressWeight?: () => void;
 }
-
-const metrics = {
-  default: {
-    repsHeight: spacing[15],
-    minWidth: spacing[15],
-    repsFont: font['text-xl'],
-    targetFont: font['text-base'],
-    weightFont: font['text-sm'],
-    weightPadding: spacing[2],
-  },
-  compact: {
-    repsHeight: spacing[9],
-    minWidth: spacing[11],
-    repsFont: font['text-lg'],
-    targetFont: font['text-xs'],
-    weightFont: font['text-xs'],
-    weightPadding: spacing[1],
-  },
-} as const;
 
 /**
  * The two-tone set tile, without any of the editor's interactivity. Handlers are optional so a read-only
@@ -48,7 +26,6 @@ const metrics = {
  */
 export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
   const { colors } = useAppTheme();
-  const size = metrics[props.size ?? 'default'];
   const repCountValue = props.set.set?.repsCompleted;
   const isFilled = repCountValue !== undefined;
   const showsWeight = props.resistance !== 'none';
@@ -62,7 +39,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
     <View
       style={{
         userSelect: 'none',
-        minWidth: size.minWidth,
+        minWidth: spacing[15],
         gap: 2,
       }}
     >
@@ -80,7 +57,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
           testID="repcount"
           style={{
             flexShrink: 0,
-            height: size.repsHeight,
+            height: spacing[15],
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: setColors.background,
@@ -91,11 +68,11 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
             <Text
               style={{
                 color: setColors.text,
-                ...size.repsFont,
+                ...font['text-xl'],
               }}
             >
               <Text style={{ fontWeight: isFilled ? 'bold' : undefined }}>{repCountValue ?? '-'}</Text>
-              <Text style={{ ...size.targetFont, verticalAlign: 'top' }}>/{formatRepsTarget(props.repsTarget)}</Text>
+              <Text style={{ ...font['text-base'], verticalAlign: 'top' }}>/{formatRepsTarget(props.repsTarget)}</Text>
             </Text>
             {props.previousRepCount !== undefined && (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[0.5] }}>
@@ -115,7 +92,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
             borderBottomLeftRadius: rounding.roundedRectangleRadius,
             borderBottomRightRadius: rounding.roundedRectangleRadius,
             overflow: 'hidden',
-            padding: size.weightPadding,
+            padding: spacing[2],
             width: '100%',
           }}
         >
@@ -124,11 +101,11 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
             testID="repcount-weight"
             style={{
               alignItems: 'center',
-              margin: -size.weightPadding,
-              padding: size.weightPadding,
+              margin: -spacing[2],
+              padding: spacing[2],
             }}
           >
-            <Text style={{ color: colors.onSecondaryContainer, ...size.weightFont }}>
+            <Text style={{ color: colors.onSecondaryContainer, ...font['text-sm'] }}>
               <WeightFormat weight={props.set.weight} usesBodyweight={props.resistance === 'bodyweight'} />
             </Text>
           </Pressable>
