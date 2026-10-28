@@ -11,7 +11,6 @@ import {
   RecordedCardioExerciseSet,
   RecordedExercise,
   RecordedWeightedExercise,
-  RestTimer as RestTimerModel,
   Session,
 } from '@/models/session-models';
 import { Updater } from '@/utils/types';
@@ -39,10 +38,6 @@ import { CardioExercise } from '@/components/presentation/workout/cardio/cardio-
 import WeightFormat from '../presentation/foundation/weight-format';
 import { formatDuration } from '@/utils/format-date';
 import { useAddExercise } from '@/hooks/useAddExercise';
-
-function withRestTimerAt(session: Session, time: OffsetDateTime | undefined) {
-  return session.with({ restTimer: time ? new RestTimerModel(time) : undefined });
-}
 
 export default function SessionComponent(props: {
   session: Session;
@@ -78,7 +73,7 @@ export default function SessionComponent(props: {
   const addExercise = useAddExercise(editableSessionId);
   const updateSession = (reducer: (session: Session) => Session) => props.updateSession?.(reducer);
   const resetTimer = (time: OffsetDateTime | undefined) => {
-    updateSession((s) => withRestTimerAt(s, time));
+    updateSession((s) => s.withRestTimerAt(time));
   };
   const dismissTimer = () => {
     const dismissedTimer = session.restTimer;
@@ -103,10 +98,19 @@ export default function SessionComponent(props: {
       const before = s.cardioSetAt(exerciseIndex, setIndex);
       const updated = s.withCardioSet(exerciseIndex, setIndex, update, now);
       return updated.cardioSetAt(exerciseIndex, setIndex)?.earnsRest(before)
-        ? withRestTimerAt(updated, updated.lastExercise?.latestTime)
+        ? updated.withRestTimerAt(updated.lastExercise?.latestTime)
         : updated;
     });
   };
+
+  const updateWeightedExercise = (exerciseIndex: number) => (update: Updater<RecordedWeightedExercise>) =>
+    updateSession((s) => {
+      const updated = s.withExercise(
+        exerciseIndex,
+        update(s.recordedExercises[exerciseIndex] as RecordedWeightedExercise),
+      );
+      return updated.hasSameLatestCompletion(s) ? updated : updated.withRestTimerAt(updated.lastExercise?.latestTime);
+    });
 
   const startCardioTimer = (exerciseIndex: number) => (setIndex: number) =>
     updateSession((s) => s.withCardioTimerStarted(exerciseIndex, setIndex, OffsetDateTime.now()));
@@ -154,12 +158,9 @@ export default function SessionComponent(props: {
               : (session.lastExercise?.latestTime ??
                 session.date.atTime(LocalTime.now()).atZone(ZoneId.systemDefault()).toOffsetDateTime())
           }
-          resetSetTimer={() => updateSession((s) => withRestTimerAt(s, s.lastExercise?.latestTime))}
           recordedExercise={item}
           toStartNext={session.nextExercise === item}
-          updateExercise={(update) =>
-            updateSession((s) => s.withExercise(index, update(s.recordedExercises[index] as RecordedWeightedExercise)))
-          }
+          updateExercise={updateWeightedExercise(index)}
           onEditExercise={
             editableSessionId ? () => push(getSessionExerciseEditorHref(editableSessionId, index)) : undefined
           }
@@ -236,7 +237,6 @@ export default function SessionComponent(props: {
   ) : null;
 
   const lastExercise = session.lastExercise;
-  const lastRecordedSet = lastExercise instanceof RecordedWeightedExercise ? lastExercise?.lastRecordedSet : undefined;
   const nextExercise = session.nextExercise;
 
   // A weighted exercise rests per exercise; cardio rests per set, and may not rest at all.
@@ -246,12 +246,6 @@ export default function SessionComponent(props: {
     .otherwise(() => undefined);
 
   const showRestTimer = restTimersEnabled && isActiveWorkout && nextExercise && restBetweenSets && session.restTimer;
-  // Only a weighted set can be failed - cardio has no rep count to fall short of.
-  const lastSetFailed =
-    lastRecordedSet?.set &&
-    lastExercise instanceof RecordedWeightedExercise &&
-    lastRecordedSet.set.repsCompleted <
-      lastExercise.repsTargetForSet(lastExercise.potentialSets.indexOf(lastRecordedSet)).min;
   const cheerBanner = arrivingCheers.length ? (
     <CheerBanner cheers={arrivingCheers} onDismiss={dismissCheers} />
   ) : undefined;
@@ -261,7 +255,7 @@ export default function SessionComponent(props: {
       rest={restBetweenSets}
       startTime={session.restTimer.startedAt}
       pausedAt={session.restTimer.pausedAt}
-      failed={!!lastSetFailed}
+      failed={session.lastSetFailed}
       onRestart={() => resetTimer(OffsetDateTime.now())}
       onDismiss={dismissTimer}
       onTogglePause={toggleRestTimerPaused}
