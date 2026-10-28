@@ -21,7 +21,7 @@ export interface TimeTrackedStatistic<T> {
 }
 
 // We use this to ensure that when showing multiple series with disparate data, we can ensure that the x axis points are properly aligned
-interface OptionalTimeTrackedStatistic<T> {
+export interface OptionalTimeTrackedStatistic<T> {
   dateTime: OffsetDateTime;
   value: T | undefined;
 }
@@ -54,6 +54,15 @@ export interface WeightedExerciseStatistics {
   repsStatistics: RepsBreakdownStatistics;
 }
 
+export interface WorkoutExerciseStatistics {
+  workoutName: string;
+  exerciseStats: OptionalStatisticOverTime<Weight>[];
+}
+
+export interface PinnedExerciseStatistic {
+  exerciseName: string;
+}
+
 export interface StatisticOverTime<T> {
   statistics: TimeTrackedStatistic<T>[];
   currentValue: T;
@@ -84,6 +93,7 @@ export interface GranularStatisticView {
   heaviestLift: HeaviestLift | undefined;
   weightedExerciseStats: WeightedExerciseStatistics[];
   sessionStats: OptionalStatisticOverTime<Weight>[];
+  workoutExerciseStats: WorkoutExerciseStatistics[];
   bodyweightStats: WeightedStatisticOverTime;
 }
 
@@ -129,6 +139,13 @@ export const selectExerciseView = createSelector(
         (ex) => normalizeExerciseName(ex.exerciseName) === normalizeExerciseName(exerciseName),
       ),
     ),
+);
+
+export const selectWorkoutView = createSelector(
+  selectOverallView,
+  (_, workoutName: string) => workoutName,
+  (state: RemoteData<GranularStatisticView>, workoutName: string) =>
+    state.map((x) => x.workoutExerciseStats.find((w) => w.workoutName === workoutName)),
 );
 
 export const fetchOverallStats = createAction('fetchOverallStats');
