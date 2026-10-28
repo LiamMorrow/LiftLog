@@ -2,7 +2,7 @@ import Icon from '@/components/presentation/foundation/icon';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { LegendList } from '@legendapp/list';
+import { LegendList } from '@legendapp/list/react-native';
 import { Children, isValidElement, ReactNode } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Card, Text } from 'react-native-paper';

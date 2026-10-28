@@ -36,7 +36,7 @@ import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useDeferredValue, useState } from 'react';
 import { View } from 'react-native';
-import { LegendList } from '@legendapp/list';
+import { LegendList } from '@legendapp/list/react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Card, Icon, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';

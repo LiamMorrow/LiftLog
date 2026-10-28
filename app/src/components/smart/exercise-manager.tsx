@@ -24,7 +24,7 @@ import { showSnackbar } from '@/store/app';
 import { useMountEffect } from '@/hooks/useMountEffect';
 import ExerciseMuscleSelector from '@/components/presentation/workout-editor/exercise-muscle-selector';
 import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
-import { LegendList } from '@legendapp/list';
+import { LegendList } from '@legendapp/list/react-native';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import { translateExerciseMeta } from '@/utils/exercise-meta';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';

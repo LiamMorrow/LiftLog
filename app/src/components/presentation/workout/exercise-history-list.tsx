@@ -19,7 +19,7 @@ import { formatDuration } from '@/utils/format-duration';
 import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
 import { LocalDate } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
-import { LegendList } from '@legendapp/list';
+import { LegendList } from '@legendapp/list/react-native';
 import { useState } from 'react';
 import { Pressable, StyleProp, View, ViewStyle } from 'react-native';
 import { match, P } from 'ts-pattern';
@@ -47,12 +47,15 @@ export function ExerciseHistoryList(props: {
   contentContainerStyle?: StyleProp<ViewStyle>;
 }) {
   const items = withMonthHeaders(props.exercises);
+  const stickyHeaderIndices = items.flatMap((item, index) => (item.kind === 'month' ? [index] : []));
 
   return (
     <LegendList
       testID="exercise-history-list"
       data={items}
       nestedScrollEnabled
+      stickyHeaderIndices={stickyHeaderIndices}
+      estimatedItemSize={64}
       getItemType={(item) => item.kind}
       keyExtractor={(item, index) =>
         item.kind === 'month' ? `month-${item.month.toString()}` : `${item.exercise.latestTime?.toString()}-${index}`

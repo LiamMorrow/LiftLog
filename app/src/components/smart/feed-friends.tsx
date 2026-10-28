@@ -33,7 +33,7 @@ import { Card } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { match } from 'ts-pattern';
 import PersonRemove from '@expo/material-symbols/person_remove.xml';
-import { LegendList } from '@legendapp/list';
+import { LegendList } from '@legendapp/list/react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type FriendRow =

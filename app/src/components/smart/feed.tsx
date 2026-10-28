@@ -32,7 +32,7 @@ import { View } from 'react-native';
 import { Card } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
-import { LegendList, LegendListRef } from '@legendapp/list';
+import { LegendList, LegendListRef } from '@legendapp/list/react-native';
 import { useEffect, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import IconButton from '@/components/presentation/foundation/icon-button';
@@ -47,7 +47,7 @@ export default function Feed() {
   const itemSignature = feedItems.map((x) => x.eventId).join(',');
 
   useEffect(() => {
-    listRef.current?.scrollToOffset({ offset: 0, animated: false });
+    void listRef.current?.scrollToOffset({ offset: 0, animated: false });
   }, [itemSignature]);
 
   return (

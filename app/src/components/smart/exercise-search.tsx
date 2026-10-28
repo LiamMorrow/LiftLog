@@ -7,7 +7,7 @@ import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { setExerciseSearchResult } from '@/store/app';
 import { selectExerciseById, selectExerciseIds, updateExercise } from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
-import { LegendList } from '@legendapp/list';
+import { LegendList } from '@legendapp/list/react-native';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
