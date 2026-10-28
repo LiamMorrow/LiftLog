@@ -35,6 +35,7 @@
       "./plugins/android-gradle-properties.js",
       "./plugins/android-react-native-feature-flags.js",
       "./plugins/android-nav-bar-contrast.js",
+      "./plugins/android-network-security-config.js",
       [
         "expo-notifications",
         {
@@ -114,6 +115,9 @@
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true,
         "ITSAppUsesNonExemptEncryption": false,
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        },
         "LSSupportsOpeningDocumentsInPlace": true,
         "CFBundleDocumentTypes": [
           {

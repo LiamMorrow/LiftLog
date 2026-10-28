@@ -28,6 +28,7 @@
   "backends.name.required.message": "A name is required",
   "backends.url.required.message": "A URL is required",
   "backends.url.error.message": "URL must start with http:// or https://",
+  "backends.url.insecure.message": "Without https://, anyone on your network can read what is sent, including your headers. Only use http:// on a network you trust.",
   "backends.kind.label": "Type",
   "backends.kind.liftlog.label": "LiftLog backend",
   "backends.kind.liftlog.body": "Serves the feed, the AI planner and backups.",

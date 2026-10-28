@@ -1,4 +1,4 @@
-import { basicAuthHeaderValue, parseBasicAuthHeaderValue } from './backend';
+import { backendUrlIsInsecure, basicAuthHeaderValue, parseBasicAuthHeaderValue } from './backend';
 import { describe, expect, it } from 'vitest';
 
 describe('basicAuthHeaderValue', () => {
@@ -29,5 +29,15 @@ describe('parseBasicAuthHeaderValue', () => {
     expect(parseBasicAuthHeaderValue('Basic not valid base64!')).toBeUndefined();
     expect(parseBasicAuthHeaderValue(`Basic ${Buffer.from('nocolon').toString('base64')}`)).toBeUndefined();
     expect(parseBasicAuthHeaderValue('')).toBeUndefined();
+  });
+});
+
+describe('backendUrlIsInsecure', () => {
+  it('flags plain http only', () => {
+    expect(backendUrlIsInsecure('http://192.168.1.10:5264')).toBe(true);
+    expect(backendUrlIsInsecure('  http://liftlog.lan')).toBe(true);
+    expect(backendUrlIsInsecure('https://liftlog.example.com')).toBe(false);
+    expect(backendUrlIsInsecure('http://')).toBe(false);
+    expect(backendUrlIsInsecure('')).toBe(false);
   });
 });

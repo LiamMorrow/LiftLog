@@ -83,6 +83,10 @@ export function backendUrlIsValid(url: string): boolean {
   return /^https?:\/\/.+/.test(url.trim());
 }
 
+export function backendUrlIsInsecure(url: string): boolean {
+  return /^http:\/\/.+/.test(url.trim());
+}
+
 /** An incomplete backend is one nothing could be asked of, so no feature is allowed to point at it. */
 export function isBackendComplete(backend: Backend): boolean {
   return !!backend.name.trim() && backendUrlIsValid(backend.url);
