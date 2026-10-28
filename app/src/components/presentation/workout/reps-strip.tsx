@@ -23,14 +23,15 @@ export function RepsStrip(props: { sets: RepsStripSet[]; compact?: boolean; styl
 function RepsSegment(props: { set: RepsStripSet; compact?: boolean; isFirst: boolean; isLast: boolean }) {
   const { colors } = useAppTheme();
   const { set } = props;
-  const size = props.compact ? spacing[6] : spacing[8];
+  const height = props.compact ? spacing[6] : spacing[8];
+  const minWidth = props.compact ? spacing[6] + spacing[0.5] : spacing[8];
   const startRadius = props.isFirst ? rounding.roundedRectangleRadius : rounding.segmentedBetweenRadius;
   const endRadius = props.isLast ? rounding.roundedRectangleRadius : rounding.segmentedBetweenRadius;
   return (
     <View
       style={{
-        minWidth: size,
-        height: size,
+        minWidth,
+        height,
         paddingHorizontal: spacing[1],
         borderTopLeftRadius: startRadius,
         borderBottomLeftRadius: startRadius,
