@@ -11,10 +11,16 @@ import { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 export default function SharedItemPage() {
-  const { id, k } = useLocalSearchParams<{
+  const {
+    id,
+    '#': hashKey,
+    k: legacyQueryKey,
+  } = useLocalSearchParams<{
     id: string;
+    '#'?: string;
     k?: string;
   }>();
+  const k = hashKey || legacyQueryKey;
   const sharedRemote = useAppSelector(selectSharedItem);
   const dispatch = useDispatch();
   const { t } = useTranslate();

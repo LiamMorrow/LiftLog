@@ -246,7 +246,7 @@ On decryption, each key held for that user is tried, newest first:
 
 Keys created before AES-GCM are AES-CBC, and a key with no recorded algorithm is one of them. They use the same steps with a random 16-byte IV, and a profile encrypts every field under the one `encryptionIV`. AES-CBC does not authenticate ciphertext, so an attacker who knows part of the plaintext can modify it without the key, as described in [this post by Seald](https://www.seald.io/blog/3-common-mistakes-when-implementing-encryption). The signature covers this, because a modified payload hashes differently and its signature no longer verifies.
 
-Shared-item links carry a one-off AES-128-CBC key in the URL.
+Shared-item links carry a one-off AES-128-CBC key in the URL fragment, which browsers never send to the server.
 
 ## Where the code is
 
