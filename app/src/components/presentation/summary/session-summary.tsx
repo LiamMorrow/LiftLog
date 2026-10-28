@@ -17,7 +17,7 @@ export default function SessionSummary({
   showSets,
   color = 'onSurface',
 }: SessionSummaryProps) {
-  const { colors } = useAppTheme();
+  const { colors, colorScheme } = useAppTheme();
   return (
     <View style={{ gap: showSets ? spacing[2] : spacing[1] }} testID="session-summary">
       {session.recordedExercises
@@ -25,7 +25,13 @@ export default function SessionSummary({
         .map((ex, index) => (
           <View
             key={index}
-            style={showSets && { borderBottomWidth: 1, borderColor: colors.outlineVariant, paddingBottom: spacing[2] }}
+            style={
+              showSets && {
+                borderBottomWidth: 1,
+                borderColor: colorScheme === 'light' ? colors.outlineVariant : colors.outline,
+                paddingBottom: spacing[2],
+              }
+            }
           >
             <ExerciseSummaryLine
               exercise={ex}
