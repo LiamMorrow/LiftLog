@@ -186,7 +186,7 @@ function History() {
                 titleContent={<SessionSummaryTitle showDate session={session} />}
                 mainContent={
                   <View style={{ gap: spacing[3] }}>
-                    <SessionSummary isFilled showWeight session={session} />
+                    <SessionSummary isFilled showWeight showSets session={session} />
                     <PrStrip records={personalRecords.get(session.id)} scope="history" />
                   </View>
                 }

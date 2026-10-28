@@ -223,7 +223,7 @@ function SessionCardContent({ session }: { session: Session }) {
   return (
     <SplitCardControl
       titleContent={<SessionSummaryTitle session={session} />}
-      mainContent={<SessionSummary session={session} isFilled={false} showWeight />}
+      mainContent={<SessionSummary session={session} isFilled={false} showWeight showSets />}
     />
   );
 }

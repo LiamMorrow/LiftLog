@@ -3,7 +3,8 @@ import Icon from '@/components/presentation/foundation/icon';
 import { SegmentedListItem } from '@/components/presentation/foundation/segmented-list';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
-import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { RepsStrip } from '@/components/presentation/workout/reps-strip';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { formatRepsTarget, RepsTarget } from '@/models/blueprint-models';
 import {
@@ -169,16 +170,10 @@ function WeightedRuns(props: { exercise: RecordedWeightedExercise }) {
               />
             </View>
           )}
-          <View style={{ flexShrink: 1, flexDirection: 'row', flexWrap: 'wrap', gap: spacing[0.5] }}>
-            {run.map(({ set }, setIndex) => (
-              <RepsSegment
-                key={setIndex}
-                reps={set.set?.repsCompleted}
-                isFirst={setIndex === 0}
-                isLast={setIndex === run.length - 1}
-              />
-            ))}
-          </View>
+          <RepsStrip
+            style={{ flexShrink: 1 }}
+            sets={run.map(({ set }) => ({ label: set.set?.repsCompleted.toString() ?? '-', isDone: !!set.set }))}
+          />
           <SurfaceText font="text-xs" color="onSurfaceVariant" style={{ fontVariant: ['tabular-nums'] }}>
             {formatTargets(run.map((x) => x.target))}
           </SurfaceText>
@@ -192,40 +187,6 @@ function formatTargets(targets: RepsTarget[]): string {
   return consecutiveRuns(targets, (a, b) => a.min === b.min && a.max === b.max)
     .map((run) => `${run.length}×${formatRepsTarget(run[0]!)}`)
     .join(', ');
-}
-
-function RepsSegment(props: { reps: number | undefined; isFirst: boolean; isLast: boolean }) {
-  const { colors } = useAppTheme();
-  const isFilled = props.reps !== undefined;
-  const startRadius = props.isFirst ? rounding.roundedRectangleRadius : rounding.segmentedBetweenRadius;
-  const endRadius = props.isLast ? rounding.roundedRectangleRadius : rounding.segmentedBetweenRadius;
-  return (
-    <View
-      style={{
-        minWidth: spacing[8],
-        height: spacing[8],
-        paddingHorizontal: spacing[1],
-        borderTopLeftRadius: startRadius,
-        borderBottomLeftRadius: startRadius,
-        borderTopRightRadius: endRadius,
-        borderBottomRightRadius: endRadius,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: isFilled ? colors.primary : colors.secondaryContainer,
-      }}
-    >
-      <SurfaceText
-        font="text-base"
-        weight={isFilled ? 'bold' : undefined}
-        style={{
-          color: isFilled ? colors.onPrimary : colors.onSecondaryContainer + '99',
-          fontVariant: ['tabular-nums'],
-        }}
-      >
-        {props.reps ?? '-'}
-      </SurfaceText>
-    </View>
-  );
 }
 
 function CardioSets(props: { exercise: RecordedCardioExercise }) {

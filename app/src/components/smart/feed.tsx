@@ -195,7 +195,7 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
               }
               mainContent={
                 <View style={{ gap: spacing[3] }}>
-                  <SessionSummary session={props.feedItem.session} isFilled showWeight />
+                  <SessionSummary session={props.feedItem.session} isFilled showWeight showSets />
                   <PrStrip {...records} />
                 </View>
               }

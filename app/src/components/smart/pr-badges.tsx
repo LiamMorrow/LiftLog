@@ -164,9 +164,6 @@ export function PrStrip({ records, scope }: ScopedRecords) {
         flexDirection: 'row',
         flexWrap: 'wrap',
         gap: spacing[2],
-        paddingTop: spacing[3],
-        borderTopWidth: 1,
-        borderTopColor: colors.outlineVariant,
       }}
     >
       {byExercise(records).map((exerciseRecords) => {
