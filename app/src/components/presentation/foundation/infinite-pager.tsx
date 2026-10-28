@@ -73,6 +73,7 @@ export function InfinitePager({
       <Animated.View style={[{ overflow: 'hidden' }, heightStyle]}>
         {width > 0 && (
           <AnimatedLegendList
+            key={width}
             ref={listRef}
             horizontal
             pagingEnabled
