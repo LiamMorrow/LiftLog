@@ -43,6 +43,10 @@ The server must be reachable over **HTTPS** from your phone - put it behind a re
 terminates TLS (Caddy, Traefik, nginx) rather than exposing port 8080 directly. Mobile platforms
 block cleartext HTTP, so this is not optional.
 
+Live workouts and the AI planner use WebSockets (`/feed-hub`, `/ai-chat-v2`), so let the proxy pass
+WebSocket upgrades through. Caddy and Traefik do this by default; nginx needs the `Upgrade` and
+`Connection` headers forwarded.
+
 In the app, go to **Settings → Backends → Add backend** and enter:
 
 | Field   | Value                                                                               |

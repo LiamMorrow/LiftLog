@@ -1,18 +1,24 @@
 using FluentValidation;
 using LiftLog.Api.Db;
 using LiftLog.Api.Features;
+using LiftLog.Api.Hubs;
 using LiftLog.Api.Models;
 using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
 [FeatureCheck(Feature.Feed)]
-public class FollowSecretController(UserDataContext db, PasswordService passwordService)
-    : ControllerBase
+public class FollowSecretController(
+    UserDataContext db,
+    PasswordService passwordService,
+    LiveFeedRegistry liveFeedRegistry,
+    IHubContext<FeedHub, IFeedClient> feedHub
+) : ControllerBase
 {
     [HttpPut]
     [Route("follow-secret")]
@@ -80,6 +86,13 @@ public class FollowSecretController(UserDataContext db, PasswordService password
             .ToListAsync();
         db.UserFollowSecrets.RemoveRange(userFollowSecret);
         await db.SaveChangesAsync();
+        foreach (var connectionId in liveFeedRegistry.Revoke(request.UserId, request.FollowSecret))
+        {
+            await feedHub.Groups.RemoveFromGroupAsync(
+                connectionId,
+                FeedHub.LiveGroup(request.UserId)
+            );
+        }
         return Ok();
     }
 }

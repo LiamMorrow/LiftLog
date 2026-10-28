@@ -1,17 +1,20 @@
 using FluentValidation;
 using LiftLog.Api.Db;
 using LiftLog.Api.Features;
+using LiftLog.Api.Hubs;
 using LiftLog.Api.Models;
 using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
 [FeatureCheck(Feature.Feed)]
-public class InboxController(UserDataContext db) : ControllerBase
+public class InboxController(UserDataContext db, IHubContext<FeedHub, IFeedClient> feedHub)
+    : ControllerBase
 {
     [HttpPut]
     [Route("[controller]")]
@@ -40,6 +43,7 @@ public class InboxController(UserDataContext db) : ControllerBase
         };
         db.UserInboxItems.Add(userInboxItem);
         await db.SaveChangesAsync();
+        await feedHub.Clients.Group(FeedHub.InboxGroup(request.ToUserId)).InboxNudge();
 
         return Ok();
     }

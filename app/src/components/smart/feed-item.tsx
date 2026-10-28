@@ -8,7 +8,7 @@ import { PrRecordList, useEventRecords } from '@/components/smart/pr-badges';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useFeedTimeline } from '@/hooks/useFeedTimeline';
-import { useInboxPolling } from '@/hooks/useInboxPolling';
+import { useFeedHubLease } from '@/hooks/useFeedHubLease';
 import { useLiveLabel } from '@/hooks/useLiveLabel';
 import { LiveChip } from '@/components/presentation/feed/live-chip';
 import { LiveSessionUserEvent } from '@/models/feed-models';
@@ -29,7 +29,7 @@ export function FeedItem({ eventId }: { eventId: string }) {
   const finishedItem = useFeedTimeline().find((x) => x.eventId === eventId);
   const liveItem = useAppSelector(selectLiveSessions).find((x) => x.eventId === eventId);
   const feedItem = finishedItem ?? liveItem;
-  useInboxPolling(!finishedItem && !!liveItem);
+  useFeedHubLease('viewer', true);
   const friends = useAppSelector((x) => x.feed.friends);
   const ownUserId = useAppSelector(selectOwnFeedUserId);
   const identity = useAppSelector((x) => x.feed.identity.unwrapOr(undefined));

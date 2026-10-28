@@ -1,6 +1,7 @@
 import { Switch } from '@/components/presentation/foundation/switch';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';
 
 interface ListSwitchProps {
@@ -11,15 +12,18 @@ interface ListSwitchProps {
   onValueChange: (value: boolean) => void;
   testID?: string;
   disabled?: boolean;
+  focus?: boolean;
 }
 
 export function SegmentedListSwitch(props: ListSwitchProps) {
+  const { colors } = useAppTheme();
   return (
     <SegmentListFormElement
       label={props.label}
       supportingText={props.supportingText}
       icon={props.icon}
-      onPress={() => props.onValueChange(!props.value)}
+      onPress={props.disabled ? undefined : () => props.onValueChange(!props.value)}
+      style={props.focus ? { backgroundColor: colors.tertiary + '33' } : undefined}
       right={
         <Switch
           value={props.value}

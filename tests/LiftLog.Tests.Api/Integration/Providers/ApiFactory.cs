@@ -4,6 +4,7 @@ namespace LiftLog.Tests.Api.Integration.Providers;
 
 public abstract class ApiFactory : IAsyncDisposable
 {
+    private readonly Lock factoryLock = new();
     private WebApplicationFactory<Program>? factory;
 
     public abstract string ProviderName { get; }
@@ -18,14 +19,19 @@ public abstract class ApiFactory : IAsyncDisposable
 
     public HttpClient CreateClient() => GetFactory().CreateClient();
 
-    public WebApplicationFactory<Program> GetFactory() =>
-        factory ??= TestFactoryHelper.CreateTestFactory(
-            new WebApplicationFactory<Program>(),
-            extraConfiguration: new Dictionary<string, string?>(DatabaseSettings)
-            {
-                ["SkipDatabaseMigrations"] = SkipDatabaseMigrations ? "true" : "false",
-            }
-        );
+    public WebApplicationFactory<Program> GetFactory()
+    {
+        lock (factoryLock)
+        {
+            return factory ??= TestFactoryHelper.CreateTestFactory(
+                new WebApplicationFactory<Program>(),
+                extraConfiguration: new Dictionary<string, string?>(DatabaseSettings)
+                {
+                    ["SkipDatabaseMigrations"] = SkipDatabaseMigrations ? "true" : "false",
+                }
+            );
+        }
+    }
 
     public virtual async ValueTask DisposeAsync()
     {

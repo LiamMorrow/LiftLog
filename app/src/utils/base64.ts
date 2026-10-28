@@ -11,3 +11,17 @@ export function fromBase64(base64: string): string | undefined {
   const unpadded = (text: string) => text.replace(/=+$/, '');
   return unpadded(toBase64(decoded)) === unpadded(base64) ? decoded : undefined;
 }
+
+export function uint8ArrayToBase64(value: Uint8Array): string {
+  return btoa(String.fromCharCode(...value));
+}
+
+export function base64ToUint8Array(value: string): Uint8Array {
+  const binaryString = atob(value);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}

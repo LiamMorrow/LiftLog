@@ -26,6 +26,7 @@ export interface FeedIdentityJSON {
   publishBodyweight: boolean;
   publishPlan: boolean;
   publishWorkouts: boolean;
+  shareLiveWorkouts?: boolean;
 }
 
 export type FriendStatusJSON = 'incoming' | 'pending' | 'friend' | 'legacyFollowing' | 'legacyFollower';

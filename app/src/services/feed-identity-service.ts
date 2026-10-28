@@ -20,6 +20,7 @@ export class FeedIdentityService {
     publishPlan: boolean,
     publishWorkouts: boolean,
     currentPlan: ProgramBlueprint | undefined,
+    shareLiveWorkouts = false,
   ): Promise<ApiResult<FeedIdentity>> {
     const response = await this.feedApiService.createUserAsync();
     if (!response.isSuccess()) {
@@ -35,6 +36,8 @@ export class FeedIdentityService {
       publishBodyweight,
       publishPlan,
       publishWorkouts,
+      [],
+      shareLiveWorkouts,
     );
     const published = await this.publishProfileAsync(identity, currentPlan);
     return published.isSuccess() ? ApiResult.success(identity) : ApiResult.fromFailure(published);

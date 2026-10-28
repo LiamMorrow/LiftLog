@@ -12,7 +12,11 @@ namespace LiftLog.Api.Controllers;
 
 [ApiController]
 [FeatureCheck(Feature.Feed, Feature.Sharing)]
-public class UserController(UserDataContext db, PasswordService passwordService) : ControllerBase
+public class UserController(
+    UserDataContext db,
+    PasswordService passwordService,
+    LiveFeedRegistry liveFeedRegistry
+) : ControllerBase
 {
     [Route("[controller]/create")]
     [HttpPost]
@@ -106,6 +110,7 @@ public class UserController(UserDataContext db, PasswordService passwordService)
 
         db.Users.Remove(user);
         await db.SaveChangesAsync();
+        liveFeedRegistry.Evict(user.Id);
         return Ok();
     }
 

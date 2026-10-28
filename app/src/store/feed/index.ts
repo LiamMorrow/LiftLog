@@ -14,13 +14,15 @@ import {
 import { RemoteData } from '@/models/remote';
 import { FeedBackupData } from '@/models/backup';
 import { ApiError } from '@/services/api-error';
+import type { FeedHubLease } from '@/services/feed-hub-service';
+import { LiveFrameResponse } from '@/models/feed-api-models';
 import { createAction, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type FeedState = {
   isHydrated: boolean;
   identity: RemoteData<FeedIdentity>;
   feed: SessionUserEvent[];
-  /** Friends' workouts in progress. Only as fresh as the last fetch, so never persisted. */
+  /** Friends' workouts in progress, as the feed hub last sent them. Never persisted. */
   liveSessions: LiveSessionUserEvent[];
   friends: Record<string, Friend>;
   sharedFeedUser: RemoteData<SharedFeedUser>;
@@ -110,6 +112,14 @@ const feedSlice = createSlice({
     setLiveSessions(state, action: PayloadAction<LiveSessionUserEvent[]>) {
       state.liveSessions = action.payload;
     },
+    upsertLiveSession(state, action: PayloadAction<LiveSessionUserEvent>) {
+      state.liveSessions = state.liveSessions.filter((x) => x.userId !== action.payload.userId).concat(action.payload);
+    },
+    removeLiveSession(state, action: PayloadAction<{ userId: string; eventId: string }>) {
+      state.liveSessions = state.liveSessions.filter(
+        (x) => !(x.userId === action.payload.userId && x.eventId === action.payload.eventId),
+      );
+    },
     queueFollowSecretRevocations(state, action: PayloadAction<string[]>) {
       state.revokedFollowSecrets = [...new Set([...state.revokedFollowSecrets, ...action.payload])];
     },
@@ -159,6 +169,7 @@ const feedSlice = createSlice({
     selectLiveSessions: (state: FeedState) => state.liveSessions,
     selectFeedIdentityRemote: (state: FeedState) => state.identity,
     selectOwnFeedUserId: (state: FeedState) => state.identity.unwrapOr(undefined)?.id,
+    selectSharingLive: (state: FeedState) => !!state.identity.unwrapOr(undefined)?.sharesLiveWorkouts,
     selectReceivedReactionsByEvent: createSelector(
       (state: FeedState) => state.receivedReactions,
       (reactions) => {
@@ -208,6 +219,8 @@ export const {
   removeRevokableFollowSecret,
   removeFeedItems,
   setLiveSessions,
+  upsertLiveSession,
+  removeLiveSession,
   upsertReceivedReactions,
   setSentReaction,
   removeSentReaction,
@@ -224,6 +237,7 @@ export const {
   selectIncomingFriendRequestCount,
   selectFeedIdentityRemote,
   selectOwnFeedUserId,
+  selectSharingLive,
   selectReceivedReactionsByEvent,
   selectSentReactionsByEvent,
 } = feedSlice.selectors;
@@ -246,12 +260,13 @@ export const createFeedIdentity = createAction<
     publishBodyweight: boolean;
     publishPlan: boolean;
     publishWorkouts: boolean;
+    shareLiveWorkouts?: boolean;
   } & FeedAction
 >('createFeedIdentity');
 
 export const fetchFeedItems = createAction<FeedAction>('fetchFeedItems');
 
-/** `inboxOnly` skips refreshing the feed afterwards, for polls that are only waiting on messages such as cheers. */
+/** `inboxOnly` skips refreshing the feed afterwards, for fetches that are only waiting on messages such as cheers. */
 export const fetchInboxItems = createAction<FeedAction & { inboxOnly?: boolean }>('fetchInboxItems');
 
 export const flushOutbox = createAction('flushOutbox');
@@ -303,6 +318,14 @@ export const resetFeedAccount = createAction<FeedAction & { newIdentity?: FeedId
 );
 
 export const updateFeedIdentity = createAction<{ updates: Partial<FeedIdentity> } & FeedAction>('updateFeedIdentity');
+
+export const acquireFeedHubLease = createAction<FeedHubLease>('acquireFeedHubLease');
+export const releaseFeedHubLease = createAction<FeedHubLease>('releaseFeedHubLease');
+export const feedHubConnected = createAction('feedHubConnected');
+export const watchLiveSessions = createAction('watchLiveSessions');
+export const liveFrameReceived = createAction<LiveFrameResponse>('liveFrameReceived');
+export const liveFrameEnded = createAction<{ userId: string; eventId: string }>('liveFrameEnded');
+export const inboxNudged = createAction('inboxNudged');
 
 /** One tap. Taps are coalesced in the effect, so a flurry of them becomes a single encrypted message. */
 export const cheerFeedItem = createAction<{ eventId: string; emoji: ReactionEmoji } & FeedAction>('cheerFeedItem');

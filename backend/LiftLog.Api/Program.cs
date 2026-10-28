@@ -36,7 +36,8 @@ builder.Services.AddSignalR(s =>
     s.MaximumParallelInvocationsPerClient = 2;
     s.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
     s.HandshakeTimeout = TimeSpan.FromSeconds(60);
-});
+})
+    .AddHubOptions<FeedHub>(s => s.MaximumReceiveMessageSize = 64 * 1024);
 
 builder
     .Services.AddAuthentication(PurchaseTokenAuthenticationSchemeOptions.SchemeName)
@@ -47,6 +48,8 @@ builder
 builder.Services.AddAuthorization();
 
 builder.Services.AddSingleton<PasswordService>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<LiveFeedRegistry>();
 builder.Services.AddScoped<RateLimitService>();
 
 builder.Services.AddHostedService<CleanupExpiredDataHostedService>();
@@ -80,13 +83,14 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-MapAiChatHub<AiWorkoutChatHub>("/ai-chat");
-MapAiChatHub<AiWorkoutChatHubV2>("/ai-chat-v2");
+MapGatedHub<AiWorkoutChatHub>("/ai-chat", Feature.AiPlanner);
+MapGatedHub<AiWorkoutChatHubV2>("/ai-chat-v2", Feature.AiPlanner);
+MapGatedHub<FeedHub>("/feed-hub", Feature.Feed);
 
-void MapAiChatHub<THub>(string path)
+void MapGatedHub<THub>(string path, Feature feature)
     where THub : Hub
 {
-    if (app.Services.GetRequiredService<IFeatureGate>().IsEnabled(Feature.AiPlanner))
+    if (app.Services.GetRequiredService<IFeatureGate>().IsEnabled(feature))
     {
         app.MapHub<THub>(path);
         return;

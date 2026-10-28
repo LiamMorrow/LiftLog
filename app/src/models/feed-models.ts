@@ -55,8 +55,6 @@ import { equal } from '@/models/session-models/helpers';
 export const FEED_EVENT_RETENTION_DAYS = 90;
 export const FEED_EVENT_RETENTION_SECONDS = FEED_EVENT_RETENTION_DAYS * 24 * 60 * 60;
 
-/** Refreshed on every live publish, so it only lapses for a workout that stopped publishing (crashed, abandoned). */
-export const LIVE_EVENT_EXPIRY_SECONDS = 3 * 60 * 60;
 /** A live workout that has not been published for this long is hidden, as its owner has probably stopped. */
 export const LIVE_EVENT_STALE_SECONDS = 30 * 60;
 
@@ -274,9 +272,8 @@ export class RemovedSessionUserEvent {
 }
 
 /**
- * A workout still in progress. Its own type, rather than a flag on SessionUserEvent, so that apps which predate
- * it drop it instead of showing a half-done workout as finished. The finished SessionUserEvent replaces it, as
- * both are published under the session's id.
+ * A workout still in progress, sent to watching friends through the feed hub rather than stored as a feed item.
+ * Published under the session's id, so the finished SessionUserEvent supersedes it.
  */
 export class LiveSessionUserEvent {
   readonly type = 'LiveSessionUserEvent' as const;
@@ -294,7 +291,7 @@ export class LiveSessionUserEvent {
   }
 
   isStale(now: Instant): boolean {
-    return this.timestamp.plusSeconds(LIVE_EVENT_STALE_SECONDS).isBefore(now) || !this.expiry.isAfter(now);
+    return this.timestamp.plusSeconds(LIVE_EVENT_STALE_SECONDS).isBefore(now);
   }
 
   static fromJSON(json: LiveSessionUserEventJSON): LiveSessionUserEvent {
@@ -362,7 +359,12 @@ export class FeedIdentity {
     readonly publishPlan: boolean,
     readonly publishWorkouts: boolean,
     readonly previousAesKeys: PreviousAesKey[] = [],
+    readonly shareLiveWorkouts: boolean = false,
   ) {}
+
+  get sharesLiveWorkouts(): boolean {
+    return this.publishWorkouts && this.shareLiveWorkouts;
+  }
 
   static fromJSON(json: FeedIdentityJSON): FeedIdentity {
     return new FeedIdentity(
@@ -379,6 +381,7 @@ export class FeedIdentity {
         key: fromAesKeyJSON(x.key),
         supersededAt: fromInstantJson(x.supersededAt),
       })),
+      json.shareLiveWorkouts ?? false,
     );
   }
 
@@ -398,6 +401,7 @@ export class FeedIdentity {
       publishBodyweight: this.publishBodyweight,
       publishPlan: this.publishPlan,
       publishWorkouts: this.publishWorkouts,
+      shareLiveWorkouts: this.shareLiveWorkouts,
     };
   }
 
@@ -411,7 +415,8 @@ export class FeedIdentity {
       this.name === other.name &&
       this.publishBodyweight === other.publishBodyweight &&
       this.publishPlan === other.publishPlan &&
-      this.publishWorkouts === other.publishWorkouts
+      this.publishWorkouts === other.publishWorkouts &&
+      this.shareLiveWorkouts === other.shareLiveWorkouts
     );
   }
 
@@ -427,6 +432,7 @@ export class FeedIdentity {
       other.publishPlan ?? this.publishPlan,
       other.publishWorkouts ?? this.publishWorkouts,
       other.previousAesKeys ?? this.previousAesKeys,
+      other.shareLiveWorkouts ?? this.shareLiveWorkouts,
     );
   }
 

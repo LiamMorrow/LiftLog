@@ -2,11 +2,11 @@ import PageMenu from '@/components/presentation/foundation/page-menu';
 import { useAppSelector } from '@/store';
 import { shareString } from '@/store/app';
 import { getFeedShareUrl, selectFeedIdentityRemote } from '@/store/feed';
-import { getFeedProfileEditorHref } from '@/components/smart/feed-profile-editor';
+import { getFeedSettingsHref } from '@/components/smart/feed-settings';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
-import Edit from '@expo/material-symbols/edit.xml';
+import Settings from '@expo/material-symbols/settings.xml';
 import Share from '@expo/material-symbols/share.xml';
 
 export function FeedMenu() {
@@ -24,10 +24,10 @@ export function FeedMenu() {
       testID="feed-menu"
       items={[
         {
-          label: t('feed.edit_profile.button'),
-          icon: Edit,
-          systemImage: 'pencil',
-          onPress: () => push(getFeedProfileEditorHref()),
+          label: t('feed.settings.title'),
+          icon: Settings,
+          systemImage: 'gearshape',
+          onPress: () => push(getFeedSettingsHref()),
         },
         {
           label: t('feed.share_feed.button'),

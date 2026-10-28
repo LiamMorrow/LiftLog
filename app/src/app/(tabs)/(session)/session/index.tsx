@@ -2,13 +2,14 @@ import ConfirmationDialog from '@/components/presentation/foundation/confirmatio
 import SessionComponent from '@/components/smart/session-component';
 import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
 import { useAppSelector } from '@/store';
+import { selectSharingLive } from '@/store/feed';
 import { useDispatch } from 'react-redux';
 import { selectActiveSession, updateStoredSession } from '@/store/stored-sessions';
 import { useFinishWorkout } from '@/hooks/useFinishWorkout';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
-import { CHEER_POLL_INTERVAL_MS, useInboxPolling } from '@/hooks/useInboxPolling';
+import { useFeedHubLease } from '@/hooks/useFeedHubLease';
 import { useState } from 'react';
 
 export default function Index() {
@@ -17,8 +18,8 @@ export default function Index() {
   const finishWorkout = useFinishWorkout(session?.id);
   const showPostWorkoutSummary = useAppSelector((x) => x.settings.showPostWorkoutSummary);
   const keepAwake = useAppSelector((x) => x.settings.keepScreenAwakeDuringWorkout);
-  const sharingLive = useAppSelector((x) => !!x.feed.identity.unwrapOr(undefined)?.publishWorkouts);
-  useInboxPolling(sharingLive, { intervalMs: CHEER_POLL_INTERVAL_MS, inboxOnly: true });
+  const sharingLive = useAppSelector(selectSharingLive);
+  useFeedHubLease('trainer', sharingLive);
   const { dismissTo, push } = useRouter();
   const { t } = useTranslate();
   const [confirmOpen, setConfirmOpen] = useState(false);

@@ -23,6 +23,7 @@ import { selectBackendForFeature } from '@/store/backends';
 import type { RootState } from '@/store/store';
 import type { FetchResponse } from 'expo/build/winter/fetch/FetchResponse';
 import { fetch } from 'expo/fetch';
+import { base64ToUint8Array, uint8ArrayToBase64 } from '@/utils/base64';
 
 type Base64Response<T> = T extends Uint8Array
   ? string
@@ -267,18 +268,4 @@ function stringify(value: unknown): string {
     }
     return val;
   });
-}
-
-function uint8ArrayToBase64(value: Uint8Array): string {
-  return btoa(String.fromCharCode(...value));
-}
-
-function base64ToUint8Array(value: string): Uint8Array {
-  const binaryString = atob(value);
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes;
 }

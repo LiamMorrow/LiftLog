@@ -7,7 +7,7 @@ import SessionSummaryTitle from '@/components/presentation/summary/session-summa
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { getFeedItemHref } from '@/components/smart/feed-item';
-import { getFeedProfileEditorHref } from '@/components/smart/feed-profile-editor';
+import { getFeedSettingsHref } from '@/components/smart/feed-settings';
 import { FeedWeekStrip } from '@/components/smart/feed-week-strip';
 import { TrainingNow } from '@/components/smart/training-now';
 import { ReactionBar } from '@/components/smart/reaction-bar';
@@ -122,7 +122,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
             <Button
               style={{ marginLeft: 'auto' }}
               testID="feed-fix-button"
-              onPress={() => push(getFeedProfileEditorHref({ focusPublish: true }))}
+              onPress={() => push(getFeedSettingsHref({ focus: 'publish' }))}
               mode="outlined"
             >
               <T keyName="generic.fix.button" />

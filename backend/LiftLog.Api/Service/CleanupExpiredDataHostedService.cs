@@ -5,6 +5,7 @@ namespace LiftLog.Api.Service;
 
 public class CleanupExpiredDataHostedService(
     IServiceProvider services,
+    LiveFeedRegistry liveFeedRegistry,
     ILogger<CleanupExpiredDataHostedService> logger
 ) : BackgroundService
 {
@@ -16,6 +17,7 @@ public class CleanupExpiredDataHostedService(
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                liveFeedRegistry.SweepExpired();
                 await CleanupAsync(stoppingToken);
                 await Task.Delay(Interval, stoppingToken);
             }

@@ -39,6 +39,7 @@ import { addOutboxEffects } from '@/store/feed/outbox-effects';
 import { addRotationEffects, keyHolders } from '@/store/feed/rotation-effects';
 import { addRepairEffects } from '@/store/feed/repair-effects';
 import { addLiveSessionEffects } from '@/store/feed/live-session-effects';
+import { addFeedHubEffects } from '@/store/feed/feed-hub-effects';
 import { selectActiveProgram } from '@/store/program';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { Platform } from 'react-native';
@@ -289,6 +290,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
         payload.publishPlan,
         payload.publishWorkouts,
         undefined,
+        payload.shareLiveWorkouts,
       );
       if (!identityResult.isSuccess()) {
         dispatch(
@@ -333,6 +335,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
           publishBodyweight: previous?.publishBodyweight ?? false,
           publishPlan: previous?.publishPlan ?? false,
           publishWorkouts: previous?.publishWorkouts ?? false,
+          shareLiveWorkouts: previous?.shareLiveWorkouts ?? false,
           fromUserAction: true,
         }),
       );
@@ -371,6 +374,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
           publishBodyweight: action.payload.newIdentity?.publishBodyweight ?? false,
           publishPlan: action.payload.newIdentity?.publishPlan ?? false,
           publishWorkouts: action.payload.newIdentity?.publishWorkouts ?? false,
+          shareLiveWorkouts: action.payload.newIdentity?.shareLiveWorkouts ?? false,
         }),
       );
     },
@@ -430,6 +434,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
   addRepairEffects(addEffect);
   addReactionEffects(addEffect);
   addLiveSessionEffects(addEffect);
+  addFeedHubEffects(addEffect);
 }
 
 function wipeFeedTables(tx: ExpoSQLiteDatabase) {

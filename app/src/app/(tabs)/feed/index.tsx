@@ -3,13 +3,14 @@ import { FeedFriends } from '@/components/smart/feed-friends';
 import { FeedMenu } from '@/components/smart/feed-menu';
 import { OwnHistoryProvider } from '@/components/smart/own-history-provider';
 import { useHeaderInset } from '@/hooks/useHeaderInset';
-import { useInboxPolling } from '@/hooks/useInboxPolling';
+import { useFeedHubLease } from '@/hooks/useFeedHubLease';
 import { ScrollProvider, useScroll, useScrollHeaderColor } from '@/hooks/useScrollListener';
 import { useAppSelector } from '@/store';
-import { selectIncomingFriendRequestCount } from '@/store/feed';
+import { fetchInboxItems, selectIncomingFriendRequestCount } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
-import { Stack } from 'expo-router';
+import { Stack, useFocusEffect } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Tabs, TabScreen, TabsProvider } from 'react-native-paper-tabs';
 
 export default function FeedIndexPage() {
@@ -32,7 +33,11 @@ export default function FeedIndexPage() {
   }, [tabScrolls, activeTabIndex, setScrolled]);
 
   const headerInset = useHeaderInset();
-  useInboxPolling(true);
+  const dispatch = useDispatch();
+  useFocusEffect(() => {
+    dispatch(fetchInboxItems({ fromUserAction: false }));
+  });
+  useFeedHubLease('viewer', true);
   return (
     <OwnHistoryProvider>
       <Stack.Screen options={{ title: t('feed.feed.title') }} />

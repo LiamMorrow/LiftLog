@@ -52,6 +52,20 @@ export const whatsNewEntries: WhatsNewEntry[] = [
     },
     condition: (state) => state.backends.backends.length === 0,
   },
+  {
+    id: 4,
+    icon: 'podcasts',
+    titleKey: 'whats_new.live_workouts.title',
+    bodyKey: 'whats_new.live_workouts.body',
+    cta: {
+      labelKey: 'whats_new.live_workouts.cta',
+      route: { pathname: '/settings/feed', params: { focus: 'live' } },
+    },
+    condition: (state) =>
+      state.settings.showFeed &&
+      Object.values(state.feed.friends).some((friend) => friend.status === 'friend') &&
+      !state.feed.identity.unwrapOr(undefined)?.shareLiveWorkouts,
+  },
 ];
 
 export const latestWhatsNewId = whatsNewEntries.reduce((max, entry) => Math.max(max, entry.id), 0);

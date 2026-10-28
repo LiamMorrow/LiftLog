@@ -2,6 +2,7 @@ import { AiChatServiceV2 } from '@/services/ai-chat-service-v2';
 import { EncryptionService } from '@/services/encryption-service';
 import { FeedApiService } from '@/services/feed-api';
 import { FeedFollowService } from '@/services/feed-follow-service';
+import { FeedHubService } from '@/services/feed-hub-service';
 import { FeedIdentityService } from '@/services/feed-identity-service';
 import { FeedInboxDecryptionService } from '@/services/feed-inbox-decryption-service';
 import { FileExportService } from '@/services/file-export-service';
@@ -16,6 +17,7 @@ import { StringSharer } from '@/services/string-sharer';
 import { getTolgee } from '@/services/tolgee';
 import { WorkoutWorker } from '@/services/workout-worker';
 import { RootState } from '@/store';
+import { feedHubConnected, inboxNudged, liveFrameEnded, liveFrameReceived } from '@/store/feed';
 import { Store } from '@reduxjs/toolkit';
 import { HealthExportService } from './health-export-service';
 import { HealthExportService as HES } from './health-export-service-shared';
@@ -41,6 +43,13 @@ export function createServices(store: Store<RootState>, db: ExpoSQLiteDatabase, 
   const filePickerService = new FilePickerService();
   const preferenceService = new PreferenceService(keyValueStore);
   const aiChatService = new AiChatServiceV2(new HubConnectionFactory(), store.getState);
+  const feedHubService = new FeedHubService(new HubConnectionFactory(), store.getState);
+  feedHubService.setListener({
+    connected: () => store.dispatch(feedHubConnected()),
+    liveFrame: (frame) => store.dispatch(liveFrameReceived(frame)),
+    liveEnded: (userId, eventId) => store.dispatch(liveFrameEnded({ userId, eventId })),
+    inboxNudge: () => store.dispatch(inboxNudged()),
+  });
   const tolgee = getTolgee(preferenceService);
   const workoutWorkerService = new WorkoutWorker(store.dispatch, store.getState, tolgee);
   const healthExportService: HES = new HealthExportService();
@@ -59,6 +68,7 @@ export function createServices(store: Store<RootState>, db: ExpoSQLiteDatabase, 
     feedFollowService,
     feedInboxDecryptionService,
     feedApiService,
+    feedHubService,
     feedIdentityService,
     healthExportService,
     stringSharer,

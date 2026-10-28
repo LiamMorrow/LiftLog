@@ -1,6 +1,6 @@
-import { AddEffectFn } from '@/store/store';
-import { selectFeedIdentityRemote, setIdentity } from '@/store/feed';
-import { publishLiveSessionAsync, removeLiveSessionAsync } from '@/store/feed/feed-items-effects';
+import { AddEffectFn, RootState } from '@/store/store';
+import { selectFeedIdentityRemote, selectSharingLive, setIdentity } from '@/store/feed';
+import { encryptLiveSessionAsync } from '@/store/feed/feed-items-effects';
 import { enqueueLivePublish } from '@/store/feed/live-publish-queue';
 import { activeSessionUpdated } from '@/store/workout-worker';
 import {
@@ -9,42 +9,26 @@ import {
   selectActiveSessionId,
   sessionFinished,
 } from '@/store/stored-sessions';
-import { FeedIdentity } from '@/models/feed-models';
 import { EncryptionService } from '@/services/encryption-service';
-import { FeedApiService } from '@/services/feed-api';
+import { FeedHubService } from '@/services/feed-hub-service';
 
-export const LIVE_PUBLISH_INTERVAL_MS = 60 * 1000;
+/** Logging a set touches the session several times in a row, which friends should see as one update. */
+export const LIVE_PUBLISH_COALESCE_MS = 2_000;
 
-let lastPublishedAtMs = 0;
 let publishedSessionId: string | undefined;
 
 export function addLiveSessionEffects(addEffect: AddEffectFn) {
-  addEffect(
-    activeSessionUpdated,
-    async (action, { getState, signal, cancelActiveListeners, extra: { encryptionService, feedApiService } }) => {
-      cancelActiveListeners();
-      if (!action.payload.after) {
-        return;
-      }
-
-      const waitMs = lastPublishedAtMs + LIVE_PUBLISH_INTERVAL_MS - Date.now();
-      if (waitMs > 0) {
-        await new Promise((resolve) => setTimeout(resolve, waitMs));
-        if (signal.aborted) {
-          return;
-        }
-      }
-
-      const identity = selectFeedIdentityRemote(getState()).unwrapOr(undefined);
-      const session = selectActiveSession(getState());
-      if (!identity?.publishWorkouts || !session) {
-        return;
-      }
-      lastPublishedAtMs = Date.now();
-      publishedSessionId = session.id;
-      await enqueueLivePublish(() => publishLiveSessionAsync(identity, session, encryptionService, feedApiService));
-    },
-  );
+  addEffect(activeSessionUpdated, async (action, { getState, signal, cancelActiveListeners, extra }) => {
+    cancelActiveListeners();
+    if (!action.payload.after) {
+      return;
+    }
+    await new Promise((resolve) => setTimeout(resolve, LIVE_PUBLISH_COALESCE_MS));
+    if (signal.aborted) {
+      return;
+    }
+    await publishActiveSessionLive(getState, extra);
+  });
 
   addEffect(sessionFinished, (action) => {
     if (action.payload === publishedSessionId) {
@@ -52,35 +36,45 @@ export function addLiveSessionEffects(addEffect: AddEffectFn) {
     }
   });
 
-  addEffect(
-    deleteStoredSession,
-    async (action, { getState, stateBeforeReduce, extra: { encryptionService, feedApiService } }) => {
-      const identity = selectFeedIdentityRemote(getState()).unwrapOr(undefined);
-      const wasLive =
-        action.payload === publishedSessionId ||
-        (!!identity?.publishWorkouts && action.payload === selectActiveSessionId(stateBeforeReduce));
-      if (identity && wasLive) {
-        await withdraw(identity, action.payload, encryptionService, feedApiService);
-      }
-    },
-  );
+  addEffect(deleteStoredSession, async (action, { getState, stateBeforeReduce, extra: { feedHubService } }) => {
+    const wasLive =
+      action.payload === publishedSessionId ||
+      (selectSharingLive(getState()) && action.payload === selectActiveSessionId(stateBeforeReduce));
+    if (wasLive) {
+      await withdraw(action.payload, feedHubService);
+    }
+  });
 
-  addEffect(setIdentity, async (action, { extra: { encryptionService, feedApiService } }) => {
-    const identity = action.payload.unwrapOr(undefined);
-    if (identity && !identity.publishWorkouts && publishedSessionId) {
-      await withdraw(identity, publishedSessionId, encryptionService, feedApiService);
+  addEffect(setIdentity, async (_, { getState, stateBeforeReduce, extra }) => {
+    const wasSharing = selectSharingLive(stateBeforeReduce);
+    const isSharing = selectSharingLive(getState());
+    if (wasSharing && !isSharing && publishedSessionId) {
+      await withdraw(publishedSessionId, extra.feedHubService);
+    } else if (!wasSharing && isSharing) {
+      await publishActiveSessionLive(getState, extra);
     }
   });
 }
 
-async function withdraw(
-  identity: FeedIdentity,
-  sessionId: string,
-  encryptionService: EncryptionService,
-  feedApiService: FeedApiService,
+/** Only while the workout screen holds the trainer lease. Coming back to it publishes the workout again. */
+export async function publishActiveSessionLive(
+  getState: () => RootState,
+  { encryptionService, feedHubService }: { encryptionService: EncryptionService; feedHubService: FeedHubService },
 ) {
+  const identity = selectFeedIdentityRemote(getState()).unwrapOr(undefined);
+  const session = selectActiveSession(getState());
+  if (!identity?.sharesLiveWorkouts || !session || !feedHubService.hasLease('trainer')) {
+    return;
+  }
+  publishedSessionId = session.id;
+  await enqueueLivePublish(async () =>
+    feedHubService.publishLive(session.id, await encryptLiveSessionAsync(identity, session, encryptionService)),
+  );
+}
+
+async function withdraw(sessionId: string, feedHubService: FeedHubService) {
   if (sessionId === publishedSessionId) {
     publishedSessionId = undefined;
   }
-  await enqueueLivePublish(() => removeLiveSessionAsync(identity, sessionId, encryptionService, feedApiService));
+  await enqueueLivePublish(() => feedHubService.endLive(sessionId));
 }

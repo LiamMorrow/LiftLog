@@ -1,6 +1,6 @@
 # Feed Process
 
-LiftLog gives users the option of publishing their workouts to a feed that their friends can see. Friends see each other's workouts, including ones still in progress, plan, weekly activity, and can cheer each other's workouts. This is entirely opt in.
+LiftLog gives users the option of publishing their workouts to a feed that their friends can see. Friends see each other's workouts, plan and weekly activity, can follow a workout live while it happens if its owner shares live workouts, and can cheer each other's workouts. This is entirely opt in.
 
 Privacy is extremely important to preserve here. Data is end to end encrypted ([see Technical Details](#technical-details)), and users are in full control of who their friends are. Friendship is always mutual, and it always starts with a link and an explicit accept:
 
@@ -58,7 +58,8 @@ As mentioned, personal information (including workouts) is end to end encrypted.
 Personal Information that is NOT encrypted is limited to:
 
 - Timestamp of request - this is the timestamp of when a feed item was submitted. This could correlate to a time of workout, and therefore could be considered PII.
-- Expiry of a feed item. A live workout expires hours after it is published rather than 90 days, so the server can tell that its author is probably training ([see Live workouts](#live-workouts)).
+- Expiry of a feed item.
+- When someone sharing live workouts is training, and when each update to it was sent ([see Live workouts](#live-workouts)).
 - User ID (a UUID) - this is stored on the device, but is not linked to it (i.e. The LiftLog servers cannot trace userId to device)
 - The recipient of an inbox message, and when it was sent as a User ID. The sender is only named inside the encrypted message.
 
@@ -171,20 +172,21 @@ sequenceDiagram
 
 ### Live workouts
 
-While a workout is open and **Publish workouts** is on, the app publishes it as a `LiveSessionUserEvent`: the workout so far, under the session's id, signed and encrypted like any other feed item, and expiring 3 hours later. It publishes again whenever the workout changes, at most once a minute.
+**Share live workouts** is off by default, and only takes effect while **Publish workouts** is on. While a workout is open with it on, the app sends the workout so far as a `LiveSessionUserEvent`, under the session's id, signed and encrypted like any feed item. It sends again whenever the workout changes, a couple of seconds after the last change.
 
-- **Finishing** publishes the `SessionUserEvent` under the same id, which replaces the live one on the server.
-- **Discarding** the workout, or turning **Publish workouts** off during it, publishes a `RemovedSessionUserEvent` in its place.
-- Live publishes and the finished workout go out one after another, so a slow live publish cannot land on top of the finished workout.
+Live workouts travel over a SignalR hub (`/feed-hub`) rather than the feed:
 
-A live workout is its own event type, rather than a flag on `SessionUserEvent`, so that apps from before it drop it instead of showing a half-done workout as finished.
+- **Trainer.** The app authenticates with its user id and password, then publishes each update. The server keeps only the latest one per user, in memory, for 30 minutes after it was sent, and passes it on to friends watching. Nothing is written to the database, so a server restart forgets it until the next update.
+- **Friends.** The app watches its friends with their `FollowSecret`s, the same ones it fetches feed items with. It receives the latest update of each friend who is training, then each new one as it is sent. Revoking a `FollowSecret` stops its holder receiving them.
+- **Finishing** publishes the `SessionUserEvent` first, then tells the hub the live workout has ended, so friends fetch the finished workout as the live one disappears. **Discarding** the workout, or turning sharing off during it, ends it the same way.
 
-Friends keep live workouts in memory only, replaced on every fetch, and hide one that has not been published for 30 minutes. They appear as **Training now** above the week's activity and open on the normal workout page, where friends can cheer them. The cheer is keyed by the session id, so it stays with the workout once it is finished.
+The app holds a connection to the hub only while the feed is on screen, or while the workout screen is open and sharing live, and only while the app is in the foreground. Updates made in the background are sent when the workout screen comes back. A backend without the hub still has the feed, without live workouts.
 
-Nothing pushes these to anyone, so the app polls:
+Friends keep live workouts in memory only, and hide one that has not been updated for 30 minutes. They appear as **Training now** above the week's activity and open on the normal workout page, where friends can cheer them. The cheer is keyed by the session id, so it stays with the workout once it is finished.
 
-- The feed fetches when it is opened, and every minute while it stays open.
-- While a workout is open with **Publish workouts** on, the app checks its inbox every minute, without refreshing the feed, so cheers reach the workout screen while you train. Development builds check every 15 seconds.
+Cheers are still inbox messages. When an inbox message arrives for someone connected to the hub, the server tells them to fetch their inbox, so a cheer reaches the workout screen within seconds. The app also fetches its inbox whenever it connects, to catch up on anything sent while it was away.
+
+The server can tell when a user sharing live workouts is training, and when each change to the workout was made. It cannot read the workouts.
 
 ### Key rotation
 
@@ -256,7 +258,9 @@ All paths are under `app/src/`.
 - `store/feed/rotation-effects.ts` - key rotation.
 - `store/feed/repair-effects.ts` - repairing friendships that drifted out of sync.
 - `store/feed/feed-items-effects.ts` - publishing workouts, fetching friends' feed items and profiles.
-- `store/feed/live-session-effects.ts` - publishing the workout in progress, and withdrawing it when discarded.
+- `store/feed/live-session-effects.ts` - publishing the workout in progress, and ending it when discarded.
+- `store/feed/feed-hub-effects.ts` - watching friends' live workouts, and fetching the inbox when the hub says to.
+- `services/feed-hub-service.ts` - the connection to the feed hub, held open while something needs it.
 - `store/feed/feed-timeline.ts` - merging your own sessions into the feed.
 - `services/feed-follow-service.ts` - building and encrypting inbox messages.
 - `services/js-migrations/merge-follows-into-friends.ts` - turning follows into friends.

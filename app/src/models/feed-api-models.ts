@@ -123,3 +123,16 @@ export type GetSharedItemResponse = {
   rsaPublicKey: RsaPublicKey;
   encryptedPayload: AesEncryptedAndRsaSignedData;
 };
+
+export type LiveFrameResponse = {
+  userId: string;
+  eventId: string;
+  encryptedEventPayload: Uint8Array;
+  encryptedEventIV: Uint8Array;
+  timestamp: string;
+};
+
+export type WatchLiveResponse = {
+  frames: LiveFrameResponse[];
+  invalidFollowSecrets: string[];
+};

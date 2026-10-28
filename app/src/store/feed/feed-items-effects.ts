@@ -10,6 +10,7 @@ import {
   removeFriend,
   repairFriends,
   selectAcceptedFriends,
+  selectSharingLive,
   setLiveSessions,
   upsertFeedItems,
 } from '@/store/feed';
@@ -21,12 +22,12 @@ import {
   FeedUserEvent,
   FEED_EVENT_RETENTION_SECONDS,
   fromFeedUserEventJSON,
-  LIVE_EVENT_EXPIRY_SECONDS,
+  LIVE_EVENT_STALE_SECONDS,
   LiveSessionUserEvent,
   RemovedSessionUserEvent,
   SessionUserEvent,
 } from '@/models/feed-models';
-import { settleLivePublish } from '@/store/feed/live-publish-queue';
+import { enqueueLivePublish, settleLivePublish } from '@/store/feed/live-publish-queue';
 import { Session } from '@/models/session-models';
 import { GetUserResponse, UserEventResponse } from '@/models/feed-api-models';
 import { EncryptionService, fromJsonBytes, splitNonceAndCiphertext, toJsonBytes } from '@/services/encryption-service';
@@ -67,7 +68,7 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
 
   addEffect(
     publishUnpublishedSessions,
-    async (_, { dispatch, getState, extra: { db, feedApiService, encryptionService } }) => {
+    async (_, { dispatch, getState, extra: { db, feedApiService, feedHubService, encryptionService } }) => {
       const state = getState();
       const identityRemote = state.feed.identity;
 
@@ -95,6 +96,9 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
 
         if (result?.isSuccess()) {
           dispatch(removeUnpublishedSessionId(sessionId));
+          if (selectSharingLive(getState())) {
+            await enqueueLivePublish(() => feedHubService.endLive(sessionId));
+          }
         }
       }
     },
@@ -156,11 +160,7 @@ async function fetchOnce(
   dispatch(patchFriendProfiles(profiles.filter((x) => x !== undefined && x !== 'undecryptable')));
 
   const invalidFollowSecrets = new Set(feedResponse.data.invalidFollowSecrets);
-  for (const friend of selectAcceptedFriends(getState())) {
-    if (friend.theirSecret && invalidFollowSecrets.has(friend.theirSecret)) {
-      dispatch(removeFriend({ friendId: friend.id, notify: false, fromUserAction: false }));
-    }
-  }
+  removeFriendsWithInvalidSecrets(invalidFollowSecrets, dispatch, getState);
 
   const friendsById = new Map(friends.map((x) => [x.id, x]));
   const decryptedEvents = await Promise.all(
@@ -170,9 +170,9 @@ async function fetchOnce(
     }),
   );
   decryptedEvents.forEach((x, i) => x === 'undecryptable' && undecryptable.add(feedResponse.data.events[i]!.userId));
-  const fetchedItems = decryptedEvents.filter((item) => item !== null && item !== 'undecryptable');
-  const liveItems = fetchedItems.filter((item) => item.type === 'LiveSessionUserEvent');
-  const feedItems = fetchedItems.filter((item) => item.type !== 'LiveSessionUserEvent');
+  const feedItems = decryptedEvents.filter(
+    (item) => item !== null && item !== 'undecryptable' && item.type !== 'LiveSessionUserEvent',
+  );
 
   const now = Instant.now();
   const currentFriendIds = new Set(
@@ -210,9 +210,8 @@ async function fetchOnce(
   const settledKeys = new Set(deduped.map((item) => `${item.userId}-${item.eventId}`));
   dispatch(
     setLiveSessions(
-      liveItems.filter(
-        (item) =>
-          currentFriendIds.has(item.userId) && !item.isStale(now) && !settledKeys.has(`${item.userId}-${item.eventId}`),
+      getState().feed.liveSessions.filter(
+        (item) => currentFriendIds.has(item.userId) && !settledKeys.has(`${item.userId}-${item.eventId}`),
       ),
     ),
   );
@@ -220,43 +219,42 @@ async function fetchOnce(
   return friends.filter((x) => undecryptable.has(x.id) && !invalidFollowSecrets.has(x.theirSecret!)).map((x) => x.id);
 }
 
-export async function publishLiveSessionAsync(
+export function removeFriendsWithInvalidSecrets(
+  invalidFollowSecrets: Set<string>,
+  dispatch: AppDispatch,
+  getState: () => RootState,
+) {
+  for (const friend of selectAcceptedFriends(getState())) {
+    if (friend.theirSecret && invalidFollowSecrets.has(friend.theirSecret)) {
+      dispatch(removeFriend({ friendId: friend.id, notify: false, fromUserAction: false }));
+    }
+  }
+}
+
+export function encryptLiveSessionAsync(
   identity: FeedIdentity,
   session: Session,
   encryptionService: EncryptionService,
-  feedApiService: FeedApiService,
 ) {
-  return publishEvent(
+  const now = Instant.now();
+  return encryptEvent(
     identity,
     new LiveSessionUserEvent(
       identity.id,
       session.id,
-      Instant.now(),
-      Instant.now().plusSeconds(LIVE_EVENT_EXPIRY_SECONDS),
+      now,
+      now.plusSeconds(LIVE_EVENT_STALE_SECONDS),
       identity.publishBodyweight ? session : session.with({ bodyweight: undefined }),
     ),
     encryptionService,
-    feedApiService,
   );
 }
 
-export async function removeLiveSessionAsync(
-  identity: FeedIdentity,
-  sessionId: string,
-  encryptionService: EncryptionService,
-  feedApiService: FeedApiService,
-) {
-  return publishEvent(
-    identity,
-    new RemovedSessionUserEvent(
-      identity.id,
-      sessionId,
-      Instant.now(),
-      Instant.now().plusSeconds(LIVE_EVENT_EXPIRY_SECONDS),
-      sessionId,
-    ),
-    encryptionService,
-    feedApiService,
+function encryptEvent(identity: FeedIdentity, event: FeedUserEvent, encryptionService: EncryptionService) {
+  return encryptionService.signAndEncryptAsync(
+    toJsonBytes(event.toJSON()),
+    identity.aesKey,
+    identity.rsaKeyPair.privateKey,
   );
 }
 
@@ -266,13 +264,7 @@ async function publishEvent(
   encryptionService: EncryptionService,
   feedApiService: FeedApiService,
 ) {
-  const payloadBytes = toJsonBytes(event.toJSON());
-
-  const encryptedData = await encryptionService.signAndEncryptAsync(
-    payloadBytes,
-    identity.aesKey,
-    identity.rsaKeyPair.privateKey,
-  );
+  const encryptedData = await encryptEvent(identity, event, encryptionService);
 
   return await feedApiService.putUserEventAsync({
     userId: identity.id,
@@ -378,8 +370,8 @@ async function decryptProfileAsync(
   }
 }
 
-async function toFeedItemAsync(
-  userEvent: UserEventResponse,
+export async function toFeedItemAsync(
+  userEvent: Pick<UserEventResponse, 'encryptedEventPayload' | 'encryptedEventIV'>,
   friend: Friend,
   encryptionService: EncryptionService,
 ): Promise<FeedUserEvent | 'undecryptable' | null> {

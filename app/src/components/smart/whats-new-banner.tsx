@@ -33,10 +33,16 @@ export function WhatsNewBanner() {
         <Text variant="labelSmall" style={{ color: colors.onTertiaryContainer, letterSpacing: 1 }}>
           <T keyName="whats_new.eyebrow" />
         </Text>
-        <IconButton icon="close" size={18} onPress={dismiss} iconColor={colors.onTertiaryContainer} />
+        <IconButton
+          icon="close"
+          size={18}
+          onPress={dismiss}
+          iconColor={colors.onTertiaryContainer}
+          style={styles.close}
+        />
       </View>
 
-      <Pager indicatorColor={colors.onTertiaryContainer}>
+      <Pager indicatorColor={colors.onTertiaryContainer} showIndicator={unseen.length > 1}>
         {unseen.map((entry) => (
           <Feature key={entry.id} entry={entry} onPress={goToFeature} />
         ))}
@@ -75,7 +81,8 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 20,
     padding: spacing[4],
-    gap: spacing[1],
+    paddingBottom: spacing[2],
+    gap: spacing[3],
   },
   header: {
     flexDirection: 'row',
@@ -94,9 +101,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  close: {
+    margin: -spacing[2],
+  },
   ctaRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop: spacing[2],
   },
 });
