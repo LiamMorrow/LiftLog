@@ -250,7 +250,7 @@ describe('workout-worker effects', () => {
         }),
       });
       const before = original.withExercise(0, exercise);
-      const after = before.withWeightedExercise(0, exercise.withRepCount(0, 4, OffsetDateTime.now()));
+      const after = before.withExercise(0, exercise.withRepCount(0, 4, OffsetDateTime.now()));
       const { testBed, scheduleNextSetNotification, clearSetTimerNotification } = notifyTestBed(
         { restNotifications: true, restTimersEnabled: true },
         after,

@@ -320,13 +320,10 @@ export class Session {
     });
   }
 
-  withWeightedExercise(exerciseIndex: number, exercise: RecordedWeightedExercise): Session {
-    const updated = this.withExercise(exerciseIndex, exercise);
-    const before = this.lastExercise?.latestTime;
-    const after = updated.lastExercise?.latestTime;
-    // Rep corrections and removing older sets must preserve elapsed time, pause, and dismissal.
-    // Only a change to the latest completion starts a different rest period.
-    return (before && after ? before.isEqual(after) : before === after) ? updated : updated.withRestTimerAt(after);
+  hasSameLatestCompletion(other: Session): boolean {
+    const mine = this.lastExercise?.latestTime;
+    const theirs = other.lastExercise?.latestTime;
+    return mine && theirs ? mine.isEqual(theirs) : mine === theirs;
   }
 
   withRemovedExercise(exerciseIndex: number): Session {
@@ -571,11 +568,7 @@ export class Session {
     if (this.nextExercise && exercise && exercise.latestTime && exercise instanceof RecordedWeightedExercise) {
       const { minRest, failureRest } = exercise.blueprint.restBetweenSets;
 
-      const lastSet = exercise.lastRecordedSet;
-      const targetMin = lastSet?.set
-        ? exercise.repsTargetForSet(exercise.potentialSets.indexOf(lastSet)).min
-        : undefined;
-      const rest = targetMin === undefined ? Duration.ZERO : this.lastSetFailed ? failureRest : minRest;
+      const rest = !exercise.lastRecordedSet?.set ? Duration.ZERO : this.lastSetFailed ? failureRest : minRest;
 
       if (rest.equals(Duration.ZERO)) {
         return undefined;

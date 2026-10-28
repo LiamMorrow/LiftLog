@@ -37,9 +37,9 @@ describe('rest timer after logged reps corrections', () => {
 
   it.each([10, 5, 4, 0, 11])('uses the current latest reps (%i) without changing elapsed time', (reps) => {
     const { start, exercise, session } = setup();
-    const corrected = session.withWeightedExercise(0, exercise.withRepCount(1, reps, start.plusSeconds(20)));
+    const corrected = session.withExercise(0, exercise.withRepCount(1, reps, start.plusSeconds(20)));
     const end = start.plusSeconds(reps < 5 ? 300 : 5);
-    expect(corrected.restTimer).toBe(session.restTimer);
+    expect(corrected.hasSameLatestCompletion(session)).toBe(true);
     expect(corrected.lastExercise?.latestTime).toEqual(start);
     expect(corrected.restTimer!.elapsed(start.plusSeconds(20))).toEqual(Duration.ofSeconds(20));
     expect(corrected.restTimerEndTime).toEqual(end);
@@ -55,8 +55,8 @@ describe('rest timer after logged reps corrections', () => {
     let current = exercise;
     for (let reps = 9; reps >= 4; reps--) {
       current = current.withCycledRepCount(1, start.plusSeconds(20));
-      const updated = session.withWeightedExercise(0, current);
-      expect(updated.restTimer).toBe(session.restTimer);
+      const updated = session.withExercise(0, current);
+      expect(updated.hasSameLatestCompletion(session)).toBe(true);
       expect(updated.restTimerEndTime).toEqual(start.plusSeconds(reps < 5 ? 300 : 5));
     }
   });
@@ -65,10 +65,11 @@ describe('rest timer after logged reps corrections', () => {
     const { start, exercise, session } = setup();
     const now = start.plusSeconds(20);
     expect(session.restTimerEndTime!.isBefore(now)).toBe(true);
-    const failed = session.withWeightedExercise(0, exercise.withRepCount(1, 4, now));
+    const failed = session.withExercise(0, exercise.withRepCount(1, 4, now));
+    expect(failed.hasSameLatestCompletion(session)).toBe(true);
     expect(Duration.between(now, failed.restTimerEndTime!)).toEqual(Duration.ofSeconds(280));
-    const corrected = failed.withWeightedExercise(0, exercise.withRepCount(1, 5, now));
-    expect(corrected.restTimer).toBe(session.restTimer);
+    const corrected = failed.withExercise(0, exercise.withRepCount(1, 5, now));
+    expect(corrected.hasSameLatestCompletion(failed)).toBe(true);
     expect(corrected.restTimerEndTime).toEqual(start.plusSeconds(5));
     expect(corrected.restTimerEndTime!.isBefore(now)).toBe(true);
     expect(failed.restTimerEndTime!.isBefore(start.plusMinutes(6))).toBe(true);
@@ -85,8 +86,8 @@ describe('rest timer after logged reps corrections', () => {
             ? running.withRestTimerAt(undefined)
             : running;
       for (const reps of [4, 5, 0, undefined]) {
-        const updated = session.withWeightedExercise(0, exercise.withRepCount(0, reps, start.plusSeconds(20)));
-        expect(updated.restTimer).toBe(session.restTimer);
+        const updated = session.withExercise(0, exercise.withRepCount(0, reps, start.plusSeconds(20)));
+        expect(updated.hasSameLatestCompletion(session)).toBe(true);
         expect(updated.lastExercise?.latestTime).toEqual(start);
         expect(updated.restTimerEndTime).toEqual(session.restTimerEndTime);
         expect(getTimerInfo(updated)).toEqual(getTimerInfo(session));
@@ -107,8 +108,8 @@ describe('rest timer after logged reps corrections', () => {
       .withExercise(1, older)
       .withRestTimerAt(start);
     for (const reps of [4, 5, undefined]) {
-      const after = before.withWeightedExercise(1, older.withRepCount(0, reps, start.plusSeconds(20)));
-      expect(after.restTimer).toBe(before.restTimer);
+      const after = before.withExercise(1, older.withRepCount(0, reps, start.plusSeconds(20)));
+      expect(after.hasSameLatestCompletion(before)).toBe(true);
       expect(getTimerInfo(after)).toEqual(getTimerInfo(before));
     }
   });
@@ -120,16 +121,16 @@ describe('rest timer after logged reps corrections', () => {
     );
     const before = session.withExercise(0, outOfOrder);
     expect(before.lastSetFailed).toBe(false);
-    const after = before.withWeightedExercise(0, outOfOrder.withRepCount(1, 0, start.plusSeconds(20)));
+    const after = before.withExercise(0, outOfOrder.withRepCount(1, 0, start.plusSeconds(20)));
     expect(after.restTimerEndTime).toEqual(start.plusSeconds(5));
-    expect(after.restTimer).toBe(before.restTimer);
+    expect(after.hasSameLatestCompletion(before)).toBe(true);
   });
 
   it('keeps paused elapsed time while correcting failure, then schedules from the resumed anchor', () => {
     const { start, exercise, session } = setup();
     const paused = session.with({ restTimer: session.restTimer!.pause(start.plusSeconds(2)) });
-    const corrected = paused.withWeightedExercise(0, exercise.withRepCount(1, 4, start.plusSeconds(20)));
-    expect(corrected.restTimer).toBe(paused.restTimer);
+    const corrected = paused.withExercise(0, exercise.withRepCount(1, 4, start.plusSeconds(20)));
+    expect(corrected.hasSameLatestCompletion(paused)).toBe(true);
     expect(corrected.restTimer!.elapsed(start.plusMinutes(1))).toEqual(Duration.ofSeconds(2));
     expect(getTimerInfo(corrected)).toBeUndefined();
     expect(corrected.restTimerEndTime).toBeUndefined();
@@ -137,22 +138,17 @@ describe('rest timer after logged reps corrections', () => {
     expect(resumed.restTimerEndTime).toEqual(start.plusSeconds(318));
   });
 
-  it('does not resurrect a dismissed timer when the latest reps are corrected', () => {
+  it('changes the latest completion on logging a new set or removing the latest set', () => {
     const { start, exercise, session } = setup();
-    const dismissed = session.withRestTimerAt(undefined);
-    const corrected = dismissed.withWeightedExercise(0, exercise.withRepCount(1, 4, start.plusSeconds(20)));
-    expect(corrected.restTimer).toBeUndefined();
-    expect(getTimerInfo(corrected)).toBeUndefined();
-  });
-
-  it('starts a new rest on logging a new set and falls back on removing the latest set', () => {
-    const { start, exercise, session } = setup();
-    const logged = session.withWeightedExercise(0, exercise.withRepCount(2, 4, start.plusSeconds(20)));
-    expect(logged.restTimer!.startedAt).toEqual(start.plusSeconds(20));
-    const removed = logged.withWeightedExercise(0, exercise.withRepCount(1, undefined, start.plusSeconds(30)));
-    expect(removed.restTimer!.startedAt).toEqual(start.minusSeconds(60));
-    const empty = removed.withWeightedExercise(0, exercise.withNothingCompleted());
-    expect(empty.restTimer).toBeUndefined();
+    const logged = session.withExercise(0, exercise.withRepCount(2, 4, start.plusSeconds(20)));
+    expect(logged.hasSameLatestCompletion(session)).toBe(false);
+    expect(logged.lastExercise?.latestTime).toEqual(start.plusSeconds(20));
+    const removed = logged.withExercise(0, exercise.withRepCount(1, undefined, start.plusSeconds(30)));
+    expect(removed.hasSameLatestCompletion(logged)).toBe(false);
+    expect(removed.lastExercise?.latestTime).toEqual(start.minusSeconds(60));
+    const empty = removed.withExercise(0, exercise.withNothingCompleted());
+    expect(empty.hasSameLatestCompletion(removed)).toBe(false);
+    expect(empty.lastExercise?.latestTime).toBeUndefined();
   });
 });
 

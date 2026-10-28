@@ -39,10 +39,6 @@ import WeightFormat from '../presentation/foundation/weight-format';
 import { formatDuration } from '@/utils/format-date';
 import { useAddExercise } from '@/hooks/useAddExercise';
 
-function withRestTimerAt(session: Session, time: OffsetDateTime | undefined) {
-  return session.withRestTimerAt(time);
-}
-
 export default function SessionComponent(props: {
   session: Session;
   /**
@@ -77,7 +73,7 @@ export default function SessionComponent(props: {
   const addExercise = useAddExercise(editableSessionId);
   const updateSession = (reducer: (session: Session) => Session) => props.updateSession?.(reducer);
   const resetTimer = (time: OffsetDateTime | undefined) => {
-    updateSession((s) => withRestTimerAt(s, time));
+    updateSession((s) => s.withRestTimerAt(time));
   };
   const dismissTimer = () => {
     const dismissedTimer = session.restTimer;
@@ -102,10 +98,19 @@ export default function SessionComponent(props: {
       const before = s.cardioSetAt(exerciseIndex, setIndex);
       const updated = s.withCardioSet(exerciseIndex, setIndex, update, now);
       return updated.cardioSetAt(exerciseIndex, setIndex)?.earnsRest(before)
-        ? withRestTimerAt(updated, updated.lastExercise?.latestTime)
+        ? updated.withRestTimerAt(updated.lastExercise?.latestTime)
         : updated;
     });
   };
+
+  const updateWeightedExercise = (exerciseIndex: number) => (update: Updater<RecordedWeightedExercise>) =>
+    updateSession((s) => {
+      const updated = s.withExercise(
+        exerciseIndex,
+        update(s.recordedExercises[exerciseIndex] as RecordedWeightedExercise),
+      );
+      return updated.hasSameLatestCompletion(s) ? updated : updated.withRestTimerAt(updated.lastExercise?.latestTime);
+    });
 
   const startCardioTimer = (exerciseIndex: number) => (setIndex: number) =>
     updateSession((s) => s.withCardioTimerStarted(exerciseIndex, setIndex, OffsetDateTime.now()));
@@ -155,11 +160,7 @@ export default function SessionComponent(props: {
           }
           recordedExercise={item}
           toStartNext={session.nextExercise === item}
-          updateExercise={(update) =>
-            updateSession((s) =>
-              s.withWeightedExercise(index, update(s.recordedExercises[index] as RecordedWeightedExercise)),
-            )
-          }
+          updateExercise={updateWeightedExercise(index)}
           onEditExercise={
             editableSessionId ? () => push(getSessionExerciseEditorHref(editableSessionId, index)) : undefined
           }

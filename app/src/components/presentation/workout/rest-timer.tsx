@@ -84,23 +84,18 @@ export default function RestTimer({
   const [timerState, setTimerState] = useState(getTimerState());
   const [jiggling, setJiggling] = useState(false);
 
-  const triggerJiggle = useCallback(
-    (milestone: string) => {
-      if (jiggled.current.has(milestone)) return;
-      jiggled.current.add(milestone);
-      impactAsync(ImpactFeedbackStyle.Heavy).catch(console.log);
-      setJiggling(true);
-      setTimeout(() => setJiggling(false), 10);
-    },
-    [jiggled],
-  );
+  const triggerJiggle = useCallback((milestone: string) => {
+    if (jiggled.current.has(milestone)) return;
+    jiggled.current.add(milestone);
+    impactAsync(ImpactFeedbackStyle.Heavy).catch(console.log);
+    setJiggling(true);
+    setTimeout(() => setJiggling(false), 10);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
       const state = getTimerState();
       setTimerState(state);
-      // An edit can move an elapsed deadline back into the future. Rearm only those
-      // milestones, so the longer rest alerts again without replaying past alerts.
       if (state.phase === 'resting') jiggled.current.delete('ready');
       if (state.phase !== 'over') jiggled.current.delete('over');
       if (paused) return;
