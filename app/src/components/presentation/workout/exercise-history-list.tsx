@@ -6,9 +6,7 @@ import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { RepsStrip } from '@/components/presentation/workout/reps-strip';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { formatRepsTarget, RepsTarget } from '@/models/blueprint-models';
 import {
-  PotentialSet,
   RecordedCardioExercise,
   RecordedCardioExerciseSet,
   RecordedExercise,
@@ -26,8 +24,6 @@ import { Pressable, StyleProp, View, ViewStyle } from 'react-native';
 import { match, P } from 'ts-pattern';
 
 type HistoryItem = { kind: 'month'; month: LocalDate } | { kind: 'exercise'; exercise: RecordedExercise };
-
-type HistorySet = { set: PotentialSet; target: RepsTarget };
 
 function withMonthHeaders(exercises: RecordedExercise[]): HistoryItem[] {
   const items: HistoryItem[] = [];
@@ -150,43 +146,30 @@ function HistoryDate(props: { date: LocalDate | undefined }) {
 function WeightedRuns(props: { exercise: RecordedWeightedExercise }) {
   const { exercise } = props;
   const showsWeight = exercise.blueprint.resistance !== 'none';
-  const sets: HistorySet[] = exercise.potentialSets.map((set, index) => ({
-    set,
-    target: exercise.repsTargetForSet(index),
+  const sets = exercise.potentialSets.map((set) => ({
+    weight: set.weight,
+    label: set.set?.repsCompleted.toString() ?? '-',
+    isDone: !!set.set,
   }));
-  const runs = consecutiveRuns(sets, (previous, next) => !showsWeight || previous.set.weight.equals(next.set.weight));
+  const runs = consecutiveRuns(sets, (previous, next) => !showsWeight || previous.weight.equals(next.weight));
 
   return (
-    <View style={{ gap: spacing[2] }}>
+    <View style={{ gap: spacing[2], alignItems: 'flex-end' }}>
       {runs.map((run, index) => (
         <View key={index} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}>
           {showsWeight && (
-            <View style={{ width: spacing[20], alignItems: 'flex-end' }}>
-              <WeightFormat
-                weight={run[0]!.set.weight}
-                usesBodyweight={exercise.blueprint.resistance === 'bodyweight'}
-                fontSize="text-base"
-                fontWeight="bold"
-              />
-            </View>
+            <WeightFormat
+              weight={run[0]!.weight}
+              usesBodyweight={exercise.blueprint.resistance === 'bodyweight'}
+              fontSize="text-base"
+              fontWeight="bold"
+            />
           )}
-          <RepsStrip
-            style={{ flexShrink: 1 }}
-            sets={run.map(({ set }) => ({ label: set.set?.repsCompleted.toString() ?? '-', isDone: !!set.set }))}
-          />
-          <SurfaceText font="text-xs" color="onSurfaceVariant" style={{ fontVariant: ['tabular-nums'] }}>
-            {formatTargets(run.map((x) => x.target))}
-          </SurfaceText>
+          <RepsStrip style={{ flexShrink: 1, justifyContent: 'flex-end' }} sets={run} />
         </View>
       ))}
     </View>
   );
-}
-
-function formatTargets(targets: RepsTarget[]): string {
-  return consecutiveRuns(targets, (a, b) => a.min === b.min && a.max === b.max)
-    .map((run) => `${run.length}×${formatRepsTarget(run[0]!)}`)
-    .join(', ');
 }
 
 function CardioSets(props: { exercise: RecordedCardioExercise }) {
