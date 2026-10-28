@@ -6,6 +6,7 @@ import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { CreateFeedAccountCard } from '@/components/smart/create-feed-account-card';
 import { getFeedItemHref } from '@/components/smart/feed-item';
 import { getFeedSettingsHref } from '@/components/smart/feed-settings';
 import { FeedWeekStrip } from '@/components/smart/feed-week-strip';
@@ -44,6 +45,7 @@ export default function Feed() {
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const listRef = useRef<LegendListRef>(null);
+  const hasAccount = useAppSelector(selectFeedIdentityRemote).isSuccess();
   const itemSignature = feedItems.map((x) => x.eventId).join(',');
 
   useEffect(() => {
@@ -60,9 +62,11 @@ export default function Feed() {
         dispatch(fetchInboxItems({ fromUserAction: true }));
       }}
       ListEmptyComponent={
-        <EmptyInfo style={{ marginTop: spacing[8] }}>
-          <T keyName="feed.no_friend_workouts.message" />
-        </EmptyInfo>
+        hasAccount ? (
+          <EmptyInfo style={{ marginTop: spacing[8] }}>
+            <T keyName="feed.no_friend_workouts.message" />
+          </EmptyInfo>
+        ) : undefined
       }
       refreshing={fetchingFeedItems}
       onScroll={handleScroll}
@@ -80,17 +84,27 @@ export default function Feed() {
 
 function FeedProfileHeader() {
   const identityRemote = useAppSelector(selectFeedIdentityRemote);
+  const createAccount = () => <CreateFeedAccountCard />;
 
   return (
-    <>
-      <Remote value={identityRemote} success={(identity) => <FeedProfile identity={identity} />} />
-      <TrainingNow />
-      <FeedWeekStrip />
-    </>
+    <Remote
+      value={identityRemote}
+      notAsked={createAccount}
+      loading={createAccount}
+      error={createAccount}
+      success={(identity) => (
+        <>
+          <FeedProfile identity={identity} />
+          <TrainingNow />
+          <FeedWeekStrip />
+        </>
+      )}
+    />
   );
 }
 
 function FeedProfile({ identity }: { identity: FeedIdentity }) {
+  const { t } = useTranslate();
   const dispatch = useDispatch();
   const { push } = useRouter();
   const friends = useAppSelector(selectFriendList);
@@ -147,7 +161,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
                 dispatch(
                   shareString({
                     title: 'Share feed profile',
-                    value: shareUrl,
+                    value: t('feed.share_link.message', { link: shareUrl }),
                   }),
                 );
               }}

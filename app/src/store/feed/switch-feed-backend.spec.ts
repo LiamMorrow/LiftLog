@@ -87,7 +87,6 @@ describe('switchFeedBackend', () => {
     expect(testBed.getDispatchedAction(createFeedIdentity).payload).toMatchObject({
       name: 'Liam',
       publishBodyweight: true,
-      publishPlan: true,
       publishWorkouts: true,
     });
   });
@@ -99,6 +98,7 @@ describe('switchFeedBackend', () => {
 
     expect(feedIdentityService.deleteFeedIdentityAsync).not.toHaveBeenCalled();
     expect(testBed.getDispatchedAction(setBackendAssignment)).toBeDefined();
+    testBed.expectNotDispatched(createFeedIdentity);
   });
 });
 
@@ -140,6 +140,7 @@ describe('resetFeedAccount', () => {
     await testBed.dispatchHandled(resetFeedAccount({ fromUserAction: true, createNewIdentity: false }));
 
     testBed.getDispatchedAction(clearFeedState);
+    testBed.expectNotDispatched(createFeedIdentity);
   });
 
   it('leaves alone an account restored while the old one was being deleted', async () => {

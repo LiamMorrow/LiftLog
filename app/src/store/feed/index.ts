@@ -1,5 +1,4 @@
 import { AesKey } from '@/models/encryption-models';
-import { ProgramBlueprint } from '@/models/blueprint-models';
 import {
   FeedIdentity,
   Friend,
@@ -82,14 +81,11 @@ const feedSlice = createSlice({
         delete state.friends[id];
       }
     },
-    patchFriendProfiles(
-      state,
-      action: PayloadAction<{ id: string; name: string | undefined; currentPlan: ProgramBlueprint | undefined }[]>,
-    ) {
-      for (const { id, name, currentPlan } of action.payload) {
+    patchFriendProfiles(state, action: PayloadAction<{ id: string; name: string | undefined }[]>) {
+      for (const { id, name } of action.payload) {
         const friend = state.friends[id];
         if (friend) {
-          state.friends[id] = friend.with({ name, currentPlan });
+          state.friends[id] = friend.with({ name });
         }
       }
     },
@@ -258,7 +254,6 @@ export const createFeedIdentity = createAction<
   {
     name: string | undefined;
     publishBodyweight: boolean;
-    publishPlan: boolean;
     publishWorkouts: boolean;
     shareLiveWorkouts?: boolean;
   } & FeedAction

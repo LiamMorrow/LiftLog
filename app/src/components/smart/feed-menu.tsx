@@ -1,23 +1,28 @@
 import PageMenu from '@/components/presentation/foundation/page-menu';
+import { MenuItem } from '@/components/presentation/foundation/menu';
 import { useAppSelector } from '@/store';
-import { shareString } from '@/store/app';
-import { getFeedShareUrl, selectFeedIdentityRemote } from '@/store/feed';
+import { selectFeedIdentityRemote } from '@/store/feed';
+import { getFeedQrCodeHref } from '@/components/smart/feed-qr-code';
 import { getFeedSettingsHref } from '@/components/smart/feed-settings';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
-import { useDispatch } from 'react-redux';
 import Settings from '@expo/material-symbols/settings.xml';
 import Share from '@expo/material-symbols/share.xml';
 
 export function FeedMenu() {
   const { t } = useTranslate();
   const { push } = useRouter();
-  const dispatch = useDispatch();
   const identity = useAppSelector(selectFeedIdentityRemote).unwrapOr(undefined);
-
-  if (!identity) {
-    return null;
-  }
+  const shareItems: MenuItem[] = identity
+    ? [
+        {
+          label: t('feed.share_feed.button'),
+          icon: Share,
+          systemImage: 'square.and.arrow.up',
+          onPress: () => push(getFeedQrCodeHref()),
+        },
+      ]
+    : [];
 
   return (
     <PageMenu
@@ -29,18 +34,7 @@ export function FeedMenu() {
           systemImage: 'gearshape',
           onPress: () => push(getFeedSettingsHref()),
         },
-        {
-          label: t('feed.share_feed.button'),
-          icon: Share,
-          systemImage: 'square.and.arrow.up',
-          onPress: () =>
-            dispatch(
-              shareString({
-                title: t('feed.profile.title'),
-                value: getFeedShareUrl(identity),
-              }),
-            ),
-        },
+        ...shareItems,
       ]}
     />
   );

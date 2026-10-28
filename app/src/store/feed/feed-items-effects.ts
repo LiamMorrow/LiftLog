@@ -33,10 +33,9 @@ import { GetUserResponse, UserEventResponse } from '@/models/feed-api-models';
 import { EncryptionService, fromJsonBytes, splitNonceAndCiphertext, toJsonBytes } from '@/services/encryption-service';
 import { FeedApiService } from '@/services/feed-api';
 import { readSession } from '@/db/sessions';
-import { ProgramBlueprint } from '@/models/blueprint-models';
 import { feedUnpublishedSessionsSchema } from '@/db/schema';
-import { AnyVersionProgramBlueprintJSON, AnyVersionUserEventJSON } from '@/models/storage/versions/any';
-import { programBlueprintMigrations, userEventMigrations } from '@/models/storage/versions/migrations';
+import { AnyVersionUserEventJSON } from '@/models/storage/versions/any';
+import { userEventMigrations } from '@/models/storage/versions/migrations';
 import { AesEncryptedAndRsaSignedData, AesKey } from '@/models/encryption-models';
 
 const MIN_TIMESTAMP = Instant.parse('2000-01-01T00:00:00Z');
@@ -339,9 +338,7 @@ async function decryptProfileAsync(
   friend: Friend,
   response: GetUserResponse,
   encryptionService: EncryptionService,
-): Promise<
-  { id: string; name: string | undefined; currentPlan: ProgramBlueprint | undefined } | 'undecryptable' | undefined
-> {
+): Promise<{ id: string; name: string | undefined } | 'undecryptable' | undefined> {
   const profileField =
     (field: Uint8Array) =>
     (key: AesKey): AesEncryptedAndRsaSignedData =>
@@ -354,16 +351,7 @@ async function decryptProfileAsync(
           await decryptWithKeysAsync(profileField(response.encryptedName), friend, encryptionService),
         )
       : undefined;
-    const currentPlan = response.encryptedCurrentPlan?.length
-      ? ProgramBlueprint.fromJSON(
-          programBlueprintMigrations.migrate(
-            fromJsonBytes<AnyVersionProgramBlueprintJSON>(
-              await decryptWithKeysAsync(profileField(response.encryptedCurrentPlan), friend, encryptionService),
-            ),
-          ),
-        )
-      : undefined;
-    return { id: friend.id, name, currentPlan };
+    return { id: friend.id, name };
   } catch (error) {
     console.warn('Could not decrypt a friend profile; keeping the last one', error);
     return error instanceof NoKeyDecrypts ? 'undecryptable' : undefined;

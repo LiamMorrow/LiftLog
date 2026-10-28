@@ -8,7 +8,7 @@ import { makeFriend } from '@/store/feed/__test__/friends';
 import { storedSessionsReducer } from '@/store/stored-sessions';
 import { FeedIdentity, FEED_EVENT_RETENTION_SECONDS, Friend, SessionUserEvent } from '@/models/feed-models';
 import { Session } from '@/models/session-models';
-import { ProgramBlueprint, SessionBlueprint } from '@/models/blueprint-models';
+import { SessionBlueprint } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { AesKey, RsaKeyPair } from '@/models/encryption-models';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
@@ -402,7 +402,6 @@ describe('fetchFeedItems with real encryption', () => {
     const putUserDataAsync = vi.fn().mockResolvedValue(ApiResult.success());
     await new FeedIdentityService({ putUserDataAsync } as never, encryptionService).publishProfileAsync(
       publisher(aesKey),
-      new ProgramBlueprint('Shared plan', [], LocalDate.of(2026, 8, 6)),
     );
     return putUserDataAsync.mock.calls[0]![0] as PutUserDataRequest;
   }
@@ -463,7 +462,6 @@ describe('fetchFeedItems with real encryption', () => {
 
     const friend = testBed.getState().feed.friends[FOLLOWED_ID]!;
     expect(friend.name).toBe('Bob');
-    expect(friend.currentPlan?.name).toBe('Shared plan');
     expect(testBed.getDispatchedAction(repairFriends).payload).toEqual({ undecryptable: [] });
   });
 

@@ -1,5 +1,6 @@
 import { SettingsPage } from '@/components/layout/settings-page';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import { CreateFeedAccountCard } from '@/components/smart/create-feed-account-card';
 import { FormRow } from '@/components/presentation/foundation/form-row';
 import { Remote } from '@/components/presentation/foundation/remote';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
@@ -7,8 +8,10 @@ import { SegmentedListSwitch } from '@/components/presentation/foundation/segmen
 import { FeedIdentity } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import { resetFeedAccount, selectFeedIdentityRemote, updateFeedIdentity } from '@/store/feed';
+import { getFeedQrCodeHref } from '@/components/smart/feed-qr-code';
+import { setShowFeed } from '@/store/settings';
 import { useTranslate } from '@tolgee/react';
-import { Href } from 'expo-router';
+import { Href, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
@@ -23,26 +26,61 @@ export function getFeedSettingsHref(opts?: { focus?: FeedSettingsFocus; fromSett
   };
 }
 
-export function FeedSettings({ focus }: { focus: FeedSettingsFocus | undefined }) {
+export function FeedSettings({
+  focus,
+  fromSettings,
+}: {
+  focus: FeedSettingsFocus | undefined;
+  fromSettings?: boolean;
+}) {
   const { t } = useTranslate();
+  const dispatch = useDispatch();
   const identityRemote = useAppSelector(selectFeedIdentityRemote);
+  const showFeed = useAppSelector((x) => x.settings.showFeed);
+  const lockedOn = showFeed && identityRemote.isSuccess();
   return (
     <SettingsPage title={t('feed.settings.title')} docs="FeedProcess.md">
-      <Remote value={identityRemote} success={(identity) => <FeedSettingsForm identity={identity} focus={focus} />} />
+      <SegmentedGroup>
+        <SegmentedListSwitch
+          testID="feed-show-feed-switch"
+          icon={'forum'}
+          label={t('feed.show_feed.label')}
+          supportingText={lockedOn ? t('feed.show_feed.has_account.subtitle') : t('feed.show_feed.subtitle')}
+          value={showFeed}
+          disabled={lockedOn}
+          onValueChange={(value) => dispatch(setShowFeed(value))}
+        />
+      </SegmentedGroup>
+      <Remote
+        value={identityRemote}
+        notAsked={() => <CreateFeedAccountCard />}
+        loading={() => <CreateFeedAccountCard />}
+        error={() => <CreateFeedAccountCard />}
+        success={(identity) => <FeedSettingsForm identity={identity} focus={focus} fromSettings={fromSettings} />}
+      />
     </SettingsPage>
   );
 }
 
-function FeedSettingsForm({ identity, focus }: { identity: FeedIdentity; focus: FeedSettingsFocus | undefined }) {
+function FeedSettingsForm({
+  identity,
+  focus,
+  fromSettings,
+}: {
+  identity: FeedIdentity;
+  focus: FeedSettingsFocus | undefined;
+  fromSettings: boolean | undefined;
+}) {
+  const { push } = useRouter();
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const updateProfile = (value: Partial<FeedIdentity>) => {
     dispatch(updateFeedIdentity({ updates: value, fromUserAction: true }));
   };
-  const resetAccount = () => {
-    dispatch(resetFeedAccount({ fromUserAction: true }));
+  const deleteAccount = () => {
+    dispatch(resetFeedAccount({ fromUserAction: true, createNewIdentity: false }));
   };
-  const [resetAccountDialogOpen, setResetAccountDialogOpen] = useState(false);
+  const [deleteAccountDialogOpen, setDeleteAccountDialogOpen] = useState(false);
   return (
     <>
       <FormRow>
@@ -54,6 +92,13 @@ function FeedSettingsForm({ identity, focus }: { identity: FeedIdentity; focus: 
           onChangeText={(name) => updateProfile({ name })}
         />
       </FormRow>
+      <SegmentedGroup>
+        <SegmentListFormElement
+          icon={'share'}
+          label={t('feed.share_feed.button')}
+          onPress={() => push(getFeedQrCodeHref({ fromSettings }))}
+        />
+      </SegmentedGroup>
       <SegmentedGroup>
         <SegmentedListSwitch
           testID="feed-publish-workouts-switch"
@@ -81,28 +126,22 @@ function FeedSettingsForm({ identity, focus }: { identity: FeedIdentity; focus: 
           value={identity.publishBodyweight}
           onValueChange={(publishBodyweight) => updateProfile({ publishBodyweight })}
         />
-        <SegmentedListSwitch
-          icon={'assignment'}
-          label={t('feed.publish_plan.label')}
-          supportingText={t('feed.publish_plan.friends.subtitle')}
-          value={identity.publishPlan}
-          onValueChange={(publishPlan) => updateProfile({ publishPlan })}
-        />
       </SegmentedGroup>
       <SegmentedGroup>
         <SegmentListFormElement
           icon={'delete'}
-          label={t('feed.reset_account.button')}
-          onPress={() => setResetAccountDialogOpen(true)}
+          destructive
+          label={t('feed.delete_account.button')}
+          onPress={() => setDeleteAccountDialogOpen(true)}
         />
       </SegmentedGroup>
       <ConfirmationDialog
-        headline={t('feed.reset_account.button')}
-        textContent={t('feed.reset_account.confirm.body')}
-        open={resetAccountDialogOpen}
-        onOk={resetAccount}
-        okText={t('feed.reset_account.button')}
-        onCancel={() => setResetAccountDialogOpen(false)}
+        headline={t('feed.delete_account.button')}
+        textContent={t('feed.delete_account.confirm.body')}
+        open={deleteAccountDialogOpen}
+        onOk={deleteAccount}
+        okText={t('feed.delete_account.button')}
+        onCancel={() => setDeleteAccountDialogOpen(false)}
       />
     </>
   );

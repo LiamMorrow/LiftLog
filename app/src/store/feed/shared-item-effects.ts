@@ -3,10 +3,10 @@ import { fromSharedItemJSON } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
 import { AnyVersionSharedItemJSON } from '@/models/storage/versions/any';
 import { sharedItemMigrations } from '@/models/storage/versions/migrations';
-import { ApiErrorType } from '@/services/api-error';
 import { fromJsonBytes, toJsonBytes } from '@/services/encryption-service';
 import { encryptAndShare, feedApiError, fetchSharedItem, setSharedItem } from '@/store/feed';
 import { AddEffectFn } from '@/store/store';
+import { createAndStoreFeedIdentity } from '@/store/feed/create-feed-identity';
 import { toUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
 
 export function addSharedItemEffects(addEffect: AddEffectFn) {
@@ -14,26 +14,22 @@ export function addSharedItemEffects(addEffect: AddEffectFn) {
     encryptAndShare,
     async (
       action,
-      { cancelActiveListeners, getState, dispatch, extra: { encryptionService, feedApiService, stringSharer, logger } },
+      {
+        cancelActiveListeners,
+        getState,
+        dispatch,
+        extra: { encryptionService, feedApiService, feedIdentityService, stringSharer },
+      },
     ) => {
       cancelActiveListeners();
-      const identity = getState().feed.identity;
-      if (!identity.isSuccess()) {
-        logger.debug('Identity', identity);
-        dispatch(
-          feedApiError({
-            error: {
-              exception: new Error('No identity'),
-              message: 'Failed to share. Identity not found',
-              type: ApiErrorType.Unknown,
-            },
-            message: 'Failed to share. Identity not found',
-            action: {
-              ...action,
-              payload: { ...action.payload, fromUserAction: true },
-            },
-          }),
-        );
+      const identity =
+        getState().feed.identity.unwrapOr(undefined) ??
+        (await createAndStoreFeedIdentity(
+          { ...action, payload: { ...action.payload, fromUserAction: true } },
+          { name: undefined, publishBodyweight: false, publishWorkouts: false },
+          { dispatch, getState, feedIdentityService },
+        ));
+      if (!identity) {
         return;
       }
 
@@ -44,12 +40,12 @@ export function addSharedItemEffects(addEffect: AddEffectFn) {
       const encrypted = await encryptionService.signAndEncryptAsync(
         payloadBytes,
         aesKey,
-        identity.data.rsaKeyPair.privateKey,
+        identity.rsaKeyPair.privateKey,
       );
 
       const result = await feedApiService.postSharedItemAsync({
-        userId: identity.data.id,
-        password: identity.data.password,
+        userId: identity.id,
+        password: identity.password,
         encryptedPayload: encrypted,
         expiry: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
       });

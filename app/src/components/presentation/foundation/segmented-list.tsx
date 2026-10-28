@@ -83,8 +83,10 @@ export function SegmentListFormElement(props: {
   line2?: ReactNode | string;
   right?: ReactNode | string;
   style?: StyleProp<ViewStyle>;
+  destructive?: boolean;
 }) {
   const { colors } = useAppTheme();
+  const labelColor = props.destructive ? colors.error : undefined;
   const pressable = props.onPress ?? props.onLongPress;
   const Wrapper = pressable ? TouchableRipple : View;
   return (
@@ -105,8 +107,10 @@ export function SegmentListFormElement(props: {
               alignItems: 'center',
             }}
           >
-            {props.icon ? <Icon size={20} source={props.icon} /> : undefined}
-            <Text variant="labelLarge">{props.label}</Text>
+            {props.icon ? <Icon size={20} source={props.icon} color={labelColor} /> : undefined}
+            <Text variant="labelLarge" style={{ color: labelColor }}>
+              {props.label}
+            </Text>
           </View>
           {typeof props.right === 'string' ? <Text variant="labelLarge">{props.right}</Text> : props.right}
         </View>

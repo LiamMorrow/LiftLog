@@ -6,7 +6,6 @@ import {
   setNotesExpandedByDefault,
   setShowAccomplishments,
   setShowBodyweight,
-  setShowFeed,
   setShowPostWorkoutSummary,
   setThemeMode,
   setTrueBlackDarkTheme,
@@ -34,13 +33,6 @@ export default function AppConfigurationPage() {
           supportingText={t('settings.show_bodyweight.subtitle')}
           value={settings.showBodyweight}
           onValueChange={(value) => dispatch(setShowBodyweight(value))}
-        />
-        <SegmentedListSwitch
-          label={t('feed.show_feed.label')}
-          icon={'forum'}
-          supportingText={t('feed.show_feed.subtitle')}
-          value={settings.showFeed}
-          onValueChange={(value) => dispatch(setShowFeed(value))}
         />
         <SegmentedListSwitch
           testID="setShowAccomplishments"

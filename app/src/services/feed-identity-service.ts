@@ -1,7 +1,6 @@
 import { FeedApiService } from './feed-api';
-import { EncryptionService, joinNonceAndCiphertext, toJsonBytes } from './encryption-service';
+import { EncryptionService, joinNonceAndCiphertext } from './encryption-service';
 import { FeedIdentity } from '@/models/feed-models';
-import { ProgramBlueprint } from '@/models/blueprint-models';
 import { PutUserDataRequest } from '@/models/feed-api-models';
 import { ApiResult } from '@/services/api-error';
 import { match } from 'ts-pattern';
@@ -17,9 +16,7 @@ export class FeedIdentityService {
   async createFeedIdentityAsync(
     name: string | undefined,
     publishBodyweight: boolean,
-    publishPlan: boolean,
     publishWorkouts: boolean,
-    currentPlan: ProgramBlueprint | undefined,
     shareLiveWorkouts = false,
   ): Promise<ApiResult<FeedIdentity>> {
     const response = await this.feedApiService.createUserAsync();
@@ -34,25 +31,21 @@ export class FeedIdentityService {
       response.data.password,
       name,
       publishBodyweight,
-      publishPlan,
+      false,
       publishWorkouts,
       [],
       shareLiveWorkouts,
     );
-    const published = await this.publishProfileAsync(identity, currentPlan);
+    const published = await this.publishProfileAsync(identity);
     return published.isSuccess() ? ApiResult.success(identity) : ApiResult.fromFailure(published);
   }
 
-  async publishProfileAsync(
-    identity: FeedIdentity,
-    currentPlan: ProgramBlueprint | undefined,
-  ): Promise<ApiResult<void>> {
-    const { aesKey, rsaKeyPair, name, publishPlan } = identity;
+  async publishProfileAsync(identity: FeedIdentity): Promise<ApiResult<void>> {
+    const { aesKey, rsaKeyPair, name } = identity;
     const nameBytes = name ? new TextEncoder().encode(name) : undefined;
-    const planBytes = publishPlan && currentPlan ? toJsonBytes(currentPlan.toJSON()) : undefined;
     const encrypted = await match(aesKey.algorithm)
-      .with('AES-GCM', () => this.encryptGcmProfileAsync(identity, nameBytes, planBytes))
-      .with('AES-CBC', () => this.encryptCbcProfileAsync(identity, nameBytes, planBytes))
+      .with('AES-GCM', () => this.encryptGcmProfileAsync(identity, nameBytes))
+      .with('AES-CBC', () => this.encryptCbcProfileAsync(identity, nameBytes))
       .exhaustive();
 
     return this.feedApiService.putUserDataAsync({
@@ -66,14 +59,14 @@ export class FeedIdentityService {
   private async encryptGcmProfileAsync(
     { aesKey, rsaKeyPair }: FeedIdentity,
     nameBytes: Uint8Array | undefined,
-    planBytes: Uint8Array | undefined,
   ): Promise<EncryptedProfile> {
-    const encrypt = async (bytes: Uint8Array | undefined) =>
-      bytes &&
-      joinNonceAndCiphertext(await this.encryptionService.signAndEncryptAsync(bytes, aesKey, rsaKeyPair.privateKey));
     return {
-      encryptedName: await encrypt(nameBytes),
-      encryptedCurrentPlan: await encrypt(planBytes),
+      encryptedName:
+        nameBytes &&
+        joinNonceAndCiphertext(
+          await this.encryptionService.signAndEncryptAsync(nameBytes, aesKey, rsaKeyPair.privateKey),
+        ),
+      encryptedCurrentPlan: undefined,
       encryptionIV: new Uint8Array(),
     };
   }
@@ -81,17 +74,14 @@ export class FeedIdentityService {
   private async encryptCbcProfileAsync(
     { aesKey, rsaKeyPair }: FeedIdentity,
     nameBytes: Uint8Array | undefined,
-    planBytes: Uint8Array | undefined,
   ): Promise<EncryptedProfile> {
-    const privateKey = rsaKeyPair.privateKey;
     const name =
-      nameBytes && (await this.encryptionService.signAndEncryptWithCbcIvAsync(nameBytes, aesKey, privateKey));
-    const plan =
-      planBytes && (await this.encryptionService.signAndEncryptWithCbcIvAsync(planBytes, aesKey, privateKey, name?.iv));
+      nameBytes &&
+      (await this.encryptionService.signAndEncryptWithCbcIvAsync(nameBytes, aesKey, rsaKeyPair.privateKey));
     return {
       encryptedName: name?.encryptedPayload,
-      encryptedCurrentPlan: plan?.encryptedPayload,
-      encryptionIV: (name ?? plan)?.iv.value ?? new Uint8Array(),
+      encryptedCurrentPlan: undefined,
+      encryptionIV: name?.iv.value ?? new Uint8Array(),
     };
   }
 

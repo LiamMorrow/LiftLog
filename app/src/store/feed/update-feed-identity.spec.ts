@@ -75,9 +75,9 @@ describe('updateFeedIdentity', () => {
       );
     });
 
-    await testBed.dispatchHandled(updateFeedIdentity({ updates: { publishPlan: true }, fromUserAction: true }));
+    await testBed.dispatchHandled(updateFeedIdentity({ updates: { publishBodyweight: true }, fromUserAction: true }));
 
-    expect(identity().publishPlan).toBe(false);
+    expect(identity().publishBodyweight).toBe(false);
     expect(identity().aesKey).toBe(rotatedKey);
   });
 
@@ -114,7 +114,7 @@ describe('updateFeedIdentity', () => {
       );
     });
 
-    await testBed.dispatchHandled(updateFeedIdentity({ updates: { publishPlan: false }, fromUserAction: true }));
+    await testBed.dispatchHandled(updateFeedIdentity({ updates: { publishBodyweight: false }, fromUserAction: true }));
 
     expect(identity()).toBe(replacement);
   });

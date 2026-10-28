@@ -68,7 +68,7 @@ Public keys are stored alongside the user's information.
 
 ### Identity
 
-Each install generates an identity, which is stored on THEIR device. An identity consists of:
+A feed account is optional. Its identity is generated when the user creates an account from the feed or feed settings, or when they first share a workout or plan link, and is stored on THEIR device. Deleting the account removes it from the server and the device. An identity consists of:
 
 - An optional name
 - An AES-128-GCM key, plus the keys it replaced in the last 90 days ([see Key rotation](#key-rotation))

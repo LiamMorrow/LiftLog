@@ -40,7 +40,6 @@ import { addRotationEffects, keyHolders } from '@/store/feed/rotation-effects';
 import { addRepairEffects } from '@/store/feed/repair-effects';
 import { addLiveSessionEffects } from '@/store/feed/live-session-effects';
 import { addFeedHubEffects } from '@/store/feed/feed-hub-effects';
-import { selectActiveProgram } from '@/store/program';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { Platform } from 'react-native';
 import {
@@ -69,6 +68,7 @@ import { feedIdentityMigrations, sessionUserEventMigrations } from '@/models/sto
 import { setBackendAssignment, switchFeedBackend } from '@/store/backends';
 import { readFriends, writeFriends } from '@/db/feed-friends';
 import { enqueueOutboxMessages } from '@/db/feed-outbox';
+import { createAndStoreFeedIdentity } from '@/store/feed/create-feed-identity';
 
 export function applyFeedEffects(addEffect: AddEffectFn) {
   addEffect(
@@ -114,17 +114,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
               ),
           }),
         );
-        if (!identity) {
-          dispatch(
-            createFeedIdentity({
-              name: undefined,
-              publishBodyweight: false,
-              publishPlan: false,
-              publishWorkouts: false,
-              fromUserAction: false,
-            }),
-          );
-        } else {
+        if (identity) {
           await fixIosBadRSAKey(getState, dispatch, encryptionService, logger);
           const loaded = selectFeedIdentityRemote(getState()).unwrapOr(undefined);
           if (loaded && loaded.aesKey.algorithm !== 'AES-GCM') {
@@ -279,31 +269,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     createFeedIdentity,
     async (action, { cancelActiveListeners, getState, dispatch, extra: { feedIdentityService } }) => {
       cancelActiveListeners();
-      if (getState().feed.identity.isLoading()) {
-        return;
-      }
-      const payload = action.payload;
-      dispatch(setIdentity(RemoteData.loading()));
-      const identityResult = await feedIdentityService.createFeedIdentityAsync(
-        payload.name,
-        payload.publishBodyweight,
-        payload.publishPlan,
-        payload.publishWorkouts,
-        undefined,
-        payload.shareLiveWorkouts,
-      );
-      if (!identityResult.isSuccess()) {
-        dispatch(
-          feedApiError({
-            message: 'Failed to create user',
-            error: identityResult.error!,
-            action,
-          }),
-        );
-        dispatch(setIdentity(RemoteData.error(identityResult.error)));
-        return;
-      }
-      dispatch(setIdentity(RemoteData.success(identityResult.data)));
+      await createAndStoreFeedIdentity(action, action.payload, { dispatch, getState, feedIdentityService });
     },
   );
 
@@ -329,13 +295,15 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
 
       dispatch(clearFeedState());
       dispatch(setBackendAssignment({ feature: 'feed', backendId: action.payload.backendId }));
+      if (!previous) {
+        return;
+      }
       dispatch(
         createFeedIdentity({
-          name: previous?.name,
-          publishBodyweight: previous?.publishBodyweight ?? false,
-          publishPlan: previous?.publishPlan ?? false,
-          publishWorkouts: previous?.publishWorkouts ?? false,
-          shareLiveWorkouts: previous?.shareLiveWorkouts ?? false,
+          name: previous.name,
+          publishBodyweight: previous.publishBodyweight,
+          publishWorkouts: previous.publishWorkouts,
+          shareLiveWorkouts: previous.shareLiveWorkouts,
           fromUserAction: true,
         }),
       );
@@ -372,7 +340,6 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
           fromUserAction: true,
           name: action.payload.newIdentity?.name,
           publishBodyweight: action.payload.newIdentity?.publishBodyweight ?? false,
-          publishPlan: action.payload.newIdentity?.publishPlan ?? false,
           publishWorkouts: action.payload.newIdentity?.publishWorkouts ?? false,
           shareLiveWorkouts: action.payload.newIdentity?.shareLiveWorkouts ?? false,
         }),
@@ -395,10 +362,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
       const identity = before.with(updates);
       dispatch(setIdentity(RemoteData.success(identity)));
 
-      const result = await feedIdentityService.publishProfileAsync(
-        identity,
-        stateAfterReduce.program.isHydrated ? selectActiveProgram(stateAfterReduce) : undefined,
-      );
+      const result = await feedIdentityService.publishProfileAsync(identity);
       if (signal.aborted || !result.isError()) {
         return;
       }

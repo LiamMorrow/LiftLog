@@ -15,7 +15,6 @@ import { openUrl } from '@/utils/open-url';
 import { copyLogs } from '@/store/app';
 import { useAppSelector } from '@/store';
 import { selectHasUnseenWhatsNew } from '@/store/settings';
-import { selectFeedIdentityRemote } from '@/store/feed';
 import { getFeedSettingsHref } from '@/components/smart/feed-settings';
 
 export default function SettingsPageIndex() {
@@ -25,7 +24,6 @@ export default function SettingsPageIndex() {
   const [appInfoOpen, setAppInfoOpen] = useState(false);
   const dispatch = useDispatch();
   const hasUnseenWhatsNew = useAppSelector(selectHasUnseenWhatsNew);
-  const hasFeedIdentity = useAppSelector(selectFeedIdentityRemote).isSuccess();
 
   const doCopyLogs = () => {
     dispatch(copyLogs());
@@ -71,13 +69,11 @@ export default function SettingsPageIndex() {
           icon={'notifications'}
           onPress={() => push('/settings/notifications')}
         />
-        {hasFeedIdentity ? (
-          <SegmentedListLink
-            label={t('feed.settings.title')}
-            icon={'forum'}
-            onPress={() => push(getFeedSettingsHref({ fromSettings: true }))}
-          />
-        ) : undefined}
+        <SegmentedListLink
+          label={t('feed.settings.title')}
+          icon={'forum'}
+          onPress={() => push(getFeedSettingsHref({ fromSettings: true }))}
+        />
       </SegmentedGroup>
 
       <SegmentedGroup>

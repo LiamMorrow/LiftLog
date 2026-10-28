@@ -3,7 +3,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { createTestDb } from '@/utils/__test__/test-db';
 import { applyFeedEffects } from '@/store/feed/effects';
-import feedReducer, { initializeFeedStateSlice, rotateFeedKey, setIsHydrated } from '@/store/feed';
+import feedReducer, { createFeedIdentity, initializeFeedStateSlice, rotateFeedKey, setIsHydrated } from '@/store/feed';
 import { feedIdentitySchema } from '@/db/schema';
 import { upsert } from '@/db/helpers';
 import { identity } from '@/store/feed/__test__/inbox-harness';
@@ -11,9 +11,11 @@ import { FeedIdentityJSON } from '@/models/storage/versions/latest';
 
 vi.mock('react-native', () => ({ Platform: { OS: 'android' } }));
 
-async function initializeWith(payload: FeedIdentityJSON) {
+async function initializeWith(payload: FeedIdentityJSON | undefined) {
   const db = await createTestDb();
-  upsert(db, feedIdentitySchema, [{ id: 0, payload }]);
+  if (payload) {
+    upsert(db, feedIdentitySchema, [{ id: 0, payload }]);
+  }
   const testBed = createAddEffectTestBed({
     services: { db },
     reducer: combineReducers({ feed: feedReducer }),
@@ -39,5 +41,11 @@ describe('initializeFeedStateSlice', () => {
     );
 
     testBed.expectNotDispatched(rotateFeedKey);
+  });
+
+  it('does not create an account when there is none', async () => {
+    const testBed = await initializeWith(undefined);
+
+    testBed.expectNotDispatched(createFeedIdentity);
   });
 });

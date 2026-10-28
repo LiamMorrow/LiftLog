@@ -35,7 +35,11 @@ export function PersonAvatar({ userId, name, size = DEFAULT_SIZE }: PersonAvatar
       }}
     >
       {initials ? (
-        <SurfaceText font={size < 32 ? 'text-xs' : 'text-base'} weight="bold" color={`on${capitalize(color)}`}>
+        <SurfaceText
+          font={size < 32 ? 'text-xs' : size < 64 ? 'text-base' : 'text-3xl'}
+          weight="bold"
+          color={`on${capitalize(color)}`}
+        >
           {initials}
         </SurfaceText>
       ) : (
