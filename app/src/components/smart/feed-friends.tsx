@@ -1,5 +1,4 @@
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
-import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import CardActions from '@/components/presentation/foundation/card-actions';
 import Menu from '@/components/presentation/foundation/menu';
@@ -72,7 +71,7 @@ export function FeedFriends() {
       onRefresh={() => {
         dispatch(fetchInboxItems({ fromUserAction: true }));
       }}
-      ListEmptyComponent={<FriendsEmpty />}
+      ListHeaderComponent={<ShareProfileCard />}
       refreshing={fetchingFeedItems}
       onScroll={handleScroll}
       data={rows}
@@ -108,31 +107,39 @@ function SectionHeader(props: { label: string; count: number }) {
   );
 }
 
-function FriendsEmpty() {
+function ShareProfileCard() {
   const dispatch = useDispatch();
+  const { t } = useTranslate();
   const identity = useAppSelector((x) => x.feed.identity.unwrapOr(undefined));
 
+  if (!identity) {
+    return null;
+  }
+
   return (
-    <Card mode="contained">
+    <Card mode="contained" style={{ marginBottom: spacing[2] }}>
       <Card.Content>
-        <EmptyInfo icon="personAdd" style={{ paddingVertical: spacing[4] }}>
-          <T keyName="feed.no_friends.body" />
-        </EmptyInfo>
+        <SurfaceText>
+          <T keyName="feed.share_link.body" />
+        </SurfaceText>
       </Card.Content>
-      {identity ? (
-        <CardActions>
-          <Button
-            testID="friends-share-button"
-            mode="contained"
-            icon={'share'}
-            onPress={() => {
-              dispatch(shareString({ title: 'Share feed profile', value: getFeedShareUrl(identity) }));
-            }}
-          >
-            <T keyName="generic.share.button" />
-          </Button>
-        </CardActions>
-      ) : null}
+      <CardActions>
+        <Button
+          testID="friends-share-button"
+          mode="contained"
+          icon={'share'}
+          onPress={() => {
+            dispatch(
+              shareString({
+                title: 'Share feed profile',
+                value: t('feed.share_link.message', { link: getFeedShareUrl(identity) }),
+              }),
+            );
+          }}
+        >
+          <T keyName="generic.share.button" />
+        </Button>
+      </CardActions>
     </Card>
   );
 }
