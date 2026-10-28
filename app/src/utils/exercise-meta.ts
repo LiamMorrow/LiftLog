@@ -5,7 +5,7 @@ type TranslateFn = ReturnType<typeof useTranslate>['t'];
 
 export type ExerciseMetaKind = 'muscle' | 'category' | 'equipment' | 'force' | 'level' | 'mechanic';
 
-function toKeySegment(value: string): string {
+export function toKeySegment(value: string): string {
   return value
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '_')

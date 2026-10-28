@@ -9,14 +9,17 @@ appId: com.limajuice.liftlog
 - tapOn: 'Settings'
 - tapOn: 'Manage exercises'
 
-# Add a new exercise
+# Adding an exercise opens its editor, backing out lists it
 - tapOn: 'Add exercise'
+- assertVisible:
+    id: 'exercise-name-input'
+- back
 - assertVisible: 'New exercise'
 
 # Delete reveals an undo snackbar that restores the exercise
 - swipe:
     from:
-      id: 'exercise-accordion'
+      id: 'exercise-row'
     direction: LEFT
 - tapOn:
     id: 'exercise-delete-btn'
@@ -24,7 +27,8 @@ appId: com.limajuice.liftlog
 - tapOn: 'Undo'
 - assertVisible: 'New exercise'
 
-# Edit name and instructions
+# Edit name and instructions, which apply when leaving the editor
+- tapOn: 'New exercise'
 - tapOn:
     id: 'exercise-name-input'
 - eraseText
@@ -34,8 +38,9 @@ appId: com.limajuice.liftlog
 - eraseText
 - inputText: 'Lie on bench and press bar.'
 - hideKeyboard
-- assertVisible: 'E2E Bench Press'
 - assertVisible: 'Lie on bench and press bar.'
+- back
+- assertVisible: 'E2E Bench Press'
 
 # Filter narrows the list by name
 - tapOn:
@@ -47,7 +52,7 @@ appId: com.limajuice.liftlog
 # Remove the exercise so the flow leaves no state behind
 - swipe:
     from:
-      id: 'exercise-accordion'
+      id: 'exercise-row'
     direction: LEFT
 - tapOn:
     id: 'exercise-delete-btn'

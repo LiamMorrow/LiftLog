@@ -28,7 +28,7 @@ export default function FullHeightScrollView({
   const { handleScroll } = useScroll();
   const [floatingBottomSize, setFloatingBottomSize] = useState(0);
   const insets = useSafeAreaInsets();
-  const bottomInsetHeight = floatingBottomSize;
+  const bottomInsetHeight = floatingBottomSize + (modal ? insets.bottom : 0);
 
   const headerInset = useHeaderInset();
   const topInsetHeight = modal ? headerInset : 0;

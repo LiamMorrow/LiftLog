@@ -1,12 +1,11 @@
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, View } from 'react-native';
-import { Icon, List, TextInput } from 'react-native-paper';
+import { Icon, List } from 'react-native-paper';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import AddIcon from '@expo/material-symbols/add.xml';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
-import { AccordionItem } from '@/components/presentation/foundation/accordion-item';
 import { useScroll } from '@/hooks/useScrollListener';
 import {
   deleteExercise as deleteExerciseAction,
@@ -22,27 +21,18 @@ import { uuid } from '@/utils/uuid';
 import { SwipeRow } from 'react-native-swipe-list-view';
 import { showSnackbar } from '@/store/app';
 import { useMountEffect } from '@/hooks/useMountEffect';
-import ExerciseMuscleSelector from '@/components/presentation/workout-editor/exercise-muscle-selector';
 import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
 import { LegendList } from '@legendapp/list/react-native';
-import { ExerciseDescriptor } from '@/models/exercise-models';
 import { translateExerciseMeta } from '@/utils/exercise-meta';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { getExerciseDescriptorEditorHref } from '@/components/smart/exercise-descriptor-editor';
 
-function ExerciseListItem({
-  exerciseId,
-  expand,
-  onDelete,
-}: {
-  exerciseId: string;
-  expand: boolean;
-  onDelete: () => void;
-}) {
+function ExerciseListItem({ exerciseId, onDelete }: { exerciseId: string; onDelete: () => void }) {
   const { colors } = useAppTheme();
   const { t } = useTranslate();
+  const { push } = useRouter();
   const exercise = useAppSelectorWithArg(selectExerciseById, exerciseId);
-  const [expanded, setExpanded] = useState(expand);
-  const [listExpanded, setListExpanded] = useState(expand);
 
   const rowRef = useRef<SwipeRow<unknown>>(null);
   useEffect(() => {
@@ -77,39 +67,20 @@ function ExerciseListItem({
           <Icon source={'delete'} size={30} color={colors.onError} />
         </TouchableRipple>
       </View>
-      <List.Accordion
+      <List.Item
         title={exercise.name}
         // Important to have a space to ensure they are all the same size
         // Otherwise delete button can show through when there is no desc
         description={exercise.muscles.map((m) => translateExerciseMeta(t, 'muscle', m)).join(', ') || ' '}
         descriptionNumberOfLines={1}
-        expanded={listExpanded}
+        style={{ backgroundColor: colors.surface }}
         onPress={() => {
-          if (rowRef.current?.isOpen) {
-            return;
-          }
-          if (!expanded) {
-            setListExpanded(true);
-            setExpanded(true);
-          } else {
-            setExpanded(false);
+          if (!rowRef.current?.isOpen) {
+            push(getExerciseDescriptorEditorHref(exerciseId));
           }
         }}
-        testID={`exercise-accordion`}
-      >
-        <AccordionItem
-          isExpanded={expanded}
-          onToggled={(isOpen) => {
-            setExpanded(isOpen);
-            if (!isOpen) {
-              // Wait until collapse finishes before unmounting
-              setListExpanded(false);
-            }
-          }}
-        >
-          <ExerciseEditSheet exercise={exercise} exerciseId={exerciseId} />
-        </AccordionItem>
-      </List.Accordion>
+        testID="exercise-row"
+      />
     </SwipeRow>
   );
 }
@@ -118,6 +89,7 @@ export default function ExerciseManager() {
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const { getState } = useStore<RootState>();
+  const { push } = useRouter();
   const exercises = useAppSelector(selectExercises);
   const filteredExerciseIds = useAppSelector((s) => s.storedSessions.filteredExerciseIds);
   const setFilteredExerciseIds = (ids: string[]) => {
@@ -148,7 +120,8 @@ export default function ExerciseManager() {
         },
       }),
     );
-    setFilteredExerciseIds([newId]);
+    setFilteredExerciseIds([newId, ...filteredExerciseIds]);
+    push(getExerciseDescriptorEditorHref(newId, { isNew: true }));
   };
 
   const deleteExercise = (id: string) => {
@@ -185,6 +158,8 @@ export default function ExerciseManager() {
         }}
         style={{ flex: 1 }}
         data={flatListItems}
+        estimatedItemSize={64}
+        recycleItems
         getItemType={(_, index) => (index === 0 ? 'filters' : 'exercise')}
         keyExtractor={(item, index) => (index === 0 ? 'filters' : item)}
         renderItem={({ item, index }) => {
@@ -197,13 +172,7 @@ export default function ExerciseManager() {
               />
             );
           }
-          return (
-            <ExerciseListItem
-              exerciseId={item}
-              expand={flatListItems.length === 2}
-              onDelete={() => deleteExercise(item)}
-            />
-          );
+          return <ExerciseListItem exerciseId={item} onDelete={() => deleteExercise(item)} />;
         }}
       />
       <View
@@ -224,37 +193,5 @@ export default function ExerciseManager() {
         />
       </View>
     </SafeAreaView>
-  );
-}
-
-function ExerciseEditSheet({ exercise, exerciseId }: { exercise: ExerciseDescriptor; exerciseId: string }) {
-  const { t } = useTranslate();
-  const dispatch = useDispatch();
-  const update = (ex: Partial<ExerciseDescriptor>) => {
-    dispatch(updateExercise({ exercise: { ...exercise, ...ex }, id: exerciseId }));
-  };
-  return (
-    <View
-      style={{
-        flex: 1,
-        paddingHorizontal: spacing.pageHorizontalMargin,
-        gap: spacing[2],
-      }}
-    >
-      <TextInput
-        label={t('exercise.name.label')}
-        value={exercise.name}
-        onChangeText={(name) => update({ name })}
-        testID="exercise-name-input"
-      />
-      <TextInput
-        label={t('generic.instructions.label')}
-        value={exercise.instructions}
-        onChangeText={(instructions) => update({ instructions })}
-        multiline
-        testID="exercise-instructions-input"
-      />
-      <ExerciseMuscleSelector muscles={exercise.muscles} onChange={(muscles) => update({ muscles })} />
-    </View>
   );
 }

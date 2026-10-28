@@ -72,6 +72,7 @@ export default function Feed() {
       onScroll={handleScroll}
       data={feedItems}
       keyExtractor={(x) => x.eventId}
+      recycleItems
       renderItem={({ item }) => <FeedItemRenderer feedItem={item} />}
       ItemSeparatorComponent={() => <View style={{ height: spacing[2] }}></View>}
       contentContainerStyle={{
@@ -216,9 +217,9 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
             />
 
             {isOwnItem ? (
-              <ReactionSummary compact eventId={props.feedItem.eventId} animateOnMount />
+              <ReactionSummary key={props.feedItem.eventId} compact eventId={props.feedItem.eventId} animateOnMount />
             ) : (
-              <ReactionBar eventId={props.feedItem.eventId} animateOnMount />
+              <ReactionBar key={props.feedItem.eventId} eventId={props.feedItem.eventId} animateOnMount />
             )}
           </Card.Content>
         </Card>

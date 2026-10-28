@@ -1,3 +1,4 @@
+import { MuscleMap } from '@/components/presentation/muscles/muscle-map';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { selectMuscles } from '@/store/stored-sessions';
@@ -6,7 +7,11 @@ import { translateExerciseMeta } from '@/utils/exercise-meta';
 import { View } from 'react-native';
 import { Chip, Text } from 'react-native-paper';
 
-export default function ExerciseMuscleSelector(props: { muscles: string[]; onChange: (muscles: string[]) => void }) {
+export default function ExerciseMuscleSelector(props: {
+  muscles: string[];
+  onChange: (muscles: string[]) => void;
+  showMuscleMap?: boolean;
+}) {
   const { muscles, onChange } = props;
   const { t } = useTranslate();
   const muscleList = useAppSelector(selectMuscles);
@@ -37,6 +42,12 @@ export default function ExerciseMuscleSelector(props: { muscles: string[]; onCha
           </Chip>
         ))}
       </View>
+      {props.showMuscleMap && (
+        <MuscleMap
+          intensities={Object.fromEntries(muscles.map((muscle) => [muscle, 1]))}
+          style={{ width: 200, alignSelf: 'center', marginTop: spacing[2] }}
+        />
+      )}
     </View>
   );
 }
