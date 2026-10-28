@@ -86,7 +86,7 @@ export function SegmentListFormElement(props: {
   destructive?: boolean;
 }) {
   const { colors } = useAppTheme();
-  const labelColor = props.destructive ? colors.error : undefined;
+  const labelColor = props.destructive ? colors.error : colors.onSurface;
   const pressable = props.onPress ?? props.onLongPress;
   const Wrapper = pressable ? TouchableRipple : View;
   return (
