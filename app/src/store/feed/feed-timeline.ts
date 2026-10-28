@@ -25,6 +25,7 @@ export function ownFeedHorizon(today: LocalDate) {
 export function ownFeedItem(identity: FeedIdentity, session: Session): SessionUserEvent {
   const timestamp =
     session.lastExercise?.latestTime?.toInstant() ??
+    session.finishedAt?.toInstant() ??
     session.date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
   return new SessionUserEvent(
     identity.id,

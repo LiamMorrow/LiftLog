@@ -6,7 +6,13 @@ import {
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
-import { SessionJSON, fromLocalDateJSON, toLocalDateJSON } from '@/models/storage/versions/latest';
+import {
+  SessionJSON,
+  fromLocalDateJSON,
+  fromOffsetDateTimeJSON,
+  toLocalDateJSON,
+  toOffsetDateTimeJSON,
+} from '@/models/storage/versions/latest';
 import { Weight, WeightUnit } from '@/models/weight';
 import { indexed } from '@/utils/enumerable';
 import { Duration, LocalDate, OffsetDateTime } from '@js-joda/core';
@@ -35,6 +41,7 @@ export class Session {
     readonly date: LocalDate,
     readonly bodyweight: Weight | undefined,
     readonly restTimer: RestTimer | undefined,
+    readonly finishedAt?: OffsetDateTime,
   ) {}
   get duration(): Duration | undefined {
     return this.lastExercise?.latestTime && this.firstExercise?.earliestTime
@@ -54,6 +61,7 @@ export class Session {
       fromLocalDateJSON(json.date),
       json.bodyweight ? Weight.fromJSON(json.bodyweight) : undefined,
       undefined,
+      json.finishedAt ? fromOffsetDateTimeJSON(json.finishedAt) : undefined,
     );
   }
 
@@ -123,6 +131,7 @@ export class Session {
       'date' in other ? (other.date ?? this.date) : this.date,
       'bodyweight' in other ? other.bodyweight : this.bodyweight,
       'restTimer' in other ? other.restTimer : this.restTimer,
+      'finishedAt' in other ? other.finishedAt : this.finishedAt,
     );
   }
 
@@ -358,6 +367,7 @@ export class Session {
       date: toLocalDateJSON(this.date),
       id: this.id,
       recordedExercises: this.recordedExercises.map((x) => x.toJSON()),
+      finishedAt: this.finishedAt ? toOffsetDateTimeJSON(this.finishedAt) : undefined,
     };
   }
 

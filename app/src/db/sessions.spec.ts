@@ -239,6 +239,23 @@ describe('readSessionToContinueFrom', () => {
     expect(readSessionToContinueFrom(db)?.name).toBe('Pull');
   });
 
+  it('orders sessions with nothing completed by when they were finished', () => {
+    store(
+      sessionOf('Push', [squatAt(tickAt(9, 0))]),
+      sessionOf('Pull', []).with({ finishedAt: tickAt(11, 0) }),
+      sessionOf('Legs', []).with({ finishedAt: tickAt(10, 0) }),
+    );
+
+    expect(readSessionToContinueFrom(db)?.name).toBe('Pull');
+  });
+
+  it('round trips when a session was finished', () => {
+    const session = sessionOf('Push', []).with({ finishedAt: tickAt(11, 0) });
+    store(session);
+
+    expect(readSession(db, session.id)?.finishedAt?.isEqual(tickAt(11, 0))).toBe(true);
+  });
+
   it('skips freeform workouts, which are not part of the plan', () => {
     store(sessionOf('Push', [squatAt(tickAt(9, 0))]), sessionOf(freeformSessionName, [squatAt(tickAt(10, 0))]));
 

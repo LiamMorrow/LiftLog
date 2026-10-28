@@ -30,6 +30,7 @@ import { eq, sql } from 'drizzle-orm';
 import { toRecord } from '@/utils/reduce';
 import { fromExerciseDescriptorJSON, toExerciseDescriptorJSON } from '@/models/exercise-models';
 import { loadBuiltInExercises } from '@/services/exercise-catalog';
+import { OffsetDateTime } from '@js-joda/core';
 import { migrateLegacyCurrentSession } from '@/store/stored-sessions/legacy-current-session';
 
 // Built-ins the user deleted, so they stay hidden across restarts and locale switches.
@@ -89,12 +90,16 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
   // with it, otherwise every recorded set would fire a health export.
   addEffect(sessionFinished, async (action, { getState, dispatch, extra: { db, healthExportService, logger } }) => {
     const state = getState();
-    const workout = selectSession(state, action.payload);
-    if (!workout) {
+    const openWorkout = selectSession(state, action.payload);
+    if (!openWorkout) {
       return;
     }
 
-    if (state.storedSessions.activeSessionId === workout.id) {
+    const isActive = state.storedSessions.activeSessionId === openWorkout.id;
+    const workout = isActive
+      ? openWorkout.with({ finishedAt: openWorkout.finishedAt ?? OffsetDateTime.now() })
+      : openWorkout;
+    if (isActive) {
       dispatch(setActiveSessionId(undefined));
     }
     // Written here rather than left to the persist effect, so whoever re-reads on the revision bump sees it.

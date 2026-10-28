@@ -15,6 +15,7 @@ export interface SessionJSON {
   recordedExercises: RecordedExerciseJSON[];
   date: LocalDateJSON;
   bodyweight: WeightJSON | undefined;
+  finishedAt?: OffsetDateTimeJSON | undefined;
 }
 
 /**

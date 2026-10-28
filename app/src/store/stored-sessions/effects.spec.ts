@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { LocalDate } from '@js-joda/core';
+import { LocalDate, OffsetDateTime, ZoneOffset } from '@js-joda/core';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import type { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { openDatabaseAsync } from 'expo-sqlite';
@@ -235,6 +235,44 @@ describe('stored-sessions effects', () => {
       await testBed.dispatchHandled(sessionFinished(edited.id));
 
       testBed.expectNotDispatched(setActiveSessionId);
+    });
+
+    it('stamps when the workout in progress was finished', async () => {
+      const session = Session.freeformSession(LocalDate.of(2026, 4, 10), undefined);
+      const testBed = bed({
+        state: {
+          storedSessions: { openSessions: { [session.id]: session }, activeSessionId: session.id },
+        } as Partial<RootState>,
+      });
+
+      await testBed.dispatchHandled(sessionFinished(session.id));
+
+      expect(readSession(db, session.id)?.finishedAt).toBeDefined();
+    });
+
+    it('keeps the first finish time when the workout in progress is finished again', async () => {
+      const finishedAt = OffsetDateTime.of(2026, 4, 10, 9, 0, 0, 0, ZoneOffset.UTC);
+      const session = Session.freeformSession(LocalDate.of(2026, 4, 10), undefined).with({ finishedAt });
+      const testBed = bed({
+        state: {
+          storedSessions: { openSessions: { [session.id]: session }, activeSessionId: session.id },
+        } as Partial<RootState>,
+      });
+
+      await testBed.dispatchHandled(sessionFinished(session.id));
+
+      expect(readSession(db, session.id)?.finishedAt?.isEqual(finishedAt)).toBe(true);
+    });
+
+    it('does not stamp a past session finished from History', async () => {
+      const edited = Session.freeformSession(LocalDate.of(2026, 3, 1), undefined);
+      const testBed = bed({
+        state: { storedSessions: { openSessions: { [edited.id]: edited } } } as Partial<RootState>,
+      });
+
+      await testBed.dispatchHandled(sessionFinished(edited.id));
+
+      expect(readSession(db, edited.id)?.finishedAt).toBeUndefined();
     });
 
     it('exports to the health aggregator exactly once, not once per recorded set', async () => {

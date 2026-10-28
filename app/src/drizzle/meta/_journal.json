@@ -120,6 +120,13 @@
       "when": 1792797877163,
       "tag": "0016_personal_record_summary",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1793148748320,
+      "tag": "0017_session_finished_at",
+      "breakpoints": true
     }
   ]
 }

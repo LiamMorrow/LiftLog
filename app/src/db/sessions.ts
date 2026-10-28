@@ -129,6 +129,8 @@ export function sessionToRows(session: Session): SessionRows {
       date: json.date,
       bodyweightValue: json.bodyweight?.value ?? null,
       bodyweightUnit: json.bodyweight?.unit ?? null,
+      finishedAt: json.finishedAt ?? null,
+      finishedAtMs: json.finishedAt ? toEpochMs(json.finishedAt) : null,
     },
     exercises: [],
     weightedSets: [],
@@ -326,6 +328,7 @@ function sessionsFromRows(rows: {
       date: session.date,
       bodyweight: bodyweightFromColumns(session),
       recordedExercises,
+      finishedAt: session.finishedAt ?? undefined,
     };
     return Session.fromJSON(json);
   });
@@ -502,7 +505,7 @@ export function readPreviousExercises(
 }
 
 /** When a session was performed: its last completed set, or the start of its date when it has none. */
-const referenceMs = sql<number>`coalesce(${sessionsSchema.lastCompletedAtMs}, unixepoch(${sessionsSchema.date}, 'utc') * 1000)`;
+const referenceMs = sql<number>`coalesce(${sessionsSchema.lastCompletedAtMs}, ${sessionsSchema.finishedAtMs}, unixepoch(${sessionsSchema.date}, 'utc') * 1000)`;
 
 export interface SessionVolume {
   id: string;
