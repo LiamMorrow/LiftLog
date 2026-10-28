@@ -4,14 +4,17 @@ import { Button, HStack, Host } from '@expo/ui/swift-ui';
 import {
   Animation,
   animation,
+  background,
   buttonStyle,
   foregroundStyle,
   glassEffect,
   labelStyle,
   padding,
   shadow,
+  shapes,
   disabled,
 } from '@expo/ui/swift-ui/modifiers';
+import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import { floatingShadowModifier } from '@/components/presentation/foundation/floating-shadow';
 import { PageActionsAccessory } from './page-actions-accessory';
 import { View } from 'react-native';
@@ -40,10 +43,14 @@ export function PageActions({ primary, secondary = [], primaryExpanded, accessor
         // reaches VoiceOver. Equal padding around the lone symbol turns the capsule into a circle.
         labelStyle(showLabel ? 'titleAndIcon' : 'iconOnly'),
         showLabel ? padding({ horizontal: 20, vertical: 14 }) : padding({ all: 15 }),
-        glassEffect({
-          glass: { variant: 'clear', interactive: true, tint: isPrimary ? colors.primary : undefined },
-          shape: 'capsule',
-        }),
+        // Without liquid glass (before iOS 26) `glassEffect` draws nothing, which would leave the label
+        // floating on the page.
+        isLiquidGlassAvailable()
+          ? glassEffect({
+              glass: { variant: 'clear', interactive: true, tint: isPrimary ? colors.primary : undefined },
+              shape: 'capsule',
+            })
+          : background(isPrimary ? colors.primary : colors.surfaceContainerHigh, shapes.capsule()),
         animation(Animation.spring({ duration: 0.35, bounce: 0.2 }), showLabel),
         disabled(!!action.disabled),
       ]}

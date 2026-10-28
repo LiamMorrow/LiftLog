@@ -9,7 +9,7 @@ import { Updater } from '@/utils/types';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedWeightedExercise;
-  previousRecordedExercises: RecordedWeightedExercise[];
+  previousLineageExercise: RecordedWeightedExercise | undefined;
   toStartNext: boolean;
   isReadonly: boolean;
   showPreviousButton: boolean;
@@ -18,6 +18,8 @@ interface WeightedExerciseProps {
   updateExercise: (update: Updater<RecordedWeightedExercise>) => void;
   onEditExercise: (() => void) | undefined;
   onRemoveExercise: () => void;
+  onMoveExerciseUp: (() => void) | undefined;
+  onMoveExerciseDown: (() => void) | undefined;
 }
 
 export default function WeightedExercise(props: WeightedExerciseProps) {
@@ -30,13 +32,15 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
   return (
     <ExerciseSection
       recordedExercise={props.recordedExercise}
-      previousRecordedExercises={props.previousRecordedExercises}
+      previousLineageExercise={props.previousLineageExercise}
       toStartNext={props.toStartNext}
       isReadonly={props.isReadonly}
       showPreviousButton={props.showPreviousButton}
       updateExercise={props.updateExercise}
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
+      onMoveExerciseUp={props.onMoveExerciseUp}
+      onMoveExerciseDown={props.onMoveExerciseDown}
     >
       <View style={{ flexDirection: 'row', gap: spacing[2], flexWrap: 'wrap' }}>
         {recordedExercise.potentialSets.map((set, index) => (
@@ -48,11 +52,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
               const time = timeProvider();
               updateExercise((ex) => ex.withCycledRepCount(index, time));
             }}
-            previousRepCount={
-              props.previousRecordedExercises
-                .filter((x) => x.progressionKey() === props.recordedExercise.progressionKey())
-                .at(0)?.potentialSets[index]?.set?.repsCompleted
-            }
+            previousRepCount={props.previousLineageExercise?.potentialSets[index]?.set?.repsCompleted}
             onUpdateReps={(reps) => {
               const time = timeProvider();
               updateExercise((ex) => ex.withRepCount(index, reps, time));

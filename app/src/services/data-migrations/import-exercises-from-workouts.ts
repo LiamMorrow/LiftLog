@@ -1,33 +1,36 @@
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
-import { dataMigrationsSchema, exercisesSchema, sessionsSchema } from '@/db/schema';
+import { dataMigrationsSchema, exercisesSchema, recordedExercisesSchema } from '@/db/schema';
 import Enumerable from 'linq';
 import { normalizeExerciseName } from '@/models/blueprint-models';
-import { fromRecordedExerciseJSON } from '@/models/session-models';
 import { ExerciseDescriptorJSON } from '@/models/storage/versions/initial';
 import { uuid } from '@/utils/uuid';
-import { exerciseDescriptorMigrations, sessionMigrations } from '@/models/storage/versions/migrations';
+import { exerciseDescriptorMigrations } from '@/models/storage/versions/migrations';
 
 export const importExercisesFromWorkoutsDataMigration = 'IMPORT_EXERCISES_FROM_WORKOUTS';
 
 export async function importExercisesFromWorkouts(db: ExpoSQLiteDatabase) {
-  await db.transaction(async (tx) => {
-    const workouts = (await tx.select().from(sessionsSchema)).map((row) => sessionMigrations.migrate(row.payload));
+  db.transaction((tx) => {
+    const recordedExercises = tx
+      .select({ name: recordedExercisesSchema.name, movementKey: recordedExercisesSchema.movementKey })
+      .from(recordedExercisesSchema)
+      .all();
     const existingExerciseNames = new Set(
-      (await tx.select().from(exercisesSchema))
+      tx
+        .select()
+        .from(exercisesSchema)
+        .all()
         .map((row) => exerciseDescriptorMigrations.migrate(row.payload))
         .map((x) => normalizeExerciseName(x.name)),
     );
-    const uniqueExercisesNotInList = Enumerable.from(workouts)
-      .selectMany((x) => x.recordedExercises)
-      .select(fromRecordedExerciseJSON)
-      .where((x) => !existingExerciseNames.has(normalizeExerciseName(x.blueprint.name)))
-      .distinct((x) => x.blueprint.movementKey());
+    const uniqueExercisesNotInList = Enumerable.from(recordedExercises)
+      .where((x) => !existingExerciseNames.has(normalizeExerciseName(x.name)))
+      .distinct((x) => x.movementKey);
 
     const newExercises = uniqueExercisesNotInList
       .select(
         (ex) =>
           ({
-            name: ex.blueprint.name,
+            name: ex.name,
             category: 'Unknown',
             equipment: null,
             force: null,
@@ -47,9 +50,9 @@ export async function importExercisesFromWorkouts(db: ExpoSQLiteDatabase) {
       .toArray();
 
     if (newExercises.length) {
-      await tx.insert(exercisesSchema).values(newExercises);
+      tx.insert(exercisesSchema).values(newExercises).run();
     }
 
-    await tx.insert(dataMigrationsSchema).values({ id: importExercisesFromWorkoutsDataMigration });
+    tx.insert(dataMigrationsSchema).values({ id: importExercisesFromWorkoutsDataMigration }).run();
   });
 }

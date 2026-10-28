@@ -1,4 +1,4 @@
-import { AppThemeProvider } from '@/hooks/useAppTheme';
+import { AppThemeProvider, useAppTheme } from '@/hooks/useAppTheme';
 import { I18nManager, LogBox, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppStateProvider } from '@/components/smart/app-state-provider';
@@ -51,6 +51,7 @@ export default function RootLayout() {
 }
 
 function Layout() {
+  const { colors } = useAppTheme();
   return (
     <StackWithHeader>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -63,6 +64,7 @@ function Layout() {
           sheetAllowedDetents: [0.6, 0.95],
           sheetGrabberVisible: true,
           sheetCornerRadius: 28,
+          contentStyle: { backgroundColor: colors.surface },
           headerShown: false,
         }}
       />

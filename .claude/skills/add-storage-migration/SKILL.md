@@ -57,6 +57,23 @@ ingest/version-rejection). This skill is the fast path for the common case.
 `programBlueprintMigrations` shows a pure wrapper using `dependsOn({ sessions })` +
 `pseudoMigrateUntil`.
 
+## Sessions are relational
+
+On the device, sessions are typed SQLite tables, not one JSON payload (see `docs/Storage.md`).
+`sessionMigrations` still matters: feed items, backups and protobuf imports carry sessions as JSON. So
+a change to `latest/session.ts` needs **both** a `.add()` step **and** the table side:
+
+- If existing rows need new values, a **JS migration** pinned to that SQL migration
+  (`services/js-migrations/`). Not a data migration: it must also reach restored backups.
+- `services/js-migrations/explode-sessions.ts` maps the latest `SessionJSON` into the tables as they
+  were at `0009_relational_sessions`. When `SessionJSON` changes it stops compiling; keep it writing only
+  those columns.
+- A change to an **exercise blueprint** also reaches `recorded_exercise` (columns, plus `plannedSets` /
+  `progression` JSON, which has no version) and `cardio_set`: add a JS migration that rewrites them,
+  reusing the step functions from `migrations/steps/`.
+- If `movementKey()` / `progressionKey()` would return something different, add a JS migration that
+  recomputes `recorded_exercise.movementKey` / `progressionKey`.
+
 ## Hard rules (violating these corrupts real user data)
 
 - **Never edit an existing `.add()` step.** Migrations are append-only - each step transforms data

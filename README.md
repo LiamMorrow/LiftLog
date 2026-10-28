@@ -16,19 +16,19 @@
 
 ## 🚀 Overview
 
-**LiftLog** is an intuitive, cross-platform gym weight tracking app built with React Native and Expo. It features Material Design 3, AI-powered workout planning, and secure, end-to-end encrypted social feeds. Available on Android and iOS.
+**LiftLog** is an intuitive, cross-platform gym weight tracking app built with React Native and Expo. Everything you log is stored locally on your device, no sign up required.
+LiftLog also supports privacy focused, end to end encrypted, social feeds to track your workouts with your friends.
 
 ### Key Features
 
 - 🗿 Intuitive UI which lets you log your progression, without getting in your way
-- Entirely device local workouts, no waiting for sign in or downloads
+- 📱 Entirely device local workouts
 - 📱 Runs on Android and iOS. Web support was removed in [this commit](https://github.com/LiamMorrow/LiftLog/commit/d77d94e5eeffd3a9a81af6f61f47e9c57fb91738)
-- 🔒 End-to-end encrypted social feeds (opt-in, privacy-first)
-- 🎨 Material Design 3 via React Native Paper
+- 🔒 End-to-end encrypted social feeds
+- 🎨 Material Design 3 / Liquid glass
 - 🌐 Internationalization with Tolgee/Weblate (10+ languages)
-- 🏋️‍♂️ Publish workouts, follow other users, and control your feed privacy
-- 🧠 AI planner tailors gym plans to your goals and body
-- ⚡ Fast, modern UI with Expo Router and Redux Toolkit
+- 🧠 AI planner tailors gym plans to your goals and body (requires running your own server, or purchasing pro).
+- ⚡ Fast, modern UI
 
 ---
 
@@ -72,25 +72,15 @@ LiftLog is organized into several projects:
 
 ### Frontend ([app/](./app/))
 
-- **Main React Native app** (Expo)
-- **Components**: `components/` (layout, presentation, smart)
-- **State**: `store/` (Redux Toolkit)
-- **Services**: `services/` (API, business logic)
-- **Hooks**: `hooks/` (custom React hooks)
-- **Translations**: `i18n/` (Tolgee)
-- **Navigation**: Expo Router
+This directory contains the app itself, built with Expo / react native.
 
 ### Backend ([LiftLog.Api/](./backend/))
 
+This directory contains the backend api, which handles the feed, ai planner, and offsite backups.
 For documentation on running the backend for local development, see [the README](./backend/README.md)
 
 - **Dotnet WebAPI** for feeds, AI plans, and backups
 - **End-to-end encrypted feeds** (AES)
-- **Claude integration** for workout plans
-
-### RevenueCat ([RevenueCat/](./backend/RevenueCat/))
-
-- **Client library** for in-app purchases/subscriptions
 
 ### Website ([site/](./site))
 

@@ -59,7 +59,7 @@ Two things worth knowing before you switch:
 
 - **Remote backup is not assigned to anything by default.** It uploads your whole database, so it
   stays off until you pick a backend for it.
-- **Moving the feed deletes your feed account**, including your followers.
+- **Moving the feed deletes your feed account**, including your friends.
 
 [Backends.md](./Backends.md) covers both in full, along with the separate "backup endpoint only"
 backend type for bare implementations of the backup protocol.

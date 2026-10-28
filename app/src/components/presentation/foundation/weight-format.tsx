@@ -1,6 +1,6 @@
 import { ColorChoice, font, FontChoice, useAppTheme } from '@/hooks/useAppTheme';
 import { shortFormatWeightUnit, Weight } from '@/models/weight';
-import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
 import { useTranslate } from '@tolgee/react';
 import { Text, TextStyle } from 'react-native';
 
@@ -36,12 +36,13 @@ export default function WeightFormat(props: WeightFormatProps) {
     return (
       <Text style={style}>
         {label} {sign}
-        {localeFormatBigNumber(value)} <Text style={{ fontSize: 12 }}>{shortFormatWeightUnit(props.weight?.unit)}</Text>
+        {localeDisplayFormatBigNumber(value)}{' '}
+        <Text style={{ fontSize: 12 }}>{shortFormatWeightUnit(props.weight?.unit)}</Text>
       </Text>
     );
   }
 
-  const weightDisplay = localeFormatBigNumber(value) || '-';
+  const weightDisplay = localeDisplayFormatBigNumber(value) || '-';
   return (
     <Text style={style}>
       {weightDisplay} <Text style={{ fontSize: 12 }}>{shortFormatWeightUnit(props.weight?.unit)}</Text>

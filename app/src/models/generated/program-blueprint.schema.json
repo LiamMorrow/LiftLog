@@ -20,7 +20,12 @@
       "$ref": "#/definitions/LocalDate"
     }
   },
-  "required": ["version", "name", "sessions", "lastEdited"],
+  "required": [
+    "version",
+    "name",
+    "sessions",
+    "lastEdited"
+  ],
   "definitions": {
     "SessionBlueprint": {
       "type": "object",
@@ -42,14 +47,21 @@
           "type": "string"
         }
       },
-      "required": ["version", "name", "exercises", "notes"]
+      "required": [
+        "version",
+        "name",
+        "exercises",
+        "notes"
+      ]
     },
     "ExerciseBlueprint": {
       "type": "object",
       "discriminator": {
         "propertyName": "type"
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "oneOf": [
         {
           "$ref": "#/definitions/WeightedExerciseBlueprint"
@@ -121,7 +133,9 @@
           "$ref": "#/definitions/RepsTarget"
         }
       },
-      "required": ["reps"],
+      "required": [
+        "reps"
+      ],
       "description": "What the plan asks for on one set."
     },
     "RepsTarget": {
@@ -134,7 +148,10 @@
           "type": "integer"
         }
       },
-      "required": ["min", "max"],
+      "required": [
+        "min",
+        "max"
+      ],
       "description": "Always a band; `min === max` is a point target."
     },
     "Rest": {
@@ -151,7 +168,11 @@
           "description": "Rest taken after a set where the user failed to hit their target reps."
         }
       },
-      "required": ["minRest", "maxRest", "failureRest"]
+      "required": [
+        "minRest",
+        "maxRest",
+        "failureRest"
+      ]
     },
     "Duration": {
       "type": "string",
@@ -182,17 +203,27 @@
           "$ref": "#/definitions/SuccessRule"
         }
       },
-      "required": ["axis", "step", "scope", "trigger"],
+      "required": [
+        "axis",
+        "step",
+        "scope",
+        "trigger"
+      ],
       "description": "One step of automatic progression. An exercise carries an ordered list of these, and the first rule that can still move is the one that moves.\n\n`step` and `ceiling` are in the axis's own unit - whole reps, or plate increments in whatever unit the lifter works in. Deliberately not a weight: 2.5 in a kilogram gym and 5 in a pound gym are the same step, not conversions of one another, and a blueprint has no unit to be expressed in."
     },
     "ProgressionAxis": {
       "type": "string",
-      "enum": ["reps", "load"],
+      "enum": [
+        "reps",
+        "load"
+      ],
       "description": "Which number a rule moves."
     },
     "BigNumber": {
       "type": "string",
-      "examples": ["1.23"],
+      "examples": [
+        "1.23"
+      ],
       "format": "decimal"
     },
     "SetScope": {
@@ -200,7 +231,9 @@
       "discriminator": {
         "propertyName": "type"
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "oneOf": [
         {
           "$ref": "#/definitions/AllSetsScope"
@@ -219,7 +252,9 @@
           "const": "allSets"
         }
       },
-      "required": ["type"]
+      "required": [
+        "type"
+      ]
     },
     "LowestSetsScope": {
       "type": "object",
@@ -230,10 +265,18 @@
         },
         "pick": {
           "type": "string",
-          "enum": ["first", "middle", "last", "all"]
+          "enum": [
+            "first",
+            "middle",
+            "last",
+            "all"
+          ]
         }
       },
-      "required": ["type", "pick"],
+      "required": [
+        "type",
+        "pick"
+      ],
       "description": "Ranks by the rule's own axis, so a reps rule picks the smallest target rather than the smallest weight."
     },
     "SuccessRule": {
@@ -243,7 +286,11 @@
     },
     "Resistance": {
       "type": "string",
-      "enum": ["none", "external", "bodyweight"]
+      "enum": [
+        "none",
+        "external",
+        "bodyweight"
+      ]
     },
     "CardioExerciseBlueprint": {
       "type": "object",
@@ -268,7 +315,13 @@
           "type": "string"
         }
       },
-      "required": ["type", "name", "sets", "notes", "link"]
+      "required": [
+        "type",
+        "name",
+        "sets",
+        "notes",
+        "link"
+      ]
     },
     "CardioExerciseSetBlueprint": {
       "type": "object",
@@ -314,7 +367,9 @@
       "discriminator": {
         "propertyName": "type"
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "oneOf": [
         {
           "$ref": "#/definitions/TimeCardioTarget"
@@ -335,7 +390,10 @@
           "$ref": "#/definitions/Duration"
         }
       },
-      "required": ["type", "value"]
+      "required": [
+        "type",
+        "value"
+      ]
     },
     "DistanceCardioTarget": {
       "type": "object",
@@ -348,7 +406,10 @@
           "$ref": "#/definitions/Distance"
         }
       },
-      "required": ["type", "value"]
+      "required": [
+        "type",
+        "value"
+      ]
     },
     "Distance": {
       "type": "object",
@@ -360,11 +421,19 @@
           "$ref": "#/definitions/DistanceUnit"
         }
       },
-      "required": ["value", "unit"]
+      "required": [
+        "value",
+        "unit"
+      ]
     },
     "DistanceUnit": {
       "type": "string",
-      "enum": ["metre", "yard", "mile", "kilometre"]
+      "enum": [
+        "metre",
+        "yard",
+        "mile",
+        "kilometre"
+      ]
     },
     "LocalDate": {
       "type": "string",

@@ -10,6 +10,10 @@ import androidx.core.app.NotificationManagerCompat
 import expo.modules.workoutworker.R
 import expo.modules.workoutworker.WorkoutConstants.getLaunchAppAtWorkoutPagePendingIntent
 import expo.modules.workoutworker.WorkoutConstants.getLiveUpdateDeleteIntent
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 // Which stage of a rest break the timer is in, and the small icon that marks it in the notification
@@ -37,7 +41,11 @@ class WorkoutNotificationManager(private val context: Context) {
 
         const val PERSISTENT_CHANNEL_ID = "workout_channel"
         const val REST_CHANNEL_ID = "rest_channel"
+
+        private const val REST_NOTIFICATION_LIFETIME_MS = 10_000L
     }
+
+    private var clearRestJob: Job? = null
 
     // Set once the user swipes the Live Update away; from then on we stop requesting promotion so
     // Android doesn't revoke our permission for re-posting a dismissed promoted notification.
@@ -116,17 +124,17 @@ class WorkoutNotificationManager(private val context: Context) {
 
     fun notifyRest(notification: Notification) {
         val manager = context.getSystemService(NotificationManager::class.java)
+        clearRestJob?.cancel()
+        manager.cancel(REST_NOTIFICATION_ID)
         manager.notify(REST_NOTIFICATION_ID, notification)
-
+        clearRestJob = MainScope().launch {
+            delay(REST_NOTIFICATION_LIFETIME_MS)
+            manager.cancel(REST_NOTIFICATION_ID)
+        }
     }
 
     fun clearPersistentNotification() {
         val manager = context.getSystemService(NotificationManager::class.java)
         manager.cancel(PERSISTENT_NOTIFICATION_ID)
-    }
-
-    fun clearRestNotification() {
-        val manager = context.getSystemService(NotificationManager::class.java)
-        manager.cancel(REST_NOTIFICATION_ID)
     }
 }

@@ -1,14 +1,12 @@
 import { Session } from '@/models/session-models';
 import { useTranslate } from '@tolgee/react';
-import { useEffect, useRef, useState } from 'react';
 import { getSessionWorkoutEditorHref } from '@/components/smart/session-workout-editor';
-import { Tooltip, TooltipHandle } from 'react-native-paper';
 import PageMenu from '@/components/presentation/foundation/page-menu';
 import { Platform } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { Jiggler } from '@/components/presentation/foundation/jiggler';
-import IconButton from '@/components/presentation/foundation/icon-button';
 import { MenuItem } from '@/components/presentation/foundation/menu';
+import Button from '@/components/presentation/foundation/button';
+import Edit from '@expo/material-symbols/edit.xml';
 
 export default function SessionMoreMenuComponent(props: {
   session: Session;
@@ -36,46 +34,23 @@ export default function SessionMoreMenuComponent(props: {
             <Stack.Toolbar.Label>{finishText}</Stack.Toolbar.Label>
           </Stack.Toolbar.Button>
         ),
-        android: <AndroidFinishButton session={session} save={save} />,
+        android: (
+          <Stack.Toolbar.View>
+            <Button mode="text" compact onPress={save}>
+              {finishText}
+            </Button>
+          </Stack.Toolbar.View>
+        ),
       })}
       items={[
         {
           label: t('workout.edit.button'),
-          icon: 'edit',
+          icon: Edit,
           systemImage: 'pencil',
           onPress: handleEditWorkout,
         },
         ...(additionalItems ?? []),
       ]}
     />
-  );
-}
-
-function AndroidFinishButton({ session, save }: { session: Session; save: () => void }) {
-  const { t } = useTranslate();
-
-  const hasExercises = !!session.recordedExercises.length;
-  const isComplete = session.isComplete;
-  const shouldJiggle = hasExercises && isComplete === true;
-  const [jiggleFinishButton, setJiggleFinishButton] = useState(shouldJiggle);
-  const tooltipRef = useRef<TooltipHandle>(null);
-
-  useEffect(() => {
-    if (shouldJiggle) {
-      tooltipRef.current?.show();
-      const timeout = setTimeout(() => {
-        setJiggleFinishButton(false);
-        tooltipRef.current?.hide();
-      }, 10000);
-      return () => clearTimeout(timeout);
-    }
-  }, [shouldJiggle]);
-
-  return (
-    <Jiggler jiggling={jiggleFinishButton} jiggleSpeed={140}>
-      <Tooltip ref={tooltipRef} title={t('workout.finish.action.tooltip')}>
-        <IconButton testID="finish-session-button" icon={'assignmentTurnedIn'} onPress={save} />
-      </Tooltip>
-    </Jiggler>
   );
 }

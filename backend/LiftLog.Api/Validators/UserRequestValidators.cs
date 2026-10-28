@@ -105,6 +105,17 @@ public class GetInboxMessagesRequestValidator : AbstractValidator<GetInboxMessag
     }
 }
 
+public class AckInboxMessagesRequestValidator : AbstractValidator<AckInboxMessagesRequest>
+{
+    public AckInboxMessagesRequestValidator()
+    {
+        RuleFor(x => x.UserId).NotEmpty();
+        RuleFor(x => x.Password).NotEmpty().MaximumLength(40);
+        RuleFor(x => x.Ids).NotEmpty();
+        RuleFor(x => x.Ids.Length).InclusiveBetween(1, 500).When(x => x.Ids != null);
+    }
+}
+
 public class PutUserFollowSecretRequestValidator : AbstractValidator<PutUserFollowSecretRequest>
 {
     public PutUserFollowSecretRequestValidator()

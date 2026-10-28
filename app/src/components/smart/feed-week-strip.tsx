@@ -3,7 +3,8 @@ import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useToday } from '@/hooks/useToday';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { selectActivityWeek, selectFollowsOtherUsers, selectStreakStats } from '@/store/activity';
+import { selectActivityWeek, selectFollowsOtherUsers } from '@/store/activity';
+import { useOwnHistory } from '@/components/smart/own-history-provider';
 import { useTranslate } from '@tolgee/react';
 import { View } from 'react-native';
 import { Card } from 'react-native-paper';
@@ -14,9 +15,11 @@ const MAX_ROWS = 8;
 export function FeedWeekStrip() {
   const { t } = useTranslate();
   const today = useToday();
-  const rows = useAppSelectorWithArg(selectActivityWeek, today);
-  const streak = useAppSelectorWithArg(selectStreakStats, today);
+  const own = useOwnHistory();
+  const rows = useAppSelectorWithArg(selectActivityWeek, { today, own });
+  const streak = own.streak;
   const followsAnyone = useAppSelector(selectFollowsOtherUsers);
+  const showAccomplishments = useAppSelector((x) => x.settings.showAccomplishments);
 
   if (!followsAnyone) {
     return null;
@@ -38,7 +41,7 @@ export function FeedWeekStrip() {
           <SurfaceText font="text-lg" weight="bold" numberOfLines={1}>
             {t('feed.this_week.title')}
           </SurfaceText>
-          {streak.state !== 'none' && (
+          {showAccomplishments && streak.state !== 'none' && (
             <SurfaceText font="text-sm" color="onSurfaceVariant" numberOfLines={1} style={{ flexShrink: 1 }}>
               {streak.weeks + (streak.state === 'secured' ? 1 : 0) === 1
                 ? t('stats.streak.weeks.one')

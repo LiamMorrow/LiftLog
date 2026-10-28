@@ -10,6 +10,15 @@ import m0005 from './0005_worried_silvermane.sql';
 import m0006 from './0006_far_corsair.sql';
 import m0007 from './0007_brown_quicksilver.sql';
 import m0008 from './0008_far_catseye.sql';
+import m0009 from './0009_relational_sessions.sql';
+import m0010 from './0010_effective_weight.sql';
+import m0011 from './0011_session_summary.sql';
+import m0012 from './0012_feed_inbox_delivery.sql';
+import m0013 from './0013_feed_friend.sql';
+import m0014 from './0014_drop_follow_tables.sql';
+import m0015 from './0015_feed_friend_repair.sql';
+import m0016 from './0016_personal_record_summary.sql';
+import m0017 from './0017_session_finished_at.sql';
 
   export default {
     journal,
@@ -22,7 +31,16 @@ m0004,
 m0005,
 m0006,
 m0007,
-m0008
+m0008,
+m0009,
+m0010,
+m0011,
+m0012,
+m0013,
+m0014,
+m0015,
+m0016,
+m0017
     }
   }
   

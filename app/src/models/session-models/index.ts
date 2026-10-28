@@ -1,4 +1,4 @@
-import { EmptySession, Session } from '@/models/session-models/session';
+import { EmptySession, freeformSessionName, Session } from '@/models/session-models/session';
 import {
   PotentialSet,
   RecordedSet,
@@ -19,6 +19,7 @@ export {
   RecordedExercise,
   RecordedSet,
   EmptySession,
+  freeformSessionName,
   fromRecordedExerciseJSON,
   WeightAppliesTo,
 };

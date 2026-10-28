@@ -4,7 +4,8 @@ import {
   restControlIconSize,
 } from '@/components/presentation/workout/rest-timer-controls-props';
 import { Button, HStack, Host, Image } from '@expo/ui/swift-ui';
-import { accessibilityLabel, buttonStyle, frame, padding } from '@expo/ui/swift-ui/modifiers';
+import { accessibilityLabel, frame, padding } from '@expo/ui/swift-ui/modifiers';
+import { glassButtonStyle } from '@/components/presentation/foundation/glass-button-style';
 import { useTranslate } from '@tolgee/react';
 
 // A button hugs its label, so without padding the puck shrink-wraps the glyph and the controls run
@@ -24,14 +25,14 @@ export function RestTimerControls({ paused, onRestart, onTogglePause, onDismiss 
       <HStack alignment="center">
         <Button
           onPress={onRestart}
-          modifiers={[buttonStyle('glass'), controlPadding, accessibilityLabel(t('rest_timer.restart'))]}
+          modifiers={[glassButtonStyle('regular'), controlPadding, accessibilityLabel(t('rest_timer.restart'))]}
         >
           <Image systemName="arrow.counterclockwise" size={restControlIconSize} modifiers={[iconFrame]} />
         </Button>
         <Button
           onPress={onTogglePause}
           modifiers={[
-            buttonStyle('glassProminent'),
+            glassButtonStyle('prominent'),
             controlPadding,
             accessibilityLabel(paused ? t('rest_timer.resume') : t('rest_timer.pause')),
           ]}
@@ -40,7 +41,7 @@ export function RestTimerControls({ paused, onRestart, onTogglePause, onDismiss 
         </Button>
         <Button
           onPress={onDismiss}
-          modifiers={[buttonStyle('glass'), controlPadding, accessibilityLabel(t('rest_timer.dismiss'))]}
+          modifiers={[glassButtonStyle('regular'), controlPadding, accessibilityLabel(t('rest_timer.dismiss'))]}
         >
           <Image systemName="xmark" size={restControlIconSize} modifiers={[iconFrame]} />
         </Button>

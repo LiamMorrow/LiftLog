@@ -1,12 +1,10 @@
 import { Remote } from '@/components/presentation/foundation/remote';
 import { WeightedExerciseListSearcher } from '@/components/presentation/stats/weighted-exercise-list-searcher';
+import { useHeaderInset } from '@/hooks/useHeaderInset';
 import { useAppSelector } from '@/store';
 import { fetchOverallStats, selectOverallView, WeightedExerciseStatistics } from '@/store/stats';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
-import { HeaderHeightContext } from 'expo-router/react-navigation';
-import { useContext } from 'react';
-import { Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 
@@ -24,12 +22,11 @@ export default function ExerciseListPage() {
     push(`/stats/expanded-weighted-exercise?exerciseName=${encodeURIComponent(item.exerciseName)}`);
   };
 
-  const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
-  const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
+  const headerInset = useHeaderInset();
   return (
     <SafeAreaView
       edges={{ bottom: 'additive', left: 'additive', right: 'additive', top: 'off' }}
-      style={{ flex: 1, paddingTop: topInsetHeight }}
+      style={{ flex: 1, paddingTop: headerInset }}
     >
       <Stack.Screen
         options={{

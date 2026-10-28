@@ -7,10 +7,16 @@ import BigNumber from 'bignumber.js';
 import { jsonToCSV } from 'react-native-csv';
 import { shortFormatWeightUnit } from '@/models/weight';
 import { DateTimeFormatter, LocalDateTime } from '@js-joda/core';
+import { readSessions } from '@/db/sessions';
+import { TemporalComparer } from '@/models/comparers';
+import { getSessionReferenceTime } from '@/store/stored-sessions';
 
 export function addExportPlaintextEffects(addEffect: AddEffectFn) {
-  addEffect(exportPlainText, async ({ payload: { format } }, { extra: { progressRepository, fileExportService } }) => {
-    const sessions = progressRepository.getOrderedSessions();
+  addEffect(exportPlainText, async ({ payload: { format } }, { extra: { db, fileExportService } }) => {
+    const sessions = Enumerable.from(readSessions(db).sessions).orderByDescending(
+      (x) => getSessionReferenceTime(x),
+      TemporalComparer,
+    );
     const now = LocalDateTime.now()
       .withNano(0)
       .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)

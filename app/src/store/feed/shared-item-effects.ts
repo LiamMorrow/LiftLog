@@ -37,11 +37,11 @@ export function addSharedItemEffects(addEffect: AddEffectFn) {
         return;
       }
 
-      const aesKey = await encryptionService.generateAesKey();
+      const aesKey = await encryptionService.generateAesKey('AES-CBC');
       const payload = action.payload.item.toJSON();
       const payloadBytes = toJsonBytes(payload);
 
-      const encrypted = await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
+      const encrypted = await encryptionService.signAndEncryptAsync(
         payloadBytes,
         aesKey,
         identity.data.rsaKeyPair.privateKey,
@@ -85,11 +85,7 @@ export function addSharedItemEffects(addEffect: AddEffectFn) {
     const { encryptedPayload, rsaPublicKey } = shared.data;
     const { key: aesKey } = a.payload;
 
-    const decryptedBytes = await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
-      encryptedPayload,
-      aesKey,
-      rsaPublicKey,
-    );
+    const decryptedBytes = await encryptionService.decryptAndVerifyAsync(encryptedPayload, aesKey, rsaPublicKey);
     const sharedItemDao = fromJsonBytes<AnyVersionSharedItemJSON>(decryptedBytes);
     const sharedItem = fromSharedItemJSON(sharedItemMigrations.migrate(sharedItemDao));
 

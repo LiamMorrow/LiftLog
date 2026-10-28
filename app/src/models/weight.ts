@@ -1,4 +1,4 @@
-import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
 import BigNumber from 'bignumber.js';
 import { match, P } from 'ts-pattern';
 import { fromBigNumberJSON, toBigNumberJSON, WeightJSON } from './storage/versions/latest';
@@ -114,7 +114,7 @@ export class Weight {
   }
 
   shortLocaleFormat(decimalPlaces?: number) {
-    return localeFormatBigNumber(this.value, decimalPlaces) + shortFormatWeightUnit(this.unit);
+    return localeDisplayFormatBigNumber(this.value, decimalPlaces) + shortFormatWeightUnit(this.unit);
   }
 }
 

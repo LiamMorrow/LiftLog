@@ -4,7 +4,7 @@ import { Weight } from '@/models/weight';
 import { formatDistance } from '@/utils/distance';
 import { formatCardioTarget } from '@/utils/format-cardio-target';
 import { formatTimeSpan } from '@/utils/format-time-span';
-import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
 
 /**
  * A text rendering of an exercise, for surfaces that summarise a session rather than let you work through it.
@@ -31,8 +31,8 @@ export function formatExerciseSummary(
         [
           set.duration && formatTimeSpan(set.duration),
           set.distance && formatDistance(set.distance),
-          set.incline && `${localeFormatBigNumber(set.incline)} incl`,
-          set.resistance && `${localeFormatBigNumber(set.resistance)} res`,
+          set.incline && `${localeDisplayFormatBigNumber(set.incline)} incl`,
+          set.resistance && `${localeDisplayFormatBigNumber(set.resistance)} res`,
         ]
           .filter((part) => !!part)
           .join(' '),

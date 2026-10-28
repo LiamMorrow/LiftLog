@@ -18,7 +18,7 @@ export default function FocusRing({
   padding?: number;
 } & ViewProps) {
   const { colors } = useAppTheme();
-  padding ??= 5;
+  padding ??= 3;
 
   const growAnim = useAnimatedValue(isSelected ? 1 : 0);
   const settledSelection = useRef(isSelected);
@@ -43,7 +43,7 @@ export default function FocusRing({
 
   const borderWidth = growAnim.interpolate({
     inputRange: [0, 0.25, 1],
-    outputRange: [0, 8, 3],
+    outputRange: [0, 5, 2],
   });
   const opacity = growAnim;
 
@@ -51,7 +51,7 @@ export default function FocusRing({
     <View style={style}>
       <Animated.View
         style={{
-          borderColor: colors.outline,
+          borderColor: colors.primary,
           position: 'absolute',
           top: pos,
           bottom: pos,

@@ -494,16 +494,9 @@
   "feed.share_feed.button": "Condividi feed",
   "stats.streak.weeks.one": "1 settimana di fila",
   "stats.streak.weeks.other": "{weeks} settimane di fila",
-  "stats.streak.secured.message": "Questa settimana è fatta. La tua serie è al sicuro.",
-  "stats.streak.keep_going.one": "1 ancora questa settimana per mantenere la tua serie di {weeks} settimane",
-  "stats.streak.keep_going.other": "{remaining} ancora questa settimana per mantenere la tua serie di {weeks} settimane",
-  "stats.last_7_days.one": "1 giorno di allenamento negli ultimi 7",
-  "stats.last_7_days.other": "{count} giorni di allenamento negli ultimi 7",
   "history.calendar.feed_horizon.message": "Gli allenamenti delle persone che segui rimangono in memoria per 90 giorni, quindi i mesi più vecchi mostrano solo i tuoi allenamenti.",
   "history.calendar.no_sessions_on_day.message": "Nessun allenamento il {date}.",
   "history.calendar.add_workout.button": "Aggiungi un allenamento",
-  "history.calendar.who_else_trained.title": "Chi altro si è allenato",
-  "history.calendar.legend.volume": "Il tuo volume",
   "history.calendar.legend.friends": "Persone che segui",
   "feed.this_week.title": "Questa settimana",
   "feed.this_week.more_people": "+{count} di più",
@@ -512,7 +505,6 @@
   "feed.you.label": "Tu",
   "feed.cheers.from.message": "Acclamato da {names}",
   "feed.cheers.private.explanation": "Solo tu puoi vedere chi ha acclamato il tuo allenamento.",
-  "feed.pr_badge.label": "Migliore {exercise} in 90 giorni",
   "feed.requests.title": "Richieste",
   "feed.wants_to_follow_you.subtitle": "Vuole seguirti",
   "feed.following_back.label": "Vi seguite a vicenda",
@@ -565,6 +557,5 @@
   "exercise.level.intermediate": "Intermedio",
   "exercise.mechanic.compound": "Composto",
   "exercise.mechanic.isolation": "Isolamento",
-  "cardio_timer.status.working": "Allenamento",
-  "history.pr_badge.label": "Migliore di sempre {exercise}"
+  "cardio_timer.status.working": "Allenamento"
 }

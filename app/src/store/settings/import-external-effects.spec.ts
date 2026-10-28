@@ -3,6 +3,7 @@ import { addImportExternalEffects } from '@/store/settings/import-external-effec
 import { getImportForFitNotes, getImportForStrongLifts } from '@/services/csv-import';
 import { csvImportFixtureBytes } from '@/services/csv-import/__test__/fixtures';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
+import { createTestDb } from '@/utils/__test__/test-db';
 import { describe, expect, it, vi } from 'vitest';
 import { showSnackbar } from '@/store/app';
 import { setStatsIsDirty } from '@/store/stats';
@@ -11,12 +12,12 @@ import { Session } from '@/models/session-models';
 type BedOpts = {
   format: ExternalImportFormat;
   bytes: Uint8Array;
-  sessions?: Record<string, Session>;
+  sessions?: Session[];
   imperial?: boolean;
   tolgee?: (key: string, params?: { count?: number; error?: string }) => string;
 };
 
-function makeExternalImportBed({ format: _format, bytes, sessions = {}, imperial = false, tolgee }: BedOpts) {
+async function makeExternalImportBed({ format: _format, bytes, sessions = [], imperial = false, tolgee }: BedOpts) {
   const defaultTolgee = (key: string, params?: { count?: number; error?: string }) => {
     if (key === 'backup.import_from_other_apps.complete.message') {
       return `Imported ${params?.count} workout(s)`;
@@ -33,9 +34,9 @@ function makeExternalImportBed({ format: _format, bytes, sessions = {}, imperial
   const testBed = createAddEffectTestBed({
     initialState: {
       settings: { useImperialUnits: imperial },
-      storedSessions: { sessions },
     },
     services: {
+      db: await createTestDb(sessions),
       filePickerService: {
         pickFile: vi.fn().mockResolvedValue({
           name: 'import.csv',
@@ -53,7 +54,7 @@ function makeExternalImportBed({ format: _format, bytes, sessions = {}, imperial
 
 describe('import-external-effects', () => {
   it('picks a FitNotes CSV and dispatches importBackupData', async () => {
-    const testBed = makeExternalImportBed({
+    const testBed = await makeExternalImportBed({
       format: 'FitNotes',
       bytes: csvImportFixtureBytes('fitnotes-android-export-kgs.csv'),
     });
@@ -82,8 +83,8 @@ describe('import-external-effects', () => {
       backup: () => getImportForStrongLifts(csvImportFixtureBytes('stronglifts-export-kg.csv')),
     },
   ] as const)('skips import when all $name sessions already exist', async ({ format, bytes, backup }) => {
-    const existing = Object.fromEntries(backup().workouts.map((w) => [w.id, w]));
-    const testBed = makeExternalImportBed({ format, bytes: bytes(), sessions: existing });
+    const existing = backup().workouts;
+    const testBed = await makeExternalImportBed({ format, bytes: bytes(), sessions: existing });
     await testBed.dispatchHandled(importFromExternal({ format }));
 
     expect(() => testBed.getDispatchedAction(importBackupData)).toThrow();
@@ -98,10 +99,8 @@ describe('import-external-effects', () => {
     const changedSets = `Date,Exercise,Category,Weight,Weight Unit,Reps,Distance,Distance Unit,Time,Comment
 2026-08-08,Bench Press,Chest,65,kgs,8,,,,
 `;
-    const existing = Object.fromEntries(
-      getImportForFitNotes(new TextEncoder().encode(original)).workouts.map((w) => [w.id, w]),
-    );
-    const testBed = makeExternalImportBed({
+    const existing = getImportForFitNotes(new TextEncoder().encode(original)).workouts;
+    const testBed = await makeExternalImportBed({
       format: 'FitNotes',
       bytes: new TextEncoder().encode(changedSets),
       sessions: existing,
@@ -114,9 +113,9 @@ describe('import-external-effects', () => {
 
   it('imports only sessions not already in History', async () => {
     const all = getImportForFitNotes(csvImportFixtureBytes('fitnotes-android-export-kgs.csv'));
-    const firstOnly = Object.fromEntries([[all.workouts[0]!.id, all.workouts[0]!]]);
+    const firstOnly = [all.workouts[0]!];
 
-    const testBed = makeExternalImportBed({
+    const testBed = await makeExternalImportBed({
       format: 'FitNotes',
       bytes: csvImportFixtureBytes('fitnotes-android-export-kgs.csv'),
       sessions: firstOnly,
@@ -131,7 +130,7 @@ describe('import-external-effects', () => {
   });
 
   it('shows an error snackbar for invalid CSV and does not import', async () => {
-    const testBed = makeExternalImportBed({
+    const testBed = await makeExternalImportBed({
       format: 'FitNotes',
       bytes: new TextEncoder().encode('not,a,valid,file\n1,2,3,4\n'),
     });
@@ -159,7 +158,7 @@ describe('import-external-effects', () => {
   });
 
   it('picks a StrongLifts CSV and dispatches importBackupData', async () => {
-    const testBed = makeExternalImportBed({
+    const testBed = await makeExternalImportBed({
       format: 'StrongLifts',
       bytes: csvImportFixtureBytes('stronglifts-export-kg.csv'),
     });

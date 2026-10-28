@@ -5,15 +5,7 @@ import { SegmentedGroup, SegmentListFormElement } from '@/components/presentatio
 import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
 import { useActionEffect } from '@/hooks/useActionEffect';
 import { useAppTheme } from '@/hooks/useAppTheme';
-import {
-  addFollower,
-  clearFeedState,
-  putFollowedUser,
-  resetFeedAccount,
-  setFollowRequests,
-  setIdentity,
-  upsertFeedItems,
-} from '@/store/feed';
+import { restoreFeedBackup } from '@/store/feed';
 import { beginFeedImport, exportData, importData } from '@/store/settings';
 import { setStatsIsDirty } from '@/store/stats';
 
@@ -22,7 +14,6 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { HealthExportSwitch, useCanExportHealth } from '@/components/smart/health-export-switch';
-import { RemoteData } from '@/models/remote';
 import { FeedBackupData } from '@/models/backup';
 
 export default function BackupAndRestorePage() {
@@ -101,18 +92,7 @@ function ImportFeedDialog({ open, setOpen }: DialogProps) {
       setOpen(false);
       return;
     }
-    dispatch(
-      resetFeedAccount({
-        fromUserAction: true,
-        createNewIdentity: false,
-      }),
-    );
-    dispatch(clearFeedState());
-    dispatch(setIdentity(RemoteData.success(importedFeedState.identity)));
-    dispatch(upsertFeedItems(importedFeedState.feedItems));
-    dispatch(setFollowRequests(importedFeedState.followRequests));
-    importedFeedState.followed.forEach((x) => dispatch(putFollowedUser(x)));
-    importedFeedState.followers.forEach((x) => dispatch(addFollower(x)));
+    dispatch(restoreFeedBackup({ ...importedFeedState, fromUserAction: true }));
     setOpen(false);
   };
   useActionEffect(beginFeedImport, (action) => {
@@ -154,7 +134,7 @@ function ExportFeedDialog({ open, setOpen }: DialogProps) {
       headline={t('feed.backup_account.title')}
       textContent={
         <LimitedHtml
-          value={t('feed.backup_account.confirm.body')}
+          value={t('feed.backup_account_with_friends.confirm.body')}
           emStyles={{ color: colors.error, fontWeight: 'bold' }}
         />
       }

@@ -1,183 +1,65 @@
-import { Instant, ZoneId } from '@js-joda/core';
+import { Instant } from '@js-joda/core';
 import {
   publishUnpublishedSessions,
   removeUnpublishedSessionId,
   feedApiError,
   fetchFeedItems,
   setIsFetching,
-  putFollowedUser,
+  patchFriendProfiles,
   removeFeedItems,
+  removeFriend,
+  repairFriends,
+  selectAcceptedFriends,
+  setLiveSessions,
   upsertFeedItems,
 } from '@/store/feed';
-import { AddEffectFn } from '@/store/store';
+import { AddEffectFn, AppDispatch, RootState } from '@/store/store';
+import { compareFeedItems } from '@/store/feed/feed-timeline';
 import {
   FeedIdentity,
-  FeedUser,
-  FollowedFeedUser,
+  Friend,
   FeedUserEvent,
   FEED_EVENT_RETENTION_SECONDS,
   fromFeedUserEventJSON,
+  LIVE_EVENT_EXPIRY_SECONDS,
+  LiveSessionUserEvent,
   RemovedSessionUserEvent,
   SessionUserEvent,
 } from '@/models/feed-models';
+import { settleLivePublish } from '@/store/feed/live-publish-queue';
 import { Session } from '@/models/session-models';
 import { GetUserResponse, UserEventResponse } from '@/models/feed-api-models';
-import { EncryptionService, fromJsonBytes, toJsonBytes } from '@/services/encryption-service';
+import { EncryptionService, fromJsonBytes, splitNonceAndCiphertext, toJsonBytes } from '@/services/encryption-service';
 import { FeedApiService } from '@/services/feed-api';
-import { selectSession } from '@/store/stored-sessions';
+import { readSession } from '@/db/sessions';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { feedUnpublishedSessionsSchema } from '@/db/schema';
 import { AnyVersionProgramBlueprintJSON, AnyVersionUserEventJSON } from '@/models/storage/versions/any';
 import { programBlueprintMigrations, userEventMigrations } from '@/models/storage/versions/migrations';
+import { AesEncryptedAndRsaSignedData, AesKey } from '@/models/encryption-models';
 
 const MIN_TIMESTAMP = Instant.parse('2000-01-01T00:00:00Z');
 
 export function addFeedItemEffects(addEffect: AddEffectFn) {
+  let fetchAgain = false;
+
   addEffect(fetchFeedItems, async (action, { dispatch, getState, extra: { feedApiService, encryptionService } }) => {
-    const state = getState();
-    if (state.feed.isFetching) {
+    if (getState().feed.isFetching) {
+      fetchAgain = true;
       return;
     }
     dispatch(publishUnpublishedSessions());
 
     try {
       dispatch(setIsFetching(true));
-      const originalFollowedUsers = state.feed.followedUsers;
-
-      // Get latest event timestamp for each user
-      const userIdToLatestEvent = state.feed.feed.reduce((acc, item) => {
-        const current = acc.get(item.userId);
-        if (!current || item.timestamp.isAfter(current)) {
-          acc.set(item.userId, item.timestamp);
-        }
-        return acc;
-      }, new Map<string, Instant>());
-
-      // Get followed users with follow secrets
-      const followedUsersWithFollowSecret = Object.entries(originalFollowedUsers)
-        .filter((x): x is [string, FollowedFeedUser] => x[1].type === 'FollowedFeedUser')
-        .map(([userId, user]) => ({
-          userId: userId,
-          followSecret: user.followSecret,
-          since: userIdToLatestEvent.get(userId)?.toString() || MIN_TIMESTAMP.toString(),
-        }));
-
-      if (followedUsersWithFollowSecret.length === 0) {
-        dispatch(removeFeedItems(getState().feed.feed.map((x) => x.id)));
-        return;
+      let undecryptable: string[] | undefined;
+      do {
+        fetchAgain = false;
+        undecryptable = await fetchOnce(action, dispatch, getState, feedApiService, encryptionService);
+      } while (fetchAgain);
+      if (undecryptable) {
+        dispatch(repairFriends({ undecryptable }));
       }
-
-      // Fetch feed events and users in parallel
-      const [feedResponse, usersResponse] = await Promise.all([
-        feedApiService.getUserEventsAsync({
-          users: followedUsersWithFollowSecret,
-        }),
-        feedApiService.getUsersAsync({
-          ids: followedUsersWithFollowSecret.map((x) => x.userId),
-        }),
-      ]);
-
-      if (!feedResponse.isSuccess()) {
-        dispatch(
-          feedApiError({
-            message: 'Failed to fetch feed items',
-            error: feedResponse.error!,
-            action,
-          }),
-        );
-        return;
-      }
-
-      if (!usersResponse.isSuccess()) {
-        dispatch(
-          feedApiError({
-            message: 'Failed to fetch users',
-            error: usersResponse.error!,
-            action,
-          }),
-        );
-        return;
-      }
-
-      const feedEvents = feedResponse.data.events;
-      const invalidFollowSecrets = new Set(feedResponse.data.invalidFollowSecrets);
-      const users = usersResponse.data.users;
-
-      // Decrypt and update user information
-      const newUsers = (
-        await Promise.all(
-          Object.entries(users).map(async ([userId, userResponse]) => {
-            const originalUser = originalFollowedUsers[userId];
-            if (!originalUser) {
-              return undefined;
-            }
-            if (originalUser.type === 'PendingFeedUser') {
-              return originalUser;
-            }
-
-            return await getDecryptedUserAsync(originalUser, userResponse, encryptionService);
-          }),
-        )
-      )
-        .filter((user) => user !== null && user !== undefined)
-        .concat(Object.values(originalFollowedUsers).filter((user) => user.type === 'PendingFeedUser'))
-        .filter((user) => user.type === 'PendingFeedUser' || !invalidFollowSecrets.has(user.followSecret || ''));
-
-      newUsers.forEach((user) => dispatch(putFollowedUser(user)));
-
-      // Decrypt and process feed events
-      const feedItems = (
-        await Promise.all(
-          feedEvents
-            .filter((event) => newUsers.some((user) => user.id === event.userId))
-            .map((event) => toFeedItemAsync(event, newUsers, encryptionService)),
-        )
-      ).filter((item) => item !== null);
-
-      const now = Instant.now();
-      const existingFeedItems = state.feed.feed as FeedUserEvent[];
-      const allFeedItems = existingFeedItems.concat(feedItems);
-
-      // Dedup by (userId, eventId), keeping latest timestamp
-      const deduped = [
-        ...allFeedItems
-          .reduce((acc, item) => {
-            const key = `${item.userId}-${item.eventId}`;
-            const existing = acc.get(key);
-            if (!existing || item.timestamp.isAfter(existing.timestamp)) {
-              acc.set(key, item);
-            }
-            return acc;
-          }, new Map<string, FeedUserEvent>())
-          .values(),
-      ];
-
-      const validItems = deduped.filter(
-        (item) =>
-          item.expiry.isAfter(now) &&
-          newUsers.some((user) => user.id === item.userId) &&
-          item.type !== 'RemovedSessionUserEvent',
-      );
-
-      const removedIds = deduped.filter((item) => !validItems.some((v) => v.id === item.id)).map((item) => item.id);
-
-      const sorted = validItems.sort((a, b) => {
-        const aTime =
-          a.type === 'SessionUserEvent'
-            ? a.session.date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()
-            : a.timestamp;
-        const bTime =
-          b.type === 'SessionUserEvent'
-            ? b.session.date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()
-            : b.timestamp;
-
-        const result = bTime.compareTo(aTime);
-        if (result !== 0) return result;
-        return b.timestamp.compareTo(a.timestamp);
-      });
-
-      if (removedIds.length) dispatch(removeFeedItems(removedIds));
-      dispatch(upsertFeedItems(sorted as SessionUserEvent[]));
     } finally {
       dispatch(setIsFetching(false));
     }
@@ -198,10 +80,11 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
         return;
       }
 
+      await settleLivePublish();
       const unpublishedSessionIds = await db.select().from(feedUnpublishedSessionsSchema);
 
       for (const { sessionId } of unpublishedSessionIds) {
-        const session = selectSession(getState(), sessionId);
+        const session = readSession(db, sessionId);
 
         let result;
         if (session) {
@@ -218,6 +101,165 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
   );
 }
 
+async function fetchOnce(
+  action: ReturnType<typeof fetchFeedItems>,
+  dispatch: AppDispatch,
+  getState: () => RootState,
+  feedApiService: FeedApiService,
+  encryptionService: EncryptionService,
+): Promise<string[] | undefined> {
+  const state = getState();
+  const friends = selectAcceptedFriends(state).filter((x) => x.theirSecret && x.theirKeys.length);
+
+  const latestEventByUser = new Map<string, Instant>();
+  for (const item of state.feed.feed) {
+    const current = latestEventByUser.get(item.userId);
+    if (!current || item.timestamp.isAfter(current)) {
+      latestEventByUser.set(item.userId, item.timestamp);
+    }
+  }
+
+  if (friends.length === 0) {
+    dispatch(removeFeedItems(state.feed.feed.map((x) => x.id)));
+    dispatch(setLiveSessions([]));
+    return [];
+  }
+
+  const [feedResponse, usersResponse] = await Promise.all([
+    feedApiService.getUserEventsAsync({
+      users: friends.map((friend) => ({
+        userId: friend.id,
+        followSecret: friend.theirSecret!,
+        since: (latestEventByUser.get(friend.id) ?? MIN_TIMESTAMP).toString(),
+      })),
+    }),
+    feedApiService.getUsersAsync({ ids: friends.map((x) => x.id) }),
+  ]);
+
+  if (!feedResponse.isSuccess()) {
+    dispatch(feedApiError({ message: 'Failed to fetch feed items', error: feedResponse.error!, action }));
+    return undefined;
+  }
+  if (!usersResponse.isSuccess()) {
+    dispatch(feedApiError({ message: 'Failed to fetch users', error: usersResponse.error!, action }));
+    return undefined;
+  }
+
+  const undecryptable = new Set<string>();
+  const profiles = await Promise.all(
+    friends.map(async (friend) => {
+      const response = usersResponse.data.users[friend.id];
+      return response ? decryptProfileAsync(friend, response, encryptionService) : undefined;
+    }),
+  );
+  profiles.forEach((x, i) => x === 'undecryptable' && undecryptable.add(friends[i]!.id));
+  dispatch(patchFriendProfiles(profiles.filter((x) => x !== undefined && x !== 'undecryptable')));
+
+  const invalidFollowSecrets = new Set(feedResponse.data.invalidFollowSecrets);
+  for (const friend of selectAcceptedFriends(getState())) {
+    if (friend.theirSecret && invalidFollowSecrets.has(friend.theirSecret)) {
+      dispatch(removeFriend({ friendId: friend.id, notify: false, fromUserAction: false }));
+    }
+  }
+
+  const friendsById = new Map(friends.map((x) => [x.id, x]));
+  const decryptedEvents = await Promise.all(
+    feedResponse.data.events.map((event) => {
+      const friend = friendsById.get(event.userId);
+      return friend ? toFeedItemAsync(event, friend, encryptionService) : Promise.resolve(null);
+    }),
+  );
+  decryptedEvents.forEach((x, i) => x === 'undecryptable' && undecryptable.add(feedResponse.data.events[i]!.userId));
+  const fetchedItems = decryptedEvents.filter((item) => item !== null && item !== 'undecryptable');
+  const liveItems = fetchedItems.filter((item) => item.type === 'LiveSessionUserEvent');
+  const feedItems = fetchedItems.filter((item) => item.type !== 'LiveSessionUserEvent');
+
+  const now = Instant.now();
+  const currentFriendIds = new Set(
+    selectAcceptedFriends(getState())
+      .filter((x) => x.theirSecret)
+      .map((x) => x.id),
+  );
+  const existingFeedItems = getState().feed.feed as FeedUserEvent[];
+
+  const deduped = [
+    ...existingFeedItems
+      .concat(feedItems)
+      .reduce((acc, item) => {
+        const key = `${item.userId}-${item.eventId}`;
+        const existing = acc.get(key);
+        if (!existing || item.timestamp.isAfter(existing.timestamp)) {
+          acc.set(key, item);
+        }
+        return acc;
+      }, new Map<string, FeedUserEvent>())
+      .values(),
+  ];
+
+  const validItems = deduped.filter(
+    (item) => item.expiry.isAfter(now) && currentFriendIds.has(item.userId) && item.type !== 'RemovedSessionUserEvent',
+  );
+  const validIds = new Set(validItems.map((x) => x.id));
+  const removedIds = existingFeedItems.filter((item) => !validIds.has(item.id)).map((item) => item.id);
+
+  const sorted = validItems.sort(compareFeedItems);
+
+  if (removedIds.length) dispatch(removeFeedItems(removedIds));
+  dispatch(upsertFeedItems(sorted as SessionUserEvent[]));
+
+  const settledKeys = new Set(deduped.map((item) => `${item.userId}-${item.eventId}`));
+  dispatch(
+    setLiveSessions(
+      liveItems.filter(
+        (item) =>
+          currentFriendIds.has(item.userId) && !item.isStale(now) && !settledKeys.has(`${item.userId}-${item.eventId}`),
+      ),
+    ),
+  );
+
+  return friends.filter((x) => undecryptable.has(x.id) && !invalidFollowSecrets.has(x.theirSecret!)).map((x) => x.id);
+}
+
+export async function publishLiveSessionAsync(
+  identity: FeedIdentity,
+  session: Session,
+  encryptionService: EncryptionService,
+  feedApiService: FeedApiService,
+) {
+  return publishEvent(
+    identity,
+    new LiveSessionUserEvent(
+      identity.id,
+      session.id,
+      Instant.now(),
+      Instant.now().plusSeconds(LIVE_EVENT_EXPIRY_SECONDS),
+      identity.publishBodyweight ? session : session.with({ bodyweight: undefined }),
+    ),
+    encryptionService,
+    feedApiService,
+  );
+}
+
+export async function removeLiveSessionAsync(
+  identity: FeedIdentity,
+  sessionId: string,
+  encryptionService: EncryptionService,
+  feedApiService: FeedApiService,
+) {
+  return publishEvent(
+    identity,
+    new RemovedSessionUserEvent(
+      identity.id,
+      sessionId,
+      Instant.now(),
+      Instant.now().plusSeconds(LIVE_EVENT_EXPIRY_SECONDS),
+      sessionId,
+    ),
+    encryptionService,
+    feedApiService,
+  );
+}
+
 async function publishEvent(
   identity: FeedIdentity,
   event: FeedUserEvent,
@@ -226,7 +268,7 @@ async function publishEvent(
 ) {
   const payloadBytes = toJsonBytes(event.toJSON());
 
-  const encryptedData = await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
+  const encryptedData = await encryptionService.signAndEncryptAsync(
     payloadBytes,
     identity.aesKey,
     identity.rsaKeyPair.privateKey,
@@ -283,83 +325,74 @@ async function removePublishedSessionAsync(
   );
 }
 
-async function getDecryptedUserAsync(
-  originalUser: FollowedFeedUser,
+class NoKeyDecrypts extends Error {}
+
+async function decryptWithKeysAsync(
+  payloadFor: (key: AesKey) => AesEncryptedAndRsaSignedData,
+  friend: Friend,
+  encryptionService: EncryptionService,
+): Promise<Uint8Array> {
+  let lastError: unknown;
+  for (const key of friend.theirKeys) {
+    try {
+      return await encryptionService.decryptAndVerifyAsync(payloadFor(key), key, friend.publicKey);
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw new NoKeyDecrypts('None of the keys this friend shared decrypt it', { cause: lastError });
+}
+
+async function decryptProfileAsync(
+  friend: Friend,
   response: GetUserResponse,
   encryptionService: EncryptionService,
-): Promise<FeedUser | null> {
+): Promise<
+  { id: string; name: string | undefined; currentPlan: ProgramBlueprint | undefined } | 'undecryptable' | undefined
+> {
+  const profileField =
+    (field: Uint8Array) =>
+    (key: AesKey): AesEncryptedAndRsaSignedData =>
+      key.algorithm === 'AES-GCM'
+        ? splitNonceAndCiphertext(field)
+        : { encryptedPayload: field, iv: { value: response.encryptionIV } };
   try {
-    let name: string | undefined;
-    let currentPlan: ProgramBlueprint | undefined;
-
-    // Decrypt name if present
-    if (response.encryptedName && response.encryptedName.length > 0) {
-      const decryptedNameBytes = await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
-        {
-          encryptedPayload: response.encryptedName,
-          iv: { value: response.encryptionIV },
-        },
-        originalUser.aesKey,
-        originalUser.publicKey,
-      );
-      name = new TextDecoder().decode(decryptedNameBytes);
-    }
-
-    // Decrypt current plan if present
-    if (response.encryptedCurrentPlan && response.encryptedCurrentPlan.length > 0) {
-      const decryptedPlanBytes = await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
-        {
-          encryptedPayload: response.encryptedCurrentPlan,
-          iv: { value: response.encryptionIV },
-        },
-        originalUser.aesKey,
-        originalUser.publicKey,
-      );
-
-      const currentPlanJson = fromJsonBytes<AnyVersionProgramBlueprintJSON>(decryptedPlanBytes);
-      currentPlan = ProgramBlueprint.fromJSON(programBlueprintMigrations.migrate(currentPlanJson));
-    }
-
-    return new FollowedFeedUser(
-      originalUser.id,
-      originalUser.publicKey,
-      name,
-      currentPlan,
-      originalUser.aesKey,
-      originalUser.followSecret,
-    );
+    const name = response.encryptedName?.length
+      ? new TextDecoder().decode(
+          await decryptWithKeysAsync(profileField(response.encryptedName), friend, encryptionService),
+        )
+      : undefined;
+    const currentPlan = response.encryptedCurrentPlan?.length
+      ? ProgramBlueprint.fromJSON(
+          programBlueprintMigrations.migrate(
+            fromJsonBytes<AnyVersionProgramBlueprintJSON>(
+              await decryptWithKeysAsync(profileField(response.encryptedCurrentPlan), friend, encryptionService),
+            ),
+          ),
+        )
+      : undefined;
+    return { id: friend.id, name, currentPlan };
   } catch (error) {
-    console.error('Failed to decrypt feed user', error);
-
-    return null;
+    console.warn('Could not decrypt a friend profile; keeping the last one', error);
+    return error instanceof NoKeyDecrypts ? 'undecryptable' : undefined;
   }
 }
 
 async function toFeedItemAsync(
   userEvent: UserEventResponse,
-  users: FeedUser[],
+  friend: Friend,
   encryptionService: EncryptionService,
-): Promise<FeedUserEvent | null> {
-  const user = users.find((u) => u.id === userEvent.userId);
-  if (!user || user.type === 'PendingFeedUser') {
-    return null;
-  }
-
+): Promise<FeedUserEvent | 'undecryptable' | null> {
   try {
-    const decryptedPayload = await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
-      {
-        encryptedPayload: userEvent.encryptedEventPayload,
-        iv: { value: userEvent.encryptedEventIV },
-      },
-      user.aesKey,
-      user.publicKey,
+    const decryptedPayload = await decryptWithKeysAsync(
+      () => ({ encryptedPayload: userEvent.encryptedEventPayload, iv: { value: userEvent.encryptedEventIV } }),
+      friend,
+      encryptionService,
     );
-
     const payload = fromJsonBytes<AnyVersionUserEventJSON>(decryptedPayload);
-
     return fromFeedUserEventJSON(userEventMigrations.migrate(payload));
   } catch (error) {
     console.error('Failed to decrypt feed item. Skipping.', error);
-    return null;
+    return error instanceof NoKeyDecrypts ? 'undecryptable' : null;
   }
 }

@@ -1,0 +1,74 @@
+import { Popover } from '@/components/presentation/foundation/popover';
+import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { StreakStats } from '@/store/activity';
+import { flameIcon } from '@/components/presentation/summary/flame-icon';
+import { useStreakCopy } from '@/components/presentation/summary/streak-copy';
+import { Image, Platform, View } from 'react-native';
+import { Icon } from 'react-native-paper';
+
+const PILL_HEIGHT = 36;
+
+interface StreakPillProps {
+  stats: StreakStats;
+}
+
+export function StreakPill({ stats }: StreakPillProps) {
+  const { colors } = useAppTheme();
+  const { weeks, hasStreak, isSafe, safeLabel, title, body, accessibilityLabel } = useStreakCopy(stats);
+
+  if (!stats.hasHistory) {
+    return null;
+  }
+
+  const isGlass = Platform.OS === 'ios';
+  const ink = !hasStreak ? 'onSurfaceVariant' : isGlass ? 'onSurface' : 'onPrimaryContainer';
+  const background = isGlass ? undefined : hasStreak ? colors.primaryContainer : colors.surfaceContainerHighest;
+
+  return (
+    <Popover
+      accessibilityLabel={title}
+      trigger={(open) => (
+        <View
+          style={{
+            borderRadius: PILL_HEIGHT / 2,
+            overflow: 'hidden',
+            backgroundColor: background,
+          }}
+        >
+          <TouchableRipple
+            onPress={open}
+            accessibilityRole="button"
+            accessibilityLabel={accessibilityLabel}
+            testID="streak-pill"
+          >
+            <View style={{ justifyContent: 'center', height: PILL_HEIGHT, paddingHorizontal: spacing[2] }}>
+              <Image source={flameIcon(isSafe, hasStreak ? weeks : undefined)} style={{ tintColor: colors[ink] }} />
+            </View>
+          </TouchableRipple>
+        </View>
+      )}
+    >
+      {() => (
+        <View style={{ gap: spacing[1] }}>
+          <SurfaceText font="text-lg" weight="bold">
+            {title}
+          </SurfaceText>
+          {isSafe ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
+              <Icon source="check" size={16} color={colors.onSurface} />
+              <SurfaceText font="text-sm" weight="500">
+                {safeLabel}
+              </SurfaceText>
+            </View>
+          ) : (
+            <SurfaceText font="text-sm" color="onSurfaceVariant">
+              {body}
+            </SurfaceText>
+          )}
+        </View>
+      )}
+    </Popover>
+  );
+}

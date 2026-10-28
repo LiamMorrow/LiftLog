@@ -4,7 +4,7 @@ import { Session, RecordedWeightedExercise, RecordedSet, RestTimer } from '@/mod
 import { Weight } from '@/models/weight';
 import { putStoredSession, setActiveSessionId } from '@/store/stored-sessions';
 import { useAppSelector } from '@/store';
-import { Duration, LocalDate, LocalTime, OffsetDateTime, ZoneOffset } from '@js-joda/core';
+import { Duration, Instant, LocalDate, LocalTime, OffsetDateTime, ZoneOffset } from '@js-joda/core';
 import { Redirect, useLocalSearchParams } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import BigNumber from 'bignumber.js';
@@ -13,7 +13,7 @@ import { AiPlan } from '@/models/ai-models';
 import { setStatsIsDirty, fetchOverallStats } from '@/store/stats';
 import { savePlan, setSavedPlans } from '@/store/program';
 import { ProgramBlueprint } from '@/models/blueprint-models';
-import { upsertStoredSessions, setStoredSessions } from '@/store/stored-sessions';
+import { upsertStoredSessions } from '@/store/stored-sessions';
 import {
   setColorSchemeSeed,
   setLastSeenWhatsNewId,
@@ -21,6 +21,8 @@ import {
   setWelcomeWizardCompleted,
 } from '@/store/settings';
 import { whatsNewEntries } from '@/models/whats-new';
+import { Friend, SessionUserEvent } from '@/models/feed-models';
+import { patchFeedState } from '@/store/feed';
 
 export default function ScreenshotCollectionPage() {
   const { type } = useLocalSearchParams<{ type: string }>();
@@ -29,6 +31,9 @@ export default function ScreenshotCollectionPage() {
   }
   const dispatch = useDispatch();
   useMountEffect(() => {
+    if (type === 'history-feed') {
+      return;
+    }
     dispatch(setWelcomeWizardCompleted(true));
     dispatch(setLastSeenWhatsNewId(whatsNewEntries.at(-1)!.id));
     dispatch(setColorSchemeSeed('#005500'));
@@ -49,6 +54,8 @@ export default function ScreenshotCollectionPage() {
       return <PrepareExerciseStatsPage />;
     case 'history':
       return <PrepareHistoryPage />;
+    case 'history-feed':
+      return <PrepareHistoryFeedPage />;
   }
 }
 
@@ -242,13 +249,14 @@ function buildStatsSessionData(dispatch: ReturnType<typeof useDispatch>) {
     89, 87, 84, 82, 80, 77, 75, 73, 70, 68, 65, 63, 61, 58, 56, 54, 51, 49, 47, 44, 42, 40, 37, 35, 33, 30, 28, 26, 23,
     21, 19, 16, 14, 12, 9, 7, 5, 3, 1,
   ];
+  // Fixed ids, so running this again rewrites the same sessions rather than adding another set of them.
   const sessions = daysAgoList.map((daysAgo, i) => {
-    if (i % 3 === 0) return push(daysAgo, i);
-    if (i % 3 === 1) return pull(daysAgo, i);
-    return legs(daysAgo, i);
+    const id = `00000000-0000-4000-8000-${i.toString().padStart(12, '0')}`;
+    if (i % 3 === 0) return push(daysAgo, i).with({ id });
+    if (i % 3 === 1) return pull(daysAgo, i).with({ id });
+    return legs(daysAgo, i).with({ id });
   });
 
-  dispatch(setStoredSessions({}));
   dispatch(upsertStoredSessions(sessions));
   dispatch(setStatsIsDirty(true));
   dispatch(fetchOverallStats());
@@ -257,6 +265,79 @@ function buildStatsSessionData(dispatch: ReturnType<typeof useDispatch>) {
 function PrepareHistoryPage() {
   const dispatch = useDispatch();
   useMountEffect(() => buildStatsSessionData(dispatch));
+  return <Redirect href={'/history'} />;
+}
+
+function PrepareHistoryFeedPage() {
+  const dispatch = useDispatch();
+  const feed = useAppSelector((s) => s.feed.feed);
+  const friends = useAppSelector((s) => s.feed.friends);
+  useMountEffect(() => {
+    const fakeFriends = [
+      { id: 'screenshot-friend-alex', name: 'Alex', daysAgo: [1, 2, 4, 6, 8, 9, 11, 13, 15, 16, 18, 20, 22] },
+      { id: 'screenshot-friend-sam', name: 'Sam', daysAgo: [1, 3, 5, 8, 10, 12, 15, 17, 19, 24] },
+      { id: 'screenshot-friend-jo', name: 'Jo', daysAgo: [2, 4, 8, 9, 11, 16, 23] },
+      { id: 'screenshot-friend-kim', name: 'Kim', daysAgo: [1, 8, 15, 22] },
+    ];
+    const workout = (date: LocalDate, weightKg: number) => {
+      const session = Session.freeformSession(date, undefined)
+        .withName('Full Body')
+        .withAddedExercise(
+          WeightedExerciseBlueprint.empty().with({ name: 'Squat', sets: 3, repsConfig: { type: 'fixed', reps: 5 } }),
+          false,
+        );
+      const exercise = [0, 1, 2].reduce(
+        (recorded, i) =>
+          recorded.withSet(i, (ps) =>
+            ps.with({
+              weight: new Weight(weightKg, 'kilograms'),
+              set: RecordedSet.of({
+                repsCompleted: 5,
+                completionDateTime: OffsetDateTime.of(date, LocalTime.of(8, i * 3), ZoneOffset.UTC),
+              }),
+            }),
+          ),
+        session.recordedExercises[0] as RecordedWeightedExercise,
+      );
+      return session.withExercise(0, exercise);
+    };
+    const events = fakeFriends.flatMap((friend) =>
+      friend.daysAgo.map(
+        (daysAgo) =>
+          new SessionUserEvent(
+            friend.id,
+            `${friend.id}-${daysAgo}`,
+            Instant.now(),
+            Instant.now().plus(Duration.ofDays(90)),
+            workout(LocalDate.now().minusDays(daysAgo), 60 + ((daysAgo * 13) % 50)),
+          ),
+      ),
+    );
+    dispatch(
+      patchFeedState({
+        feed: [...feed.filter((x) => !events.some((event) => event.id === x.id)), ...events],
+        friends: {
+          ...friends,
+          ...Object.fromEntries(
+            fakeFriends.map((friend) => [
+              friend.id,
+              new Friend(
+                friend.id,
+                { spkiPublicKeyBytes: new Uint8Array() },
+                friend.name,
+                undefined,
+                'friend',
+                [],
+                undefined,
+                undefined,
+                undefined,
+              ),
+            ]),
+          ),
+        },
+      }),
+    );
+  });
   return <Redirect href={'/history'} />;
 }
 

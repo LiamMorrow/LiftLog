@@ -48,11 +48,11 @@ export async function dedupeBuiltInExercises(db: ExpoSQLiteDatabase, keyValueSto
   const added = JSON.parse((await keyValueStore.getItem(addedBuiltInExerciseIdsStorageKey)) ?? '[]') as string[];
   const hidden = added.filter((id) => canonical[id] && !presentIds.has(id));
 
-  await db.transaction(async (tx) => {
+  db.transaction((tx) => {
     for (const id of idsToDelete) {
-      await tx.delete(exercisesSchema).where(eq(exercisesSchema.id, id));
+      tx.delete(exercisesSchema).where(eq(exercisesSchema.id, id)).run();
     }
-    await tx.insert(dataMigrationsSchema).values({ id: dedupeBuiltInExercisesDataMigration });
+    tx.insert(dataMigrationsSchema).values({ id: dedupeBuiltInExercisesDataMigration }).run();
   });
   await keyValueStore.setItem(hiddenBuiltInExerciseIdsStorageKey, JSON.stringify(hidden));
 }

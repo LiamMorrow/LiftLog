@@ -1,14 +1,9 @@
 import { ActivityWeekCell } from '@/components/presentation/calendar/activity-week-cell';
-import { cellEntrance } from '@/components/presentation/calendar/activity-entrance';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { useMountEffect } from '@/hooks/useMountEffect';
 import { ActivityCell } from '@/store/activity';
-import { useMemo } from 'react';
-import { Animated, Easing, I18nManager, useAnimatedValue, View } from 'react-native';
-
-const ENTRANCE_DURATION_MS = 450;
+import { I18nManager, View } from 'react-native';
 
 interface WeekActivityStripProps {
   cells: ActivityCell[];
@@ -21,21 +16,6 @@ interface WeekActivityStripProps {
  */
 export function WeekActivityStrip({ cells }: WeekActivityStripProps) {
   const formatDate = useFormatDate();
-
-  const progress = useAnimatedValue(0);
-  useMountEffect(() => {
-    Animated.timing(progress, {
-      toValue: 1,
-      duration: ENTRANCE_DURATION_MS,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start();
-  });
-
-  const entrances = useMemo(
-    () => Array.from({ length: cells.length }, (_, index) => cellEntrance(progress, index, cells.length)),
-    [progress, cells.length],
-  );
 
   const direction = I18nManager.isRTL ? 'row-reverse' : 'row';
 
@@ -56,7 +36,7 @@ export function WeekActivityStrip({ cells }: WeekActivityStripProps) {
 
       <View style={{ flexDirection: direction, gap: spacing[1] }}>
         {cells.map((cell, index) => (
-          <ActivityWeekCell key={index} cell={cell} entrance={entrances[index]!} />
+          <ActivityWeekCell key={index} cell={cell} />
         ))}
       </View>
     </View>

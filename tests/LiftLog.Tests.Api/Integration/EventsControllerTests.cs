@@ -146,4 +146,43 @@ public class EventsControllerTests(ApiFactory factory)
         await Assert.That(response.Events).IsEmpty();
         await Assert.That(response.InvalidFollowSecrets).IsEquivalentTo([revoked]);
     }
+
+    [Test]
+    public async Task Get_AcceptsTwoSecretsForTheSamePublisher()
+    {
+        var client = factory.CreateClient();
+        var alice = await FeedHelper.CreateUserAsync(client);
+        var first = NewSecret();
+        var second = NewSecret();
+        await FeedHelper.AddFollowSecretAsync(client, alice, first);
+        await FeedHelper.AddFollowSecretAsync(client, alice, second);
+        var aliceEvent = await FeedHelper.PublishEventAsync(client, alice, FarFuture);
+
+        var response = await FeedHelper.GetEventsAsync(
+            client,
+            new GetUserEventRequest(alice.Id, first, longAgo),
+            new GetUserEventRequest(alice.Id, second, longAgo)
+        );
+
+        await Assert.That(response.InvalidFollowSecrets).IsEmpty();
+        await Assert.That(response.Events.Select(x => x.EventId)).IsEquivalentTo([aliceEvent]);
+    }
+
+    [Test]
+    public async Task Get_AcceptsASecretSentUnderAnotherUsersId()
+    {
+        var client = factory.CreateClient();
+        var alice = await FeedHelper.CreateUserAsync(client);
+        var bob = await FeedHelper.CreateUserAsync(client);
+        var aliceSecret = NewSecret();
+        await FeedHelper.AddFollowSecretAsync(client, alice, aliceSecret);
+        await FeedHelper.PublishEventAsync(client, alice, FarFuture);
+
+        var response = await FeedHelper.GetEventsAsync(
+            client,
+            new GetUserEventRequest(bob.Id, aliceSecret, longAgo)
+        );
+
+        await Assert.That(response.InvalidFollowSecrets).IsEmpty();
+    }
 }

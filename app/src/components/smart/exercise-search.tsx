@@ -1,17 +1,17 @@
 import Button from '@/components/presentation/foundation/button';
 import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
 import { spacing } from '@/hooks/useAppTheme';
+import { useHeaderInset } from '@/hooks/useHeaderInset';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { setExerciseSearchResult } from '@/store/app';
 import { selectExerciseById, selectExerciseIds, updateExercise } from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
-import { LegendList } from '@legendapp/list';
+import { LegendList } from '@legendapp/list/react-native';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
-import { HeaderHeightContext } from 'expo-router/react-navigation';
-import { useContext, useMemo, useState } from 'react';
-import { Platform, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { View } from 'react-native';
 import { List } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
@@ -34,18 +34,12 @@ export function ExerciseSearch(props: { requestId: string; exerciseName: string 
     dismiss();
   };
 
-  const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
-  const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
+  const headerInset = useHeaderInset();
 
   return (
     <SafeAreaView
-      edges={{
-        left: 'additive',
-        right: 'additive',
-        top: Platform.OS === 'ios' ? 'additive' : 'off',
-        bottom: 'additive',
-      }}
-      style={{ flex: 1, insetBlockStart: topInsetHeight }}
+      edges={{ left: 'additive', right: 'additive', top: 'off', bottom: 'additive' }}
+      style={{ flex: 1, paddingTop: headerInset }}
     >
       <Stack.Screen options={{ title: t('generic.search.button') }} />
       <LegendList

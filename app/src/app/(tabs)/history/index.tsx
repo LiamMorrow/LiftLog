@@ -3,44 +3,59 @@ import ConfirmationDialog from '@/components/presentation/foundation/confirmatio
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { HistoryActivityCalendar } from '@/components/smart/history-activity-calendar';
-import { HistoryPrBadges } from '@/components/smart/pr-badges';
-import { WhoElseTrainedCard } from '@/components/smart/who-else-trained-card';
+import { PrStrip } from '@/components/smart/pr-badges';
+import { WhoElseTrained } from '@/components/smart/who-else-trained';
 import { ReactionSummary } from '@/components/smart/reaction-summary';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
-import { StreakCard } from '@/components/presentation/summary/streak-card';
-import { spacing } from '@/hooks/useAppTheme';
+import { useStreakToolbarItem } from '@/components/smart/streak-toolbar-item';
+import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
-import { useToday } from '@/hooks/useToday';
 import { Session } from '@/models/session-models';
-import { selectStreakStats } from '@/store/activity';
-import { useAppSelector, useAppSelectorWhenFocused, useAppSelectorWhenFocusedWithArg } from '@/store';
+import { useAppSelector } from '@/store';
+import { OwnHistoryProvider, useOwnHistory } from '@/components/smart/own-history-provider';
+import { useSessionsQuery } from '@/hooks/useSessionsQuery';
+import { readSessionsBetween } from '@/db/sessions';
+import { TemporalComparer } from '@/models/comparers';
+import Enumerable from 'linq';
 import { addUnpublishedSessionId, encryptAndShare, removeReactionsForEvents } from '@/store/feed';
 import {
   deleteStoredSession,
+  getSessionReferenceTime,
+  openSession,
   putStoredSession,
   selectActiveSession,
-  selectSessionsBy,
-  selectSessionsInMonth,
 } from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
 import { LocalDate, YearMonth } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useDeferredValue, useState } from 'react';
 import { View } from 'react-native';
-import { LegendList } from '@legendapp/list';
+import { LegendList } from '@legendapp/list/react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Card, Tooltip } from 'react-native-paper';
+import { Card, Icon, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useStartWorkout } from '@/hooks/useStartWorkout';
 import { SharedSession } from '@/models/feed-models';
 
-export default function History() {
+const noSessions: Session[] = [];
+
+export default function HistoryPage() {
+  return (
+    <OwnHistoryProvider>
+      <History />
+    </OwnHistoryProvider>
+  );
+}
+
+function History() {
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const formatDate = useFormatDate();
@@ -51,19 +66,26 @@ export default function History() {
     x.program.upcomingSessions.map((x) => x.at(0)?.bodyweight).unwrapOr(undefined),
   );
   const [selectedDate, setSelectedDate] = useState<LocalDate>();
-  // These sweep the whole history, and this screen stays mounted under /history/edit - so they must
-  // not recompute while a session is being edited on top of it.
-  const sessionsInMonth = useAppSelectorWhenFocusedWithArg(selectSessionsInMonth, currentYearMonth);
-  const sessionsOnSelectedDate = useAppSelectorWhenFocused((state) =>
-    selectedDate ? selectSessionsBy(state, selectedDate, selectedDate) : undefined,
-  );
-  const visibleSessions = sessionsOnSelectedDate ?? sessionsInMonth;
-  const today = useToday();
-  const streakStats = useAppSelectorWhenFocusedWithArg(selectStreakStats, today);
+  const listedYearMonth = useDeferredValue(currentYearMonth);
+  const listedDate = useDeferredValue(selectedDate);
+  const from = listedDate ?? listedYearMonth.atDay(1);
+  const to = listedDate ?? listedYearMonth.atEndOfMonth();
+  const visibleSessions =
+    useSessionsQuery(
+      (db) =>
+        Enumerable.from(readSessionsBetween(db, from, to))
+          .orderByDescending((x) => getSessionReferenceTime(x), TemporalComparer)
+          .toArray(),
+      `${from.toString()}:${to.toString()}`,
+    ) ?? noSessions;
+  const { streak: streakStats, personalRecords } = useOwnHistory();
+  const listedMonthName = formatDate(listedYearMonth.atDay(1), { month: 'long' });
+  const streakToolbarItem = useStreakToolbarItem(streakStats);
   const { push } = useRouter();
   const currentWorkoutSession = useAppSelector(selectActiveSession);
   const startWorkoutSession = useStartWorkout();
   const onSelectSession = (session: Session) => {
+    dispatch(openSession(session));
     push(`/history/edit?sessionId=${encodeURIComponent(session.id)}`);
   };
   const createSessionAtDate = (date: LocalDate) => {
@@ -114,10 +136,12 @@ export default function History() {
           title: t('generic.history.title'),
         }}
       />
+      <Stack.Toolbar placement="right">{streakToolbarItem}</Stack.Toolbar>
       <LegendList
         testID="history-list"
         maintainVisibleContentPosition={false}
         data={visibleSessions}
+        extraData={personalRecords}
         keyExtractor={(session) => session.id}
         onScroll={handleScroll}
         contentContainerStyle={{
@@ -126,8 +150,7 @@ export default function History() {
         }}
         ItemSeparatorComponent={() => <View style={{ height: spacing[2] }} />}
         ListHeaderComponent={
-          <View style={{ gap: spacing[4], marginBottom: spacing[4] }}>
-            <StreakCard stats={streakStats} />
+          <View style={{ gap: spacing[4], marginBottom: spacing[2] }}>
             <HistoryActivityCalendar
               currentYearMonth={currentYearMonth}
               selectedDate={selectedDate}
@@ -137,7 +160,23 @@ export default function History() {
               }}
               onDateSelect={setSelectedDate}
             />
-            {selectedDate && <WhoElseTrainedCard date={selectedDate} />}
+            {selectedDate ? (
+              <View style={{ gap: spacing[1] }}>
+                <SelectedDayChip date={selectedDate} onClear={() => setSelectedDate(undefined)} />
+                <WhoElseTrained date={selectedDate} />
+              </View>
+            ) : (
+              visibleSessions.length > 0 && (
+                <SurfaceText font="text-sm" weight="500" color="onSurfaceVariant" testID="history-month-count">
+                  {visibleSessions.length === 1
+                    ? t('history.month.workouts.one', { month: listedMonthName })
+                    : t('history.month.workouts.other', {
+                        count: visibleSessions.length.toString(),
+                        month: listedMonthName,
+                      })}
+                </SurfaceText>
+              )
+            )}
           </View>
         }
         renderItem={({ item: session }) => (
@@ -146,9 +185,9 @@ export default function History() {
               <SplitCardControl
                 titleContent={<SessionSummaryTitle showDate session={session} />}
                 mainContent={
-                  <View style={{ gap: spacing[2] }}>
+                  <View style={{ gap: spacing[3] }}>
                     <SessionSummary isFilled showWeight session={session} />
-                    <HistoryPrBadges sessionId={session.id} />
+                    <PrStrip records={personalRecords.get(session.id)} scope="history" />
                   </View>
                 }
               />
@@ -176,12 +215,12 @@ export default function History() {
           </Card>
         )}
         ListEmptyComponent={
-          selectedDate ? (
+          listedDate ? (
             <View style={{ gap: spacing[4], alignItems: 'center' }}>
               <EmptyInfo>
                 <LimitedHtml
                   value={t('history.calendar.no_sessions_on_day.message', {
-                    date: formatDate(selectedDate, { day: 'numeric', month: 'long' }),
+                    date: formatDate(listedDate, { day: 'numeric', month: 'long' }),
                   })}
                 />
               </EmptyInfo>
@@ -189,7 +228,7 @@ export default function History() {
                 mode="contained"
                 icon="plus"
                 testID="history-add-workout-on-day"
-                onPress={() => createSessionAtDate(selectedDate)}
+                onPress={() => createSessionAtDate(listedDate)}
               >
                 <T keyName="history.calendar.add_workout.button" />
               </Button>
@@ -198,7 +237,7 @@ export default function History() {
             <EmptyInfo>
               <LimitedHtml
                 value={t('workout.no_sessions_in_month.message', {
-                  month: formatDate(currentYearMonth.atDay(1), {
+                  month: formatDate(listedYearMonth.atDay(1), {
                     month: 'long',
                   }),
                 })}
@@ -241,5 +280,50 @@ export default function History() {
         }}
       />
     </>
+  );
+}
+
+function SelectedDayChip({ date, onClear }: { date: LocalDate; onClear: () => void }) {
+  const { t } = useTranslate();
+  const { colors } = useAppTheme();
+  const formatDate = useFormatDate();
+
+  return (
+    <View
+      style={{
+        alignSelf: 'flex-start',
+        borderRadius: 8,
+        overflow: 'hidden',
+        backgroundColor: colors.secondaryContainer,
+      }}
+    >
+      <TouchableRipple
+        onPress={onClear}
+        accessibilityRole="button"
+        accessibilityHint={t('history.calendar.clear_day.button')}
+        testID="history-clear-day"
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: spacing[1],
+            height: 32,
+            paddingLeft: spacing[3],
+            paddingRight: spacing[2],
+          }}
+        >
+          <SurfaceText font="text-sm" weight="500" color="onSecondaryContainer">
+            {formatDate(date, {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              year: date.year() !== LocalDate.now().year() ? 'numeric' : undefined,
+            })}
+          </SurfaceText>
+          <Icon source="close" size={18} color={colors.onSecondaryContainer} />
+        </View>
+      </TouchableRipple>
+    </View>
   );
 }

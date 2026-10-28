@@ -25,20 +25,22 @@ export async function importBackends(db: ExpoSQLiteDatabase, preferenceService: 
 
   await preferenceService.setPreference('backupIncludeFeedAccount', includeFeedAccount);
 
-  await db.transaction(async (tx) => {
+  db.transaction((tx) => {
     if (endpoint.trim()) {
       const id = uuid();
-      await tx.insert(backendsSchema).values({
-        id,
-        name: nameFromEndpoint(endpoint),
-        url: normalizeBackendUrl(endpoint),
-        kind: 'backupEndpoint',
-      });
+      tx.insert(backendsSchema)
+        .values({
+          id,
+          name: nameFromEndpoint(endpoint),
+          url: normalizeBackendUrl(endpoint),
+          kind: 'backupEndpoint',
+        })
+        .run();
       if (apiKey.trim()) {
-        await tx.insert(backendHeadersSchema).values({ backendId: id, name: 'X-Api-Key', value: apiKey });
+        tx.insert(backendHeadersSchema).values({ backendId: id, name: 'X-Api-Key', value: apiKey }).run();
       }
-      await tx.insert(backendAssignmentsSchema).values({ feature: 'backup', backendId: id });
+      tx.insert(backendAssignmentsSchema).values({ feature: 'backup', backendId: id }).run();
     }
-    await tx.insert(dataMigrationsSchema).values({ id: importBackendsDataMigration });
+    tx.insert(dataMigrationsSchema).values({ id: importBackendsDataMigration }).run();
   });
 }

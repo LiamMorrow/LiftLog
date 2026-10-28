@@ -8,6 +8,7 @@ import { SegmentedListSelect } from '@/components/presentation/foundation/segmen
 import {
   Backend,
   backendFeatureNameKey,
+  backendUrlIsInsecure,
   backendUrlIsValid,
   BackendKind,
   normalizeBackendUrl,
@@ -206,7 +207,11 @@ function BackendEditor({ backend }: { backend: Backend }) {
           autoCapitalize="none"
           keyboardType="url"
         />
-        <HelperText type="error">{urlError}</HelperText>
+        {!urlError && backendUrlIsInsecure(backend.url) ? (
+          <HelperText type="info">{t('backends.url.insecure.message')}</HelperText>
+        ) : (
+          <HelperText type="error">{urlError}</HelperText>
+        )}
       </FormRow>
 
       <SegmentedGroup>

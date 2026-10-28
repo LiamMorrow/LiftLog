@@ -60,6 +60,7 @@ export const preferenceRegistry = {
   useImperialUnits: pref({ default: false, codec: boolCodec }),
   showBodyweight: pref({ default: true, codec: boolCodec }),
   showFeed: pref({ default: true, codec: boolCodec }),
+  showAccomplishments: pref({ default: true, codec: boolCodec }),
   restNotifications: pref({ default: true, codec: boolCodec }),
   restTimersEnabled: pref({ default: true, codec: boolCodec }),
   crashReportsEnabled: pref({ default: true, codec: boolCodec }),

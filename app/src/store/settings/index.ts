@@ -102,6 +102,7 @@ export const {
   setKeepScreenAwakeDuringWorkout,
   setExportToHealthAggregator,
   setShowPostWorkoutSummary,
+  setShowAccomplishments,
   setTrueBlackDarkTheme,
   setThemeMode,
 } = preferenceSetters;

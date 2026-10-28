@@ -7,11 +7,11 @@ export const seedBackendAssignmentsDataMigration = 'SEED_BACKEND_ASSIGNMENTS';
 const servedByUs: BackendFeature[] = ['feed', 'aiPlanner'];
 
 export async function seedBackendAssignments(db: ExpoSQLiteDatabase) {
-  await db.transaction(async (tx) => {
-    await tx
-      .insert(backendAssignmentsSchema)
+  db.transaction((tx) => {
+    tx.insert(backendAssignmentsSchema)
       .values(servedByUs.map((feature) => ({ feature, backendId: builtInBackendId })))
-      .onConflictDoNothing();
-    await tx.insert(dataMigrationsSchema).values({ id: seedBackendAssignmentsDataMigration });
+      .onConflictDoNothing()
+      .run();
+    tx.insert(dataMigrationsSchema).values({ id: seedBackendAssignmentsDataMigration }).run();
   });
 }

@@ -53,7 +53,7 @@ appId: com.limajuice.liftlog
     commands:
       - back
 
-# It shows up in History with the logged weight, below the streak card and the calendar
+# It shows up in History with the logged weight, below the calendar
 - tapOn: 'History'
 - assertVisible:
     id: 'session-summary-title'

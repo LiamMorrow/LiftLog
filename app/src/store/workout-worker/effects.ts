@@ -1,11 +1,13 @@
 import { setRestTimersEnabled } from '@/store/settings';
 import {
   deleteStoredSession,
+  closeSession,
+  openSession,
   putStoredSession,
   selectActiveSession,
   setActiveSessionId,
-  setStoredSessions,
   updateStoredSession,
+  upsertStoredSessions,
 } from '@/store/stored-sessions';
 import { AddEffectFn } from '@/store/store';
 import {
@@ -23,7 +25,9 @@ const sessionMutations = [
   putStoredSession,
   updateStoredSession,
   deleteStoredSession,
-  setStoredSessions,
+  openSession,
+  closeSession,
+  upsertStoredSessions,
 ];
 
 export function applyWorkoutWorkerEffects(addEffect: AddEffectFn) {

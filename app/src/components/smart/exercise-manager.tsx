@@ -1,6 +1,6 @@
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, View } from 'react-native';
 import { Icon, List, TextInput } from 'react-native-paper';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
@@ -24,10 +24,9 @@ import { showSnackbar } from '@/store/app';
 import { useMountEffect } from '@/hooks/useMountEffect';
 import ExerciseMuscleSelector from '@/components/presentation/workout-editor/exercise-muscle-selector';
 import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
-import { LegendList } from '@legendapp/list';
+import { LegendList } from '@legendapp/list/react-native';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import { translateExerciseMeta } from '@/utils/exercise-meta';
-import { HeaderHeightContext } from 'expo-router/react-navigation';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function ExerciseListItem({
@@ -129,8 +128,6 @@ export default function ExerciseManager() {
     setFilteredExerciseIds(Object.keys(exercises));
   });
   const insets = useSafeAreaInsets();
-  const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
-  const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
   const [floatingBottomSize, setFloatingBottomSize] = useState(0);
   const bottomInsetHeight = floatingBottomSize + (Platform.select({ ios: insets.bottom }) ?? 0);
 
@@ -184,8 +181,7 @@ export default function ExerciseManager() {
       <LegendList
         onScroll={handleScroll}
         contentContainerStyle={{
-          insetBlockStart: topInsetHeight,
-          insetBlockEnd: bottomInsetHeight,
+          paddingBottom: bottomInsetHeight,
         }}
         style={{ flex: 1 }}
         data={flatListItems}

@@ -19,13 +19,17 @@ import WeightedExercise from '@/components/presentation/workout/weighted/weighte
 import WeightDisplay from '@/components/presentation/foundation/editors/weight-display';
 import BigNumber from 'bignumber.js';
 import RestTimer from '@/components/presentation/workout/rest-timer';
+import { FloatingPane } from '@/components/presentation/workout/floating-pane';
+import { CheerBanner } from '@/components/smart/cheer-banner';
+import { useArrivingCheers } from '@/hooks/useArrivingCheers';
 import { ReactNode } from 'react';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { getSessionExerciseEditorHref } from '@/components/smart/session-exercise-editor';
 import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
 import { useRouter } from 'expo-router';
-import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
+import { useAppSelector } from '@/store';
+import { readPreviousExercises } from '@/db/sessions';
+import { useSessionsQuery } from '@/hooks/useSessionsQuery';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import AddIcon from '@expo/material-symbols/add.xml';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
@@ -51,16 +55,25 @@ export default function SessionComponent(props: {
   showBodyweight: boolean;
   header?: ReactNode;
   openPostWorkoutSummary?: () => void;
+  /** Renders without its own scroll view, for a read-only session inside a page that scrolls. */
+  embedded?: boolean;
 }) {
   const { session, isActiveWorkout } = props;
   const { colors } = useAppTheme();
   const { t } = useTranslate();
   const { push } = useRouter();
   const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
+  const { cheers: arrivingCheers, dismiss: dismissCheers } = useArrivingCheers(
+    isActiveWorkout ? session.id : undefined,
+  );
   const dispatch = useDispatch();
   const isReadonly = !props.updateSession;
   const editableSessionId = isReadonly ? undefined : session.id;
-  const recentlyCompletedExercises = useAppSelectorWithArg(selectRecentlyCompletedExercises, session.id);
+  const progressionKeys = [...new Set(session.recordedExercises.map((x) => x.progressionKey()))];
+  const previousExercises = useSessionsQuery(
+    (db) => readPreviousExercises(db, progressionKeys, session.id),
+    `${session.id}:${progressionKeys.join('\n')}`,
+  );
   const addExercise = useAddExercise(editableSessionId);
   const updateSession = (reducer: (session: Session) => Session) => props.updateSession?.(reducer);
   const resetTimer = (time: OffsetDateTime | undefined) => {
@@ -151,9 +164,17 @@ export default function SessionComponent(props: {
             editableSessionId ? () => push(getSessionExerciseEditorHref(editableSessionId, index)) : undefined
           }
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
+          onMoveExerciseUp={
+            !isReadonly && index > 0 ? () => updateSession((s) => s.withExerciseMovedUp(index)) : undefined
+          }
+          onMoveExerciseDown={
+            !isReadonly && index < session.recordedExercises.length - 1
+              ? () => updateSession((s) => s.withExerciseMovedDown(index))
+              : undefined
+          }
           isReadonly={isReadonly}
           showPreviousButton={!!isActiveWorkout}
-          previousRecordedExercises={recentlyCompletedExercises(item.movementKey()) as RecordedWeightedExercise[]}
+          previousLineageExercise={previousExercises?.[item.progressionKey()] as RecordedWeightedExercise | undefined}
         />
       ))
       .with(P.instanceOf(RecordedCardioExercise), (item) => (
@@ -169,9 +190,17 @@ export default function SessionComponent(props: {
             editableSessionId ? () => push(getSessionExerciseEditorHref(editableSessionId, index)) : undefined
           }
           onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
+          onMoveExerciseUp={
+            !isReadonly && index > 0 ? () => updateSession((s) => s.withExerciseMovedUp(index)) : undefined
+          }
+          onMoveExerciseDown={
+            !isReadonly && index < session.recordedExercises.length - 1
+              ? () => updateSession((s) => s.withExerciseMovedDown(index))
+              : undefined
+          }
           isReadonly={isReadonly}
           showPreviousButton={!!isActiveWorkout}
-          previousRecordedExercises={recentlyCompletedExercises(item.movementKey()) as RecordedCardioExercise[]}
+          previousLineageExercise={previousExercises?.[item.progressionKey()] as RecordedCardioExercise | undefined}
         />
       ))
       .exhaustive();
@@ -216,8 +245,12 @@ export default function SessionComponent(props: {
     .otherwise(() => undefined);
 
   const showRestTimer = restTimersEnabled && isActiveWorkout && nextExercise && restBetweenSets && session.restTimer;
+  const cheerBanner = arrivingCheers.length ? (
+    <CheerBanner cheers={arrivingCheers} onDismiss={dismissCheers} />
+  ) : undefined;
   const restTimer = showRestTimer ? (
     <RestTimer
+      banner={cheerBanner}
       rest={restBetweenSets}
       startTime={session.restTimer.startedAt}
       pausedAt={session.restTimer.pausedAt}
@@ -231,6 +264,7 @@ export default function SessionComponent(props: {
   const runningCardio = isActiveWorkout ? session.runningCardioSet : undefined;
   const cardioTimer = runningCardio ? (
     <CardioTimer
+      banner={cheerBanner}
       set={runningCardio.set}
       onPersist={() =>
         updateCardioSet(runningCardio.exerciseIndex)(runningCardio.setIndex, (s) =>
@@ -246,11 +280,12 @@ export default function SessionComponent(props: {
   ) : undefined;
 
   const timer = cardioTimer ?? restTimer;
+  const accessory = timer ?? (cheerBanner ? <FloatingPane>{cheerBanner}</FloatingPane> : undefined);
 
   // The timer rides above the action, so the action stays put whether or not a rest is running.
   const floatingBottomContainer = isReadonly ? null : (
     <PageActions
-      accessory={timer}
+      accessory={accessory}
       primaryExpanded={!timer}
       primary={{
         label: t('exercise.add.title'),
@@ -298,14 +333,20 @@ export default function SessionComponent(props: {
     </Card>
   );
 
-  return (
-    <FullHeightScrollView floatingChildren={floatingBottomContainer}>
+  const content = (
+    <>
       {props.header}
       {notesComponent}
       {emptyInfo}
       <ItemList items={session.recordedExercises} renderItem={renderItem} />
       {bodyweight}
       {workoutSummary}
-    </FullHeightScrollView>
+    </>
   );
+
+  if (props.embedded) {
+    return content;
+  }
+
+  return <FullHeightScrollView floatingChildren={floatingBottomContainer}>{content}</FullHeightScrollView>;
 }

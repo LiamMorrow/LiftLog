@@ -79,7 +79,7 @@ function FeedProfileForm({ identity, focusPublish }: { identity: FeedIdentity; f
         />
         <ListSwitch
           headline={t('feed.publish_plan.label')}
-          supportingText={t('feed.publish_plan.subtitle')}
+          supportingText={t('feed.publish_plan.friends.subtitle')}
           value={identity.publishPlan}
           onValueChange={(publishPlan) => updateProfile({ publishPlan })}
         />

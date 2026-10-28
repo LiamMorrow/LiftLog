@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { matchCardioTarget } from '@/models/blueprint-models';
 import { RecordedCardioExerciseSet } from '@/models/session-models';
 import { OffsetDateTime } from '@js-joda/core';
@@ -6,7 +6,7 @@ import { ViewStyle } from 'react-native';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { formatTimeSpan, TimerPane, TimerSegment } from '@/components/presentation/workout/timer-pane';
 import { CardioTimerControls } from '@/components/presentation/workout/cardio/cardio-timer-controls';
-import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
 import { getShortUnit, toMetres } from '@/utils/unit';
 import { useTranslate } from '@tolgee/react';
 import { ColorChoice } from '@/hooks/useAppTheme';
@@ -16,6 +16,7 @@ interface CardioTimerProps {
   /** Banks the elapsed time so far without stopping, so a killed app loses at most one interval. */
   onPersist: () => void;
   onStop: () => void;
+  banner?: ReactNode;
   style?: ViewStyle;
 }
 
@@ -25,7 +26,7 @@ const persistIntervalMs = 1000;
  * The clock for a running cardio set. Passing the target is the goal rather than a failure, so unlike
  * a rest it goes green and stays there rather than reddening, and it never stops itself.
  */
-export function CardioTimer({ set, onPersist, onStop, style }: CardioTimerProps) {
+export function CardioTimer({ set, onPersist, onStop, banner, style }: CardioTimerProps) {
   const { t } = useTranslate();
   const [jiggling, setJiggling] = useState(false);
 
@@ -58,11 +59,13 @@ export function CardioTimer({ set, onPersist, onStop, style }: CardioTimerProps)
         const reached = !!doneMetres && doneMetres.gte(targetMetres);
         const progress =
           doneMetres && targetMetres.gt(0) ? Math.min(1, doneMetres.dividedBy(targetMetres).toNumber()) : 0;
-        const done = set.distance ? localeFormatBigNumber(set.distance.value) + getShortUnit(set.distance.unit) : '-';
+        const done = set.distance
+          ? localeDisplayFormatBigNumber(set.distance.value) + getShortUnit(set.distance.unit)
+          : '-';
         return {
           reached,
           time: formatTimeSpan(elapsedMs),
-          status: `${done} / ${localeFormatBigNumber(target.value.value) + getShortUnit(target.value.unit)}`,
+          status: `${done} / ${localeDisplayFormatBigNumber(target.value.value) + getShortUnit(target.value.unit)}`,
           accent: reached ? 'green' : 'onSurfaceVariant',
           segments: [
             {
@@ -113,6 +116,7 @@ export function CardioTimer({ set, onPersist, onStop, style }: CardioTimerProps)
       accent={timerState.accent as ColorChoice}
       segments={timerState.segments}
       jiggling={jiggling}
+      banner={banner}
       style={style}
       controls={<CardioTimerControls onStop={onStop} />}
     />

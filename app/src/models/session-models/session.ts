@@ -6,7 +6,13 @@ import {
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
-import { SessionJSON, fromLocalDateJSON, toLocalDateJSON } from '@/models/storage/versions/latest';
+import {
+  SessionJSON,
+  fromLocalDateJSON,
+  fromOffsetDateTimeJSON,
+  toLocalDateJSON,
+  toOffsetDateTimeJSON,
+} from '@/models/storage/versions/latest';
 import { Weight, WeightUnit } from '@/models/weight';
 import { indexed } from '@/utils/enumerable';
 import { Duration, LocalDate, OffsetDateTime } from '@js-joda/core';
@@ -25,6 +31,8 @@ import { PotentialSet, RecordedWeightedExercise } from '@/models/session-models/
 import { RestTimer } from '@/models/session-models/rest-timer';
 import { IndexOutOfBoundsError } from '@/utils/index-out-of-bounds';
 
+export const freeformSessionName = 'Freeform Workout';
+
 export class Session {
   constructor(
     readonly id: string,
@@ -33,6 +41,7 @@ export class Session {
     readonly date: LocalDate,
     readonly bodyweight: Weight | undefined,
     readonly restTimer: RestTimer | undefined,
+    readonly finishedAt?: OffsetDateTime,
   ) {}
   get duration(): Duration | undefined {
     return this.lastExercise?.latestTime && this.firstExercise?.earliestTime
@@ -52,6 +61,7 @@ export class Session {
       fromLocalDateJSON(json.date),
       json.bodyweight ? Weight.fromJSON(json.bodyweight) : undefined,
       undefined,
+      json.finishedAt ? fromOffsetDateTimeJSON(json.finishedAt) : undefined,
     );
   }
 
@@ -80,7 +90,7 @@ export class Session {
     );
   }
 
-  withNoNilWeights(fallbackWeightUnit: WeightUnit): Session | undefined {
+  withNoNilWeights(fallbackWeightUnit: WeightUnit): Session {
     return this.with({
       recordedExercises: this.recordedExercises.map((re) =>
         re instanceof RecordedWeightedExercise
@@ -121,6 +131,7 @@ export class Session {
       'date' in other ? (other.date ?? this.date) : this.date,
       'bodyweight' in other ? other.bodyweight : this.bodyweight,
       'restTimer' in other ? other.restTimer : this.restTimer,
+      'finishedAt' in other ? other.finishedAt : this.finishedAt,
     );
   }
 
@@ -327,6 +338,36 @@ export class Session {
     });
   }
 
+  withExerciseMovedUp(exerciseIndex: number): Session {
+    return this.withExerciseMoved(exerciseIndex, exerciseIndex - 1);
+  }
+
+  withExerciseMovedDown(exerciseIndex: number): Session {
+    return this.withExerciseMoved(exerciseIndex, exerciseIndex + 1);
+  }
+
+  withExerciseMoved(exerciseIndex: number, newIndex: number): Session {
+    if (
+      exerciseIndex < 0 ||
+      exerciseIndex >= this.recordedExercises.length ||
+      newIndex < 0 ||
+      newIndex >= this.recordedExercises.length ||
+      exerciseIndex === newIndex
+    ) {
+      return this;
+    }
+    // Remove first, then re-insert at the target index: since removal shifts nothing before it,
+    // inserting at newIndex lands the item at its final position for moves in either direction.
+    const move = <T>(items: T[]): T[] =>
+      items.toSpliced(exerciseIndex, 1).toSpliced(newIndex, 0, items[exerciseIndex]!);
+    return this.with({
+      recordedExercises: move(this.recordedExercises),
+      blueprint: this.blueprint.with({
+        exercises: move(this.blueprint.exercises),
+      }),
+    });
+  }
+
   toJSON(): SessionJSON {
     return {
       version: 7,
@@ -335,6 +376,7 @@ export class Session {
       date: toLocalDateJSON(this.date),
       id: this.id,
       recordedExercises: this.recordedExercises.map((x) => x.toJSON()),
+      finishedAt: this.finishedAt ? toOffsetDateTimeJSON(this.finishedAt) : undefined,
     };
   }
 
@@ -343,7 +385,7 @@ export class Session {
       id: uuid(),
       date: date,
       bodyweight,
-      blueprint: EmptySession.blueprint.with({ name: 'Freeform Workout' }),
+      blueprint: EmptySession.blueprint.with({ name: freeformSessionName }),
     });
   }
 
@@ -365,6 +407,18 @@ export class Session {
 
   get isStarted(): boolean {
     return this.recordedExercises.some((x) => x.isStarted);
+  }
+
+  get startedAt(): OffsetDateTime | undefined {
+    return this.recordedExercises
+      .map((x) => x.earliestTime)
+      .filter((x) => x !== undefined)
+      .sort(TemporalComparer)
+      .at(0);
+  }
+
+  get completedSetCount(): number {
+    return this.recordedExercises.reduce((total, x) => total + x.completedSetCount, 0);
   }
 
   get runningCardioSet():
@@ -553,7 +607,7 @@ export class Session {
   }
 
   get isFreeform(): boolean {
-    return this.blueprint.name === 'Freeform Workout';
+    return this.blueprint.name === freeformSessionName;
   }
 }
 

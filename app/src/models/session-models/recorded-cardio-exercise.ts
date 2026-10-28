@@ -254,6 +254,10 @@ export class RecordedCardioExercise {
     return this.sets.some((x) => !!x.completionDateTime);
   }
 
+  get completedSetCount() {
+    return this.sets.filter((x) => !!x.completionDateTime).length;
+  }
+
   get latestTime(): OffsetDateTime | undefined {
     return this.sets
       .map((x) => x.completionDateTime)

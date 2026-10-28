@@ -81,5 +81,5 @@ describe the change and ask Liam to rebuild, then verify. JS-only edits to these
 
 ## Verify
 
-From `app/`: `npm run typecheck` and `npm run lint` (the react-compiler rule runs via eslint). Then look
+From `app/`: `npm run typecheck` and `npm run lint`. Then look
 at both platforms on device.

@@ -2,7 +2,7 @@ import { RecordedCardioExercise, RecordedCardioExerciseSet } from '@/models/sess
 import ExerciseSection from '@/components/presentation/workout/exercise-section';
 import { CardioTarget, Distance, DistanceUnit } from '@/models/blueprint-models';
 import { T, useTranslate } from '@tolgee/react';
-import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
 import { Duration, OffsetDateTime } from '@js-joda/core';
 import { useEffect, useState } from 'react';
 
@@ -27,7 +27,7 @@ import { Updater } from '@/utils/types';
 
 interface CardioExerciseProps {
   recordedExercise: RecordedCardioExercise;
-  previousRecordedExercises: RecordedCardioExercise[];
+  previousLineageExercise: RecordedCardioExercise | undefined;
   toStartNext: boolean;
   isReadonly: boolean;
   showPreviousButton: boolean;
@@ -37,6 +37,8 @@ interface CardioExerciseProps {
   onStartTimer: (setIndex: number) => void;
   onEditExercise: (() => void) | undefined;
   onRemoveExercise: () => void;
+  onMoveExerciseUp: (() => void) | undefined;
+  onMoveExerciseDown: (() => void) | undefined;
 }
 
 export function CardioExercise(props: CardioExerciseProps) {
@@ -45,13 +47,15 @@ export function CardioExercise(props: CardioExerciseProps) {
   return (
     <ExerciseSection
       recordedExercise={recordedExercise}
-      previousRecordedExercises={props.previousRecordedExercises}
+      previousLineageExercise={props.previousLineageExercise}
       toStartNext={props.toStartNext}
       isReadonly={props.isReadonly}
       showPreviousButton={props.showPreviousButton}
       updateExercise={updateExercise}
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
+      onMoveExerciseUp={props.onMoveExerciseUp}
+      onMoveExerciseDown={props.onMoveExerciseDown}
     >
       <View style={{ gap: spacing[4] }}>
         {recordedExercise.sets.map((set, setIndex) => (
@@ -139,7 +143,7 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
             isReadonly={isReadonly}
             value={set.incline}
             emptyValue={BigNumber(0)}
-            format={localeFormatBigNumber}
+            format={localeDisplayFormatBigNumber}
             label={t('exercise.incline.label')}
             testID="cardio-incline-tile"
             onSave={(incline) => updateSet((s) => s.with({ incline }))}
@@ -152,7 +156,7 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
             isReadonly={isReadonly}
             value={set.resistance}
             emptyValue={BigNumber(0)}
-            format={localeFormatBigNumber}
+            format={localeDisplayFormatBigNumber}
             label={t('exercise.resistance.label')}
             testID="cardio-resistance-tile"
             onSave={(resistance) => updateSet((s) => s.with({ resistance }))}
@@ -245,7 +249,7 @@ function CardioDistanceTile(props: {
       isReadonly={props.isReadonly}
       value={props.distance}
       emptyValue={props.emptyValue}
-      format={(distance) => localeFormatBigNumber(distance.value) + getShortUnit(distance.unit)}
+      format={(distance) => localeDisplayFormatBigNumber(distance.value) + getShortUnit(distance.unit)}
       label={t('exercise.distance.label')}
       testID="cardio-distance-tile"
       onSave={props.onSave}
@@ -297,7 +301,7 @@ function CardioTargetHandler(props: { target: CardioTarget }) {
       </Text>
       <Text variant="bodyLarge" style={{ color: colors.primary }}>
         {props.target.type === 'distance'
-          ? localeFormatBigNumber(props.target.value.value) + getShortUnit(props.target.value.unit)
+          ? localeDisplayFormatBigNumber(props.target.value.value) + getShortUnit(props.target.value.unit)
           : formatDuration(props.target.value)}
       </Text>
     </View>

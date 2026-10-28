@@ -9,10 +9,17 @@ import type {
 import type { ProgramBlueprintJSON } from '@/models/storage/versions/latest/blueprint';
 import type { SessionJSON } from '@/models/storage/versions/latest/session';
 
+export interface PreviousAesKeyJSON {
+  key: AesKeyJSON;
+  supersededAt: InstantJSON;
+}
+
 export interface FeedIdentityJSON {
+  version: 2;
   id: string;
   lookup: string;
   aesKey: AesKeyJSON;
+  previousAesKeys: PreviousAesKeyJSON[];
   rsaKeyPair: RsaKeyPairJSON;
   password: string;
   name: string | undefined;
@@ -21,33 +28,19 @@ export interface FeedIdentityJSON {
   publishWorkouts: boolean;
 }
 
-export interface PendingFeedUserJSON {
-  type: 'PendingFeedUser';
-  id: string;
-  publicKey: RsaPublicKeyJSON;
-  name: string | undefined;
-}
+export type FriendStatusJSON = 'incoming' | 'pending' | 'friend' | 'legacyFollowing' | 'legacyFollower';
 
-export interface FollowerFeedUserJSON {
-  type: 'FollowerFeedUser';
-  id: string;
-  publicKey: RsaPublicKeyJSON;
-  name: string | undefined;
-  followSecret: string;
-}
-
-export interface FollowedFeedUserJSON {
-  version: 3;
-  type: 'FollowedFeedUser';
+export interface FriendJSON {
   id: string;
   publicKey: RsaPublicKeyJSON;
   name: string | undefined;
   currentPlan: ProgramBlueprintJSON | undefined;
-  aesKey: AesKeyJSON;
-  followSecret: string;
+  status: FriendStatusJSON;
+  theirKeys: AesKeyJSON[];
+  theirKeysSentAt: InstantJSON | undefined;
+  theirSecret: string | undefined;
+  mySecret: string | undefined;
 }
-
-export type FeedUserJSON = PendingFeedUserJSON | FollowedFeedUserJSON | FollowerFeedUserJSON;
 
 interface UserEventBaseJSON {
   userId: string;
@@ -67,7 +60,12 @@ export interface RemovedSessionUserEventJSON extends UserEventBaseJSON {
   sessionId: string;
 }
 
-export type UserEventJSON = SessionUserEventJSON | RemovedSessionUserEventJSON;
+export interface LiveSessionUserEventJSON extends UserEventBaseJSON {
+  type: 'LiveSessionUserEvent';
+  session: SessionJSON;
+}
+
+export type UserEventJSON = SessionUserEventJSON | RemovedSessionUserEventJSON | LiveSessionUserEventJSON;
 
 interface InboxMessageBaseJSON<TType extends string, T> {
   senderUserId: string;
@@ -113,6 +111,24 @@ export interface ReactionJSON {
   reactedAt: InstantJSON;
 }
 
+export interface InboxDeliveryJSON {
+  messageId: string;
+  sentAt: InstantJSON;
+}
+
+export interface FriendRequestJSON {
+  name: string | undefined;
+}
+
+export interface FriendKeysJSON {
+  aesKeys: AesKeyJSON[];
+  followSecret: string;
+}
+
+export type FriendRejectJSON = Record<string, never>;
+
+export type UnfriendJSON = Record<string, never>;
+
 export type FollowRequestInboxMessageJSON = InboxMessageBaseJSON<'FollowRequest', FollowRequestJSON>;
 export type FollowResponseInboxMessageJSON = InboxMessageBaseJSON<'FollowResponse', FollowResponseJSON>;
 export type UnfollowNotificationInboxMessageJSON = InboxMessageBaseJSON<
@@ -120,12 +136,20 @@ export type UnfollowNotificationInboxMessageJSON = InboxMessageBaseJSON<
   UnfollowNotificationJSON
 >;
 export type ReactionInboxMessageJSON = InboxMessageBaseJSON<'Reaction', ReactionJSON>;
+export type FriendRequestInboxMessageJSON = InboxMessageBaseJSON<'FriendRequest', FriendRequestJSON>;
+export type FriendKeysInboxMessageJSON = InboxMessageBaseJSON<'FriendKeys', FriendKeysJSON>;
+export type FriendRejectInboxMessageJSON = InboxMessageBaseJSON<'FriendReject', FriendRejectJSON>;
+export type UnfriendInboxMessageJSON = InboxMessageBaseJSON<'Unfriend', UnfriendJSON>;
 
 export type InboxMessageJSON =
   | FollowRequestInboxMessageJSON
   | FollowResponseInboxMessageJSON
   | UnfollowNotificationInboxMessageJSON
-  | ReactionInboxMessageJSON;
+  | ReactionInboxMessageJSON
+  | FriendRequestInboxMessageJSON
+  | FriendKeysInboxMessageJSON
+  | FriendRejectInboxMessageJSON
+  | UnfriendInboxMessageJSON;
 
 /** A cheer someone sent you. Only ever visible to the author of the cheered workout. */
 export interface ReceivedReactionJSON {

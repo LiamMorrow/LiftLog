@@ -35,6 +35,9 @@
     },
     "bodyweight": {
       "$ref": "./Weight.json"
+    },
+    "finishedAt": {
+      "$ref": "./OffsetDateTime.json"
     }
   },
   "required": [
