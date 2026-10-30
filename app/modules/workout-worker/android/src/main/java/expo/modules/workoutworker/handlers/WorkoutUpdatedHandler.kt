@@ -316,11 +316,12 @@ class WorkoutUpdatedHandler(
         return if (min == max) "$max" else "$min-$max"
     }
 
-    // Mirrors WeightedExerciseBlueprint.repsTargetForSet on the JS side, including its fall back to
-    // the last target when the index runs past the planned list.
+    // Mirrors RecordedWeightedExercise.repsTargetForSet on the JS side: the session's own target wins,
+    // falling back to the blueprint (and its last target when the index runs past the planned list).
     private fun targetFor(exercise: RecordedWeightedExercise, setIndex: Int): String {
         val plannedSets = exercise.blueprint.plannedSets
-        val target = (plannedSets.getOrNull(setIndex) ?: plannedSets.lastOrNull())?.reps ?: return ""
+        val target = (exercise.potentialSets.getOrNull(setIndex)?.target
+            ?: plannedSets.getOrNull(setIndex) ?: plannedSets.lastOrNull())?.reps ?: return ""
         return formatRepsTarget(target.min, target.max)
     }
 
