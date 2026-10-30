@@ -9,9 +9,7 @@ import { I18nManager, View, ViewStyle } from 'react-native';
 import { ActivityDayCell, TILE_HEIGHT } from '@/components/presentation/calendar/activity-day-cell';
 import { ActivityWeekCell } from '@/components/presentation/calendar/activity-week-cell';
 
-/** Keeps every row's cells aligned under one another regardless of how long the names are. */
-const LABEL_WIDTH = 64;
-const TRAILING_WIDTH = 72;
+const LEADING_WIDTH = 32;
 
 export type ActivityDensity = 'month' | 'week';
 
@@ -26,7 +24,7 @@ interface ActivityCalendarProps {
   header?: ReactNode;
   footer?: ReactNode;
   onCellPress?: (cell: ActivityCell) => void;
-  renderRowTrailing?: (row: ActivityRow) => ReactNode;
+  renderRowLeading?: (row: ActivityRow) => ReactNode;
 }
 
 export function ActivityCalendar({
@@ -38,7 +36,7 @@ export function ActivityCalendar({
   header,
   footer,
   onCellPress,
-  renderRowTrailing,
+  renderRowLeading,
 }: ActivityCalendarProps) {
   const formatDate = useFormatDate();
 
@@ -52,47 +50,41 @@ export function ActivityCalendar({
         getDateOnDay(DayOfWeek.of((((firstDayOfWeek ?? DayOfWeek.MONDAY).ordinal() + offset) % 7) + 1)),
       );
 
-  const cellGap = isWeek ? spacing[1] : spacing[2];
+  const cellGap = spacing[2];
 
   return (
     <View style={{ alignItems: 'stretch', gap: cellGap }}>
       {header}
 
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
-        {isWeek && <View style={{ width: LABEL_WIDTH }} />}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
+        {isWeek && renderRowLeading && <View style={{ width: LEADING_WIDTH }} />}
         <ForceLTRRow style={{ flex: 1, gap: cellGap }}>
-          {headerDates.map((date, index) => (
-            <SurfaceText
-              key={index}
-              font="text-xs"
-              color="onSurfaceVariant"
-              style={{ flex: 1, textAlign: 'center', letterSpacing: 0.6 }}
-            >
-              {formatDate(date, { weekday: 'narrow' }).toUpperCase()}
-            </SurfaceText>
-          ))}
+          {headerDates.map((date, index) => {
+            const isToday = isWeek && !!rows[0]?.cells[index]?.isToday;
+            return (
+              <SurfaceText
+                key={index}
+                font="text-xs"
+                weight={isToday ? 'bold' : undefined}
+                color={isToday ? 'onSurface' : 'onSurfaceVariant'}
+                style={{ flex: 1, textAlign: 'center', letterSpacing: 0.6 }}
+              >
+                {formatDate(date, { weekday: 'narrow' }).toUpperCase()}
+              </SurfaceText>
+            );
+          })}
         </ForceLTRRow>
-        {isWeek && renderRowTrailing && <View style={{ width: TRAILING_WIDTH }} />}
       </View>
 
       {isWeek
         ? rows.map((row) => (
-            <View key={row.key} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
-              <SurfaceText font="text-sm" weight="bold" numberOfLines={1} style={{ width: LABEL_WIDTH }}>
-                {row.label}
-              </SurfaceText>
+            <View key={row.key} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
+              {renderRowLeading && <View style={{ width: LEADING_WIDTH }}>{renderRowLeading(row)}</View>}
               <ForceLTRRow style={{ flex: 1, gap: cellGap }}>
                 {row.cells.map((cell, columnIndex) => (
                   <ActivityWeekCell key={columnIndex} cell={cell} />
                 ))}
               </ForceLTRRow>
-              {renderRowTrailing && (
-                <View style={{ width: TRAILING_WIDTH }}>
-                  <SurfaceText font="text-xs" color="onSurfaceVariant" numberOfLines={1}>
-                    {renderRowTrailing(row)}
-                  </SurfaceText>
-                </View>
-              )}
             </View>
           ))
         : (monthBody ?? <ActivityMonthRows rows={rows} selectedDate={selectedDate} onCellPress={onCellPress} />)}

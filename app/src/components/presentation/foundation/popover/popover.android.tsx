@@ -2,6 +2,7 @@ import { PopoverProps } from './popover-props';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useEffect, useState } from 'react';
 import { BackHandler, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { Portal } from 'react-native-paper';
 import Animated, { cubicBezier } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -38,7 +39,7 @@ function place(anchor: Frame, width: number, height: number, windowWidth: number
 }
 
 /**
- * A small card pointing at its trigger, which is measured each time it calls `open`. It sits above the trigger when
+ * A small card pointing at its trigger, which is located each time it calls `open`. It sits above the trigger when
  * there is room, below it otherwise. Tapping anywhere else or pressing back closes it.
  */
 export function Popover({ trigger, children, accessibilityLabel, width = 300 }: PopoverProps) {
@@ -50,10 +51,25 @@ export function Popover({ trigger, children, accessibilityLabel, width = 300 }: 
   const [height, setHeight] = useState<number>();
   const isOpen = anchor !== undefined;
 
-  const open = () =>
+  const [touchedOrigin, setTouchedOrigin] = useState<{ x: number; y: number }>();
+  const recordTouch = Gesture.Manual()
+    .runOnJS(true)
+    .onTouchesDown((event) => {
+      const touch = event.allTouches[0];
+      setTouchedOrigin(touch && { x: touch.absoluteX - touch.x, y: touch.absoluteY - touch.y });
+    });
+
+  const open = () => {
+    setTouchedOrigin(undefined);
     triggerView?.measure((_x, _y, frameWidth, frameHeight, pageX, pageY) =>
-      setAnchor({ x: pageX, y: pageY, width: frameWidth, height: frameHeight }),
+      setAnchor({
+        x: touchedOrigin?.x ?? pageX,
+        y: touchedOrigin?.y ?? pageY,
+        width: frameWidth,
+        height: frameHeight,
+      }),
     );
+  };
   const close = () => {
     setAnchor(undefined);
     setHeight(undefined);
@@ -77,9 +93,11 @@ export function Popover({ trigger, children, accessibilityLabel, width = 300 }: 
 
   return (
     <>
-      <View ref={setTriggerView} collapsable={false} style={{ maxWidth: '100%' }}>
-        {trigger(open)}
-      </View>
+      <GestureDetector gesture={recordTouch}>
+        <View ref={setTriggerView} collapsable={false} style={{ maxWidth: '100%' }}>
+          {trigger(open)}
+        </View>
+      </GestureDetector>
       {isOpen && (
         <Portal>
           <Pressable style={StyleSheet.absoluteFill} onPress={close} accessible={false} />

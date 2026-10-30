@@ -1,4 +1,4 @@
-import { rounding, useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import { ActivityCell } from '@/store/activity';
 import { memo } from 'react';
 import { View } from 'react-native';
@@ -20,13 +20,9 @@ export const ActivityWeekCell = memo(function ActivityWeekCell({ cell }: Activit
     <View
       style={{
         flex: 1,
-        aspectRatio: 1,
-        borderRadius: rounding.segmentedBetweenRadius * 3,
-        // A rest day must never read as *heavier* than a light training day, so the empty track sits
-        // below the faintest step of the ramp rather than above it.
-        backgroundColor: cell.level === 0 ? colors.surface : background,
-        borderColor: cell.isToday ? colors.primary : 'transparent',
-        borderWidth: cell.isToday ? 2 : 0,
+        height: 32,
+        borderRadius: 10,
+        backgroundColor: cell.level === 0 ? colors.surfaceContainer : background,
       }}
     />
   );

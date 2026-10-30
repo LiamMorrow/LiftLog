@@ -27,8 +27,10 @@ export default function SessionSummary({
             key={index}
             style={
               showSets && {
+                borderTopWidth: index === 0 ? 1 : 0,
                 borderBottomWidth: 1,
                 borderColor: colorScheme === 'light' ? colors.outlineVariant : colors.outline,
+                paddingTop: index === 0 ? spacing[2] : 0,
                 paddingBottom: spacing[2],
               }
             }
