@@ -38,5 +38,3457 @@
   "Alternate Hammer Curl": {
     "name": "Curl a Martello Alternato",
     "instructions": "Posizionati in piedi con il torso dritto e un manubrio in ciascuna mano con le braccia distese. I gomiti dovrebbero essere vicini al torso.\nI palmi delle tue mani dovrebbero essere rivolti verso il torso. Questa è la posizione iniziale.\nMentre mantieni la parte superiore del braccio ferma, solleva il peso destro contraendo il bicipite mentre espiri. Continua il movimento finché il bicipite è completamente contratto e il manubrio è al livello della spalla. Mantieni la posizione contratta per un secondo spremendo il bicipite. Nota: si dovrebbe muovere solo l'avambraccio.\nLentamente riporta il manubrio alla posizione iniziale mentre inspiri.\nRipeti il movimento con la mano sinistra. Questo è una ripetizione.\nContinua ad alternare i movimenti in questa maniera per il numero raccomandato di ripetizioni."
+  },
+  "Triceps Pushdown - Rope Attachment": {
+    "name": "",
+    "instructions": ""
+  },
+  "Smith Machine Bench Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Spider Crawl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Spider Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Split Snatch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Cable Chest Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Cable Lift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Supine Chest Throw": {
+    "name": "",
+    "instructions": ""
+  },
+  "Trap Bar Deadlift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Upright Row - With Bands": {
+    "name": "",
+    "instructions": ""
+  },
+  "Upward Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "V-Bar Pulldown": {
+    "name": "",
+    "instructions": ""
+  },
+  "Weighted Bench Dip": {
+    "name": "",
+    "instructions": ""
+  },
+  "Weighted Crunches": {
+    "name": "",
+    "instructions": ""
+  },
+  "Weighted Jump Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Weighted Pull Ups": {
+    "name": "",
+    "instructions": ""
+  },
+  "Wide-Grip Decline Barbell Pullover": {
+    "name": "",
+    "instructions": ""
+  },
+  "Wide-Grip Lat Pulldown": {
+    "name": "",
+    "instructions": ""
+  },
+  "Wide-Grip Pulldown Behind The Neck": {
+    "name": "",
+    "instructions": ""
+  },
+  "Wide-Grip Rear Pull-Up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Wide-Grip Standing Barbell Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Wide Stance Barbell Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Wide Stance Stiff Legs": {
+    "name": "",
+    "instructions": ""
+  },
+  "Wind Sprints": {
+    "name": "",
+    "instructions": ""
+  },
+  "Alternating Kettlebell Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Foot-SMR": {
+    "name": "",
+    "instructions": ""
+  },
+  "Forward Drag with Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Frankenstein Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Smith Machine Calf Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Smith Machine One-Arm Upright Row": {
+    "instructions": "",
+    "name": ""
+  },
+  "Smith Machine Reverse Calf Raises": {
+    "instructions": "",
+    "name": ""
+  },
+  "Smith Machine Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Smith Machine Stiff-Legged Deadlift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Smith Machine Upright Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Snatch Balance": {
+    "name": "",
+    "instructions": ""
+  },
+  "Speed Box Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Speed Squats": {
+    "name": "",
+    "instructions": ""
+  },
+  "Spinal Stretch": {
+    "instructions": "",
+    "name": ""
+  },
+  "Squat with Chains": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Biceps Cable Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Biceps Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Palms-In Dumbbell Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Smith Machine Incline Bench Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Palms-Up Barbell Behind The Back Wrist Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Pelvic Tilt": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Toe Touches": {
+    "instructions": "",
+    "name": ""
+  },
+  "Stomach Vacuum": {
+    "instructions": "",
+    "name": ""
+  },
+  "Svend Press": {
+    "instructions": "",
+    "name": ""
+  },
+  "T-Bar Row with Handle": {
+    "name": "",
+    "instructions": ""
+  },
+  "Tate Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Torso Rotation": {
+    "instructions": "",
+    "name": ""
+  },
+  "Trail Running/Walking": {
+    "name": "",
+    "instructions": ""
+  },
+  "Triceps Overhead Extension with Rope": {
+    "instructions": "",
+    "name": ""
+  },
+  "Triceps Pushdown": {
+    "instructions": "",
+    "name": ""
+  },
+  "Upright Cable Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Weighted Ball Hyperextension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Weighted Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "World's Greatest Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Wrist Circles": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Ab Rollout - On Knees": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Shrug": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bench Dips": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bicycling": {
+    "name": "",
+    "instructions": ""
+  },
+  "Box Squat with Chains": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bradford/Rocky Presses": {
+    "instructions": "",
+    "name": ""
+  },
+  "Butt-Ups": {
+    "name": "",
+    "instructions": ""
+  },
+  "Calf Raises - With Bands": {
+    "name": "",
+    "instructions": ""
+  },
+  "Chin To Chest Stretch": {
+    "instructions": "",
+    "name": ""
+  },
+  "Cross Body Hammer Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cross Over - With Bands": {
+    "name": "",
+    "instructions": ""
+  },
+  "Crucifix": {
+    "name": "",
+    "instructions": ""
+  },
+  "Decline Close-Grip Bench To Skull Crusher": {
+    "name": "",
+    "instructions": ""
+  },
+  "Decline Crunch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Decline Dumbbell Bench Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Double Kettlebell Push Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dynamic Chest Stretch": {
+    "instructions": "",
+    "name": ""
+  },
+  "EZ-Bar Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Farmer's Walk": {
+    "name": "",
+    "instructions": ""
+  },
+  "Front Cable Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Front Cone Hops (or hurdle hops)": {
+    "name": "",
+    "instructions": ""
+  },
+  "Hanging Pike": {
+    "name": "",
+    "instructions": ""
+  },
+  "Incline Dumbbell Bench With Palms Facing In": {
+    "name": "",
+    "instructions": ""
+  },
+  "Iron Cross": {
+    "instructions": "",
+    "name": ""
+  },
+  "Jogging, Treadmill": {
+    "name": "",
+    "instructions": ""
+  },
+  "Landmine 180's": {
+    "name": "",
+    "instructions": ""
+  },
+  "Leverage Shrug": {
+    "name": "",
+    "instructions": ""
+  },
+  "Linear 3-Part Start Technique": {
+    "name": "",
+    "instructions": ""
+  },
+  "Linear Acceleration Wall Drill": {
+    "name": "",
+    "instructions": ""
+  },
+  "Low Pulley Row To Neck": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying Supine Dumbbell Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Side Deadlift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Power Clean from Blocks": {
+    "name": "",
+    "instructions": ""
+  },
+  "Preacher Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Pullups": {
+    "name": "",
+    "instructions": ""
+  },
+  "Side to Side Box Shuffle": {
+    "name": "",
+    "instructions": ""
+  },
+  "Single-Leg Leg Extension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Leg Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Long Jump": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Low-Pulley Deltoid Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Military Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Cable Wood Chop": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Olympic Plate Hand Squeeze": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing One-Arm Dumbbell Curl Over Incline Bench": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Two-Arm Overhead Throw": {
+    "name": "",
+    "instructions": ""
+  },
+  "Step-up with Knee Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Step Mill": {
+    "name": "",
+    "instructions": ""
+  },
+  "Stiff-Legged Barbell Deadlift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Natural Glute Ham Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Straight-Arm Dumbbell Pullover": {
+    "name": "",
+    "instructions": ""
+  },
+  "Straight-Arm Pulldown": {
+    "name": "",
+    "instructions": ""
+  },
+  "Straight Bar Bench Mid Rows": {
+    "name": "",
+    "instructions": ""
+  },
+  "Superman": {
+    "instructions": "",
+    "name": ""
+  },
+  "Hug A Ball": {
+    "name": "",
+    "instructions": ""
+  },
+  "Carioca Quick Step": {
+    "name": "",
+    "instructions": ""
+  },
+  "V-Bar Pullup": {
+    "instructions": "",
+    "name": ""
+  },
+  "Weighted Sissy Squat": {
+    "instructions": "",
+    "name": ""
+  },
+  "Smith Single-Leg Split Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Wrist Rotations with Straight Bar": {
+    "name": "",
+    "instructions": ""
+  },
+  "Front Dumbbell Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Squat with Plate Movers": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Lateral Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing One-Arm Cable Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Star Jump": {
+    "name": "",
+    "instructions": ""
+  },
+  "Squats - With Bands": {
+    "name": "",
+    "instructions": ""
+  },
+  "Stairmaster": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Alternating Dumbbell Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bent Over Two-Arm Long Bar Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bent Over Two-Dumbbell Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bottoms-Up Clean From The Hang Position": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Incline Triceps Extension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Seated Crunch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Calf Raise On A Dumbbell": {
+    "name": "",
+    "instructions": ""
+  },
+  "Chest Push with Run Release": {
+    "name": "",
+    "instructions": ""
+  },
+  "Clean Deadlift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Clean Pull": {
+    "name": "",
+    "instructions": ""
+  },
+  "Clock Push-Up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Close-Grip EZ-Bar Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cocoons": {
+    "name": "",
+    "instructions": ""
+  },
+  "Conan's Wheel": {
+    "name": "",
+    "instructions": ""
+  },
+  "Concentration Curls": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cross-Body Crunch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Deadlift with Chains": {
+    "name": "",
+    "instructions": ""
+  },
+  "Decline Dumbbell Flyes": {
+    "name": "",
+    "instructions": ""
+  },
+  "Decline Smith Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Deficit Deadlift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Double Kettlebell Alternating Hang Clean": {
+    "name": "",
+    "instructions": ""
+  },
+  "Double Kettlebell Jerk": {
+    "name": "",
+    "instructions": ""
+  },
+  "Drop Push": {
+    "name": "",
+    "instructions": ""
+  },
+  "Face Pull": {
+    "name": "",
+    "instructions": ""
+  },
+  "Front Barbell Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Front Barbell Squat To A Bench": {
+    "name": "",
+    "instructions": ""
+  },
+  "Front Box Jump": {
+    "name": "",
+    "instructions": ""
+  },
+  "Front Two-Dumbbell Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Full Range-Of-Motion Lat Pulldown": {
+    "name": "",
+    "instructions": ""
+  },
+  "Glute Ham Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Good Morning off Pins": {
+    "name": "",
+    "instructions": ""
+  },
+  "Gorilla Chin/Crunch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Groin and Back Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Hammer Curls": {
+    "name": "",
+    "instructions": ""
+  },
+  "Incline Cable Chest Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Incline Dumbbell Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Inverted Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kneeling Single-Arm High Pulley Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kneeling Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Latissimus Dorsi-SMR": {
+    "name": "",
+    "instructions": ""
+  },
+  "Leg-Over Floor Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Leg-Up Hamstring Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Leg Pull-In": {
+    "name": "",
+    "instructions": ""
+  },
+  "Leverage Chest Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Leverage Deadlift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Low Cable Triceps Extension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying Close-Grip Bar Curl On High Pulley": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying Close-Grip Barbell Triceps Extension Behind The Head": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying Crossover": {
+    "name": "",
+    "instructions": ""
+  },
+  "Machine Bicep Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Oblique Crunches": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Kettlebell Push Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Prone Manual Hamstring": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Barbell Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Rhomboids-SMR": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Bent-Over Two-Arm Dumbbell Triceps Extension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Dumbbell Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Flat Bench Leg Pull-In": {
+    "name": "",
+    "instructions": ""
+  },
+  "The Straddle": {
+    "name": "",
+    "instructions": ""
+  },
+  "Wide-Grip Barbell Bench Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Wide-Grip Decline Barbell Bench Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Alternate Heel Touchers": {
+    "name": "",
+    "instructions": ""
+  },
+  "Alternate Incline Dumbbell Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Alternating Floor Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Atlas Stones": {
+    "name": "",
+    "instructions": ""
+  },
+  "Axle Deadlift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cat Stretch": {
+    "instructions": "",
+    "name": ""
+  },
+  "Catch and Overhead Throw": {
+    "name": "",
+    "instructions": ""
+  },
+  "Chain Handle Extension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Chair Lower Back Stretch": {
+    "instructions": "",
+    "name": ""
+  },
+  "Chair Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Chair Upper Body Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Flutter Kicks": {
+    "name": "",
+    "instructions": ""
+  },
+  "Spell Caster": {
+    "name": "",
+    "instructions": ""
+  },
+  "Tricep Dumbbell Kickback": {
+    "name": "",
+    "instructions": ""
+  },
+  "Split Squat with Dumbbells": {
+    "name": "",
+    "instructions": ""
+  },
+  "Upper Back-Leg Grab": {
+    "name": "",
+    "instructions": ""
+  },
+  "Walking, Treadmill": {
+    "name": "",
+    "instructions": ""
+  },
+  "Weighted Sit-Ups - With Bands": {
+    "name": "",
+    "instructions": ""
+  },
+  "Windmills": {
+    "name": "",
+    "instructions": ""
+  },
+  "Yoke Walk": {
+    "name": "",
+    "instructions": ""
+  },
+  "Balance Board": {
+    "instructions": "",
+    "name": ""
+  },
+  "Barbell Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Hip Thrust": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Shoulder Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Squat To A Bench": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bear Crawl Sled Drags": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bench Press - With Bands": {
+    "instructions": "",
+    "name": ""
+  },
+  "Bent Over Barbell Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bent Over Dumbbell Rear Delt Raise With Head On Bench": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bent Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bodyweight Flyes": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bodyweight Mid Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Box Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Box Squat with Bands": {
+    "name": "",
+    "instructions": ""
+  },
+  "Butt Lift (Bridge)": {
+    "name": "",
+    "instructions": ""
+  },
+  "Butterfly": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Incline Pushdown": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Internal Rotation": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Iron Cross": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable One Arm Tricep Extension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Rear Delt Fly": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Rear Lunge": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Scaption": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Shrug": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Tricep Extension -Pronated Grip": {
+    "name": "",
+    "instructions": ""
+  },
+  "Elevated Cable Rows": {
+    "name": "",
+    "instructions": ""
+  },
+  "Elliptical Trainer": {
+    "name": "",
+    "instructions": ""
+  },
+  "External Rotation with Band": {
+    "name": "",
+    "instructions": ""
+  },
+  "External Rotation with Cable": {
+    "name": "",
+    "instructions": ""
+  },
+  "Flat Bench Leg Pull-In": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Dumbbell Calf Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Hammer Grip Incline DB Bench Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Hamstring-SMR": {
+    "name": "",
+    "instructions": ""
+  },
+  "Hang Snatch - Below Knees": {
+    "name": "",
+    "instructions": ""
+  },
+  "Hanging Bar Good Morning": {
+    "name": "",
+    "instructions": ""
+  },
+  "Incline Push-Up Wide": {
+    "name": "",
+    "instructions": ""
+  },
+  "Inverted Row with Straps": {
+    "name": "",
+    "instructions": ""
+  },
+  "Jefferson Squats": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lunge Sprint": {
+    "name": "",
+    "instructions": ""
+  },
+  "On-Your-Back Quad Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "One Arm Against Wall": {
+    "name": "",
+    "instructions": ""
+  },
+  "Overhead Triceps": {
+    "name": "",
+    "instructions": ""
+  },
+  "Pallof Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Parallel Bar Dip": {
+    "name": "",
+    "instructions": ""
+  },
+  "Push Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Triceps Bench Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Barbell Military Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Barbell Twist": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Dumbbell Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Palms-Down Barbell Wrist Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Shoulder Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Side Wrist Pull": {
+    "name": "",
+    "instructions": ""
+  },
+  "Knee Circles": {
+    "name": "",
+    "instructions": ""
+  },
+  "One Arm Dumbbell Preacher Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Around The Worlds": {
+    "name": "",
+    "instructions": ""
+  },
+  "Front Raise And Pullover": {
+    "name": "",
+    "instructions": ""
+  },
+  "Front Squat (Clean Grip)": {
+    "name": "",
+    "instructions": ""
+  },
+  "Knee Across The Body": {
+    "name": "",
+    "instructions": ""
+  },
+  "Sled Drag - Harness": {
+    "instructions": "",
+    "name": ""
+  },
+  "Sled Overhead Backward Walk": {
+    "name": "",
+    "instructions": ""
+  },
+  "Sled Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Snatch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Barbell Calf Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing One-Arm Dumbbell Triceps Extension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Suspended Split Squat": {
+    "instructions": "",
+    "name": ""
+  },
+  "Triceps Pushdown - V-Bar Attachment": {
+    "name": "",
+    "instructions": ""
+  },
+  "Upper Back Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Zercher Squats": {
+    "name": "",
+    "instructions": ""
+  },
+  "Zottman Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Zottman Preacher Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Band Assisted Pull-Up": {
+    "instructions": "",
+    "name": ""
+  },
+  "Barbell Curls Lying Against An Incline": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Step Ups": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Walking Lunge": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bench Press - Powerlifting": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bent-Arm Dumbbell Pullover": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bent Over One-Arm Long Bar Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Chest Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Crunch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Judo Flip": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Wrist Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Calf Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Calf Stretch Elbows Against Wall": {
+    "instructions": "",
+    "name": ""
+  },
+  "Calf Stretch Hands Against Wall": {
+    "name": "",
+    "instructions": ""
+  },
+  "Circus Bell": {
+    "instructions": "",
+    "name": ""
+  },
+  "Clean Shrug": {
+    "instructions": "",
+    "name": ""
+  },
+  "Clean and Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Clean from Blocks": {
+    "name": "",
+    "instructions": ""
+  },
+  "Close-Grip Barbell Bench Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Close-Grip EZ Bar Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Close-Grip Push-Up off of a Dumbbell": {
+    "name": "",
+    "instructions": ""
+  },
+  "Decline Barbell Bench Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Decline Oblique Crunch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Decline Push-Up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Lunges": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Lying Pronation": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Lying Rear Lateral Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Lying Supination": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Prone Incline Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Side Bend": {
+    "instructions": "",
+    "name": ""
+  },
+  "Flat Bench Lying Leg Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Floor Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Dumbbell Triceps Extension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Goblet Squat": {
+    "instructions": "",
+    "name": ""
+  },
+  "Incline Hammer Curls": {
+    "name": "",
+    "instructions": ""
+  },
+  "Incline Inner Biceps Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Janda Sit-Up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kettlebell Pass Between The Legs": {
+    "instructions": "",
+    "name": ""
+  },
+  "Kettlebell Pirate Ships": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lateral Cone Hops": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lateral Raise - With Bands": {
+    "name": "",
+    "instructions": ""
+  },
+  "Leg Extensions": {
+    "name": "",
+    "instructions": ""
+  },
+  "Leg Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Leverage High Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Leverage Incline Chest Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lower Back Curl": {
+    "instructions": "",
+    "name": ""
+  },
+  "Lying Dumbbell Tricep Extension": {
+    "instructions": "",
+    "name": ""
+  },
+  "Lying Triceps Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Machine Preacher Curls": {
+    "name": "",
+    "instructions": ""
+  },
+  "Machine Shoulder (Military) Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Middle Back Shrug": {
+    "name": "",
+    "instructions": ""
+  },
+  "Muscle Up": {
+    "instructions": "",
+    "name": ""
+  },
+  "Oblique Crunches - On The Floor": {
+    "name": "",
+    "instructions": ""
+  },
+  "Olympic Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Dumbbell Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm High-Pulley Cable Side Bends": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Kettlebell Para Press": {
+    "instructions": "",
+    "name": ""
+  },
+  "One-Arm Medicine Ball Slam": {
+    "instructions": "",
+    "name": ""
+  },
+  "One-Arm Open Palm Kettlebell Clean": {
+    "name": "",
+    "instructions": ""
+  },
+  "One Half Locust": {
+    "name": "",
+    "instructions": ""
+  },
+  "One Handed Hang": {
+    "name": "",
+    "instructions": ""
+  },
+  "One Knee To Chest": {
+    "name": "",
+    "instructions": ""
+  },
+  "One Leg Barbell Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Palms-Down Wrist Curl Over A Bench": {
+    "name": "",
+    "instructions": ""
+  },
+  "Palms-Up Barbell Wrist Curl Over A Bench": {
+    "name": "",
+    "instructions": ""
+  },
+  "Pelvic Tilt Into Bridge": {
+    "name": "",
+    "instructions": ""
+  },
+  "Power Snatch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Power Snatch from Blocks": {
+    "name": "",
+    "instructions": ""
+  },
+  "Power Stairs": {
+    "name": "",
+    "instructions": ""
+  },
+  "Press Sit-Up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Push Press - Behind the Neck": {
+    "instructions": "",
+    "name": ""
+  },
+  "Push Up to Side Plank": {
+    "name": "",
+    "instructions": ""
+  },
+  "Pushups (Close and Wide Hand Positions)": {
+    "name": "",
+    "instructions": ""
+  },
+  "Pyramid": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Front Barbell Raise Over Head": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Palm-In One-Arm Dumbbell Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Rack Pull with Bands": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Band Box Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Band Deadlift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Band Power Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Cable Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Crunch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Plate Curls": {
+    "name": "",
+    "instructions": ""
+  },
+  "Romanian Deadlift from Deficit": {
+    "name": "",
+    "instructions": ""
+  },
+  "Rope Crunch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Rope Jumping": {
+    "name": "",
+    "instructions": ""
+  },
+  "Scapular Pull-Up": {
+    "instructions": "",
+    "name": ""
+  },
+  "Scissor Kick": {
+    "name": "",
+    "instructions": ""
+  },
+  "Scissors Jump": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Biceps": {
+    "instructions": "",
+    "name": ""
+  },
+  "Seated Cable Shoulder Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Dumbbell Palms-Down Wrist Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Glute": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Hamstring": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Hamstring and Calf Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Head Harness Neck Resistance": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Overhead Stretch": {
+    "instructions": "",
+    "name": ""
+  },
+  "Shotgun Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Gastrocnemius Calf Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Hamstring and Calf Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Hip Circles": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Hip Flexors": {
+    "name": "",
+    "instructions": ""
+  },
+  "Plate Pinch": {
+    "name": "",
+    "instructions": ""
+  },
+  "On Your Side Quad Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Pull Through": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Band Bench Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Romanian Deadlift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Cable Rows": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Leg Tucks": {
+    "name": "",
+    "instructions": ""
+  },
+  "Single-Leg High Box Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Single-Leg Hop Progression": {
+    "name": "",
+    "instructions": ""
+  },
+  "Low Cable Crossover": {
+    "name": "",
+    "instructions": ""
+  },
+  "Arnold Dumbbell Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Backward Drag": {
+    "name": "",
+    "instructions": ""
+  },
+  "Band Skull Crusher": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Ab Rollout": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bent-Knee Hip Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Body-Up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Crossover": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Preacher Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Isometric Neck Exercise - Front And Back": {
+    "name": "",
+    "instructions": ""
+  },
+  "One Arm Dumbbell Bench Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Otis-Up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Overhead Slam": {
+    "name": "",
+    "instructions": ""
+  },
+  "Overhead Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Overhead Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Piriformis-SMR": {
+    "name": "",
+    "instructions": ""
+  },
+  "Push-Ups With Feet On An Exercise Ball": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Dumbbell Inner Biceps Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Palm-Up Barbell Wrist Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "See-Saw Press (Alternating Side Press)": {
+    "name": "",
+    "instructions": ""
+  },
+  "Side Laterals to Front Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Alternating Deltoid Raise": {
+    "instructions": "",
+    "name": ""
+  },
+  "Alternating Hang Clean": {
+    "name": "",
+    "instructions": ""
+  },
+  "Alternating Renegade Row": {
+    "instructions": "",
+    "name": ""
+  },
+  "Anterior Tibialis-SMR": {
+    "instructions": "",
+    "name": ""
+  },
+  "Anti-Gravity Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Arm Circles": {
+    "instructions": "",
+    "name": ""
+  },
+  "Atlas Stone Trainer": {
+    "name": "",
+    "instructions": ""
+  },
+  "Back Flyes - With Bands": {
+    "instructions": "",
+    "name": ""
+  },
+  "Chest And Front Of Shoulder Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Chest Push (multiple response)": {
+    "name": "",
+    "instructions": ""
+  },
+  "Elbow to Knee": {
+    "name": "",
+    "instructions": ""
+  },
+  "Fast Skipping": {
+    "name": "",
+    "instructions": ""
+  },
+  "Finger Curls": {
+    "name": "",
+    "instructions": ""
+  },
+  "Floor Press with Chains": {
+    "name": "",
+    "instructions": ""
+  },
+  "Freehand Jump Squat": {
+    "instructions": "",
+    "name": ""
+  },
+  "Frog Hops": {
+    "name": "",
+    "instructions": ""
+  },
+  "Frog Sit-Ups": {
+    "name": "",
+    "instructions": ""
+  },
+  "Front Incline Dumbbell Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Front Leg Raises": {
+    "name": "",
+    "instructions": ""
+  },
+  "Front Plate Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Front Squats With Two Kettlebells": {
+    "name": "",
+    "instructions": ""
+  },
+  "Heavy Bag Thrust": {
+    "name": "",
+    "instructions": ""
+  },
+  "High Cable Curls": {
+    "name": "",
+    "instructions": ""
+  },
+  "Hip Circles (prone)": {
+    "instructions": "",
+    "name": ""
+  },
+  "Hip Extension with Bands": {
+    "instructions": "",
+    "name": ""
+  },
+  "Hip Flexion with Band": {
+    "name": "",
+    "instructions": ""
+  },
+  "Hip Lift with Band": {
+    "name": "",
+    "instructions": ""
+  },
+  "Hug Knees To Chest": {
+    "name": "",
+    "instructions": ""
+  },
+  "Hurdle Hops": {
+    "instructions": "",
+    "name": ""
+  },
+  "Hyperextensions (Back Extensions)": {
+    "name": "",
+    "instructions": ""
+  },
+  "Incline Dumbbell Flyes - With A Twist": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kettlebell Turkish Get-Up (Lunge style)": {
+    "instructions": "",
+    "name": ""
+  },
+  "Kettlebell Turkish Get-Up (Squat style)": {
+    "instructions": "",
+    "name": ""
+  },
+  "Kettlebell Windmill": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kipping Muscle Up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Knee/Hip Raise On Parallel Bars": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kneeling Jump Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Looking At Ceiling": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying Bent Leg Groin": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying Cable Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying Cambered Barbell Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Machine Bench Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Medicine Ball Scoop Throw": {
+    "name": "",
+    "instructions": ""
+  },
+  "Neck-SMR": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Flat Bench Dumbbell Flye": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Kettlebell Military Press To The Side": {
+    "name": "",
+    "instructions": ""
+  },
+  "One Arm Chin-Up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Overhead Lat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Quadriceps-SMR": {
+    "name": "",
+    "instructions": ""
+  },
+  "Skating": {
+    "instructions": "",
+    "name": ""
+  },
+  "Sled Overhead Triceps Extension": {
+    "instructions": "",
+    "name": ""
+  },
+  "Sled Reverse Flye": {
+    "name": "",
+    "instructions": ""
+  },
+  "Sledgehammer Swings": {
+    "name": "",
+    "instructions": ""
+  },
+  "Smith Incline Shoulder Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Smith Machine Behind the Back Shrug": {
+    "name": "",
+    "instructions": ""
+  },
+  "Smith Machine Bent Over Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Smith Machine Close-Grip Bench Press": {
+    "instructions": "",
+    "name": ""
+  },
+  "Smith Machine Decline Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Smith Machine Hang Power Clean": {
+    "name": "",
+    "instructions": ""
+  },
+  "Smith Machine Hip Raise": {
+    "instructions": "",
+    "name": ""
+  },
+  "Smith Machine Leg Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Smith Machine Overhead Shoulder Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Smith Machine Pistol Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Snatch Deadlift": {
+    "instructions": "",
+    "name": ""
+  },
+  "Snatch Pull": {
+    "instructions": "",
+    "name": ""
+  },
+  "Split Clean": {
+    "name": "",
+    "instructions": ""
+  },
+  "Split Jerk": {
+    "name": "",
+    "instructions": ""
+  },
+  "Split Jump": {
+    "name": "",
+    "instructions": ""
+  },
+  "Split Squats": {
+    "name": "",
+    "instructions": ""
+  },
+  "Squat Jerk": {
+    "name": "",
+    "instructions": ""
+  },
+  "Squat with Bands": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Bent-Over One-Arm Dumbbell Triceps Extension": {
+    "instructions": "",
+    "name": ""
+  },
+  "Standing Bent-Over Two-Arm Dumbbell Triceps Extension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Bradford Press": {
+    "instructions": "",
+    "name": ""
+  },
+  "Standing Calf Raises": {
+    "name": "",
+    "instructions": ""
+  },
+  "Stiff-Legged Dumbbell Deadlift": {
+    "instructions": "",
+    "name": ""
+  },
+  "Straight Raises on Incline Bench": {
+    "name": "",
+    "instructions": ""
+  },
+  "Stride Jump Crossover": {
+    "name": "",
+    "instructions": ""
+  },
+  "Sumo Deadlift": {
+    "instructions": "",
+    "name": ""
+  },
+  "Sumo Deadlift with Bands": {
+    "instructions": "",
+    "name": ""
+  },
+  "Sumo Deadlift with Chains": {
+    "name": "",
+    "instructions": ""
+  },
+  "Supine One-Arm Overhead Throw": {
+    "name": "",
+    "instructions": ""
+  },
+  "Supine Two-Arm Overhead Throw": {
+    "name": "",
+    "instructions": ""
+  },
+  "Suspended Fallout": {
+    "instructions": "",
+    "name": ""
+  },
+  "Suspended Push-Up": {
+    "instructions": "",
+    "name": ""
+  },
+  "Suspended Reverse Crunch": {
+    "instructions": "",
+    "name": ""
+  },
+  "Suspended Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Thigh Abductor": {
+    "name": "",
+    "instructions": ""
+  },
+  "Thigh Adductor": {
+    "name": "",
+    "instructions": ""
+  },
+  "Tire Flip": {
+    "name": "",
+    "instructions": ""
+  },
+  "Toe Touchers": {
+    "name": "",
+    "instructions": ""
+  },
+  "Triceps Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Tuck Crunch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Two-Arm Dumbbell Preacher Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Two-Arm Kettlebell Clean": {
+    "name": "",
+    "instructions": ""
+  },
+  "Two-Arm Kettlebell Jerk": {
+    "name": "",
+    "instructions": ""
+  },
+  "Two-Arm Kettlebell Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Underhand Cable Pulldowns": {
+    "name": "",
+    "instructions": ""
+  },
+  "Upright Barbell Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Vertical Swing": {
+    "instructions": "",
+    "name": ""
+  },
+  "Weighted Ball Side Bend": {
+    "name": "",
+    "instructions": ""
+  },
+  "Wrist Roller": {
+    "instructions": "",
+    "name": ""
+  },
+  "Backward Medicine Ball Throw": {
+    "name": "",
+    "instructions": ""
+  },
+  "Band Good Morning": {
+    "instructions": "",
+    "name": ""
+  },
+  "Band Good Morning (Pull Through)": {
+    "name": "",
+    "instructions": ""
+  },
+  "Band Hip Adductions": {
+    "name": "",
+    "instructions": ""
+  },
+  "Band Pull Apart": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Bench Press - Medium Grip": {
+    "instructions": "",
+    "name": ""
+  },
+  "Barbell Deadlift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Full Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Glute Bridge": {
+    "instructions": "",
+    "name": ""
+  },
+  "Barbell Guillotine Bench Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Hack Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Incline Bench Press - Medium Grip": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Lunge": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Rear Delt Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Rollout from Bench": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Seated Calf Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Side Bend": {
+    "instructions": "",
+    "name": ""
+  },
+  "Barbell Side Split Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Battling Ropes": {
+    "name": "",
+    "instructions": ""
+  },
+  "Behind Head Chest Stretch": {
+    "instructions": "",
+    "name": ""
+  },
+  "Bench Jump": {
+    "instructions": "",
+    "name": ""
+  },
+  "Bench Press with Chains": {
+    "instructions": "",
+    "name": ""
+  },
+  "Bench Sprint": {
+    "instructions": "",
+    "name": ""
+  },
+  "Bent-Arm Barbell Pullover": {
+    "instructions": "",
+    "name": ""
+  },
+  "Bent Over Low-Pulley Side Lateral": {
+    "instructions": "",
+    "name": ""
+  },
+  "Bent Over Two-Dumbbell Row With Palms In": {
+    "instructions": "",
+    "name": ""
+  },
+  "Bicycling, Stationary": {
+    "name": "",
+    "instructions": ""
+  },
+  "Board Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Body Tricep Press": {
+    "instructions": "",
+    "name": ""
+  },
+  "Bodyweight Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bodyweight Walking Lunge": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bosu Ball Cable Crunch With Side Bends": {
+    "name": "",
+    "instructions": ""
+  },
+  "Box Jump (Multiple Response)": {
+    "instructions": "",
+    "name": ""
+  },
+  "Box Skip": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Deadlifts": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Hammer Curls - Rope Attachment": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Hip Adduction": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Lying Triceps Extension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Reverse Crunch": {
+    "instructions": "",
+    "name": ""
+  },
+  "Cable Rope Overhead Triceps Extension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Rope Rear-Delt Rows": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Russian Twists": {
+    "instructions": "",
+    "name": ""
+  },
+  "Cable Seated Lateral Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Shoulder Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cable Shrugs": {
+    "name": "",
+    "instructions": ""
+  },
+  "Calf-Machine Shoulder Shrug": {
+    "name": "",
+    "instructions": ""
+  },
+  "Calf Press On The Leg Press Machine": {
+    "name": "",
+    "instructions": ""
+  },
+  "Calves-SMR": {
+    "name": "",
+    "instructions": ""
+  },
+  "Car Deadlift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Car Drivers": {
+    "name": "",
+    "instructions": ""
+  },
+  "Chest Push (single response)": {
+    "instructions": "",
+    "name": ""
+  },
+  "Chest Push from 3 point stance": {
+    "instructions": "",
+    "name": ""
+  },
+  "Chest Stretch on Stability Ball": {
+    "name": "",
+    "instructions": ""
+  },
+  "Child's Pose": {
+    "instructions": "",
+    "name": ""
+  },
+  "Chin-Up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Clean": {
+    "instructions": "",
+    "name": ""
+  },
+  "Clean and Jerk": {
+    "instructions": "",
+    "name": ""
+  },
+  "Close-Grip Dumbbell Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Close-Grip EZ-Bar Curl with Band": {
+    "name": "",
+    "instructions": ""
+  },
+  "Close-Grip Front Lat Pulldown": {
+    "instructions": "",
+    "name": ""
+  },
+  "Close-Grip Standing Barbell Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Crunch - Hands Overhead": {
+    "name": "",
+    "instructions": ""
+  },
+  "Crunch - Legs On Exercise Ball": {
+    "name": "",
+    "instructions": ""
+  },
+  "Crunches": {
+    "name": "",
+    "instructions": ""
+  },
+  "Cuban Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dancer's Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dead Bug": {
+    "name": "",
+    "instructions": ""
+  },
+  "Deadlift with Bands": {
+    "name": "",
+    "instructions": ""
+  },
+  "Decline Dumbbell Triceps Extension": {
+    "instructions": "",
+    "name": ""
+  },
+  "Decline EZ Bar Triceps Extension": {
+    "instructions": "",
+    "name": ""
+  },
+  "Decline Reverse Crunch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Depth Jump Leap": {
+    "instructions": "",
+    "name": ""
+  },
+  "Dip Machine": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dips - Chest Version": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dips - Triceps Version": {
+    "name": "",
+    "instructions": ""
+  },
+  "Donkey Calf Raises": {
+    "name": "",
+    "instructions": ""
+  },
+  "Double Kettlebell Snatch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Double Kettlebell Windmill": {
+    "name": "",
+    "instructions": ""
+  },
+  "Double Leg Butt Kick": {
+    "name": "",
+    "instructions": ""
+  },
+  "Downward Facing Balance": {
+    "instructions": "",
+    "name": ""
+  },
+  "Drag Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Alternate Bicep Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Bench Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Bench Press with Neutral Grip": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Bicep Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Flyes": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Incline Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Incline Shoulder Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell One-Arm Shoulder Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell One-Arm Triceps Extension": {
+    "instructions": "",
+    "name": ""
+  },
+  "Dumbbell One-Arm Upright Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Seated Box Jump": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Seated One-Leg Calf Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Shoulder Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Squat To A Bench": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Step Ups": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dynamic Back Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "EZ-Bar Skullcrusher": {
+    "instructions": "",
+    "name": ""
+  },
+  "Elbow Circles": {
+    "instructions": "",
+    "name": ""
+  },
+  "Elbows Back": {
+    "name": "",
+    "instructions": ""
+  },
+  "Elevated Back Lunge": {
+    "name": "",
+    "instructions": ""
+  },
+  "Exercise Ball Crunch": {
+    "instructions": "",
+    "name": ""
+  },
+  "Exercise Ball Pull-In": {
+    "name": "",
+    "instructions": ""
+  },
+  "Extended Range One-Arm Kettlebell Floor Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "External Rotation": {
+    "name": "",
+    "instructions": ""
+  },
+  "Flat Bench Cable Flyes": {
+    "instructions": "",
+    "name": ""
+  },
+  "Flexor Incline Dumbbell Curls": {
+    "name": "",
+    "instructions": ""
+  },
+  "Floor Glute-Ham Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Gironda Sternum Chins": {
+    "instructions": "",
+    "name": ""
+  },
+  "Glute Kickback": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Dumbbell Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Dumbbell Reverse Curl": {
+    "instructions": "",
+    "name": ""
+  },
+  "Standing Dumbbell Straight-Arm Front Delt Raise Above Head": {
+    "name": "",
+    "instructions": ""
+  },
+  "Good Morning": {
+    "name": "",
+    "instructions": ""
+  },
+  "Groiners": {
+    "name": "",
+    "instructions": ""
+  },
+  "Hack Squat": {
+    "instructions": "",
+    "name": ""
+  },
+  "Hamstring Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Handstand Push-Ups": {
+    "name": "",
+    "instructions": ""
+  },
+  "Hang Clean": {
+    "instructions": "",
+    "name": ""
+  },
+  "Hang Clean - Below the Knees": {
+    "instructions": "",
+    "name": ""
+  },
+  "Hang Snatch": {
+    "instructions": "",
+    "name": ""
+  },
+  "Hanging Leg Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Heaving Snatch Balance": {
+    "instructions": "",
+    "name": ""
+  },
+  "Hyperextensions With No Hyperextension Bench": {
+    "name": "",
+    "instructions": ""
+  },
+  "IT Band and Glute Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Iliotibial Tract-SMR": {
+    "name": "",
+    "instructions": ""
+  },
+  "Incline Barbell Triceps Extension": {
+    "instructions": "",
+    "name": ""
+  },
+  "Incline Bench Pull": {
+    "instructions": "",
+    "name": ""
+  },
+  "Incline Cable Flye": {
+    "instructions": "",
+    "name": ""
+  },
+  "Incline Dumbbell Curl": {
+    "instructions": "",
+    "name": ""
+  },
+  "Incline Dumbbell Flyes": {
+    "instructions": "",
+    "name": ""
+  },
+  "Incline Push-Up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Incline Push-Up Close-Grip": {
+    "name": "",
+    "instructions": ""
+  },
+  "Incline Push-Up Depth Jump": {
+    "name": "",
+    "instructions": ""
+  },
+  "Incline Push-Up Medium": {
+    "name": "",
+    "instructions": ""
+  },
+  "Intermediate Groin Stretch": {
+    "instructions": "",
+    "name": ""
+  },
+  "Intermediate Hip Flexor and Quad Stretch": {
+    "instructions": "",
+    "name": ""
+  },
+  "Internal Rotation with Band": {
+    "name": "",
+    "instructions": ""
+  },
+  "Isometric Chest Squeezes": {
+    "instructions": "",
+    "name": ""
+  },
+  "Isometric Neck Exercise - Sides": {
+    "name": "",
+    "instructions": ""
+  },
+  "Isometric Wipers": {
+    "name": "",
+    "instructions": ""
+  },
+  "Jackknife Sit-Up": {
+    "instructions": "",
+    "name": ""
+  },
+  "Jerk Balance": {
+    "name": "",
+    "instructions": ""
+  },
+  "Jerk Dip Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kettlebell Arnold Press": {
+    "instructions": "",
+    "name": ""
+  },
+  "Kettlebell Dead Clean": {
+    "instructions": "",
+    "name": ""
+  },
+  "Kettlebell Figure 8": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kettlebell Hang Clean": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kettlebell One-Legged Deadlift": {
+    "instructions": "",
+    "name": ""
+  },
+  "Kettlebell Pistol Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kettlebell Seated Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kettlebell Seesaw Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kettlebell Sumo High Pull": {
+    "name": "",
+    "instructions": ""
+  },
+  "Knee Tuck Jump": {
+    "instructions": "",
+    "name": ""
+  },
+  "Kneeling Arm Drill": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kneeling Cable Crunch With Alternating Oblique Twists": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kneeling Cable Triceps Extension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kneeling Forearm Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kneeling High Pulley Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kneeling Hip Flexor": {
+    "name": "",
+    "instructions": ""
+  },
+  "Landmine Linear Jammer": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lateral Bound": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lateral Box Jump": {
+    "name": "",
+    "instructions": ""
+  },
+  "Leverage Decline Chest Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Leverage Iso Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Leverage Shoulder Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Log Lift": {
+    "instructions": "",
+    "name": ""
+  },
+  "London Bridges": {
+    "instructions": "",
+    "name": ""
+  },
+  "Lower Back-SMR": {
+    "instructions": "",
+    "name": ""
+  },
+  "Lunge Pass Through": {
+    "instructions": "",
+    "name": ""
+  },
+  "Lying Close-Grip Barbell Triceps Press To Chin": {
+    "instructions": "",
+    "name": ""
+  },
+  "Lying Face Down Plate Neck Resistance": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying Face Up Plate Neck Resistance": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying Glute": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying Hamstring": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying High Bench Barbell Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying Leg Curls": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying Machine Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying One-Arm Lateral Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying Prone Quadriceps": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying Rear Delt Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Lying T-Bar Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Machine Triceps Extension": {
+    "instructions": "",
+    "name": ""
+  },
+  "Medicine Ball Chest Pass": {
+    "name": "",
+    "instructions": ""
+  },
+  "Medicine Ball Full Twist": {
+    "name": "",
+    "instructions": ""
+  },
+  "Middle Back Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Mixed Grip Chin": {
+    "name": "",
+    "instructions": ""
+  },
+  "Monster Walk": {
+    "instructions": "",
+    "name": ""
+  },
+  "Mountain Climbers": {
+    "instructions": "",
+    "name": ""
+  },
+  "Moving Claw Series": {
+    "name": "",
+    "instructions": ""
+  },
+  "Muscle Snatch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Narrow Stance Hack Squats": {
+    "name": "",
+    "instructions": ""
+  },
+  "Narrow Stance Leg Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Narrow Stance Squats": {
+    "name": "",
+    "instructions": ""
+  },
+  "Neck Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Incline Lateral Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Kettlebell Clean": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Kettlebell Clean and Jerk": {
+    "instructions": "",
+    "name": ""
+  },
+  "One-Arm Kettlebell Floor Press": {
+    "instructions": "",
+    "name": ""
+  },
+  "One-Arm Kettlebell Jerk": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Kettlebell Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Kettlebell Snatch": {
+    "instructions": "",
+    "name": ""
+  },
+  "One-Arm Kettlebell Split Jerk": {
+    "instructions": "",
+    "name": ""
+  },
+  "One-Arm Kettlebell Split Snatch": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Kettlebell Swings": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Long Bar Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Overhead Kettlebell Squats": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Arm Side Laterals": {
+    "name": "",
+    "instructions": ""
+  },
+  "One-Legged Cable Kickback": {
+    "name": "",
+    "instructions": ""
+  },
+  "One Arm Floor Press": {
+    "instructions": "",
+    "name": ""
+  },
+  "One Arm Pronated Dumbbell Triceps Extension": {
+    "instructions": "",
+    "name": ""
+  },
+  "One Arm Supinated Dumbbell Triceps Extension": {
+    "instructions": "",
+    "name": ""
+  },
+  "Open Palm Kettlebell Clean": {
+    "instructions": "",
+    "name": ""
+  },
+  "Overhead Cable Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Pallof Press With Rotation": {
+    "instructions": "",
+    "name": ""
+  },
+  "Palms-Down Dumbbell Wrist Curl Over A Bench": {
+    "instructions": "",
+    "name": ""
+  },
+  "Palms-Up Dumbbell Wrist Curl Over A Bench": {
+    "name": "",
+    "instructions": ""
+  },
+  "Peroneals-SMR": {
+    "name": "",
+    "instructions": ""
+  },
+  "Peroneals Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Physioball Hip Bridge": {
+    "name": "",
+    "instructions": ""
+  },
+  "Pin Presses": {
+    "name": "",
+    "instructions": ""
+  },
+  "Plank": {
+    "name": "",
+    "instructions": ""
+  },
+  "Plate Twist": {
+    "name": "",
+    "instructions": ""
+  },
+  "Plyo Kettlebell Pushups": {
+    "instructions": "",
+    "name": ""
+  },
+  "Plyo Push-up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Posterior Tibialis Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Power Clean": {
+    "name": "",
+    "instructions": ""
+  },
+  "Power Partials": {
+    "name": "",
+    "instructions": ""
+  },
+  "Preacher Hammer Dumbbell Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Prowler Sprint": {
+    "name": "",
+    "instructions": ""
+  },
+  "Push-Up Wide": {
+    "name": "",
+    "instructions": ""
+  },
+  "Push-Ups - Close Triceps Position": {
+    "name": "",
+    "instructions": ""
+  },
+  "Push-Ups With Feet Elevated": {
+    "name": "",
+    "instructions": ""
+  },
+  "Pushups": {
+    "instructions": "",
+    "name": ""
+  },
+  "Quad Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Quick Leap": {
+    "name": "",
+    "instructions": ""
+  },
+  "Rack Delivery": {
+    "name": "",
+    "instructions": ""
+  },
+  "Rope Straight-Arm Pulldown": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Overhead Barbell Triceps Extension": {
+    "instructions": "",
+    "name": ""
+  },
+  "Tricep Side Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Rack Pulls": {
+    "name": "",
+    "instructions": ""
+  },
+  "Rear Leg Raises": {
+    "name": "",
+    "instructions": ""
+  },
+  "Recumbent Bike": {
+    "name": "",
+    "instructions": ""
+  },
+  "Return Push from Stance": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Band Sumo Deadlift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Barbell Preacher Curls": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Flyes": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Flyes With External Rotation": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Grip Bent-Over Rows": {
+    "instructions": "",
+    "name": ""
+  },
+  "Reverse Grip Triceps Pushdown": {
+    "instructions": "",
+    "name": ""
+  },
+  "Reverse Hyperextension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Reverse Machine Flyes": {
+    "instructions": "",
+    "name": ""
+  },
+  "Rickshaw Carry": {
+    "instructions": "",
+    "name": ""
+  },
+  "Rickshaw Deadlift": {
+    "instructions": "",
+    "name": ""
+  },
+  "Ring Dips": {
+    "instructions": "",
+    "name": ""
+  },
+  "Rocket Jump": {
+    "name": "",
+    "instructions": ""
+  },
+  "Rocking Standing Calf Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Rocky Pull-Ups/Pulldowns": {
+    "instructions": "",
+    "name": ""
+  },
+  "Rope Climb": {
+    "instructions": "",
+    "name": ""
+  },
+  "Round The World Shoulder Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Rowing, Stationary": {
+    "name": "",
+    "instructions": ""
+  },
+  "Runner's Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Running, Treadmill": {
+    "name": "",
+    "instructions": ""
+  },
+  "Russian Twist": {
+    "name": "",
+    "instructions": ""
+  },
+  "Sandbag Load": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Band Hamstring Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Bent-Over One-Arm Dumbbell Triceps Extension": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Bent-Over Rear Delt Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Calf Raise": {
+    "instructions": "",
+    "name": ""
+  },
+  "Seated Calf Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Close-Grip Concentration Barbell Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Dumbbell Palms-Up Wrist Curl": {
+    "instructions": "",
+    "name": ""
+  },
+  "Seated Floor Hamstring Stretch": {
+    "instructions": "",
+    "name": ""
+  },
+  "Seated Front Deltoid": {
+    "instructions": "",
+    "name": ""
+  },
+  "Seated Good Mornings": {
+    "instructions": "",
+    "name": ""
+  },
+  "Seated Leg Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated One-Arm Dumbbell Palms-Down Wrist Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated One-Arm Dumbbell Palms-Up Wrist Curl": {
+    "instructions": "",
+    "name": ""
+  },
+  "Seated One-arm Cable Pulley Rows": {
+    "instructions": "",
+    "name": ""
+  },
+  "Seated Side Lateral Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Triceps Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Seated Two-Arm Palms-Up Low-Pulley Wrist Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Shoulder Circles": {
+    "name": "",
+    "instructions": ""
+  },
+  "Shoulder Press - With Bands": {
+    "name": "",
+    "instructions": ""
+  },
+  "Shoulder Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Side-Lying Floor Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Side Bridge": {
+    "instructions": "",
+    "name": ""
+  },
+  "Side Hop-Sprint": {
+    "name": "",
+    "instructions": ""
+  },
+  "Side Jackknife": {
+    "name": "",
+    "instructions": ""
+  },
+  "Side Lateral Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Side Leg Raises": {
+    "name": "",
+    "instructions": ""
+  },
+  "Side Lying Groin Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Side Neck Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Side Standing Long Jump": {
+    "name": "",
+    "instructions": ""
+  },
+  "Side To Side Chins": {
+    "name": "",
+    "instructions": ""
+  },
+  "Single-Arm Cable Crossover": {
+    "name": "",
+    "instructions": ""
+  },
+  "Single-Arm Linear Jammer": {
+    "name": "",
+    "instructions": ""
+  },
+  "Single-Arm Push-Up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Single-Cone Sprint Drill": {
+    "name": "",
+    "instructions": ""
+  },
+  "Single-Leg Lateral Hop": {
+    "name": "",
+    "instructions": ""
+  },
+  "Single-Leg Stride Jump": {
+    "name": "",
+    "instructions": ""
+  },
+  "Single Dumbbell Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Single Leg Butt Kick": {
+    "name": "",
+    "instructions": ""
+  },
+  "Single Leg Glute Bridge": {
+    "name": "",
+    "instructions": ""
+  },
+  "Single Leg Push-off": {
+    "name": "",
+    "instructions": ""
+  },
+  "Sit-Up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Sit Squats": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Barbell Press Behind Neck": {
+    "instructions": "",
+    "name": ""
+  },
+  "Standing Dumbbell Upright Row": {
+    "instructions": "",
+    "name": ""
+  },
+  "Standing Elevated Quad Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Towel Triceps Extension": {
+    "instructions": "",
+    "name": ""
+  },
+  "Alternate Leg Diagonal Bound": {
+    "name": "",
+    "instructions": ""
+  },
+  "Alternating Cable Shoulder Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Alternating Kettlebell Row": {
+    "name": "",
+    "instructions": ""
+  },
+  "Ankle Circles": {
+    "name": "",
+    "instructions": ""
+  },
+  "Ankle On The Knee": {
+    "name": "",
+    "instructions": ""
+  },
+  "Chain Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Chair Leg Extended Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Kettlebell Thruster": {
+    "name": "",
+    "instructions": ""
+  },
+  "Sled Push": {
+    "name": "",
+    "instructions": ""
+  },
+  "Snatch Shrug": {
+    "name": "",
+    "instructions": ""
+  },
+  "Snatch from Blocks": {
+    "name": "",
+    "instructions": ""
+  },
+  "Speed Band Overhead Triceps": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Rope Crunch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Soleus And Achilles Stretch": {
+    "name": "",
+    "instructions": ""
+  },
+  "Stiff Leg Barbell Good Morning": {
+    "name": "",
+    "instructions": ""
+  },
+  "Two-Arm Kettlebell Military Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Ball Leg Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Incline Shoulder Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Barbell Shrug Behind The Back": {
+    "name": "",
+    "instructions": ""
+  },
+  "Bottoms Up": {
+    "name": "",
+    "instructions": ""
+  },
+  "Brachialis-SMR": {
+    "name": "",
+    "instructions": ""
+  },
+  "Crossover Reverse Lunge": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Clean": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Floor Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Dumbbell Lying One-Arm Rear Lateral Raise": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Concentration Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Inchworm": {
+    "name": "",
+    "instructions": ""
+  },
+  "Incline Push-Up Reverse Grip": {
+    "name": "",
+    "instructions": ""
+  },
+  "Iron Crosses (stretch)": {
+    "name": "",
+    "instructions": ""
+  },
+  "JM Press": {
+    "name": "",
+    "instructions": ""
+  },
+  "Keg Load": {
+    "name": "",
+    "instructions": ""
+  },
+  "Leg Lift": {
+    "name": "",
+    "instructions": ""
+  },
+  "Linear Depth Jump": {
+    "name": "",
+    "instructions": ""
+  },
+  "One Arm Lat Pulldown": {
+    "name": "",
+    "instructions": ""
+  },
+  "Platform Hamstring Slides": {
+    "name": "",
+    "instructions": ""
+  },
+  "Plie Dumbbell Squat": {
+    "name": "",
+    "instructions": ""
+  },
+  "Power Jerk": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Inner-Biceps Curl": {
+    "name": "",
+    "instructions": ""
+  },
+  "Standing Low-Pulley One-Arm Triceps Extension": {
+    "name": "",
+    "instructions": ""
   }
 }
