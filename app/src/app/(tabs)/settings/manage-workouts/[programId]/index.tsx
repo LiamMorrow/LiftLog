@@ -4,13 +4,16 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import AddIcon from '@expo/material-symbols/add.xml';
+import AccessibilityNew from '@expo/material-symbols/accessibility_new.xml';
 import ManageWorkoutCardContent from '@/components/smart/manage-workout-card-content';
+import { getMuscleAnalysisHref } from '@/components/smart/muscle-analysis';
 import { spacing } from '@/hooks/useAppTheme';
 import { EmptySession } from '@/models/session-models';
 import { useAppSelectorWithArg } from '@/store';
 import { addProgramSession, selectProgram, setSavedPlanName } from '@/store/program';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Platform } from 'react-native';
 import { Card, TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
@@ -59,6 +62,15 @@ export default function ManageWorkouts() {
       }}
     >
       <Stack.Screen options={{ title: program.name }} />
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          hidden={!program.sessions.length}
+          accessibilityLabel={t('plan.muscle_analysis.title')}
+          onPress={() => push(getMuscleAnalysisHref(programId))}
+        >
+          <Stack.Toolbar.Icon sf="figure.arms.open" {...(Platform.OS === 'ios' ? {} : { src: AccessibilityNew })} />
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
       <TextInput
         value={program.name}
         style={{ marginBottom: spacing[2] }}

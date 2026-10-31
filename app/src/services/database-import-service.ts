@@ -19,6 +19,10 @@ import {
   dedupeBuiltInExercises,
   dedupeBuiltInExercisesDataMigration,
 } from '@/services/data-migrations/dedupe-builtin-exercises';
+import {
+  splitSecondaryMuscles,
+  splitSecondaryMusclesDataMigration,
+} from '@/services/data-migrations/split-secondary-muscles';
 import { importBackends, importBackendsDataMigration } from '@/services/data-migrations/import-backends';
 import {
   seedBackendAssignments,
@@ -61,6 +65,9 @@ export class DatabaseImportService implements DatabaseImporter {
     }
     if (!dataMigrationsRun.includes(dedupeBuiltInExercisesDataMigration)) {
       await dedupeBuiltInExercises(this.db, this.keyValueStore);
+    }
+    if (!dataMigrationsRun.includes(splitSecondaryMusclesDataMigration)) {
+      await splitSecondaryMuscles(this.db);
     }
     if (!dataMigrationsRun.includes(importBackendsDataMigration)) {
       await importBackends(this.db, this.preferenceService);

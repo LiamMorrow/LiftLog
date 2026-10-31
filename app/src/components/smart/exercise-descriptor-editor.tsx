@@ -66,7 +66,12 @@ export function ExerciseDescriptorEditor(props: { exerciseId: string; isNew?: bo
             multiline
             testID="exercise-instructions-input"
           />
-          <ExerciseMuscleSelector muscles={shown.muscles} onChange={(muscles) => update({ muscles })} showMuscleMap />
+          <ExerciseMuscleSelector
+            muscles={shown.muscles}
+            secondaryMuscles={shown.secondaryMuscles ?? []}
+            onChange={(muscles, secondaryMuscles) => update({ muscles, secondaryMuscles })}
+            showMuscleMap
+          />
         </View>
       )}
     </FullHeightScrollView>

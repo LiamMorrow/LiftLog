@@ -71,6 +71,7 @@ function Layout() {
       />
       <Stack.Screen name="workout-editor" />
       <Stack.Screen name="diff-save" />
+      <Stack.Screen name="muscle-analysis" />
     </StackWithHeader>
   );
 }

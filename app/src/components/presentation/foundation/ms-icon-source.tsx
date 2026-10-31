@@ -57,6 +57,7 @@ import { msInventory } from '@material-symbols-react-native/outlined-400/msInven
 import { msChevronRight } from '@material-symbols-react-native/outlined-400/msChevronRight';
 import { msArrowDropDown } from '@material-symbols-react-native/outlined-400/msArrowDropDown';
 import { msCheck } from '@material-symbols-react-native/outlined-400/msCheck';
+import { msContrast } from '@material-symbols-react-native/outlined-400/msContrast';
 import { msArrowDropUp } from '@material-symbols-react-native/outlined-400/msArrowDropUp';
 import { msBackup } from '@material-symbols-react-native/outlined-400/msBackup';
 import { msCloudUpload } from '@material-symbols-react-native/outlined-400/msCloudUpload';
@@ -230,6 +231,7 @@ const MaterialSymbols = {
   text: msTextAd,
   reload: msRefresh,
   check: msCheck,
+  contrast: msContrast,
   'menu-down': msArrowDropDown,
   arrowDropDown: msArrowDropDown,
   arrowDropUp: msArrowDropUp,
