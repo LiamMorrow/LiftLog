@@ -2,11 +2,11 @@ import { StatisticOverTime } from '@/store/stats';
 import { QuantityAxis } from '@/components/presentation/stats/quantity-axis';
 import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 import { View } from 'react-native';
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import { useEffect, useState } from 'react';
 import { lineGraphProps } from '@/components/presentation/stats/line-graph-props';
+import { DataPointCallout } from '@/components/presentation/stats/data-point-callout';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { Text } from 'react-native-paper';
 
 export function StatisticLineChart<T>({
   statistics: { statistics, maxValue, minValue },
@@ -28,9 +28,7 @@ export function StatisticLineChart<T>({
     return {
       value,
       label,
-      focusedDataPointLabelComponent: () => (
-        <FocusedDatapointLabelComponent value={axis.formatNumber(value)} label={label} />
-      ),
+      focusedDataPointLabelComponent: () => <DataPointCallout label={label} value={axis.formatNumber(value)} />,
     };
   });
   const [width, setWidth] = useState(0);
@@ -70,26 +68,6 @@ export function StatisticLineChart<T>({
         yAxisOffset={Math.floor(min) - 10}
         noOfSectionsBelowXAxis={min < 0 ? 5 : 0}
       />
-    </View>
-  );
-}
-
-function FocusedDatapointLabelComponent(props: { value: string; label: string }) {
-  const { colors } = useAppTheme();
-  return (
-    <View
-      style={{
-        alignItems: 'center',
-        paddingVertical: spacing[1],
-        backgroundColor: colors.surface,
-        borderRadius: 4,
-        borderColor: colors.outline,
-        borderStyle: 'solid',
-        borderWidth: 1,
-      }}
-    >
-      <Text>{props.label}</Text>
-      <Text>{props.value}</Text>
     </View>
   );
 }

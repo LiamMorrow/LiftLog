@@ -6,11 +6,13 @@ import {
   GranularStatisticView,
   HeaviestLift,
   OptionalStatisticOverTime,
+  OptionalTimeTrackedStatistic,
   RepsBreakdownStatistics,
   StatisticOverTime,
   TimeTrackedStatistic,
   WeightedExerciseStatistics,
   WeightedStatisticOverTime,
+  WorkoutExerciseStatistics,
 } from '@/store/stats';
 import { loadOps, QuantityOps, repsOps, StatAxis } from '@/store/stats/quantity';
 import { Duration, OffsetDateTime, ZoneId } from '@js-joda/core';
@@ -44,6 +46,7 @@ export function calculateStats(
       weightedExerciseStats: [],
       heaviestLift: undefined,
       sessionStats: [],
+      workoutExerciseStats: [],
     };
 
   // Only sessions with at least one exercise
@@ -116,6 +119,51 @@ export function calculateStats(
           : 1,
     )
     .map((g) => g.stat);
+
+  // --- Per-workout, per-exercise stats (one line per exercise within a single workout) ---
+  const workoutExerciseStats: WorkoutExerciseStatistics[] = [];
+  for (const { title: name } of sessionStats) {
+    const group = sessionsByBlueprint.get(name)!;
+    const groupDates = Enumerable.from(group)
+      .select((s) => s.date)
+      .distinct((x) => x.toString())
+      .orderBy((x) => x.toString())
+      .toArray();
+    const exerciseWeightByDate = new Map<MovementKey, Map<string, Weight>>();
+    const exerciseDisplayName = new Map<MovementKey, string>();
+    for (const session of group) {
+      for (const ex of session.recordedExercises) {
+        if (!(ex instanceof RecordedWeightedExercise) || !ex.isStarted || !ex.tracksResistance) continue;
+        const key = ex.movementKey();
+        const maxWeight = ex.potentialSets
+          .filter((ps) => ps.set)
+          .map((ps) => ex.effectiveWeight(ps, session.bodyweight))
+          .reduce((a, b) => (a === null ? b : a.isGreaterThan(b) ? a : b), null as null | Weight);
+        if (!maxWeight) continue;
+        exerciseDisplayName.set(key, ex.blueprint.name);
+        if (!exerciseWeightByDate.has(key)) exerciseWeightByDate.set(key, new Map());
+        exerciseWeightByDate.get(key)!.set(session.date.toString(), maxWeight);
+      }
+    }
+    const workoutExerciseStatsList: OptionalStatisticOverTime<Weight>[] = Array.from(
+      exerciseWeightByDate.entries(),
+    ).map(([key, weightByDate]) => {
+      const statistics = groupDates.map((date): OptionalTimeTrackedStatistic<Weight> => ({
+        dateTime: date.atTime(12, 0).atZone(ZoneId.systemDefault()).toOffsetDateTime(),
+        value: weightByDate.get(date.toString()),
+      }));
+      const statsWithValue = statistics.filter((x) => x.value !== undefined);
+      const min = statsWithValue.length ? Weight.min(...statsWithValue.map((x) => x.value!)) : Weight.NIL;
+      const max = statsWithValue.length ? Weight.max(...statsWithValue.map((x) => x.value!)) : Weight.NIL;
+      return {
+        title: exerciseDisplayName.get(key)!,
+        statistics,
+        minValue: min,
+        maxValue: max,
+      };
+    });
+    workoutExerciseStats.push({ workoutName: name, exerciseStats: workoutExerciseStatsList });
+  }
 
   // --- Exercise stats grouped by normalized exercise name ---
   interface ExerciseStatAcc {
@@ -294,6 +342,7 @@ export function calculateStats(
     heaviestLift,
     weightedExerciseStats: exerciseStats,
     sessionStats,
+    workoutExerciseStats,
     bodyweightStats,
   };
 }
