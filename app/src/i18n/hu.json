@@ -332,5 +332,19 @@
   "rest.max.label": "Maximális pihenő",
   "rest.medium.label": "Közepes",
   "rest.min.label": "Minimális pihenő",
-  "rest.rest.label": "Pihenő"
+  "rest.rest.label": "Pihenő",
+  "backends.none.label": "Nincs",
+  "backends.title": "Szerverek",
+  "backends.manage.button": "Szerverek kezelése",
+  "backends.add.button": "Szerver hozzáadása",
+  "backends.url.insecure.message": "https:// nélkül bárki el tudja olvasni a hálózati forgalmat, beleértve a fejléceket is. http:// előtagot csak megbízható hálózatokon használj.",
+  "backends.kind.liftlog.body": "A hírfolyamot, az MI tervezőt és a biztonsági mentéseket biztosítja.",
+  "backends.kind.backup_endpoint.label": "Csak biztonsági mentésre",
+  "backends.kind.backup_endpoint.body": "Csak a biztonsági mentési protokollt támogatja, csak biztonsági mentésre használatos.",
+  "backends.headers.add.button": "Fejléc hozzáadása",
+  "backends.headers.add.title": "Fejléc hozzáadása",
+  "backends.headers.edit.title": "Fejléc szerkesztése",
+  "backends.header_scheme.raw": "Sima érték",
+  "backends.test.not_liftlog": "Ez nem egy LiftLog-szerver. Ha csak biztonsági mentéseket fogad, akkor állítsd a Típust \"Csak biztonsági mentésre\" értékre.",
+  "backends.explanation": "Irányítsd a LiftLogot a saját szerveredre."
 }
