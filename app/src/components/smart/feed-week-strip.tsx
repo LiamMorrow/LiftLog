@@ -1,3 +1,4 @@
+import { TitledSection } from '@/components/presentation/foundation/titled-section';
 import { ActivityCalendar } from '@/components/presentation/calendar/activity-calendar';
 import { PersonAvatar } from '@/components/presentation/feed/person-avatar';
 import { Popover } from '@/components/presentation/foundation/popover';
@@ -11,7 +12,6 @@ import { selectOwnFeedUserId } from '@/store/feed';
 import { useOwnHistory } from '@/components/smart/own-history-provider';
 import { useTranslate } from '@tolgee/react';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
 
 /** Beyond this the strip stops being a glance and starts being a list. */
 const MAX_ROWS = 8;
@@ -35,11 +35,7 @@ export function FeedWeekStrip() {
   const overflow = friendRows.length - visibleFriendRows.length;
 
   return (
-    <View style={{ gap: spacing[2], marginBottom: spacing[6] }}>
-      <Text variant="titleMedium" numberOfLines={1}>
-        {t('feed.this_week.title')}
-      </Text>
-
+    <TitledSection title={t('feed.this_week.title')} style={{ marginBottom: spacing[6] }}>
       <ActivityCalendar
         density="week"
         rows={[ownRow!, ...visibleFriendRows]}
@@ -62,7 +58,7 @@ export function FeedWeekStrip() {
           {t('feed.this_week.more_people', { count: overflow.toString() })}
         </SurfaceText>
       )}
-    </View>
+    </TitledSection>
   );
 }
 

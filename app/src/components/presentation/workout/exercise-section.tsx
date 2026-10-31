@@ -28,6 +28,7 @@ interface ExerciseSectionProps<T extends RecordedExercise> {
   toStartNext: boolean;
   isReadonly: boolean;
   showPreviousButton: boolean;
+  titleLeading?: ReactNode;
 
   children: ReactNode;
 
@@ -163,11 +164,14 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             alignItems: 'center',
           }}
         >
-          <ItemTitle
-            testID="weighted-exercise-title"
-            style={{ marginVertical: spacing[2] }}
-            title={recordedExercise.blueprint.name}
-          />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2], flexShrink: 1 }}>
+            {props.titleLeading}
+            <ItemTitle
+              testID="weighted-exercise-title"
+              style={{ marginVertical: spacing[2] }}
+              title={recordedExercise.blueprint.name}
+            />
+          </View>
           {interactiveButtons}
         </View>
         {props.children}

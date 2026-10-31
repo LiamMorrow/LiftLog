@@ -1,8 +1,8 @@
 import FixedIncrementer from '@/components/presentation/foundation/editors/fixed-incrementer';
-import { FormRow } from '@/components/presentation/foundation/form-row';
 import RestFormat from '@/components/presentation/foundation/rest-format';
 import SegmentedPicker from '@/components/presentation/foundation/segmented-picker';
-import { SegmentedList, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
+import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
+import { TitledSection } from '@/components/presentation/foundation/titled-section';
 import { SegmentedListSelect } from '@/components/presentation/foundation/segmented-list-select';
 import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
 import { RestEditorDialog } from '@/components/presentation/workout-editor/rest-editor-dialog';
@@ -71,44 +71,63 @@ export function WeightedExerciseEditor({
   };
 
   return (
-    <View style={{ gap: spacing[2] }}>
-      <SegmentedPicker
-        value={mode}
-        options={[
-          { value: 'fixed', label: 'Fixed', testID: 'reps-mode-fixed' },
-          { value: 'range', label: 'Range', testID: 'reps-mode-range' },
-          { value: 'perSet', label: 'Per set', testID: 'reps-mode-per-set' },
-        ]}
-        onChange={changeMode}
-      />
-
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'flex-start',
-          width: '100%',
-          gap: spacing[4],
-          marginBlockEnd: spacing[2],
-        }}
-      >
-        <View style={{ flex: 1 }}>
-          <FixedIncrementer
-            label={t('exercise.sets.label')}
-            onValueChange={(value) => updateExercise(exercise.withSets(value))}
-            value={exercise.plannedSets.length}
-            testID="exercise-sets"
-          />
+    <>
+      <TitledSection title={t('exercise.sets_and_reps.title')}>
+        <SegmentedPicker
+          value={mode}
+          options={[
+            { value: 'fixed', label: 'Fixed', testID: 'reps-mode-fixed' },
+            { value: 'range', label: 'Range', testID: 'reps-mode-range' },
+            { value: 'perSet', label: 'Per set', testID: 'reps-mode-per-set' },
+          ]}
+          onChange={changeMode}
+        />
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start', width: '100%', gap: spacing[4] }}>
+          <View style={{ flex: 1 }}>
+            <FixedIncrementer
+              label={t('exercise.sets.label')}
+              onValueChange={(value) => updateExercise(exercise.withSets(value))}
+              value={exercise.plannedSets.length}
+              testID="exercise-sets"
+            />
+          </View>
+          {repsConfig.type === 'perSet' ? (
+            <PerSetRepsEditor repsConfig={repsConfig} setRepsConfig={setRepsConfig} />
+          ) : repsConfig.type === 'range' ? (
+            <RangeRepsEditor repsConfig={repsConfig} setRepsConfig={setRepsConfig} />
+          ) : (
+            <FixedRepsEditor repsConfig={repsConfig} setRepsConfig={setRepsConfig} />
+          )}
         </View>
-        {repsConfig.type === 'perSet' ? (
-          <PerSetRepsEditor repsConfig={repsConfig} setRepsConfig={setRepsConfig} />
-        ) : repsConfig.type === 'range' ? (
-          <RangeRepsEditor repsConfig={repsConfig} setRepsConfig={setRepsConfig} />
-        ) : (
-          <FixedRepsEditor repsConfig={repsConfig} setRepsConfig={setRepsConfig} />
-        )}
-      </View>
+      </TitledSection>
+
+      <TitledSection title={restTimersEnabled ? t('exercise.between_sets.title') : t('workout.superset.label')}>
+        <SegmentedGroup>
+          {restTimersEnabled ? (
+            <SegmentListFormElement
+              key="rest"
+              label={t('rest.rest.label')}
+              icon={'airlineSeatReclineExtraFill'}
+              onPress={() => setRestDialogOpen(true)}
+              right={<RestFormat style={{ color: colors.onSurface }} rest={exercise.restBetweenSets} />}
+            />
+          ) : undefined}
+          <SegmentedListSwitch
+            key="superset"
+            label={t('workout.superset_next_exercise.button')}
+            icon={'link'}
+            value={exercise.supersetWithNext}
+            testID="exercise-superset"
+            onValueChange={(supersetWithNext) => updateExercise({ supersetWithNext })}
+          />
+        </SegmentedGroup>
+      </TitledSection>
 
       <SharedFieldsEditor exercise={exercise} updateExercise={updateExercise} />
+
+      <TitledSection title={t('exercise.progressive_overload.label')}>
+        <ProgressionRulesEditor exercise={exercise} onChange={(progression) => updateExercise({ progression })} />
+      </TitledSection>
 
       {restTimersEnabled && (
         <RestEditorDialog
@@ -118,53 +137,28 @@ export function WeightedExerciseEditor({
           setDialogOpen={setRestDialogOpen}
         />
       )}
-      <FormRow>
-        <SegmentedList
-          items={[
-            ...(restTimersEnabled
-              ? [
-                  <SegmentListFormElement
-                    key={1}
-                    label={t('rest.rest.label')}
-                    icon={'airlineSeatReclineExtraFill'}
-                    onPress={() => setRestDialogOpen(true)}
-                    right={<RestFormat style={{ color: colors.onSurface }} rest={exercise.restBetweenSets} />}
-                  />,
-                ]
-              : []),
-            <SegmentedListSwitch
-              key={2}
-              label={t('workout.superset_next_exercise.button')}
-              icon={'link'}
-              value={exercise.supersetWithNext}
-              testID="exercise-superset"
-              onValueChange={(supersetWithNext) => updateExercise({ supersetWithNext })}
-            />,
-            <SegmentedListSelect
-              key={4}
-              label={t('exercise.resistance.label')}
-              icon={'directionsRun'}
-              testID="load-basis"
-              value={exercise.resistance}
-              options={resistanceOptions.map(({ value, label }) => ({ value, label: t(label) }))}
-              onChange={(resistance: Resistance) => updateExercise({ resistance })}
-              supportingText={t(resistanceOptions.find((option) => option.value === exercise.resistance)!.body)}
-            />,
-            <SegmentListFormElement
-              key={3}
-              label={t('exercise.progressive_overload.label')}
-              icon={'trendingUp'}
-              line2={
-                <ProgressionRulesEditor
-                  exercise={exercise}
-                  onChange={(progression) => updateExercise({ progression })}
-                />
-              }
-            />,
-          ]}
-        />
-      </FormRow>
-    </View>
+    </>
+  );
+}
+
+export function ResistanceSelect({
+  exercise,
+  updateExercise,
+}: {
+  exercise: WeightedExerciseBlueprint;
+  updateExercise: (ex: Partial<ExerciseBlueprint>) => void;
+}) {
+  const { t } = useTranslate();
+  return (
+    <SegmentedListSelect
+      label={t('exercise.resistance.label')}
+      icon={'directionsRun'}
+      testID="load-basis"
+      value={exercise.resistance}
+      options={resistanceOptions.map(({ value, label }) => ({ value, label: t(label) }))}
+      onChange={(resistance: Resistance) => updateExercise({ resistance })}
+      supportingText={t(resistanceOptions.find((option) => option.value === exercise.resistance)!.body)}
+    />
   );
 }
 

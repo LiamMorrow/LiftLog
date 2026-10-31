@@ -1,5 +1,6 @@
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import { normalizeExerciseName, SessionBlueprint } from '@/models/blueprint-models';
+import { RecordedWeightedExercise, Session } from '@/models/session-models';
 
 export const secondaryMuscleWeight = 0.5;
 
@@ -37,6 +38,14 @@ export function plannedExerciseSets(sessions: SessionBlueprint[]): ExerciseSets[
     session.exercises.flatMap((exercise) =>
       exercise.type === 'WeightedExerciseBlueprint' ? [{ name: exercise.name, sets: exercise.plannedSets.length }] : [],
     ),
+  );
+}
+
+export function completedExerciseSets(session: Session): ExerciseSets[] {
+  return session.recordedExercises.flatMap((exercise) =>
+    exercise instanceof RecordedWeightedExercise && exercise.completedSetCount
+      ? [{ name: exercise.blueprint.name, sets: exercise.completedSetCount }]
+      : [],
   );
 }
 

@@ -5,8 +5,8 @@ import { selectSession, updateStoredSession } from '@/store/stored-sessions';
 import { useTranslate } from '@tolgee/react';
 import { Href, Stack, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
+import { SegmentedListTextInput } from '@/components/presentation/foundation/segmented-list-text-input';
 import { useDispatch } from 'react-redux';
 import { useOnDismiss } from '@/hooks/useOnDismiss';
 
@@ -56,23 +56,21 @@ export function SessionWorkoutEditor(props: { sessionId: string }) {
     <FullHeightScrollView avoidKeyboard modal scrollStyle={{ padding: spacing.pageHorizontalMargin }}>
       <Stack.Screen options={{ title }} />
       {workout ? (
-        <View style={{ gap: spacing[2] }}>
-          <TextInput
+        <SegmentedGroup>
+          <SegmentedListTextInput
             label={t('workout.name.label')}
             testID="workout-name"
-            style={{ marginBottom: spacing[2] }}
             value={name}
             onChangeText={(name) => updateBlueprint({ name })}
           />
-          <TextInput
+          <SegmentedListTextInput
             label={t('plan.notes.label')}
             testID="workout-notes"
-            style={{ marginBottom: spacing[2] }}
             defaultValue={workout.blueprint.notes}
             onChangeText={(notes) => updateBlueprint({ notes })}
             multiline
           />
-        </View>
+        </SegmentedGroup>
       ) : null}
     </FullHeightScrollView>
   );

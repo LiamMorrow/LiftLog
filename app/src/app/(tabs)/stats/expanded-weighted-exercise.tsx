@@ -4,7 +4,7 @@ import { RepsBarChart } from '@/components/presentation/stats/reps-bar-chart';
 import SingleValueStatisticCard from '@/components/presentation/stats/single-value-statistic-card';
 import { SingleValueStatisticsGrid } from '@/components/presentation/stats/single-value-statistics-grid';
 import { TimePeriodSelector } from '@/components/presentation/stats/time-period-selector';
-import { TitledSection } from '@/components/presentation/stats/titled-section';
+import { TitledSection } from '@/components/presentation/foundation/titled-section';
 import { StatisticBarChart } from '@/components/presentation/stats/statistic-bar-chart';
 import { StatisticLineChart } from '@/components/presentation/stats/statistic-line-chart';
 import { useLoadAxis, useRepsAxis } from '@/components/presentation/stats/quantity-axis';
@@ -96,7 +96,7 @@ function LoadedStatsFilled({ stats }: { stats: WeightedExerciseStatistics }) {
 function StatCardWithTitle(props: { title: string; children: ReactNode }) {
   const { colors } = useAppTheme();
   return (
-    <TitledSection title={props.title}>
+    <TitledSection title={props.title} style={{ marginHorizontal: spacing.pageHorizontalMargin }}>
       <Card
         mode="contained"
         style={{
@@ -116,7 +116,10 @@ function OverallStatsGrid({ stats }: { stats: WeightedExerciseStatistics }) {
   const onReps = stats.primary === 'reps';
   // The grid lays each child out as its own cell, so this has to stay a flat list.
   return (
-    <TitledSection title={t('stats.exercise.overview.title')}>
+    <TitledSection
+      title={t('stats.exercise.overview.title')}
+      style={{ marginHorizontal: spacing.pageHorizontalMargin }}
+    >
       <SingleValueStatisticsGrid>
         {[
           <SingleValueStatisticCard

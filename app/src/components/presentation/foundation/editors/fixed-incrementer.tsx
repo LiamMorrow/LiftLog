@@ -1,7 +1,7 @@
-import { IntegerEditor } from '@/components/presentation/foundation/editors/integer-editor';
+import { IntegerInput } from '@/components/presentation/foundation/editors/number-inputs';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
-import { useAppTheme, font, spacing, rounding } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, rounding } from '@/hooks/useAppTheme';
 import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { match } from 'ts-pattern';
@@ -43,21 +43,12 @@ export default function FixedIncrementer(props: FixedIncrementerProps) {
           borderBottomEndRadius: betweenRadius,
           backgroundColor: colors.surfaceVariant,
           overflow: 'hidden',
-          alignItems: 'center',
         }}
       >
-        <IntegerEditor
-          style={{
-            color: colors.onSurfaceVariant,
-            ...font['text-xl'],
-            fontWeight: 'bold',
-            textAlign: 'center',
-            backgroundColor: colors.surfaceVariant,
-            flex: 1,
-          }}
-          noUnderline
+        <IntegerInput
           onChange={props.onValueChange}
           value={props.value}
+          accessibilityLabel={props.label}
           testID="fixed-value-input"
         />
       </View>

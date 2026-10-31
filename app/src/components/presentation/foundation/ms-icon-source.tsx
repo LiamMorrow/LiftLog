@@ -125,6 +125,7 @@ import { msFunction } from '@material-symbols-react-native/outlined-400/msFuncti
 import { msHeartCheck } from '@material-symbols-react-native/outlined-400/msHeartCheck';
 import { msContentPasteSearch } from '@material-symbols-react-native/outlined-400/msContentPasteSearch';
 import { msLink } from '@material-symbols-react-native/outlined-400/msLink';
+import { msAccessibilityNew } from '@material-symbols-react-native/outlined-400/msAccessibilityNew';
 import { msSteps } from '@material-symbols-react-native/outlined-400/msSteps';
 import { msElevation } from '@material-symbols-react-native/outlined-400/msElevation';
 import { msAssignmentTurnedIn } from '@material-symbols-react-native/outlined-400/msAssignmentTurnedIn';
@@ -192,6 +193,7 @@ const MaterialSymbols = {
   podcasts: msPodcasts,
   localFireDepartment: msLocalFireDepartment,
   link: msLink,
+  accessibilityNew: msAccessibilityNew,
   steps: msSteps,
   elevation: msElevation,
   remove: msRemove,

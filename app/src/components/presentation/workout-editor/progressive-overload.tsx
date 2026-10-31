@@ -13,10 +13,9 @@ import {
 } from '@/models/blueprint-models';
 import { useTranslate } from '@tolgee/react';
 import { ScrollView, View } from 'react-native';
-import { DecimalEditor } from '@/components/presentation/foundation/editors/decimal-editor';
-import { IntegerEditor } from '@/components/presentation/foundation/editors/integer-editor';
-import { Dialog, Divider, Text } from 'react-native-paper';
-import { AppThemeColors, spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { DecimalInput, IntegerInput } from '@/components/presentation/foundation/editors/number-inputs';
+import { Dialog, Text } from 'react-native-paper';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import Button from '@/components/presentation/foundation/button';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
@@ -30,6 +29,10 @@ import { Portal } from 'react-native-paper';
 import { OffsetDateTime } from '@js-joda/core';
 import { Weight } from '@/models/weight';
 import Icon from '@/components/presentation/foundation/icon';
+import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
+import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
+import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 interface Props {
   /** The whole blueprint, so the worked example can run the rules against this exercise's own sets. */
@@ -59,84 +62,153 @@ export function ProgressionRulesEditor(props: Props) {
   const { colors } = useAppTheme();
   const rules = props.exercise.progression;
   const canMoveLoad = props.exercise.resistance !== 'none';
+  const [editingIndex, setEditingIndex] = useState<number | undefined>(undefined);
+  const [exampleOpen, setExampleOpen] = useState(false);
 
   const replaceRule = (index: number, rule: ProgressionRule) =>
     props.onChange(rules.map((existing, i) => (i === index ? rule : existing)));
 
-  const removeRule = (index: number) => props.onChange(rules.filter((_, i) => i !== index));
+  const removeRule = (index: number) => {
+    setEditingIndex(undefined);
+    props.onChange(rules.filter((_, i) => i !== index));
+  };
 
-  const swapRules = (index: number, other: number) =>
+  const swapRules = (index: number, other: number) => {
+    setEditingIndex(other);
     props.onChange(rules.map((rule, i) => (i === index ? rules[other]! : i === other ? rules[index]! : rule)));
+  };
 
-  const addRule = () => props.onChange(withAddedRule(props.exercise));
+  const addRule = () => {
+    const next = withAddedRule(props.exercise);
+    props.onChange(next);
+    setEditingIndex(next.findLastIndex((rule) => !rules.includes(rule)));
+  };
 
   const deadFrom = unreachableFrom(rules, canMoveLoad);
   const defaultCeiling = defaultCeilingFor(props.exercise);
+  const neverRuns = (index: number) => deadFrom !== undefined && index >= deadFrom;
+  const editingRule = editingIndex === undefined ? undefined : rules[editingIndex];
+
+  const scopeLabels: Record<ScopeChoice, string> = {
+    allSets: t('exercise.progression.scope.all_sets.label'),
+    all: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.all.label'),
+    first: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.first.label'),
+    middle: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.middle.label'),
+    last: t('exercise.progressive_overload.increase_lowest_set.increase_strategy.last.label'),
+  };
+  const ruleSummary = (rule: ProgressionRule) =>
+    t('exercise.progression.rule.summary.label', {
+      axis:
+        rule.axis === 'load' ? t('exercise.progression.axis.load.label') : t('exercise.progression.axis.reps.label'),
+      step: localeDisplayFormatBigNumber(rule.step),
+    });
+  const ruleDetail = (rule: ProgressionRule, index: number) =>
+    [
+      scopeLabels[scopeChoiceOf(rule.scope)],
+      rule.ceiling !== undefined &&
+        t('exercise.progression.rule.ceiling_summary.label', { ceiling: rule.ceiling.toString() }),
+      rule.ceiling !== undefined && rule.onCeiling === 'reset' && t('exercise.progression.rule.reset_summary.label'),
+      neverRuns(index) && t('exercise.progression.rule.never_runs.label'),
+    ]
+      .filter(Boolean)
+      .join(' · ');
 
   return (
-    <View style={{ gap: spacing[2] }} testID="progression-rules">
-      {rules.length === 0 && (
-        <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
-          {t('exercise.progression.none.body')}
-        </Text>
-      )}
-      {rules.map((rule, index) => (
-        <View key={index} style={deadFrom !== undefined && index >= deadFrom ? { opacity: 0.5 } : undefined}>
-          {index > 0 && <Divider style={{ marginBlock: spacing[2] }} />}
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text variant="labelLarge" style={{ flex: 1, color: colors.onSurfaceVariant }}>
-              {t('exercise.progression.rule.title', { position: index + 1 })}
-              {deadFrom !== undefined && index >= deadFrom && ` · ${t('exercise.progression.rule.never_runs.label')}`}
-            </Text>
-            {rules.length > 1 && (
-              <>
-                <IconButton
-                  icon="arrowUpward"
-                  size={18}
-                  disabled={index === 0}
-                  accessibilityLabel={t('exercise.progression.rule.move_up.label')}
-                  onPress={() => swapRules(index, index - 1)}
-                />
-                <IconButton
-                  icon="arrowDownward"
-                  size={18}
-                  disabled={index === rules.length - 1}
-                  accessibilityLabel={t('exercise.progression.rule.move_down.label')}
-                  onPress={() => swapRules(index, index + 1)}
-                />
-              </>
-            )}
-            <IconButton
-              icon="delete"
-              size={18}
-              accessibilityLabel={t('exercise.progression.rule.remove.label')}
-              testID={`progression-remove-${index}`}
-              onPress={() => removeRule(index)}
+    <View testID="progression-rules">
+      <SegmentedGroup>
+        {[
+          ...rules.map((rule, index) => (
+            <SegmentListFormElement
+              key={`rule-${index}`}
+              testID={`progression-rule-${index}`}
+              label={ruleSummary(rule)}
+              supportingText={ruleDetail(rule, index)}
+              style={neverRuns(index) ? { opacity: 0.5 } : undefined}
+              onPress={() => setEditingIndex(index)}
+              right={<Icon source="chevronRight" size={20} color={colors.onSurfaceVariant} />}
             />
-          </View>
-          <RuleEditor
-            rule={rule}
-            canMoveLoad={canMoveLoad}
-            hasLaterRule={index < rules.length - 1}
-            defaultCeiling={defaultCeiling}
-            onChange={(next) => replaceRule(index, next)}
-          />
-          {deadFrom === index + 1 && (
-            <Text variant="bodySmall" style={{ color: colors.error, marginBlockStart: spacing[2] }}>
-              {rule.axis === 'load'
-                ? t('exercise.progression.blocks_later.load.body')
-                : t('exercise.progression.blocks_later.reps.body')}
-            </Text>
-          )}
-        </View>
-      ))}
-      {rules.length > 0 && <Divider style={{ marginBlockStart: spacing[2] }} />}
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
-        <Button style={{ flex: 1 }} icon="add" testID="progression-add-rule" onPress={addRule}>
-          {t('exercise.progression.add_rule.label')}
-        </Button>
-        {rules.length > 0 && <ProgressionExample exercise={props.exercise} />}
-      </View>
+          )),
+          <SegmentListFormElement
+            key="add"
+            testID="progression-add-rule"
+            label={t('exercise.progression.add_rule.label')}
+            icon="add"
+            supportingText={rules.length ? undefined : t('exercise.progression.none.body')}
+            onPress={addRule}
+          />,
+          ...(rules.length
+            ? [
+                <SegmentedListLink
+                  key="example"
+                  label={t('exercise.progressive_overload.example.label')}
+                  onPress={() => setExampleOpen(true)}
+                />,
+              ]
+            : []),
+        ]}
+      </SegmentedGroup>
+      {editingRule && editingIndex !== undefined ? (
+        <Portal>
+          <KeyboardAvoidingView behavior="height" style={{ flex: 1, pointerEvents: 'box-none' }}>
+            <Dialog visible onDismiss={() => setEditingIndex(undefined)}>
+              <Dialog.Title>
+                {t('exercise.progression.rule.title', { position: editingIndex + 1 })}
+                {neverRuns(editingIndex) && ` · ${t('exercise.progression.rule.never_runs.label')}`}
+              </Dialog.Title>
+              <Dialog.Content>
+                <RuleEditor
+                  rule={editingRule}
+                  canMoveLoad={canMoveLoad}
+                  hasLaterRule={editingIndex < rules.length - 1}
+                  defaultCeiling={defaultCeiling}
+                  onChange={(next) => replaceRule(editingIndex, next)}
+                />
+                {deadFrom === editingIndex + 1 && (
+                  <Text variant="bodySmall" style={{ color: colors.error, marginBlockStart: spacing[2] }}>
+                    {editingRule.axis === 'load'
+                      ? t('exercise.progression.blocks_later.load.body')
+                      : t('exercise.progression.blocks_later.reps.body')}
+                  </Text>
+                )}
+              </Dialog.Content>
+              <Dialog.Actions>
+                {rules.length > 1 && (
+                  <>
+                    <IconButton
+                      icon="arrowUpward"
+                      size={18}
+                      disabled={editingIndex === 0}
+                      accessibilityLabel={t('exercise.progression.rule.move_up.label')}
+                      onPress={() => swapRules(editingIndex, editingIndex - 1)}
+                    />
+                    <IconButton
+                      icon="arrowDownward"
+                      size={18}
+                      disabled={editingIndex === rules.length - 1}
+                      accessibilityLabel={t('exercise.progression.rule.move_down.label')}
+                      onPress={() => swapRules(editingIndex, editingIndex + 1)}
+                    />
+                    <View style={{ flex: 1 }} />
+                  </>
+                )}
+                <Button
+                  textColor={colors.error}
+                  testID={`progression-remove-${editingIndex}`}
+                  onPress={() => removeRule(editingIndex)}
+                >
+                  {t('generic.remove.button')}
+                </Button>
+                <Button testID="progression-rule-done" onPress={() => setEditingIndex(undefined)}>
+                  {t('generic.done.button')}
+                </Button>
+              </Dialog.Actions>
+            </Dialog>
+          </KeyboardAvoidingView>
+        </Portal>
+      ) : undefined}
+      {rules.length > 0 && (
+        <ProgressionExample exercise={props.exercise} open={exampleOpen} onDismiss={() => setExampleOpen(false)} />
+      )}
     </View>
   );
 }
@@ -195,16 +267,18 @@ function RuleEditor(props: {
         }
       >
         {rule.axis === 'reps' ? (
-          <IntegerEditor
-            {...numberInputStyle(colors)}
+          <IntegerInput
+            minWidth={spacing[20]}
             value={rule.step.toNumber()}
             onChange={(step) => props.onChange(rule.with({ step: BigNumber(step) }))}
+            accessibilityLabel={t('exercise.progression.step.reps.label')}
           />
         ) : (
-          <DecimalEditor
-            {...numberInputStyle(colors)}
+          <DecimalInput
+            minWidth={spacing[20]}
             value={rule.step}
             onChange={(step) => props.onChange(rule.with({ step }))}
+            accessibilityLabel={t('exercise.progressive_overload.increase_all_evenly.amount.label')}
           />
         )}
       </Row>
@@ -227,10 +301,11 @@ function RuleEditor(props: {
           />
           {rule.ceiling !== undefined && (
             <Row label={t('exercise.progression.ceiling.label')}>
-              <IntegerEditor
-                {...numberInputStyle(colors)}
+              <IntegerInput
+                minWidth={spacing[20]}
                 value={rule.ceiling.toNumber()}
                 onChange={(ceiling) => props.onChange(rule.with({ ceiling: BigNumber(ceiling) }))}
+                accessibilityLabel={t('exercise.progression.ceiling.label')}
               />
             </Row>
           )}
@@ -247,16 +322,6 @@ function RuleEditor(props: {
       )}
     </View>
   );
-}
-
-/** Reads as a value on the right of its row, like the pickers beside it, rather than as a filled field. */
-function numberInputStyle(colors: AppThemeColors) {
-  return {
-    dense: true,
-    textColor: colors.primary,
-    underlineStyle: { display: 'none' as const },
-    style: { flex: 1, textAlign: 'right' as const, backgroundColor: 'transparent' },
-  };
 }
 
 function SwitchRow(props: { label: string; description: string; value: boolean; onValueChange: (v: boolean) => void }) {
@@ -312,9 +377,8 @@ function Row(props: { label: string; children: React.ReactNode }) {
   );
 }
 
-function ProgressionExample(props: { exercise: WeightedExerciseBlueprint }) {
+function ProgressionExample(props: { exercise: WeightedExerciseBlueprint; open: boolean; onDismiss: () => void }) {
   const { t } = useTranslate();
-  const [exampleOpen, setExampleOpen] = useState(false);
   const unit = usePreferredWeightUnit();
   const resistance = props.exercise.resistance;
   const start = new Weight(resistance === 'none' ? 0 : 10, unit);
@@ -329,38 +393,33 @@ function ProgressionExample(props: { exercise: WeightedExerciseBlueprint }) {
   );
 
   return (
-    <>
-      <Button style={{ flex: 1 }} onPress={() => setExampleOpen(true)}>
-        {t('exercise.progressive_overload.example.label')}
-      </Button>
-      <Portal>
-        <Dialog visible={exampleOpen} onDismiss={() => setExampleOpen(false)}>
-          <Dialog.Title>{t('exercise.progressive_overload.example.label')}</Dialog.Title>
-          <Dialog.Content style={{ height: 400 }}>
-            <ScrollView contentContainerStyle={{ gap: spacing[4], alignItems: 'center' }} style={{ flex: 1 }}>
-              {rungs.map((rung, index) => (
-                <View key={index} style={{ gap: spacing[4], alignItems: 'center' }}>
-                  {index > 0 && <Icon source={'arrowDownward'} size={24} />}
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing[2] }}>
-                    {rung.potentialSets.map((set, setIndex) => (
-                      <DummySet
-                        key={setIndex}
-                        set={set}
-                        resistance={resistance}
-                        repsTarget={rung.repsTargetForSet(setIndex)}
-                      />
-                    ))}
-                  </View>
+    <Portal>
+      <Dialog visible={props.open} onDismiss={props.onDismiss}>
+        <Dialog.Title>{t('exercise.progressive_overload.example.label')}</Dialog.Title>
+        <Dialog.Content style={{ height: 400 }}>
+          <ScrollView contentContainerStyle={{ gap: spacing[4], alignItems: 'center' }} style={{ flex: 1 }}>
+            {rungs.map((rung, index) => (
+              <View key={index} style={{ gap: spacing[4], alignItems: 'center' }}>
+                {index > 0 && <Icon source={'arrowDownward'} size={24} />}
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing[2] }}>
+                  {rung.potentialSets.map((set, setIndex) => (
+                    <DummySet
+                      key={setIndex}
+                      set={set}
+                      resistance={resistance}
+                      repsTarget={rung.repsTargetForSet(setIndex)}
+                    />
+                  ))}
                 </View>
-              ))}
-            </ScrollView>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setExampleOpen(false)}>{t('generic.ok.button')}</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
-    </>
+              </View>
+            ))}
+          </ScrollView>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button onPress={props.onDismiss}>{t('generic.ok.button')}</Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
   );
 }
 

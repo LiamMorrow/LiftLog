@@ -9,6 +9,7 @@ import { useDebouncedCallback } from 'use-debounce';
 
 export default function ExerciseFilterer(props: {
   exerciseName: string;
+  autoFocus?: boolean;
   onFilteredExerciseIdsChange: (ids: string[]) => void;
   onSuggestedNewExercise: (exerciseDescriptor: ExerciseDescriptor | 'NONE') => void;
 }) {
@@ -61,6 +62,7 @@ export default function ExerciseFilterer(props: {
 
   return (
     <ExerciseSearchAndFilters
+      autoFocus={props.autoFocus}
       searchText={searchText}
       setSearchText={(s) => {
         setSearchText(s);

@@ -1,7 +1,7 @@
 import { PotentialSet } from '@/models/session-models';
 import { formatRepsTarget, Resistance, RepsTarget } from '@/models/blueprint-models';
-import { ReactNode } from 'react';
-import { Text, View } from 'react-native';
+import { ReactNode, useEffect } from 'react';
+import { AccessibilityInfo, Animated, Easing, StyleSheet, Text, useAnimatedValue, View } from 'react-native';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { font, rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
@@ -17,6 +17,7 @@ interface PotentialSetDisplayProps {
   /** Omit to render a static tile - a tile with no handler mounts no gesture detector at all. */
   onPressReps?: () => void;
   onPressWeight?: () => void;
+  isNext?: boolean;
 }
 
 /**
@@ -29,11 +30,17 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
   const repCountValue = props.set.set?.repsCompleted;
   const isFilled = repCountValue !== undefined;
   const showsWeight = props.resistance !== 'none';
-  const setColors = match({ isFilled })
+  const isNext = !isFilled && !!props.isNext;
+  const isLater = !isFilled && !props.isNext;
+  const setColors = match({ isFilled, isNext: !!props.isNext })
     .returnType<{ background: string; text: string }>()
     .with({ isFilled: true }, () => ({ background: colors.primary, text: colors.onPrimary }))
-    .with({}, () => ({ background: colors.secondaryContainer, text: colors.onSecondaryContainer + '99' }))
+    .with({ isNext: true }, () => ({ background: colors.secondaryContainer, text: colors.onSecondaryContainer }))
+    .with({}, () => ({ background: colors.surfaceContainerHighest, text: colors.onSurfaceVariant + '99' }))
     .exhaustive();
+  const weightColors = isLater
+    ? { background: colors.surfaceContainerHigh, text: colors.onSurfaceVariant }
+    : { background: colors.secondaryContainer + 'AA', text: colors.onSecondaryContainer };
 
   return (
     <View
@@ -52,6 +59,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
           overflow: 'hidden',
         }}
       >
+        {isNext ? <NextSetPulse /> : undefined}
         <Pressable
           onPress={props.onPressReps}
           testID="repcount"
@@ -60,7 +68,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
             height: spacing[15],
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: setColors.background,
+            backgroundColor: isNext ? 'transparent' : setColors.background,
             paddingHorizontal: spacing[2],
           }}
         >
@@ -86,7 +94,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
       {showsWeight && (
         <View
           style={{
-            backgroundColor: colors.secondaryContainer + 'AA',
+            backgroundColor: weightColors.background,
             borderTopLeftRadius: rounding.segmentedBetweenRadius,
             borderTopRightRadius: rounding.segmentedBetweenRadius,
             borderBottomLeftRadius: rounding.roundedRectangleRadius,
@@ -105,7 +113,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
               padding: spacing[2],
             }}
           >
-            <Text style={{ color: colors.onSecondaryContainer, ...font['text-sm'] }}>
+            <Text style={{ color: weightColors.text, ...font['text-sm'] }}>
               <WeightFormat weight={props.set.weight} usesBodyweight={props.resistance === 'bodyweight'} />
             </Text>
           </Pressable>
@@ -128,4 +136,43 @@ function Pressable(props: { onPress: (() => void) | undefined; style: object; te
       {props.children}
     </TouchableRipple>
   );
+}
+
+const pulseStrength = 0.35;
+
+function NextSetPulse() {
+  const { colors } = useAppTheme();
+  const strength = useAnimatedValue(0);
+
+  useEffect(() => {
+    const pulse = Animated.loop(
+      Animated.sequence(
+        [pulseStrength, 0].map((toValue) =>
+          Animated.timing(strength, {
+            toValue,
+            duration: 1200,
+            easing: Easing.inOut(Easing.sin),
+            useNativeDriver: true,
+          }),
+        ),
+      ),
+    );
+    let cancelled = false;
+    void AccessibilityInfo.isReduceMotionEnabled().then((reduceMotion) => {
+      if (!cancelled && !reduceMotion) {
+        pulse.start();
+      }
+    });
+    return () => {
+      cancelled = true;
+      pulse.stop();
+    };
+  }, [strength]);
+
+  const backgroundColor = strength.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.secondaryContainer, colors.primary],
+  });
+
+  return <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor }]} />;
 }

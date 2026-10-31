@@ -2,10 +2,11 @@ import { SegmentedList } from '@/components/presentation/foundation/segmented-li
 import { WeightedExerciseStatSummary } from '@/components/presentation/stats/weighted-exercise-stat-summary';
 import { spacing } from '@/hooks/useAppTheme';
 import { GranularStatisticView, WeightedExerciseStatistics } from '@/store/stats';
-import { useTranslate, T } from '@tolgee/react';
+import { T } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Searchbar, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
+import { SearchField } from '@/components/presentation/foundation/search-field';
 
 export function WeightedExerciseListSearcher({
   stats: { weightedExerciseStats },
@@ -15,7 +16,6 @@ export function WeightedExerciseListSearcher({
   onItemPress: (item: WeightedExerciseStatistics) => void;
 }) {
   const [searchText, setSearchText] = useState('');
-  const { t } = useTranslate();
   const [filteredExercises, setFilteredExercises] = useState(weightedExerciseStats);
   const handleChangeText = (value: string) => {
     setSearchText(value);
@@ -31,12 +31,7 @@ export function WeightedExerciseListSearcher({
         flex: 1,
       }}
     >
-      <Searchbar
-        mode="bar"
-        placeholder={t('generic.search.button')}
-        value={searchText}
-        onChangeText={handleChangeText}
-      />
+      <SearchField value={searchText} onChangeText={handleChangeText} />
       {!filteredExercises.length && (
         <Text>
           <T keyName="stats.no_data.message" />

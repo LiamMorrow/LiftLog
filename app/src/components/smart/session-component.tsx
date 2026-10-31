@@ -6,27 +6,21 @@ import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/foundation/item-list';
-import {
-  RecordedCardioExercise,
-  RecordedCardioExerciseSet,
-  RecordedExercise,
-  RecordedWeightedExercise,
-  Session,
-} from '@/models/session-models';
-import { Updater } from '@/utils/types';
+import { RecordedCardioExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
 import { CardioTimer } from '@/components/presentation/workout/cardio/cardio-timer';
-import WeightedExercise from '@/components/presentation/workout/weighted/weighted-exercise';
 import WeightDisplay from '@/components/presentation/foundation/editors/weight-display';
 import BigNumber from 'bignumber.js';
 import RestTimer from '@/components/presentation/workout/rest-timer';
 import { FloatingPane } from '@/components/presentation/workout/floating-pane';
+import { EditDockHost, EditDockProvider } from '@/components/presentation/workout/edit-dock';
+import { SessionExercise, updateCardioSet } from '@/components/smart/session-exercise';
 import { CheerBanner } from '@/components/smart/cheer-banner';
 import { useArrivingCheers } from '@/hooks/useArrivingCheers';
 import { ReactNode } from 'react';
+import { SupersetGroup } from '@/components/presentation/workout/superset-group';
+import { ExerciseGroup, groupSupersets } from '@/utils/superset-groups';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import { getSessionExerciseEditorHref } from '@/components/smart/session-exercise-editor';
-import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
-import { useRouter } from 'expo-router';
+import { OffsetDateTime } from '@js-joda/core';
 import { useAppSelector } from '@/store';
 import { readPreviousExercises } from '@/db/sessions';
 import { useSessionsQuery } from '@/hooks/useSessionsQuery';
@@ -34,7 +28,6 @@ import { PageActions } from '@/components/presentation/foundation/page-actions';
 import AddIcon from '@expo/material-symbols/add.xml';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { match, P } from 'ts-pattern';
-import { CardioExercise } from '@/components/presentation/workout/cardio/cardio-exercise';
 import WeightFormat from '../presentation/foundation/weight-format';
 import { formatDuration } from '@/utils/format-date';
 import { useAddExercise } from '@/hooks/useAddExercise';
@@ -57,7 +50,6 @@ export default function SessionComponent(props: {
   const { session, isActiveWorkout } = props;
   const { colors } = useAppTheme();
   const { t } = useTranslate();
-  const { push } = useRouter();
   const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
   const { cheers: arrivingCheers, dismiss: dismissCheers } = useArrivingCheers(
     isActiveWorkout ? session.id : undefined,
@@ -89,31 +81,6 @@ export default function SessionComponent(props: {
   const toggleRestTimerPaused = () => {
     updateSession((s) => s.with({ restTimer: s.restTimer?.togglePause(OffsetDateTime.now()) }));
   };
-
-  // Both the set's own tiles and the docked clock write through here, so a set earns its rest
-  // whichever way it was filled in.
-  const updateCardioSet = (exerciseIndex: number) => (setIndex: number, update: Updater<RecordedCardioExerciseSet>) => {
-    const now = OffsetDateTime.now();
-    updateSession((s) => {
-      const before = s.cardioSetAt(exerciseIndex, setIndex);
-      const updated = s.withCardioSet(exerciseIndex, setIndex, update, now);
-      return updated.cardioSetAt(exerciseIndex, setIndex)?.earnsRest(before)
-        ? updated.withRestTimerAt(updated.lastExercise?.latestTime)
-        : updated;
-    });
-  };
-
-  const updateWeightedExercise = (exerciseIndex: number) => (update: Updater<RecordedWeightedExercise>) =>
-    updateSession((s) => {
-      const updated = s.withExercise(
-        exerciseIndex,
-        update(s.recordedExercises[exerciseIndex] as RecordedWeightedExercise),
-      );
-      return updated.hasSameLatestCompletion(s) ? updated : updated.withRestTimerAt(updated.lastExercise?.latestTime);
-    });
-
-  const startCardioTimer = (exerciseIndex: number) => (setIndex: number) =>
-    updateSession((s) => s.withCardioTimerStarted(exerciseIndex, setIndex, OffsetDateTime.now()));
 
   const notesComponent = session.blueprint.notes ? (
     <Card
@@ -148,63 +115,28 @@ export default function SessionComponent(props: {
       </EmptyInfo>
     ) : null;
 
-  const renderItem = (item: RecordedExercise, index: number) => {
-    return match(item)
-      .with(P.instanceOf(RecordedWeightedExercise), (item) => (
-        <WeightedExercise
-          timeProvider={() =>
-            isActiveWorkout
-              ? OffsetDateTime.now()
-              : (session.lastExercise?.latestTime ??
-                session.date.atTime(LocalTime.now()).atZone(ZoneId.systemDefault()).toOffsetDateTime())
-          }
-          recordedExercise={item}
-          toStartNext={session.nextExercise === item}
-          updateExercise={updateWeightedExercise(index)}
-          onEditExercise={
-            editableSessionId ? () => push(getSessionExerciseEditorHref(editableSessionId, index)) : undefined
-          }
-          onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
-          onMoveExerciseUp={
-            !isReadonly && index > 0 ? () => updateSession((s) => s.withExerciseMovedUp(index)) : undefined
-          }
-          onMoveExerciseDown={
-            !isReadonly && index < session.recordedExercises.length - 1
-              ? () => updateSession((s) => s.withExerciseMovedDown(index))
-              : undefined
-          }
+  const renderGroup = (group: ExerciseGroup) => {
+    const exercises = group.members.map(({ index, label }) => {
+      const exercise = session.recordedExercises[index]!;
+      return (
+        <SessionExercise
+          key={index}
+          exercise={exercise}
+          index={index}
+          exerciseCount={session.recordedExercises.length}
+          supersetLabel={label}
+          toStartNext={nextExercise === exercise}
           isReadonly={isReadonly}
-          showPreviousButton={!!isActiveWorkout}
-          previousLineageExercise={previousExercises?.[item.progressionKey()] as RecordedWeightedExercise | undefined}
+          isActiveWorkout={!!isActiveWorkout}
+          editableSessionId={editableSessionId}
+          sessionDate={session.date}
+          lastCompletedAt={isActiveWorkout ? undefined : lastExercise?.latestTime}
+          previousLineageExercise={previousExercises?.[exercise.progressionKey()]}
+          updateSession={updateSession}
         />
-      ))
-      .with(P.instanceOf(RecordedCardioExercise), (item) => (
-        <CardioExercise
-          recordedExercise={item}
-          updateExercise={(ex) =>
-            updateSession((s) => s.withExercise(index, ex(s.recordedExercises[index] as RecordedCardioExercise)))
-          }
-          updateSet={updateCardioSet(index)}
-          onStartTimer={startCardioTimer(index)}
-          toStartNext={session.nextExercise === item}
-          onEditExercise={
-            editableSessionId ? () => push(getSessionExerciseEditorHref(editableSessionId, index)) : undefined
-          }
-          onRemoveExercise={() => updateSession((s) => s.withRemovedExercise(index))}
-          onMoveExerciseUp={
-            !isReadonly && index > 0 ? () => updateSession((s) => s.withExerciseMovedUp(index)) : undefined
-          }
-          onMoveExerciseDown={
-            !isReadonly && index < session.recordedExercises.length - 1
-              ? () => updateSession((s) => s.withExerciseMovedDown(index))
-              : undefined
-          }
-          isReadonly={isReadonly}
-          showPreviousButton={!!isActiveWorkout}
-          previousLineageExercise={previousExercises?.[item.progressionKey()] as RecordedCardioExercise | undefined}
-        />
-      ))
-      .exhaustive();
+      );
+    });
+    return group.isSuperset ? <SupersetGroup>{exercises}</SupersetGroup> : exercises;
   };
 
   const bodyweight = props.showBodyweight ? (
@@ -268,12 +200,12 @@ export default function SessionComponent(props: {
       banner={cheerBanner}
       set={runningCardio.set}
       onPersist={() =>
-        updateCardioSet(runningCardio.exerciseIndex)(runningCardio.setIndex, (s) =>
+        updateCardioSet(updateSession, runningCardio.exerciseIndex, runningCardio.setIndex, (s) =>
           s.withTimerReanchored(OffsetDateTime.now()),
         )
       }
       onStop={() =>
-        updateCardioSet(runningCardio.exerciseIndex)(runningCardio.setIndex, (s) =>
+        updateCardioSet(updateSession, runningCardio.exerciseIndex, runningCardio.setIndex, (s) =>
           s.withTimerStopped(OffsetDateTime.now()),
         )
       }
@@ -285,16 +217,18 @@ export default function SessionComponent(props: {
 
   // The timer rides above the action, so the action stays put whether or not a rest is running.
   const floatingBottomContainer = isReadonly ? null : (
-    <PageActions
-      accessory={accessory}
-      primaryExpanded={!timer}
-      primary={{
-        label: t('exercise.add.title'),
-        icon: AddIcon,
-        systemImage: 'plus',
-        onPress: addExercise,
-      }}
-    />
+    <EditDockHost>
+      <PageActions
+        accessory={accessory}
+        primaryExpanded={!timer}
+        primary={{
+          label: t('exercise.add.title'),
+          icon: AddIcon,
+          systemImage: 'plus',
+          onPress: addExercise,
+        }}
+      />
+    </EditDockHost>
   );
 
   const workoutSummary = (
@@ -339,7 +273,7 @@ export default function SessionComponent(props: {
       {props.header}
       {notesComponent}
       {emptyInfo}
-      <ItemList items={session.recordedExercises} renderItem={renderItem} />
+      <ItemList items={groupSupersets(session.recordedExercises)} renderItem={renderGroup} />
       {bodyweight}
       {workoutSummary}
     </>
@@ -349,5 +283,9 @@ export default function SessionComponent(props: {
     return content;
   }
 
-  return <FullHeightScrollView floatingChildren={floatingBottomContainer}>{content}</FullHeightScrollView>;
+  return (
+    <EditDockProvider>
+      <FullHeightScrollView floatingChildren={floatingBottomContainer}>{content}</FullHeightScrollView>
+    </EditDockProvider>
+  );
 }

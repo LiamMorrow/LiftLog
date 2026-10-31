@@ -1,10 +1,10 @@
 import { SettingsPage } from '@/components/layout/settings-page';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import { CreateFeedAccountCard } from '@/components/smart/create-feed-account-card';
-import { FormRow } from '@/components/presentation/foundation/form-row';
 import { Remote } from '@/components/presentation/foundation/remote';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
+import { SegmentedListTextInput } from '@/components/presentation/foundation/segmented-list-text-input';
 import { FeedIdentity } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import { resetFeedAccount, selectFeedIdentityRemote, updateFeedIdentity } from '@/store/feed';
@@ -13,7 +13,6 @@ import { setShowFeed } from '@/store/settings';
 import { useTranslate } from '@tolgee/react';
 import { Href, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export type FeedSettingsFocus = 'publish' | 'live';
@@ -83,15 +82,14 @@ function FeedSettingsForm({
   const [deleteAccountDialogOpen, setDeleteAccountDialogOpen] = useState(false);
   return (
     <>
-      <FormRow>
-        <TextInput
+      <SegmentedGroup>
+        <SegmentedListTextInput
           label={t('feed.your_name.label')}
           placeholder={t('generic.optional.label')}
           value={identity.name ?? ''}
-          mode="outlined"
           onChangeText={(name) => updateProfile({ name })}
         />
-      </FormRow>
+      </SegmentedGroup>
       <SegmentedGroup>
         <SegmentListFormElement
           icon={'share'}

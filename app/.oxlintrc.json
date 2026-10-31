@@ -78,12 +78,29 @@
             "name": "react-native-paper",
             "importNames": ["IconButton", "TouchableRipple", "Button"],
             "message": "Use our wrappers in @/components/presentation/foundation/ - they are more reliable as they use GestureHandler"
+          },
+          {
+            "name": "react-native-paper",
+            "importNames": ["TextInput", "Searchbar"],
+            "message": "Use TextField, SegmentedListTextInput, PillTextField or SearchField from @/components/presentation/foundation/"
+          },
+          {
+            "name": "react-native",
+            "importNames": ["TextInput"],
+            "allowTypeImports": true,
+            "message": "Use TextField, SegmentedListTextInput, PillTextField or SearchField from @/components/presentation/foundation/"
           }
         ]
       }
     ]
   },
   "overrides": [
+    {
+      "files": ["src/components/presentation/foundation/text-field.tsx"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    },
     {
       "files": ["src/components/**/*.{ts,tsx}"],
       "rules": {

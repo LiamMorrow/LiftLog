@@ -50,6 +50,7 @@ export function ExerciseSearch(props: { requestId: string; exerciseName: string 
           if (i.index === 0) {
             return (
               <ExerciseFilterer
+                autoFocus
                 exerciseName={props.exerciseName}
                 onSuggestedNewExercise={setSuggestedNewExercise}
                 onFilteredExerciseIdsChange={setFilteredExerciseIds}

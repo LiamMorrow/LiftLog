@@ -68,7 +68,7 @@ export function MuscleAnalysis(props: { programId: string }) {
   };
 
   return (
-    <FullHeightScrollView scrollStyle={{ paddingHorizontal: spacing.pageHorizontalMargin }}>
+    <FullHeightScrollView modal scrollStyle={{ paddingHorizontal: spacing.pageHorizontalMargin }}>
       <Stack.Screen options={{ title: t('plan.muscle_analysis.title') }} />
       <View style={{ gap: spacing[4], paddingBottom: spacing[12] }}>
         {program.sessions.length > 1 && (

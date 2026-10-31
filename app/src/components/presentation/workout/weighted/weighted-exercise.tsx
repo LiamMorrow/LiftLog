@@ -1,11 +1,12 @@
 import PotentialSetCounter from '@/components/presentation/workout/weighted/potential-set-counter';
 import { spacing } from '@/hooks/useAppTheme';
 import { RecordedWeightedExercise } from '@/models/session-models';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { View } from 'react-native';
 import ExerciseSection from '@/components/presentation/workout/exercise-section';
 import { OffsetDateTime } from '@js-joda/core';
 import { Updater } from '@/utils/types';
+import { useTranslate } from '@tolgee/react';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedWeightedExercise;
@@ -13,6 +14,7 @@ interface WeightedExerciseProps {
   toStartNext: boolean;
   isReadonly: boolean;
   showPreviousButton: boolean;
+  titleLeading?: ReactNode;
 
   timeProvider: () => OffsetDateTime;
   updateExercise: (update: Updater<RecordedWeightedExercise>) => void;
@@ -25,7 +27,8 @@ interface WeightedExerciseProps {
 export default function WeightedExercise(props: WeightedExerciseProps) {
   const { updateExercise, timeProvider } = props;
   const { recordedExercise } = props;
-  useState(false);
+  const { t } = useTranslate();
+  const [weightEditOriginal, setWeightEditOriginal] = useState<RecordedWeightedExercise>();
 
   const setToStartNext = recordedExercise.potentialSets.findIndex((x) => !x.isComplete);
 
@@ -36,6 +39,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
       toStartNext={props.toStartNext}
       isReadonly={props.isReadonly}
       showPreviousButton={props.showPreviousButton}
+      titleLeading={props.titleLeading}
       updateExercise={props.updateExercise}
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
@@ -57,8 +61,16 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
               const time = timeProvider();
               updateExercise((ex) => ex.withRepCount(index, reps, time));
             }}
-            onUpdateWeight={(w, applyTo) => updateExercise((ex) => ex.withWeight(index, w, applyTo))}
+            editorSubtitle={t('exercise.set_of_exercise.label', {
+              exercise: recordedExercise.blueprint.name,
+              number: index + 1,
+            })}
+            onBeginWeightEdit={() => setWeightEditOriginal(recordedExercise)}
+            onUpdateWeight={(w, applyTo) =>
+              updateExercise((ex) => ex.withWeightOver(weightEditOriginal ?? ex, index, w, applyTo))
+            }
             set={set}
+            hasRemainingSets={recordedExercise.potentialSets.some((s) => !s.set)}
             toStartNext={props.toStartNext && setToStartNext === index && !props.isReadonly}
             resistance={recordedExercise.blueprint.resistance}
             weightIncrement={recordedExercise.blueprint.weightIncrement}

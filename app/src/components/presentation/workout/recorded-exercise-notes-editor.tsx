@@ -1,9 +1,8 @@
-import Button from '@/components/presentation/foundation/button';
+import { TextField } from '@/components/presentation/foundation/text-field';
+import { DockedEditor } from '@/components/presentation/workout/edit-dock';
+import { spacing } from '@/hooks/useAppTheme';
 import { useDerivedState } from '@/hooks/useDerivedState';
-import { T } from '@tolgee/react';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-
-import { Portal, Dialog, TextInput } from 'react-native-paper';
+import { useTranslate } from '@tolgee/react';
 
 export default function RecordedExerciseNotesEditor(props: {
   exerciseName: string;
@@ -12,55 +11,32 @@ export default function RecordedExerciseNotesEditor(props: {
   onUpdateNotes: (n: string) => void;
   onDismiss: () => void;
 }) {
-  const { open, notes, onUpdateNotes, onDismiss, exerciseName } = props;
-  const [editorNotes, setEditorNotes] = useDerivedState(notes, (notes) => notes ?? '');
+  const { t } = useTranslate();
+  const [editorNotes, setEditorNotes] = useDerivedState(props.notes, (notes) => notes ?? '');
 
   return (
-    open && (
-      <Portal>
-        <KeyboardAvoidingView
-          behavior={'height'}
-          style={{
-            flex: 1,
-            pointerEvents: open ? 'box-none' : 'none',
-          }}
-        >
-          <Dialog visible={open} onDismiss={onDismiss}>
-            <Dialog.Title>
-              <T keyName="workout.notes_for.title" params={{ name: exerciseName }} />
-            </Dialog.Title>
-            <Dialog.Content>
-              <TextInput
-                defaultValue={editorNotes}
-                multiline
-                mode="outlined"
-                numberOfLines={6}
-                onChangeText={setEditorNotes}
-              />
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button
-                testID="cancel-notes"
-                onPress={() => {
-                  onDismiss();
-                  setEditorNotes(notes || '');
-                }}
-              >
-                <T keyName="generic.cancel.button" />
-              </Button>
-              <Button
-                testID="save-notes"
-                onPress={() => {
-                  onUpdateNotes(editorNotes);
-                  onDismiss();
-                }}
-              >
-                <T keyName="generic.save.button" />
-              </Button>
-            </Dialog.Actions>
-          </Dialog>
-        </KeyboardAvoidingView>
-      </Portal>
-    )
+    <DockedEditor
+      open={props.open}
+      onClose={() => {
+        if (editorNotes !== (props.notes ?? '')) {
+          props.onUpdateNotes(editorNotes);
+        }
+        props.onDismiss();
+      }}
+      title={t('workout.notes.title')}
+      subtitle={props.exerciseName}
+    >
+      <TextField
+        underline="always"
+        testID="exercise-notes-input"
+        accessibilityLabel={t('workout.notes.title')}
+        value={editorNotes}
+        onChangeText={setEditorNotes}
+        multiline
+        autoFocus
+        textAlignVertical="top"
+        style={{ minHeight: spacing[20], maxHeight: spacing[40], paddingBottom: spacing[2] }}
+      />
+    </DockedEditor>
   );
 }

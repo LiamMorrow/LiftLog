@@ -1,22 +1,28 @@
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
-import ExerciseBlueprintSummary from '@/components/presentation/workout-editor/exercise-blueprint-summary';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import ItemList from '@/components/presentation/foundation/item-list';
 import Form from '@/components/presentation/foundation/form';
-import LabelledFormRow from '@/components/presentation/foundation/labelled-form-row';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
+import { TitledSection } from '@/components/presentation/foundation/titled-section';
+import { SegmentedGroup, SegmentedListItem } from '@/components/presentation/foundation/segmented-list';
+import { SegmentedListTextInput } from '@/components/presentation/foundation/segmented-list-text-input';
+import { ExerciseBlueprintRow } from '@/components/presentation/workout-editor/exercise-blueprint-row';
+import { SupersetLink } from '@/components/presentation/workout-editor/superset-link';
 import AddIcon from '@expo/material-symbols/add.xml';
 import CopyExerciseDialog from '@/components/smart/copy-exercise-dialog';
-import { spacing } from '@/hooks/useAppTheme';
+import { useReorderToolbarItem } from '@/components/smart/reorder-toolbar-item';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { WeightedExerciseBlueprint, Rest, SessionBlueprint, ExerciseBlueprint } from '@/models/blueprint-models';
+import { Session } from '@/models/session-models';
 import { useAppSelector } from '@/store';
 import { ProgramSessionLocation, selectProgramSession, updateProgram } from '@/store/program';
+import { groupSupersets } from '@/utils/superset-groups';
 import { T, useTranslate } from '@tolgee/react';
 import { Redirect, Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
-import { Card, TextInput } from 'react-native-paper';
+import { Fragment, useState } from 'react';
+import { View } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 export default function ManageWorkouts() {
@@ -32,9 +38,13 @@ export default function ManageWorkouts() {
   return <SessionEditor session={session} location={location} />;
 }
 
+type UpdateSession = (update: (session: SessionBlueprint) => SessionBlueprint) => void;
+
 function SessionEditor({ session, location }: { session: SessionBlueprint; location: ProgramSessionLocation }) {
   const dispatch = useDispatch();
-  const updateSession = (update: (session: SessionBlueprint) => SessionBlueprint) => {
+  const { colors } = useAppTheme();
+  const preferredWeightUnit = usePreferredWeightUnit();
+  const updateSession: UpdateSession = (update) => {
     dispatch(
       updateProgram({
         programId: location.programId,
@@ -42,16 +52,23 @@ function SessionEditor({ session, location }: { session: SessionBlueprint; locat
       }),
     );
   };
-  const [selectedExercise, setSelectedExercise] = useState<ExerciseBlueprint | undefined>(undefined);
-  const [isRemoveOpen, setIsRemoveOpen] = useState(false);
+  const [exerciseToRemove, setExerciseToRemove] = useState<ExerciseBlueprint | undefined>(undefined);
+  const [exerciseToCopy, setExerciseToCopy] = useState<ExerciseBlueprint | undefined>(undefined);
+  const [reordering, setReordering] = useState(false);
+  const reorderToolbarItem = useReorderToolbarItem({
+    reordering,
+    onToggle: () => setReordering(!reordering),
+    hidden: session.exercises.length < 2,
+  });
   const { push } = useRouter();
+  const { t } = useTranslate();
+
   const openExerciseEditor = (exerciseIndex: number) => {
     push({
       pathname: '/plan-workout-editor/[programId]/[sessionIndex]/exercise',
       params: { ...location, exerciseIndex },
     });
   };
-  const { t } = useTranslate();
   const beginAddExercise = () => {
     updateSession((s) =>
       s.withAddedExercise(
@@ -68,14 +85,28 @@ function SessionEditor({ session, location }: { session: SessionBlueprint; locat
     );
     openExerciseEditor(session.exercises.length);
   };
-  const setName = (name: string) => {
-    updateSession((s) => s.withName(name));
-  };
-  const setNotes = (notes: string) => {
-    updateSession((s) => s.withNotes(notes));
+  const toggleSupersetWithNext = (index: number) => {
+    const exercise = session.exercises[index];
+    if (exercise instanceof WeightedExerciseBlueprint) {
+      updateSession((s) => s.withExercise(index, exercise.with({ supersetWithNext: !exercise.supersetWithNext })));
+    }
   };
 
-  const floatingBottomContainer = (
+  const groups = groupSupersets(Session.getEmptySession(session, preferredWeightUnit).recordedExercises);
+  const lastIndex = session.exercises.length - 1;
+  const seamAbove = (index: number) => {
+    if (!reordering || index === 0) {
+      return undefined;
+    }
+    const above = session.exercises[index - 1];
+    return above instanceof WeightedExerciseBlueprint ? (
+      <SupersetLink linked={above.supersetWithNext} onToggle={() => toggleSupersetWithNext(index - 1)} />
+    ) : (
+      <View style={{ height: spacing[6] }} />
+    );
+  };
+
+  const floatingBottomContainer = reordering ? undefined : (
     <PageActions
       primary={{
         label: t('exercise.add.title'),
@@ -88,105 +119,119 @@ function SessionEditor({ session, location }: { session: SessionBlueprint; locat
   return (
     <FullHeightScrollView floatingChildren={floatingBottomContainer} modal>
       <Stack.Screen options={{ title: session.name }} />
+      <Stack.Toolbar placement="right">{reorderToolbarItem}</Stack.Toolbar>
       <Form>
-        <LabelledFormRow label={t('workout.name.label')} icon={'assignmentFill'}>
-          <TextInput mode="flat" value={session.name} onChangeText={setName} selectTextOnFocus />
-        </LabelledFormRow>
-        <LabelledFormRow label={t('workout.notes.label')} icon={'notesFill'}>
-          <TextInput mode="flat" value={session.notes} onChangeText={setNotes} multiline />
-        </LabelledFormRow>
-        <LabelledFormRow label={t('exercise.exercises.title')} icon={'fitnessCenterFill'} undoFormPadding noGap>
-          <ItemList
-            items={session.exercises}
-            verticalPadding={false}
-            empty={
-              <Card mode="contained" style={{ marginHorizontal: spacing[6] }}>
-                <Card.Content>
-                  <EmptyInfo>
-                    <T keyName="exercise.no_exercises_added.message" />
-                  </EmptyInfo>
-                </Card.Content>
-              </Card>
-            }
-            renderItem={(blueprint, index) => (
-              <ExerciseItem
-                blueprint={blueprint}
-                location={location}
-                updateSession={updateSession}
-                beginEdit={() => {
-                  openExerciseEditor(index);
-                }}
-                beginRemove={() => {
-                  setSelectedExercise(blueprint);
-                  setIsRemoveOpen(true);
-                }}
-              />
-            )}
+        <SegmentedGroup>
+          <SegmentedListTextInput
+            label={t('generic.name.label')}
+            value={session.name}
+            onChangeText={(name) => updateSession((s) => s.withName(name))}
+            selectTextOnFocus
           />
-        </LabelledFormRow>
+          <SegmentedListTextInput
+            label={t('generic.notes.label')}
+            value={session.notes}
+            onChangeText={(notes) => updateSession((s) => s.withNotes(notes))}
+            multiline
+          />
+        </SegmentedGroup>
+
+        <TitledSection
+          title={t('exercise.exercises.title')}
+          trailing={
+            session.exercises.length
+              ? t(session.exercises.length === 1 ? 'plan.summary.exercise' : 'plan.summary.exercises', {
+                  count: session.exercises.length,
+                })
+              : undefined
+          }
+        >
+          {session.exercises.length ? (
+            <View style={{ gap: reordering ? 0 : spacing[0.5] }}>
+              {groups.map((group) => (
+                <Fragment key={group.members[0]!.index}>
+                  {seamAbove(group.members[0]!.index)}
+                  <View style={{ gap: reordering ? 0 : spacing[0.5] }}>
+                    {group.isSuperset ? (
+                      <View
+                        style={{
+                          position: 'absolute',
+                          left: -(spacing.pageHorizontalMargin + spacing[1]) / 2,
+                          top: spacing[3],
+                          bottom: spacing[3],
+                          width: spacing[1],
+                          borderRadius: spacing[0.5],
+                          backgroundColor: colors.tertiary,
+                        }}
+                      />
+                    ) : undefined}
+                    {group.members.map(({ index, label }, memberIndex) => {
+                      const blueprint = session.exercises[index]!;
+                      return (
+                        <Fragment key={index}>
+                          {memberIndex > 0 ? seamAbove(index) : undefined}
+                          <SegmentedListItem
+                            isFirst={reordering ? memberIndex === 0 : index === 0}
+                            isLast={reordering ? memberIndex === group.members.length - 1 : index === lastIndex}
+                          >
+                            <ExerciseBlueprintRow
+                              blueprint={blueprint}
+                              supersetLabel={label}
+                              reordering={reordering}
+                              canMoveUp={index > 0}
+                              canMoveDown={index < lastIndex}
+                              onEdit={() => openExerciseEditor(index)}
+                              onMoveUp={() => updateSession((s) => s.withExerciseMovedUp(blueprint))}
+                              onMoveDown={() => updateSession((s) => s.withExerciseMovedDown(blueprint))}
+                              onRemove={() => setExerciseToRemove(blueprint)}
+                              onCopyTo={() => setExerciseToCopy(blueprint)}
+                            />
+                          </SegmentedListItem>
+                        </Fragment>
+                      );
+                    })}
+                  </View>
+                </Fragment>
+              ))}
+            </View>
+          ) : (
+            <SegmentedListItem isFirst isLast>
+              <View style={{ padding: spacing[4] }}>
+                <EmptyInfo>
+                  <T keyName="exercise.no_exercises_added.message" />
+                </EmptyInfo>
+              </View>
+            </SegmentedListItem>
+          )}
+        </TitledSection>
       </Form>
       <ConfirmationDialog
         headline={t('exercise.remove.confirm.title')}
         onOk={() => {
-          const selected = selectedExercise;
-          setSelectedExercise(undefined);
-          setIsRemoveOpen(false);
+          const selected = exerciseToRemove;
+          setExerciseToRemove(undefined);
           if (selected) updateSession((s) => s.withoutExercise(selected));
         }}
-        onCancel={() => setIsRemoveOpen(false)}
-        open={!!selectedExercise && isRemoveOpen}
+        onCancel={() => setExerciseToRemove(undefined)}
+        open={!!exerciseToRemove}
         textContent={
           <LimitedHtml
             value={t('exercise.remove_from_workout.confirm.body', {
-              exercise: selectedExercise?.name ?? '',
+              exercise: exerciseToRemove?.name ?? '',
               session: session.name,
             })}
           />
         }
       />
+      {exerciseToCopy ? (
+        <CopyExerciseDialog
+          visible
+          onDismiss={() => setExerciseToCopy(undefined)}
+          exerciseBlueprint={exerciseToCopy}
+          currentSessionIndex={location.sessionIndex}
+          programId={location.programId}
+        />
+      ) : undefined}
     </FullHeightScrollView>
-  );
-}
-
-function ExerciseItem({
-  blueprint,
-  beginEdit,
-  beginRemove,
-  location,
-  updateSession,
-}: {
-  blueprint: ExerciseBlueprint;
-  beginEdit: () => void;
-  beginRemove: () => void;
-  location: ProgramSessionLocation;
-  updateSession: (update: (session: SessionBlueprint) => SessionBlueprint) => void;
-}) {
-  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
-
-  const moveDown = () => {
-    updateSession((s) => s.withExerciseMovedDown(blueprint));
-  };
-  const moveUp = () => {
-    updateSession((s) => s.withExerciseMovedUp(blueprint));
-  };
-
-  return (
-    <>
-      <ExerciseBlueprintSummary
-        blueprint={blueprint}
-        onEdit={beginEdit}
-        onMoveDown={moveDown}
-        onMoveUp={moveUp}
-        onRemove={beginRemove}
-        onCopyTo={() => setCopyDialogOpen(true)}
-      />
-      <CopyExerciseDialog
-        visible={copyDialogOpen}
-        onDismiss={() => setCopyDialogOpen(false)}
-        exerciseBlueprint={blueprint}
-        currentSessionIndex={location.sessionIndex}
-        programId={location.programId}
-      />
-    </>
   );
 }

@@ -17,8 +17,13 @@ appId: com.limajuice.liftlog
     commands:
       - tapOn: 'Replace'
 - tapOn: 'Add exercise'
+- scrollUntilVisible:
+    element:
+      id: 'exercise-type'
+    direction: DOWN
 - tapOn:
-    id: 'cardio-button'
+    id: 'exercise-type'
+- tapOn: 'Cardio/Time'
 - back
 
 # The plan says which metrics the set tracks, so its tiles are there before anything is entered.
@@ -48,7 +53,7 @@ appId: com.limajuice.liftlog
 - inputText: '45'
 - hideKeyboard
 - tapOn:
-    id: 'cardio-value-save'
+    id: 'edit-dock-done'
 - assertVisible: '45'
 
 # Finish the (incomplete) session and confirm

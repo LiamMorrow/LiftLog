@@ -1,16 +1,19 @@
 import { ExerciseDescriptor } from '@/models/exercise-models';
+import { CardioExerciseSetBlueprintJSON } from '@/models/storage/versions/latest';
 import { createAction, createSlice, PayloadAction, UnknownAction } from '@reduxjs/toolkit';
 
 const initialState: AppState = {
   isHydrated: false,
   currentSnackbar: undefined,
   exerciseSearchResult: undefined,
+  cardioSetEdit: undefined,
 };
 
 type AppState = {
   isHydrated: boolean;
   currentSnackbar: SnackbarDescriptor | undefined;
   exerciseSearchResult: ExerciseSearchResult | undefined;
+  cardioSetEdit: CardioSetEdit | undefined;
 };
 
 // The exercise search is its own route, so it hands its result back through the store rather than a
@@ -19,6 +22,14 @@ type AppState = {
 export type ExerciseSearchResult = {
   requestId: string;
   exercise: ExerciseDescriptor;
+};
+
+// Same handoff for the cardio set editor route, sent on every change so the exercise editor below it stays
+// live. A null set means the set was removed.
+export type CardioSetEdit = {
+  requestId: string;
+  setIndex: number;
+  set: CardioExerciseSetBlueprintJSON | null;
 };
 
 const appSlice = createSlice({
@@ -39,6 +50,14 @@ const appSlice = createSlice({
 
     clearExerciseSearchResult(state) {
       state.exerciseSearchResult = undefined;
+    },
+
+    setCardioSetEdit(state, action: PayloadAction<CardioSetEdit>) {
+      state.cardioSetEdit = action.payload;
+    },
+
+    clearCardioSetEdit(state) {
+      state.cardioSetEdit = undefined;
     },
   },
 });
@@ -69,7 +88,13 @@ export type SnackbarDescriptor =
     };
 export const showSnackbar = createAction<SnackbarDescriptor & { duration?: number }>('snackBarWithAction');
 
-export const { setIsHydrated, setCurrentSnackbar, setExerciseSearchResult, clearExerciseSearchResult } =
-  appSlice.actions;
+export const {
+  setIsHydrated,
+  setCurrentSnackbar,
+  setExerciseSearchResult,
+  clearExerciseSearchResult,
+  setCardioSetEdit,
+  clearCardioSetEdit,
+} = appSlice.actions;
 
 export default appSlice.reducer;

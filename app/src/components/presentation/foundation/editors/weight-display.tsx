@@ -1,4 +1,3 @@
-import WeightDialog from '@/components/presentation/foundation/editors/weight-dialog';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { font } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
@@ -6,6 +5,8 @@ import BigNumber from 'bignumber.js';
 import { useState } from 'react';
 import Button from '@/components/presentation/foundation/button';
 import { Weight } from '@/models/weight';
+import { DockedEditor } from '@/components/presentation/workout/edit-dock';
+import { WeightEditor } from '@/components/presentation/foundation/editors/weight-editor';
 
 type WeightDisplayProps = {
   increment: BigNumber;
@@ -26,31 +27,41 @@ type WeightDisplayProps = {
 );
 export default function WeightDisplay(props: WeightDisplayProps) {
   const { t } = useTranslate();
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
 
   return (
     <>
       <Button
         testID="weight-display"
         mode="text"
-        onPress={() => setDialogOpen(true)}
+        onPress={() => setEditorOpen(true)}
         labelStyle={{ ...font['text-lg'] }}
       >
         <WeightFormat weight={props.weight} color={'primary'} />
       </Button>
       {props.isReadonly ? null : (
-        <WeightDialog
-          open={dialogOpen}
-          // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
-          weight={props.weight!}
-          increment={props.increment}
-          allowNegative={props.allowNegative}
-          label={props.label ?? t('weight.weight.label')}
-          allowNull={props.allowNull}
-          // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
-          updateWeight={props.updateWeight as (weight: Weight | undefined) => void}
-          onClose={() => setDialogOpen(false)}
-        />
+        <DockedEditor
+          open={editorOpen}
+          onClose={() => setEditorOpen(false)}
+          title={props.label ?? t('weight.weight.label')}
+        >
+          {props.allowNull ? (
+            <WeightEditor
+              allowNull
+              weight={props.weight}
+              updateWeight={props.updateWeight}
+              increment={props.increment}
+              allowNegative={props.allowNegative}
+            />
+          ) : (
+            <WeightEditor
+              weight={props.weight}
+              updateWeight={props.updateWeight}
+              increment={props.increment}
+              allowNegative={props.allowNegative}
+            />
+          )}
+        </DockedEditor>
       )}
     </>
   );

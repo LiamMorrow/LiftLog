@@ -1,8 +1,8 @@
-import { FormRow } from '@/components/presentation/foundation/form-row';
-import { spacing } from '@/hooks/useAppTheme';
+import { TitledSection } from '@/components/presentation/foundation/titled-section';
+import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
+import { SegmentedListTextInput } from '@/components/presentation/foundation/segmented-list-text-input';
 import { CardioExerciseBlueprint, ExerciseBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { useTranslate } from '@tolgee/react';
-import { TextInput } from 'react-native-paper';
 
 export function SharedFieldsEditor({
   exercise,
@@ -13,29 +13,23 @@ export function SharedFieldsEditor({
 }) {
   const { t } = useTranslate();
   return (
-    <>
-      <FormRow>
-        <TextInput
-          mode="outlined"
+    <TitledSection title={t('generic.notes.label')}>
+      <SegmentedGroup>
+        <SegmentedListTextInput
           label={t('plan.notes.label')}
           testID="exercise-notes"
-          style={{ marginBottom: spacing[2] }}
           value={exercise.notes}
           onChangeText={(notes) => updateExercise({ notes })}
           multiline
         />
-      </FormRow>
-      <FormRow>
-        <TextInput
-          mode="outlined"
-          testID="exercise-link"
+        <SegmentedListTextInput
           label={t('generic.external_link.label')}
-          style={{ marginBottom: spacing[2] }}
+          testID="exercise-link"
           placeholder="https://"
           value={exercise.link}
           onChangeText={(link) => updateExercise({ link })}
         />
-      </FormRow>
-    </>
+      </SegmentedGroup>
+    </TitledSection>
   );
 }

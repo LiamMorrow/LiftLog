@@ -8,7 +8,8 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/icon-button';
-import { Appbar, TextInput, Tooltip } from 'react-native-paper';
+import { Appbar, Tooltip } from 'react-native-paper';
+import { PillTextField, pillTextFieldHeight } from '@/components/presentation/foundation/pill-text-field';
 import { useAppSelector } from '@/store';
 import {
   addMessage,
@@ -143,41 +144,38 @@ export default function AiPlanner() {
             paddingTop: COMPOSER_GAP,
             paddingBottom: insets.bottom + COMPOSER_GAP,
             flexDirection: 'row',
-            alignItems: 'center',
+            alignItems: 'flex-end',
           }}
         >
-          <ShareProgramButton disabled={isLoadingResponse || isOutOfDate} />
+          <View style={{ height: pillTextFieldHeight, justifyContent: 'center' }}>
+            <ShareProgramButton disabled={isLoadingResponse || isOutOfDate} />
+          </View>
 
-          <TextInput
+          <PillTextField
             value={messageText}
-            editable={!isOutOfDate}
-            style={{
-              flex: 1,
-              borderRadius: 30,
-              borderTopLeftRadius: 30,
-              borderTopRightRadius: 30,
-            }}
+            readOnly={isOutOfDate}
+            style={{ flex: 1 }}
             onChangeText={setMessageText}
             multiline
             placeholder={t('ai.type_your_message.placeholder')}
+            accessibilityLabel={t('ai.type_your_message.placeholder')}
             onSubmitEditing={(e) => setMessageText(e.nativeEvent.text + '\n')}
             submitBehavior="submit"
             returnKeyType="default"
-            underlineStyle={{ display: 'none' }}
           />
 
-          {isLoadingResponse && (
-            <IconButton mode="outlined" icon={'stop'} size={35} onPress={() => dispatch(stopAiGenerator())} />
-          )}
-
-          <IconButton
-            mode="contained"
-            icon={'send'}
-            size={35}
-            disabled={isOutOfDate}
-            mirrored={I18nManager.isRTL}
-            onPress={() => sendMessage(messageText)}
-          />
+          <View style={{ height: pillTextFieldHeight, flexDirection: 'row', alignItems: 'center' }}>
+            {isLoadingResponse && (
+              <IconButton mode="outlined" icon={'stop'} onPress={() => dispatch(stopAiGenerator())} />
+            )}
+            <IconButton
+              mode="contained"
+              icon={'send'}
+              disabled={isOutOfDate}
+              mirrored={I18nManager.isRTL}
+              onPress={() => sendMessage(messageText)}
+            />
+          </View>
         </View>
       </Animated.View>
     </View>

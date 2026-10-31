@@ -1,20 +1,29 @@
-import CardList from '@/components/presentation/foundation/card-list';
+import { SettingsPage } from '@/components/layout/settings-page';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
-import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
-import AddIcon from '@expo/material-symbols/add.xml';
-import AccessibilityNew from '@expo/material-symbols/accessibility_new.xml';
-import ManageWorkoutCardContent from '@/components/smart/manage-workout-card-content';
+import { TitledSection } from '@/components/presentation/foundation/titled-section';
+import {
+  SegmentedGroup,
+  SegmentedListItem,
+  SegmentListFormElement,
+} from '@/components/presentation/foundation/segmented-list';
+import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
+import { SegmentedListTextInput } from '@/components/presentation/foundation/segmented-list-text-input';
 import { getMuscleAnalysisHref } from '@/components/smart/muscle-analysis';
+import { PlanWorkoutRow } from '@/components/smart/plan-workout-row';
+import { useReorderToolbarItem } from '@/components/smart/reorder-toolbar-item';
 import { spacing } from '@/hooks/useAppTheme';
+import { SharedProgramBlueprint } from '@/models/feed-models';
 import { EmptySession } from '@/models/session-models';
 import { useAppSelectorWithArg } from '@/store';
+import { encryptAndShare } from '@/store/feed';
 import { addProgramSession, selectProgram, setSavedPlanName } from '@/store/program';
+import AddIcon from '@expo/material-symbols/add.xml';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { Platform } from 'react-native';
-import { Card, TextInput } from 'react-native-paper';
+import { useState } from 'react';
+import { View } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 export default function ManageWorkouts() {
@@ -23,6 +32,13 @@ export default function ManageWorkouts() {
   const program = useAppSelectorWithArg(selectProgram, programId);
   const { t } = useTranslate();
   const dispatch = useDispatch();
+  const [reordering, setReordering] = useState(false);
+  const reorderToolbarItem = useReorderToolbarItem({
+    reordering,
+    onToggle: () => setReordering(!reordering),
+    hidden: program.sessions.length < 2,
+  });
+
   const selectSession = (index: number) => {
     push(`/plan-workout-editor/${programId}/${index}`);
   };
@@ -31,15 +47,18 @@ export default function ManageWorkouts() {
     const newSession = EmptySession.blueprint.with({
       name: `${t('workout.workout.label')} ${program.sessions.length + 1}`,
     });
-    dispatch(
-      addProgramSession({
-        programId,
-        sessionBlueprint: newSession,
-      }),
-    );
+    dispatch(addProgramSession({ programId, sessionBlueprint: newSession }));
     selectSession(program.sessions.length);
   };
-  const floatingBottomContainer = (
+
+  const days = program.sessions.length;
+  const exercises = program.sessions.reduce((total, session) => total + session.exercises.length, 0);
+  const summary = [
+    t(days === 1 ? 'plan.summary.day' : 'plan.summary.days', { count: days }),
+    t(exercises === 1 ? 'plan.summary.exercise' : 'plan.summary.exercises', { count: exercises }),
+  ].join(' · ');
+
+  const actions = reordering ? undefined : (
     <PageActions
       primary={{
         label: t('workout.add.button'),
@@ -49,46 +68,64 @@ export default function ManageWorkouts() {
       }}
     />
   );
-  const emptyInfo = program.sessions.length ? undefined : (
-    <EmptyInfo>
-      <LimitedHtml value={t('workout.no_workouts_in_plan.message')} />
-    </EmptyInfo>
-  );
-  return (
-    <FullHeightScrollView
-      floatingChildren={floatingBottomContainer}
-      scrollStyle={{
-        paddingHorizontal: spacing.pageHorizontalMargin,
-      }}
-    >
-      <Stack.Screen options={{ title: program.name }} />
-      <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Button
-          hidden={!program.sessions.length}
-          accessibilityLabel={t('plan.muscle_analysis.title')}
-          onPress={() => push(getMuscleAnalysisHref(programId))}
-        >
-          <Stack.Toolbar.Icon sf="figure.arms.open" {...(Platform.OS === 'ios' ? {} : { src: AccessibilityNew })} />
-        </Stack.Toolbar.Button>
-      </Stack.Toolbar>
-      <TextInput
-        value={program.name}
-        style={{ marginBottom: spacing[2] }}
-        mode="flat"
-        onChangeText={(name) => dispatch(setSavedPlanName({ programId: programId, name }))}
-      />
-      {emptyInfo}
 
-      <CardList
-        items={program.sessions}
-        cardType="contained"
-        onPress={(_, i) => selectSession(i)}
-        renderItemContent={(session) => (
-          <Card.Content>
-            <ManageWorkoutCardContent sessionBlueprint={session} programId={programId} />
-          </Card.Content>
+  return (
+    <SettingsPage title={program.name} actions={actions}>
+      <Stack.Toolbar placement="right">{reorderToolbarItem}</Stack.Toolbar>
+      <SegmentedGroup>
+        <SegmentedListTextInput
+          label={t('generic.name.label')}
+          value={program.name}
+          onChangeText={(name) => dispatch(setSavedPlanName({ programId, name }))}
+        />
+      </SegmentedGroup>
+
+      <TitledSection title={t('plan.workouts.title')} trailing={days ? summary : undefined}>
+        {days ? (
+          <SegmentedGroup>
+            {program.sessions.map((session, index) => (
+              <PlanWorkoutRow
+                key={index}
+                programId={programId}
+                sessionBlueprint={session}
+                sessionIndex={index}
+                reordering={reordering}
+                onPress={() => selectSession(index)}
+              />
+            ))}
+          </SegmentedGroup>
+        ) : (
+          <SegmentedListItem isFirst isLast>
+            <View style={{ padding: spacing[4] }}>
+              <EmptyInfo>
+                <LimitedHtml value={t('workout.no_workouts_in_plan.message')} />
+              </EmptyInfo>
+            </View>
+          </SegmentedListItem>
         )}
-      />
-    </FullHeightScrollView>
+      </TitledSection>
+
+      {days && !reordering ? (
+        <SegmentedGroup>
+          <SegmentedListLink
+            label={t('plan.muscle_analysis.title')}
+            icon="accessibilityNew"
+            onPress={() => push(getMuscleAnalysisHref(programId))}
+          />
+          <SegmentListFormElement
+            label={t('plan.share.button')}
+            icon="share"
+            onPress={() =>
+              dispatch(
+                encryptAndShare({
+                  title: t('plan.shared_item.title'),
+                  item: new SharedProgramBlueprint(program),
+                }),
+              )
+            }
+          />
+        </SegmentedGroup>
+      ) : undefined}
+    </SettingsPage>
   );
 }
