@@ -79,7 +79,7 @@ export function Popover({ trigger, children, accessibilityLabel, width = 300 }: 
     anchor && height !== undefined ? place(anchor, contentWidth, height, window.width, insets.top + EDGE) : undefined;
 
   return (
-    <>
+    <View style={{ maxWidth: '100%' }}>
       <GestureDetector gesture={recordTouch}>
         <View ref={setTriggerView} collapsable={false} style={{ maxWidth: '100%' }}>
           {trigger(open)}
@@ -129,6 +129,6 @@ export function Popover({ trigger, children, accessibilityLabel, width = 300 }: 
           </Animated.View>
         </Modal>
       )}
-    </>
+    </View>
   );
 }
