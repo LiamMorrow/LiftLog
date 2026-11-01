@@ -32,7 +32,7 @@ import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { useDispatch } from 'react-redux';
-import { WelcomeWizard } from '@/components/smart/welcome-wizard';
+import { useMountEffect } from '@/hooks/useMountEffect';
 import { WhatsNewBanner } from '@/components/smart/whats-new-banner';
 import { SharedSession } from '@/models/feed-models';
 import { useStartWorkoutWithConfirmation } from '@/hooks/useStartWorkoutWithConfirmation';
@@ -72,7 +72,6 @@ function ListUpcomingWorkouts({
 
   return (
     <View style={{ flex: 1, gap: spacing[2], paddingTop: spacing[4] }}>
-      <WelcomeWizard />
       <WhatsNewBanner />
       {currentSession && (
         <TitledSection
@@ -233,6 +232,14 @@ export default function Index() {
   const currentBodyweight = upcomingSessions.map((x) => x.at(0)?.bodyweight).unwrapOr(undefined);
   const { start } = useStartWorkoutWithConfirmation();
   const streakToolbarItem = useStreakToolbarItem(useStreakStats());
+  const welcomeWizardCompleted = useAppSelector((s) => s.settings.welcomeWizardCompleted);
+  const { push } = useRouter();
+
+  useMountEffect(() => {
+    if (!welcomeWizardCompleted) {
+      push('/welcome');
+    }
+  });
 
   useFocusEffect(() => {
     dispatch(fetchUpcomingSessions());

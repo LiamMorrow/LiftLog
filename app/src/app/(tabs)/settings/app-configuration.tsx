@@ -15,10 +15,10 @@ import {
   setShowPostWorkoutSummary,
   setThemeMode,
   setTrueBlackDarkTheme,
-  setWelcomeWizardCompleted,
 } from '@/store/settings';
 import { useTranslate } from '@tolgee/react';
 import { useDispatch } from 'react-redux';
+import { useRouter } from 'expo-router';
 import { SettingsPage } from '@/components/layout/settings-page';
 import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
@@ -28,6 +28,7 @@ export default function AppConfigurationPage() {
   const { t } = useTranslate();
   const settings = useAppSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
+  const { push } = useRouter();
 
   return (
     <SettingsPage title={t('settings.app_configuration.title')} caption={t('settings.app_configuration.subtitle')}>
@@ -90,7 +91,7 @@ export default function AppConfigurationPage() {
           label={t('onboarding.start_setup_wizard.button')}
           icon={ReplayIcon}
           systemImage="arrow.counterclockwise"
-          onPress={() => dispatch(setWelcomeWizardCompleted(false))}
+          onPress={() => push('/welcome')}
         />
       </SegmentedGroup>
     </SettingsPage>

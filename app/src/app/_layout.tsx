@@ -66,6 +66,10 @@ function Layout() {
       <Stack.Screen name="progression-rule" options={{ presentation: 'modal' }} />
       <Stack.Screen name="progression-example" options={{ presentation: 'modal' }} />
       <Stack.Screen name="color-picker" options={{ presentation: 'modal' }} />
+      <Stack.Screen
+        name="welcome"
+        options={{ presentation: 'fullScreenModal', headerShown: false, gestureEnabled: false }}
+      />
       <Stack.Screen name="exercise-editor" options={{}} />
       <Stack.Screen name="exercise-descriptor-editor" />
       <Stack.Screen name="backend-header" />

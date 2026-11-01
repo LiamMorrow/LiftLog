@@ -9,9 +9,12 @@ tags:
 - launchApp:
     clearState: true
 # The wizard is three pages, so the last of these commits it
-- tapOn: '^Next$'
-- tapOn: '^Next$'
-- tapOn: 'Get started'
+- tapOn:
+    id: 'welcome-next'
+- tapOn:
+    id: 'welcome-next'
+- tapOn:
+    id: 'welcome-next'
 # The freeform button names itself via its icon's content description; matching is
 # case-insensitive by default, so `(?-i)` keeps this off the "Freeform Workout" cards.
 - assertVisible: '(?-i)Freeform workout'

@@ -35,12 +35,12 @@ import { useTranslate } from '@tolgee/react';
 import { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Portal } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { openUrl } from '@/utils/open-url';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { requestPermissionsAsync } from 'expo-notifications';
+import { useRouter } from 'expo-router';
 import { HealthExportSwitch, useCanExportHealth } from './health-export-switch';
 
 export function WelcomeWizard() {
@@ -80,7 +80,7 @@ export function WelcomeWizard() {
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const settings = useAppSelector((state) => state.settings);
-  const welcomeWizardCompleted = settings.welcomeWizardCompleted;
+  const { dismiss } = useRouter();
   const { colors } = useAppTheme();
   const [currentPage, setCurrentPage] = useState(0);
   const canExportHealth = useCanExportHealth();
@@ -104,6 +104,7 @@ export function WelcomeWizard() {
     } else {
       dispatch(setWelcomeWizardCompleted(true));
       dispatch(setLastSeenWhatsNewId(latestWhatsNewId));
+      dismiss();
       if (notificationsEnabled) {
         await requestPermissionsAsync();
       }
@@ -247,34 +248,31 @@ export function WelcomeWizard() {
   );
 
   return (
-    !welcomeWizardCompleted && (
-      <Portal>
-        <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface }}>
-          <View style={[styles.container]}>
-            <Pager fill page={currentPage} onPageChange={setCurrentPage}>
-              {renderCrashReportsPage()}
-              {renderLocalizationPage()}
-              {renderNotificationsAndFeedPage()}
-            </Pager>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface }}>
+      <View style={[styles.container]}>
+        <Pager fill page={currentPage} onPageChange={setCurrentPage}>
+          {renderCrashReportsPage()}
+          {renderLocalizationPage()}
+          {renderNotificationsAndFeedPage()}
+        </Pager>
 
-            <View style={styles.footer}>
-              <View style={styles.buttonRow}>
-                <NativeButton
-                  variant="text"
-                  label={t('generic.previous.button')}
-                  disabled={currentPage === 0}
-                  onPress={handlePrevious}
-                />
-                <NativeButton
-                  label={currentPage === totalPages - 1 ? t('onboarding.get_started.button') : t('generic.next.button')}
-                  onPress={() => void handleNext()}
-                />
-              </View>
-            </View>
+        <View style={styles.footer}>
+          <View style={styles.buttonRow}>
+            <NativeButton
+              variant="text"
+              label={t('generic.previous.button')}
+              disabled={currentPage === 0}
+              onPress={handlePrevious}
+            />
+            <NativeButton
+              testID="welcome-next"
+              label={currentPage === totalPages - 1 ? t('onboarding.get_started.button') : t('generic.next.button')}
+              onPress={() => void handleNext()}
+            />
           </View>
-        </SafeAreaView>
-      </Portal>
-    )
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
