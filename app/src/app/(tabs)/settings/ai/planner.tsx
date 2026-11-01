@@ -119,6 +119,7 @@ export default function AiPlanner() {
             gap: spacing[0.5],
             paddingHorizontal: spacing.pageHorizontalMargin,
             paddingTop: COMPOSER_GAP,
+            paddingBottom: spacing.pageVerticalMargin,
           }}
           keyExtractor={(x) => x.id}
           renderItem={({ item, index }) => {

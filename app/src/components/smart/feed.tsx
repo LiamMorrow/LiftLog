@@ -79,8 +79,9 @@ export default function Feed() {
       renderItem={({ item }) => <FeedItemRenderer feedItem={item} />}
       ItemSeparatorComponent={() => <View style={{ height: spacing[2] }}></View>}
       contentContainerStyle={{
-        padding: spacing.pageHorizontalMargin,
-        paddingBottom: insets.bottom,
+        paddingHorizontal: spacing.pageHorizontalMargin,
+        paddingTop: spacing.pageVerticalMargin,
+        paddingBottom: insets.bottom + spacing.pageVerticalMargin,
       }}
     />
   );

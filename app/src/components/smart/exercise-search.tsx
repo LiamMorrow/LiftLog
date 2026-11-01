@@ -40,7 +40,7 @@ export function ExerciseSearch(props: { requestId: string; exerciseName: string 
   return (
     <SafeAreaView
       edges={{ left: 'additive', right: 'additive', top: 'off', bottom: 'additive' }}
-      style={{ flex: 1, paddingTop: headerInset }}
+      style={{ flex: 1, paddingTop: headerInset + spacing.pageVerticalMargin }}
     >
       <Stack.Screen options={{ title: t('generic.search.button') }} />
       <LegendList

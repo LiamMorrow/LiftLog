@@ -19,7 +19,7 @@ export function ExerciseHistory(props: { movementKey: MovementKey; exerciseName:
       <AppText
         variant="titleLarge"
         numberOfLines={1}
-        style={{ paddingHorizontal: spacing.pageHorizontalMargin, paddingTop: spacing[3] }}
+        style={{ paddingHorizontal: spacing.pageHorizontalMargin, paddingTop: spacing.pageVerticalMargin }}
       >
         {props.exerciseName}
       </AppText>

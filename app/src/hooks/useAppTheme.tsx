@@ -14,6 +14,7 @@ export const rounding = {
 
 export const spacing = {
   pageHorizontalMargin: 16, // spacing[4]
+  pageVerticalMargin: 4, // spacing[1]
   0: 0,
   0.5: 2,
   1: 4,

@@ -161,7 +161,8 @@ function History() {
         onScroll={handleScroll}
         contentContainerStyle={{
           paddingHorizontal: spacing.pageHorizontalMargin,
-          paddingBottom: insets.bottom,
+          paddingTop: spacing.pageVerticalMargin,
+          paddingBottom: insets.bottom + spacing.pageVerticalMargin,
         }}
         ItemSeparatorComponent={() => <View style={{ height: spacing[2] }} />}
         ListHeaderComponent={

@@ -53,7 +53,7 @@ export function SessionWorkoutEditor(props: { sessionId: string }) {
   }, [hasWorkout, dismiss]);
 
   return (
-    <FullHeightScrollView avoidKeyboard modal scrollStyle={{ padding: spacing.pageHorizontalMargin }}>
+    <FullHeightScrollView avoidKeyboard modal scrollStyle={{ paddingHorizontal: spacing.pageHorizontalMargin }}>
       <Stack.Screen options={{ title }} />
       {workout ? (
         <SegmentedGroup>

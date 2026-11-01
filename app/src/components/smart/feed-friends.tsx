@@ -104,8 +104,9 @@ export function FeedFriends() {
           .exhaustive()
       }
       contentContainerStyle={{
-        padding: spacing.pageHorizontalMargin,
-        paddingBottom: insets.bottom + spacing.pageHorizontalMargin,
+        paddingHorizontal: spacing.pageHorizontalMargin,
+        paddingTop: spacing.pageVerticalMargin,
+        paddingBottom: insets.bottom + spacing.pageVerticalMargin,
       }}
     />
   );

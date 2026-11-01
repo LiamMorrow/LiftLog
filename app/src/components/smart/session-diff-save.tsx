@@ -143,7 +143,7 @@ export function SessionDiffSaveEditor() {
     <FullHeightScrollView
       modal
       floatingChildren={floatingBottomContainer}
-      scrollStyle={{ padding: spacing.pageHorizontalMargin }}
+      scrollStyle={{ paddingHorizontal: spacing.pageHorizontalMargin }}
     >
       <Stack.Screen options={{ title: t('plan.diff.dialog.title') }} />
       <AppText

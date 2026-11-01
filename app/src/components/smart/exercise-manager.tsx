@@ -1,4 +1,4 @@
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, View } from 'react-native';
@@ -156,7 +156,8 @@ export default function ExerciseManager() {
       <LegendList
         onScroll={handleScroll}
         contentContainerStyle={{
-          paddingBottom: bottomInsetHeight,
+          paddingTop: spacing.pageVerticalMargin,
+          paddingBottom: bottomInsetHeight + spacing.pageVerticalMargin,
         }}
         style={{ flex: 1 }}
         data={flatListItems}

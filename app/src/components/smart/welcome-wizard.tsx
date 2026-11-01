@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   },
   pageContent: {
     flex: 1,
-    marginTop: spacing.pageHorizontalMargin,
+    marginTop: spacing.pageVerticalMargin,
   },
   headerSection: {
     marginBottom: spacing[8],
