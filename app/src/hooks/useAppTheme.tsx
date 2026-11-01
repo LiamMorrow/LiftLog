@@ -123,6 +123,8 @@ export type AppThemeColors = Material3Scheme &
     onLime: string;
     amber: string;
     onAmber: string;
+    goldContainer: string;
+    onGoldContainer: string;
 
     seedColor: string | undefined;
 
@@ -215,6 +217,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) 
       ...colorPair('indigo', 'ff4b0082', schemedTheme.primary, isDark),
       ...colorPair('lime', 'ffcddc39', schemedTheme.primary, isDark),
       ...colorPair('amber', 'ffffc107', schemedTheme.primary, isDark),
+      ...goldContainer(isDark),
       ...activityRamp(schemedTheme.primary, isDark),
       seedColor: seedColor,
       scheme: colorScheme,
@@ -272,6 +275,13 @@ function activityRamp(primary: string, isDark: boolean): ActivityRampColors {
       [`onActivityLevel${index + 1}`]: hexFromArgb(Hct.from(seed.hue, seed.chroma, tone > 60 ? 10 : 100).toInt()),
     })),
   ) as ActivityRampColors;
+}
+
+function goldContainer(isDark: boolean) {
+  const gold = Hct.fromInt(argbFromHex('ffffc107'));
+  const tone = (light: number, dark: number) =>
+    hexFromArgb(Hct.from(gold.hue, gold.chroma, isDark ? dark : light).toInt());
+  return { goldContainer: tone(90, 30), onGoldContainer: tone(10, 90) };
 }
 
 function colorPair<T extends string>(name: T, hex: string, primary: string, isDark: boolean): ColorPair<T> {

@@ -1,6 +1,7 @@
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import Button from '@/components/presentation/foundation/button';
 import { Popover } from '@/components/presentation/foundation/popover';
+import { SegmentedList } from '@/components/presentation/foundation/segmented-list';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { getExerciseHistoryHref } from '@/components/smart/exercise-history';
@@ -222,13 +223,39 @@ export function PrRecordList({ records, scope }: ScopedRecords) {
   return (
     <View style={{ gap: spacing[2] }}>
       {byExercise(records).map((exerciseRecords) => (
-        <View key={exerciseRecords[0]!.exerciseOrd} style={{ gap: spacing[1] }}>
-          <SurfaceText font="text-sm" weight="bold">
-            {exerciseRecords[0]!.exerciseName}
-          </SurfaceText>
-          <RecordRows records={exerciseRecords} scope={scope} />
-        </View>
+        <ExerciseRecords key={exerciseRecords[0]!.exerciseOrd} records={exerciseRecords} scope={scope} />
       ))}
+    </View>
+  );
+}
+
+export function PrRecordSegmentedList({ records, scope }: ScopedRecords) {
+  const showAccomplishments = useAppSelector((x) => x.settings.showAccomplishments);
+
+  if (!showAccomplishments || !records?.length) {
+    return null;
+  }
+
+  return (
+    <SegmentedList
+      items={byExercise(records)}
+      itemKey={(exerciseRecords) => `${exerciseRecords[0]!.exerciseOrd}`}
+      renderItem={(exerciseRecords) => (
+        <View style={{ padding: spacing[4] }}>
+          <ExerciseRecords records={exerciseRecords} scope={scope} />
+        </View>
+      )}
+    />
+  );
+}
+
+function ExerciseRecords({ records, scope }: { records: PersonalRecord[]; scope: RecordScope }) {
+  return (
+    <View style={{ gap: spacing[1] }}>
+      <SurfaceText font="text-sm" weight="bold">
+        {records[0]!.exerciseName}
+      </SurfaceText>
+      <RecordRows records={records} scope={scope} />
     </View>
   );
 }

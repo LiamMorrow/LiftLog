@@ -4,23 +4,21 @@ import { CardioTarget, Distance, DistanceUnit } from '@/models/blueprint-models'
 import { T, useTranslate } from '@tolgee/react';
 import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
 import { Duration, OffsetDateTime } from '@js-joda/core';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 import { View } from 'react-native';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Text } from 'react-native-paper';
-import Menu from '@/components/presentation/foundation/menu';
 import BigNumber from 'bignumber.js';
 import { useAppSelector } from '@/store';
 import { formatDuration } from '@/utils/format-duration';
 import { getShortUnit } from '@/utils/unit';
-import { DecimalEditor } from '@/components/presentation/foundation/editors/decimal-editor';
-import { IntegerEditor } from '@/components/presentation/foundation/editors/integer-editor';
+import { DecimalInput, DurationInput, IntegerInput } from '@/components/presentation/foundation/editors/number-inputs';
+import SelectPicker from '@/components/presentation/foundation/select-picker';
 import { WeightEditor } from '@/components/presentation/foundation/editors/weight-editor';
-import DurationEditor from '@/components/presentation/foundation/editors/duration-editor';
+import { NegateWeightButton } from '@/components/presentation/foundation/editors/weight-input-controls';
 import { CardioValueTile } from '@/components/presentation/workout/cardio/cardio-value-tile';
-import FocusRing from '@/components/presentation/foundation/focus-ring';
 import { Weight } from '@/models/weight';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { Updater } from '@/utils/types';
@@ -31,6 +29,7 @@ interface CardioExerciseProps {
   toStartNext: boolean;
   isReadonly: boolean;
   showPreviousButton: boolean;
+  titleLeading?: ReactNode;
 
   updateExercise: (update: Updater<RecordedCardioExercise>) => void;
   updateSet: (setIndex: number, update: Updater<RecordedCardioExerciseSet>) => void;
@@ -43,6 +42,7 @@ interface CardioExerciseProps {
 
 export function CardioExercise(props: CardioExerciseProps) {
   const { recordedExercise, updateExercise, updateSet } = props;
+  const { t } = useTranslate();
 
   return (
     <ExerciseSection
@@ -51,6 +51,7 @@ export function CardioExercise(props: CardioExerciseProps) {
       toStartNext={props.toStartNext}
       isReadonly={props.isReadonly}
       showPreviousButton={props.showPreviousButton}
+      titleLeading={props.titleLeading}
       updateExercise={updateExercise}
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
@@ -62,6 +63,10 @@ export function CardioExercise(props: CardioExerciseProps) {
           <CardioExerciseSet
             set={set}
             key={setIndex}
+            editorSubtitle={t('exercise.set_of_exercise.label', {
+              exercise: recordedExercise.blueprint.name,
+              number: setIndex + 1,
+            })}
             isReadonly={props.isReadonly}
             toStartNext={props.toStartNext && (recordedExercise.sets[setIndex - 1]?.isCompletelyFilled ?? true)}
             updateSet={(update) => updateSet(setIndex, update)}
@@ -76,6 +81,7 @@ export function CardioExercise(props: CardioExerciseProps) {
 
 interface CardioExerciseSetProps {
   set: RecordedCardioExerciseSet;
+  editorSubtitle: string;
   toStartNext: boolean;
   isReadonly: boolean;
 
@@ -124,56 +130,80 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
       >
         {set.tracksDuration && (
           <CardioDurationTile
+            editorSubtitle={props.editorSubtitle}
             duration={liveDuration}
             isReadonly={isReadonly}
             isTimerRunning={set.isTimerRunning}
-            onSave={(duration) => updateSet((s) => s.with({ duration }))}
+            onChange={(duration) => updateSet((s) => s.with({ duration }))}
           />
         )}
         {set.tracksDistance && (
           <CardioDistanceTile
+            editorSubtitle={props.editorSubtitle}
             distance={set.distance}
             isReadonly={isReadonly}
             emptyValue={emptyDistance}
-            onSave={(distance) => updateSet((s) => s.with({ distance }))}
+            onChange={(distance) => updateSet((s) => s.with({ distance }))}
           />
         )}
         {blueprint.trackIncline && (
           <CardioValueTile
             isReadonly={isReadonly}
+            editorSubtitle={props.editorSubtitle}
             value={set.incline}
             emptyValue={BigNumber(0)}
             format={localeDisplayFormatBigNumber}
             label={t('exercise.incline.label')}
             testID="cardio-incline-tile"
-            onSave={(incline) => updateSet((s) => s.with({ incline }))}
+            onChange={(incline) => updateSet((s) => s.with({ incline }))}
           >
-            {(value, setValue) => <DecimalEditor style={{ flex: 1 }} value={value} onChange={setValue} />}
+            {(value, setValue) => (
+              <DecimalInput
+                size="large"
+                autoFocus
+                flex={1}
+                value={value}
+                onChange={setValue}
+                accessibilityLabel={t('exercise.incline.label')}
+              />
+            )}
           </CardioValueTile>
         )}
         {blueprint.trackResistance && (
           <CardioValueTile
             isReadonly={isReadonly}
+            editorSubtitle={props.editorSubtitle}
             value={set.resistance}
             emptyValue={BigNumber(0)}
             format={localeDisplayFormatBigNumber}
             label={t('exercise.resistance.label')}
             testID="cardio-resistance-tile"
-            onSave={(resistance) => updateSet((s) => s.with({ resistance }))}
+            onChange={(resistance) => updateSet((s) => s.with({ resistance }))}
           >
-            {(value, setValue) => <DecimalEditor style={{ flex: 1 }} value={value} onChange={setValue} />}
+            {(value, setValue) => (
+              <DecimalInput
+                size="large"
+                autoFocus
+                flex={1}
+                value={value}
+                onChange={setValue}
+                accessibilityLabel={t('exercise.resistance.label')}
+              />
+            )}
           </CardioValueTile>
         )}
         {blueprint.trackWeight && (
           <CardioValueTile
             isReadonly={isReadonly}
+            editorSubtitle={props.editorSubtitle}
             value={set.weight}
             emptyValue={new Weight(0, preferredWeightUnit)}
             format={(weight) => weight.shortLocaleFormat()}
             label={t('weight.weight.label')}
             testID="cardio-weight-tile"
-            dialogStyle={{ flexDirection: 'column', alignItems: 'stretch' }}
-            onSave={(weight) => updateSet((s) => s.with({ weight }))}
+            editorStyle={{ flexDirection: 'column', alignItems: 'stretch' }}
+            onChange={(weight) => updateSet((s) => s.with({ weight }))}
+            headerAction={(value, setValue) => <NegateWeightButton weight={value} onChange={setValue} />}
           >
             {(value, setValue) => (
               <WeightEditor increment={BigNumber(2.5)} updateWeight={setValue} weight={value} allowNegative />
@@ -183,28 +213,32 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
         {blueprint.trackSteps && (
           <CardioValueTile
             isReadonly={isReadonly}
+            editorSubtitle={props.editorSubtitle}
             value={set.steps}
             emptyValue={0}
             format={(steps) => steps.toString()}
             label={t('exercise.steps.label')}
             testID="cardio-steps-tile"
-            onSave={(steps) => updateSet((s) => s.with({ steps }))}
+            onChange={(steps) => updateSet((s) => s.with({ steps }))}
           >
-            {(value, setValue) => <IntegerEditor style={{ flex: 1 }} value={value} onChange={setValue} />}
+            {(value, setValue) => (
+              <IntegerInput
+                size="large"
+                autoFocus
+                flex={1}
+                value={value}
+                onChange={setValue}
+                accessibilityLabel={t('exercise.steps.label')}
+              />
+            )}
           </CardioValueTile>
         )}
         {set.tracksDuration && !isReadonly && (
-          <FocusRing
-            isSelected={props.toStartNext && !set.isTimerRunning}
-            padding={0}
-            radius={rounding.roundedRectangleFocusRingRadius}
-          >
-            <CardioTimerButton
-              isTimerRunning={set.isTimerRunning}
-              onStart={props.onStartTimer}
-              onStop={props.onStopTimer}
-            />
-          </FocusRing>
+          <CardioTimerButton
+            isTimerRunning={set.isTimerRunning}
+            onStart={props.onStartTimer}
+            onStop={props.onStopTimer}
+          />
         )}
       </View>
     </View>
@@ -212,63 +246,73 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
 }
 
 function CardioDurationTile(props: {
+  editorSubtitle: string;
   duration: Duration | undefined;
   isTimerRunning: boolean;
   isReadonly: boolean;
-  onSave: (duration: Duration) => void;
+  onChange: (duration: Duration) => void;
 }) {
   const { t } = useTranslate();
   return (
     <CardioValueTile
       isReadonly={props.isReadonly}
+      editorSubtitle={props.editorSubtitle}
       value={props.duration}
       emptyValue={Duration.ZERO}
       format={formatDuration}
       label={t('generic.time.label')}
       testID="cardio-duration-tile"
-      dialogStyle={{ flexDirection: 'column', alignItems: 'stretch' }}
-      onSave={props.onSave}
+      editorStyle={{ flexDirection: 'column', alignItems: 'stretch' }}
+      onChange={props.onChange}
     >
       {(value, setValue) => (
-        <DurationEditor duration={value} showHours onDurationUpdated={setValue} readonly={props.isTimerRunning} />
+        <DurationInput
+          size="large"
+          autoFocus={!props.isTimerRunning}
+          showHours
+          duration={value}
+          onDurationUpdated={setValue}
+          readOnly={props.isTimerRunning}
+        />
       )}
     </CardioValueTile>
   );
 }
 
 function CardioDistanceTile(props: {
+  editorSubtitle: string;
   distance: Distance | undefined;
   emptyValue: Distance;
   isReadonly: boolean;
-  onSave: (distance: Distance) => void;
+  onChange: (distance: Distance) => void;
 }) {
   const { t } = useTranslate();
   const units: DistanceUnit[] = ['kilometre', 'metre', 'mile', 'yard'];
   return (
     <CardioValueTile
       isReadonly={props.isReadonly}
+      editorSubtitle={props.editorSubtitle}
       value={props.distance}
       emptyValue={props.emptyValue}
       format={(distance) => localeDisplayFormatBigNumber(distance.value) + getShortUnit(distance.unit)}
       label={t('exercise.distance.label')}
       testID="cardio-distance-tile"
-      onSave={props.onSave}
+      onChange={props.onChange}
     >
       {(value, setValue) => (
         <>
-          <DecimalEditor
-            style={{ flex: 1 }}
+          <DecimalInput
+            size="large"
+            autoFocus
+            flex={1}
             value={value.value}
             onChange={(distanceValue) => setValue({ ...value, value: distanceValue })}
+            accessibilityLabel={t('exercise.distance.label')}
           />
-          <Menu
-            trigger={(open) => (
-              <IconButton onPress={open} mode="outlined" icon={() => <Text>{getShortUnit(value.unit)}</Text>} />
-            )}
-            items={units.map((unit) => ({
-              label: unit,
-              onPress: () => setValue({ ...value, unit }),
-            }))}
+          <SelectPicker
+            value={value.unit}
+            options={units.map((unit) => ({ value: unit, label: getShortUnit(unit) }))}
+            onChange={(unit) => setValue({ ...value, unit })}
           />
         </>
       )}

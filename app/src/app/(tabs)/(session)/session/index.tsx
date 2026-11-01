@@ -1,6 +1,7 @@
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import SessionComponent from '@/components/smart/session-component';
 import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
+import { getPostWorkoutHref } from '@/components/smart/post-workout';
 import { useAppSelector } from '@/store';
 import { selectSharingLive } from '@/store/feed';
 import { useDispatch } from 'react-redux';
@@ -33,12 +34,11 @@ export default function Index() {
       return;
     }
     setConfirmOpen(false);
-    if (showPostWorkoutSummary) {
-      push(`/session/post-workout?sessionId=${encodeURIComponent(session.id)}&source=finished`);
-      return;
-    }
     const hasDiff = finishWorkout();
     dismissTo('/');
+    if (showPostWorkoutSummary) {
+      push(getPostWorkoutHref(session.id));
+    }
     if (hasDiff) {
       push('/diff-save');
     }
@@ -65,9 +65,7 @@ export default function Index() {
         updateSession={(update) => dispatch(updateStoredSession({ sessionId: session.id, update }))}
         isActiveWorkout
         showBodyweight={showBodyweight}
-        openPostWorkoutSummary={() =>
-          push(`/session/post-workout?sessionId=${encodeURIComponent(session.id)}&source=live`)
-        }
+        openPostWorkoutSummary={() => push(getPostWorkoutHref(session.id))}
       />
       <ConfirmationDialog
         okText={t('generic.finish.button')}

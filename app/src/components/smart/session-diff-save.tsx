@@ -3,6 +3,7 @@ import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import SaveIcon from '@expo/material-symbols/save.xml';
+import CloseIcon from '@expo/material-symbols/close.xml';
 import SessionDiffView from '@/components/presentation/summary/session-diff-view';
 import { spacing } from '@/hooks/useAppTheme';
 import {
@@ -26,7 +27,6 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useOnDismiss } from '@/hooks/useOnDismiss';
 
 /**
@@ -128,47 +128,54 @@ export function SessionDiffSaveEditor() {
         systemImage: 'square.and.arrow.down',
         onPress: save,
       }}
+      secondary={[
+        {
+          label: t('generic.close.button'),
+          icon: CloseIcon,
+          systemImage: 'xmark',
+          onPress: () => dismiss(),
+        },
+      ]}
     />
   );
 
   return (
-    <SafeAreaView edges={{ bottom: 'additive', top: 'off' }} style={{ flex: 1 }}>
-      <FullHeightScrollView
-        floatingChildren={floatingBottomContainer}
-        scrollStyle={{ padding: spacing.pageHorizontalMargin }}
+    <FullHeightScrollView
+      modal
+      floatingChildren={floatingBottomContainer}
+      scrollStyle={{ padding: spacing.pageHorizontalMargin }}
+    >
+      <Stack.Screen options={{ title: t('plan.diff.dialog.title') }} />
+      <Text
+        style={{
+          paddingBlockEnd: spacing[2],
+        }}
+        variant="bodyMedium"
       >
-        <Stack.Screen options={{ title: t('plan.diff.dialog.title') }} />
-        <Text
-          style={{
-            paddingBlockEnd: spacing[2],
-          }}
-          variant="bodyMedium"
-        >
-          {currentPlanDiff?.type === 'diff' ? (
-            <LimitedHtml
-              value={t('plan.diff.dialog_update.body', {
-                originalSessionName: currentPlanDiff?.diff.originalSession.name,
-              })}
-            />
-          ) : (
-            t('plan.diff.dialog_add.body')
-          )}
-        </Text>
-        <View style={{ marginHorizontal: -spacing.pageHorizontalMargin }}>
-          {canEditExistingWorkout && (
-            <ListSwitch
-              value={isCreatingNewWorkout}
-              supportingText={<LimitedHtml value={getSwitchSubtitle()} />}
-              onValueChange={handleSaveModeChange}
-              headline={t('plan.diff.dialog_save_as_new_switch.title')}
-            />
-          )}
-        </View>
-        <SessionDiffView
-          diff={currentPlanDiff?.diff ?? EmptySessionBlueprintDiff}
-          onSelectedDiffChange={setSelectedDiff}
-        />
-      </FullHeightScrollView>
-    </SafeAreaView>
+        {currentPlanDiff?.type === 'diff' ? (
+          <LimitedHtml
+            value={t('plan.diff.dialog_update.body', {
+              originalSessionName: currentPlanDiff?.diff.originalSession.name,
+            })}
+          />
+        ) : (
+          t('plan.diff.dialog_add.body')
+        )}
+      </Text>
+      <View style={{ marginHorizontal: -spacing.pageHorizontalMargin }}>
+        {canEditExistingWorkout && (
+          <ListSwitch
+            value={isCreatingNewWorkout}
+            supportingText={<LimitedHtml value={getSwitchSubtitle()} />}
+            onValueChange={handleSaveModeChange}
+            headline={t('plan.diff.dialog_save_as_new_switch.title')}
+          />
+        )}
+      </View>
+      <SessionDiffView
+        diff={currentPlanDiff?.diff ?? EmptySessionBlueprintDiff}
+        onSelectedDiffChange={setSelectedDiff}
+      />
+    </FullHeightScrollView>
   );
 }

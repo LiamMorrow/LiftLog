@@ -9,7 +9,8 @@ import { useTranslate } from '@tolgee/react';
 import { Href, Stack, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
+import { SegmentedListTextInput } from '@/components/presentation/foundation/segmented-list-text-input';
 import { useDispatch } from 'react-redux';
 
 export function getExerciseDescriptorEditorHref(exerciseId: string, opts?: { isNew?: boolean }): Href {
@@ -50,23 +51,28 @@ export function ExerciseDescriptorEditor(props: { exerciseId: string; isNew?: bo
       <Stack.Screen options={{ title }} />
       {shown && (
         <View style={{ gap: spacing[2], paddingBottom: spacing[12] }}>
-          <TextInput
-            mode="outlined"
-            label={t('exercise.name.label')}
-            value={shown.name}
-            onChangeText={(name) => update({ name })}
-            selectTextOnFocus={props.isNew}
-            testID="exercise-name-input"
+          <SegmentedGroup>
+            <SegmentedListTextInput
+              label={t('exercise.name.label')}
+              value={shown.name}
+              onChangeText={(name) => update({ name })}
+              selectTextOnFocus={props.isNew}
+              testID="exercise-name-input"
+            />
+            <SegmentedListTextInput
+              label={t('generic.instructions.label')}
+              value={shown.instructions}
+              onChangeText={(instructions) => update({ instructions })}
+              multiline
+              testID="exercise-instructions-input"
+            />
+          </SegmentedGroup>
+          <ExerciseMuscleSelector
+            muscles={shown.muscles}
+            secondaryMuscles={shown.secondaryMuscles ?? []}
+            onChange={(muscles, secondaryMuscles) => update({ muscles, secondaryMuscles })}
+            showMuscleMap
           />
-          <TextInput
-            mode="outlined"
-            label={t('generic.instructions.label')}
-            value={shown.instructions}
-            onChangeText={(instructions) => update({ instructions })}
-            multiline
-            testID="exercise-instructions-input"
-          />
-          <ExerciseMuscleSelector muscles={shown.muscles} onChange={(muscles) => update({ muscles })} showMuscleMap />
         </View>
       )}
     </FullHeightScrollView>

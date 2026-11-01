@@ -1,4 +1,4 @@
-import DurationEditor from '@/components/presentation/foundation/editors/duration-editor';
+import { DurationInput } from '@/components/presentation/foundation/editors/number-inputs';
 import { spacing } from '@/hooks/useAppTheme';
 import { Rest } from '@/models/blueprint-models';
 import { Duration } from '@js-joda/core';
@@ -6,11 +6,12 @@ import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { match } from 'ts-pattern';
-import { Dialog } from 'react-native-paper';
+import { Dialog, Text } from 'react-native-paper';
 import { Portal } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import SegmentedPicker from '@/components/presentation/foundation/segmented-picker';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { RestRangeSlider, useRestThumbStyles } from '@/components/presentation/workout-editor/rest-range-slider';
 
 type ButtonValues = 'short' | 'medium' | 'long' | 'custom';
 
@@ -40,23 +41,39 @@ export function RestEditorDialog(props: RestEditorDialogProps) {
     }
   };
 
-  const updateRest = (type: keyof Rest) => (duration: Duration) => onRestUpdated({ ...rest, [type]: duration });
+  const updateCustomRest = (next: Rest) => {
+    setButtonValue('custom');
+    onRestUpdated(next);
+  };
+  const updateRest = (type: keyof Rest) => (duration: Duration) => updateCustomRest({ ...rest, [type]: duration });
+  const thumbStyles = useRestThumbStyles();
 
+  const durationRows = [
+    { key: 'minRest', label: t('rest.min.label') },
+    { key: 'maxRest', label: t('rest.max.label') },
+    { key: 'failureRest', label: t('rest.failure.label') },
+  ] as const;
   const customView = (
-    <View
-      style={{
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: spacing[2],
-      }}
-    >
-      <DurationEditor label={t('rest.min.label')} duration={rest.minRest} onDurationUpdated={updateRest('minRest')} />
-      <DurationEditor label={t('rest.max.label')} duration={rest.maxRest} onDurationUpdated={updateRest('maxRest')} />
-      <DurationEditor
-        label={t('rest.failure.label')}
-        duration={rest.failureRest}
-        onDurationUpdated={updateRest('failureRest')}
-      />
+    <View style={{ gap: spacing[3], marginBlockStart: spacing[4] }}>
+      <RestRangeSlider rest={rest} onChange={updateCustomRest} />
+      {durationRows.map(({ key, label }) => (
+        <View key={key} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
+          <View
+            style={{
+              width: 12,
+              height: 12,
+              borderRadius: 6,
+              borderWidth: 2,
+              borderColor: key === 'minRest' ? thumbStyles[key].border : thumbStyles[key].fill,
+              backgroundColor: thumbStyles[key].fill,
+            }}
+          />
+          <Text variant="labelLarge" style={{ flex: 1 }}>
+            {label}
+          </Text>
+          <DurationInput duration={rest[key]} onDurationUpdated={updateRest(key)} />
+        </View>
+      ))}
     </View>
   );
   return (

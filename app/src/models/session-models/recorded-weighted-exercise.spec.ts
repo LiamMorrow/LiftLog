@@ -51,6 +51,21 @@ describe('RecordedWeightedExercise.withWeight', () => {
     const result = exercise.withWeight(0, heavy, 'allSets');
     expect(result.potentialSets.every((s) => s.weight.equals(heavy))).toBe(true);
   });
+
+  it('withWeightOver puts back sets that fall out of what it applies to', () => {
+    const widened = exercise.withWeight(1, heavy, 'allSets');
+    const narrowed = widened.withWeightOver(exercise, 1, heavy, 'thisSet');
+    expect(narrowed.potentialSets[0]!.weight).toEqual(exercise.potentialSets[0]!.weight);
+    expect(narrowed.potentialSets[1]!.weight).toEqual(heavy);
+    expect(narrowed.potentialSets[2]!.weight).toEqual(light);
+  });
+
+  it('withWeightOver keeps reps recorded since the original', () => {
+    const current = exercise.withSet(1, (s) => s.with({ set: exercise.potentialSets[0]!.set }));
+    const result = current.withWeightOver(exercise, 1, heavy, 'uncompletedSets');
+    expect(result.potentialSets[1]!.set).toEqual(exercise.potentialSets[0]!.set);
+    expect(result.potentialSets[2]!.weight).toEqual(heavy);
+  });
 });
 
 // ─── withNothingCompleted ─────────────────────────────────────────────────────

@@ -23,6 +23,7 @@ import { msInfo } from '@material-symbols-react-native/outlined-400/msInfo';
 import { msMoreHoriz } from '@material-symbols-react-native/outlined-400/msMoreHoriz';
 import { msMoreVert } from '@material-symbols-react-native/outlined-400/msMoreVert';
 import { msPersonAdd } from '@material-symbols-react-native/outlined-400/msPersonAdd';
+import { msQrCode } from '@material-symbols-react-native/outlined-400/msQrCode';
 import { msPersonRemove } from '@material-symbols-react-native/outlined-400/msPersonRemove';
 import { msNotes } from '@material-symbols-react-native/outlined-400/msNotes';
 import { msPlayCircle } from '@material-symbols-react-native/outlined-400/msPlayCircle';
@@ -56,6 +57,7 @@ import { msInventory } from '@material-symbols-react-native/outlined-400/msInven
 import { msChevronRight } from '@material-symbols-react-native/outlined-400/msChevronRight';
 import { msArrowDropDown } from '@material-symbols-react-native/outlined-400/msArrowDropDown';
 import { msCheck } from '@material-symbols-react-native/outlined-400/msCheck';
+import { msContrast } from '@material-symbols-react-native/outlined-400/msContrast';
 import { msArrowDropUp } from '@material-symbols-react-native/outlined-400/msArrowDropUp';
 import { msBackup } from '@material-symbols-react-native/outlined-400/msBackup';
 import { msCloudUpload } from '@material-symbols-react-native/outlined-400/msCloudUpload';
@@ -123,6 +125,7 @@ import { msFunction } from '@material-symbols-react-native/outlined-400/msFuncti
 import { msHeartCheck } from '@material-symbols-react-native/outlined-400/msHeartCheck';
 import { msContentPasteSearch } from '@material-symbols-react-native/outlined-400/msContentPasteSearch';
 import { msLink } from '@material-symbols-react-native/outlined-400/msLink';
+import { msAccessibilityNew } from '@material-symbols-react-native/outlined-400/msAccessibilityNew';
 import { msSteps } from '@material-symbols-react-native/outlined-400/msSteps';
 import { msElevation } from '@material-symbols-react-native/outlined-400/msElevation';
 import { msAssignmentTurnedIn } from '@material-symbols-react-native/outlined-400/msAssignmentTurnedIn';
@@ -171,6 +174,7 @@ const MaterialSymbols = {
   moreVert: msMoreVert,
   notes: msNotes,
   personAdd: msPersonAdd,
+  qrCode: msQrCode,
   personRemove: msPersonRemove,
   heartCheck: msHeartCheck,
   cancel: msCancel,
@@ -189,6 +193,7 @@ const MaterialSymbols = {
   podcasts: msPodcasts,
   localFireDepartment: msLocalFireDepartment,
   link: msLink,
+  accessibilityNew: msAccessibilityNew,
   steps: msSteps,
   elevation: msElevation,
   remove: msRemove,
@@ -228,6 +233,7 @@ const MaterialSymbols = {
   text: msTextAd,
   reload: msRefresh,
   check: msCheck,
+  contrast: msContrast,
   'menu-down': msArrowDropDown,
   arrowDropDown: msArrowDropDown,
   arrowDropUp: msArrowDropUp,

@@ -27,7 +27,7 @@ appId: com.limajuice.liftlog
 - assertVisible:
     id: 'rest-timer'
 
-# Set the weight to 7.5kg (3 x 2.5kg increments) and save
+# Set the weight to 7.5kg (3 x 2.5kg increments) and close the dock
 - tapOn:
     id: 'repcount-weight'
 - tapOn:
@@ -37,7 +37,7 @@ appId: com.limajuice.liftlog
 - tapOn:
     id: 'increment-weight'
 - tapOn:
-    id: 'save'
+    id: 'edit-dock-done'
 
 # Finish the (incomplete) session and confirm
 - tapOn:
@@ -52,6 +52,11 @@ appId: com.limajuice.liftlog
       visible: 'Would you like to save this workout to your plan?'
     commands:
       - back
+
+# Finishing opens the recap over the tabs
+- assertVisible:
+    id: 'post-workout'
+- back
 
 # It shows up in History with the logged weight, below the calendar
 - tapOn: 'History'

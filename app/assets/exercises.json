@@ -8849,6 +8849,166 @@
       "primaryMuscles": ["biceps"],
       "secondaryMuscles": ["forearms"],
       "category": "strength"
+    },
+    {
+      "name": "Bench Press",
+      "force": "push",
+      "level": "beginner",
+      "mechanic": "compound",
+      "equipment": "barbell",
+      "primaryMuscles": ["chest"],
+      "secondaryMuscles": ["shoulders", "triceps"],
+      "category": "strength"
+    },
+    {
+      "name": "Dumbbell Incline Bench Press",
+      "force": "push",
+      "level": "beginner",
+      "mechanic": "compound",
+      "equipment": "dumbbell",
+      "primaryMuscles": ["chest"],
+      "secondaryMuscles": ["shoulders", "triceps"],
+      "category": "strength"
+    },
+    {
+      "name": "Cable Chest Fly (Low to High)",
+      "force": "push",
+      "level": "beginner",
+      "mechanic": "isolation",
+      "equipment": "cable",
+      "primaryMuscles": ["chest"],
+      "secondaryMuscles": ["shoulders"],
+      "category": "strength"
+    },
+    {
+      "name": "Cable Tricep Pushdown (Rope)",
+      "force": "push",
+      "level": "beginner",
+      "mechanic": "isolation",
+      "equipment": "cable",
+      "primaryMuscles": ["triceps"],
+      "secondaryMuscles": [],
+      "category": "strength"
+    },
+    {
+      "name": "Squat",
+      "force": "push",
+      "level": "beginner",
+      "mechanic": "compound",
+      "equipment": "barbell",
+      "primaryMuscles": ["quadriceps"],
+      "secondaryMuscles": ["calves", "glutes", "hamstrings", "lower back"],
+      "category": "strength"
+    },
+    {
+      "name": "Leg Curl",
+      "force": "pull",
+      "level": "beginner",
+      "mechanic": "isolation",
+      "equipment": "machine",
+      "primaryMuscles": ["hamstrings"],
+      "secondaryMuscles": [],
+      "category": "strength"
+    },
+    {
+      "name": "Cable Face Pull (Rope)",
+      "force": "pull",
+      "level": "intermediate",
+      "mechanic": "compound",
+      "equipment": "cable",
+      "primaryMuscles": ["shoulders"],
+      "secondaryMuscles": ["middle back"],
+      "category": "strength"
+    },
+    {
+      "name": "Deadlift",
+      "force": "pull",
+      "level": "intermediate",
+      "mechanic": "compound",
+      "equipment": "barbell",
+      "primaryMuscles": ["lower back"],
+      "secondaryMuscles": ["calves", "forearms", "glutes", "hamstrings", "lats", "middle back", "quadriceps", "traps"],
+      "category": "strength"
+    },
+    {
+      "name": "Bent Over Row",
+      "force": "pull",
+      "level": "beginner",
+      "mechanic": "compound",
+      "equipment": "barbell",
+      "primaryMuscles": ["middle back"],
+      "secondaryMuscles": ["biceps", "lats", "shoulders"],
+      "category": "strength"
+    },
+    {
+      "name": "Single Arm Seated Cable Rows",
+      "force": "pull",
+      "level": "beginner",
+      "mechanic": "compound",
+      "equipment": "cable",
+      "primaryMuscles": ["middle back"],
+      "secondaryMuscles": ["biceps", "lats", "shoulders"],
+      "category": "strength"
+    },
+    {
+      "name": "Bayesian Cable Curls",
+      "force": "pull",
+      "level": "beginner",
+      "mechanic": "isolation",
+      "equipment": "cable",
+      "primaryMuscles": ["biceps"],
+      "secondaryMuscles": [],
+      "category": "strength"
+    },
+    {
+      "name": "Dumbbell Hammer Curl",
+      "force": "pull",
+      "level": "beginner",
+      "mechanic": "isolation",
+      "equipment": "dumbbell",
+      "primaryMuscles": ["biceps"],
+      "secondaryMuscles": ["forearms"],
+      "category": "strength"
+    },
+    {
+      "name": "Overhead Press",
+      "force": "push",
+      "level": "beginner",
+      "mechanic": "compound",
+      "equipment": "barbell",
+      "primaryMuscles": ["shoulders"],
+      "secondaryMuscles": ["triceps"],
+      "category": "strength"
+    },
+    {
+      "name": "Cross Body Cable Y Raise",
+      "force": "pull",
+      "level": "beginner",
+      "mechanic": "isolation",
+      "equipment": "cable",
+      "primaryMuscles": ["shoulders"],
+      "secondaryMuscles": ["traps"],
+      "category": "strength"
+    },
+    {
+      "name": "Cable Straight Bar Curl",
+      "force": "pull",
+      "level": "beginner",
+      "mechanic": "isolation",
+      "equipment": "cable",
+      "primaryMuscles": ["biceps"],
+      "secondaryMuscles": [],
+      "category": "strength"
+    },
+    {
+      "name": "Triceps Pressdown (Bar)",
+      "force": "push",
+      "level": "beginner",
+      "mechanic": "isolation",
+      "equipment": "cable",
+      "primaryMuscles": ["triceps"],
+      "secondaryMuscles": [],
+      "category": "strength"
     }
   ]
 }

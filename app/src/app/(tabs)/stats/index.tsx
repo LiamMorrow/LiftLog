@@ -5,7 +5,7 @@ import { ExerciseListSummary } from '@/components/presentation/stats/exercise-li
 import SingleValueStatisticCard from '@/components/presentation/stats/single-value-statistic-card';
 import { SingleValueStatisticsGrid } from '@/components/presentation/stats/single-value-statistics-grid';
 import { TimePeriodSelector } from '@/components/presentation/stats/time-period-selector';
-import { TitledSection } from '@/components/presentation/stats/titled-section';
+import { TitledSection } from '@/components/presentation/foundation/titled-section';
 import { StatisticLineChart } from '@/components/presentation/stats/statistic-line-chart';
 import { useLoadAxis } from '@/components/presentation/stats/quantity-axis';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
@@ -62,7 +62,7 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
   const canShowBodyweightGraph = showBodyweight && stats.bodyweightStats.statistics.length > 0;
   return (
     <>
-      <TitledSection title={t('stats.overview.title')}>
+      <TitledSection title={t('stats.overview.title')} style={{ marginHorizontal: spacing.pageHorizontalMargin }}>
         <SingleValueStatisticsGrid>
           <SingleValueStatisticCard
             title={t('stats.workouts_per_week.label')}
@@ -103,7 +103,10 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
       </TitledSection>
 
       {showBodyweightGraph && canShowBodyweightGraph && (
-        <TitledSection title={t('exercise.bodyweight.label')}>
+        <TitledSection
+          title={t('exercise.bodyweight.label')}
+          style={{ marginHorizontal: spacing.pageHorizontalMargin }}
+        >
           <Card
             mode="contained"
             style={{

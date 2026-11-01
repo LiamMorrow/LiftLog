@@ -84,13 +84,14 @@ export function SegmentListFormElement(props: {
   right?: ReactNode | string;
   style?: StyleProp<ViewStyle>;
   destructive?: boolean;
+  testID?: string;
 }) {
   const { colors } = useAppTheme();
   const labelColor = props.destructive ? colors.error : colors.onSurface;
   const pressable = props.onPress ?? props.onLongPress;
   const Wrapper = pressable ? TouchableRipple : View;
   return (
-    <Wrapper onPress={props.onPress} onLongPress={props.onLongPress}>
+    <Wrapper testID={props.testID} onPress={props.onPress} onLongPress={props.onLongPress}>
       <View style={[{ padding: spacing[4] }, props.style]}>
         <View
           style={{

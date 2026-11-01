@@ -1,7 +1,8 @@
 import Button from '@/components/presentation/foundation/button';
 import { SegmentedList } from '@/components/presentation/foundation/segmented-list';
-import { TitledSection } from '@/components/presentation/stats/titled-section';
+import { TitledSection } from '@/components/presentation/foundation/titled-section';
 import { WeightedExerciseStatSummary } from '@/components/presentation/stats/weighted-exercise-stat-summary';
+import { spacing } from '@/hooks/useAppTheme';
 import { GranularStatisticView, WeightedExerciseStatistics } from '@/store/stats';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
@@ -17,7 +18,8 @@ export function ExerciseListSummary(props: { stats: GranularStatisticView }) {
   return (
     <TitledSection
       title={t('stats.weighted_exercise_list.title')}
-      titleRight={
+      style={{ marginHorizontal: spacing.pageHorizontalMargin }}
+      trailing={
         <Button mode="text" onPress={() => push('/stats/exercise-list')} style={{ alignSelf: 'flex-end' }}>
           {t('stats.see_more.button')}
         </Button>

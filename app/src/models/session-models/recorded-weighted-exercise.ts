@@ -147,6 +147,16 @@ export class RecordedWeightedExercise {
       .exhaustive();
   }
 
+  /** Applies the weight as if onto `original`, so narrowing what it applies to puts the other sets back. */
+  withWeightOver(original: RecordedWeightedExercise, setIndex: number, weight: Weight, applyTo: WeightAppliesTo) {
+    const applied = original.withWeight(setIndex, weight, applyTo);
+    return this.with({
+      potentialSets: this.potentialSets.map((set, index) =>
+        set.with({ weight: applied.potentialSets[index]?.weight ?? set.weight }),
+      ),
+    });
+  }
+
   toJSON(): RecordedWeightedExerciseJSON {
     return {
       type: 'RecordedWeightedExercise',

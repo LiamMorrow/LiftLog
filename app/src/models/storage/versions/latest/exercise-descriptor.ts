@@ -5,6 +5,7 @@ export interface ExerciseDescriptorJSON {
   mechanic: string | null;
   equipment: string | null;
   muscles: string[];
+  secondaryMuscles?: string[];
   instructions: string;
   category: string;
 }

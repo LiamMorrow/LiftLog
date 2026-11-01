@@ -5,7 +5,8 @@ import { useTranslate } from '@tolgee/react';
 import { translateExerciseMeta } from '@/utils/exercise-meta';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Searchbar, Card } from 'react-native-paper';
+import { Card } from 'react-native-paper';
+import { SearchField } from '@/components/presentation/foundation/search-field';
 import IconButton from '@/components/presentation/foundation/icon-button';
 
 export default function ExerciseSearchAndFilters({
@@ -13,7 +14,9 @@ export default function ExerciseSearchAndFilters({
   setSearchText,
   muscleFilters,
   setMuscleFilters,
+  autoFocus,
 }: {
+  autoFocus?: boolean;
   searchText: string;
   setSearchText: (text: string) => void;
   muscleFilters: string[];
@@ -26,11 +29,10 @@ export default function ExerciseSearchAndFilters({
 
   return (
     <View style={{ gap: spacing[2] }}>
-      <Searchbar
-        placeholder={t('generic.search.button')}
+      <SearchField
         value={searchText}
-        defaultValue={searchText}
         selectTextOnFocus
+        autoFocus={autoFocus}
         onChangeText={setSearchText}
         autoCapitalize={'words'}
         autoCorrect={false}

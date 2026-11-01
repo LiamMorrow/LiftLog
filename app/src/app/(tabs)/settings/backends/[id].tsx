@@ -1,10 +1,11 @@
 import { SettingsPage } from '@/components/layout/settings-page';
 import { BackendHeaderEditor } from '@/components/presentation/backends/backend-header-editor';
+import { getBackendHeaderFormHref } from '@/components/smart/backend-header-form';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
-import { FormRow } from '@/components/presentation/foundation/form-row';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListSelect } from '@/components/presentation/foundation/segmented-list-select';
+import { SegmentedListTextInput } from '@/components/presentation/foundation/segmented-list-text-input';
 import {
   Backend,
   backendFeatureNameKey,
@@ -27,7 +28,7 @@ import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import ExperimentIcon from '@expo/material-symbols/experiment.xml';
 import DeleteIcon from '@expo/material-symbols/delete.xml';
-import { HelperText, TextInput } from 'react-native-paper';
+import { HelperText } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 const kindOptions = [
@@ -184,35 +185,31 @@ function BackendEditor({ backend }: { backend: Backend }) {
         />
       }
     >
-      <FormRow noGap>
-        <TextInput
-          mode="outlined"
+      <SegmentedGroup>
+        <SegmentedListTextInput
           label={t('backends.name.label')}
           value={backend.name}
           error={!!nameError}
+          supportingText={nameError}
           onChangeText={(name) => update({ name })}
           onBlur={() => update({ name: backend.name.trim() })}
           autoCorrect={false}
         />
-        <HelperText type="error">{nameError}</HelperText>
-        <TextInput
-          mode="outlined"
+        <SegmentedListTextInput
           label={t('backends.url.label')}
           placeholder="https://liftlog.example.com"
           value={backend.url}
           error={!!urlError}
+          supportingText={
+            urlError || (backendUrlIsInsecure(backend.url) ? t('backends.url.insecure.message') : undefined)
+          }
           onChangeText={(url) => update({ url })}
           onBlur={() => update({ url: normalizeBackendUrl(backend.url) })}
           autoCorrect={false}
           autoCapitalize="none"
           keyboardType="url"
         />
-        {!urlError && backendUrlIsInsecure(backend.url) ? (
-          <HelperText type="info">{t('backends.url.insecure.message')}</HelperText>
-        ) : (
-          <HelperText type="error">{urlError}</HelperText>
-        )}
-      </FormRow>
+      </SegmentedGroup>
 
       <SegmentedGroup>
         <SegmentedListSelect
@@ -225,7 +222,11 @@ function BackendEditor({ backend }: { backend: Backend }) {
         />
       </SegmentedGroup>
 
-      <BackendHeaderEditor headers={backend.headers} onChange={(headers) => update({ headers })} />
+      <BackendHeaderEditor
+        headers={backend.headers}
+        onChange={(headers) => update({ headers })}
+        onEdit={(index) => router.push(getBackendHeaderFormHref(backend.id, index))}
+      />
 
       {probe.status === 'idle' ? null : (
         <HelperText type={probe.status === 'done' && !probe.ok ? 'error' : 'info'}>

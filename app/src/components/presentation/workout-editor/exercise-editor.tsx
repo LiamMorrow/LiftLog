@@ -1,15 +1,17 @@
-import { FormRow } from '@/components/presentation/foundation/form-row';
 import Form from '@/components/presentation/foundation/form';
-import SegmentedPicker from '@/components/presentation/foundation/segmented-picker';
+import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
+import { SegmentedListSelect } from '@/components/presentation/foundation/segmented-list-select';
 import { CardioExerciseEditor } from '@/components/presentation/workout-editor/cardio-exercise-editor';
 import { ExerciseSearcher } from '@/components/presentation/workout-editor/exercise-searcher';
-import { WeightedExerciseEditor } from '@/components/presentation/workout-editor/weighted-exercise-editor';
-import DirectionsRunIcon from '@expo/material-symbols/directions_run.xml';
-import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
+import {
+  ResistanceSelect,
+  WeightedExerciseEditor,
+} from '@/components/presentation/workout-editor/weighted-exercise-editor';
 import { CardioExerciseBlueprint, ExerciseBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import { match, P } from 'ts-pattern';
 import { useDerivedState } from '@/hooks/useDerivedState';
+import { useTranslate } from '@tolgee/react';
 
 interface ExerciseEditorProps {
   exercise: ExerciseBlueprint;
@@ -17,6 +19,7 @@ interface ExerciseEditorProps {
 }
 
 export function ExerciseEditor(props: ExerciseEditorProps) {
+  const { t } = useTranslate();
   const selectExerciseFromSearch = (ex: ExerciseDescriptor) => {
     updateExercise({ name: ex.name });
   };
@@ -30,7 +33,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
     commit(exercise.with(ex as unknown as Partial<WeightedExerciseBlueprint & CardioExerciseBlueprint>));
   };
 
-  const handleTypeChange = (type: string) => {
+  const handleTypeChange = (type: 'weighted' | 'cardio') => {
     let newExercise: CardioExerciseBlueprint | WeightedExerciseBlueprint = exercise;
     if (type === 'weighted') {
       newExercise = WeightedExerciseBlueprint.empty().with({
@@ -59,32 +62,25 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
 
   return (
     <Form>
-      <FormRow>
-        <ExerciseSearcher currentExercise={exercise} onSelectExercise={selectExerciseFromSearch} />
-      </FormRow>
-      <FormRow>
-        <SegmentedPicker
+      <ExerciseSearcher currentExercise={exercise} onSelectExercise={selectExerciseFromSearch} />
+      {exerciseEditor}
+      <SegmentedGroup>
+        <SegmentedListSelect
+          key="type"
+          label={t('exercise.type.label')}
+          icon={exercise instanceof WeightedExerciseBlueprint ? 'fitnessCenter' : 'directionsRun'}
+          testID="exercise-type"
           value={exercise instanceof WeightedExerciseBlueprint ? 'weighted' : 'cardio'}
           options={[
-            {
-              value: 'weighted',
-              label: 'Weighted',
-              icon: FitnessCenterIcon,
-              systemImage: 'dumbbell',
-              testID: 'weighted-button',
-            },
-            {
-              value: 'cardio',
-              label: 'Cardio/Time',
-              icon: DirectionsRunIcon,
-              systemImage: 'figure.run',
-              testID: 'cardio-button',
-            },
+            { value: 'weighted', label: t('exercise.type.weighted.label') },
+            { value: 'cardio', label: t('exercise.type.cardio.label') },
           ]}
           onChange={handleTypeChange}
         />
-      </FormRow>
-      {exerciseEditor}
+        {exercise instanceof WeightedExerciseBlueprint ? (
+          <ResistanceSelect key="resistance" exercise={exercise} updateExercise={updateExercise} />
+        ) : undefined}
+      </SegmentedGroup>
     </Form>
   );
 }

@@ -57,7 +57,7 @@ const booleanPrefs: BoolPref[] = [
   { key: 'notesExpandedByDefault', default: true },
   { key: 'keepScreenAwakeDuringWorkout', default: true },
   { key: 'exportToHealthAggregator', default: false },
-  { key: 'showPostWorkoutSummary', default: false },
+  { key: 'showPostWorkoutSummary', default: true },
   { key: 'trueBlackDarkTheme', default: false },
 ];
 

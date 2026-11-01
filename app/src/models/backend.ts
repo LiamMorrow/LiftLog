@@ -96,6 +96,17 @@ export function normalizeBackendUrl(url: string): string {
   return url.trim().replace(/\/+$/, '');
 }
 
+export const commonHeaderNames = ['Authorization', 'Proxy-Authorization', 'X-API-Key'];
+
+const secretHeaderNames = ['authorization', 'proxy-authorization', 'x-api-key'];
+
+// Both carry the same `<scheme> <credentials>` value, so both can be filled in as a username and password.
+const basicAuthHeaderNames = ['authorization', 'proxy-authorization'];
+
+export const isSecretHeader = (name: string) => secretHeaderNames.includes(name.trim().toLowerCase());
+
+export const takesBasicAuth = (name: string) => basicAuthHeaderNames.includes(name.trim().toLowerCase());
+
 export function basicAuthHeaderValue(username: string, password: string): string {
   return `Basic ${toBase64(`${username}:${password}`)}`;
 }

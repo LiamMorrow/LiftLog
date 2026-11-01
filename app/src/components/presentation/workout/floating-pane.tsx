@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { Platform, useWindowDimensions, View, ViewStyle } from 'react-native';
+import { Platform, StyleProp, useWindowDimensions, View, ViewStyle } from 'react-native';
 import { GlassBackground } from '@/components/presentation/foundation/glass-background';
 import { floatingShadowStyle } from '@/components/presentation/foundation/floating-shadow';
 
@@ -9,18 +9,19 @@ const barRadius = spacing[5];
 interface FloatingPaneProps {
   children: ReactNode;
   testID?: string;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
+  contentStyle?: StyleProp<ViewStyle>;
 }
 
 /** The glass bar that floats above a workout's page actions. */
-export function FloatingPane({ children, testID, style }: FloatingPaneProps) {
+export function FloatingPane({ children, testID, style, contentStyle }: FloatingPaneProps) {
   const { colors } = useAppTheme();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
 
   return (
-    // The glass rounds itself, so the bar does not clip: news shown in it, such as a cheer's emoji, can rise
-    // out of it. The lift comes from a wrapper, and Android separates itself with a hairline instead.
+    // Nothing clips the bar, so news shown in it, such as a cheer's emoji, can rise out of it. On iOS the glass
+    // rounds itself and the lift comes from a wrapper; Android paints and lifts the bar itself.
     <View
       style={[
         {
@@ -34,21 +35,32 @@ export function FloatingPane({ children, testID, style }: FloatingPaneProps) {
     >
       <View
         testID={testID}
-        style={{
-          borderRadius: barRadius,
-          paddingVertical: spacing[2],
-          paddingLeft: spacing[4],
-          paddingRight: spacing[2],
-          gap: spacing[1],
-          borderColor: colors.outlineVariant,
-          borderWidth: Platform.OS === 'android' ? 1 : 0,
-        }}
+        style={[
+          {
+            borderRadius: barRadius,
+            paddingVertical: spacing[2],
+            paddingLeft: spacing[4],
+            paddingRight: spacing[2],
+            gap: spacing[1],
+          },
+          Platform.OS === 'android'
+            ? {
+                backgroundColor: colors.surfaceContainerHigh,
+                borderColor: colors.outlineVariant,
+                borderWidth: 1,
+                elevation: 2,
+              }
+            : undefined,
+          contentStyle,
+        ]}
       >
-        <GlassBackground
-          radius={barRadius}
-          color={colors.surfaceContainerHigh}
-          tintColor={withAlpha(colors.surfaceContainerHigh, 0.75)}
-        />
+        {Platform.OS === 'ios' ? (
+          <GlassBackground
+            radius={barRadius}
+            color={colors.surfaceContainerHigh}
+            tintColor={withAlpha(colors.surfaceContainerHigh, 0.75)}
+          />
+        ) : undefined}
         {children}
       </View>
     </View>

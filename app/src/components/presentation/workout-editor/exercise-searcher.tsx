@@ -1,12 +1,15 @@
-import Button from '@/components/presentation/foundation/button';
+import IconButton from '@/components/presentation/foundation/icon-button';
+import { spacing } from '@/hooks/useAppTheme';
 import { ExerciseBlueprint } from '@/models/blueprint-models';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import { useAppSelector } from '@/store';
 import { clearExerciseSearchResult } from '@/store/app';
 import { uuid } from '@/utils/uuid';
+import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, Pressable } from 'react-native';
+import { Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 interface ExerciseSearcherProps {
@@ -16,6 +19,7 @@ interface ExerciseSearcherProps {
 
 export function ExerciseSearcher({ currentExercise, onSelectExercise }: ExerciseSearcherProps) {
   const { push } = useRouter();
+  const { t } = useTranslate();
   const dispatch = useDispatch();
   const [requestId] = useState(() => uuid());
   const searchResult = useAppSelector((x) => x.app.exerciseSearchResult);
@@ -37,8 +41,21 @@ export function ExerciseSearcher({ currentExercise, onSelectExercise }: Exercise
   };
 
   return (
-    <Button icon={'contentPasteSearch'} mode="contained" onPress={openSearch}>
-      {currentExercise.name}
-    </Button>
+    <Pressable
+      testID="exercise-name"
+      accessibilityRole="button"
+      onPress={openSearch}
+      style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}
+    >
+      <Text variant="headlineMedium" style={{ flex: 1 }}>
+        {currentExercise.name}
+      </Text>
+      <IconButton
+        icon="search"
+        mode="contained-tonal"
+        accessibilityLabel={t('generic.search.button')}
+        onPress={openSearch}
+      />
+    </Pressable>
   );
 }

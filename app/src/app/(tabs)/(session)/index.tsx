@@ -13,6 +13,7 @@ import { Remote } from '@/components/presentation/foundation/remote';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
+import { TitledSection } from '@/components/presentation/foundation/titled-section';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { useAppSelector, useAppSelectorWhenFocused } from '@/store';
@@ -70,16 +71,16 @@ function ListUpcomingWorkouts({
       <WelcomeWizard />
       <WhatsNewBanner />
       {currentSession && (
-        <>
-          <SectionHeader
-            title={t('workout.current.title')}
-            trailing={formatDate(currentSession.date, {
-              year: currentSession.date.year() !== LocalDate.now().year() ? 'numeric' : undefined,
-              day: 'numeric',
-              weekday: 'long',
-              month: 'long',
-            })}
-          />
+        <TitledSection
+          style={{ marginTop: spacing[2] }}
+          title={t('workout.current.title')}
+          trailing={formatDate(currentSession.date, {
+            year: currentSession.date.year() !== LocalDate.now().year() ? 'numeric' : undefined,
+            day: 'numeric',
+            weekday: 'long',
+            month: 'long',
+          })}
+        >
           <Card mode="contained">
             <Card.Content>
               <SessionCardContent session={currentSession} />
@@ -106,44 +107,48 @@ function ListUpcomingWorkouts({
               </Button>
             </CardActions>
           </Card>
-        </>
+        </TitledSection>
       )}
-      {!!upcoming.length && <SectionHeader title={t('workout.upcoming.title')} trailing={plan.name} />}
-      <CardList
-        keySelector={(x) => x.id}
-        cardType="contained"
-        items={upcoming}
-        emptyTemplate={currentSession ? undefined : <NoUpcomingWorkouts />}
-        renderItemContent={(session) => {
-          return (
-            <Card.Content>
-              <SessionCardContent session={session} />
-            </Card.Content>
-          );
-        }}
-        renderItemActions={(session) => {
-          const sessionPlanIndex = plan.sessions.findIndex((x) => x.equals(session.blueprint));
-          const handleEditPress = () => {
-            push(`/plan-workout-editor/${planId}/${sessionPlanIndex}`);
-          };
-          return (
-            <CardActions style={{ marginTop: spacing[2] }}>
-              <IconButton icon={'share'} mode="contained" onPress={() => handleSharePress(session)} />
-              {sessionPlanIndex !== -1 ? (
-                <IconButton icon={'edit'} mode="contained" onPress={handleEditPress} />
-              ) : undefined}
-              <Button
-                mode="contained"
-                icon={'playCircle'}
-                testID="start-resume-workout-button"
-                onPress={() => startSession(session)}
-              >
-                {session.isStarted ? <T keyName="workout.resume.button" /> : <T keyName="workout.start.button" />}
-              </Button>
-            </CardActions>
-          );
-        }}
-      />
+      {upcoming.length ? (
+        <TitledSection style={{ marginTop: spacing[2] }} title={t('workout.upcoming.title')} trailing={plan.name}>
+          <CardList
+            keySelector={(x) => x.id}
+            cardType="contained"
+            items={upcoming}
+            renderItemContent={(session) => {
+              return (
+                <Card.Content>
+                  <SessionCardContent session={session} />
+                </Card.Content>
+              );
+            }}
+            renderItemActions={(session) => {
+              const sessionPlanIndex = plan.sessions.findIndex((x) => x.equals(session.blueprint));
+              const handleEditPress = () => {
+                push(`/plan-workout-editor/${planId}/${sessionPlanIndex}`);
+              };
+              return (
+                <CardActions style={{ marginTop: spacing[2] }}>
+                  <IconButton icon={'share'} mode="contained" onPress={() => handleSharePress(session)} />
+                  {sessionPlanIndex !== -1 ? (
+                    <IconButton icon={'edit'} mode="contained" onPress={handleEditPress} />
+                  ) : undefined}
+                  <Button
+                    mode="contained"
+                    icon={'playCircle'}
+                    testID="start-resume-workout-button"
+                    onPress={() => startSession(session)}
+                  >
+                    {session.isStarted ? <T keyName="workout.resume.button" /> : <T keyName="workout.start.button" />}
+                  </Button>
+                </CardActions>
+              );
+            }}
+          />
+        </TitledSection>
+      ) : currentSession ? undefined : (
+        <NoUpcomingWorkouts />
+      )}
       <ConfirmationDialog
         headline={t('workout.clear_current.confirm.title')}
         textContent={t('workout.clear_current.confirm.body')}
@@ -155,27 +160,6 @@ function ListUpcomingWorkouts({
         open={confirmDeleteSessionOpen}
         onCancel={() => setConfirmDeleteSessionOpen(false)}
       />
-    </View>
-  );
-}
-
-function SectionHeader({ title, trailing }: { title: string; trailing: string }) {
-  const { colors } = useAppTheme();
-
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'baseline',
-        justifyContent: 'space-between',
-        gap: spacing[4],
-        marginTop: spacing[2],
-      }}
-    >
-      <Text variant="titleMedium">{title}</Text>
-      <Text variant="bodyMedium" numberOfLines={1} style={{ flexShrink: 1, color: colors.onSurfaceVariant }}>
-        {trailing}
-      </Text>
     </View>
   );
 }

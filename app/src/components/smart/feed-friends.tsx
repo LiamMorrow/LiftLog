@@ -1,18 +1,22 @@
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
-import CardActions from '@/components/presentation/foundation/card-actions';
 import Menu from '@/components/presentation/foundation/menu';
-import { PersonCard } from '@/components/presentation/feed/person-card';
+import { PersonRow } from '@/components/presentation/feed/person-row';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
-import { WeekActivityStrip } from '@/components/presentation/calendar/week-activity-strip';
-import Button from '@/components/presentation/foundation/button';
+import {
+  SegmentedGroup,
+  SegmentedListItem,
+  SegmentListFormElement,
+} from '@/components/presentation/foundation/segmented-list';
+import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { useOwnHistory } from '@/components/smart/own-history-provider';
-import { spacing } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useScroll } from '@/hooks/useScrollListener';
 import { useToday } from '@/hooks/useToday';
 import { Friend } from '@/models/feed-models';
+import { getFeedQrCodeHref } from '@/components/smart/feed-qr-code';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { FollowingActivity, selectFollowingActivity } from '@/store/activity';
 import { shareString } from '@/store/app';
@@ -25,10 +29,10 @@ import {
   selectFriendList,
   shareBackWithFriend,
 } from '@/store/feed';
-import { T, useTranslate } from '@tolgee/react';
+import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Card } from 'react-native-paper';
+import { useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { match } from 'ts-pattern';
 import PersonRemove from '@expo/material-symbols/person_remove.xml';
@@ -37,7 +41,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type FriendRow =
   | { type: 'header'; key: string; label: string; count: number }
-  | { type: 'friend'; key: string; friend: Friend };
+  | { type: 'friend'; key: string; friend: Friend; isFirst: boolean; isLast: boolean };
 
 export function FeedFriends() {
   const { t } = useTranslate();
@@ -54,7 +58,13 @@ export function FeedFriends() {
     members.length
       ? [
           { type: 'header', key: `${key}-header`, label, count: members.length },
-          ...members.map((friend): FriendRow => ({ type: 'friend', key: friend.id, friend })),
+          ...members.map((friend, index): FriendRow => ({
+            type: 'friend',
+            key: friend.id,
+            friend,
+            isFirst: index === 0,
+            isLast: index === members.length - 1,
+          })),
         ]
       : [];
   const withStatus = (...statuses: Friend['status'][]) => friends.filter((x) => statuses.includes(x.status));
@@ -71,7 +81,7 @@ export function FeedFriends() {
       onRefresh={() => {
         dispatch(fetchInboxItems({ fromUserAction: true }));
       }}
-      ListHeaderComponent={<ShareProfileCard />}
+      ListHeaderComponent={<ShareProfileRows />}
       refreshing={fetchingFeedItems}
       onScroll={handleScroll}
       data={rows}
@@ -81,11 +91,14 @@ export function FeedFriends() {
         match(item)
           .with({ type: 'header' }, (row) => <SectionHeader label={row.label} count={row.count} />)
           .with({ type: 'friend' }, (row) => (
-            <FriendItem friend={row.friend} activity={activityByUser.get(row.friend.id)} />
+            <View style={{ paddingBottom: row.isLast ? 0 : spacing[0.5] }}>
+              <SegmentedListItem isFirst={row.isFirst} isLast={row.isLast}>
+                <FriendItem friend={row.friend} activity={activityByUser.get(row.friend.id)} />
+              </SegmentedListItem>
+            </View>
           ))
           .exhaustive()
       }
-      ItemSeparatorComponent={() => <View style={{ height: spacing[2] }} />}
       contentContainerStyle={{
         padding: spacing.pageHorizontalMargin,
         paddingBottom: insets.bottom + spacing.pageHorizontalMargin,
@@ -96,20 +109,21 @@ export function FeedFriends() {
 
 function SectionHeader(props: { label: string; count: number }) {
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2], paddingTop: spacing[1] }}>
-      <SurfaceText font="text-sm" weight="bold" color="onSurfaceVariant" style={{ letterSpacing: 0.6 }}>
-        {props.label.toUpperCase()}
-      </SurfaceText>
-      <SurfaceText font="text-sm" color="onSurfaceVariant">
-        {props.count.toString()}
-      </SurfaceText>
-    </View>
+    <SurfaceText
+      font="text-sm"
+      weight="500"
+      color="onSurfaceVariant"
+      style={{ paddingTop: spacing[5], paddingBottom: spacing[2], paddingHorizontal: spacing[1] }}
+    >
+      {`${props.label} · ${props.count}`}
+    </SurfaceText>
   );
 }
 
-function ShareProfileCard() {
+function ShareProfileRows() {
   const dispatch = useDispatch();
   const { t } = useTranslate();
+  const { push } = useRouter();
   const identity = useAppSelector((x) => x.feed.identity.unwrapOr(undefined));
 
   if (!identity) {
@@ -117,30 +131,22 @@ function ShareProfileCard() {
   }
 
   return (
-    <Card mode="contained" style={{ marginBottom: spacing[2] }}>
-      <Card.Content>
-        <SurfaceText>
-          <T keyName="feed.share_link.body" />
-        </SurfaceText>
-      </Card.Content>
-      <CardActions>
-        <Button
-          testID="friends-share-button"
-          mode="contained"
-          icon={'share'}
-          onPress={() => {
-            dispatch(
-              shareString({
-                title: 'Share feed profile',
-                value: t('feed.share_link.message', { link: getFeedShareUrl(identity) }),
-              }),
-            );
-          }}
-        >
-          <T keyName="generic.share.button" />
-        </Button>
-      </CardActions>
-    </Card>
+    <SegmentedGroup>
+      <SegmentListFormElement
+        icon="share"
+        label={t('feed.share_link.row')}
+        supportingText={t('feed.share_link.row.supporting')}
+        onPress={() => {
+          dispatch(
+            shareString({
+              title: 'Share feed profile',
+              value: t('feed.share_link.message', { link: getFeedShareUrl(identity) }),
+            }),
+          );
+        }}
+      />
+      <SegmentedListLink icon="qrCode" label={t('feed.qr_code.row')} onPress={() => push(getFeedQrCodeHref())} />
+    </SegmentedGroup>
   );
 }
 
@@ -148,6 +154,7 @@ function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingA
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const [confirmRemoveVisible, setConfirmRemoveVisible] = useState(false);
+  const { colors } = useAppTheme();
   const name = friend.name || t('feed.anonymous_user.label');
   const friendId = friend.id;
 
@@ -159,7 +166,7 @@ function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingA
   const removeLabel = friend.status === 'pending' ? t('feed.cancel_request.button') : t('feed.remove_friend.button');
   const removeMenu = (
     <Menu
-      trigger={(open) => <IconButton testID="friend-more-btn" onPress={open} icon={'moreHoriz'} />}
+      trigger={(open) => <IconButton testID="friend-more-btn" onPress={open} icon={'moreVert'} />}
       items={[
         {
           label: removeLabel,
@@ -172,58 +179,71 @@ function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingA
     />
   );
 
-  const card = match(friend.status)
+  const row = match(friend.status)
     .with('incoming', () => (
-      <PersonCard userId={friendId} name={friend.name} subtitle={t('feed.wants_to_be_friends.subtitle')}>
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: spacing[2] }}>
-          <Button
-            testID="feed-deny-friend-request"
-            mode="outlined"
-            icon={'close'}
-            onPress={() => dispatch(denyFriendRequest({ friendId, fromUserAction: true }))}
-          >
-            {t('generic.deny.button')}
-          </Button>
-          <Button
-            testID="feed-accept-friend-request"
-            mode="contained"
-            icon={'check'}
-            onPress={() => dispatch(acceptFriendRequest({ friendId, fromUserAction: true }))}
-          >
-            {t('generic.accept.button')}
-          </Button>
-        </View>
-      </PersonCard>
+      <PersonRow
+        userId={friendId}
+        name={friend.name}
+        subtitle={t('feed.wants_to_be_friends.subtitle')}
+        trailing={
+          <View style={{ flexDirection: 'row' }}>
+            <IconButton
+              testID="feed-deny-friend-request"
+              iconColor={colors.error}
+              icon={'close'}
+              accessibilityLabel={t('generic.deny.button')}
+              onPress={() => dispatch(denyFriendRequest({ friendId, fromUserAction: true }))}
+            />
+            <IconButton
+              testID="feed-accept-friend-request"
+              mode="contained"
+              icon={'check'}
+              containerColor={colors.primary}
+              iconColor={colors.onPrimary}
+              accessibilityLabel={t('generic.accept.button')}
+              onPress={() => dispatch(acceptFriendRequest({ friendId, fromUserAction: true }))}
+            />
+          </View>
+        }
+      />
     ))
     .with('legacyFollowing', () => (
-      <PersonCard userId={friendId} name={friend.name} subtitle={t('feed.share_back.subtitle')}>
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: spacing[2] }}>
-          <Button testID="feed-decline-share-back" mode="outlined" onPress={() => setConfirmRemoveVisible(true)}>
-            {t('generic.remove.button')}
-          </Button>
-          <Button
-            testID="feed-share-back"
-            mode="contained"
-            icon={'personAdd'}
-            onPress={() => dispatch(shareBackWithFriend({ friendId, fromUserAction: true }))}
-          >
-            {t('feed.share_back.button')}
-          </Button>
-        </View>
-      </PersonCard>
+      <PersonRow
+        userId={friendId}
+        name={friend.name}
+        subtitle={t('feed.share_back.subtitle')}
+        trailing={
+          <View style={{ flexDirection: 'row' }}>
+            <IconButton
+              testID="feed-decline-share-back"
+              iconColor={colors.error}
+              icon={'close'}
+              accessibilityLabel={t('generic.remove.button')}
+              onPress={() => setConfirmRemoveVisible(true)}
+            />
+            <IconButton
+              testID="feed-share-back"
+              mode="contained"
+              icon={'personAdd'}
+              containerColor={colors.primary}
+              iconColor={colors.onPrimary}
+              accessibilityLabel={t('feed.share_back.button')}
+              onPress={() => dispatch(shareBackWithFriend({ friendId, fromUserAction: true }))}
+            />
+          </View>
+        }
+      />
     ))
     .with('friend', () => (
-      <PersonCard
+      <PersonRow
         userId={friendId}
         name={friend.name}
         subtitle={<ActivitySummary activity={activity} />}
         trailing={removeMenu}
-      >
-        {activity ? <WeekActivityStrip cells={activity.cells} /> : null}
-      </PersonCard>
+      />
     ))
     .with('pending', () => (
-      <PersonCard
+      <PersonRow
         userId={friendId}
         name={friend.name}
         subtitle={t('feed.waiting_to_accept.subtitle')}
@@ -231,7 +251,7 @@ function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingA
       />
     ))
     .with('legacyFollower', () => (
-      <PersonCard
+      <PersonRow
         userId={friendId}
         name={friend.name}
         subtitle={t('feed.waiting_to_share_back.subtitle')}
@@ -250,7 +270,7 @@ function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingA
         okText={t('generic.remove.button')}
         onCancel={() => setConfirmRemoveVisible(false)}
       />
-      {card}
+      {row}
     </>
   );
 }

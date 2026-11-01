@@ -8,7 +8,7 @@ export function useStreakToolbarItem(stats: StreakStats | undefined) {
   const showAccomplishments = useAppSelector((x) => x.settings.showAccomplishments);
 
   return (
-    <Stack.Toolbar.View hidden={!showAccomplishments || !stats?.hasHistory}>
+    <Stack.Toolbar.View key="streak" hidden={!showAccomplishments || !stats?.hasHistory}>
       {stats ? <StreakPill stats={stats} /> : undefined}
     </Stack.Toolbar.View>
   );

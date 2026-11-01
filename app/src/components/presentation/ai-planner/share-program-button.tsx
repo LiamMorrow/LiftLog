@@ -28,7 +28,7 @@ export function ShareProgramButton({ disabled }: { disabled: boolean }) {
 
   return (
     <Tooltip title={t('ai.share_program.button')}>
-      <IconButton mode="outlined" icon={'assignment'} size={35} disabled={disabled || !activeProgram} onPress={share} />
+      <IconButton mode="outlined" icon={'assignment'} disabled={disabled || !activeProgram} onPress={share} />
     </Tooltip>
   );
 }
