@@ -95,6 +95,7 @@
               "Divider",
               "HelperText",
               "Icon",
+              "Snackbar",
               "Switch",
               "Text",
               "Tooltip"
