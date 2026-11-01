@@ -467,6 +467,8 @@
   "rest_timer.status.resting": "Resting",
   "settings.app_configuration.subtitle": "Adjust theme and other misc. settings",
   "settings.app_configuration.title": "App configuration",
+  "settings.workout_configuration.subtitle": "Adjust how workouts look and behave",
+  "settings.workout_configuration.title": "Workout",
   "settings.app_info.subtitle": "Display app information",
   "settings.app_info.title": "App info",
   "settings.bug_report.subtitle": "Let us know when you encounter a bug",

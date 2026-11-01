@@ -7,6 +7,7 @@ import BugReportIcon from '@expo/material-symbols/bug_report.xml';
 import CampaignIcon from '@expo/material-symbols/campaign.xml';
 import DirectionsRunIcon from '@expo/material-symbols/directions_run.xml';
 import DnsIcon from '@expo/material-symbols/dns.xml';
+import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
 import ForumIcon from '@expo/material-symbols/forum.xml';
 import InfoIcon from '@expo/material-symbols/info.xml';
 import LanguageIcon from '@expo/material-symbols/language.xml';
@@ -80,6 +81,13 @@ export default function SettingsPageIndex() {
           icon={SettingsIcon}
           systemImage="gearshape"
           onPress={() => push('/settings/app-configuration')}
+        />
+        <SegmentedListLink
+          testID="workoutConfiguration"
+          label={t('settings.workout_configuration.title')}
+          icon={FitnessCenterIcon}
+          systemImage="dumbbell"
+          onPress={() => push('/settings/workout-configuration')}
         />
         <SegmentedListLink
           testID="localization"
