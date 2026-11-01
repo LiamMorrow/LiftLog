@@ -83,7 +83,7 @@
   },
   "overrides": [
     {
-      "files": ["src/components/presentation/foundation/text-field.tsx"],
+      "files": ["src/components/presentation/foundation/text-field/text-field.tsx"],
       "rules": {
         "no-restricted-imports": "off"
       }

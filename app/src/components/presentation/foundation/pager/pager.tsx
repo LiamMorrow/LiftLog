@@ -12,7 +12,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { PageIndicator } from './page-indicator';
+import { PageIndicator } from '@/components/presentation/foundation/page-indicator';
 
 export interface PagerProps {
   children: ReactNode;

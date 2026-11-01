@@ -1,4 +1,4 @@
-import { GesturePressableProps } from '@/components/presentation/foundation/pressable-props';
+import { GesturePressableProps } from './pressable-props';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { withAlpha } from '@/utils/color';
 import { isNotNullOrUndefined } from '@/utils/null';

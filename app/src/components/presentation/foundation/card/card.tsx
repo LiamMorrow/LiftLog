@@ -15,10 +15,7 @@ export function Card({ children, style, onPress, testID }: CardProps) {
   return (
     <View
       testID={testID}
-      style={[
-        { backgroundColor: colors.surfaceVariant, borderRadius: rounding.cardRadius, overflow: 'hidden' },
-        style,
-      ]}
+      style={[{ backgroundColor: colors.surfaceVariant, borderRadius: rounding.cardRadius, overflow: 'hidden' }, style]}
     >
       {onPress ? <TouchableRipple onPress={onPress}>{children}</TouchableRipple> : children}
     </View>
