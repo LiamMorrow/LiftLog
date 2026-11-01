@@ -1,11 +1,12 @@
 import Button from '@/components/presentation/foundation/button';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import CardActions from '@/components/presentation/foundation/card-actions';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { createFeedIdentity, selectFeedIdentityRemote } from '@/store/feed';
 import { T } from '@tolgee/react';
-import { Card } from 'react-native-paper';
+
 import { useDispatch } from 'react-redux';
 
 export function useCreateFeedAccount() {
@@ -27,12 +28,12 @@ export function useCreateFeedAccount() {
 export function CreateFeedAccountCard() {
   const { create, creating } = useCreateFeedAccount();
   return (
-    <Card mode="contained" style={{ marginBottom: spacing[2] }}>
-      <Card.Content>
+    <Card style={{ marginBottom: spacing[2] }}>
+      <CardContent style={{ paddingBottom: 0 }}>
         <AppText variant="bodyLarge">
           <T keyName="feed.create_account.body" />
         </AppText>
-      </Card.Content>
+      </CardContent>
       <CardActions>
         <Button
           testID="feed-create-account-button"

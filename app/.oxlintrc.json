@@ -86,7 +86,7 @@
           },
           {
             "name": "react-native-paper",
-            "importNames": ["Switch", "Text"],
+            "importNames": ["Card", "Switch", "Text"],
             "message": "react-native-paper is being removed. Use the equivalent from @/components/presentation/foundation/"
           },
           {

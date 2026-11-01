@@ -1,4 +1,5 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import { Remote } from '@/components/presentation/foundation/remote';
 import { RepsBarChart } from '@/components/presentation/stats/reps-bar-chart';
 import SingleValueStatisticCard from '@/components/presentation/stats/single-value-statistic-card';
@@ -17,7 +18,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router/build/hooks';
 import { ReactNode, useEffect } from 'react';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Card } from 'react-native-paper';
+
 import { useDispatch } from 'react-redux';
 
 export default function ExpandedExercisePage() {
@@ -99,12 +100,11 @@ function StatCardWithTitle(props: { title: string; children: ReactNode }) {
   return (
     <TitledSection title={props.title} style={{ marginHorizontal: spacing.pageHorizontalMargin }}>
       <Card
-        mode="contained"
         style={{
           backgroundColor: colors.surfaceContainer,
         }}
       >
-        <Card.Content style={{ paddingVertical: spacing[8] }}>{props.children}</Card.Content>
+        <CardContent style={{ paddingVertical: spacing[8] }}>{props.children}</CardContent>
       </Card>
     </TitledSection>
   );

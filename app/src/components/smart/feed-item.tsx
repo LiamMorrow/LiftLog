@@ -1,4 +1,5 @@
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import { PersonAvatar } from '@/components/presentation/feed/person-avatar';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import SessionComponent from '@/components/smart/session-component';
@@ -18,7 +19,6 @@ import { T, useTranslate } from '@tolgee/react';
 import { LocalDate } from '@js-joda/core';
 import { Href, Stack } from 'expo-router';
 import { View } from 'react-native';
-import { Card } from 'react-native-paper';
 
 export function getFeedItemHref(eventId: string): Href {
   return `/feed/item/${encodeURIComponent(eventId)}`;
@@ -67,8 +67,8 @@ export function FeedItem({ eventId }: { eventId: string }) {
         session={session}
         showBodyweight={showBodyweight && !!session.bodyweight}
         header={
-          <Card mode="contained" style={{ margin: spacing.pageHorizontalMargin }}>
-            <Card.Content>
+          <Card style={{ margin: spacing.pageHorizontalMargin }}>
+            <CardContent>
               <View style={{ gap: spacing[2] }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}>
                   <PersonAvatar userId={feedItem.userId} name={authorName} size={40} />
@@ -99,7 +99,7 @@ export function FeedItem({ eventId }: { eventId: string }) {
                   )}
                 </View>
               </View>
-            </Card.Content>
+            </CardContent>
           </Card>
         }
       />

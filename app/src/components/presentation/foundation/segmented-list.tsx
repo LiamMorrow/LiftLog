@@ -1,3 +1,4 @@
+import { Card } from '@/components/presentation/foundation/card';
 import Icon from '@/components/presentation/foundation/icon';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
@@ -143,13 +144,11 @@ export function SegmentedListItem(props: { isFirst: boolean; isLast: boolean; ch
     .with({ isLast: true }, () => styles.lastItem)
     .with({ isFirst: false, isLast: false }, () => styles.middleItem)
     .exhaustive();
-  const { colors } = useAppTheme();
-  return <View style={[styles.item, { backgroundColor: colors.surfaceVariant }, style]}>{props.children}</View>;
+  return <Card style={[styles.item, style]}>{props.children}</Card>;
 }
 
 const styles = StyleSheet.create({
   item: {
-    borderRadius: rounding.cardRadius,
     overflow: 'hidden',
   },
   rowAction: {

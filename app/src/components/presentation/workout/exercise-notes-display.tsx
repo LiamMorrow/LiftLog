@@ -1,11 +1,12 @@
 import { AccordionItem } from '@/components/presentation/foundation/accordion-item';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import { spacing } from '@/hooks/useAppTheme';
 import { RecordedExercise } from '@/models/session-models';
 import { useAppSelector } from '@/store';
 import { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Card, Divider } from 'react-native-paper';
+import { Divider } from 'react-native-paper';
 import IconButton from '@/components/presentation/foundation/icon-button';
 
 interface ExerciseNotesDisplayProps {
@@ -65,8 +66,8 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
     return undefined;
   }
   return (
-    <Card mode="contained" style={[{ marginTop: spacing[4] }]}>
-      <Card.Content style={{ flexDirection: 'row' }}>
+    <Card style={[{ marginTop: spacing[4] }]}>
+      <CardContent style={{ flexDirection: 'row' }}>
         <IconButton
           icon={expanded ? 'unfoldLess' : 'unfoldMore'}
           style={{
@@ -100,7 +101,7 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
             </View>
           </AccordionItem>
         </View>
-      </Card.Content>
+      </CardContent>
     </Card>
   );
 }

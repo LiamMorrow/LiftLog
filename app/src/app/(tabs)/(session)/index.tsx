@@ -1,4 +1,5 @@
 import CardActions from '@/components/presentation/foundation/card-actions';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import CardList from '@/components/presentation/foundation/card-list';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
@@ -27,7 +28,7 @@ import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Card, Icon as PaperIcon, Tooltip } from 'react-native-paper';
+import { Icon as PaperIcon, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { WelcomeWizard } from '@/components/smart/welcome-wizard';
@@ -82,10 +83,10 @@ function ListUpcomingWorkouts({
             month: 'long',
           })}
         >
-          <Card mode="contained">
-            <Card.Content>
+          <Card>
+            <CardContent style={{ paddingBottom: 0 }}>
               <SessionCardContent session={currentSession} />
-            </Card.Content>
+            </CardContent>
             <CardActions style={{ marginTop: spacing[2] }}>
               <Tooltip title={t('workout.share_workout.button')}>
                 <IconButton icon={'share'} mode="contained" onPress={() => handleSharePress(currentSession)} />
@@ -114,13 +115,12 @@ function ListUpcomingWorkouts({
         <TitledSection style={{ marginTop: spacing[2] }} title={t('workout.upcoming.title')} trailing={plan.name}>
           <CardList
             keySelector={(x) => x.id}
-            cardType="contained"
             items={upcoming}
             renderItemContent={(session) => {
               return (
-                <Card.Content>
+                <CardContent style={{ paddingBottom: 0 }}>
                   <SessionCardContent session={session} />
-                </Card.Content>
+                </CardContent>
               );
             }}
             renderItemActions={(session) => {

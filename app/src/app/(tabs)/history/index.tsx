@@ -1,4 +1,5 @@
 import CardActions from '@/components/presentation/foundation/card-actions';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import IconButton from '@/components/presentation/foundation/icon-button';
@@ -39,7 +40,7 @@ import { useDeferredValue, useState } from 'react';
 import { View } from 'react-native';
 import { LegendList } from '@legendapp/list/react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Card, Icon, Tooltip } from 'react-native-paper';
+import { Icon, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -183,8 +184,8 @@ function History() {
           </View>
         }
         renderItem={({ item: session }) => (
-          <Card mode="contained">
-            <Card.Content>
+          <Card>
+            <CardContent style={{ paddingBottom: 0 }}>
               <SplitCardControl
                 titleContent={<SessionSummaryTitle showDate session={session} />}
                 mainContent={
@@ -195,7 +196,7 @@ function History() {
                 }
               />
               <ReactionSummary eventId={session.id} />
-            </Card.Content>
+            </CardContent>
             <CardActions style={{ marginTop: spacing[2] }}>
               <Tooltip title={t('workout.share_workout.button')}>
                 <IconButton icon={'share'} mode="contained" onPress={() => handleSharePress(session)} />

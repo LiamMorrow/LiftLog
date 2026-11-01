@@ -1,8 +1,8 @@
 import { AppText } from '@/components/presentation/foundation/app-text';
+import { Card } from '@/components/presentation/foundation/card';
 import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
-import { Card } from 'react-native-paper';
 
 export interface StatTile {
   key: string;
@@ -26,11 +26,7 @@ export function StatTiles({ tiles }: { tiles: StatTile[] }) {
           {row.map((tile) => {
             const ink = tile.gold ? 'onGoldContainer' : 'onSurfaceVariant';
             return (
-              <Card
-                key={tile.key}
-                mode="contained"
-                style={[{ flex: 1 }, tile.gold && { backgroundColor: colors.goldContainer }]}
-              >
+              <Card key={tile.key} style={[{ flex: 1 }, tile.gold && { backgroundColor: colors.goldContainer }]}>
                 <View style={{ padding: spacing[3], gap: spacing[0.5] }}>
                   <AppText variant="bodySmall" color={ink}>
                     {tile.label}

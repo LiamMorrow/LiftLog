@@ -1,4 +1,5 @@
 import CardList from '@/components/presentation/foundation/card-list';
+import { CardContent } from '@/components/presentation/foundation/card';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
@@ -12,7 +13,7 @@ import { showSnackbar } from '@/store/app';
 import { T, useTranslate } from '@tolgee/react';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Card } from 'react-native-paper';
+
 import { useDispatch } from 'react-redux';
 import { uuid } from '@/utils/uuid';
 import { useRouter } from 'expo-router';
@@ -50,15 +51,14 @@ function SharedProgramBlueprintContent({ sharedItem }: { sharedItem: SharedProgr
           <T keyName="workout.all.title" />
         </AppText>
         <CardList
-          cardType="contained"
           items={sessions}
           renderItemContent={(session) => (
-            <Card.Content>
+            <CardContent>
               <SplitCardControl
                 titleContent={<SessionSummaryTitle session={session} />}
                 mainContent={<SessionSummary session={session} />}
               />
-            </Card.Content>
+            </CardContent>
           )}
           keySelector={(session) => session.id}
           emptyTemplate={

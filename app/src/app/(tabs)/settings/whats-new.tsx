@@ -1,4 +1,5 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import Button from '@/components/presentation/foundation/button';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { latestWhatsNewId, whatsNewEntries, WhatsNewEntry } from '@/models/whats-new';
@@ -9,7 +10,7 @@ import { Href, Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Card, Icon } from 'react-native-paper';
+import { Icon } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export default function WhatsNew() {
@@ -43,8 +44,8 @@ function WhatsNewCard({ entry }: { entry: WhatsNewEntry }) {
   const goToFeature = (route: Href) => push(route);
 
   return (
-    <Card mode="contained">
-      <Card.Content style={{ gap: spacing[2] }}>
+    <Card>
+      <CardContent style={{ gap: spacing[2] }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}>
           <View
             style={{
@@ -72,7 +73,7 @@ function WhatsNewCard({ entry }: { entry: WhatsNewEntry }) {
             </Button>
           </View>
         )}
-      </Card.Content>
+      </CardContent>
     </Card>
   );
 }

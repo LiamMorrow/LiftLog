@@ -1,4 +1,5 @@
 import CardActions from '@/components/presentation/foundation/card-actions';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import { PersonAvatar } from '@/components/presentation/feed/person-avatar';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { Remote } from '@/components/presentation/foundation/remote';
@@ -30,7 +31,7 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { View } from 'react-native';
-import { Card } from 'react-native-paper';
+
 import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { LegendList, LegendListRef } from '@legendapp/list/react-native';
@@ -122,8 +123,8 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
       />
 
       {identity.publishWorkouts ? undefined : (
-        <Card mode="contained" style={{ marginBottom: spacing[2] }}>
-          <Card.Content
+        <Card style={{ marginBottom: spacing[2] }}>
+          <CardContent
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -142,17 +143,17 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
             >
               <T keyName="generic.fix.button" />
             </Button>
-          </Card.Content>
+          </CardContent>
         </Card>
       )}
 
       {isAlone && (
-        <Card mode="contained" style={{ marginBottom: spacing[2] }}>
-          <Card.Content style={{ gap: spacing[2] }}>
+        <Card style={{ marginBottom: spacing[2] }}>
+          <CardContent style={{ gap: spacing[2], paddingBottom: 0 }}>
             <AppText variant="bodyLarge">
               <T keyName="feed.friends_explanation.body" />
             </AppText>
-          </Card.Content>
+          </CardContent>
           <CardActions>
             <Button
               testID="feed-share-button"
@@ -189,8 +190,8 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
       const authorName = isOwnItem ? identity?.name : friends[props.feedItem.userId]?.name;
       const byline = isOwnItem ? t('feed.you.label') : (authorName ?? t('feed.anonymous_user.label'));
       return (
-        <Card mode="contained" testID="feed-view-workout">
-          <Card.Content>
+        <Card testID="feed-view-workout">
+          <CardContent>
             <SplitCardControl
               actions={
                 <IconButton
@@ -221,7 +222,7 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
             ) : (
               <ReactionBar key={props.feedItem.eventId} eventId={props.feedItem.eventId} animateOnMount />
             )}
-          </Card.Content>
+          </CardContent>
         </Card>
       );
     }

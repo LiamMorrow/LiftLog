@@ -1,5 +1,6 @@
 import { showSnackbar } from '@/store/app';
-import { Card, Icon } from 'react-native-paper';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
+import { Icon } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { View } from 'react-native';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
@@ -84,13 +85,12 @@ export default function SessionComponent(props: {
 
   const notesComponent = session.blueprint.notes ? (
     <Card
-      mode="contained"
       style={{
         marginVertical: spacing[2],
         marginHorizontal: spacing.pageHorizontalMargin,
       }}
     >
-      <Card.Content
+      <CardContent
         style={{
           gap: spacing[4],
           flexDirection: 'row',
@@ -101,7 +101,7 @@ export default function SessionComponent(props: {
         <View style={{ paddingRight: spacing[2] }}>
           <AppText variant="bodyLarge">{session.blueprint.notes}</AppText>
         </View>
-      </Card.Content>
+      </CardContent>
     </Card>
   ) : null;
 
@@ -140,8 +140,8 @@ export default function SessionComponent(props: {
   };
 
   const bodyweight = props.showBodyweight ? (
-    <Card style={{ marginHorizontal: spacing.pageHorizontalMargin }} mode="contained" testID="bodyweight-card">
-      <Card.Content
+    <Card style={{ marginHorizontal: spacing.pageHorizontalMargin }} testID="bodyweight-card">
+      <CardContent
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -156,7 +156,7 @@ export default function SessionComponent(props: {
           increment={new BigNumber('0.1')}
           label={t('exercise.bodyweight.label')}
         />
-      </Card.Content>
+      </CardContent>
     </Card>
   ) : null;
 
@@ -225,11 +225,10 @@ export default function SessionComponent(props: {
 
   const workoutSummary = (
     <Card
-      mode="contained"
       onPress={isActiveWorkout ? props.openPostWorkoutSummary : undefined}
       style={{ margin: spacing.pageHorizontalMargin }}
     >
-      <Card.Content>
+      <CardContent>
         <View
           style={{
             flexDirection: 'row',
@@ -256,7 +255,7 @@ export default function SessionComponent(props: {
             {(session.duration && formatDuration(session.duration, 'hours-mins')) || '-'}
           </AppText>
         </View>
-      </Card.Content>
+      </CardContent>
     </Card>
   );
 

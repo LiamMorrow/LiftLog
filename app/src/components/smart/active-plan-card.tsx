@@ -1,4 +1,5 @@
 import Button from '@/components/presentation/foundation/button';
+import { Card } from '@/components/presentation/foundation/card';
 import CardActions from '@/components/presentation/foundation/card-actions';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { AppText } from '@/components/presentation/foundation/app-text';
@@ -10,7 +11,7 @@ import { selectProgram } from '@/store/program';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { View } from 'react-native';
-import { Card } from 'react-native-paper';
+
 import { useDispatch } from 'react-redux';
 import { ItemMenu } from './program-list-item';
 
@@ -29,7 +30,7 @@ export function ActivePlanCard({ id }: { id: string }) {
   ].join(' · ');
 
   return (
-    <Card mode="contained">
+    <Card>
       <View style={{ padding: spacing[4], gap: spacing[3] }}>
         <View
           style={{

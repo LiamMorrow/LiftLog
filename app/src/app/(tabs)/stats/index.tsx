@@ -1,4 +1,5 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import Icon from '@/components/presentation/foundation/icon';
 import { Remote } from '@/components/presentation/foundation/remote';
 import { ExerciseListSummary } from '@/components/presentation/stats/exercise-list-summary';
@@ -18,7 +19,7 @@ import { Stack, useFocusEffect } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Card } from 'react-native-paper';
+
 import { useDispatch } from 'react-redux';
 import { match } from 'ts-pattern';
 
@@ -109,15 +110,14 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
           style={{ marginHorizontal: spacing.pageHorizontalMargin }}
         >
           <Card
-            mode="contained"
             style={{
               backgroundColor: colors.surfaceContainer,
               marginBottom: spacing[2],
             }}
           >
-            <Card.Content>
+            <CardContent>
               <StatisticLineChart statistics={stats.bodyweightStats} axis={loadAxis} />
-            </Card.Content>
+            </CardContent>
           </Card>
         </TitledSection>
       )}
