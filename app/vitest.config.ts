@@ -22,6 +22,7 @@ const expoSqliteShim: Plugin = {
 export default defineConfig({
   // Metro injects this; without it anything importing `services/api-consts` throws on load.
   define: { __DEV__: 'false' },
+  assetsInclude: ['**/*.xml'],
   test: {
     globals: false,
     environment: 'jsdom',

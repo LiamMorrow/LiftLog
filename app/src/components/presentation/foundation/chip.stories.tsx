@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-native';
+import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
 import { fn } from 'storybook/test';
 import { Chip } from '@/components/presentation/foundation/chip';
 
@@ -19,4 +20,4 @@ export const Outlined: Story = { args: { mode: 'outlined' } };
 
 export const Selected: Story = { args: { selected: true } };
 
-export const WithIcon: Story = { args: { icon: 'fitnessCenter' } };
+export const WithIcon: Story = { args: { icon: FitnessCenterIcon, systemImage: 'dumbbell' } };

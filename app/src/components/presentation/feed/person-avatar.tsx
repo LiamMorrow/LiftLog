@@ -1,5 +1,6 @@
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import PersonIcon from '@expo/material-symbols/person.xml';
 import { ColorChoice, useAppTheme } from '@/hooks/useAppTheme';
 import { View } from 'react-native';
 
@@ -42,7 +43,12 @@ export function PersonAvatar({ userId, name, size = DEFAULT_SIZE }: PersonAvatar
           {initials}
         </AppText>
       ) : (
-        <Icon source="person" size={size / 2} color={colors[`on${capitalize(color)}` as ColorChoice]} />
+        <NativeIcon
+          icon={PersonIcon}
+          systemImage="person.fill"
+          size={size / 2}
+          color={colors[`on${capitalize(color)}` as ColorChoice]}
+        />
       )}
     </View>
   );

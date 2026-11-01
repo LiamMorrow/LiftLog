@@ -10,7 +10,7 @@ import { T, useTranslate } from '@tolgee/react';
 import { Href, useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
 import { shallowEqual, useDispatch } from 'react-redux';
 
 export function WhatsNewBanner() {
@@ -64,7 +64,7 @@ function Feature({ entry, onPress }: { entry: WhatsNewEntry; onPress: (route: Hr
     <>
       <View style={styles.featureRow}>
         <View style={[styles.iconWell, { backgroundColor: colors.tertiary }]}>
-          <Icon source={entry.icon} size={22} color={colors.onTertiary} />
+          <NativeIcon icon={entry.icon} systemImage={entry.systemImage} size={22} color={colors.onTertiary} />
         </View>
         <AppText variant="titleMedium" style={{ color: colors.onTertiaryContainer, flexShrink: 1 }}>
           <T keyName={entry.titleKey} />

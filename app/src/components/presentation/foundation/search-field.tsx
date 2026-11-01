@@ -1,4 +1,5 @@
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import SearchIcon from '@expo/material-symbols/search.xml';
 import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
 import CloseIcon from '@expo/material-symbols/close.xml';
 import { PillTextField } from '@/components/presentation/foundation/pill-text-field';
@@ -25,7 +26,7 @@ export function SearchField({ value, onChangeText, ...props }: SearchFieldProps)
       {...props}
       value={value}
       onChangeText={onChangeText}
-      leading={<Icon source="search" size={24} color={colors.onSurfaceVariant} />}
+      leading={<NativeIcon icon={SearchIcon} systemImage="magnifyingglass" size={24} color={colors.onSurfaceVariant} />}
       trailing={
         value ? (
           <NativeIconButton

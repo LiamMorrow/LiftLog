@@ -1,9 +1,11 @@
 import { IntegerInput } from '@/components/presentation/foundation/editors/number-inputs';
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import AddIcon from '@expo/material-symbols/add.xml';
+import RemoveIcon from '@expo/material-symbols/remove.xml';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
-import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { useAppTheme, spacing, rounding } from '@/hooks/useAppTheme';
-import { View } from 'react-native';
+import { ImageSourcePropType, View } from 'react-native';
+import { SFSymbol } from 'sf-symbols-typescript';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { match } from 'ts-pattern';
 
@@ -62,13 +64,15 @@ export default function FixedIncrementer(props: FixedIncrementerProps) {
         }}
       >
         <ContainedSegmentIconButton
-          icon={'remove'}
+          icon={RemoveIcon}
+          systemImage="minus"
           onPress={() => props.onValueChange(props.value - 1)}
           position="start"
           testID="fixed-decrement"
         />
         <ContainedSegmentIconButton
-          icon={'add'}
+          icon={AddIcon}
+          systemImage="plus"
           onPress={() => props.onValueChange(props.value + 1)}
           position="end"
           testID="fixed-increment"
@@ -80,7 +84,8 @@ export default function FixedIncrementer(props: FixedIncrementerProps) {
 
 interface ContainedSegmentIconButtonProps {
   position: 'start' | 'end' | 'middle';
-  icon: AppIconSource;
+  icon: ImageSourcePropType;
+  systemImage: SFSymbol;
   onPress: () => void;
   testID?: string;
 }
@@ -125,7 +130,7 @@ function ContainedSegmentIconButton(props: ContainedSegmentIconButtonProps) {
         },
       ]}
     >
-      <Icon source={props.icon} size={24} color={colors.onSurfaceVariant} />
+      <NativeIcon icon={props.icon} systemImage={props.systemImage} size={24} color={colors.onSurfaceVariant} />
     </TouchableRipple>
   );
 }

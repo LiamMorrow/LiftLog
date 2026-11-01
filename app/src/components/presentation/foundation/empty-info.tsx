@@ -1,11 +1,17 @@
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
-import { View, ViewProps } from 'react-native';
-import { Icon } from '@/components/presentation/foundation/icon';
-import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
+import { ImageSourcePropType, View, ViewProps } from 'react-native';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import InfoIcon from '@expo/material-symbols/info.xml';
+import { SFSymbol } from 'sf-symbols-typescript';
 
-export default function EmptyInfo(props: ViewProps & { icon?: AppIconSource }) {
-  const { icon, style, ...rest } = props;
+/** An icon is given for both platforms or not at all. */
+type EmptyInfoIcon =
+  | { icon: ImageSourcePropType; systemImage: SFSymbol }
+  | { icon?: undefined; systemImage?: undefined };
+
+export default function EmptyInfo(props: ViewProps & EmptyInfoIcon) {
+  const { icon, systemImage, style, ...rest } = props;
   return (
     <View
       {...rest}
@@ -19,7 +25,7 @@ export default function EmptyInfo(props: ViewProps & { icon?: AppIconSource }) {
         style,
       ]}
     >
-      <Icon source={icon ?? 'info'} size={30} />
+      <NativeIcon icon={icon ?? InfoIcon} systemImage={systemImage ?? 'info.circle'} size={30} />
       <AppText variant="bodyLarge" color="onSurface" style={{ textAlign: 'center' }}>
         {props.children}
       </AppText>

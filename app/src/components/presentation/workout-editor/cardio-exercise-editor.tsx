@@ -20,7 +20,8 @@ import StraightenIcon from '@expo/material-symbols/straighten.xml';
 import TimerIcon from '@expo/material-symbols/timer.xml';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { DecimalInput, DurationInput } from '@/components/presentation/foundation/editors/number-inputs';
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import ChevronRightIcon from '@expo/material-symbols/chevron_right.xml';
 import { TitledSection } from '@/components/presentation/foundation/titled-section';
 import { formatCardioTarget } from '@/utils/format-cardio-target';
 import {
@@ -125,7 +126,12 @@ export function CardioExerciseEditor({
                 right={
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
                     <AppText variant="labelLarge">{formatCardioTarget(set.target)}</AppText>
-                    <Icon source="chevronRight" size={20} color={colors.onSurfaceVariant} />
+                    <NativeIcon
+                      icon={ChevronRightIcon}
+                      systemImage="chevron.right"
+                      size={20}
+                      color={colors.onSurfaceVariant}
+                    />
                   </View>
                 }
               />

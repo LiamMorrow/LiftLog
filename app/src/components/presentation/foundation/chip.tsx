@@ -1,22 +1,33 @@
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Icon } from '@/components/presentation/foundation/icon';
-import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import CheckIcon from '@expo/material-symbols/check.xml';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { View } from 'react-native';
+import { ImageSourcePropType, View } from 'react-native';
+import { SFSymbol } from 'sf-symbols-typescript';
 
-export function Chip(props: {
-  children: string;
-  onPress: () => void;
-  selected?: boolean;
-  mode?: 'flat' | 'outlined';
-  icon?: AppIconSource;
-  showSelectedCheck?: boolean;
-  testID?: string;
-}) {
+/** An icon is given for both platforms or not at all. */
+export type ChipIcon =
+  | { icon: ImageSourcePropType; systemImage: SFSymbol }
+  | { icon?: undefined; systemImage?: undefined };
+
+export function Chip(
+  props: ChipIcon & {
+    children: string;
+    onPress: () => void;
+    selected?: boolean;
+    mode?: 'flat' | 'outlined';
+    showSelectedCheck?: boolean;
+    testID?: string;
+  },
+) {
   const { colors } = useAppTheme();
   const { selected = false, mode = 'flat', showSelectedCheck = true } = props;
-  const icon = props.icon ?? (selected && showSelectedCheck ? 'check' : undefined);
+  const icon: ChipIcon = props.icon
+    ? { icon: props.icon, systemImage: props.systemImage }
+    : selected && showSelectedCheck
+      ? { icon: CheckIcon, systemImage: 'checkmark' }
+      : {};
   const contentColor = selected ? colors.onSecondaryContainer : colors.onSurfaceVariant;
   const backgroundColor = selected || mode === 'flat' ? colors.secondaryContainer : colors.surface;
 
@@ -41,11 +52,13 @@ export function Chip(props: {
           flexDirection: 'row',
           alignItems: 'center',
           gap: spacing[2],
-          paddingInlineStart: icon ? spacing[2] : spacing[4],
+          paddingInlineStart: icon.icon ? spacing[2] : spacing[4],
           paddingInlineEnd: spacing[4],
         }}
       >
-        {icon ? <Icon source={icon} size={18} color={contentColor} /> : undefined}
+        {icon.icon ? (
+          <NativeIcon icon={icon.icon} systemImage={icon.systemImage} size={18} color={contentColor} />
+        ) : undefined}
         <AppText variant="labelLarge" style={{ color: contentColor }}>
           {props.children}
         </AppText>

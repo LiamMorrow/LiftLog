@@ -6,7 +6,6 @@
     "react-native/Libraries/TurboModule/TurboModuleRegistry",
     "react-native-reanimated/lib/typescript/Animated",
     "react-native/types_generated/index",
-    "^@material-symbols-react-native/outlined-400$",
     "assert",
     "fast-match",
     "inspector",

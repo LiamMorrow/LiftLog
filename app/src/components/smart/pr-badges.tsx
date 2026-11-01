@@ -11,7 +11,7 @@ import { selectFeedPersonalRecords } from '@/store/activity';
 import { PersonalRecord, PersonalRecordKind } from '@/store/stats/personal-records';
 import { useOwnHistory } from '@/components/smart/own-history-provider';
 import { TranslationKey, useTranslate } from '@tolgee/react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { NativeIcon } from '@/components/presentation/foundation/native-icon';
 import { NativeIconProps } from '@/components/presentation/foundation/native-icon';
 import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
@@ -137,7 +137,10 @@ function RecordPopoverContent({
       {scope === 'history' && (
         <NativeButton
           variant="text"
-          style={{ alignSelf: 'flex-end', marginBottom: -spacing[2], marginRight: -spacing[2] }}
+          style={[
+            { alignSelf: 'flex-end' },
+            Platform.OS === 'android' && { marginBottom: -spacing[2], marginRight: -spacing[2] },
+          ]}
           label={t('history.pr_badge.see_history.button')}
           onPress={() => {
             close();

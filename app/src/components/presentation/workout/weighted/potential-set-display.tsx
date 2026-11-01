@@ -6,7 +6,8 @@ import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import HistoryIcon from '@expo/material-symbols/history.xml';
 import { match } from 'ts-pattern';
 
 interface PotentialSetDisplayProps {
@@ -80,7 +81,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
             </AppText>
             {props.previousRepCount !== undefined && (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[0.5] }}>
-                <Icon source={'history'} size={12} color={setColors.text} />
+                <NativeIcon icon={HistoryIcon} systemImage="clock.arrow.circlepath" size={12} color={setColors.text} />
                 <Text style={{ color: setColors.text }}>{props.previousRepCount}</Text>
               </View>
             )}

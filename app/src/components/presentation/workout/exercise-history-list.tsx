@@ -1,5 +1,6 @@
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import NotesIcon from '@expo/material-symbols/notes.xml';
 import { SegmentedListItem } from '@/components/presentation/foundation/segmented-list';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
@@ -233,7 +234,7 @@ function HistoryNotes(props: { notes: string }) {
       onPress={() => setExpanded(!expanded)}
       style={{ flexDirection: 'row', gap: spacing[2], alignItems: 'flex-start' }}
     >
-      <Icon source="notes" size={14} color={colors.onSurfaceVariant} />
+      <NativeIcon icon={NotesIcon} systemImage="text.alignleft" size={14} color={colors.onSurfaceVariant} />
       <AppText
         variant="bodySmall"
         color="onSurfaceVariant"

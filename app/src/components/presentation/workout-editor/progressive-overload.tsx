@@ -29,7 +29,8 @@ import PotentialSetCounter from '@/components/presentation/workout/weighted/pote
 import BigNumber from 'bignumber.js';
 import { OffsetDateTime } from '@js-joda/core';
 import { Weight } from '@/models/weight';
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import ChevronRightIcon from '@expo/material-symbols/chevron_right.xml';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
 import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
@@ -101,7 +102,14 @@ export function ProgressionRulesEditor(props: Props) {
               supportingText={ruleDetail(rule, neverRuns(index))}
               style={neverRuns(index) ? { opacity: 0.5 } : undefined}
               onPress={() => openRule({ exercise: props.exercise, index })}
-              right={<Icon source="chevronRight" size={20} color={colors.onSurfaceVariant} />}
+              right={
+                <NativeIcon
+                  icon={ChevronRightIcon}
+                  systemImage="chevron.right"
+                  size={20}
+                  color={colors.onSurfaceVariant}
+                />
+              }
             />
           )),
           <SegmentListFormElement
@@ -415,7 +423,7 @@ export function ProgressionExample(props: { exercise: WeightedExerciseBlueprint 
       <View style={{ gap: spacing[4], alignItems: 'center', paddingHorizontal: spacing.pageHorizontalMargin }}>
         {rungs.map((rung, index) => (
           <View key={index} style={{ gap: spacing[4], alignItems: 'center' }}>
-            {index > 0 && <Icon source={'arrowDownward'} size={24} />}
+            {index > 0 && <NativeIcon icon={ArrowDownwardIcon} systemImage="arrow.down" size={24} />}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing[2] }}>
               {rung.potentialSets.map((set, setIndex) => (
                 <DummySet

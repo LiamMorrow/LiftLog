@@ -3,6 +3,7 @@ import DescriptionIcon from '@expo/material-symbols/description.xml';
 import ForumIcon from '@expo/material-symbols/forum.xml';
 import LanguageIcon from '@expo/material-symbols/language.xml';
 import LinkIcon from '@expo/material-symbols/link.xml';
+import OpenInBrowserIcon from '@expo/material-symbols/open_in_browser.xml';
 import NotificationsIcon from '@expo/material-symbols/notifications.xml';
 import WeightIcon from '@expo/material-symbols/weight.xml';
 import { NativeButton } from '@/components/presentation/foundation/native-button';
@@ -11,7 +12,7 @@ import { SelectPickerOption } from '@/components/presentation/foundation/select-
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
 import { SegmentedListSelect } from '@/components/presentation/foundation/segmented-list-select';
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
 import ThemeChooser from '@/components/presentation/foundation/editors/theme-chooser';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { supportedLanguages } from '@/services/tolgee';
@@ -139,14 +140,14 @@ export function WelcomeWizard() {
             icon={LinkIcon}
             systemImage="link"
             onPress={() => openUrl('https://github.com/LiamMorrow/LiftLog')}
-            right={<Icon source="openInBrowser" size={20} />}
+            right={<NativeIcon icon={OpenInBrowserIcon} systemImage="arrow.up.right.square" size={20} />}
           />
           <SegmentListFormElement
             label={t('onboarding.privacy_policy.button')}
             icon={DescriptionIcon}
             systemImage="doc.text"
             onPress={() => openUrl('https://liftlog.online/privacy.html')}
-            right={<Icon source="openInBrowser" size={20} />}
+            right={<NativeIcon icon={OpenInBrowserIcon} systemImage="arrow.up.right.square" size={20} />}
           />
         </SegmentedGroup>
       </View>

@@ -45,7 +45,7 @@ checked… }}` object to a native control, and don't `tint`/`foregroundStyle` an
 ## Icons inside Compose must be native
 
 Import an XML vector drawable per icon from `@expo/material-symbols` and render it with expo-ui's own
-`Icon` - **not** the RN foundation `Icon` / `@material-symbols-react-native` wrapper:
+`Icon` - **not** an RN icon component:
 
 ```tsx
 import { Icon } from "@expo/ui/jetpack-compose";

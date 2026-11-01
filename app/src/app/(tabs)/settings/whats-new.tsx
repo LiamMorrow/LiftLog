@@ -10,7 +10,7 @@ import { Href, Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
 import { useDispatch } from 'react-redux';
 
 export default function WhatsNew() {
@@ -58,7 +58,12 @@ function WhatsNewCard({ entry }: { entry: WhatsNewEntry }) {
               backgroundColor: colors.secondaryContainer,
             }}
           >
-            <Icon source={entry.icon} size={24} color={colors.onSecondaryContainer} />
+            <NativeIcon
+              icon={entry.icon}
+              systemImage={entry.systemImage}
+              size={24}
+              color={colors.onSecondaryContainer}
+            />
           </View>
           <AppText variant="titleMedium" style={{ flexShrink: 1 }}>
             <T keyName={entry.titleKey} />

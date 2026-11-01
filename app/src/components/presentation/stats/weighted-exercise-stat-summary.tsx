@@ -1,4 +1,5 @@
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import ChevronRightIcon from '@expo/material-symbols/chevron_right.xml';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { spacing } from '@/hooks/useAppTheme';
 import { WeightedExerciseStatistics } from '@/store/stats';
@@ -38,7 +39,7 @@ export function WeightedExerciseStatSummary({
             </AppText>
           </View>
         </View>
-        <Icon source="chevronRight" size={24} />
+        <NativeIcon icon={ChevronRightIcon} systemImage="chevron.right" size={24} />
       </View>
     </TouchableRipple>
   );

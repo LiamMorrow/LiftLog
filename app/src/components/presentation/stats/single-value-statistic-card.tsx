@@ -1,15 +1,16 @@
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
 import { Card } from '@/components/presentation/foundation/card';
-import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';
-import { View } from 'react-native';
+import { ImageSourcePropType, View } from 'react-native';
+import { SFSymbol } from 'sf-symbols-typescript';
 import { AppText } from '@/components/presentation/foundation/app-text';
 
 export default function SingleValueStatisticCard(props: {
   title: string;
   value: string | ReactNode;
-  icon: AppIconSource;
+  icon: ImageSourcePropType;
+  systemImage: SFSymbol;
   onPress?: () => void;
 }) {
   const { colors } = useAppTheme();
@@ -28,7 +29,7 @@ export default function SingleValueStatisticCard(props: {
             gap: spacing[2],
           }}
         >
-          <Icon size={16} source={props.icon} color={colors.primary} />
+          <NativeIcon icon={props.icon} systemImage={props.systemImage} size={16} color={colors.primary} />
           <AppText variant="labelLarge" lineBreakMode="tail" numberOfLines={1}>
             {props.title}
           </AppText>

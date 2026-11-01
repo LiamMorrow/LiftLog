@@ -2,7 +2,8 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, View } from 'react-native';
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import DeleteIcon from '@expo/material-symbols/delete.xml';
 import { ListItem } from '@/components/presentation/foundation/list-item';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import AddIcon from '@expo/material-symbols/add.xml';
@@ -65,7 +66,7 @@ function ExerciseListItem({ exerciseId, onDelete }: { exerciseId: string; onDele
           }}
           testID={`exercise-delete-btn`}
         >
-          <Icon source={'delete'} size={30} color={colors.onError} />
+          <NativeIcon icon={DeleteIcon} systemImage="trash" size={30} color={colors.onError} />
         </TouchableRipple>
       </View>
       <ListItem

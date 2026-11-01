@@ -4,7 +4,8 @@ import { spacing } from '@/hooks/useAppTheme';
 import { RemoteData } from '@/models/remote';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import ErrorIcon from '@expo/material-symbols/error.xml';
 import { NativeButton } from '@/components/presentation/foundation/native-button';
 
 interface RemoteProps<T> {
@@ -22,7 +23,7 @@ export function Remote<T>(props: RemoteProps<T>) {
   notAsked ??= loading;
   error ??= (value) => (
     <View style={{ alignItems: 'center', gap: spacing[4] }}>
-      <Icon source={'error'} size={30} />
+      <NativeIcon icon={ErrorIcon} systemImage="exclamationmark.circle" size={30} />
       <View style={{ justifyContent: 'center' }}>
         <AppText variant="bodyLarge" style={{ textAlign: 'center' }}>
           {typeof value === 'string' ? value : 'Unknown error'}
