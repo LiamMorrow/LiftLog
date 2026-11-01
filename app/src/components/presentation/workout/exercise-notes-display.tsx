@@ -20,7 +20,8 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
   const { t } = useTranslate();
   const expandByDefault = useAppSelector((x) => x.settings.notesExpandedByDefault);
   const notes = props.exercise.notes ?? '';
-  const blueprintNotes = props.exercise.blueprint.notes ?? '';
+  const showPlanNotes = useAppSelector((x) => x.settings.showPlanNotesInWorkout);
+  const blueprintNotes = showPlanNotes ? (props.exercise.blueprint.notes ?? '') : '';
   const previousNotes = props.previousExercise?.notes ? 'Last time: ' + props.previousExercise.notes : '';
   const [expanded, setExpanded] = useState(expandByDefault);
   const [maxNumberOfLines, setMaxNumberOfLines] = useState(expandByDefault ? undefined : 1);

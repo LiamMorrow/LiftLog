@@ -1,4 +1,5 @@
 import AssignmentTurnedInIcon from '@expo/material-symbols/assignment_turned_in.xml';
+import DescriptionIcon from '@expo/material-symbols/description.xml';
 import MonitorWeightIcon from '@expo/material-symbols/monitor_weight.xml';
 import NotesIcon from '@expo/material-symbols/notes.xml';
 import ReplayIcon from '@expo/material-symbols/replay.xml';
@@ -10,6 +11,7 @@ import {
   setColorSchemeSeed,
   setKeepScreenAwakeDuringWorkout,
   setNotesExpandedByDefault,
+  setShowPlanNotesInWorkout,
   setShowAccomplishments,
   setShowBodyweight,
   setShowPostWorkoutSummary,
@@ -66,6 +68,15 @@ export default function AppConfigurationPage() {
           supportingText={t('workout.notes_expanded_by_default.subtitle')}
           value={settings.notesExpandedByDefault}
           onValueChange={(value) => dispatch(setNotesExpandedByDefault(value))}
+        />
+        <SegmentedListSwitch
+          testID="setShowPlanNotesInWorkout"
+          label={t('workout.show_plan_notes.label')}
+          icon={DescriptionIcon}
+          systemImage="doc.text"
+          supportingText={t('workout.show_plan_notes.subtitle')}
+          value={settings.showPlanNotesInWorkout}
+          onValueChange={(value) => dispatch(setShowPlanNotesInWorkout(value))}
         />
         <SegmentedListSwitch
           label={t('workout.keep_screen_awake.label')}

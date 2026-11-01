@@ -66,6 +66,7 @@ export const preferenceRegistry = {
   crashReportsEnabled: pref({ default: true, codec: boolCodec }),
   welcomeWizardCompleted: pref({ default: false, codec: boolCodec }),
   notesExpandedByDefault: pref({ default: true, codec: boolCodec }),
+  showPlanNotesInWorkout: pref({ default: true, codec: boolCodec }),
   keepScreenAwakeDuringWorkout: pref({ default: true, codec: boolCodec }),
   showPostWorkoutSummary: pref({ default: true, codec: boolCodec }),
   trueBlackDarkTheme: pref({ default: false, codec: boolCodec }),
