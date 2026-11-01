@@ -2,6 +2,7 @@ import { MenuProps } from './menu-props';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { DropdownMenu, DropdownMenuItem, Host, Spacer, Text, Icon } from '@expo/ui/jetpack-compose';
 import { useState } from 'react';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
 import { StyleSheet, View } from 'react-native';
 
 export default function Menu({ trigger, items }: MenuProps) {
@@ -10,7 +11,7 @@ export default function Menu({ trigger, items }: MenuProps) {
 
   return (
     <View>
-      {trigger(() => setExpanded(true))}
+      <NativeIconButton {...trigger} onPress={() => setExpanded(true)} />
       {/* Compose drops the contents of a host that mounts into, or is reattached to, an already
           attached view hierarchy, so the trigger stays outside of the host and the host only
           exists while the menu is open. The host instead fills the trigger's bounds, giving the

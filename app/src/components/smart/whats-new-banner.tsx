@@ -1,11 +1,12 @@
 import Button from '@/components/presentation/foundation/button';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import CloseIcon from '@expo/material-symbols/close.xml';
 import { Pager } from '@/components/presentation/foundation/pager';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { latestWhatsNewId, WhatsNewEntry } from '@/models/whats-new';
 import { useAppSelector } from '@/store';
 import { selectUnseenWhatsNew, setLastSeenWhatsNewId } from '@/store/settings';
-import { T } from '@tolgee/react';
+import { T, useTranslate } from '@tolgee/react';
 import { Href, useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
@@ -13,6 +14,7 @@ import { Icon } from '@/components/presentation/foundation/icon';
 import { shallowEqual, useDispatch } from 'react-redux';
 
 export function WhatsNewBanner() {
+  const { t } = useTranslate();
   const unseen = useAppSelector(selectUnseenWhatsNew, shallowEqual);
   const dispatch = useDispatch();
   const { colors } = useAppTheme();
@@ -34,13 +36,16 @@ export function WhatsNewBanner() {
         <AppText variant="labelSmall" style={{ color: colors.onTertiaryContainer, letterSpacing: 1 }}>
           <T keyName="whats_new.eyebrow" />
         </AppText>
-        <IconButton
-          icon="close"
-          size={18}
-          onPress={dismiss}
-          iconColor={colors.onTertiaryContainer}
-          style={styles.close}
-        />
+        <View style={styles.close}>
+          <NativeIconButton
+            icon={CloseIcon}
+            systemImage="xmark"
+            iconSize={18}
+            colors={{ content: colors.onTertiaryContainer }}
+            label={t('generic.close.button')}
+            onPress={dismiss}
+          />
+        </View>
       </View>
 
       <Pager indicatorColor={colors.onTertiaryContainer} showIndicator={unseen.length > 1}>

@@ -7,13 +7,17 @@ import { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { Divider } from '@/components/presentation/foundation/divider';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { useTranslate } from '@tolgee/react';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import UnfoldLessIcon from '@expo/material-symbols/unfold_less.xml';
+import UnfoldMoreIcon from '@expo/material-symbols/unfold_more.xml';
 
 interface ExerciseNotesDisplayProps {
   exercise: RecordedExercise;
   previousExercise: RecordedExercise | undefined;
 }
 export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
+  const { t } = useTranslate();
   const expandByDefault = useAppSelector((x) => x.settings.notesExpandedByDefault);
   const notes = props.exercise.notes ?? '';
   const blueprintNotes = props.exercise.blueprint.notes ?? '';
@@ -68,16 +72,16 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
   return (
     <Card style={[{ marginTop: spacing[4] }]}>
       <CardContent style={{ flexDirection: 'row' }}>
-        <IconButton
-          icon={expanded ? 'unfoldLess' : 'unfoldMore'}
-          style={{
-            margin: 0,
-            marginLeft: -spacing[3],
-            alignSelf: 'flex-start',
-          }}
-          animated
-          onPress={handleToggleExpanded}
-        />
+        <View style={{ marginInlineStart: -spacing[3], alignSelf: 'flex-start' }}>
+          <NativeIconButton
+            icon={expanded ? UnfoldLessIcon : UnfoldMoreIcon}
+            systemImage={
+              expanded ? 'arrow.down.and.line.horizontal.and.arrow.up' : 'arrow.up.and.line.horizontal.and.arrow.down'
+            }
+            label={t(expanded ? 'generic.collapse.button' : 'generic.expand.button')}
+            onPress={handleToggleExpanded}
+          />
+        </View>
 
         <View style={{ flex: 1 }}>
           <AccordionItem

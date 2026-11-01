@@ -1,19 +1,24 @@
 import { MenuProps } from './menu-props';
+import { nativeIconButtonHostStyle, nativeIconButtonSize } from '../native-icon-button/native-icon-button-props';
+import { SwiftIconButtonImage, swiftIconButtonModifiers } from '../native-icon-button/swift-icon-button';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { Button, Host, Menu as NativeMenu } from '@expo/ui/swift-ui';
-import { disabled, frame } from '@expo/ui/swift-ui/modifiers';
+import { accessibilityIdentifier, accessibilityLabel, disabled, menuStyle } from '@expo/ui/swift-ui/modifiers';
 
-export default function Menu({ trigger, items, testID, size: touchSize }: MenuProps) {
+export default function Menu({ trigger, items }: MenuProps) {
   const { colors } = useAppTheme();
-  const size = touchSize ?? 40;
 
   return (
-    <Host
-      style={{ width: size, height: size, margin: touchSize === undefined ? 6 : 0 }}
-      seedColor={colors.seedColor}
-      colorScheme={colors.scheme}
-    >
-      <NativeMenu label={trigger(() => {})} testID={testID} modifiers={[frame({ width: size, height: size })]}>
+    <Host style={nativeIconButtonHostStyle({})} seedColor={colors.seedColor} colorScheme={colors.scheme}>
+      <NativeMenu
+        label={<SwiftIconButtonImage {...trigger} boxSize={nativeIconButtonSize()} theme={colors} />}
+        modifiers={[
+          menuStyle('button'),
+          ...swiftIconButtonModifiers(trigger, colors),
+          accessibilityLabel(trigger.label),
+          ...(trigger.testID ? [accessibilityIdentifier(trigger.testID)] : []),
+        ]}
+      >
         {items.map((item) => (
           <Button
             key={item.label}

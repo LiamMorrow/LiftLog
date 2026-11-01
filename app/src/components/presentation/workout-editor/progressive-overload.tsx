@@ -18,7 +18,9 @@ import { AppText } from '@/components/presentation/foundation/app-text';
 import { Dialog } from 'react-native-paper';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import Button from '@/components/presentation/foundation/button';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import ArrowUpwardIcon from '@expo/material-symbols/arrow_upward.xml';
+import ArrowDownwardIcon from '@expo/material-symbols/arrow_downward.xml';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { Switch } from '@/components/presentation/foundation/switch';
 import { useState } from 'react';
@@ -175,18 +177,20 @@ export function ProgressionRulesEditor(props: Props) {
               <Dialog.Actions>
                 {rules.length > 1 && (
                   <>
-                    <IconButton
-                      icon="arrowUpward"
-                      size={18}
+                    <NativeIconButton
+                      icon={ArrowUpwardIcon}
+                      systemImage="arrow.up"
+                      iconSize={18}
                       disabled={editingIndex === 0}
-                      accessibilityLabel={t('exercise.progression.rule.move_up.label')}
+                      label={t('exercise.progression.rule.move_up.label')}
                       onPress={() => swapRules(editingIndex, editingIndex - 1)}
                     />
-                    <IconButton
-                      icon="arrowDownward"
-                      size={18}
+                    <NativeIconButton
+                      icon={ArrowDownwardIcon}
+                      systemImage="arrow.down"
+                      iconSize={18}
                       disabled={editingIndex === rules.length - 1}
-                      accessibilityLabel={t('exercise.progression.rule.move_down.label')}
+                      label={t('exercise.progression.rule.move_down.label')}
                       onPress={() => swapRules(editingIndex, editingIndex + 1)}
                     />
                     <View style={{ flex: 1 }} />

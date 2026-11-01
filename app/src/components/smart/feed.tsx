@@ -37,7 +37,8 @@ import { useDispatch } from 'react-redux';
 import { LegendList, LegendListRef } from '@legendapp/list/react-native';
 import { useEffect, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import OpenInNewIcon from '@expo/material-symbols/open_in_new.xml';
 
 export default function Feed() {
   const feedItems = useFeedTimeline();
@@ -194,10 +195,12 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
           <CardContent>
             <SplitCardControl
               actions={
-                <IconButton
-                  mode="outlined"
+                <NativeIconButton
+                  variant="outlined"
+                  icon={OpenInNewIcon}
+                  systemImage="arrow.up.right.square"
+                  label={t('feed.view_workout.button')}
                   onPress={() => push(getFeedItemHref(props.feedItem.eventId))}
-                  icon={'openInNew'}
                 />
               }
               titleContent={

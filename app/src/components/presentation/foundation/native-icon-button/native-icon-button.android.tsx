@@ -1,4 +1,9 @@
-import { nativeIconButtonHostStyle, NativeIconButtonProps, NativeIconButtonVariant } from './native-icon-button-props';
+import {
+  defaultIconSize,
+  nativeIconButtonHostStyle,
+  NativeIconButtonProps,
+  NativeIconButtonVariant,
+} from './native-icon-button-props';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import {
   FilledIconButton,
@@ -8,7 +13,7 @@ import {
   IconButton,
   OutlinedIconButton,
 } from '@expo/ui/jetpack-compose';
-import { testID as testIDModifier } from '@expo/ui/jetpack-compose/modifiers';
+import { size, testID as testIDModifier } from '@expo/ui/jetpack-compose/modifiers';
 
 const buttonForVariant = {
   standard: IconButton,
@@ -17,26 +22,25 @@ const buttonForVariant = {
   outlined: OutlinedIconButton,
 } satisfies Record<NativeIconButtonVariant, unknown>;
 
-export function NativeIconButton({
-  label,
-  onPress,
-  icon,
-  variant = 'standard',
-  disabled,
-  testID,
-}: NativeIconButtonProps) {
+export function NativeIconButton(props: NativeIconButtonProps) {
   const { colors } = useAppTheme();
+  const variant = props.variant ?? 'standard';
   const MaterialIconButton = buttonForVariant[variant];
+  const iconSize = props.iconSize ?? defaultIconSize;
+  const containerSize = iconSize + 16;
 
   return (
-    <Host seedColor={colors.seedColor} colorScheme={colors.scheme} style={nativeIconButtonHostStyle}>
+    <Host seedColor={colors.seedColor} colorScheme={colors.scheme} style={nativeIconButtonHostStyle(props)}>
       <MaterialIconButton
-        onClick={onPress}
-        enabled={!disabled}
-        colors={variant === 'standard' ? { contentColor: colors.onSurfaceVariant } : undefined}
-        modifiers={testID ? [testIDModifier(testID)] : undefined}
+        onClick={props.onPress}
+        enabled={!props.disabled}
+        colors={{
+          contentColor: props.colors?.content ?? (variant === 'standard' ? colors.onSurfaceVariant : undefined),
+          containerColor: props.colors?.container,
+        }}
+        modifiers={[size(containerSize, containerSize), ...(props.testID ? [testIDModifier(props.testID)] : [])]}
       >
-        <Icon source={icon} size={24} contentDescription={label} />
+        <Icon source={props.icon} size={iconSize} contentDescription={props.label} />
       </MaterialIconButton>
     </Host>
   );

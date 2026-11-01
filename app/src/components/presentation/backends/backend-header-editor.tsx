@@ -1,4 +1,5 @@
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import CloseIcon from '@expo/material-symbols/close.xml';
 import { SegmentedList, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { BackendHeader, isSecretHeader } from '@/models/backend';
@@ -36,9 +37,10 @@ export function BackendHeaderEditor(props: {
             icon={'vpnKey'}
             onPress={() => props.onEdit(index)}
             right={
-              <IconButton
-                icon="close"
-                accessibilityLabel={t('generic.delete.button')}
+              <NativeIconButton
+                icon={CloseIcon}
+                systemImage="xmark"
+                label={t('generic.delete.button')}
                 onPress={() => onChange(headers.filter((_, i) => i !== index))}
               />
             }

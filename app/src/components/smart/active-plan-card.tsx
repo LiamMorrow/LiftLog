@@ -1,7 +1,8 @@
 import Button from '@/components/presentation/foundation/button';
 import { Card } from '@/components/presentation/foundation/card';
 import CardActions from '@/components/presentation/foundation/card-actions';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import ShareIcon from '@expo/material-symbols/share.xml';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { SharedProgramBlueprint } from '@/models/feed-models';
@@ -57,11 +58,12 @@ export function ActivePlanCard({ id }: { id: string }) {
       </View>
 
       <CardActions style={{ marginTop: spacing[2] }}>
-        <ItemMenu id={id} mode="contained" />
-        <IconButton
-          icon={'share'}
-          mode="contained"
-          accessibilityLabel={t('generic.share.button')}
+        <ItemMenu id={id} colors={{ content: colors.primary }} />
+        <NativeIconButton
+          icon={ShareIcon}
+          systemImage="square.and.arrow.up"
+          colors={{ content: colors.primary }}
+          label={t('generic.share.button')}
           onPress={() =>
             dispatch(
               encryptAndShare({

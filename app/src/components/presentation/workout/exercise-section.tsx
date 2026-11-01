@@ -9,8 +9,8 @@ import { useTranslate } from '@tolgee/react';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import ExerciseNotesDisplay from '@/components/presentation/workout/exercise-notes-display';
 import RecordedExerciseNotesEditor from '@/components/presentation/workout/recorded-exercise-notes-editor';
-import IconButton from '@/components/presentation/foundation/icon-button';
-import { NativeIconButton, nativeIconButtonSize } from '@/components/presentation/foundation/native-icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
 import { useRouter } from 'expo-router';
 import { getExerciseHistoryHref } from '@/components/smart/exercise-history';
 import { Updater } from '@/utils/types';
@@ -81,15 +81,12 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
       ) : null}
 
       <Menu
-        size={nativeIconButtonSize}
-        trigger={(open) => (
-          <IconButton
-            testID="more-exercise-btn"
-            onPress={open}
-            icon={'moreHoriz'}
-            style={{ margin: (nativeIconButtonSize - 40) / 2 }}
-          />
-        )}
+        trigger={{
+          testID: 'more-exercise-btn',
+          icon: MoreHorizIcon,
+          systemImage: 'ellipsis',
+          label: t('generic.more_options.button'),
+        }}
         items={[
           // Absent for a session the user does not own, which has nothing to edit.
           ...(props.onEditExercise

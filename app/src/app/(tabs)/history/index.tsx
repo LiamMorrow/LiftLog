@@ -2,7 +2,10 @@ import CardActions from '@/components/presentation/foundation/card-actions';
 import { Card, CardContent } from '@/components/presentation/foundation/card';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import ShareIcon from '@expo/material-symbols/share.xml';
+import PlayCircleIcon from '@expo/material-symbols/play_circle.xml';
+import DeleteIcon from '@expo/material-symbols/delete.xml';
 import { HistoryActivityCalendar } from '@/components/smart/history-activity-calendar';
 import { PrStrip } from '@/components/smart/pr-badges';
 import { WhoElseTrained } from '@/components/smart/who-else-trained';
@@ -60,6 +63,7 @@ export default function HistoryPage() {
 
 function History() {
   const { t } = useTranslate();
+  const { colors } = useAppTheme();
   const dispatch = useDispatch();
   const formatDate = useFormatDate();
   const [currentYearMonth, setCurrentYearMonth] = useState(YearMonth.now());
@@ -199,22 +203,25 @@ function History() {
               <ReactionSummary eventId={session.id} />
             </CardContent>
             <CardActions style={{ marginTop: spacing[2] }}>
-              <IconButton
-                icon={'share'}
-                mode="contained"
-                accessibilityLabel={t('workout.share_workout.button')}
+              <NativeIconButton
+                icon={ShareIcon}
+                systemImage="square.and.arrow.up"
+                colors={{ content: colors.primary }}
+                label={t('workout.share_workout.button')}
                 onPress={() => handleSharePress(session)}
               />
-              <IconButton
-                mode="contained"
-                icon={'playCircle'}
-                accessibilityLabel={t('workout.start_this.button')}
+              <NativeIconButton
+                icon={PlayCircleIcon}
+                systemImage="play.circle"
+                colors={{ content: colors.primary }}
+                label={t('workout.start_this.button')}
                 onPress={() => startWorkout(session)}
               />
-              <IconButton
-                mode="contained"
-                icon={'delete'}
-                accessibilityLabel={t('generic.delete.button')}
+              <NativeIconButton
+                icon={DeleteIcon}
+                systemImage="trash"
+                colors={{ content: colors.primary }}
+                label={t('generic.delete.button')}
                 onPress={() => deleteWorkout(session)}
               />
               <Button

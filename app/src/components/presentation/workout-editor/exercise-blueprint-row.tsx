@@ -1,4 +1,7 @@
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import ArrowUpwardIcon from '@expo/material-symbols/arrow_upward.xml';
+import ArrowDownwardIcon from '@expo/material-symbols/arrow_downward.xml';
+import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
 import Menu from '@/components/presentation/foundation/menu';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { SupersetBadge } from '@/components/presentation/workout/superset-group';
@@ -69,24 +72,28 @@ export function ExerciseBlueprintRow(props: ExerciseBlueprintRowProps) {
         </View>
         {props.reordering ? (
           <View style={{ flexDirection: 'row' }}>
-            <IconButton
-              icon="arrowUpward"
+            <NativeIconButton
+              icon={ArrowUpwardIcon}
+              systemImage="arrow.up"
               disabled={!props.canMoveUp}
-              accessibilityLabel={t('generic.move_up.button')}
+              label={t('generic.move_up.button')}
               onPress={props.onMoveUp}
             />
-            <IconButton
-              icon="arrowDownward"
+            <NativeIconButton
+              icon={ArrowDownwardIcon}
+              systemImage="arrow.down"
               disabled={!props.canMoveDown}
-              accessibilityLabel={t('generic.move_down.button')}
+              label={t('generic.move_down.button')}
               onPress={props.onMoveDown}
             />
           </View>
         ) : (
           <Menu
-            trigger={(open) => (
-              <IconButton icon="moreHoriz" accessibilityLabel={t('generic.more_options.button')} onPress={open} />
-            )}
+            trigger={{
+              icon: MoreHorizIcon,
+              systemImage: 'ellipsis',
+              label: t('generic.more_options.button'),
+            }}
             items={[
               {
                 label: t('exercise.copy_to.button'),

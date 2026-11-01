@@ -1,62 +1,24 @@
-import {
-  nativeIconButtonHostStyle,
-  nativeIconButtonSize,
-  NativeIconButtonProps,
-  NativeIconButtonVariant,
-} from './native-icon-button-props';
+import { nativeIconButtonHostStyle, nativeIconButtonSize, NativeIconButtonProps } from './native-icon-button-props';
+import { SwiftIconButtonImage, swiftIconButtonModifiers } from './swift-icon-button';
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { Button, Host, Image } from '@expo/ui/swift-ui';
-import {
-  accessibilityIdentifier,
-  accessibilityLabel,
-  buttonBorderShape,
-  buttonStyle,
-  contentShape,
-  disabled as disabledModifier,
-  frame,
-  shapes,
-  tint,
-} from '@expo/ui/swift-ui/modifiers';
+import { Button, Host } from '@expo/ui/swift-ui';
+import { accessibilityIdentifier, accessibilityLabel, disabled as disabledModifier } from '@expo/ui/swift-ui/modifiers';
 
-const styleForVariant: Record<NativeIconButtonVariant, Parameters<typeof buttonStyle>[0]> = {
-  standard: 'plain',
-  filled: 'borderedProminent',
-  tonal: 'bordered',
-  outlined: 'bordered',
-};
-
-export function NativeIconButton({
-  label,
-  onPress,
-  systemImage,
-  variant = 'standard',
-  disabled,
-  testID,
-}: NativeIconButtonProps) {
+export function NativeIconButton(props: NativeIconButtonProps) {
   const { colors } = useAppTheme();
 
   return (
-    <Host seedColor={colors.seedColor} colorScheme={colors.scheme} style={nativeIconButtonHostStyle}>
+    <Host seedColor={colors.seedColor} colorScheme={colors.scheme} style={nativeIconButtonHostStyle(props)}>
       <Button
-        onPress={onPress}
+        onPress={props.onPress}
         modifiers={[
-          buttonStyle(styleForVariant[variant]),
-          buttonBorderShape('circle'),
-          tint(colors.primary),
-          accessibilityLabel(label),
-          ...(disabled ? [disabledModifier(true)] : []),
-          ...(testID ? [accessibilityIdentifier(testID)] : []),
+          ...swiftIconButtonModifiers(props, colors),
+          accessibilityLabel(props.label),
+          ...(props.disabled ? [disabledModifier(true)] : []),
+          ...(props.testID ? [accessibilityIdentifier(props.testID)] : []),
         ]}
       >
-        <Image
-          systemName={systemImage}
-          size={20}
-          color={variant === 'standard' ? colors.onSurfaceVariant : undefined}
-          modifiers={[
-            frame({ width: nativeIconButtonSize, height: nativeIconButtonSize }),
-            contentShape(shapes.circle()),
-          ]}
-        />
+        <SwiftIconButtonImage {...props} boxSize={nativeIconButtonSize(props.iconSize)} theme={colors} />
       </Button>
     </Host>
   );

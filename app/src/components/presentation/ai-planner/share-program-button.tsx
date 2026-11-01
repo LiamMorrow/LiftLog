@@ -1,6 +1,7 @@
 import { useTranslate } from '@tolgee/react';
 import { useDispatch } from 'react-redux';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import AssignmentIcon from '@expo/material-symbols/assignment.xml';
 import { useAppSelector } from '@/store';
 import { addMessage } from '@/store/ai-planner';
 import { uuid } from '@/utils/uuid';
@@ -26,10 +27,11 @@ export function ShareProgramButton({ disabled }: { disabled: boolean }) {
   };
 
   return (
-    <IconButton
-      mode="outlined"
-      icon={'assignment'}
-      accessibilityLabel={t('ai.share_program.button')}
+    <NativeIconButton
+      variant="outlined"
+      icon={AssignmentIcon}
+      systemImage="doc.text"
+      label={t('ai.share_program.button')}
       disabled={disabled || !activeProgram}
       onPress={share}
     />

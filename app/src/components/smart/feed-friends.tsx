@@ -9,7 +9,11 @@ import {
   SegmentListFormElement,
 } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import MoreVertIcon from '@expo/material-symbols/more_vert.xml';
+import CloseIcon from '@expo/material-symbols/close.xml';
+import CheckIcon from '@expo/material-symbols/check.xml';
+import PersonAddIcon from '@expo/material-symbols/person_add.xml';
 import { useOwnHistory } from '@/components/smart/own-history-provider';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -165,7 +169,12 @@ function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingA
   const removeLabel = friend.status === 'pending' ? t('feed.cancel_request.button') : t('feed.remove_friend.button');
   const removeMenu = (
     <Menu
-      trigger={(open) => <IconButton testID="friend-more-btn" onPress={open} icon={'moreVert'} />}
+      trigger={{
+        testID: 'friend-more-btn',
+        icon: MoreVertIcon,
+        systemImage: 'ellipsis',
+        label: t('generic.more_options.button'),
+      }}
       items={[
         {
           label: removeLabel,
@@ -186,20 +195,20 @@ function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingA
         subtitle={t('feed.wants_to_be_friends.subtitle')}
         trailing={
           <View style={{ flexDirection: 'row' }}>
-            <IconButton
+            <NativeIconButton
               testID="feed-deny-friend-request"
-              iconColor={colors.error}
-              icon={'close'}
-              accessibilityLabel={t('generic.deny.button')}
+              icon={CloseIcon}
+              systemImage="xmark"
+              colors={{ content: colors.error }}
+              label={t('generic.deny.button')}
               onPress={() => dispatch(denyFriendRequest({ friendId, fromUserAction: true }))}
             />
-            <IconButton
+            <NativeIconButton
               testID="feed-accept-friend-request"
-              mode="contained"
-              icon={'check'}
-              containerColor={colors.primary}
-              iconColor={colors.onPrimary}
-              accessibilityLabel={t('generic.accept.button')}
+              icon={CheckIcon}
+              systemImage="checkmark"
+              variant="filled"
+              label={t('generic.accept.button')}
               onPress={() => dispatch(acceptFriendRequest({ friendId, fromUserAction: true }))}
             />
           </View>
@@ -213,20 +222,20 @@ function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingA
         subtitle={t('feed.share_back.subtitle')}
         trailing={
           <View style={{ flexDirection: 'row' }}>
-            <IconButton
+            <NativeIconButton
               testID="feed-decline-share-back"
-              iconColor={colors.error}
-              icon={'close'}
-              accessibilityLabel={t('generic.remove.button')}
+              icon={CloseIcon}
+              systemImage="xmark"
+              colors={{ content: colors.error }}
+              label={t('generic.remove.button')}
               onPress={() => setConfirmRemoveVisible(true)}
             />
-            <IconButton
+            <NativeIconButton
               testID="feed-share-back"
-              mode="contained"
-              icon={'personAdd'}
-              containerColor={colors.primary}
-              iconColor={colors.onPrimary}
-              accessibilityLabel={t('feed.share_back.button')}
+              icon={PersonAddIcon}
+              systemImage="person.badge.plus"
+              variant="filled"
+              label={t('feed.share_back.button')}
               onPress={() => dispatch(shareBackWithFriend({ friendId, fromUserAction: true }))}
             />
           </View>

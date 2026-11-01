@@ -1,5 +1,6 @@
 import { IntegerInput } from '@/components/presentation/foundation/editors/number-inputs';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { Icon } from '@/components/presentation/foundation/icon';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { useAppTheme, spacing, rounding } from '@/hooks/useAppTheme';
 import { View } from 'react-native';
@@ -108,20 +109,23 @@ function ContainedSegmentIconButton(props: ContainedSegmentIconButtonProps) {
     }))
     .exhaustive();
   return (
-    <IconButton
+    <TouchableRipple
       testID={props.testID}
-      mode="contained-tonal"
-      icon={props.icon}
+      accessibilityRole="button"
       onPress={props.onPress}
-      iconColor={colors.onSurfaceVariant}
       style={[
         radius,
         {
-          margin: 0,
-          backgroundColor: colors.surfaceVariant,
           flex: 1,
+          height: 40,
+          overflow: 'hidden',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: colors.surfaceVariant,
         },
       ]}
-    />
+    >
+      <Icon source={props.icon} size={24} color={colors.onSurfaceVariant} />
+    </TouchableRipple>
   );
 }

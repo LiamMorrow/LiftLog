@@ -1,4 +1,7 @@
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import ArrowUpwardIcon from '@expo/material-symbols/arrow_upward.xml';
+import ArrowDownwardIcon from '@expo/material-symbols/arrow_downward.xml';
+import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
 import Menu from '@/components/presentation/foundation/menu';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import CopyWorkoutDialog from '@/components/smart/copy-workout-dialog';
@@ -110,24 +113,28 @@ export function PlanWorkoutRow({
           </View>
           {reordering ? (
             <View style={{ flexDirection: 'row' }}>
-              <IconButton
-                icon="arrowUpward"
+              <NativeIconButton
+                icon={ArrowUpwardIcon}
+                systemImage="arrow.up"
                 disabled={sessionIndex === 0}
-                accessibilityLabel={t('generic.move_up.button')}
+                label={t('generic.move_up.button')}
                 onPress={() => dispatch(moveSessionBlueprintUpInProgram({ programId, sessionBlueprint }))}
               />
-              <IconButton
-                icon="arrowDownward"
+              <NativeIconButton
+                icon={ArrowDownwardIcon}
+                systemImage="arrow.down"
                 disabled={sessionIndex === plan.sessions.length - 1}
-                accessibilityLabel={t('generic.move_down.button')}
+                label={t('generic.move_down.button')}
                 onPress={() => dispatch(moveSessionBlueprintDownInProgram({ programId, sessionBlueprint }))}
               />
             </View>
           ) : (
             <Menu
-              trigger={(open) => (
-                <IconButton icon="moreHoriz" accessibilityLabel={t('generic.more_options.button')} onPress={open} />
-              )}
+              trigger={{
+                icon: MoreHorizIcon,
+                systemImage: 'ellipsis',
+                label: t('generic.more_options.button'),
+              }}
               items={[
                 {
                   label: t('generic.duplicate.button'),

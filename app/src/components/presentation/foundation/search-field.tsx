@@ -1,5 +1,6 @@
 import { Icon } from '@/components/presentation/foundation/icon';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import CloseIcon from '@expo/material-symbols/close.xml';
 import { PillTextField } from '@/components/presentation/foundation/pill-text-field';
 import { TextFieldProps } from '@/components/presentation/foundation/text-field';
 import { useAppTheme } from '@/hooks/useAppTheme';
@@ -27,7 +28,12 @@ export function SearchField({ value, onChangeText, ...props }: SearchFieldProps)
       leading={<Icon source="search" size={24} color={colors.onSurfaceVariant} />}
       trailing={
         value ? (
-          <IconButton icon="close" accessibilityLabel={t('generic.clear.button')} onPress={() => onChangeText('')} />
+          <NativeIconButton
+            icon={CloseIcon}
+            systemImage="xmark"
+            label={t('generic.clear.button')}
+            onPress={() => onChangeText('')}
+          />
         ) : undefined
       }
     />

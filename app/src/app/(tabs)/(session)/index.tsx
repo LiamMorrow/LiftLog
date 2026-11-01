@@ -4,7 +4,9 @@ import CardList from '@/components/presentation/foundation/card-list';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { NativeIcon } from '@/components/presentation/foundation/native-icon';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import ShareIcon from '@expo/material-symbols/share.xml';
+import DeleteIcon from '@expo/material-symbols/delete.xml';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
 import NativeButton from '@/components/presentation/foundation/native-button';
@@ -47,6 +49,7 @@ function ListUpcomingWorkouts({
 }) {
   const plan = useAppSelector(selectActiveProgram);
   const { t } = useTranslate();
+  const { colors } = useAppTheme();
   const formatDate = useFormatDate();
   const currentSession = useAppSelectorWhenFocused(selectActiveSession);
   const planId = useAppSelector((x) => x.program.activePlanId);
@@ -88,17 +91,19 @@ function ListUpcomingWorkouts({
               <SessionCardContent session={currentSession} />
             </CardContent>
             <CardActions style={{ marginTop: spacing[2] }}>
-              <IconButton
-                icon={'share'}
-                mode="contained"
-                accessibilityLabel={t('workout.share_workout.button')}
+              <NativeIconButton
+                icon={ShareIcon}
+                systemImage="square.and.arrow.up"
+                colors={{ content: colors.primary }}
+                label={t('workout.share_workout.button')}
                 onPress={() => handleSharePress(currentSession)}
               />
-              <IconButton
+              <NativeIconButton
                 testID="clear-current-workout"
-                icon={'delete'}
-                mode="contained"
-                accessibilityLabel={t('workout.clear_current.button')}
+                icon={DeleteIcon}
+                systemImage="trash"
+                colors={{ content: colors.primary }}
+                label={t('workout.clear_current.button')}
                 onPress={() => setConfirmDeleteSessionOpen(true)}
               />
               <Button
@@ -132,9 +137,21 @@ function ListUpcomingWorkouts({
               };
               return (
                 <CardActions style={{ marginTop: spacing[2] }}>
-                  <IconButton icon={'share'} mode="contained" onPress={() => handleSharePress(session)} />
+                  <NativeIconButton
+                    icon={ShareIcon}
+                    systemImage="square.and.arrow.up"
+                    colors={{ content: colors.primary }}
+                    label={t('workout.share_workout.button')}
+                    onPress={() => handleSharePress(session)}
+                  />
                   {sessionPlanIndex !== -1 ? (
-                    <IconButton icon={'edit'} mode="contained" onPress={handleEditPress} />
+                    <NativeIconButton
+                      icon={EditIcon}
+                      systemImage="pencil"
+                      colors={{ content: colors.primary }}
+                      label={t('generic.edit.button')}
+                      onPress={handleEditPress}
+                    />
                   ) : undefined}
                   <Button
                     mode="contained"

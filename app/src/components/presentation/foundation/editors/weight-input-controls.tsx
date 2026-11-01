@@ -1,6 +1,9 @@
 import { NumberInput } from '@/components/presentation/foundation/editors/number-inputs';
 import SelectPicker from '@/components/presentation/foundation/select-picker';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import RemoveIcon from '@expo/material-symbols/remove.xml';
+import AddIcon from '@expo/material-symbols/add.xml';
+import ExposureIcon from '@expo/material-symbols/exposure.xml';
 import { spacing } from '@/hooks/useAppTheme';
 import { shortFormatWeightUnit, Weight, WeightUnit } from '@/models/weight';
 import { useTranslate } from '@tolgee/react';
@@ -20,7 +23,15 @@ export function WeightInputControls(props: {
   const { t } = useTranslate();
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
-      <IconButton icon="minus" mode="contained-tonal" size={28} testID="decrement-weight" onPress={props.onDecrement} />
+      <NativeIconButton
+        icon={RemoveIcon}
+        systemImage="minus"
+        variant="tonal"
+        iconSize={28}
+        testID="decrement-weight"
+        label={t('generic.decrease.button')}
+        onPress={props.onDecrement}
+      />
       <NumberInput
         testID="weight-input"
         size="large"
@@ -37,7 +48,15 @@ export function WeightInputControls(props: {
         options={units.map((unit) => ({ value: unit, label: shortFormatWeightUnit(unit) }))}
         onChange={props.onUnitChange}
       />
-      <IconButton icon="plus" mode="contained-tonal" size={28} testID="increment-weight" onPress={props.onIncrement} />
+      <NativeIconButton
+        icon={AddIcon}
+        systemImage="plus"
+        variant="tonal"
+        iconSize={28}
+        testID="increment-weight"
+        label={t('generic.increase.button')}
+        onPress={props.onIncrement}
+      />
     </View>
   );
 }
@@ -46,10 +65,11 @@ export function NegateWeightButton(props: { weight: Weight | undefined; onChange
   const { t } = useTranslate();
   const { weight } = props;
   return (
-    <IconButton
-      icon="plusMinus"
-      mode="contained-tonal"
-      accessibilityLabel={t('exercise.toggle_negative.button')}
+    <NativeIconButton
+      icon={ExposureIcon}
+      systemImage="plusminus"
+      variant="tonal"
+      label={t('exercise.toggle_negative.button')}
       disabled={!weight || weight.value.isZero()}
       onPress={() => weight && props.onChange(new Weight(weight.value.negated(), weight.unit))}
     />

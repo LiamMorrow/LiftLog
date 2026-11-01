@@ -9,7 +9,9 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import { SearchField } from '@/components/presentation/foundation/search-field';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import ExpandCircleUpIcon from '@expo/material-symbols/expand_circle_up.xml';
+import ExpandCircleDownIcon from '@expo/material-symbols/expand_circle_down.xml';
 
 export default function ExerciseSearchAndFilters({
   searchText,
@@ -52,14 +54,13 @@ export default function ExerciseSearchAndFilters({
               {selectedFiltersSubtitle}
             </AppText>
           </View>
-          <IconButton
-            icon={filtersExpanded ? 'expandCircleUp' : 'expandCircleDown'}
-            animated
+          <NativeIconButton
+            icon={filtersExpanded ? ExpandCircleUpIcon : ExpandCircleDownIcon}
+            systemImage={filtersExpanded ? 'chevron.up.circle' : 'chevron.down.circle'}
             testID="expand-filters-btn"
-            mode="contained-tonal"
-            onPress={() => {
-              setFiltersExpanded(!filtersExpanded);
-            }}
+            variant="tonal"
+            label={t(filtersExpanded ? 'generic.collapse.button' : 'generic.expand.button')}
+            onPress={() => setFiltersExpanded(!filtersExpanded)}
           />
         </View>
         <CardContent>

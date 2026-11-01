@@ -7,8 +7,10 @@ import { Duration, OffsetDateTime } from '@js-joda/core';
 import { ReactNode, useEffect, useState } from 'react';
 
 import { View } from 'react-native';
-import IconButton from '@/components/presentation/foundation/icon-button';
-import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import PauseIcon from '@expo/material-symbols/pause.xml';
+import PlayArrowIcon from '@expo/material-symbols/play_arrow.xml';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import BigNumber from 'bignumber.js';
 import { useAppSelector } from '@/store';
@@ -322,15 +324,20 @@ function CardioDistanceTile(props: {
 
 function CardioTimerButton(props: { isTimerRunning: boolean; onStart: () => void; onStop: () => void }) {
   const { colors } = useAppTheme();
+  const { t } = useTranslate();
   return (
-    <IconButton
+    <NativeIconButton
       testID="cardio-timer-play-pause"
-      icon={props.isTimerRunning ? 'pause' : 'playArrow'}
-      mode="contained-tonal"
+      icon={props.isTimerRunning ? PauseIcon : PlayArrowIcon}
+      systemImage={props.isTimerRunning ? 'pause.fill' : 'play.fill'}
+      variant="filled"
+      colors={
+        props.isTimerRunning
+          ? { container: colors.amber, content: colors.onAmber }
+          : { container: colors.green, content: colors.onGreen }
+      }
+      label={t(props.isTimerRunning ? 'cardio_timer.stop' : 'cardio_timer.start')}
       onPress={props.isTimerRunning ? props.onStop : props.onStart}
-      containerColor={props.isTimerRunning ? colors.amber : colors.green}
-      iconColor={props.isTimerRunning ? colors.onAmber : colors.onGreen}
-      style={{ borderRadius: rounding.roundedRectangleRadius }}
     />
   );
 }

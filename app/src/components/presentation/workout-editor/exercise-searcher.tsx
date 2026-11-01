@@ -1,4 +1,5 @@
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import SearchIcon from '@expo/material-symbols/search.xml';
 import { spacing } from '@/hooks/useAppTheme';
 import { ExerciseBlueprint } from '@/models/blueprint-models';
 import { ExerciseDescriptor } from '@/models/exercise-models';
@@ -50,10 +51,11 @@ export function ExerciseSearcher({ currentExercise, onSelectExercise }: Exercise
       <AppText variant="headlineMedium" style={{ flex: 1 }}>
         {currentExercise.name}
       </AppText>
-      <IconButton
-        icon="search"
-        mode="contained-tonal"
-        accessibilityLabel={t('generic.search.button')}
+      <NativeIconButton
+        icon={SearchIcon}
+        systemImage="magnifyingglass"
+        variant="tonal"
+        label={t('generic.search.button')}
         onPress={openSearch}
       />
     </Pressable>
