@@ -407,5 +407,19 @@
   "workout_persistent_notification.start_now.message": "Iniciar agora!",
   "workout_persistent_notification.start_soon.message": "Próxima série em instantes",
   "workout.rest_timers.label": "Timers de descanso",
-  "workout.rest_timers.subtitle": "Cronometre automaticamente o descanso entre as séries. Desativar isso oculta todos os timers de descanso e desativa as notificações de descanso"
+  "workout.rest_timers.subtitle": "Cronometre automaticamente o descanso entre as séries. Desativar isso oculta todos os timers de descanso e desativa as notificações de descanso",
+  "ai.share_program.button": "Partilhar o programa",
+  "backends.subtitle": "Escolha qual servidor alimenta o feed, o planeador AI, e os backups remotos",
+  "backends.none.label": "Nenhum",
+  "backends.backup.label": "Servidor backup",
+  "backends.feed.label": "Servidor do feed",
+  "backends.ai_planner.label": "Servidor do planeador AI",
+  "backends.feature.feed": "Feed",
+  "backends.feature.sharing": "Partilhar",
+  "backends.feature.ai_planner": "Planeador AI",
+  "backends.name.label": "Nome",
+  "backends.name.required.message": "Requer um nome",
+  "backends.url.required.message": "Requer um URL",
+  "backends.url.error.message": "O URL precisa de começar com http:// ou https://",
+  "backends.url.insecure.message": "Sem https://, qualquer pessoa da sua rede pode ler o que é enviado, incluindo os cabeçalhos. Apenas utilize http:// numa rede que confie."
 }
