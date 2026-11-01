@@ -79,6 +79,10 @@ the wizard is how new users get the chance to enable it.
 
 - Use **named exports** for new files (`export function Foo`), not default exports - even though older
   files use defaults. Don't bulk-convert existing files.
+- **Prefer foundation components** (`components/presentation/foundation/`) over raw React Native
+  primitives or one-off controls. Text, cards, buttons, icons, list rows and inputs all have one.
+- If the task needs a control that has no foundation component, **stop and ask** whether one should be
+  made for it, rather than building a one-off in the feature code.
 - Native controls are built on **expo-ui** (SwiftUI on iOS / Jetpack Compose on Android) using a
   platform-split file convention: `foo.tsx` + `foo.android.tsx` + shared `foo-props.ts`.
   For native `Host`s, seed theming with `colors.seedColor` (not `colors.primary`), let native components
