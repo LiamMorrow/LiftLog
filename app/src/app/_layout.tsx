@@ -3,15 +3,17 @@ import { I18nManager, LogBox, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppStateProvider } from '@/components/smart/app-state-provider';
 import { PlanImportGate } from '@/components/smart/plan-import-gate';
-import SnackbarProvider from '@/components/smart/snackbar-provider';
+import { SnackbarProvider } from '@/components/smart/snackbar-provider';
+import { ConfirmProvider } from '@/components/presentation/foundation/confirm';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import ServicesProvider from '@/components/smart/services-provider';
 import { install } from 'react-native-quick-crypto';
 import StackWithHeader from '@/components/layout/stack-with-header';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { requireOptionalNativeModule } from 'expo';
+import { useEffect } from 'react';
 
 install();
 
@@ -37,9 +39,11 @@ export default function RootLayout() {
             <AppThemeProvider>
               <AppStateProvider>
                 <SnackbarProvider>
-                  {Platform.OS === 'android' && <StatusBar style="auto" />}
-                  <PlanImportGate />
-                  <Layout />
+                  <ConfirmProvider>
+                    {Platform.OS === 'android' && <StatusBar style="auto" />}
+                    <PlanImportGate />
+                    <Layout />
+                  </ConfirmProvider>
                 </SnackbarProvider>
               </AppStateProvider>
             </AppThemeProvider>
@@ -52,11 +56,28 @@ export default function RootLayout() {
 
 function Layout() {
   const { colors } = useAppTheme();
+  const router = useRouter();
+  useEffect(() => {
+    if (process.env.EXPO_PUBLIC_STORYBOOK_ENABLED === 'true') {
+      router.push('/storybook');
+    }
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <StackWithHeader>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="exercise-search" options={{ presentation: 'modal' }} />
       <Stack.Screen name="cardio-set-editor" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="copy-exercise" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="copy-workout" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="rest-editor" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="progression-rule" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="progression-example" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="color-picker" options={{ presentation: 'modal' }} />
+      <Stack.Screen
+        name="welcome"
+        options={{ presentation: 'fullScreenModal', headerShown: false, gestureEnabled: false }}
+      />
       <Stack.Screen name="exercise-editor" options={{}} />
       <Stack.Screen name="exercise-descriptor-editor" />
       <Stack.Screen name="backend-header" />
@@ -75,6 +96,7 @@ function Layout() {
       <Stack.Screen name="post-workout" />
       <Stack.Screen name="diff-save" />
       <Stack.Screen name="muscle-analysis" />
+      <Stack.Screen name="storybook" options={{ headerShown: false }} />
     </StackWithHeader>
   );
 }

@@ -16,6 +16,15 @@
     "types": ["vitest", "node"],
     "exactOptionalPropertyTypes": false
   },
-  "include": ["**/*.ts", "**/*.tsx", "types/*.d.ts", ".expo/types/**/*.ts", "expo-env.d.ts", "store/tolgee.d.ts"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".rnstorybook/**/*.ts",
+    ".rnstorybook/**/*.tsx",
+    "types/*.d.ts",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "store/tolgee.d.ts"
+  ],
   "exclude": ["node_modules", "**/vitest/dist/**", "**/vitest/dist/chunks/**", "vitest.config.ts", "scripts/**"]
 }

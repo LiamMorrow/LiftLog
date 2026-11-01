@@ -47,7 +47,7 @@ export function ExerciseDescriptorEditor(props: { exerciseId: string; isNew?: bo
   }, [hasExercise, dismiss]);
 
   return (
-    <FullHeightScrollView avoidKeyboard modal scrollStyle={{ padding: spacing.pageHorizontalMargin }}>
+    <FullHeightScrollView avoidKeyboard modal scrollStyle={{ paddingHorizontal: spacing.pageHorizontalMargin }}>
       <Stack.Screen options={{ title }} />
       {shown && (
         <View style={{ gap: spacing[2], paddingBottom: spacing[12] }}>

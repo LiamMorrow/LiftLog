@@ -1,4 +1,3 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useDerivedState } from '@/hooks/useDerivedState';
 import {
@@ -12,7 +11,11 @@ import {
 import { useTranslate } from '@tolgee/react';
 import { useEffect } from 'react';
 import { View } from 'react-native';
-import { Checkbox, List, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
+import CheckCircleIcon from '@expo/material-symbols/check_circle.xml';
+import UncheckedIcon from '@expo/material-symbols/radio_button_unchecked.xml';
 import { match } from 'ts-pattern';
 
 interface SessionDiffViewProps {
@@ -52,7 +55,9 @@ export default function SessionDiffView({ diff: fullDiff, onSelectedDiffChange }
   if (!fullDiff.hasChanges) {
     return (
       <View style={{ padding: spacing[4] }}>
-        <SurfaceText style={{ textAlign: 'center' }}>{t('plan.diff.no_changes.body')}</SurfaceText>
+        <AppText variant="bodyLarge" style={{ textAlign: 'center' }}>
+          {t('plan.diff.no_changes.body')}
+        </AppText>
       </View>
     );
   }
@@ -120,7 +125,7 @@ export default function SessionDiffView({ diff: fullDiff, onSelectedDiffChange }
 
       {/* Modified exercises */}
       {fullDiff.modifiedExercises.length > 0 && (
-        <DiffSection title={t('plan.diff.section.modified.title')}>
+        <DiffSection title={t('plan.diff.section.modified.title')} grouped={false}>
           {fullDiff.modifiedExercises.map((mod) => (
             <ExerciseModificationGroup
               key={mod.exerciseName}
@@ -137,20 +142,21 @@ export default function SessionDiffView({ diff: fullDiff, onSelectedDiffChange }
 
 interface DiffSectionProps {
   title: string;
+  grouped?: boolean;
   children: React.ReactNode;
 }
 
-function DiffSection({ title, children }: DiffSectionProps) {
+function DiffSection({ title, grouped = true, children }: DiffSectionProps) {
   return (
-    <View>
+    <View style={{ marginBlockEnd: spacing[4] }}>
       <View
         style={{
           paddingVertical: spacing[2],
         }}
       >
-        <Text variant="titleSmall">{title}</Text>
+        <AppText variant="titleSmall">{title}</AppText>
       </View>
-      {children}
+      {grouped ? <SegmentedGroup>{children}</SegmentedGroup> : <View style={{ gap: spacing[3] }}>{children}</View>}
     </View>
   );
 }
@@ -176,13 +182,23 @@ function DiffChangeRow({ change, selected, onToggle, disabled, variant }: DiffCh
     .otherwise(() => undefined);
 
   return (
-    <List.Item
-      disabled={disabled}
-      onPress={onToggle}
-      title={t(label.key, label.params)}
-      titleStyle={variantColor ? { color: variantColor } : undefined}
-      description={description}
-      left={() => <Checkbox disabled={disabled} status={selected ? 'checked' : 'unchecked'} />}
+    <SegmentListFormElement
+      onPress={disabled ? undefined : onToggle}
+      label={<AppText style={variantColor ? { color: variantColor } : undefined}>{t(label.key, label.params)}</AppText>}
+      supportingText={description}
+      style={disabled ? { opacity: 0.6 } : undefined}
+      right={
+        selected ? (
+          <NativeIcon
+            icon={CheckCircleIcon}
+            systemImage="checkmark.circle.fill"
+            size={24}
+            color={theme.colors.primary}
+          />
+        ) : (
+          <NativeIcon icon={UncheckedIcon} systemImage="circle" size={24} color={theme.colors.onSurfaceVariant} />
+        )
+      }
     />
   );
 }
@@ -199,16 +215,20 @@ function ExerciseModificationGroup({
   onToggleChange,
 }: ExerciseModificationGroupProps) {
   return (
-    <List.Section>
-      <List.Subheader style={{ paddingInlineStart: spacing[2] }}>{modification.exerciseName}</List.Subheader>
-      {modification.changes.map((change) => (
-        <DiffChangeRow
-          key={change.id}
-          change={change}
-          selected={selectedChangeIds.has(change.id)}
-          onToggle={() => onToggleChange(change.id)}
-        />
-      ))}
-    </List.Section>
+    <View style={{ gap: spacing[2] }}>
+      <AppText variant="labelLarge" color="onSurfaceVariant" style={{ paddingInlineStart: spacing[2] }}>
+        {modification.exerciseName}
+      </AppText>
+      <SegmentedGroup>
+        {modification.changes.map((change) => (
+          <DiffChangeRow
+            key={change.id}
+            change={change}
+            selected={selectedChangeIds.has(change.id)}
+            onToggle={() => onToggleChange(change.id)}
+          />
+        ))}
+      </SegmentedGroup>
+    </View>
   );
 }

@@ -5,8 +5,8 @@ Paths below are relative to the repository root.
 ## Where work happens
 
 The vast majority of work is in **`app/`** - an **Expo ~57 / React Native 0.86 / React 19** app.
-Stack: expo-router (file-based routes in `app/src/app/`), Redux Toolkit, React Native Paper (Material 3),
-Drizzle ORM + expo-sqlite, Tolgee i18n, React Compiler, TypeScript ~6.
+Stack: expo-router (file-based routes in `app/src/app/`), Redux Toolkit, `@expo/ui` (SwiftUI on iOS, Jetpack
+Compose on Android), Drizzle ORM + expo-sqlite, Tolgee i18n, React Compiler, TypeScript ~6.
 
 `backend/` is a **.NET / C# Web API** (end-to-end-encrypted feeds + AI planner). It **usually does not
 need changing** to add app features - only touch it when the task is explicitly backend work.
@@ -79,8 +79,12 @@ the wizard is how new users get the chance to enable it.
 
 - Use **named exports** for new files (`export function Foo`), not default exports - even though older
   files use defaults. Don't bulk-convert existing files.
-- react-native-paper is being **incrementally migrated to expo-ui** (SwiftUI on iOS / Jetpack Compose on
-  Android) using a platform-split file convention: `foo.tsx` + `foo.android.tsx` + shared `foo-props.ts`.
+- **Prefer foundation components** (`components/presentation/foundation/`) over raw React Native
+  primitives or one-off controls. Text, cards, buttons, icons, list rows and inputs all have one.
+- If the task needs a control that has no foundation component, **stop and ask** whether one should be
+  made for it, rather than building a one-off in the feature code.
+- Native controls are built on **expo-ui** (SwiftUI on iOS / Jetpack Compose on Android) using a
+  platform-split file convention: `foo.tsx` + `foo.android.tsx` + shared `foo-props.ts`.
   For native `Host`s, seed theming with `colors.seedColor` (not `colors.primary`), let native components
   own their slot colors, and use `@expo/material-symbols` XML icons inside Compose.
 - The **React Compiler** is enabled, so it auto-memoizes render output - don't reach for `useMemo`,

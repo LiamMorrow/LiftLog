@@ -1,3 +1,9 @@
+import DnsIcon from '@expo/material-symbols/dns.xml';
+import ErrorIcon from '@expo/material-symbols/error.xml';
+import BoltIcon from '@expo/material-symbols/bolt.xml';
+import CloudUploadIcon from '@expo/material-symbols/cloud_upload.xml';
+import ForumIcon from '@expo/material-symbols/forum.xml';
+import PublicIcon from '@expo/material-symbols/public.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
 import {
   Backend,
@@ -8,15 +14,14 @@ import {
   isBackendComplete,
 } from '@/models/backend';
 import { useAppSelector } from '@/store';
-import { T, useTranslate } from '@tolgee/react';
+import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { BackendPicker } from '@/components/smart/backend-picker';
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
 import { putBackend, selectAllBackends, switchFeedBackend } from '@/store/backends';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { uuid } from '@/utils/uuid';
-import { useState } from 'react';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { useDispatch } from 'react-redux';
 import AddIcon from '@expo/material-symbols/add.xml';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
@@ -29,7 +34,18 @@ export default function BackendsPage() {
   const dispatch = useDispatch();
   const backends = useAppSelector(selectAllBackends);
   const { colors } = useAppTheme();
-  const [pendingFeedBackend, setPendingFeedBackend] = useState<string | undefined>(undefined);
+  const confirm = useConfirm();
+  const confirmFeedSwitch = (backendId: string | undefined) => {
+    if (!backendId) {
+      return;
+    }
+    confirm({
+      title: t('backends.feed_switch.title'),
+      message: t('backends.feed_switch.body'),
+      destructive: true,
+      onOk: () => dispatch(switchFeedBackend({ backendId })),
+    });
+  };
 
   // The editor edits a backend rather than filling in a form, so one exists before it opens. An
   // editor left with nothing typed into it removes what it was given.
@@ -66,17 +82,20 @@ export default function BackendsPage() {
       <SegmentedGroup>
         <SegmentListFormElement
           label={t('backends.feed.label')}
-          icon={'forum'}
-          right={<BackendPicker feature="feed" onChange={setPendingFeedBackend} />}
+          icon={ForumIcon}
+          systemImage="bubble.left.and.bubble.right"
+          right={<BackendPicker feature="feed" onChange={confirmFeedSwitch} />}
         />
         <SegmentListFormElement
           label={t('backends.ai_planner.label')}
-          icon={'boltFill'}
+          icon={BoltIcon}
+          systemImage="bolt.fill"
           right={<BackendPicker feature="aiPlanner" />}
         />
         <SegmentListFormElement
           label={t('backends.backup.label')}
-          icon={'cloudUploadFill'}
+          icon={CloudUploadIcon}
+          systemImage="icloud.and.arrow.up.fill"
           right={<BackendPicker feature="backup" />}
         />
       </SegmentedGroup>
@@ -88,7 +107,8 @@ export default function BackendsPage() {
               key={backend.id}
               label={backend.name}
               supportingText={describe(backend)}
-              icon={'publicFill'}
+              icon={PublicIcon}
+              systemImage="globe.americas.fill"
             />
           ) : (
             <SegmentedListLink
@@ -98,28 +118,17 @@ export default function BackendsPage() {
                 isBackendComplete(backend) ? (
                   describe(backend)
                 ) : (
-                  <Text style={{ color: colors.error }}>{t('backends.incomplete.label')}</Text>
+                  <AppText style={{ color: colors.error }}>{t('backends.incomplete.label')}</AppText>
                 )
               }
-              icon={isBackendComplete(backend) ? 'dnsFill' : 'error'}
+              {...(isBackendComplete(backend)
+                ? { icon: DnsIcon, systemImage: 'server.rack' as const }
+                : { icon: ErrorIcon, systemImage: 'exclamationmark.circle' as const })}
               onPress={() => push(`/settings/backends/${backend.id}`)}
             />
           ),
         )}
       </SegmentedGroup>
-
-      <ConfirmationDialog
-        open={pendingFeedBackend !== undefined}
-        headline={t('backends.feed_switch.title')}
-        textContent={<T keyName="backends.feed_switch.body" />}
-        onCancel={() => setPendingFeedBackend(undefined)}
-        onOk={() => {
-          if (pendingFeedBackend) {
-            dispatch(switchFeedBackend({ backendId: pendingFeedBackend }));
-          }
-          setPendingFeedBackend(undefined);
-        }}
-      />
     </SettingsPage>
   );
 }

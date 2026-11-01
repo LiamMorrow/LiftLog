@@ -1,4 +1,3 @@
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import SessionComponent from '@/components/smart/session-component';
 import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
 import { getPostWorkoutHref } from '@/components/smart/post-workout';
@@ -11,7 +10,7 @@ import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
 import { useFeedHubLease } from '@/hooks/useFeedHubLease';
-import { useState } from 'react';
+import { useConfirm } from '@/hooks/useConfirm';
 
 export default function Index() {
   const session = useAppSelector(selectActiveSession);
@@ -23,17 +22,21 @@ export default function Index() {
   useFeedHubLease('trainer', sharingLive);
   const { dismissTo, push } = useRouter();
   const { t } = useTranslate();
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const confirm = useConfirm();
 
   const save = (force = false) => {
     if (!session) {
       return;
     }
     if (!force && !session.isComplete) {
-      setConfirmOpen(true);
+      confirm({
+        title: t('workout.finish.confirm.title'),
+        message: t('workout.finish.incomplete.body'),
+        okText: t('generic.finish.button'),
+        onOk: () => save(true),
+      });
       return;
     }
-    setConfirmOpen(false);
     const hasDiff = finishWorkout();
     dismissTo('/');
     if (showPostWorkoutSummary) {
@@ -66,14 +69,6 @@ export default function Index() {
         isActiveWorkout
         showBodyweight={showBodyweight}
         openPostWorkoutSummary={() => push(getPostWorkoutHref(session.id))}
-      />
-      <ConfirmationDialog
-        okText={t('generic.finish.button')}
-        onOk={() => save(true)}
-        onCancel={() => setConfirmOpen(false)}
-        textContent={t('workout.finish.incomplete.body')}
-        headline={t('workout.finish.confirm.title')}
-        open={confirmOpen}
       />
     </>
   );

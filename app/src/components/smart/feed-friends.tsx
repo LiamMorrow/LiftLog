@@ -1,15 +1,20 @@
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
-import LimitedHtml from '@/components/presentation/foundation/limited-html';
+import QrCodeIcon from '@expo/material-symbols/qr_code.xml';
+import ShareIcon from '@expo/material-symbols/share.xml';
+import { useConfirm } from '@/hooks/useConfirm';
 import Menu from '@/components/presentation/foundation/menu';
 import { PersonRow } from '@/components/presentation/feed/person-row';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import {
   SegmentedGroup,
   SegmentedListItem,
   SegmentListFormElement,
 } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import MoreVertIcon from '@expo/material-symbols/more_vert.xml';
+import CloseIcon from '@expo/material-symbols/close.xml';
+import CheckIcon from '@expo/material-symbols/check.xml';
+import PersonAddIcon from '@expo/material-symbols/person_add.xml';
 import { useOwnHistory } from '@/components/smart/own-history-provider';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -30,7 +35,6 @@ import {
   shareBackWithFriend,
 } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
-import { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
@@ -100,8 +104,9 @@ export function FeedFriends() {
           .exhaustive()
       }
       contentContainerStyle={{
-        padding: spacing.pageHorizontalMargin,
-        paddingBottom: insets.bottom + spacing.pageHorizontalMargin,
+        paddingHorizontal: spacing.pageHorizontalMargin,
+        paddingTop: spacing.pageVerticalMargin,
+        paddingBottom: insets.bottom + spacing.pageVerticalMargin,
       }}
     />
   );
@@ -109,14 +114,13 @@ export function FeedFriends() {
 
 function SectionHeader(props: { label: string; count: number }) {
   return (
-    <SurfaceText
-      font="text-sm"
-      weight="500"
+    <AppText
+      variant="labelLarge"
       color="onSurfaceVariant"
       style={{ paddingTop: spacing[5], paddingBottom: spacing[2], paddingHorizontal: spacing[1] }}
     >
       {`${props.label} · ${props.count}`}
-    </SurfaceText>
+    </AppText>
   );
 }
 
@@ -133,7 +137,8 @@ function ShareProfileRows() {
   return (
     <SegmentedGroup>
       <SegmentListFormElement
-        icon="share"
+        icon={ShareIcon}
+        systemImage="square.and.arrow.up"
         label={t('feed.share_link.row')}
         supportingText={t('feed.share_link.row.supporting')}
         onPress={() => {
@@ -145,7 +150,12 @@ function ShareProfileRows() {
           );
         }}
       />
-      <SegmentedListLink icon="qrCode" label={t('feed.qr_code.row')} onPress={() => push(getFeedQrCodeHref())} />
+      <SegmentedListLink
+        icon={QrCodeIcon}
+        systemImage="qrcode"
+        label={t('feed.qr_code.row')}
+        onPress={() => push(getFeedQrCodeHref())}
+      />
     </SegmentedGroup>
   );
 }
@@ -153,27 +163,35 @@ function ShareProfileRows() {
 function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingActivity | undefined }) {
   const dispatch = useDispatch();
   const { t } = useTranslate();
-  const [confirmRemoveVisible, setConfirmRemoveVisible] = useState(false);
+  const confirm = useConfirm();
   const { colors } = useAppTheme();
   const name = friend.name || t('feed.anonymous_user.label');
   const friendId = friend.id;
 
-  const remove = () => {
-    setConfirmRemoveVisible(false);
-    dispatch(removeFriend({ friendId, notify: true, fromUserAction: true }));
-  };
-
   const removeLabel = friend.status === 'pending' ? t('feed.cancel_request.button') : t('feed.remove_friend.button');
+  const confirmRemove = () =>
+    confirm({
+      title: removeLabel,
+      message: t('feed.remove_friend.confirm.body', { user: name }),
+      okText: t('generic.remove.button'),
+      destructive: true,
+      onOk: () => dispatch(removeFriend({ friendId, notify: true, fromUserAction: true })),
+    });
   const removeMenu = (
     <Menu
-      trigger={(open) => <IconButton testID="friend-more-btn" onPress={open} icon={'moreVert'} />}
+      trigger={{
+        testID: 'friend-more-btn',
+        icon: MoreVertIcon,
+        systemImage: 'ellipsis',
+        label: t('generic.more_options.button'),
+      }}
       items={[
         {
           label: removeLabel,
           icon: PersonRemove,
           systemImage: 'person.badge.minus',
           destructive: true,
-          onPress: () => setConfirmRemoveVisible(true),
+          onPress: confirmRemove,
         },
       ]}
     />
@@ -187,20 +205,20 @@ function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingA
         subtitle={t('feed.wants_to_be_friends.subtitle')}
         trailing={
           <View style={{ flexDirection: 'row' }}>
-            <IconButton
+            <NativeIconButton
               testID="feed-deny-friend-request"
-              iconColor={colors.error}
-              icon={'close'}
-              accessibilityLabel={t('generic.deny.button')}
+              icon={CloseIcon}
+              systemImage="xmark"
+              colors={{ content: colors.error }}
+              label={t('generic.deny.button')}
               onPress={() => dispatch(denyFriendRequest({ friendId, fromUserAction: true }))}
             />
-            <IconButton
+            <NativeIconButton
               testID="feed-accept-friend-request"
-              mode="contained"
-              icon={'check'}
-              containerColor={colors.primary}
-              iconColor={colors.onPrimary}
-              accessibilityLabel={t('generic.accept.button')}
+              icon={CheckIcon}
+              systemImage="checkmark"
+              variant="filled"
+              label={t('generic.accept.button')}
               onPress={() => dispatch(acceptFriendRequest({ friendId, fromUserAction: true }))}
             />
           </View>
@@ -214,20 +232,20 @@ function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingA
         subtitle={t('feed.share_back.subtitle')}
         trailing={
           <View style={{ flexDirection: 'row' }}>
-            <IconButton
+            <NativeIconButton
               testID="feed-decline-share-back"
-              iconColor={colors.error}
-              icon={'close'}
-              accessibilityLabel={t('generic.remove.button')}
-              onPress={() => setConfirmRemoveVisible(true)}
+              icon={CloseIcon}
+              systemImage="xmark"
+              colors={{ content: colors.error }}
+              label={t('generic.remove.button')}
+              onPress={confirmRemove}
             />
-            <IconButton
+            <NativeIconButton
               testID="feed-share-back"
-              mode="contained"
-              icon={'personAdd'}
-              containerColor={colors.primary}
-              iconColor={colors.onPrimary}
-              accessibilityLabel={t('feed.share_back.button')}
+              icon={PersonAddIcon}
+              systemImage="person.badge.plus"
+              variant="filled"
+              label={t('feed.share_back.button')}
               onPress={() => dispatch(shareBackWithFriend({ friendId, fromUserAction: true }))}
             />
           </View>
@@ -260,19 +278,7 @@ function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingA
     ))
     .exhaustive();
 
-  return (
-    <>
-      <ConfirmationDialog
-        open={confirmRemoveVisible}
-        headline={removeLabel}
-        textContent={<LimitedHtml value={t('feed.remove_friend.confirm.body', { user: name })} />}
-        onOk={remove}
-        okText={t('generic.remove.button')}
-        onCancel={() => setConfirmRemoveVisible(false)}
-      />
-      {row}
-    </>
-  );
+  return row;
 }
 
 function ActivitySummary({ activity }: { activity: FollowingActivity | undefined }) {

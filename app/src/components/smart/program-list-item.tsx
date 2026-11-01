@@ -8,8 +8,9 @@ import { uuid } from '@/utils/uuid';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import IconButton from '@/components/presentation/foundation/icon-button';
-import { SegmentedListRowAction, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
+import { NativeIconButtonProps } from '@/components/presentation/foundation/native-icon-button';
+import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
+import { SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import Menu from '@/components/presentation/foundation/menu';
 import { useDispatch } from 'react-redux';
 import Edit from '@expo/material-symbols/edit.xml';
@@ -26,10 +27,10 @@ interface ProgramListItemProps {
 
 interface ItemProps {
   id: string;
-  mode?: 'contained' | 'contained-tonal' | 'outlined';
+  colors?: NativeIconButtonProps['colors'];
 }
 
-export function ItemMenu({ id, mode }: ItemProps) {
+export function ItemMenu({ id, colors }: ItemProps) {
   const thisProgram = useAppSelectorWithArg(selectProgram, id);
   const isActive = useAppSelector((x) => x.program.activePlanId) === id;
   const dispatch = useDispatch();
@@ -37,7 +38,13 @@ export function ItemMenu({ id, mode }: ItemProps) {
   const { t } = useTranslate();
   return (
     <Menu
-      trigger={(open) => <IconButton testID="more-program-btn" mode={mode} onPress={open} icon={'moreHoriz'} />}
+      trigger={{
+        testID: 'more-program-btn',
+        colors,
+        icon: MoreHorizIcon,
+        systemImage: 'ellipsis',
+        label: t('generic.more_options.button'),
+      }}
       items={[
         {
           label: t('generic.edit.button'),
@@ -120,11 +127,7 @@ export default function ProgramListItem({ id, isFocused, onSelect }: ProgramList
       label={program.name}
       style={focusStyle}
       onLongPress={() => push(`/settings/manage-workouts/${id}`)}
-      right={
-        <SegmentedListRowAction>
-          <ItemMenu id={id} />
-        </SegmentedListRowAction>
-      }
+      action={<ItemMenu id={id} />}
       onPress={onSelect}
     />
   );

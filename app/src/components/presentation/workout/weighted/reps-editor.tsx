@@ -1,7 +1,11 @@
 import { spacing } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { View } from 'react-native';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import RemoveIcon from '@expo/material-symbols/remove.xml';
+import AddIcon from '@expo/material-symbols/add.xml';
+import CloseIcon from '@expo/material-symbols/close.xml';
 import { NumberInput } from '@/components/presentation/foundation/editors/number-inputs';
 import { useDerivedState } from '@/hooks/useDerivedState';
 
@@ -30,12 +34,13 @@ export function RepsEditor(props: {
 
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
-      <IconButton
-        icon="minus"
-        mode="contained-tonal"
-        size={28}
+      <NativeIconButton
+        icon={RemoveIcon}
+        systemImage="minus"
+        variant="tonal"
+        iconSize={28}
         testID="decrement-reps"
-        accessibilityLabel={t('generic.decrease.button')}
+        label={t('generic.decrease.button')}
         onPress={() => step(-1)}
       />
       <NumberInput
@@ -44,18 +49,35 @@ export function RepsEditor(props: {
         autoFocus
         value={text}
         onChangeText={changeText}
+        placeholder={props.repTarget.toString()}
         keyboardType="number-pad"
         accessibilityLabel={t('exercise.reps.label')}
         flex={1}
       />
-      <IconButton
-        icon="plus"
-        mode="contained-tonal"
-        size={28}
+      <NativeIconButton
+        icon={AddIcon}
+        systemImage="plus"
+        variant="tonal"
+        iconSize={28}
         testID="increment-reps"
-        accessibilityLabel={t('generic.increase.button')}
+        label={t('generic.increase.button')}
         onPress={() => step(1)}
       />
     </View>
+  );
+}
+
+export function ClearRepsButton(props: { onPress: () => void }) {
+  const { t } = useTranslate();
+  return (
+    <NativeButton
+      icon={CloseIcon}
+      systemImage="xmark"
+      variant="tonal"
+      floating
+      testID="clear-reps"
+      label={t('generic.clear.button')}
+      onPress={props.onPress}
+    />
   );
 }

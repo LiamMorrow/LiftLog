@@ -1,6 +1,5 @@
 import { Services } from '@/services';
 import { resolveStore } from '@/store';
-import { registerDateTranslations } from '@/utils/date-locale';
 import { TolgeeProvider } from '@tolgee/react';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { openDatabaseAsync, SQLiteDatabase } from 'expo-sqlite';
@@ -30,11 +29,6 @@ export default function ServicesProvider(props: { children: ReactNode }) {
   const resolved = useMemo(() => (db && expoDb ? resolveStore(db, expoDb) : undefined), [db, expoDb]);
   const store = resolved?.store;
   const services = resolved?.services;
-  useEffect(() => {
-    if (services) {
-      registerDateTranslations(services.tolgee);
-    }
-  }, [services]);
   if (!store || !services) {
     return <></>;
   }

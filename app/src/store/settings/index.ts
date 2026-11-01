@@ -99,6 +99,8 @@ export const {
   setPlansSortOrder,
   setPreferredLanguage,
   setNotesExpandedByDefault,
+  setShowPlanNotesInWorkout,
+  setShowPreviousRepsInWorkout,
   setKeepScreenAwakeDuringWorkout,
   setExportToHealthAggregator,
   setShowPostWorkoutSummary,

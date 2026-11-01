@@ -1,11 +1,17 @@
-import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
+import AssignmentIcon from '@expo/material-symbols/assignment.xml';
+import DnsIcon from '@expo/material-symbols/dns.xml';
+import HeartCheckIcon from '@expo/material-symbols/heart_check.xml';
+import PodcastsIcon from '@expo/material-symbols/podcasts.xml';
 import type { RootState } from '@/store';
 import { TranslationKey } from '@tolgee/react';
 import { Href } from 'expo-router';
+import { ImageSourcePropType } from 'react-native';
+import { SFSymbol } from 'sf-symbols-typescript';
 
 export interface WhatsNewEntry {
   id: number;
-  icon: AppIconSource;
+  icon: ImageSourcePropType;
+  systemImage: SFSymbol;
   titleKey: TranslationKey;
   bodyKey: TranslationKey;
   cta?: {
@@ -22,7 +28,8 @@ export interface WhatsNewEntry {
 export const whatsNewEntries: WhatsNewEntry[] = [
   {
     id: 1,
-    icon: 'heartCheck',
+    icon: HeartCheckIcon,
+    systemImage: 'heart.text.square',
     titleKey: 'whats_new.health_sync.title',
     bodyKey: 'whats_new.health_sync.body',
     cta: {
@@ -33,7 +40,8 @@ export const whatsNewEntries: WhatsNewEntry[] = [
   },
   {
     id: 2,
-    icon: 'assignment',
+    icon: AssignmentIcon,
+    systemImage: 'doc.text',
     titleKey: 'whats_new.plan_files.title',
     bodyKey: 'whats_new.plan_files.body',
     cta: {
@@ -43,7 +51,8 @@ export const whatsNewEntries: WhatsNewEntry[] = [
   },
   {
     id: 3,
-    icon: 'dns',
+    icon: DnsIcon,
+    systemImage: 'server.rack',
     titleKey: 'whats_new.backends.title',
     bodyKey: 'whats_new.backends.body',
     cta: {
@@ -54,7 +63,8 @@ export const whatsNewEntries: WhatsNewEntry[] = [
   },
   {
     id: 4,
-    icon: 'podcasts',
+    icon: PodcastsIcon,
+    systemImage: 'dot.radiowaves.left.and.right',
     titleKey: 'whats_new.live_workouts.title',
     bodyKey: 'whats_new.live_workouts.body',
     cta: {

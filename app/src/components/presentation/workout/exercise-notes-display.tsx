@@ -1,20 +1,27 @@
 import { AccordionItem } from '@/components/presentation/foundation/accordion-item';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import { spacing } from '@/hooks/useAppTheme';
 import { RecordedExercise } from '@/models/session-models';
 import { useAppSelector } from '@/store';
 import { useCallback, useState } from 'react';
 import { View } from 'react-native';
-import { Card, Divider, Text } from 'react-native-paper';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Divider } from '@/components/presentation/foundation/divider';
+import { useTranslate } from '@tolgee/react';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import UnfoldLessIcon from '@expo/material-symbols/unfold_less.xml';
+import UnfoldMoreIcon from '@expo/material-symbols/unfold_more.xml';
 
 interface ExerciseNotesDisplayProps {
   exercise: RecordedExercise;
   previousExercise: RecordedExercise | undefined;
 }
 export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
+  const { t } = useTranslate();
   const expandByDefault = useAppSelector((x) => x.settings.notesExpandedByDefault);
   const notes = props.exercise.notes ?? '';
-  const blueprintNotes = props.exercise.blueprint.notes ?? '';
+  const showPlanNotes = useAppSelector((x) => x.settings.showPlanNotesInWorkout);
+  const blueprintNotes = showPlanNotes ? (props.exercise.blueprint.notes ?? '') : '';
   const previousNotes = props.previousExercise?.notes ? 'Last time: ' + props.previousExercise.notes : '';
   const [expanded, setExpanded] = useState(expandByDefault);
   const [maxNumberOfLines, setMaxNumberOfLines] = useState(expandByDefault ? undefined : 1);
@@ -41,21 +48,21 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
     return (
       <>
         {renderNotes && (
-          <Text testID="exercise-notes" numberOfLines={maxNumberOfLines}>
+          <AppText testID="exercise-notes" numberOfLines={maxNumberOfLines}>
             {notes}
-          </Text>
+          </AppText>
         )}
         {renderNotes && (renderPreviousNotes || renderBlueprintNotes) && <Divider />}
         {renderBlueprintNotes && (
-          <Text testID="exercise-blueprint-notes" numberOfLines={maxNumberOfLines}>
+          <AppText testID="exercise-blueprint-notes" numberOfLines={maxNumberOfLines}>
             {blueprintNotes}
-          </Text>
+          </AppText>
         )}
         {renderPreviousNotes && renderBlueprintNotes && <Divider />}
         {renderPreviousNotes && (
-          <Text testID="exercise-previous-notes" numberOfLines={maxNumberOfLines}>
+          <AppText testID="exercise-previous-notes" numberOfLines={maxNumberOfLines}>
             {previousNotes}
-          </Text>
+          </AppText>
         )}
       </>
     );
@@ -64,18 +71,18 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
     return undefined;
   }
   return (
-    <Card mode="contained" style={[{ marginTop: spacing[4] }]}>
-      <Card.Content style={{ flexDirection: 'row' }}>
-        <IconButton
-          icon={expanded ? 'unfoldLess' : 'unfoldMore'}
-          style={{
-            margin: 0,
-            marginLeft: -spacing[3],
-            alignSelf: 'flex-start',
-          }}
-          animated
-          onPress={handleToggleExpanded}
-        />
+    <Card style={[{ marginTop: spacing[4] }]}>
+      <CardContent style={{ flexDirection: 'row' }}>
+        <View style={{ marginInlineStart: -spacing[3], alignSelf: 'flex-start' }}>
+          <NativeIconButton
+            icon={expanded ? UnfoldLessIcon : UnfoldMoreIcon}
+            systemImage={
+              expanded ? 'arrow.down.and.line.horizontal.and.arrow.up' : 'arrow.up.and.line.horizontal.and.arrow.down'
+            }
+            label={t(expanded ? 'generic.collapse.button' : 'generic.expand.button')}
+            onPress={handleToggleExpanded}
+          />
+        </View>
 
         <View style={{ flex: 1 }}>
           <AccordionItem
@@ -99,7 +106,7 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
             </View>
           </AccordionItem>
         </View>
-      </Card.Content>
+      </CardContent>
     </Card>
   );
 }

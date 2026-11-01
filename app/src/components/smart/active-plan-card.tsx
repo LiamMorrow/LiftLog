@@ -1,7 +1,10 @@
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import EditIcon from '@expo/material-symbols/edit.xml';
+import { Card } from '@/components/presentation/foundation/card';
 import CardActions from '@/components/presentation/foundation/card-actions';
-import IconButton from '@/components/presentation/foundation/icon-button';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import ShareIcon from '@expo/material-symbols/share.xml';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { SharedProgramBlueprint } from '@/models/feed-models';
 import { useAppSelectorWithArg } from '@/store';
@@ -10,7 +13,7 @@ import { selectProgram } from '@/store/program';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { View } from 'react-native';
-import { Card } from 'react-native-paper';
+
 import { useDispatch } from 'react-redux';
 import { ItemMenu } from './program-list-item';
 
@@ -29,7 +32,7 @@ export function ActivePlanCard({ id }: { id: string }) {
   ].join(' · ');
 
   return (
-    <Card mode="contained">
+    <Card>
       <View style={{ padding: spacing[4], gap: spacing[3] }}>
         <View
           style={{
@@ -40,27 +43,28 @@ export function ActivePlanCard({ id }: { id: string }) {
             paddingVertical: spacing[1],
           }}
         >
-          <SurfaceText font="text-xs" weight="700" style={{ letterSpacing: 1 }}>
+          <AppText variant="labelMedium" style={{ letterSpacing: 1 }}>
             {t('plan.active.label').toUpperCase()}
-          </SurfaceText>
+          </AppText>
         </View>
 
         <View style={{ gap: spacing[0.5] }}>
-          <SurfaceText font="text-3xl" numberOfLines={2}>
+          <AppText variant="headlineLarge" numberOfLines={2}>
             {program.name}
-          </SurfaceText>
-          <SurfaceText font="text-sm" style={{ opacity: 0.7 }}>
+          </AppText>
+          <AppText variant="bodyMedium" style={{ opacity: 0.7 }}>
             {summary}
-          </SurfaceText>
+          </AppText>
         </View>
       </View>
 
       <CardActions style={{ marginTop: spacing[2] }}>
-        <ItemMenu id={id} mode="contained" />
-        <IconButton
-          icon={'share'}
-          mode="contained"
-          accessibilityLabel={t('generic.share.button')}
+        <ItemMenu id={id} colors={{ content: colors.primary }} />
+        <NativeIconButton
+          icon={ShareIcon}
+          systemImage="square.and.arrow.up"
+          colors={{ content: colors.primary }}
+          label={t('generic.share.button')}
           onPress={() =>
             dispatch(
               encryptAndShare({
@@ -70,9 +74,12 @@ export function ActivePlanCard({ id }: { id: string }) {
             )
           }
         />
-        <Button mode="contained" icon={'edit'} onPress={() => push(`/settings/manage-workouts/${id}`)}>
-          {t('plan.edit.button')}
-        </Button>
+        <NativeButton
+          icon={EditIcon}
+          systemImage="pencil"
+          label={t('plan.edit.button')}
+          onPress={() => push(`/settings/manage-workouts/${id}`)}
+        />
       </CardActions>
     </Card>
   );

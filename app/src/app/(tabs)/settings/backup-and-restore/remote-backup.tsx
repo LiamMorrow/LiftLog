@@ -1,3 +1,5 @@
+import CloudUploadIcon from '@expo/material-symbols/cloud_upload.xml';
+import VpnKeyIcon from '@expo/material-symbols/vpn_key.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
 import { useAppSelector } from '@/store';
 import { executeRemoteBackup, setBackupIncludeFeedAccount } from '@/store/settings';
@@ -46,13 +48,15 @@ export default function RemoteBackupPage() {
       <SegmentedGroup>
         <SegmentListFormElement
           label={t('backends.backup.label')}
-          icon={'cloudUploadFill'}
+          icon={CloudUploadIcon}
+          systemImage="icloud.and.arrow.up.fill"
           right={<BackendPicker feature="backup" />}
         />
         <SegmentedListSwitch
           label={t('feed.backup_account.title')}
           supportingText={t('feed.backup_account.subtitle')}
-          icon={'vpnKeyFill'}
+          icon={VpnKeyIcon}
+          systemImage="key.fill"
           value={includeFeedAccount}
           onValueChange={(value) => dispatch(setBackupIncludeFeedAccount(value))}
         />

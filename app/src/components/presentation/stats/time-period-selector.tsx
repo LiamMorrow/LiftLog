@@ -1,9 +1,9 @@
 import SelectPicker, { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
 import { isLocalDateRangeEqual, LocalDateRange } from '@/models/time-models';
-import { convert, LocalDate, nativeJs, Period } from '@js-joda/core';
+import { LocalDate, Period } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
-import { DatePickerModal } from 'react-native-paper-dates';
+import { DateRangePicker } from '@/components/presentation/foundation/date-range-picker';
 
 type TimePeriodSelectorProps = {
   timePeriod: LocalDateRange | 'all-time';
@@ -66,17 +66,6 @@ export function TimePeriodSelector({ timePeriod, setTimePeriod }: TimePeriodSele
       ]
     : timeOptions;
 
-  function handleCustomRangePicked(params: { startDate: Date | undefined; endDate: Date | undefined }) {
-    setTimeRangeSelectorOpen(false);
-    if (!params.startDate || !params.endDate) {
-      return;
-    }
-    setTimePeriod({
-      from: nativeJs(params.startDate).toLocalDate(),
-      to: nativeJs(params.endDate).toLocalDate(),
-    });
-  }
-
   return (
     <>
       <SelectPicker
@@ -92,14 +81,14 @@ export function TimePeriodSelector({ timePeriod, setTimePeriod }: TimePeriodSele
         }}
       />
       {timePeriod !== 'all-time' && (
-        <DatePickerModal
-          locale="default"
-          mode="range"
+        <DateRangePicker
           visible={timeRangeSelectorOpen}
+          value={timePeriod}
           onDismiss={() => setTimeRangeSelectorOpen(false)}
-          onConfirm={handleCustomRangePicked}
-          startDate={convert(timePeriod.from).toDate()}
-          endDate={convert(timePeriod.to).toDate()}
+          onConfirm={(range) => {
+            setTimeRangeSelectorOpen(false);
+            setTimePeriod(range);
+          }}
         />
       )}
     </>

@@ -1,5 +1,6 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import Button from '@/components/presentation/foundation/button';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { latestWhatsNewId, whatsNewEntries, WhatsNewEntry } from '@/models/whats-new';
 import { useAppSelector } from '@/store';
@@ -8,7 +9,8 @@ import { T, useTranslate } from '@tolgee/react';
 import { Href, Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { View } from 'react-native';
-import { Card, Icon, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
 import { useDispatch } from 'react-redux';
 
 export default function WhatsNew() {
@@ -38,12 +40,13 @@ export default function WhatsNew() {
 
 function WhatsNewCard({ entry }: { entry: WhatsNewEntry }) {
   const { colors } = useAppTheme();
+  const { t } = useTranslate();
   const { push } = useRouter();
   const goToFeature = (route: Href) => push(route);
 
   return (
-    <Card mode="contained">
-      <Card.Content style={{ gap: spacing[2] }}>
+    <Card>
+      <CardContent style={{ gap: spacing[2] }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}>
           <View
             style={{
@@ -55,23 +58,26 @@ function WhatsNewCard({ entry }: { entry: WhatsNewEntry }) {
               backgroundColor: colors.secondaryContainer,
             }}
           >
-            <Icon source={entry.icon} size={24} color={colors.onSecondaryContainer} />
+            <NativeIcon
+              icon={entry.icon}
+              systemImage={entry.systemImage}
+              size={24}
+              color={colors.onSecondaryContainer}
+            />
           </View>
-          <Text variant="titleMedium" style={{ flexShrink: 1 }}>
+          <AppText variant="titleMedium" style={{ flexShrink: 1 }}>
             <T keyName={entry.titleKey} />
-          </Text>
+          </AppText>
         </View>
-        <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant }}>
+        <AppText variant="bodyMedium" style={{ color: colors.onSurfaceVariant }}>
           <T keyName={entry.bodyKey} />
-        </Text>
+        </AppText>
         {entry.cta && (
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-            <Button mode="text" onPress={() => goToFeature(entry.cta!.route)}>
-              {entry.cta.labelKey && <T keyName={entry.cta.labelKey} />}
-            </Button>
+            <NativeButton variant="text" label={t(entry.cta.labelKey)} onPress={() => goToFeature(entry.cta!.route)} />
           </View>
         )}
-      </Card.Content>
+      </CardContent>
     </Card>
   );
 }

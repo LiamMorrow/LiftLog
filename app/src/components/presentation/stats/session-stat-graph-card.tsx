@@ -4,10 +4,9 @@ import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 import { View } from 'react-native';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useState } from 'react';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { useTranslate } from '@tolgee/react';
 import { lineGraphProps } from '@/components/presentation/stats/line-graph-props';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { Weight } from '@/models/weight';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
@@ -50,9 +49,9 @@ export default function SessionStatGraphCard(props: { sessionStats: OptionalStat
   }
   return (
     <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)} style={{ gap: spacing[2] }} testID="session-stat-card">
-      <SurfaceText font="text-2xl" style={{ textAlign: 'center' }}>
+      <AppText variant="headlineSmall" style={{ textAlign: 'center' }}>
         {t('workout.sessions.title')}
-      </SurfaceText>
+      </AppText>
       <LineChart
         dataSet={points.map((x, i) => ({
           data: x,
@@ -91,7 +90,7 @@ export default function SessionStatGraphCard(props: { sessionStats: OptionalStat
                 marginRight: 6,
               }}
             />
-            <Text style={{ color: colors.onSurface }}>{item.key}</Text>
+            <AppText style={{ color: colors.onSurface }}>{item.key}</AppText>
           </View>
         ))}
       </View>

@@ -1,3 +1,4 @@
+import { spacing } from '@/hooks/useAppTheme';
 import { Remote } from '@/components/presentation/foundation/remote';
 import { WeightedExerciseListSearcher } from '@/components/presentation/stats/weighted-exercise-list-searcher';
 import { useHeaderInset } from '@/hooks/useHeaderInset';
@@ -26,7 +27,7 @@ export default function ExerciseListPage() {
   return (
     <SafeAreaView
       edges={{ bottom: 'additive', left: 'additive', right: 'additive', top: 'off' }}
-      style={{ flex: 1, paddingTop: headerInset }}
+      style={{ flex: 1, paddingTop: headerInset + spacing.pageVerticalMargin }}
     >
       <Stack.Screen
         options={{

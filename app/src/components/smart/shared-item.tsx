@@ -1,8 +1,8 @@
 import CardList from '@/components/presentation/foundation/card-list';
+import { CardContent } from '@/components/presentation/foundation/card';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import AssignmentAddIcon from '@expo/material-symbols/assignment_add.xml';
 import PlayCircleIcon from '@expo/material-symbols/play_circle.xml';
@@ -12,7 +12,8 @@ import { addProgramSession, savePlan } from '@/store/program';
 import { showSnackbar } from '@/store/app';
 import { T, useTranslate } from '@tolgee/react';
 import { View } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+
 import { useDispatch } from 'react-redux';
 import { uuid } from '@/utils/uuid';
 import { useRouter } from 'expo-router';
@@ -39,32 +40,31 @@ function SharedProgramBlueprintContent({ sharedItem }: { sharedItem: SharedProgr
     <View style={{ padding: spacing.pageHorizontalMargin, gap: spacing[2] }}>
       {/* Header section */}
       <View>
-        <Text variant="titleLarge">{program.name}</Text>
-        <Text variant="bodyMedium" style={{ opacity: 0.7 }}>
+        <AppText variant="titleLarge">{program.name}</AppText>
+        <AppText variant="bodyMedium" style={{ opacity: 0.7 }}>
           {program.sessions.length} {program.sessions.length === 1 ? 'workout' : 'workouts'}
-        </Text>
+        </AppText>
       </View>
 
       <View style={{ flex: 1, gap: spacing[2] }}>
-        <Text variant="titleMedium">
+        <AppText variant="titleMedium">
           <T keyName="workout.all.title" />
-        </Text>
+        </AppText>
         <CardList
-          cardType="contained"
           items={sessions}
           renderItemContent={(session) => (
-            <Card.Content>
+            <CardContent>
               <SplitCardControl
                 titleContent={<SessionSummaryTitle session={session} />}
                 mainContent={<SessionSummary session={session} />}
               />
-            </Card.Content>
+            </CardContent>
           )}
           keySelector={(session) => session.id}
           emptyTemplate={
-            <SurfaceText>
+            <AppText variant="bodyLarge">
               <T keyName="workout.no_workouts_in_plan.message" />
-            </SurfaceText>
+            </AppText>
           }
         />
       </View>
@@ -120,7 +120,7 @@ function SharedSessionActions({ sharedItem }: { sharedItem: SharedSession }) {
   const { t } = useTranslate();
   const activeProgramId = useAppSelector((x) => x.program.activePlanId);
   const { push } = useRouter();
-  const { start, confirmationDialog } = useStartWorkoutWithConfirmation();
+  const { start } = useStartWorkoutWithConfirmation();
 
   const saveToPlan = () => {
     dispatch(
@@ -133,26 +133,23 @@ function SharedSessionActions({ sharedItem }: { sharedItem: SharedSession }) {
   };
 
   return (
-    <>
-      {confirmationDialog}
-      <PageActions
-        primaryKind="commit"
-        primary={{
-          label: t('feed.shared_session.start_workout.button'),
-          icon: PlayCircleIcon,
-          systemImage: 'play.circle',
-          onPress: () => start(session.with({ id: uuid() })),
-        }}
-        secondary={[
-          {
-            label: t('feed.shared_session.save_to_plan.button'),
-            icon: AssignmentAddIcon,
-            systemImage: 'plus',
-            onPress: saveToPlan,
-          },
-        ]}
-      />
-    </>
+    <PageActions
+      primaryKind="commit"
+      primary={{
+        label: t('feed.shared_session.start_workout.button'),
+        icon: PlayCircleIcon,
+        systemImage: 'play.circle',
+        onPress: () => start(session.with({ id: uuid() })),
+      }}
+      secondary={[
+        {
+          label: t('feed.shared_session.save_to_plan.button'),
+          icon: AssignmentAddIcon,
+          systemImage: 'plus',
+          onPress: saveToPlan,
+        },
+      ]}
+    />
   );
 }
 
@@ -176,7 +173,7 @@ export default function SharedItemComponent({ sharedItem }: SharedItemProps) {
   // Fallback for future shared item types
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <SurfaceText>Unsupported shared item type</SurfaceText>
+      <AppText variant="bodyLarge">Unsupported shared item type</AppText>
     </View>
   );
 }

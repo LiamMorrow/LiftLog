@@ -1,4 +1,4 @@
-import { ScrollProvider, useScroll } from '@/hooks/useScrollListener';
+import { ScrollProvider, useScrolledRoutes } from '@/hooks/useScrollListener';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { headerOverlapsContent } from '@/hooks/useHeaderInset';
 import { Stack } from 'expo-router';
@@ -13,12 +13,12 @@ export default function StackWithHeader(props: { children?: ReactNode }) {
 }
 
 function ScrollAwareStack({ children }: { children?: ReactNode }) {
-  const { isScrolled } = useScroll();
+  const scrolledRoutes = useScrolledRoutes();
   const { colors } = useAppTheme();
 
   return (
     <Stack
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerShadowVisible: false,
         headerBackButtonDisplayMode: 'minimal',
         headerTitleAlign: 'center',
@@ -30,10 +30,10 @@ function ScrollAwareStack({ children }: { children?: ReactNode }) {
         // shorter than the screen.
         headerStyle: headerOverlapsContent
           ? undefined
-          : { backgroundColor: isScrolled ? colors.surfaceContainer : colors.surface },
+          : { backgroundColor: scrolledRoutes.has(route.key) ? colors.surfaceContainer : colors.surface },
         gestureEnabled: true,
         headerTransparent: headerOverlapsContent,
-      }}
+      })}
     >
       {children}
     </Stack>

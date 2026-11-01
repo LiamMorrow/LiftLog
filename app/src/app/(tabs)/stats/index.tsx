@@ -1,5 +1,11 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import Icon from '@/components/presentation/foundation/icon';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
+import AssignmentIcon from '@expo/material-symbols/assignment.xml';
+import AvgTimeIcon from '@expo/material-symbols/avg_time.xml';
+import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
+import FunctionIcon from '@expo/material-symbols/function.xml';
+import MonitorWeightIcon from '@expo/material-symbols/monitor_weight.xml';
+import WeightIcon from '@expo/material-symbols/weight.xml';
 import { Remote } from '@/components/presentation/foundation/remote';
 import { ExerciseListSummary } from '@/components/presentation/stats/exercise-list-summary';
 import SingleValueStatisticCard from '@/components/presentation/stats/single-value-statistic-card';
@@ -17,7 +23,8 @@ import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+
 import { useDispatch } from 'react-redux';
 import { match } from 'ts-pattern';
 
@@ -67,32 +74,38 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
           <SingleValueStatisticCard
             title={t('stats.workouts_per_week.label')}
             value={formatWeeklyRate(stats.workoutsPerWeek)}
-            icon={'assignment'}
+            icon={AssignmentIcon}
+            systemImage="doc.text"
           />
           <SingleValueStatisticCard
             title={t('stats.sets_per_week.label')}
             value={formatWeeklyRate(stats.setsPerWeek)}
-            icon={'function'}
+            icon={FunctionIcon}
+            systemImage="function"
           />
           <SingleValueStatisticCard
             title={t('stats.max_weight_in_workout.label')}
             value={stats.maxWeightLiftedInAWorkout?.shortLocaleFormat(0) ?? '-'}
-            icon={'weight'}
+            icon={WeightIcon}
+            systemImage="scalemass"
           />
           <SingleValueStatisticCard
             title={t('workout.average_length.label')}
-            icon={'avgTime'}
+            icon={AvgTimeIcon}
+            systemImage="clock"
             value={formatDuration(stats.averageSessionLength, 'mins')}
           />
           <SingleValueStatisticCard
             title={t('stats.bodyweight_change.label')}
-            icon={'monitorWeight'}
+            icon={MonitorWeightIcon}
+            systemImage="figure"
             value={<BodyweightStatValue stats={stats} />}
             onPress={canShowBodyweightGraph ? () => setShowBodyweightGraph((x) => !x) : undefined}
           />
           <SingleValueStatisticCard
             title={t('stats.heaviest_lift.label')}
-            icon={'fitnessCenter'}
+            icon={FitnessCenterIcon}
+            systemImage="dumbbell"
             value={
               stats.heaviestLift
                 ? stats.heaviestLift.exerciseName + ' - ' + stats.heaviestLift.weight.shortLocaleFormat(0)
@@ -108,15 +121,14 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
           style={{ marginHorizontal: spacing.pageHorizontalMargin }}
         >
           <Card
-            mode="contained"
             style={{
               backgroundColor: colors.surfaceContainer,
               marginBottom: spacing[2],
             }}
           >
-            <Card.Content>
+            <CardContent>
               <StatisticLineChart statistics={stats.bodyweightStats} axis={loadAxis} />
-            </Card.Content>
+            </CardContent>
           </Card>
         </TitledSection>
       )}
@@ -132,7 +144,7 @@ function formatWeeklyRate(value: number) {
 function BodyweightStatValue({ stats: { bodyweightStats } }: { stats: GranularStatisticView }) {
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
   if (!showBodyweight) {
-    return <Text>-</Text>;
+    return <AppText>-</AppText>;
   }
   const currentValue = bodyweightStats.currentValue;
   const earliestValue = bodyweightStats.statistics[0]?.value ?? Weight.NIL;
@@ -141,15 +153,15 @@ function BodyweightStatValue({ stats: { bodyweightStats } }: { stats: GranularSt
     zero: change.value.isZero(),
     positive: change.value.isPositive(),
   })
-    .with({ zero: true }, () => <Icon source={'plusMinus'} size={12} />)
-    .with({ positive: true }, () => <Icon source={'plus'} size={12} />)
-    .with({ positive: false }, () => <Icon source={'minus'} size={12} />)
+    .with({ zero: true }, () => '±')
+    .with({ positive: true }, () => '+')
+    .with({ positive: false }, () => '−')
     .exhaustive();
 
   return (
-    <Text>
+    <AppText>
       {currentValue.shortLocaleFormat(0)} ({changeDirection}
       {change.abs().shortLocaleFormat(2)})
-    </Text>
+    </AppText>
   );
 }

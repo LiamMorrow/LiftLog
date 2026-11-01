@@ -1,9 +1,10 @@
 import { FloatingEmoji, FloatingEmojiLayer } from '@/components/presentation/feed/floating-emoji';
 import { PersonAvatar } from '@/components/presentation/feed/person-avatar';
 import { REVEAL_DURATION_MS } from '@/components/presentation/foundation/reveal';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import CloseIcon from '@expo/material-symbols/close.xml';
 import { ReceivedReaction } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import { useTranslate } from '@tolgee/react';
@@ -47,9 +48,9 @@ export function CheerBanner({ cheers, onDismiss }: { cheers: ReceivedReaction[];
           </View>
         ))}
       </View>
-      <SurfaceText weight="500" numberOfLines={1} style={{ flex: 1 }}>
+      <AppText variant="titleMedium" numberOfLines={1} style={{ flex: 1 }}>
         {t('workout.cheers.received.message', { names: names.join(', ') })}
-      </SurfaceText>
+      </AppText>
       <View>
         <Text style={{ fontSize: 18 }}>{emojis.join('')}</Text>
         <FloatingEmojiLayer
@@ -57,13 +58,12 @@ export function CheerBanner({ cheers, onDismiss }: { cheers: ReceivedReaction[];
           onFinished={(key) => setFloating((current) => current.filter((x) => x.key !== key))}
         />
       </View>
-      <IconButton
+      <NativeIconButton
         testID="cheer-banner-dismiss"
-        icon="close"
-        size={18}
-        style={{ margin: 0 }}
-        iconColor={colors.onSurfaceVariant}
-        accessibilityLabel={t('generic.close.button')}
+        icon={CloseIcon}
+        systemImage="xmark"
+        iconSize={18}
+        label={t('generic.close.button')}
         onPress={onDismiss}
       />
     </View>

@@ -1,4 +1,4 @@
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import SwapVert from '@expo/material-symbols/swap_vert.xml';
 import { useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
@@ -27,9 +27,7 @@ export function useReorderToolbarItem(props: { reordering: boolean; onToggle: ()
     </Stack.Toolbar.Button>
   ) : (
     <Stack.Toolbar.View key="reorder">
-      <Button mode="text" compact onPress={props.onToggle}>
-        {doneLabel}
-      </Button>
+      <NativeButton variant="text" compact label={doneLabel} onPress={props.onToggle} />
     </Stack.Toolbar.View>
   );
 }

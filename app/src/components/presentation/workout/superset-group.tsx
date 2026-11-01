@@ -1,8 +1,9 @@
 import { SectionHeader } from '@/components/presentation/foundation/section-header';
-import { font, spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { useTranslate } from '@tolgee/react';
 import { ReactNode } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 export function SupersetGroup({ children }: { children: ReactNode }) {
   const { colors } = useAppTheme();
@@ -44,7 +45,9 @@ export function SupersetBadge({ label }: { label: string }) {
         backgroundColor: colors.tertiaryContainer,
       }}
     >
-      <Text style={{ ...font['text-base'], fontWeight: 'bold', color: colors.onTertiaryContainer }}>{label}</Text>
+      <AppText variant="titleMedium" color="onTertiaryContainer">
+        {label}
+      </AppText>
     </View>
   );
 }

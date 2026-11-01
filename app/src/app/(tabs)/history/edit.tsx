@@ -5,16 +5,17 @@ import { useAppSelector } from '@/store';
 import { sessionFinished, updateStoredSession } from '@/store/stored-sessions';
 import { useSession } from '@/hooks/useSession';
 import { useFinishWorkout } from '@/hooks/useFinishWorkout';
-import { LocalDate } from '@js-joda/core';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { View } from 'react-native';
-import { DatePickerInput } from 'react-native-paper-dates';
 import { useDispatch } from 'react-redux';
 import { useOnDismiss } from '@/hooks/useOnDismiss';
 import { useStartWorkoutWithConfirmation } from '@/hooks/useStartWorkoutWithConfirmation';
 import { useTranslate } from '@tolgee/react';
 import { useRef } from 'react';
 import PlayCircle from '@expo/material-symbols/play_circle.xml';
+import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
+import { DatePicker } from '@/components/presentation/foundation/date-picker';
+import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 
 export default function HistoryEditPage() {
   const dispatch = useDispatch();
@@ -31,7 +32,7 @@ export default function HistoryEditPage() {
       dispatch(sessionFinished(sessionId));
     }
   });
-  const { start: resume, confirmationDialog } = useStartWorkoutWithConfirmation({
+  const { start: resume } = useStartWorkoutWithConfirmation({
     onStarted: () => {
       resumed.current = true;
       dismissTo('/history');
@@ -53,8 +54,6 @@ export default function HistoryEditPage() {
     return null;
   }
 
-  const jsDate = new Date(session.date.year(), session.date.month().ordinal(), session.date.dayOfMonth());
-
   return (
     <>
       <Stack.Screen
@@ -74,28 +73,28 @@ export default function HistoryEditPage() {
           },
         ]}
       />
-      {confirmationDialog}
       <SessionComponent
         session={session}
         updateSession={(update) => dispatch(updateStoredSession({ sessionId, update }))}
         showBodyweight={showBodyweight}
         header={
           <View style={{ paddingHorizontal: spacing.pageHorizontalMargin }}>
-            <DatePickerInput
-              testID="session-date-input"
-              locale="default"
-              inputMode="start"
-              onChange={(e) => {
-                if (e)
-                  dispatch(
-                    updateStoredSession({
-                      sessionId,
-                      update: (s) => s.withUpdatedDate(LocalDate.of(e.getFullYear(), e.getMonth() + 1, e.getDate())),
-                    }),
-                  );
-              }}
-              value={jsDate}
-            />
+            <SegmentedGroup>
+              <SegmentListFormElement
+                icon={CalendarMonthIcon}
+                systemImage="calendar"
+                label={t('generic.date.label')}
+                right={
+                  <DatePicker
+                    testID="session-date-input"
+                    value={session.date}
+                    onChange={(date) =>
+                      dispatch(updateStoredSession({ sessionId, update: (s) => s.withUpdatedDate(date) }))
+                    }
+                  />
+                }
+              />
+            </SegmentedGroup>
           </View>
         }
       />

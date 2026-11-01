@@ -1,5 +1,6 @@
-import Icon from '@/components/presentation/foundation/icon';
-import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import CheckIcon from '@expo/material-symbols/check.xml';
+import ContrastIcon from '@expo/material-symbols/contrast.xml';
 import { MuscleMap } from '@/components/presentation/muscles/muscle-map';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
@@ -7,8 +8,10 @@ import { selectMuscles } from '@/store/stored-sessions';
 import { T, useTranslate } from '@tolgee/react';
 import { translateExerciseMeta } from '@/utils/exercise-meta';
 import { secondaryMuscleWeight } from '@/utils/muscle-volume';
-import { View } from 'react-native';
-import { Chip, Text } from 'react-native-paper';
+import { ImageSourcePropType, View } from 'react-native';
+import { SFSymbol } from 'sf-symbols-typescript';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Chip, ChipIcon } from '@/components/presentation/foundation/chip';
 
 export default function ExerciseMuscleSelector(props: {
   muscles: string[];
@@ -37,13 +40,13 @@ export default function ExerciseMuscleSelector(props: {
 
   return (
     <View style={{ gap: spacing[2] }}>
-      <Text variant="labelLarge">
+      <AppText variant="labelLarge">
         <T keyName="muscles.muscle.label" />
-      </Text>
+      </AppText>
       {canMarkSecondary && (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing[4] }}>
-          <KeyItem icon="check" label={t('muscles.primary.label')} />
-          <KeyItem icon="contrast" label={t('muscles.secondary.label')} />
+          <KeyItem icon={CheckIcon} systemImage="checkmark" label={t('muscles.primary.label')} />
+          <KeyItem icon={ContrastIcon} systemImage="circle.lefthalf.filled" label={t('muscles.secondary.label')} />
         </View>
       )}
       <View
@@ -55,15 +58,15 @@ export default function ExerciseMuscleSelector(props: {
       >
         {muscleList.map((x) => {
           const isSecondary = secondaryMuscles.includes(x);
+          const icon: ChipIcon = isSecondary ? { icon: ContrastIcon, systemImage: 'circle.lefthalf.filled' } : {};
           return (
             <Chip
               mode="outlined"
               key={x}
               onPress={() => toggle(x)}
-              showSelectedOverlay
               selected={muscles.includes(x)}
               showSelectedCheck={!isSecondary}
-              icon={isSecondary ? 'contrast' : undefined}
+              {...icon}
               testID={`exercise-muscle-chip`}
             >
               {translateExerciseMeta(t, 'muscle', x)}
@@ -83,14 +86,14 @@ export default function ExerciseMuscleSelector(props: {
   );
 }
 
-function KeyItem(props: { icon: AppIconSource; label: string }) {
+function KeyItem(props: { icon: ImageSourcePropType; systemImage: SFSymbol; label: string }) {
   const { colors } = useAppTheme();
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
-      <Icon source={props.icon} size={16} color={colors.onSurfaceVariant} />
-      <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
+      <NativeIcon icon={props.icon} systemImage={props.systemImage} size={16} color={colors.onSurfaceVariant} />
+      <AppText variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
         {props.label}
-      </Text>
+      </AppText>
     </View>
   );
 }

@@ -1,11 +1,12 @@
 import CardActions from '@/components/presentation/foundation/card-actions';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import { PersonAvatar } from '@/components/presentation/feed/person-avatar';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { Remote } from '@/components/presentation/foundation/remote';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { CreateFeedAccountCard } from '@/components/smart/create-feed-account-card';
 import { getFeedItemHref } from '@/components/smart/feed-item';
 import { getFeedSettingsHref } from '@/components/smart/feed-settings';
@@ -30,13 +31,15 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { View } from 'react-native';
-import { Card } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/button';
+
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import ShareIcon from '@expo/material-symbols/share.xml';
 import { useDispatch } from 'react-redux';
 import { LegendList, LegendListRef } from '@legendapp/list/react-native';
 import { useEffect, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import OpenInNewIcon from '@expo/material-symbols/open_in_new.xml';
 
 export default function Feed() {
   const feedItems = useFeedTimeline();
@@ -76,8 +79,9 @@ export default function Feed() {
       renderItem={({ item }) => <FeedItemRenderer feedItem={item} />}
       ItemSeparatorComponent={() => <View style={{ height: spacing[2] }}></View>}
       contentContainerStyle={{
-        padding: spacing.pageHorizontalMargin,
-        paddingBottom: insets.bottom,
+        paddingHorizontal: spacing.pageHorizontalMargin,
+        paddingTop: spacing.pageVerticalMargin,
+        paddingBottom: insets.bottom + spacing.pageVerticalMargin,
       }}
     />
   );
@@ -122,8 +126,8 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
       />
 
       {identity.publishWorkouts ? undefined : (
-        <Card mode="contained" style={{ marginBottom: spacing[2] }}>
-          <Card.Content
+        <Card style={{ marginBottom: spacing[2] }}>
+          <CardContent
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -131,33 +135,33 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
               gap: spacing[2],
             }}
           >
-            <SurfaceText color="error">
+            <AppText variant="bodyLarge" color="error">
               <T keyName="feed.not_publishing_workouts.error" />
-            </SurfaceText>
-            <Button
+            </AppText>
+            <NativeButton
+              variant="outlined"
               style={{ marginLeft: 'auto' }}
               testID="feed-fix-button"
+              label={t('generic.fix.button')}
               onPress={() => push(getFeedSettingsHref({ focus: 'publish' }))}
-              mode="outlined"
-            >
-              <T keyName="generic.fix.button" />
-            </Button>
-          </Card.Content>
+            />
+          </CardContent>
         </Card>
       )}
 
       {isAlone && (
-        <Card mode="contained" style={{ marginBottom: spacing[2] }}>
-          <Card.Content style={{ gap: spacing[2] }}>
-            <SurfaceText>
+        <Card style={{ marginBottom: spacing[2] }}>
+          <CardContent style={{ gap: spacing[2], paddingBottom: 0 }}>
+            <AppText variant="bodyLarge">
               <T keyName="feed.friends_explanation.body" />
-            </SurfaceText>
-          </Card.Content>
+            </AppText>
+          </CardContent>
           <CardActions>
-            <Button
+            <NativeButton
               testID="feed-share-button"
-              mode="contained"
-              icon={'share'}
+              icon={ShareIcon}
+              systemImage="square.and.arrow.up"
+              label={t('generic.share.button')}
               onPress={() => {
                 dispatch(
                   shareString({
@@ -166,9 +170,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
                   }),
                 );
               }}
-            >
-              <T keyName="generic.share.button" />
-            </Button>
+            />
           </CardActions>
         </Card>
       )}
@@ -189,14 +191,16 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
       const authorName = isOwnItem ? identity?.name : friends[props.feedItem.userId]?.name;
       const byline = isOwnItem ? t('feed.you.label') : (authorName ?? t('feed.anonymous_user.label'));
       return (
-        <Card mode="contained" testID="feed-view-workout">
-          <Card.Content>
+        <Card testID="feed-view-workout">
+          <CardContent>
             <SplitCardControl
               actions={
-                <IconButton
-                  mode="outlined"
+                <NativeIconButton
+                  variant="outlined"
+                  icon={OpenInNewIcon}
+                  systemImage="arrow.up.right.square"
+                  label={t('feed.view_workout.button')}
                   onPress={() => push(getFeedItemHref(props.feedItem.eventId))}
-                  icon={'openInNew'}
                 />
               }
               titleContent={
@@ -221,7 +225,7 @@ function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
             ) : (
               <ReactionBar key={props.feedItem.eventId} eventId={props.feedItem.eventId} animateOnMount />
             )}
-          </Card.Content>
+          </CardContent>
         </Card>
       );
     }

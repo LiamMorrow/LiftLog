@@ -1,9 +1,12 @@
-import IconButton from '@/components/presentation/foundation/icon-button';
+import AddIcon from '@expo/material-symbols/add.xml';
+import VpnKeyIcon from '@expo/material-symbols/vpn_key.xml';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import CloseIcon from '@expo/material-symbols/close.xml';
 import { SegmentedList, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { BackendHeader, isSecretHeader } from '@/models/backend';
 import { useTranslate } from '@tolgee/react';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 
 // A fixed length, so the list does not report how long a secret is.
 const maskedValue = '•'.repeat(12);
@@ -26,33 +29,37 @@ export function BackendHeaderEditor(props: {
         <SegmentListFormElement
           key="title"
           label={t('backends.headers.label')}
-          icon={'vpnKeyFill'}
+          icon={VpnKeyIcon}
+          systemImage="key.fill"
           supportingText={t('backends.headers.explanation')}
         />,
         ...headers.map((header, index) => (
           <SegmentListFormElement
             key={`header-${index}`}
             label={header.name}
-            icon={'vpnKey'}
+            icon={VpnKeyIcon}
+            systemImage="key"
             onPress={() => props.onEdit(index)}
-            right={
-              <IconButton
-                icon="close"
-                accessibilityLabel={t('generic.delete.button')}
+            action={
+              <NativeIconButton
+                icon={CloseIcon}
+                systemImage="xmark"
+                label={t('generic.delete.button')}
                 onPress={() => onChange(headers.filter((_, i) => i !== index))}
               />
             }
             line2={
-              <Text variant="bodySmall" numberOfLines={1} style={bodyStyle}>
+              <AppText variant="bodySmall" numberOfLines={1} style={bodyStyle}>
                 {isSecretHeader(header.name) ? maskedValue : header.value}
-              </Text>
+              </AppText>
             }
           />
         )),
         <SegmentListFormElement
           key="add"
           label={t('backends.headers.add.button')}
-          icon={'add'}
+          icon={AddIcon}
+          systemImage="plus"
           onPress={() => props.onEdit(headers.length)}
         />,
       ]}

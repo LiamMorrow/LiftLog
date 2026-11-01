@@ -1,43 +1,41 @@
-import Icon from '@/components/presentation/foundation/icon';
-import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
-import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import { Card } from '@/components/presentation/foundation/card';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';
-import { View } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { ImageSourcePropType, View } from 'react-native';
+import { SFSymbol } from 'sf-symbols-typescript';
+import { AppText } from '@/components/presentation/foundation/app-text';
 
 export default function SingleValueStatisticCard(props: {
   title: string;
   value: string | ReactNode;
-  icon: AppIconSource;
+  icon: ImageSourcePropType;
+  systemImage: SFSymbol;
   onPress?: () => void;
 }) {
   const { colors } = useAppTheme();
-  const Wrapper = props.onPress ? TouchableRipple : View;
   return (
-    <Card mode="contained" style={{ flex: 1, overflow: 'hidden' }}>
-      <Wrapper onPress={props.onPress}>
+    <Card style={{ flex: 1 }} onPress={props.onPress}>
+      <View
+        style={{
+          gap: spacing[1],
+          padding: spacing[4],
+        }}
+      >
         <View
           style={{
-            gap: spacing[1],
-            padding: spacing[4],
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: spacing[2],
           }}
         >
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: spacing[2],
-            }}
-          >
-            <Icon size={16} source={props.icon} color={colors.primary} />
-            <Text variant="labelLarge" lineBreakMode="tail" numberOfLines={1}>
-              {props.title}
-            </Text>
-          </View>
-          <Text>{props.value}</Text>
+          <NativeIcon icon={props.icon} systemImage={props.systemImage} size={16} color={colors.primary} />
+          <AppText variant="labelLarge" lineBreakMode="tail" numberOfLines={1}>
+            {props.title}
+          </AppText>
         </View>
-      </Wrapper>
+        <AppText>{props.value}</AppText>
+      </View>
     </Card>
   );
 }

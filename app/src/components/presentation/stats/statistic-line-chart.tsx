@@ -6,7 +6,7 @@ import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useEffect, useState } from 'react';
 import { lineGraphProps } from '@/components/presentation/stats/line-graph-props';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 
 export function StatisticLineChart<T>({
   statistics: { statistics, maxValue, minValue },
@@ -88,8 +88,8 @@ function FocusedDatapointLabelComponent(props: { value: string; label: string })
         borderWidth: 1,
       }}
     >
-      <Text>{props.label}</Text>
-      <Text>{props.value}</Text>
+      <AppText>{props.label}</AppText>
+      <AppText>{props.value}</AppText>
     </View>
   );
 }

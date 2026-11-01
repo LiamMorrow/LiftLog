@@ -1,3 +1,4 @@
+import DeleteIcon from '@expo/material-symbols/delete.xml';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import Form from '@/components/presentation/foundation/form';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
@@ -39,7 +40,8 @@ export default function CardioSetEditorPage() {
             <SegmentListFormElement
               testID="cardio-remove-set"
               label={t('exercise.cardio_set.remove.button')}
-              icon="delete"
+              icon={DeleteIcon}
+              systemImage="trash"
               destructive
               onPress={removeSet}
             />

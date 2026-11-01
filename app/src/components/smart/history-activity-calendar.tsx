@@ -4,10 +4,13 @@ import {
   activityMonthRowsHeight,
 } from '@/components/presentation/calendar/activity-calendar';
 import { ActivityLegend } from '@/components/presentation/calendar/activity-legend';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { useTranslate } from '@tolgee/react';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import ChevronLeftIcon from '@expo/material-symbols/chevron_left.xml';
+import ChevronRightIcon from '@expo/material-symbols/chevron_right.xml';
 import { InfinitePager } from '@/components/presentation/foundation/infinite-pager';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
-import { spacing } from '@/hooks/useAppTheme';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useToday } from '@/hooks/useToday';
 import { useAppSelector, useAppSelectorWhenFocusedWithArg } from '@/store';
@@ -35,6 +38,8 @@ export function HistoryActivityCalendar({
   onMonthChange,
   onDateToggle,
 }: HistoryActivityCalendarProps) {
+  const { t } = useTranslate();
+  const { colors } = useAppTheme();
   const formatDate = useFormatDate();
   const today = useToday();
   const firstDayOfWeek = useAppSelector((x) => x.settings.firstDayOfWeek);
@@ -47,25 +52,31 @@ export function HistoryActivityCalendar({
 
   const header = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2], height: 48 }}>
-      <SurfaceText testID="calendar-month" font="text-xl" weight="500" style={{ flex: 1 }}>
+      <AppText variant="titleLarge" testID="calendar-month" style={{ flex: 1 }}>
         {formatDate(firstOfMonth, {
           month: 'long',
           year: currentYearMonth.year() === Year.now().value() ? undefined : 'numeric',
         })}
-      </SurfaceText>
+      </AppText>
       <View style={{ flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row', gap: spacing[2] }}>
-        <IconButton
+        <NativeIconButton
           testID="calendar-nav-previous-month"
-          icon="chevronLeft"
-          mode="contained"
-          style={{ margin: 0 }}
+          icon={ChevronLeftIcon}
+          systemImage="chevron.left"
+          variant="filled"
+          colors={{ container: colors.surfaceVariant, content: colors.primary }}
+          mirrored
+          label={t('generic.previous.button')}
           onPress={() => onMonthChange(currentYearMonth.minusMonths(1))}
         />
-        <IconButton
+        <NativeIconButton
           testID="calendar-nav-next-month"
-          icon="chevronRight"
-          mode="contained"
-          style={{ margin: 0 }}
+          icon={ChevronRightIcon}
+          systemImage="chevron.right"
+          variant="filled"
+          colors={{ container: colors.surfaceVariant, content: colors.primary }}
+          mirrored
+          label={t('generic.next.button')}
           onPress={() => onMonthChange(currentYearMonth.plusMonths(1))}
           disabled={isCurrentMonth}
         />

@@ -3,12 +3,14 @@ import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { Dimensions, FlatList, I18nManager, Platform, View } from 'react-native';
+import { Dimensions, FlatList, Platform, View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
-import IconButton from '@/components/presentation/foundation/icon-button';
-import { Appbar, Tooltip } from 'react-native-paper';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import StopIcon from '@expo/material-symbols/stop.xml';
+import SendIcon from '@expo/material-symbols/send.xml';
+import Replay from '@expo/material-symbols/replay.xml';
 import { PillTextField, pillTextFieldHeight } from '@/components/presentation/foundation/pill-text-field';
 import { useAppSelector } from '@/store';
 import {
@@ -95,13 +97,13 @@ export default function AiPlanner() {
           scrollEdgeEffects: { top: 'hidden' },
           headerBlurEffect: 'systemMaterial',
           title: t('ai.planner.title'),
-          headerRight: () => (
-            <Tooltip title={t('ai.restart_chat.button')}>
-              <Appbar.Action icon={'replay'} onPress={reset}></Appbar.Action>
-            </Tooltip>
-          ),
         }}
       />
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button accessibilityLabel={t('ai.restart_chat.button')} onPress={reset}>
+          <Stack.Toolbar.Icon sf="arrow.counterclockwise" {...(Platform.OS === 'ios' ? {} : { src: Replay })} />
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
       <Animated.View style={chatStyle}>
         <FlatList<ChatMessage>
           ref={listRef}
@@ -117,6 +119,7 @@ export default function AiPlanner() {
             gap: spacing[0.5],
             paddingHorizontal: spacing.pageHorizontalMargin,
             paddingTop: COMPOSER_GAP,
+            paddingBottom: spacing.pageVerticalMargin,
           }}
           keyExtractor={(x) => x.id}
           renderItem={({ item, index }) => {
@@ -166,13 +169,22 @@ export default function AiPlanner() {
 
           <View style={{ height: pillTextFieldHeight, flexDirection: 'row', alignItems: 'center' }}>
             {isLoadingResponse && (
-              <IconButton mode="outlined" icon={'stop'} onPress={() => dispatch(stopAiGenerator())} />
+              <NativeIconButton
+                variant="outlined"
+                icon={StopIcon}
+                systemImage="stop.fill"
+                label={t('ai.stop_generating.button')}
+                onPress={() => dispatch(stopAiGenerator())}
+              />
             )}
-            <IconButton
-              mode="contained"
-              icon={'send'}
+            <NativeIconButton
+              variant="filled"
+              colors={{ container: colors.surfaceVariant, content: colors.primary }}
+              icon={SendIcon}
+              systemImage="paperplane.fill"
+              mirrored
               disabled={isOutOfDate}
-              mirrored={I18nManager.isRTL}
+              label={t('ai.send_message.button')}
               onPress={() => sendMessage(messageText)}
             />
           </View>

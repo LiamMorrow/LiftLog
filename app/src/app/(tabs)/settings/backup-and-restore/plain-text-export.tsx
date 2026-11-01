@@ -1,3 +1,4 @@
+import DescriptionIcon from '@expo/material-symbols/description.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
 import { exportPlainText, PlaintextExportFormat } from '@/store/settings';
 import { useTranslate } from '@tolgee/react';
@@ -32,7 +33,8 @@ export default function PlainTextExportPage() {
       <SegmentedGroup>
         <SegmentedListSelect
           label={t('backup.plaintext_export.format.label')}
-          icon={'descriptionFill'}
+          icon={DescriptionIcon}
+          systemImage="doc.text.fill"
           value={format}
           options={[
             { value: 'CSV', label: 'CSV' },

@@ -1,4 +1,5 @@
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import SearchIcon from '@expo/material-symbols/search.xml';
 import { spacing } from '@/hooks/useAppTheme';
 import { ExerciseBlueprint } from '@/models/blueprint-models';
 import { ExerciseDescriptor } from '@/models/exercise-models';
@@ -8,8 +9,8 @@ import { uuid } from '@/utils/uuid';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Keyboard, Pressable } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Keyboard, Pressable, View } from 'react-native';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { useDispatch } from 'react-redux';
 
 interface ExerciseSearcherProps {
@@ -41,21 +42,17 @@ export function ExerciseSearcher({ currentExercise, onSelectExercise }: Exercise
   };
 
   return (
-    <Pressable
-      testID="exercise-name"
-      accessibilityRole="button"
-      onPress={openSearch}
-      style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}
-    >
-      <Text variant="headlineMedium" style={{ flex: 1 }}>
-        {currentExercise.name}
-      </Text>
-      <IconButton
-        icon="search"
-        mode="contained-tonal"
-        accessibilityLabel={t('generic.search.button')}
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}>
+      <Pressable testID="exercise-name" accessibilityRole="button" onPress={openSearch} style={{ flex: 1 }}>
+        <AppText variant="headlineMedium">{currentExercise.name}</AppText>
+      </Pressable>
+      <NativeIconButton
+        icon={SearchIcon}
+        systemImage="magnifyingglass"
+        variant="tonal"
+        label={t('generic.search.button')}
         onPress={openSearch}
       />
-    </Pressable>
+    </View>
   );
 }

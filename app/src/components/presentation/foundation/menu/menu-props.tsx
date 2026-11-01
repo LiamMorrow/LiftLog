@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { NativeIconButtonProps } from '@/components/presentation/foundation/native-icon-button';
 import { ImageSourcePropType } from 'react-native';
 import { SFSymbol } from 'sf-symbols-typescript';
 
@@ -11,9 +11,12 @@ export interface MenuItem {
   disabled?: boolean;
 }
 
+export type MenuTrigger = Pick<
+  NativeIconButtonProps,
+  'icon' | 'systemImage' | 'label' | 'variant' | 'colors' | 'testID'
+>;
+
 export interface MenuProps {
-  trigger: (open: () => void) => ReactNode;
+  trigger: MenuTrigger;
   items: MenuItem[];
-  testID?: string;
-  size?: number;
 }

@@ -1,9 +1,8 @@
 import { PopoverProps } from './popover-props';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { useEffect, useState } from 'react';
-import { BackHandler, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { useState } from 'react';
+import { Modal, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { Portal } from 'react-native-paper';
 import Animated, { cubicBezier } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -75,31 +74,19 @@ export function Popover({ trigger, children, accessibilityLabel, width = 300 }: 
     setHeight(undefined);
   };
 
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      setAnchor(undefined);
-      setHeight(undefined);
-      return true;
-    });
-    return () => subscription.remove();
-  }, [isOpen]);
-
   const contentWidth = Math.min(width, window.width - EDGE * 2);
   const placement =
     anchor && height !== undefined ? place(anchor, contentWidth, height, window.width, insets.top + EDGE) : undefined;
 
   return (
-    <>
+    <View style={{ maxWidth: '100%' }}>
       <GestureDetector gesture={recordTouch}>
         <View ref={setTriggerView} collapsable={false} style={{ maxWidth: '100%' }}>
           {trigger(open)}
         </View>
       </GestureDetector>
       {isOpen && (
-        <Portal>
+        <Modal transparent statusBarTranslucent navigationBarTranslucent onRequestClose={close}>
           <Pressable style={StyleSheet.absoluteFill} onPress={close} accessible={false} />
           <Animated.View
             role="dialog"
@@ -140,8 +127,8 @@ export function Popover({ trigger, children, accessibilityLabel, width = 300 }: 
               />
             )}
           </Animated.View>
-        </Portal>
+        </Modal>
       )}
-    </>
+    </View>
   );
 }

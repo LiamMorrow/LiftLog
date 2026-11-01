@@ -1,8 +1,11 @@
 import { LiveChip } from '@/components/presentation/feed/live-chip';
+import { Card } from '@/components/presentation/foundation/card';
 import { PersonAvatar } from '@/components/presentation/feed/person-avatar';
-import Icon from '@/components/presentation/foundation/icon';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import ChevronRightIcon from '@expo/material-symbols/chevron_right.xml';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
+import { TitledSection } from '@/components/presentation/foundation/titled-section';
 import { getFeedItemHref } from '@/components/smart/feed-item';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { LIVE_CLOCK_INTERVAL_MS, useLiveLabel } from '@/hooks/useLiveLabel';
@@ -13,7 +16,6 @@ import { selectLiveSessions } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { View } from 'react-native';
-import { Card } from 'react-native-paper';
 
 export function TrainingNow() {
   const { t } = useTranslate();
@@ -25,16 +27,13 @@ export function TrainingNow() {
   }
 
   return (
-    <View style={{ gap: spacing[2], marginBottom: spacing[2] }}>
-      <SurfaceText font="text-sm" weight="500" color="onSurfaceVariant">
-        {t('feed.training_now.title')}
-      </SurfaceText>
-      <Card mode="contained">
+    <TitledSection title={t('feed.training_now.title')} style={{ marginBottom: spacing[6] }}>
+      <Card>
         {liveSessions.map((item, index) => (
           <TrainingNowRow key={item.id} item={item} divided={index > 0} />
         ))}
       </Card>
-    </View>
+    </TitledSection>
   );
 }
 
@@ -76,15 +75,15 @@ function TrainingNowRow({ item, divided }: { item: LiveSessionUserEvent; divided
       >
         <PersonAvatar userId={item.userId} name={name} size={40} />
         <View style={{ flex: 1, minWidth: 0 }}>
-          <SurfaceText weight="500" numberOfLines={1}>
+          <AppText variant="titleMedium" numberOfLines={1}>
             {name ?? t('feed.anonymous_user.label')}
-          </SurfaceText>
-          <SurfaceText font="text-sm" color="onSurfaceVariant" numberOfLines={1}>
+          </AppText>
+          <AppText variant="bodyMedium" color="onSurfaceVariant" numberOfLines={1}>
             {detail}
-          </SurfaceText>
+          </AppText>
         </View>
         <LiveChip label={liveLabel} />
-        <Icon source="chevronRight" size={20} color={colors.onSurfaceVariant} />
+        <NativeIcon icon={ChevronRightIcon} systemImage="chevron.right" size={20} color={colors.onSurfaceVariant} />
       </View>
     </TouchableRipple>
   );

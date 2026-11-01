@@ -1,10 +1,18 @@
-import Button from '@/components/presentation/foundation/button';
+import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
+import DescriptionIcon from '@expo/material-symbols/description.xml';
+import ForumIcon from '@expo/material-symbols/forum.xml';
+import LanguageIcon from '@expo/material-symbols/language.xml';
+import LinkIcon from '@expo/material-symbols/link.xml';
+import OpenInBrowserIcon from '@expo/material-symbols/open_in_browser.xml';
+import NotificationsIcon from '@expo/material-symbols/notifications.xml';
+import WeightIcon from '@expo/material-symbols/weight.xml';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import { Pager } from '@/components/presentation/foundation/pager';
 import { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
 import { SegmentedListSelect } from '@/components/presentation/foundation/segmented-list-select';
-import Icon from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
 import ThemeChooser from '@/components/presentation/foundation/editors/theme-chooser';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { supportedLanguages } from '@/services/tolgee';
@@ -27,12 +35,13 @@ import { DayOfWeek } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Portal, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { openUrl } from '@/utils/open-url';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { requestPermissionsAsync } from 'expo-notifications';
+import { useRouter } from 'expo-router';
 import { HealthExportSwitch, useCanExportHealth } from './health-export-switch';
 
 export function WelcomeWizard() {
@@ -72,7 +81,7 @@ export function WelcomeWizard() {
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const settings = useAppSelector((state) => state.settings);
-  const welcomeWizardCompleted = settings.welcomeWizardCompleted;
+  const { dismiss } = useRouter();
   const { colors } = useAppTheme();
   const [currentPage, setCurrentPage] = useState(0);
   const canExportHealth = useCanExportHealth();
@@ -96,6 +105,7 @@ export function WelcomeWizard() {
     } else {
       dispatch(setWelcomeWizardCompleted(true));
       dispatch(setLastSeenWhatsNewId(latestWhatsNewId));
+      dismiss();
       if (notificationsEnabled) {
         await requestPermissionsAsync();
       }
@@ -111,31 +121,33 @@ export function WelcomeWizard() {
   const renderCrashReportsPage = () => (
     <View style={styles.pageContent}>
       <View style={styles.headerSection}>
-        <Text variant="headlineMedium" style={styles.pageTitle}>
+        <AppText variant="headlineMedium" style={styles.pageTitle}>
           {t('onboarding.welcome.title')}
-        </Text>
-        <Text variant="bodyLarge" style={styles.pageSubtitle}>
+        </AppText>
+        <AppText variant="bodyLarge" style={styles.pageSubtitle}>
           {t('onboarding.welcome.subtitle')}
-        </Text>
+        </AppText>
       </View>
 
       <View style={styles.settingsSection}>
-        <Text variant="titleMedium">{t('onboarding.open_source.title')}</Text>
-        <Text variant="bodyMedium" style={styles.sectionDescription}>
+        <AppText variant="titleMedium">{t('onboarding.open_source.title')}</AppText>
+        <AppText variant="bodyMedium" style={styles.sectionDescription}>
           {t('onboarding.open_source.body')}
-        </Text>
+        </AppText>
         <SegmentedGroup>
           <SegmentListFormElement
             label={t('onboarding.open_source.button')}
-            icon={'link'}
+            icon={LinkIcon}
+            systemImage="link"
             onPress={() => openUrl('https://github.com/LiamMorrow/LiftLog')}
-            right={<Icon source="openInBrowser" size={20} />}
+            right={<NativeIcon icon={OpenInBrowserIcon} systemImage="arrow.up.right.square" size={20} />}
           />
           <SegmentListFormElement
             label={t('onboarding.privacy_policy.button')}
-            icon={'description'}
+            icon={DescriptionIcon}
+            systemImage="doc.text"
             onPress={() => openUrl('https://liftlog.online/privacy.html')}
-            right={<Icon source="openInBrowser" size={20} />}
+            right={<NativeIcon icon={OpenInBrowserIcon} systemImage="arrow.up.right.square" size={20} />}
           />
         </SegmentedGroup>
       </View>
@@ -145,26 +157,28 @@ export function WelcomeWizard() {
   const renderLocalizationPage = () => (
     <View style={styles.pageContent}>
       <View style={styles.headerSection}>
-        <Text variant="headlineMedium" style={styles.pageTitle}>
+        <AppText variant="headlineMedium" style={styles.pageTitle}>
           {t('settings.localisation.title')}
-        </Text>
-        <Text variant="bodyLarge" style={styles.pageSubtitle}>
+        </AppText>
+        <AppText variant="bodyLarge" style={styles.pageSubtitle}>
           {t('settings.localisation.subtitle')}
-        </Text>
+        </AppText>
       </View>
 
       <View style={styles.settingsSection}>
         <SegmentedGroup>
           <SegmentedListSwitch
             label={t('settings.use_imperial_units.label')}
-            icon={'weight'}
+            icon={WeightIcon}
+            systemImage="scalemass"
             supportingText={t('settings.use_imperial_units.subtitle')}
             value={settings.useImperialUnits}
             onValueChange={(value) => dispatch(setUseImperialUnits(value))}
           />
           <SegmentedListSelect
             label={t('settings.first_day_of_week.label')}
-            icon={'calendar'}
+            icon={CalendarMonthIcon}
+            systemImage="calendar"
             supportingText={t('settings.first_day_of_week.subtitle')}
             value={settings.firstDayOfWeek}
             options={daysOfWeekOptions}
@@ -172,7 +186,8 @@ export function WelcomeWizard() {
           />
           <SegmentedListSelect
             label={t('settings.set_language.button')}
-            icon={'language'}
+            icon={LanguageIcon}
+            systemImage="globe"
             supportingText={t('settings.set_language.subtitle')}
             value={settings.preferredLanguage}
             options={languageOptions}
@@ -194,33 +209,35 @@ export function WelcomeWizard() {
   const renderNotificationsAndFeedPage = () => (
     <View style={styles.pageContent}>
       <View style={styles.headerSection}>
-        <Text variant="headlineMedium" style={styles.pageTitle}>
+        <AppText variant="headlineMedium" style={styles.pageTitle}>
           {t('onboarding.notifications_and_feed.title')}
-        </Text>
-        <Text variant="bodyLarge" style={styles.pageSubtitle}>
+        </AppText>
+        <AppText variant="bodyLarge" style={styles.pageSubtitle}>
           {t('onboarding.notifications_and_feed.subtitle')}
-        </Text>
+        </AppText>
       </View>
 
       <View style={styles.settingsSection}>
-        <Text variant="titleMedium">{t('settings.notifications.title')}</Text>
+        <AppText variant="titleMedium">{t('settings.notifications.title')}</AppText>
         <SegmentedGroup>
           <SegmentedListSwitch
             label={t('rest.notifications.title')}
-            icon={'notifications'}
+            icon={NotificationsIcon}
+            systemImage="bell"
             supportingText={t('rest.notifications.subtitle')}
             value={settings.restNotifications}
             onValueChange={(value) => dispatch(setRestNotifications(value))}
           />
         </SegmentedGroup>
 
-        <Text variant="titleMedium" style={styles.topSpacing}>
+        <AppText variant="titleMedium" style={styles.topSpacing}>
           {t('feed.feed.title')}
-        </Text>
+        </AppText>
         <SegmentedGroup>
           <SegmentedListSwitch
             label={t('feed.show_feed.label')}
-            icon={'forum'}
+            icon={ForumIcon}
+            systemImage="bubble.left.and.bubble.right"
             supportingText={t('feed.show_feed.subtitle')}
             value={settings.showFeed}
             onValueChange={(value) => dispatch(setShowFeed(value))}
@@ -232,30 +249,31 @@ export function WelcomeWizard() {
   );
 
   return (
-    !welcomeWizardCompleted && (
-      <Portal>
-        <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface }}>
-          <View style={[styles.container]}>
-            <Pager fill page={currentPage} onPageChange={setCurrentPage}>
-              {renderCrashReportsPage()}
-              {renderLocalizationPage()}
-              {renderNotificationsAndFeedPage()}
-            </Pager>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface }}>
+      <View style={[styles.container]}>
+        <Pager fill page={currentPage} onPageChange={setCurrentPage}>
+          {renderCrashReportsPage()}
+          {renderLocalizationPage()}
+          {renderNotificationsAndFeedPage()}
+        </Pager>
 
-            <View style={styles.footer}>
-              <View style={styles.buttonRow}>
-                <Button mode="text" onPress={handlePrevious} disabled={currentPage === 0} style={styles.button}>
-                  {t('generic.previous.button')}
-                </Button>
-                <Button mode="contained" onPress={() => void handleNext()} style={styles.button}>
-                  {currentPage === totalPages - 1 ? t('onboarding.get_started.button') : t('generic.next.button')}
-                </Button>
-              </View>
-            </View>
+        <View style={styles.footer}>
+          <View style={styles.buttonRow}>
+            <NativeButton
+              variant="text"
+              label={t('generic.previous.button')}
+              disabled={currentPage === 0}
+              onPress={handlePrevious}
+            />
+            <NativeButton
+              testID="welcome-next"
+              label={currentPage === totalPages - 1 ? t('onboarding.get_started.button') : t('generic.next.button')}
+              onPress={() => void handleNext()}
+            />
           </View>
-        </SafeAreaView>
-      </Portal>
-    )
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -265,7 +283,7 @@ const styles = StyleSheet.create({
   },
   pageContent: {
     flex: 1,
-    marginTop: spacing.pageHorizontalMargin,
+    marginTop: spacing.pageVerticalMargin,
   },
   headerSection: {
     marginBottom: spacing[8],
@@ -297,9 +315,7 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     gap: spacing[4],
-  },
-  button: {
-    flex: 1,
   },
 });

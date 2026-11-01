@@ -7,9 +7,11 @@ import { Duration, OffsetDateTime } from '@js-joda/core';
 import { ReactNode, useEffect, useState } from 'react';
 
 import { View } from 'react-native';
-import IconButton from '@/components/presentation/foundation/icon-button';
-import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { Text } from 'react-native-paper';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import PauseIcon from '@expo/material-symbols/pause.xml';
+import PlayArrowIcon from '@expo/material-symbols/play_arrow.xml';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import BigNumber from 'bignumber.js';
 import { useAppSelector } from '@/store';
 import { formatDuration } from '@/utils/format-duration';
@@ -203,7 +205,7 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
             testID="cardio-weight-tile"
             editorStyle={{ flexDirection: 'column', alignItems: 'stretch' }}
             onChange={(weight) => updateSet((s) => s.with({ weight }))}
-            headerAction={(value, setValue) => <NegateWeightButton weight={value} onChange={setValue} />}
+            actions={(value, setValue) => <NegateWeightButton weight={value} onChange={setValue} />}
           >
             {(value, setValue) => (
               <WeightEditor increment={BigNumber(2.5)} updateWeight={setValue} weight={value} allowNegative />
@@ -322,15 +324,20 @@ function CardioDistanceTile(props: {
 
 function CardioTimerButton(props: { isTimerRunning: boolean; onStart: () => void; onStop: () => void }) {
   const { colors } = useAppTheme();
+  const { t } = useTranslate();
   return (
-    <IconButton
+    <NativeIconButton
       testID="cardio-timer-play-pause"
-      icon={props.isTimerRunning ? 'pause' : 'playArrow'}
-      mode="contained-tonal"
+      icon={props.isTimerRunning ? PauseIcon : PlayArrowIcon}
+      systemImage={props.isTimerRunning ? 'pause.fill' : 'play.fill'}
+      variant="filled"
+      colors={
+        props.isTimerRunning
+          ? { container: colors.amber, content: colors.onAmber }
+          : { container: colors.green, content: colors.onGreen }
+      }
+      label={t(props.isTimerRunning ? 'cardio_timer.stop' : 'cardio_timer.start')}
       onPress={props.isTimerRunning ? props.onStop : props.onStart}
-      containerColor={props.isTimerRunning ? colors.amber : colors.green}
-      iconColor={props.isTimerRunning ? colors.onAmber : colors.onGreen}
-      style={{ borderRadius: rounding.roundedRectangleRadius }}
     />
   );
 }
@@ -340,14 +347,14 @@ function CardioTargetHandler(props: { target: CardioTarget }) {
   const isDistance = props.target.type === 'distance';
   return (
     <View style={{ flexDirection: 'row', gap: spacing[2] }}>
-      <Text variant="bodyLarge">
+      <AppText variant="bodyLarge">
         <T keyName={isDistance ? 'exercise.target_distance.label' : 'exercise.target_time.label'} />
-      </Text>
-      <Text variant="bodyLarge" style={{ color: colors.primary }}>
+      </AppText>
+      <AppText variant="bodyLarge" style={{ color: colors.primary }}>
         {props.target.type === 'distance'
           ? localeDisplayFormatBigNumber(props.target.value.value) + getShortUnit(props.target.value.unit)
           : formatDuration(props.target.value)}
-      </Text>
+      </AppText>
     </View>
   );
 }

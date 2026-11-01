@@ -1,6 +1,6 @@
 import { formatSessionVolume } from '@/components/presentation/summary/format-exercise-summary';
 import ItemTitle from '@/components/presentation/foundation/item-title';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { Session } from '@/models/session-models';
 import { LocalDate } from '@js-joda/core';
 import { ReactNode } from 'react';
@@ -41,9 +41,9 @@ export default function SessionSummaryTitle({
       {subtitle ? (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2], paddingTop: spacing[0.5] }}>
           {bylineLeading}
-          <SurfaceText font="text-sm" color={color} style={{ flexShrink: 1 }}>
+          <AppText variant="bodyMedium" color={color} style={{ flexShrink: 1 }}>
             {subtitle}
-          </SurfaceText>
+          </AppText>
         </View>
       ) : undefined}
     </View>

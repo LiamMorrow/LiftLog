@@ -1,9 +1,8 @@
-import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import { Popover } from '@/components/presentation/foundation/popover';
 import { SegmentedList } from '@/components/presentation/foundation/segmented-list';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { getExerciseHistoryHref } from '@/components/smart/exercise-history';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Weight } from '@/models/weight';
@@ -12,8 +11,14 @@ import { selectFeedPersonalRecords } from '@/store/activity';
 import { PersonalRecord, PersonalRecordKind } from '@/store/stats/personal-records';
 import { useOwnHistory } from '@/components/smart/own-history-provider';
 import { TranslationKey, useTranslate } from '@tolgee/react';
-import { View } from 'react-native';
-import { Icon } from 'react-native-paper';
+import { Platform, View } from 'react-native';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import { NativeIconProps } from '@/components/presentation/foundation/native-icon';
+import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
+import FunctionIcon from '@expo/material-symbols/function.xml';
+import StacksIcon from '@expo/material-symbols/stacks.xml';
+import BoltIcon from '@expo/material-symbols/bolt.xml';
+import TrophyIcon from '@expo/material-symbols/trophy.xml';
 import { useRouter } from 'expo-router';
 
 export type RecordScope = 'history' | 'feed';
@@ -23,11 +28,11 @@ export interface ScopedRecords {
   scope: RecordScope;
 }
 
-const icons: Record<PersonalRecordKind, AppIconSource> = {
-  heaviest: 'fitnessCenter',
-  oneRepMax: 'function',
-  mostReps: 'stacks',
-  bestSet: 'bolt',
+const icons: Record<PersonalRecordKind, Pick<NativeIconProps, 'icon' | 'systemImage'>> = {
+  heaviest: { icon: FitnessCenterIcon, systemImage: 'dumbbell' },
+  oneRepMax: { icon: FunctionIcon, systemImage: 'function' },
+  mostReps: { icon: StacksIcon, systemImage: 'square.stack.3d.up' },
+  bestSet: { icon: BoltIcon, systemImage: 'bolt' },
 };
 
 const labelKeys = {
@@ -101,16 +106,14 @@ function RecordRows({ records, scope }: { records: PersonalRecord[]; scope: Reco
   const { label, amount, gain } = useRecordFormat(scope);
   return records.map((record) => (
     <View key={record.kind} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
-      <Icon source={icons[record.kind]} size={16} color={colors.amber} />
-      <SurfaceText font="text-sm" style={{ flex: 1 }}>
+      <NativeIcon {...icons[record.kind]} size={16} color={colors.amber} />
+      <AppText variant="bodyMedium" style={{ flex: 1 }}>
         {label(record)}
-      </SurfaceText>
-      <SurfaceText font="text-sm" weight="bold">
-        {amount(record)}
-      </SurfaceText>
-      <SurfaceText font="text-sm" weight="500" color="amber">
+      </AppText>
+      <AppText variant="labelLarge">{amount(record)}</AppText>
+      <AppText variant="labelLarge" color="amber">
         {gain(record)}
-      </SurfaceText>
+      </AppText>
     </View>
   ));
 }
@@ -129,21 +132,21 @@ function RecordPopoverContent({
   const { exerciseName } = records[0]!;
   return (
     <View style={{ gap: spacing[2] }}>
-      <SurfaceText font="text-sm" weight="bold">
-        {exerciseName}
-      </SurfaceText>
+      <AppText variant="labelLarge">{exerciseName}</AppText>
       <RecordRows records={records} scope={scope} />
       {scope === 'history' && (
-        <Button
-          mode="text"
-          style={{ alignSelf: 'flex-end', marginBottom: -spacing[2], marginRight: -spacing[2] }}
+        <NativeButton
+          variant="text"
+          style={[
+            { alignSelf: 'flex-end' },
+            Platform.OS === 'android' && { marginBottom: -spacing[2], marginRight: -spacing[2] },
+          ]}
+          label={t('history.pr_badge.see_history.button')}
           onPress={() => {
             close();
             push(getExerciseHistoryHref({ name: exerciseName, type: 'WeightedExerciseBlueprint' }));
           }}
-        >
-          {t('history.pr_badge.see_history.button')}
-        </Button>
+        />
       )}
     </View>
   );
@@ -190,15 +193,10 @@ export function PrStrip({ records, scope }: ScopedRecords) {
                       paddingRight: spacing[3],
                     }}
                   >
-                    <Icon source="trophy" size={16} color={colors.amber} />
-                    <SurfaceText
-                      font="text-sm"
-                      weight="500"
-                      numberOfLines={1}
-                      style={{ flexShrink: 1, marginLeft: spacing[0.5] }}
-                    >
+                    <NativeIcon icon={TrophyIcon} systemImage="trophy" size={16} color={colors.amber} />
+                    <AppText variant="labelLarge" numberOfLines={1} style={{ flexShrink: 1, marginLeft: spacing[0.5] }}>
                       {exerciseName}
-                    </SurfaceText>
+                    </AppText>
                   </View>
                 </TouchableRipple>
               </View>
@@ -252,9 +250,7 @@ export function PrRecordSegmentedList({ records, scope }: ScopedRecords) {
 function ExerciseRecords({ records, scope }: { records: PersonalRecord[]; scope: RecordScope }) {
   return (
     <View style={{ gap: spacing[1] }}>
-      <SurfaceText font="text-sm" weight="bold">
-        {records[0]!.exerciseName}
-      </SurfaceText>
+      <AppText variant="labelLarge">{records[0]!.exerciseName}</AppText>
       <RecordRows records={records} scope={scope} />
     </View>
   );

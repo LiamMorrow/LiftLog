@@ -2,19 +2,19 @@ import { useAppSelector } from '@/store';
 import { Material3Scheme, useMaterial3Theme } from '@pchmn/expo-material3-theme';
 import React, { createContext, ReactNode, useContext, useEffect } from 'react';
 import { Appearance, Platform, useColorScheme } from 'react-native';
-import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { DarkTheme, ThemeProvider as NavigationThemeProvider, DefaultTheme } from 'expo-router';
-import { MsIconSrc } from '@/components/presentation/foundation/ms-icon-source';
 import { argbFromHex, Blend, Hct, hexFromArgb } from '@material/material-color-utilities';
 
 export const rounding = {
   roundedRectangleRadius: 10,
   roundedRectangleFocusRingRadius: 15,
   segmentedBetweenRadius: 2,
+  cardRadius: 12,
 };
 
 export const spacing = {
   pageHorizontalMargin: 16, // spacing[4]
+  pageVerticalMargin: 4, // spacing[1]
   0: 0,
   0.5: 2,
   1: 4,
@@ -45,47 +45,6 @@ export const spacing = {
   60: 240,
   64: 256,
 } as const;
-
-export const font = {
-  'text-2xs': {
-    fontSize: 10,
-    lineHeight: 14,
-  },
-  'text-xs': {
-    fontSize: 12,
-    lineHeight: 16,
-  },
-  'text-sm': {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  'text-base': {
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  'text-lg': {
-    fontSize: 18,
-    lineHeight: 28,
-  },
-  'text-xl': {
-    fontSize: 20,
-    lineHeight: 28,
-  },
-  'text-2xl': {
-    fontSize: 24,
-    lineHeight: 32,
-  },
-  'text-3xl': {
-    fontSize: 30,
-    lineHeight: 40,
-  },
-  'text-4xl': {
-    fontSize: 40,
-    lineHeight: 50,
-  },
-} as const;
-
-export type FontChoice = keyof typeof font;
 
 type ColorPair<T extends string> = { [k in T | `on${Capitalize<T>}`]: string };
 
@@ -191,7 +150,6 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) 
   }, [colorSchemeSeed]);
   const schemedTheme = colorScheme === 'dark' ? newTheme.dark : newTheme.light;
 
-  const paperTheme = isDark ? { ...MD3DarkTheme, colors: newTheme.dark } : { ...MD3LightTheme, colors: newTheme.light };
   /* The seedColor is passed into the expo ui host to and is platform dependent
    * On android, the seedColor is used to generate the tonal pallette, and therefore should be the same as the source color.
    * If it is undefined, it will use the system's theme which matches our useMaterialTheme pallette in that case.
@@ -229,25 +187,18 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) 
   const navigationTheme = {
     ...baseNavigationThem,
     colors: {
-      background: paperTheme.colors.background,
-      border: paperTheme.colors.outline,
-      card: paperTheme.colors.surfaceContainer,
-      notification: paperTheme.colors.surface,
-      primary: paperTheme.colors.primary,
-      text: paperTheme.colors.onSurface,
+      background: schemedTheme.background,
+      border: schemedTheme.outline,
+      card: schemedTheme.surfaceContainer,
+      notification: schemedTheme.surface,
+      primary: schemedTheme.primary,
+      text: schemedTheme.onSurface,
     },
   };
 
   return (
     <AppThemeContext.Provider value={appTheme}>
-      <PaperProvider
-        theme={paperTheme}
-        settings={{
-          icon: (props) => <MsIconSrc {...props} color={props.color ?? appTheme.colors.onSurface} />,
-        }}
-      >
-        <NavigationThemeProvider value={navigationTheme}>{children}</NavigationThemeProvider>
-      </PaperProvider>
+      <NavigationThemeProvider value={navigationTheme}>{children}</NavigationThemeProvider>
     </AppThemeContext.Provider>
   );
 };

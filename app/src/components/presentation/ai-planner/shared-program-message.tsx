@@ -1,4 +1,4 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { Fragment } from 'react';
 import { View } from 'react-native';
@@ -13,9 +13,9 @@ export function SharedProgramMessage({ message, isUser }: { message: AiChatShare
   const color = isUser ? 'onPrimary' : 'onSurface';
   return (
     <View style={{ gap: spacing[2] }}>
-      <SurfaceText font="text-2xl" weight={'bold'} color={color}>
+      <AppText variant="headlineSmall" color={color}>
         {message.programName}
-      </SurfaceText>
+      </AppText>
       {message.blueprint.sessions.map((s, i) => (
         <Fragment key={i}>
           <SessionSummaryTitle session={Session.getEmptySession(s, preferredWeightUnit)} color={color} />

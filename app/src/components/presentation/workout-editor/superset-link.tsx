@@ -1,4 +1,5 @@
-import Icon from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import LinkIcon from '@expo/material-symbols/link.xml';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { Pressable, View } from 'react-native';
@@ -36,7 +37,7 @@ export function SupersetLink(props: { linked: boolean; onToggle: () => void }) {
             justifyContent: 'center',
           }}
         >
-          <Icon source="link" size={14} color={colors.onTertiaryContainer} />
+          <NativeIcon icon={LinkIcon} systemImage="link" size={14} color={colors.onTertiaryContainer} />
         </Pressable>
       </View>
     );
@@ -51,7 +52,7 @@ export function SupersetLink(props: { linked: boolean; onToggle: () => void }) {
         {...accessibility}
         style={{ width: spacing[11], height: spacing[6], alignItems: 'center', justifyContent: 'center' }}
       >
-        <Icon source="link" size={16} color={colors.outline} />
+        <NativeIcon icon={LinkIcon} systemImage="link" size={16} color={colors.outline} />
       </Pressable>
     </View>
   );

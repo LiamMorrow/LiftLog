@@ -1,9 +1,11 @@
 import { showSnackbar } from '@/store/app';
-import { Card, Icon, Text } from 'react-native-paper';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import NotesIcon from '@expo/material-symbols/notes.xml';
 import { useDispatch } from 'react-redux';
 import { View } from 'react-native';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
-import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/foundation/item-list';
 import { RecordedCardioExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
@@ -26,7 +28,7 @@ import { readPreviousExercises } from '@/db/sessions';
 import { useSessionsQuery } from '@/hooks/useSessionsQuery';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import AddIcon from '@expo/material-symbols/add.xml';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { match, P } from 'ts-pattern';
 import WeightFormat from '../presentation/foundation/weight-format';
 import { formatDuration } from '@/utils/format-date';
@@ -84,34 +86,33 @@ export default function SessionComponent(props: {
 
   const notesComponent = session.blueprint.notes ? (
     <Card
-      mode="contained"
       style={{
         marginVertical: spacing[2],
         marginHorizontal: spacing.pageHorizontalMargin,
       }}
     >
-      <Card.Content
+      <CardContent
         style={{
           gap: spacing[4],
           flexDirection: 'row',
           alignItems: 'center',
         }}
       >
-        <Icon source={'text'} size={20} />
+        <NativeIcon icon={NotesIcon} systemImage="text.alignleft" size={20} />
         <View style={{ paddingRight: spacing[2] }}>
-          <SurfaceText>{session.blueprint.notes}</SurfaceText>
+          <AppText variant="bodyLarge">{session.blueprint.notes}</AppText>
         </View>
-      </Card.Content>
+      </CardContent>
     </Card>
   ) : null;
 
   const emptyInfo =
     session.recordedExercises.length === 0 ? (
       <EmptyInfo style={{ marginVertical: spacing[8] }}>
-        <SurfaceText>
+        <AppText variant="bodyLarge">
           {t('workout.contains_no_exercises.message')} {'\n'}
-        </SurfaceText>
-        <SurfaceText>{t('exercise.add_hint.body')}</SurfaceText>
+        </AppText>
+        <AppText variant="bodyLarge">{t('exercise.add_hint.body')}</AppText>
       </EmptyInfo>
     ) : null;
 
@@ -140,23 +141,15 @@ export default function SessionComponent(props: {
   };
 
   const bodyweight = props.showBodyweight ? (
-    <Card style={{ marginHorizontal: spacing.pageHorizontalMargin }} mode="contained" testID="bodyweight-card">
-      <Card.Content
+    <Card style={{ marginHorizontal: spacing.pageHorizontalMargin }} testID="bodyweight-card">
+      <CardContent
         style={{
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
       >
-        <Text
-          style={{
-            ...font['text-xl'],
-            fontWeight: 'bold',
-            color: colors.onSurface,
-          }}
-        >
-          {t('exercise.bodyweight.label')}
-        </Text>
+        <AppText variant="titleLarge">{t('exercise.bodyweight.label')}</AppText>
         <WeightDisplay
           allowNull={true}
           weight={session.bodyweight}
@@ -164,7 +157,7 @@ export default function SessionComponent(props: {
           increment={new BigNumber('0.1')}
           label={t('exercise.bodyweight.label')}
         />
-      </Card.Content>
+      </CardContent>
     </Card>
   ) : null;
 
@@ -233,11 +226,10 @@ export default function SessionComponent(props: {
 
   const workoutSummary = (
     <Card
-      mode="contained"
       onPress={isActiveWorkout ? props.openPostWorkoutSummary : undefined}
       style={{ margin: spacing.pageHorizontalMargin }}
     >
-      <Card.Content>
+      <CardContent>
         <View
           style={{
             flexDirection: 'row',
@@ -245,9 +237,9 @@ export default function SessionComponent(props: {
             alignItems: 'center',
           }}
         >
-          <Text variant="bodyMedium">
+          <AppText variant="bodyMedium">
             <T keyName="workout.total_weight_lifted.label" />
-          </Text>
+          </AppText>
           <WeightFormat fontWeight="bold" color="primary" weight={session.totalWeightLifted} decimalPlaces={0} />
         </View>
         <View
@@ -257,14 +249,14 @@ export default function SessionComponent(props: {
             alignItems: 'center',
           }}
         >
-          <Text variant="bodyMedium">
+          <AppText variant="bodyMedium">
             <T keyName="workout.total_time.label" />
-          </Text>
-          <Text variant="bodyMedium" style={{ color: colors.primary, fontWeight: 'bold' }}>
+          </AppText>
+          <AppText variant="bodyMedium" style={{ color: colors.primary, fontWeight: 'bold' }}>
             {(session.duration && formatDuration(session.duration, 'hours-mins')) || '-'}
-          </Text>
+          </AppText>
         </View>
-      </Card.Content>
+      </CardContent>
     </Card>
   );
 

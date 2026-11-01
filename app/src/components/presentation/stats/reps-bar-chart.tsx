@@ -5,7 +5,7 @@ import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { BarChart, barDataItem } from 'react-native-gifted-charts';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 
 export function RepsBarChart({ statistics: { breakdown } }: { statistics: RepsBreakdownStatistics }) {
   const { t } = useTranslate();
@@ -19,7 +19,7 @@ export function RepsBarChart({ statistics: { breakdown } }: { statistics: RepsBr
         label: numberOfReps,
         barWidth: charWidth * topLabelText.length,
         topLabelComponent: () => (
-          <Text style={{ width: 200, textAlign: 'center', pointerEvents: 'none' }}>{topLabelText}</Text>
+          <AppText style={{ width: 200, textAlign: 'center', pointerEvents: 'none' }}>{topLabelText}</AppText>
         ),
       } satisfies barDataItem;
     })

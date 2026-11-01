@@ -1,4 +1,4 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { ExerciseHistoryList } from '@/components/presentation/workout/exercise-history-list';
 import { spacing } from '@/hooks/useAppTheme';
 import { ExerciseBlueprint, MovementKey } from '@/models/blueprint-models';
@@ -16,14 +16,13 @@ export function ExerciseHistory(props: { movementKey: MovementKey; exerciseName:
 
   return (
     <SafeAreaView edges={{ left: 'additive', right: 'additive', top: 'off', bottom: 'off' }} style={{ flex: 1 }}>
-      <SurfaceText
-        font="text-xl"
-        weight="bold"
+      <AppText
+        variant="titleLarge"
         numberOfLines={1}
-        style={{ paddingHorizontal: spacing.pageHorizontalMargin, paddingTop: spacing[3] }}
+        style={{ paddingHorizontal: spacing.pageHorizontalMargin, paddingTop: spacing.pageVerticalMargin }}
       >
         {props.exerciseName}
-      </SurfaceText>
+      </AppText>
       <ExerciseHistoryList
         exercises={exercises}
         contentContainerStyle={{

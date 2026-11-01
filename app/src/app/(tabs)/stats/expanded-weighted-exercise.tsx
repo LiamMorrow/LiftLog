@@ -1,6 +1,12 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import { Remote } from '@/components/presentation/foundation/remote';
 import { RepsBarChart } from '@/components/presentation/stats/reps-bar-chart';
+import AnchorIcon from '@expo/material-symbols/anchor.xml';
+import BarChartIcon from '@expo/material-symbols/bar_chart.xml';
+import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
+import FunctionIcon from '@expo/material-symbols/function.xml';
+import WeightIcon from '@expo/material-symbols/weight.xml';
 import SingleValueStatisticCard from '@/components/presentation/stats/single-value-statistic-card';
 import { SingleValueStatisticsGrid } from '@/components/presentation/stats/single-value-statistics-grid';
 import { TimePeriodSelector } from '@/components/presentation/stats/time-period-selector';
@@ -16,7 +22,8 @@ import { Stack, useFocusEffect } from 'expo-router';
 import { useLocalSearchParams, useRouter } from 'expo-router/build/hooks';
 import { ReactNode, useEffect } from 'react';
 import { View } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+
 import { useDispatch } from 'react-redux';
 
 export default function ExpandedExercisePage() {
@@ -52,9 +59,9 @@ function LoadedStats({ stats }: { stats: WeightedExerciseStatistics | undefined 
   return stats ? (
     <LoadedStatsFilled stats={stats} />
   ) : (
-    <Text>
+    <AppText>
       <T keyName="stats.no_data.message" />
-    </Text>
+    </AppText>
   );
 }
 
@@ -87,7 +94,7 @@ function LoadedStatsFilled({ stats }: { stats: WeightedExerciseStatistics }) {
       )}
       <StatCardWithTitle title={t('stats.exercise.reps_breakdown.title')}>
         <RepsBarChart statistics={stats.repsStatistics} />
-        <Text style={{ textAlign: 'center' }}>{t('stats.exercise.reps_breakdown_sets_x_axis.label')}</Text>
+        <AppText style={{ textAlign: 'center' }}>{t('stats.exercise.reps_breakdown_sets_x_axis.label')}</AppText>
       </StatCardWithTitle>
     </View>
   );
@@ -98,12 +105,11 @@ function StatCardWithTitle(props: { title: string; children: ReactNode }) {
   return (
     <TitledSection title={props.title} style={{ marginHorizontal: spacing.pageHorizontalMargin }}>
       <Card
-        mode="contained"
         style={{
           backgroundColor: colors.surfaceContainer,
         }}
       >
-        <Card.Content style={{ paddingVertical: spacing[8] }}>{props.children}</Card.Content>
+        <CardContent style={{ paddingVertical: spacing[8] }}>{props.children}</CardContent>
       </Card>
     </TitledSection>
   );
@@ -125,13 +131,15 @@ function OverallStatsGrid({ stats }: { stats: WeightedExerciseStatistics }) {
           <SingleValueStatisticCard
             key="sets-per-week"
             title={t('stats.exercise.sets_per_week.label')}
-            icon={'function'}
+            icon={FunctionIcon}
+            systemImage="function"
             value={formatWeeklyRate(stats.setsPerWeek)}
           />,
           <SingleValueStatisticCard
             key="current"
             title={onReps ? t('stats.exercise.current_reps.label') : t('stats.exercise.current_weight.label')}
-            icon={onReps ? 'barChart' : 'weight'}
+            icon={onReps ? BarChartIcon : WeightIcon}
+            systemImage={onReps ? 'chart.bar' : 'scalemass'}
             value={
               onReps
                 ? repsAxis.format(stats.series.reps.currentValue)
@@ -141,7 +149,8 @@ function OverallStatsGrid({ stats }: { stats: WeightedExerciseStatistics }) {
           <SingleValueStatisticCard
             key="max"
             title={onReps ? t('stats.exercise.max_reps.label') : t('stats.exercise.max_weight.label')}
-            icon={'fitnessCenter'}
+            icon={FitnessCenterIcon}
+            systemImage="dumbbell"
             value={
               onReps ? repsAxis.format(stats.series.reps.maxValue) : stats.series.load.maxValue.shortLocaleFormat()
             }
@@ -150,14 +159,16 @@ function OverallStatsGrid({ stats }: { stats: WeightedExerciseStatistics }) {
             <SingleValueStatisticCard
               key="total"
               title={t('stats.exercise.total_reps.label')}
-              icon={'anchor'}
+              icon={AnchorIcon}
+              systemImage="sum"
               value={repsAxis.format(stats.series.reps.totalValue)}
             />
           ) : (
             <SingleValueStatisticCard
               key="total"
               title={t('stats.exercise.total_lifted.label')}
-              icon={'anchor'}
+              icon={AnchorIcon}
+              systemImage="sum"
               value={stats.totalVolumeStatistics.totalValue.shortLocaleFormat(0)}
             />
           ),
@@ -168,14 +179,16 @@ function OverallStatsGrid({ stats }: { stats: WeightedExerciseStatistics }) {
                 <SingleValueStatisticCard
                   key="1rm"
                   title={t('stats.exercise.estimated_1rm.label')}
-                  icon={'function'}
+                  icon={FunctionIcon}
+                  systemImage="function"
                   value={stats.max1RMPerSessionStatistics.currentValue.shortLocaleFormat(0)}
                 />,
               ]),
           <SingleValueStatisticCard
             key="rep-range"
             title={t('stats.exercise.usual_rep_range.label')}
-            icon={'barChart'}
+            icon={BarChartIcon}
+            systemImage="chart.bar"
             value={usualRepRange}
           />,
         ]}

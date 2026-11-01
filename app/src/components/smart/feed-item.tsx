@@ -1,6 +1,7 @@
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import { PersonAvatar } from '@/components/presentation/feed/person-avatar';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import SessionComponent from '@/components/smart/session-component';
 import { ReactionBar } from '@/components/smart/reaction-bar';
 import { ReactionSummary } from '@/components/smart/reaction-summary';
@@ -18,7 +19,6 @@ import { T, useTranslate } from '@tolgee/react';
 import { LocalDate } from '@js-joda/core';
 import { Href, Stack } from 'expo-router';
 import { View } from 'react-native';
-import { Card } from 'react-native-paper';
 
 export function getFeedItemHref(eventId: string): Href {
   return `/feed/item/${encodeURIComponent(eventId)}`;
@@ -67,26 +67,26 @@ export function FeedItem({ eventId }: { eventId: string }) {
         session={session}
         showBodyweight={showBodyweight && !!session.bodyweight}
         header={
-          <Card mode="contained" style={{ margin: spacing.pageHorizontalMargin }}>
-            <Card.Content>
+          <Card style={{ margin: spacing.pageHorizontalMargin }}>
+            <CardContent>
               <View style={{ gap: spacing[2] }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}>
                   <PersonAvatar userId={feedItem.userId} name={authorName} size={40} />
                   {feedItem.type === 'LiveSessionUserEvent' ? (
                     <View style={{ gap: spacing[1], flexShrink: 1 }}>
-                      <SurfaceText>
-                        <SurfaceText weight="bold">{userName}</SurfaceText> {t('feed.item.training.message')}
-                      </SurfaceText>
+                      <AppText variant="bodyLarge">
+                        <AppText variant="titleMedium">{userName}</AppText> {t('feed.item.training.message')}
+                      </AppText>
                       <LiveItemChip item={feedItem} />
                     </View>
                   ) : (
                     <View style={{ gap: spacing[1], flexShrink: 1 }}>
-                      <SurfaceText>
-                        <SurfaceText weight="bold">{userName}</SurfaceText> completed a workout
-                      </SurfaceText>
-                      <SurfaceText font="text-sm" color="onSurfaceVariant">
+                      <AppText variant="bodyLarge">
+                        <AppText variant="titleMedium">{userName}</AppText> completed a workout
+                      </AppText>
+                      <AppText variant="bodyMedium" color="onSurfaceVariant">
                         {formattedDate}
-                      </SurfaceText>
+                      </AppText>
                     </View>
                   )}
                 </View>
@@ -99,7 +99,7 @@ export function FeedItem({ eventId }: { eventId: string }) {
                   )}
                 </View>
               </View>
-            </Card.Content>
+            </CardContent>
           </Card>
         }
       />

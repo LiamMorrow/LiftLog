@@ -4,7 +4,7 @@ import { PageActions } from '@/components/presentation/foundation/page-actions';
 import CloseIcon from '@expo/material-symbols/close.xml';
 import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { MuscleVolumeList } from '@/components/presentation/muscles/muscle-volume-list';
 import { ExerciseComparisonList } from '@/components/presentation/workout/exercise-comparison-list';
 import { StatTile, StatTiles, StatValue } from '@/components/presentation/workout/stat-tiles';
@@ -30,7 +30,8 @@ import { useTranslate } from '@tolgee/react';
 import { Href, Stack, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { Icon } from 'react-native-paper';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import TrophyIcon from '@expo/material-symbols/trophy.xml';
 
 export function getPostWorkoutHref(sessionId: string): Href {
   return `/post-workout?sessionId=${encodeURIComponent(sessionId)}`;
@@ -86,9 +87,9 @@ function PostWorkoutContent({ session, previousSession }: { session: Session; pr
       <Stack.Toolbar placement="right">{streakToolbarItem}</Stack.Toolbar>
       <View testID="post-workout" style={{ gap: spacing[6], paddingTop: spacing[2], paddingBottom: spacing[12] }}>
         <View style={{ gap: spacing[4] }}>
-          <SurfaceText font="text-sm" color="onSurfaceVariant">
+          <AppText variant="bodyMedium" color="onSurfaceVariant">
             {formatDate(session.date, { weekday: 'long', day: 'numeric', month: 'long' })}
-          </SurfaceText>
+          </AppText>
           <SessionStatTiles
             session={session}
             recordCount={shownRecords.length}
@@ -170,7 +171,7 @@ function SessionStatTiles(props: { session: Session; recordCount: number; record
       label: t('workout.post_workout.records.title'),
       value: (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
-          <Icon source="trophy" size={22} color={colors.onGoldContainer} />
+          <NativeIcon icon={TrophyIcon} systemImage="trophy" size={22} color={colors.onGoldContainer} />
           <StatValue color="onGoldContainer">{props.recordCount}</StatValue>
         </View>
       ),
@@ -199,15 +200,15 @@ function MusclesWorked({ session }: { session: Session }) {
       trailing={t('workout.post_workout.muscle_sets.label')}
     >
       <MuscleVolumeList muscles={worked} />
-      <SurfaceText font="text-sm" color="onSurfaceVariant">
+      <AppText variant="bodyMedium" color="onSurfaceVariant">
         {t('workout.post_workout.secondary_muscles.body')}
-      </SurfaceText>
+      </AppText>
       {analysis.unmatchedExercises.length > 0 && (
-        <SurfaceText font="text-sm" color="onSurfaceVariant">
+        <AppText variant="bodyMedium" color="onSurfaceVariant">
           {t('workout.post_workout.unmatched_muscles.body', {
             names: analysis.unmatchedExercises.map((x) => x.name).join(', '),
           })}
-        </SurfaceText>
+        </AppText>
       )}
     </TitledSection>
   );

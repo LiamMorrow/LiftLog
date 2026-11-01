@@ -1,12 +1,13 @@
 import { Popover } from '@/components/presentation/foundation/popover';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { StreakStats } from '@/store/activity';
 import { flameIcon } from '@/components/presentation/summary/flame-icon';
 import { useStreakCopy } from '@/components/presentation/summary/streak-copy';
 import { Image, Platform, View } from 'react-native';
-import { Icon } from 'react-native-paper';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import CheckIcon from '@expo/material-symbols/check.xml';
 
 const PILL_HEIGHT = 36;
 
@@ -52,20 +53,16 @@ export function StreakPill({ stats }: StreakPillProps) {
     >
       {() => (
         <View style={{ gap: spacing[1] }}>
-          <SurfaceText font="text-lg" weight="bold">
-            {title}
-          </SurfaceText>
+          <AppText variant="titleLarge">{title}</AppText>
           {isSafe ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
-              <Icon source="check" size={16} color={colors.onSurface} />
-              <SurfaceText font="text-sm" weight="500">
-                {safeLabel}
-              </SurfaceText>
+              <NativeIcon icon={CheckIcon} systemImage="checkmark" size={16} />
+              <AppText variant="labelLarge">{safeLabel}</AppText>
             </View>
           ) : (
-            <SurfaceText font="text-sm" color="onSurfaceVariant">
+            <AppText variant="bodyMedium" color="onSurfaceVariant">
               {body}
-            </SurfaceText>
+            </AppText>
           )}
         </View>
       )}

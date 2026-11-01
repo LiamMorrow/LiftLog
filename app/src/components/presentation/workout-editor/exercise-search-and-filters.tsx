@@ -1,13 +1,17 @@
 import { AccordionItem } from '@/components/presentation/foundation/accordion-item';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import ExerciseMuscleSelector from '@/components/presentation/workout-editor/exercise-muscle-selector';
 import { spacing } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { translateExerciseMeta } from '@/utils/exercise-meta';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Card } from 'react-native-paper';
+
 import { SearchField } from '@/components/presentation/foundation/search-field';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import KeyboardArrowUpIcon from '@expo/material-symbols/keyboard_arrow_up.xml';
+import KeyboardArrowDownIcon from '@expo/material-symbols/keyboard_arrow_down.xml';
 
 export default function ExerciseSearchAndFilters({
   searchText,
@@ -40,27 +44,38 @@ export default function ExerciseSearchAndFilters({
         testID="exercise-search-input"
       />
 
-      <Card mode="contained" style={{ marginHorizontal: spacing.pageHorizontalMargin }}>
-        <Card.Title
-          title={t('generic.filters.title')}
-          subtitle={selectedFiltersSubtitle}
-          right={() => (
-            <IconButton
-              icon={filtersExpanded ? 'expandCircleUp' : 'expandCircleDown'}
-              animated
-              testID="expand-filters-btn"
-              mode="contained-tonal"
-              onPress={() => {
-                setFiltersExpanded(!filtersExpanded);
-              }}
-            />
-          )}
-        />
-        <Card.Content>
+      <Card style={{ marginHorizontal: spacing.pageHorizontalMargin }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            minHeight: 72,
+            paddingInlineStart: spacing[4],
+            paddingInlineEnd: spacing[2],
+          }}
+        >
+          <View style={{ flex: 1, paddingInlineEnd: spacing[4] }}>
+            <AppText variant="bodyLarge" numberOfLines={1}>
+              {t('generic.filters.title')}
+            </AppText>
+            <AppText variant="bodyMedium" numberOfLines={1}>
+              {selectedFiltersSubtitle}
+            </AppText>
+          </View>
+          <NativeIconButton
+            icon={filtersExpanded ? KeyboardArrowUpIcon : KeyboardArrowDownIcon}
+            systemImage={filtersExpanded ? 'chevron.up' : 'chevron.down'}
+            testID="expand-filters-btn"
+            variant="tonal"
+            label={t(filtersExpanded ? 'generic.collapse.button' : 'generic.expand.button')}
+            onPress={() => setFiltersExpanded(!filtersExpanded)}
+          />
+        </View>
+        <CardContent>
           <AccordionItem isExpanded={filtersExpanded}>
             <ExerciseMuscleSelector muscles={muscleFilters} onChange={setMuscleFilters} />
           </AccordionItem>
-        </Card.Content>
+        </CardContent>
       </Card>
     </View>
   );

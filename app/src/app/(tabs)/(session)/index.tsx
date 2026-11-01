@@ -1,11 +1,16 @@
 import CardActions from '@/components/presentation/foundation/card-actions';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import CardList from '@/components/presentation/foundation/card-list';
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import ShareIcon from '@expo/material-symbols/share.xml';
+import DeleteIcon from '@expo/material-symbols/delete.xml';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
-import NativeButton from '@/components/presentation/foundation/native-button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import PlayCircleIcon from '@expo/material-symbols/play_circle.xml';
 import EditIcon from '@expo/material-symbols/edit.xml';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import PlanMenu, { usePlanNavigation } from '@/components/smart/plan-menu';
@@ -22,14 +27,12 @@ import { encryptAndShare, publishUnpublishedSessions } from '@/store/feed';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import { executeRemoteBackup } from '@/store/settings';
 import { LocalDate } from '@js-joda/core';
-import { T, useTranslate } from '@tolgee/react';
+import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
-import { useState } from 'react';
 import { View } from 'react-native';
-import { Card, Icon as PaperIcon, Text, Tooltip } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/button';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { useDispatch } from 'react-redux';
-import { WelcomeWizard } from '@/components/smart/welcome-wizard';
+import { useMountEffect } from '@/hooks/useMountEffect';
 import { WhatsNewBanner } from '@/components/smart/whats-new-banner';
 import { SharedSession } from '@/models/feed-models';
 import { useStartWorkoutWithConfirmation } from '@/hooks/useStartWorkoutWithConfirmation';
@@ -45,12 +48,13 @@ function ListUpcomingWorkouts({
 }) {
   const plan = useAppSelector(selectActiveProgram);
   const { t } = useTranslate();
+  const { colors } = useAppTheme();
   const formatDate = useFormatDate();
   const currentSession = useAppSelectorWhenFocused(selectActiveSession);
   const planId = useAppSelector((x) => x.program.activePlanId);
   const { push } = useRouter();
   const dispatch = useDispatch();
-  const [confirmDeleteSessionOpen, setConfirmDeleteSessionOpen] = useState(false);
+  const confirm = useConfirm();
   const clearCurrentSession = () => {
     if (currentSession) {
       dispatch(deleteStoredSession(currentSession.id));
@@ -68,7 +72,6 @@ function ListUpcomingWorkouts({
 
   return (
     <View style={{ flex: 1, gap: spacing[2], paddingTop: spacing[4] }}>
-      <WelcomeWizard />
       <WhatsNewBanner />
       {currentSession && (
         <TitledSection
@@ -81,30 +84,41 @@ function ListUpcomingWorkouts({
             month: 'long',
           })}
         >
-          <Card mode="contained">
-            <Card.Content>
+          <Card>
+            <CardContent style={{ paddingBottom: 0 }}>
               <SessionCardContent session={currentSession} />
-            </Card.Content>
+            </CardContent>
             <CardActions style={{ marginTop: spacing[2] }}>
-              <Tooltip title={t('workout.share_workout.button')}>
-                <IconButton icon={'share'} mode="contained" onPress={() => handleSharePress(currentSession)} />
-              </Tooltip>
-              <Tooltip title={t('workout.clear_current.button')}>
-                <IconButton
-                  testID="clear-current-workout"
-                  icon={'delete'}
-                  mode="contained"
-                  onPress={() => setConfirmDeleteSessionOpen(true)}
-                />
-              </Tooltip>
-              <Button
-                icon={'playCircle'}
-                mode="contained"
+              <NativeIconButton
+                icon={ShareIcon}
+                systemImage="square.and.arrow.up"
+                colors={{ content: colors.primary }}
+                label={t('workout.share_workout.button')}
+                onPress={() => handleSharePress(currentSession)}
+              />
+              <NativeIconButton
+                testID="clear-current-workout"
+                icon={DeleteIcon}
+                systemImage="trash"
+                colors={{ content: colors.primary }}
+                label={t('workout.clear_current.button')}
+                onPress={() =>
+                  confirm({
+                    title: t('workout.clear_current.confirm.title'),
+                    message: t('workout.clear_current.confirm.body'),
+                    okText: t('generic.clear.button'),
+                    destructive: true,
+                    onOk: clearCurrentSession,
+                  })
+                }
+              />
+              <NativeButton
+                icon={PlayCircleIcon}
+                systemImage="play.circle"
                 testID="resume-workout-button"
+                label={t('workout.resume.button')}
                 onPress={() => startSession(currentSession)}
-              >
-                <T keyName="workout.resume.button" />
-              </Button>
+              />
             </CardActions>
           </Card>
         </TitledSection>
@@ -113,13 +127,12 @@ function ListUpcomingWorkouts({
         <TitledSection style={{ marginTop: spacing[2] }} title={t('workout.upcoming.title')} trailing={plan.name}>
           <CardList
             keySelector={(x) => x.id}
-            cardType="contained"
             items={upcoming}
             renderItemContent={(session) => {
               return (
-                <Card.Content>
+                <CardContent style={{ paddingBottom: 0 }}>
                   <SessionCardContent session={session} />
-                </Card.Content>
+                </CardContent>
               );
             }}
             renderItemActions={(session) => {
@@ -129,18 +142,29 @@ function ListUpcomingWorkouts({
               };
               return (
                 <CardActions style={{ marginTop: spacing[2] }}>
-                  <IconButton icon={'share'} mode="contained" onPress={() => handleSharePress(session)} />
+                  <NativeIconButton
+                    icon={ShareIcon}
+                    systemImage="square.and.arrow.up"
+                    colors={{ content: colors.primary }}
+                    label={t('workout.share_workout.button')}
+                    onPress={() => handleSharePress(session)}
+                  />
                   {sessionPlanIndex !== -1 ? (
-                    <IconButton icon={'edit'} mode="contained" onPress={handleEditPress} />
+                    <NativeIconButton
+                      icon={EditIcon}
+                      systemImage="pencil"
+                      colors={{ content: colors.primary }}
+                      label={t('generic.edit.button')}
+                      onPress={handleEditPress}
+                    />
                   ) : undefined}
-                  <Button
-                    mode="contained"
-                    icon={'playCircle'}
+                  <NativeButton
+                    icon={PlayCircleIcon}
+                    systemImage="play.circle"
                     testID="start-resume-workout-button"
+                    label={session.isStarted ? t('workout.resume.button') : t('workout.start.button')}
                     onPress={() => startSession(session)}
-                  >
-                    {session.isStarted ? <T keyName="workout.resume.button" /> : <T keyName="workout.start.button" />}
-                  </Button>
+                  />
                 </CardActions>
               );
             }}
@@ -149,17 +173,6 @@ function ListUpcomingWorkouts({
       ) : currentSession ? undefined : (
         <NoUpcomingWorkouts />
       )}
-      <ConfirmationDialog
-        headline={t('workout.clear_current.confirm.title')}
-        textContent={t('workout.clear_current.confirm.body')}
-        okText={t('generic.clear.button')}
-        onOk={() => {
-          clearCurrentSession();
-          setConfirmDeleteSessionOpen(false);
-        }}
-        open={confirmDeleteSessionOpen}
-        onCancel={() => setConfirmDeleteSessionOpen(false)}
-      />
     </View>
   );
 }
@@ -181,13 +194,13 @@ function NoUpcomingWorkouts() {
       }}
     >
       <View style={{ alignItems: 'center', gap: spacing[3] }}>
-        <PaperIcon source="fitnessCenter" size={40} color={colors.onSurfaceVariant} />
-        <Text variant="titleLarge" style={{ textAlign: 'center' }}>
+        <NativeIcon icon={FitnessCenterIcon} systemImage="dumbbell" size={40} color={colors.onSurfaceVariant} />
+        <AppText variant="titleLarge" style={{ textAlign: 'center' }}>
           {t('plan.no_upcoming_workouts.title')}
-        </Text>
-        <Text variant="bodyMedium" style={{ textAlign: 'center', color: colors.onSurfaceVariant }}>
+        </AppText>
+        <AppText variant="bodyMedium" style={{ textAlign: 'center', color: colors.onSurfaceVariant }}>
           {t('plan.no_upcoming_workouts.message')}
-        </Text>
+        </AppText>
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: spacing[2] }}>
         <NativeButton
@@ -217,8 +230,16 @@ export default function Index() {
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const currentBodyweight = upcomingSessions.map((x) => x.at(0)?.bodyweight).unwrapOr(undefined);
-  const { start, confirmationDialog } = useStartWorkoutWithConfirmation();
+  const { start } = useStartWorkoutWithConfirmation();
   const streakToolbarItem = useStreakToolbarItem(useStreakStats());
+  const welcomeWizardCompleted = useAppSelector((s) => s.settings.welcomeWizardCompleted);
+  const { push } = useRouter();
+
+  useMountEffect(() => {
+    if (!welcomeWizardCompleted) {
+      push('/welcome');
+    }
+  });
 
   useFocusEffect(() => {
     dispatch(fetchUpcomingSessions());
@@ -260,7 +281,6 @@ export default function Index() {
           return <ListUpcomingWorkouts startSession={start} upcoming={upcoming} />;
         }}
       />
-      {confirmationDialog}
     </FullHeightScrollView>
   );
 }

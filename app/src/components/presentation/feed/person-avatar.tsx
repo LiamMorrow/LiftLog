@@ -1,5 +1,6 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
-import Icon from '@/components/presentation/foundation/icon';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import PersonIcon from '@expo/material-symbols/person.xml';
 import { ColorChoice, useAppTheme } from '@/hooks/useAppTheme';
 import { View } from 'react-native';
 
@@ -35,15 +36,19 @@ export function PersonAvatar({ userId, name, size = DEFAULT_SIZE }: PersonAvatar
       }}
     >
       {initials ? (
-        <SurfaceText
-          font={size < 32 ? 'text-xs' : size < 64 ? 'text-base' : 'text-3xl'}
-          weight="bold"
+        <AppText
+          variant={size < 32 ? 'labelMedium' : size < 64 ? 'titleMedium' : 'headlineLarge'}
           color={`on${capitalize(color)}`}
         >
           {initials}
-        </SurfaceText>
+        </AppText>
       ) : (
-        <Icon source="person" size={size / 2} color={colors[`on${capitalize(color)}` as ColorChoice]} />
+        <NativeIcon
+          icon={PersonIcon}
+          systemImage="person.fill"
+          size={size / 2}
+          color={colors[`on${capitalize(color)}` as ColorChoice]}
+        />
       )}
     </View>
   );

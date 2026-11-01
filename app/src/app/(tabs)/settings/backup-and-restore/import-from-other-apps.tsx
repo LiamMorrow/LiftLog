@@ -1,3 +1,4 @@
+import DescriptionIcon from '@expo/material-symbols/description.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
 import { EXTERNAL_IMPORT_FORMATS } from '@/services/csv-import';
 import { ExternalImportFormat, importFromExternal } from '@/store/settings';
@@ -33,7 +34,8 @@ export default function ImportFromOtherAppsPage() {
       <SegmentedGroup>
         <SegmentedListSelect
           label={t('backup.import_from_other_apps.format.label')}
-          icon={'descriptionFill'}
+          icon={DescriptionIcon}
+          systemImage="doc.text.fill"
           value={format}
           options={EXTERNAL_IMPORT_FORMATS.map((f) => ({ value: f.id, label: t(f.labelKey) }))}
           onChange={setFormat}

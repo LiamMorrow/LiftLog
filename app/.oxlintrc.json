@@ -14,6 +14,7 @@
     "plugins",
     "scripts",
     ".expo",
+    ".rnstorybook/storybook.requires.ts",
     "expo-env.d.ts",
     "metro.config.js",
     "babel.config.js",
@@ -71,20 +72,6 @@
             "message": "Use useAppSelector from @/store"
           },
           {
-            "name": "@material-symbols-react-native/outlined-400",
-            "message": "This import does not work on android -- too big. We need to use the individual imports"
-          },
-          {
-            "name": "react-native-paper",
-            "importNames": ["IconButton", "TouchableRipple", "Button"],
-            "message": "Use our wrappers in @/components/presentation/foundation/ - they are more reliable as they use GestureHandler"
-          },
-          {
-            "name": "react-native-paper",
-            "importNames": ["TextInput", "Searchbar"],
-            "message": "Use TextField, SegmentedListTextInput, PillTextField or SearchField from @/components/presentation/foundation/"
-          },
-          {
             "name": "react-native",
             "importNames": ["TextInput"],
             "allowTypeImports": true,
@@ -96,7 +83,7 @@
   },
   "overrides": [
     {
-      "files": ["src/components/presentation/foundation/text-field.tsx"],
+      "files": ["src/components/presentation/foundation/text-field/text-field.tsx"],
       "rules": {
         "no-restricted-imports": "off"
       }

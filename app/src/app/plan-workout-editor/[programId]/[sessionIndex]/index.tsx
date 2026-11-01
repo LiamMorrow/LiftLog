@@ -1,8 +1,7 @@
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import Form from '@/components/presentation/foundation/form';
-import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import { TitledSection } from '@/components/presentation/foundation/titled-section';
 import { SegmentedGroup, SegmentedListItem } from '@/components/presentation/foundation/segmented-list';
@@ -10,11 +9,11 @@ import { SegmentedListTextInput } from '@/components/presentation/foundation/seg
 import { ExerciseBlueprintRow } from '@/components/presentation/workout-editor/exercise-blueprint-row';
 import { SupersetLink } from '@/components/presentation/workout-editor/superset-link';
 import AddIcon from '@expo/material-symbols/add.xml';
-import CopyExerciseDialog from '@/components/smart/copy-exercise-dialog';
+import { getCopyExerciseHref } from '@/components/smart/copy-exercise-picker';
 import { useReorderToolbarItem } from '@/components/smart/reorder-toolbar-item';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
-import { WeightedExerciseBlueprint, Rest, SessionBlueprint, ExerciseBlueprint } from '@/models/blueprint-models';
+import { WeightedExerciseBlueprint, Rest, SessionBlueprint } from '@/models/blueprint-models';
 import { Session } from '@/models/session-models';
 import { useAppSelector } from '@/store';
 import { ProgramSessionLocation, selectProgramSession, updateProgram } from '@/store/program';
@@ -52,8 +51,7 @@ function SessionEditor({ session, location }: { session: SessionBlueprint; locat
       }),
     );
   };
-  const [exerciseToRemove, setExerciseToRemove] = useState<ExerciseBlueprint | undefined>(undefined);
-  const [exerciseToCopy, setExerciseToCopy] = useState<ExerciseBlueprint | undefined>(undefined);
+  const confirm = useConfirm();
   const [reordering, setReordering] = useState(false);
   const reorderToolbarItem = useReorderToolbarItem({
     reordering,
@@ -183,8 +181,19 @@ function SessionEditor({ session, location }: { session: SessionBlueprint; locat
                               onEdit={() => openExerciseEditor(index)}
                               onMoveUp={() => updateSession((s) => s.withExerciseMovedUp(blueprint))}
                               onMoveDown={() => updateSession((s) => s.withExerciseMovedDown(blueprint))}
-                              onRemove={() => setExerciseToRemove(blueprint)}
-                              onCopyTo={() => setExerciseToCopy(blueprint)}
+                              onRemove={() =>
+                                confirm({
+                                  title: t('exercise.remove.confirm.title'),
+                                  message: t('exercise.remove_from_workout.confirm.body', {
+                                    exercise: blueprint.name,
+                                    session: session.name,
+                                  }),
+                                  okText: t('generic.remove.button'),
+                                  destructive: true,
+                                  onOk: () => updateSession((s) => s.withoutExercise(blueprint)),
+                                })
+                              }
+                              onCopyTo={() => push(getCopyExerciseHref({ ...location, exerciseIndex: index }))}
                             />
                           </SegmentedListItem>
                         </Fragment>
@@ -205,33 +214,6 @@ function SessionEditor({ session, location }: { session: SessionBlueprint; locat
           )}
         </TitledSection>
       </Form>
-      <ConfirmationDialog
-        headline={t('exercise.remove.confirm.title')}
-        onOk={() => {
-          const selected = exerciseToRemove;
-          setExerciseToRemove(undefined);
-          if (selected) updateSession((s) => s.withoutExercise(selected));
-        }}
-        onCancel={() => setExerciseToRemove(undefined)}
-        open={!!exerciseToRemove}
-        textContent={
-          <LimitedHtml
-            value={t('exercise.remove_from_workout.confirm.body', {
-              exercise: exerciseToRemove?.name ?? '',
-              session: session.name,
-            })}
-          />
-        }
-      />
-      {exerciseToCopy ? (
-        <CopyExerciseDialog
-          visible
-          onDismiss={() => setExerciseToCopy(undefined)}
-          exerciseBlueprint={exerciseToCopy}
-          currentSessionIndex={location.sessionIndex}
-          programId={location.programId}
-        />
-      ) : undefined}
     </FullHeightScrollView>
   );
 }

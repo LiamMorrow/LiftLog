@@ -11,15 +11,30 @@ import { SFSymbol } from 'sf-symbols-typescript';
  */
 export type NativeButtonVariant = 'filled' | 'tonal' | 'outlined' | 'text';
 
-export interface NativeButtonProps {
+/** A leading icon is given for both platforms or not at all. */
+type NativeButtonIcon =
+  | {
+      /** Android only: an XML vector drawable, e.g. `@expo/material-symbols/edit.xml`. */
+      icon: ImageSourcePropType;
+      /** iOS only. */
+      systemImage: SFSymbol;
+    }
+  | { icon?: undefined; systemImage?: undefined };
+
+export type NativeButtonProps = NativeButtonIcon & {
   label: string;
   onPress: () => void;
   variant?: NativeButtonVariant;
-  /** Android only: an XML vector drawable, e.g. `@expo/material-symbols/edit.xml`. */
-  icon?: ImageSourcePropType;
-  /** iOS only. */
-  systemImage?: SFSymbol;
   disabled?: boolean;
+  /** Shows a spinner in place of the icon and disables the button. */
+  loading?: boolean;
+  /** Tighter padding, for toolbars and other cramped spots. */
+  compact?: boolean;
+  /** For a `filled` or `tonal` button floating over content, with no surface of its own beneath it. */
+  floating?: boolean;
+  /** The label colour, for buttons drawn on a surface other than the page's. */
+  contentColor?: string;
+  testID?: string;
   /** Sizes the host the button is drawn into, not the button itself. */
   style?: StyleProp<ViewStyle>;
-}
+};

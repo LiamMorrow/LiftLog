@@ -1,7 +1,10 @@
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import ArrowUpwardIcon from '@expo/material-symbols/arrow_upward.xml';
+import ArrowDownwardIcon from '@expo/material-symbols/arrow_downward.xml';
+import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
 import Menu from '@/components/presentation/foundation/menu';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
-import CopyWorkoutDialog from '@/components/smart/copy-workout-dialog';
+import { getCopyWorkoutHref } from '@/components/smart/copy-workout-picker';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { SessionBlueprint } from '@/models/blueprint-models';
 import { useAppSelectorWithArg } from '@/store';
@@ -18,9 +21,9 @@ import ContentCopy from '@expo/material-symbols/content_copy.xml';
 import CopyAll from '@expo/material-symbols/copy_all.xml';
 import Delete from '@expo/material-symbols/delete.xml';
 import { useTranslate } from '@tolgee/react';
-import { useState } from 'react';
+import { useRouter } from 'expo-router';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { useDispatch } from 'react-redux';
 
 interface PlanWorkoutRowProps {
@@ -42,7 +45,7 @@ export function PlanWorkoutRow({
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const plan = useAppSelectorWithArg(selectProgram, programId);
-  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
+  const { push } = useRouter();
 
   const exerciseCount = sessionBlueprint.exercises.length;
   const summary = [
@@ -78,86 +81,91 @@ export function PlanWorkoutRow({
 
   return (
     <>
-      <TouchableRipple testID="plan-workout-row" onPress={reordering ? undefined : onPress}>
-        <View
-          style={{
-            minHeight: spacing[20] - spacing[2],
-            paddingVertical: spacing[2],
-            paddingLeft: spacing[4],
-            paddingRight: spacing[1],
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: spacing[4],
-          }}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingRight: spacing[1] }}>
+        <TouchableRipple
+          testID="plan-workout-row"
+          onPress={reordering ? undefined : onPress}
+          style={{ flex: 1, alignSelf: 'stretch' }}
         >
           <View
             style={{
-              width: spacing[10],
-              height: spacing[10],
-              borderRadius: rounding.roundedRectangleRadius,
-              backgroundColor: colors.surface,
+              flex: 1,
+              minHeight: spacing[20] - spacing[2],
+              paddingVertical: spacing[2],
+              paddingLeft: spacing[4],
+              paddingRight: spacing[3],
+              flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'center',
+              gap: spacing[4],
             }}
           >
-            <Text variant="titleMedium">{sessionIndex + 1}</Text>
-          </View>
-          <View style={{ flex: 1, gap: spacing[0.5] }}>
-            <Text variant="titleMedium">{sessionBlueprint.name}</Text>
-            <Text variant="bodyMedium" numberOfLines={1} style={{ color: colors.onSurfaceVariant }}>
-              {summary}
-            </Text>
-          </View>
-          {reordering ? (
-            <View style={{ flexDirection: 'row' }}>
-              <IconButton
-                icon="arrowUpward"
-                disabled={sessionIndex === 0}
-                accessibilityLabel={t('generic.move_up.button')}
-                onPress={() => dispatch(moveSessionBlueprintUpInProgram({ programId, sessionBlueprint }))}
-              />
-              <IconButton
-                icon="arrowDownward"
-                disabled={sessionIndex === plan.sessions.length - 1}
-                accessibilityLabel={t('generic.move_down.button')}
-                onPress={() => dispatch(moveSessionBlueprintDownInProgram({ programId, sessionBlueprint }))}
-              />
+            <View
+              style={{
+                width: spacing[10],
+                height: spacing[10],
+                borderRadius: rounding.roundedRectangleRadius,
+                backgroundColor: colors.surface,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <AppText variant="titleMedium">{sessionIndex + 1}</AppText>
             </View>
-          ) : (
-            <Menu
-              trigger={(open) => (
-                <IconButton icon="moreHoriz" accessibilityLabel={t('generic.more_options.button')} onPress={open} />
-              )}
-              items={[
-                {
-                  label: t('generic.duplicate.button'),
-                  icon: ContentCopy,
-                  systemImage: 'doc.on.doc',
-                  onPress: duplicateSession,
-                },
-                {
-                  label: t('exercise.copy_to.button'),
-                  icon: CopyAll,
-                  systemImage: 'doc.on.clipboard',
-                  onPress: () => setCopyDialogOpen(true),
-                },
-                {
-                  label: t('generic.remove.button'),
-                  icon: Delete,
-                  systemImage: 'trash',
-                  onPress: removeSession,
-                },
-              ]}
+            <View style={{ flex: 1, gap: spacing[0.5] }}>
+              <AppText variant="titleMedium">{sessionBlueprint.name}</AppText>
+              <AppText variant="bodyMedium" numberOfLines={1} style={{ color: colors.onSurfaceVariant }}>
+                {summary}
+              </AppText>
+            </View>
+          </View>
+        </TouchableRipple>
+        {reordering ? (
+          <View style={{ flexDirection: 'row' }}>
+            <NativeIconButton
+              icon={ArrowUpwardIcon}
+              systemImage="arrow.up"
+              disabled={sessionIndex === 0}
+              label={t('generic.move_up.button')}
+              onPress={() => dispatch(moveSessionBlueprintUpInProgram({ programId, sessionBlueprint }))}
             />
-          )}
-        </View>
-      </TouchableRipple>
-      <CopyWorkoutDialog
-        visible={copyDialogOpen}
-        onDismiss={() => setCopyDialogOpen(false)}
-        sessionBlueprint={sessionBlueprint}
-        currentProgramId={programId}
-      />
+            <NativeIconButton
+              icon={ArrowDownwardIcon}
+              systemImage="arrow.down"
+              disabled={sessionIndex === plan.sessions.length - 1}
+              label={t('generic.move_down.button')}
+              onPress={() => dispatch(moveSessionBlueprintDownInProgram({ programId, sessionBlueprint }))}
+            />
+          </View>
+        ) : (
+          <Menu
+            trigger={{
+              icon: MoreHorizIcon,
+              systemImage: 'ellipsis',
+              label: t('generic.more_options.button'),
+            }}
+            items={[
+              {
+                label: t('generic.duplicate.button'),
+                icon: ContentCopy,
+                systemImage: 'doc.on.doc',
+                onPress: duplicateSession,
+              },
+              {
+                label: t('exercise.copy_to.button'),
+                icon: CopyAll,
+                systemImage: 'doc.on.clipboard',
+                onPress: () => push(getCopyWorkoutHref({ programId, sessionIndex })),
+              },
+              {
+                label: t('generic.remove.button'),
+                icon: Delete,
+                systemImage: 'trash',
+                onPress: removeSession,
+              },
+            ]}
+          />
+        )}
+      </View>
     </>
   );
 }

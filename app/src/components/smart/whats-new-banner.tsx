@@ -1,17 +1,20 @@
-import Button from '@/components/presentation/foundation/button';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import CloseIcon from '@expo/material-symbols/close.xml';
 import { Pager } from '@/components/presentation/foundation/pager';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { latestWhatsNewId, WhatsNewEntry } from '@/models/whats-new';
 import { useAppSelector } from '@/store';
 import { selectUnseenWhatsNew, setLastSeenWhatsNewId } from '@/store/settings';
-import { T } from '@tolgee/react';
+import { T, useTranslate } from '@tolgee/react';
 import { Href, useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
-import { Icon, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
 import { shallowEqual, useDispatch } from 'react-redux';
 
 export function WhatsNewBanner() {
+  const { t } = useTranslate();
   const unseen = useAppSelector(selectUnseenWhatsNew, shallowEqual);
   const dispatch = useDispatch();
   const { colors } = useAppTheme();
@@ -30,16 +33,19 @@ export function WhatsNewBanner() {
   return (
     <View style={[styles.container, { backgroundColor: colors.tertiaryContainer }]}>
       <View style={styles.header}>
-        <Text variant="labelSmall" style={{ color: colors.onTertiaryContainer, letterSpacing: 1 }}>
+        <AppText variant="labelSmall" style={{ color: colors.onTertiaryContainer, letterSpacing: 1 }}>
           <T keyName="whats_new.eyebrow" />
-        </Text>
-        <IconButton
-          icon="close"
-          size={18}
-          onPress={dismiss}
-          iconColor={colors.onTertiaryContainer}
-          style={styles.close}
-        />
+        </AppText>
+        <View style={styles.close}>
+          <NativeIconButton
+            icon={CloseIcon}
+            systemImage="xmark"
+            iconSize={18}
+            colors={{ content: colors.onTertiaryContainer }}
+            label={t('generic.close.button')}
+            onPress={dismiss}
+          />
+        </View>
       </View>
 
       <Pager indicatorColor={colors.onTertiaryContainer} showIndicator={unseen.length > 1}>
@@ -53,24 +59,28 @@ export function WhatsNewBanner() {
 
 function Feature({ entry, onPress }: { entry: WhatsNewEntry; onPress: (route: Href) => void }) {
   const { colors } = useAppTheme();
+  const { t } = useTranslate();
   return (
     <>
       <View style={styles.featureRow}>
         <View style={[styles.iconWell, { backgroundColor: colors.tertiary }]}>
-          <Icon source={entry.icon} size={22} color={colors.onTertiary} />
+          <NativeIcon icon={entry.icon} systemImage={entry.systemImage} size={22} color={colors.onTertiary} />
         </View>
-        <Text variant="titleMedium" style={{ color: colors.onTertiaryContainer, flexShrink: 1 }}>
+        <AppText variant="titleMedium" style={{ color: colors.onTertiaryContainer, flexShrink: 1 }}>
           <T keyName={entry.titleKey} />
-        </Text>
+        </AppText>
       </View>
-      <Text variant="bodySmall" style={{ color: colors.onTertiaryContainer, marginTop: spacing[2], opacity: 0.9 }}>
+      <AppText variant="bodySmall" style={{ color: colors.onTertiaryContainer, marginTop: spacing[2], opacity: 0.9 }}>
         <T keyName={entry.bodyKey} />
-      </Text>
+      </AppText>
       {entry.cta && (
         <View style={styles.ctaRow}>
-          <Button mode="text" textColor={colors.onTertiaryContainer} onPress={() => onPress(entry.cta!.route)}>
-            <T keyName={entry.cta.labelKey} />
-          </Button>
+          <NativeButton
+            variant="text"
+            contentColor={colors.onTertiaryContainer}
+            label={t(entry.cta.labelKey)}
+            onPress={() => onPress(entry.cta!.route)}
+          />
         </View>
       )}
     </>

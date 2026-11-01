@@ -1,11 +1,13 @@
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import PersonAddIcon from '@expo/material-symbols/person_add.xml';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
 import CardActions from '@/components/presentation/foundation/card-actions';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { createFeedIdentity, selectFeedIdentityRemote } from '@/store/feed';
-import { T } from '@tolgee/react';
-import { Card } from 'react-native-paper';
+import { T, useTranslate } from '@tolgee/react';
+
 import { useDispatch } from 'react-redux';
 
 export function useCreateFeedAccount() {
@@ -26,24 +28,23 @@ export function useCreateFeedAccount() {
 
 export function CreateFeedAccountCard() {
   const { create, creating } = useCreateFeedAccount();
+  const { t } = useTranslate();
   return (
-    <Card mode="contained" style={{ marginBottom: spacing[2] }}>
-      <Card.Content>
-        <SurfaceText>
+    <Card style={{ marginBottom: spacing[2] }}>
+      <CardContent style={{ paddingBottom: 0 }}>
+        <AppText variant="bodyLarge">
           <T keyName="feed.create_account.body" />
-        </SurfaceText>
-      </Card.Content>
+        </AppText>
+      </CardContent>
       <CardActions>
-        <Button
+        <NativeButton
           testID="feed-create-account-button"
-          mode="contained"
-          icon={'personAdd'}
+          icon={PersonAddIcon}
+          systemImage="person.badge.plus"
           loading={creating}
-          disabled={creating}
+          label={t('feed.create_account.button')}
           onPress={create}
-        >
-          <T keyName="feed.create_account.button" />
-        </Button>
+        />
       </CardActions>
     </Card>
   );

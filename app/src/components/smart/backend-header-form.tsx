@@ -1,6 +1,8 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import Form from '@/components/presentation/foundation/form';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import VisibilityIcon from '@expo/material-symbols/visibility.xml';
+import VisibilityOffIcon from '@expo/material-symbols/visibility_off.xml';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListTextInput } from '@/components/presentation/foundation/segmented-list-text-input';
@@ -23,7 +25,7 @@ import { useTranslate } from '@tolgee/react';
 import { Href, Stack, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Chip } from 'react-native-paper';
+import { Chip } from '@/components/presentation/foundation/chip';
 import { useDispatch } from 'react-redux';
 
 export function getBackendHeaderFormHref(backendId: BackendId, headerIndex: number): Href {
@@ -72,9 +74,10 @@ function HeaderForm({ backend, headerIndex }: { backend: Backend; headerIndex: n
   };
 
   const revealButton = (
-    <IconButton
-      icon={revealed ? 'visibilityOff' : 'visibility'}
-      accessibilityLabel={t(revealed ? 'generic.hide.button' : 'generic.show.button')}
+    <NativeIconButton
+      icon={revealed ? VisibilityOffIcon : VisibilityIcon}
+      systemImage={revealed ? 'eye.slash' : 'eye'}
+      label={t(revealed ? 'generic.hide.button' : 'generic.show.button')}
       onPress={() => setRevealed(!revealed)}
     />
   );
@@ -113,7 +116,6 @@ function HeaderForm({ backend, headerIndex }: { backend: Backend; headerIndex: n
             {commonHeaderNames.map((suggestion) => (
               <Chip
                 key={suggestion}
-                compact
                 showSelectedCheck={false}
                 selected={name.trim().toLowerCase() === suggestion.toLowerCase()}
                 onPress={() => setName(suggestion)}

@@ -1,5 +1,11 @@
+import DeleteIcon from '@expo/material-symbols/delete.xml';
+import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
+import ForumIcon from '@expo/material-symbols/forum.xml';
+import MonitorWeightIcon from '@expo/material-symbols/monitor_weight.xml';
+import PodcastsIcon from '@expo/material-symbols/podcasts.xml';
+import ShareIcon from '@expo/material-symbols/share.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
 import { CreateFeedAccountCard } from '@/components/smart/create-feed-account-card';
 import { Remote } from '@/components/presentation/foundation/remote';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
@@ -12,7 +18,6 @@ import { getFeedQrCodeHref } from '@/components/smart/feed-qr-code';
 import { setShowFeed } from '@/store/settings';
 import { useTranslate } from '@tolgee/react';
 import { Href, useRouter } from 'expo-router';
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 export type FeedSettingsFocus = 'publish' | 'live';
@@ -42,7 +47,8 @@ export function FeedSettings({
       <SegmentedGroup>
         <SegmentedListSwitch
           testID="feed-show-feed-switch"
-          icon={'forum'}
+          icon={ForumIcon}
+          systemImage="bubble.left.and.bubble.right"
           label={t('feed.show_feed.label')}
           supportingText={lockedOn ? t('feed.show_feed.has_account.subtitle') : t('feed.show_feed.subtitle')}
           value={showFeed}
@@ -79,7 +85,7 @@ function FeedSettingsForm({
   const deleteAccount = () => {
     dispatch(resetFeedAccount({ fromUserAction: true, createNewIdentity: false }));
   };
-  const [deleteAccountDialogOpen, setDeleteAccountDialogOpen] = useState(false);
+  const confirm = useConfirm();
   return (
     <>
       <SegmentedGroup>
@@ -92,7 +98,8 @@ function FeedSettingsForm({
       </SegmentedGroup>
       <SegmentedGroup>
         <SegmentListFormElement
-          icon={'share'}
+          icon={ShareIcon}
+          systemImage="square.and.arrow.up"
           label={t('feed.share_feed.button')}
           onPress={() => push(getFeedQrCodeHref({ fromSettings }))}
         />
@@ -100,7 +107,8 @@ function FeedSettingsForm({
       <SegmentedGroup>
         <SegmentedListSwitch
           testID="feed-publish-workouts-switch"
-          icon={'fitnessCenter'}
+          icon={FitnessCenterIcon}
+          systemImage="dumbbell"
           focus={focus === 'publish'}
           label={t('feed.publish_workout.label')}
           supportingText={t('feed.publish_workout.subtitle')}
@@ -109,7 +117,8 @@ function FeedSettingsForm({
         />
         <SegmentedListSwitch
           testID="feed-share-live-workouts-switch"
-          icon={'podcasts'}
+          icon={PodcastsIcon}
+          systemImage="dot.radiowaves.left.and.right"
           focus={focus === 'live'}
           label={t('feed.share_live_workouts.label')}
           supportingText={t('feed.share_live_workouts.subtitle')}
@@ -118,7 +127,8 @@ function FeedSettingsForm({
           onValueChange={(shareLiveWorkouts) => updateProfile({ shareLiveWorkouts })}
         />
         <SegmentedListSwitch
-          icon={'monitorWeight'}
+          icon={MonitorWeightIcon}
+          systemImage="figure"
           label={t('feed.publish_bodyweight.label')}
           supportingText={t('feed.publish_bodyweight.subtitle')}
           value={identity.publishBodyweight}
@@ -127,20 +137,21 @@ function FeedSettingsForm({
       </SegmentedGroup>
       <SegmentedGroup>
         <SegmentListFormElement
-          icon={'delete'}
+          icon={DeleteIcon}
+          systemImage="trash"
           destructive
           label={t('feed.delete_account.button')}
-          onPress={() => setDeleteAccountDialogOpen(true)}
+          onPress={() =>
+            confirm({
+              title: t('feed.delete_account.button'),
+              message: t('feed.delete_account.confirm.body'),
+              okText: t('feed.delete_account.button'),
+              destructive: true,
+              onOk: deleteAccount,
+            })
+          }
         />
       </SegmentedGroup>
-      <ConfirmationDialog
-        headline={t('feed.delete_account.button')}
-        textContent={t('feed.delete_account.confirm.body')}
-        open={deleteAccountDialogOpen}
-        onOk={deleteAccount}
-        okText={t('feed.delete_account.button')}
-        onCancel={() => setDeleteAccountDialogOpen(false)}
-      />
     </>
   );
 }

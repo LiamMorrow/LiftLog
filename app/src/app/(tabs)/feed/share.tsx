@@ -2,7 +2,7 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import { Remote } from '@/components/presentation/foundation/remote';
 import { useCreateFeedAccount } from '@/components/smart/create-feed-account-card';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { SharedFeedUser } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
@@ -120,18 +120,18 @@ function AddFriendContent({ user }: { user: SharedFeedUser }) {
       }}
     >
       <PersonAvatar userId={user.id} name={user.name} size={88} />
-      <SurfaceText font="text-xl" style={{ textAlign: 'center' }}>
+      <AppText variant="titleLarge" style={{ textAlign: 'center' }}>
         <LimitedHtml value={message} />
-      </SurfaceText>
+      </AppText>
       {explanation ? (
-        <SurfaceText style={{ textAlign: 'center' }} color="onSurfaceVariant">
+        <AppText variant="bodyLarge" style={{ textAlign: 'center' }} color="onSurfaceVariant">
           <LimitedHtml value={explanation} />
-        </SurfaceText>
+        </AppText>
       ) : null}
       {needsAccount ? (
-        <SurfaceText style={{ textAlign: 'center' }} color="onSurfaceVariant">
+        <AppText variant="bodyLarge" style={{ textAlign: 'center' }} color="onSurfaceVariant">
           {t('feed.create_account.body')}
-        </SurfaceText>
+        </AppText>
       ) : null}
     </View>
   );

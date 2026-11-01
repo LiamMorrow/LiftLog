@@ -1,4 +1,5 @@
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import AddIcon from '@expo/material-symbols/add.xml';
 import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
 import { spacing } from '@/hooks/useAppTheme';
 import { useHeaderInset } from '@/hooks/useHeaderInset';
@@ -12,7 +13,7 @@ import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { List } from 'react-native-paper';
+import { ListItem } from '@/components/presentation/foundation/list-item';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 
@@ -39,7 +40,7 @@ export function ExerciseSearch(props: { requestId: string; exerciseName: string 
   return (
     <SafeAreaView
       edges={{ left: 'additive', right: 'additive', top: 'off', bottom: 'additive' }}
-      style={{ flex: 1, paddingTop: headerInset }}
+      style={{ flex: 1, paddingTop: headerInset + spacing.pageVerticalMargin }}
     >
       <Stack.Screen options={{ title: t('generic.search.button') }} />
       <LegendList
@@ -72,9 +73,9 @@ export function ExerciseSearch(props: { requestId: string; exerciseName: string 
 function ExerciseIdSearchListItem(props: { exerciseId: string; onPress: (exercise: ExerciseDescriptor) => void }) {
   const exercise = useAppSelectorWithArg(selectExerciseById, props.exerciseId);
   if (!exercise) {
-    return <List.Item title={'Unknown'} />;
+    return <ListItem title={'Unknown'} />;
   }
-  return <List.Item title={exercise.name} onPress={() => props.onPress(exercise)} />;
+  return <ListItem title={exercise.name} onPress={() => props.onPress(exercise)} />;
 }
 
 function SuggestedExerciseSearchListItem(props: {
@@ -84,16 +85,16 @@ function SuggestedExerciseSearchListItem(props: {
   const dispatch = useDispatch();
   return (
     <View style={{ padding: spacing.pageHorizontalMargin }}>
-      <Button
-        icon={'plus'}
-        mode="outlined"
+      <NativeButton
+        variant="outlined"
+        icon={AddIcon}
+        systemImage="plus"
+        label={`Add ${props.exercise.name}`}
         onPress={() => {
           dispatch(updateExercise({ id: uuid(), exercise: props.exercise }));
           props.onPress(props.exercise);
         }}
-      >
-        Add {props.exercise.name}
-      </Button>
+      />
     </View>
   );
 }

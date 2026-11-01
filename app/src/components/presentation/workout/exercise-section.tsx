@@ -4,19 +4,20 @@ import { RecordedExercise, RecordedWeightedExercise } from '@/models/session-mod
 import { ReactNode, useState } from 'react';
 import { View } from 'react-native';
 import { openUrl } from '@/utils/open-url';
-import { Tooltip } from 'react-native-paper';
 import Menu, { MenuItem } from '@/components/presentation/foundation/menu';
 import { useTranslate } from '@tolgee/react';
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
 import ExerciseNotesDisplay from '@/components/presentation/workout/exercise-notes-display';
 import RecordedExerciseNotesEditor from '@/components/presentation/workout/recorded-exercise-notes-editor';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
 import { useRouter } from 'expo-router';
 import { getExerciseHistoryHref } from '@/components/smart/exercise-history';
 import { Updater } from '@/utils/types';
 import Analytics from '@expo/material-symbols/analytics.xml';
 import Edit from '@expo/material-symbols/edit.xml';
 import Notes from '@expo/material-symbols/notes.xml';
+import History from '@expo/material-symbols/history.xml';
 import Delete from '@expo/material-symbols/delete.xml';
 import ArrowUpward from '@expo/material-symbols/arrow_upward.xml';
 import ArrowDownward from '@expo/material-symbols/arrow_downward.xml';
@@ -45,7 +46,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
   const { push } = useRouter();
   const { recordedExercise } = props;
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
-  const [removeExerciseDialogOpen, setRemoveExerciseDialogOpen] = useState(false);
+  const confirm = useConfirm();
   const showStats = recordedExercise instanceof RecordedWeightedExercise;
   const showPrevious = () => {
     push(getExerciseHistoryHref(recordedExercise.blueprint), { withAnchor: true });
@@ -61,18 +62,31 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
       }}
     >
       {props.showPreviousButton ? (
-        <Tooltip title={t('workout.previously_completed.label')}>
-          <IconButton testID="prev-exercise-btn" icon={'history'} onPress={showPrevious} />
-        </Tooltip>
+        <NativeIconButton
+          testID="prev-exercise-btn"
+          icon={History}
+          systemImage="clock.arrow.circlepath"
+          label={t('workout.previously_completed.label')}
+          onPress={showPrevious}
+        />
       ) : null}
       {!props.isReadonly ? (
-        <Tooltip title={t('generic.notes.label')}>
-          <IconButton testID="exercise-notes-btn" icon={'notes'} onPress={() => setNotesDialogOpen(true)} />
-        </Tooltip>
+        <NativeIconButton
+          testID="exercise-notes-btn"
+          icon={Notes}
+          systemImage="text.alignleft"
+          label={t('generic.notes.label')}
+          onPress={() => setNotesDialogOpen(true)}
+        />
       ) : null}
 
       <Menu
-        trigger={(open) => <IconButton testID="more-exercise-btn" onPress={open} icon={'moreHoriz'} />}
+        trigger={{
+          testID: 'more-exercise-btn',
+          icon: MoreHorizIcon,
+          systemImage: 'ellipsis',
+          label: t('generic.more_options.button'),
+        }}
         items={[
           // Absent for a session the user does not own, which has nothing to edit.
           ...(props.onEditExercise
@@ -129,7 +143,14 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             label: t('generic.remove.button'),
             icon: Delete,
             systemImage: 'trash',
-            onPress: () => setRemoveExerciseDialogOpen(true),
+            onPress: () =>
+              confirm({
+                title: t('exercise.remove.confirm.title'),
+                message: t('exercise.remove.confirm.body'),
+                okText: t('generic.remove.button'),
+                destructive: true,
+                onOk: onRemoveExercise,
+              }),
           },
           ...(props.recordedExercise.blueprint.link
             ? [
@@ -184,18 +205,6 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
         open={notesDialogOpen}
         notes={recordedExercise.notes}
         onUpdateNotes={(notes) => updateExercise((ex) => ex.with({ notes }) as T)}
-      />
-      <ConfirmationDialog
-        headline={t('exercise.remove.confirm.title')}
-        textContent={t('exercise.remove.confirm.body')}
-        okText={t('generic.remove.button')}
-        open={removeExerciseDialogOpen}
-        onOk={() => {
-          setRemoveExerciseDialogOpen(false);
-          onRemoveExercise();
-        }}
-        onCancel={() => setRemoveExerciseDialogOpen(false)}
-        preventCancel={false}
       />
     </View>
   );

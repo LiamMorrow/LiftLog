@@ -1,7 +1,14 @@
 import CardActions from '@/components/presentation/foundation/card-actions';
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import { Card, CardContent } from '@/components/presentation/foundation/card';
+import { useConfirm } from '@/hooks/useConfirm';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
-import IconButton from '@/components/presentation/foundation/icon-button';
+import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import ShareIcon from '@expo/material-symbols/share.xml';
+import PlayCircleIcon from '@expo/material-symbols/play_circle.xml';
+import EditIcon from '@expo/material-symbols/edit.xml';
+import AddIcon from '@expo/material-symbols/add.xml';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import DeleteIcon from '@expo/material-symbols/delete.xml';
 import { HistoryActivityCalendar } from '@/components/smart/history-activity-calendar';
 import { PrStrip } from '@/components/smart/pr-badges';
 import { WhoElseTrained } from '@/components/smart/who-else-trained';
@@ -11,7 +18,8 @@ import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
 import { useStreakToolbarItem } from '@/components/smart/streak-toolbar-item';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { SectionHeader } from '@/components/presentation/foundation/section-header';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
@@ -32,14 +40,14 @@ import {
 } from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
 import { LocalDate, YearMonth } from '@js-joda/core';
-import { T, useTranslate } from '@tolgee/react';
+import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useDeferredValue, useState } from 'react';
 import { View } from 'react-native';
 import { LegendList } from '@legendapp/list/react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Card, Icon, Tooltip } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/button';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import CloseIcon from '@expo/material-symbols/close.xml';
 import { useDispatch } from 'react-redux';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useStartWorkout } from '@/hooks/useStartWorkout';
@@ -57,6 +65,7 @@ export default function HistoryPage() {
 
 function History() {
   const { t } = useTranslate();
+  const { colors } = useAppTheme();
   const dispatch = useDispatch();
   const formatDate = useFormatDate();
   const [currentYearMonth, setCurrentYearMonth] = useState(YearMonth.now());
@@ -93,33 +102,39 @@ function History() {
     dispatch(putStoredSession(newSession));
     onSelectSession(newSession);
   };
-  const [replaceCurrentSessionConfirmOpen, setReplaceCurrentSessionConfirmOpen] = useState(false);
-  const [deleteSelectedWorkoutConfirmOpen, setDeleteSelectedWorkoutConfirmOpen] = useState(false);
-  const [selectedWorkout, setSelectedWorkout] = useState<Session>();
-  const deleteWorkout = (session: Session, force = false) => {
-    if (!force) {
-      setSelectedWorkout(session);
-      setDeleteSelectedWorkoutConfirmOpen(true);
-    } else if (selectedWorkout) {
-      dispatch(deleteStoredSession(selectedWorkout.id));
-      dispatch(addUnpublishedSessionId(selectedWorkout.id));
-      dispatch(removeReactionsForEvents([selectedWorkout.id]));
-      setDeleteSelectedWorkoutConfirmOpen(false);
-      setSelectedWorkout(undefined);
-    }
-  };
+  const confirm = useConfirm();
+  const deleteWorkout = (session: Session) =>
+    confirm({
+      title: t('workout.delete.confirm.title'),
+      message: t('workout.delete.confirm.body', {
+        sessionName: session.blueprint.name,
+        date: formatDate(session.date, { day: 'numeric', month: 'long', year: 'numeric' }),
+      }),
+      okText: t('generic.delete.button'),
+      destructive: true,
+      onOk: () => {
+        dispatch(deleteStoredSession(session.id));
+        dispatch(addUnpublishedSessionId(session.id));
+        dispatch(removeReactionsForEvents([session.id]));
+      },
+    });
 
-  const startWorkout = (session: Session, force = false) => {
-    if (currentWorkoutSession && !force) {
-      setSelectedWorkout(session);
-      setReplaceCurrentSessionConfirmOpen(true);
-    } else {
+  const startWorkout = (session: Session) => {
+    const start = () => {
       startWorkoutSession(session.withNothingCompleted().with({ date: LocalDate.now(), id: uuid() }));
-      setReplaceCurrentSessionConfirmOpen(false);
-      setSelectedWorkout(undefined);
-
       push('/(tabs)/(session)/session', { withAnchor: true });
+    };
+    if (!currentWorkoutSession) {
+      start();
+      return;
     }
+    confirm({
+      title: t('workout.replace_current.confirm.title'),
+      message: t('workout.replace_in_progress.confirm.body'),
+      okText: t('generic.replace.button'),
+      destructive: true,
+      onOk: start,
+    });
   };
   const handleSharePress = (session: Session) => {
     dispatch(
@@ -146,7 +161,8 @@ function History() {
         onScroll={handleScroll}
         contentContainerStyle={{
           paddingHorizontal: spacing.pageHorizontalMargin,
-          paddingBottom: insets.bottom,
+          paddingTop: spacing.pageVerticalMargin,
+          paddingBottom: insets.bottom + spacing.pageVerticalMargin,
         }}
         ItemSeparatorComponent={() => <View style={{ height: spacing[2] }} />}
         ListHeaderComponent={
@@ -167,21 +183,23 @@ function History() {
               </View>
             ) : (
               visibleSessions.length > 0 && (
-                <SurfaceText font="text-sm" weight="500" color="onSurfaceVariant" testID="history-month-count">
-                  {visibleSessions.length === 1
-                    ? t('history.month.workouts.one', { month: listedMonthName })
-                    : t('history.month.workouts.other', {
-                        count: visibleSessions.length.toString(),
-                        month: listedMonthName,
-                      })}
-                </SurfaceText>
+                <SectionHeader
+                  title={
+                    visibleSessions.length === 1
+                      ? t('history.month.workouts.one', { month: listedMonthName })
+                      : t('history.month.workouts.other', {
+                          count: visibleSessions.length.toString(),
+                          month: listedMonthName,
+                        })
+                  }
+                />
               )
             )}
           </View>
         }
         renderItem={({ item: session }) => (
-          <Card mode="contained">
-            <Card.Content>
+          <Card>
+            <CardContent style={{ paddingBottom: 0 }}>
               <SplitCardControl
                 titleContent={<SessionSummaryTitle showDate session={session} />}
                 mainContent={
@@ -192,25 +210,36 @@ function History() {
                 }
               />
               <ReactionSummary eventId={session.id} />
-            </Card.Content>
+            </CardContent>
             <CardActions style={{ marginTop: spacing[2] }}>
-              <Tooltip title={t('workout.share_workout.button')}>
-                <IconButton icon={'share'} mode="contained" onPress={() => handleSharePress(session)} />
-              </Tooltip>
-              <Tooltip title={t('workout.start_this.button')}>
-                <IconButton mode="contained" icon={'playCircle'} onPress={() => startWorkout(session)} />
-              </Tooltip>
-              <Tooltip title={t('generic.delete.button')}>
-                <IconButton mode="contained" icon={'delete'} onPress={() => deleteWorkout(session)} />
-              </Tooltip>
-              <Button
-                onPress={() => onSelectSession(session)}
-                icon="edit"
-                mode="contained"
+              <NativeIconButton
+                icon={ShareIcon}
+                systemImage="square.and.arrow.up"
+                colors={{ content: colors.primary }}
+                label={t('workout.share_workout.button')}
+                onPress={() => handleSharePress(session)}
+              />
+              <NativeIconButton
+                icon={PlayCircleIcon}
+                systemImage="play.circle"
+                colors={{ content: colors.primary }}
+                label={t('workout.start_this.button')}
+                onPress={() => startWorkout(session)}
+              />
+              <NativeIconButton
+                icon={DeleteIcon}
+                systemImage="trash"
+                colors={{ content: colors.primary }}
+                label={t('generic.delete.button')}
+                onPress={() => deleteWorkout(session)}
+              />
+              <NativeButton
+                icon={EditIcon}
+                systemImage="pencil"
                 testID="history-edit-workout"
-              >
-                <T keyName="workout.edit.button" />
-              </Button>
+                label={t('workout.edit.button')}
+                onPress={() => onSelectSession(session)}
+              />
             </CardActions>
           </Card>
         )}
@@ -224,14 +253,13 @@ function History() {
                   })}
                 />
               </EmptyInfo>
-              <Button
-                mode="contained"
-                icon="plus"
+              <NativeButton
+                icon={AddIcon}
+                systemImage="plus"
                 testID="history-add-workout-on-day"
+                label={t('history.calendar.add_workout.button')}
                 onPress={() => createSessionAtDate(listedDate)}
-              >
-                <T keyName="history.calendar.add_workout.button" />
-              </Button>
+              />
             </View>
           ) : (
             <EmptyInfo>
@@ -245,39 +273,6 @@ function History() {
             </EmptyInfo>
           )
         }
-      />
-      <ConfirmationDialog
-        headline={t('workout.replace_current.confirm.title')}
-        textContent={t('workout.replace_in_progress.confirm.body')}
-        open={replaceCurrentSessionConfirmOpen}
-        okText={t('generic.replace.button')}
-        onOk={() => selectedWorkout && startWorkout(selectedWorkout, true)}
-        onCancel={() => {
-          setSelectedWorkout(undefined);
-          setReplaceCurrentSessionConfirmOpen(false);
-        }}
-      />
-      <ConfirmationDialog
-        headline={t('workout.delete.confirm.title')}
-        textContent={
-          <LimitedHtml
-            value={t('workout.delete.confirm.body', {
-              sessionName: selectedWorkout?.blueprint.name ?? '',
-              date: formatDate(selectedWorkout?.date ?? LocalDate.now(), {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-              }),
-            })}
-          />
-        }
-        open={deleteSelectedWorkoutConfirmOpen}
-        okText={t('generic.delete.button')}
-        onOk={() => selectedWorkout && deleteWorkout(selectedWorkout, true)}
-        onCancel={() => {
-          setSelectedWorkout(undefined);
-          setDeleteSelectedWorkoutConfirmOpen(false);
-        }}
       />
     </>
   );
@@ -313,15 +308,15 @@ function SelectedDayChip({ date, onClear }: { date: LocalDate; onClear: () => vo
             paddingRight: spacing[2],
           }}
         >
-          <SurfaceText font="text-sm" weight="500" color="onSecondaryContainer">
+          <AppText variant="labelLarge" color="onSecondaryContainer">
             {formatDate(date, {
               weekday: 'long',
               day: 'numeric',
               month: 'long',
               year: date.year() !== LocalDate.now().year() ? 'numeric' : undefined,
             })}
-          </SurfaceText>
-          <Icon source="close" size={18} color={colors.onSecondaryContainer} />
+          </AppText>
+          <NativeIcon icon={CloseIcon} systemImage="xmark" size={18} color={colors.onSecondaryContainer} />
         </View>
       </TouchableRipple>
     </View>

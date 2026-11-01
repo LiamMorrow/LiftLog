@@ -1,4 +1,4 @@
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useHeaderInset } from '@/hooks/useHeaderInset';
 import { useScroll } from '@/hooks/useScrollListener';
 import { useState } from 'react';
@@ -48,7 +48,10 @@ export default function FullHeightScrollView({
           ref={scrollRef}
           onScroll={handleScroll}
           style={[scrollStyle]}
-          contentContainerStyle={[{ insetBlockStart: topInsetHeight }, contentContainerStyle]}
+          contentContainerStyle={[
+            { insetBlockStart: topInsetHeight, paddingVertical: spacing.pageVerticalMargin },
+            contentContainerStyle,
+          ]}
         >
           {children}
           <View style={{ height: bottomInsetHeight }} />
@@ -60,7 +63,10 @@ export default function FullHeightScrollView({
           ref={scrollRef as never}
           onScroll={handleScroll}
           style={[scrollStyle]}
-          contentContainerStyle={[{ insetBlockStart: topInsetHeight }, contentContainerStyle]}
+          contentContainerStyle={[
+            { insetBlockStart: topInsetHeight, paddingVertical: spacing.pageVerticalMargin },
+            contentContainerStyle,
+          ]}
         >
           {children}
           <View style={{ height: bottomInsetHeight }} />
