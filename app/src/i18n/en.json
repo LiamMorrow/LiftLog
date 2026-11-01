@@ -101,6 +101,8 @@
   "cardio_timer.stop": "Stop timer and log time",
   "cardio_timer.start": "Start timer",
   "date.edited_on.label": "Edited: {date}",
+  "date_range.from.label": "From",
+  "date_range.to.label": "To",
   "date.pick_from_calendar.button": "Pick date from calendar",
   "date.select.button": "Select date",
   "date.select_multiple.button": "Select dates",

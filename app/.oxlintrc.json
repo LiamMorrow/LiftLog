@@ -107,6 +107,10 @@
             "message": "react-native-paper is being removed. Use the equivalent from @/components/presentation/foundation/"
           },
           {
+            "name": "react-native-paper-dates",
+            "message": "Use DatePicker or DateRangePicker from @/components/presentation/foundation/"
+          },
+          {
             "name": "react-native",
             "importNames": ["TextInput"],
             "allowTypeImports": true,
