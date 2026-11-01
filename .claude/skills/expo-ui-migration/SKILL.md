@@ -1,7 +1,7 @@
 ---
 name: expo-ui-migration
 description: >-
-  Use when moving a react-native-paper component to native expo-ui (SwiftUI on iOS / Jetpack Compose on
+  Use when moving an RN component to native expo-ui (SwiftUI on iOS / Jetpack Compose on
   Android), or authoring any new platform-split native control - i.e. creating a `foo.tsx` +
   `foo.android.tsx` + `foo-props.ts` triple that renders `@expo/ui` `Host`s. Covers the seedColor rule,
   the icon-interop trap, and the Compose/SwiftUI gotchas that are easy to get wrong.
@@ -9,8 +9,8 @@ description: >-
 
 # Migrating a component to expo-ui (native)
 
-LiftLog is incrementally moving off `react-native-paper` onto native controls via `@expo/ui` - SwiftUI
-on iOS, Jetpack Compose (M3 expressive) on Android. Each migrated control is a **platform-split triple**.
+LiftLog builds its native controls on `@expo/ui` - SwiftUI on iOS, Jetpack Compose (M3 expressive) on
+Android. Each migrated control is a **platform-split triple**.
 
 ## The triple
 
@@ -45,7 +45,7 @@ checked… }}` object to a native control, and don't `tint`/`foregroundStyle` an
 ## Icons inside Compose must be native
 
 Import an XML vector drawable per icon from `@expo/material-symbols` and render it with expo-ui's own
-`Icon` - **not** the RN Paper / `@material-symbols-react-native` wrapper:
+`Icon` - **not** the RN foundation `Icon` / `@material-symbols-react-native` wrapper:
 
 ```tsx
 import { Icon } from "@expo/ui/jetpack-compose";

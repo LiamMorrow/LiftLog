@@ -7,7 +7,6 @@
     "react-native-reanimated/lib/typescript/Animated",
     "react-native/types_generated/index",
     "^@material-symbols-react-native/outlined-400$",
-    "react-native-paper-dates",
     "assert",
     "fast-match",
     "inspector",
