@@ -19,18 +19,14 @@ import TranslateIcon from '@expo/material-symbols/translate.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
-import { Icon as AppIcon } from '@/components/presentation/foundation/icon';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { T, useTranslate } from '@tolgee/react';
-import { Link, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useTranslate } from '@tolgee/react';
+import { useRouter } from 'expo-router';
 import { Platform, View } from 'react-native';
-import { AppText } from '@/components/presentation/foundation/app-text';
-import { Dialog, Portal } from 'react-native-paper';
-import Button from '@/components/presentation/foundation/button';
 import * as Application from 'expo-application';
 import { useDispatch } from 'react-redux';
 import { openUrl } from '@/utils/open-url';
+import { useConfirm } from '@/hooks/useConfirm';
 import { copyLogs } from '@/store/app';
 import { useAppSelector } from '@/store';
 import { selectHasUnseenWhatsNew } from '@/store/settings';
@@ -40,7 +36,7 @@ export default function SettingsPageIndex() {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
   const { push } = useRouter();
-  const [appInfoOpen, setAppInfoOpen] = useState(false);
+  const confirm = useConfirm();
   const dispatch = useDispatch();
   const hasUnseenWhatsNew = useAppSelector(selectHasUnseenWhatsNew);
 
@@ -176,34 +172,17 @@ export default function SettingsPageIndex() {
           label={t('settings.app_info.title')}
           icon={InfoIcon}
           systemImage="info.circle"
-          onPress={() => setAppInfoOpen(true)}
+          onPress={() =>
+            confirm({
+              title: t('settings.app_info.title'),
+              message: `LiftLog is an entirely open source app, licensed under the AGPL-3.0 license.\n\nLiftLog is currently version ${appVersion}`,
+              okText: 'GitHub',
+              cancelText: t('generic.close.button'),
+              onOk: () => openUrl('https://github.com/LiamMorrow/LiftLog'),
+            })
+          }
         />
       </SegmentedGroup>
-
-      <Portal>
-        <Dialog visible={appInfoOpen} onDismiss={() => setAppInfoOpen(false)}>
-          <Dialog.Title>
-            <T keyName="settings.app_info.title" />
-          </Dialog.Title>
-          <Dialog.Content>
-            <AppText>
-              LiftLog is an entirely open source app, licensed under the AGPL-3.0 license. You can find the source code
-              on{' '}
-              <Link style={{ color: colors.primary, fontWeight: 'bold' }} href="https://github.com/LiamMorrow/LiftLog">
-                <AppIcon size={16} source={'share'} color={colors.primary} />
-                GitHub
-              </Link>
-              .
-            </AppText>
-            <AppText>LiftLog is currently version {appVersion}</AppText>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setAppInfoOpen(false)}>
-              <T keyName="generic.close.button" />
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
     </SettingsPage>
   );
 }

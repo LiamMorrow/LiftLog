@@ -92,6 +92,7 @@
               "Card",
               "Checkbox",
               "Chip",
+              "Dialog",
               "Divider",
               "HelperText",
               "Icon",

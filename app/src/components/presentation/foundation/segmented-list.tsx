@@ -78,6 +78,7 @@ export function SegmentListFormElement(props: {
   label: ReactNode;
   icon?: NativeIconProps['icon'];
   systemImage?: NativeIconProps['systemImage'];
+  leading?: ReactNode;
   onPress?: () => void;
   onLongPress?: () => void;
   supportingText?: ReactNode;
@@ -101,7 +102,9 @@ export function SegmentListFormElement(props: {
             <View style={styles.label}>
               {props.icon && props.systemImage ? (
                 <NativeIcon icon={props.icon} systemImage={props.systemImage} size={20} color={labelColor} />
-              ) : undefined}
+              ) : (
+                props.leading
+              )}
               <AppText variant="labelLarge" style={{ color: labelColor }}>
                 {props.label}
               </AppText>

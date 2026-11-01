@@ -62,6 +62,10 @@ function Layout() {
       <Stack.Screen name="cardio-set-editor" options={{ presentation: 'modal' }} />
       <Stack.Screen name="copy-exercise" options={{ presentation: 'modal' }} />
       <Stack.Screen name="copy-workout" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="rest-editor" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="progression-rule" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="progression-example" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="color-picker" options={{ presentation: 'modal' }} />
       <Stack.Screen name="exercise-editor" options={{}} />
       <Stack.Screen name="exercise-descriptor-editor" />
       <Stack.Screen name="backend-header" />

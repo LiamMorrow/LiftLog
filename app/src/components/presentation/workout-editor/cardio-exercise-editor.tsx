@@ -14,7 +14,7 @@ import {
   SegmentListFormElement,
 } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
-import { RestEditorDialog } from '@/components/presentation/workout-editor/rest-editor-dialog';
+import { useRouteEditor } from '@/hooks/useRouteEditor';
 import { SharedFieldsEditor } from '@/components/presentation/workout-editor/shared-fields-editor';
 import StraightenIcon from '@expo/material-symbols/straighten.xml';
 import TimerIcon from '@expo/material-symbols/timer.xml';
@@ -153,22 +153,14 @@ export function CardioSetEditor(props: {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
   const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
-  const [restDialogOpen, setRestDialogOpen] = useState(false);
   const { set, updateSet } = props;
+  const openRouteEditor = useRouteEditor((restBetweenSets: Rest) => updateSet(set.with({ restBetweenSets })));
   const rest = set.restBetweenSets;
   const toggleSetItem = (item: KeysOfType<CardioExerciseSetBlueprint, boolean>) => () =>
     updateSet(set.with({ [item]: !set[item] }));
   return (
     <>
       <CardioTargetEditor target={set.target} onValueChange={(target) => updateSet(set.with({ target }))} />
-      {restTimersEnabled && rest && (
-        <RestEditorDialog
-          onRestUpdated={(restBetweenSets) => updateSet(set.with({ restBetweenSets }))}
-          rest={rest}
-          dialogOpen={restDialogOpen}
-          setDialogOpen={setRestDialogOpen}
-        />
-      )}
       <TitledSection title={t('exercise.tracking.title')}>
         <SegmentedList
           items={[
@@ -252,7 +244,7 @@ export function CardioSetEditor(props: {
                     label={t('rest.rest.label')}
                     icon={TimerIcon}
                     systemImage="timer"
-                    onPress={() => setRestDialogOpen(true)}
+                    onPress={() => openRouteEditor('/rest-editor', rest)}
                     right={<RestFormat style={{ color: colors.onSurface }} rest={rest} />}
                   />,
                 ]

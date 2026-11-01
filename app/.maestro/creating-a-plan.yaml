@@ -38,7 +38,7 @@ appId: com.limajuice.liftlog
     direction: DOWN
 - tapOn: 'Superset next exercise'
 
-# A new exercise has no rules. Adding one opens it in a dialog: the first moves weight, so narrow it to the
+# A new exercise has no rules. Adding one opens it in its own screen: the first moves weight, so narrow it to the
 # lowest sets via the scope dropdown, then add a second: a weight rule never hands over, so the new rung goes
 # in front of it and the pair comes out as reps-then-weight without any further editing.
 - scrollUntilVisible:
@@ -50,8 +50,7 @@ appId: com.limajuice.liftlog
 - assertVisible: 'Amount to increase'
 - tapOn: 'Every set'
 - tapOn: 'Every lowest'
-- tapOn:
-    id: 'progression-rule-done'
+- back
 
 - scrollUntilVisible:
     element:
@@ -60,8 +59,7 @@ appId: com.limajuice.liftlog
 - tapOn:
     id: 'progression-add-rule'
 - assertVisible: 'Stop at a limit'
-- tapOn:
-    id: 'progression-rule-done'
+- back
 
 # Back to the workout; the exercise persisted
 - back

@@ -11,7 +11,7 @@ import { View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Svg, { Path } from 'react-native-svg';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import ColorPickerDialog from '@/components/presentation/foundation/editors/color-picker-dialog';
+import { useRouteEditor } from '@/hooks/useRouteEditor';
 import { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListSelect } from '@/components/presentation/foundation/segmented-list-select';
@@ -116,13 +116,13 @@ export default function ThemeChooser(props: ThemeChooserProps) {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
   const [selectedSeed, setSelectedSeed] = useState(props.seed);
-  const [pickerOpen, setPickerOpen] = useState(false);
 
   const updateSeed = async (seed: ColorSchemeSeed) => {
     setSelectedSeed(seed);
     await sleep(ANIMATION_DURATION);
     props.onUpdateTheme(seed);
   };
+  const openRouteEditor = useRouteEditor((seed: HexColor) => void updateSeed(seed));
 
   const colorSeeds = PRESET_SEEDS;
   const isCustom = selectedSeed !== 'default' && !colorSeeds.includes(selectedSeed as (typeof PRESET_SEEDS)[number]);
@@ -182,7 +182,7 @@ export default function ThemeChooser(props: ThemeChooserProps) {
                   <CustomBall
                     active={isCustom}
                     color={isCustom ? selectedSeed : undefined}
-                    onPress={() => setPickerOpen(true)}
+                    onPress={() => openRouteEditor('/color-picker', selectedSeed)}
                   />
                 }
               />
@@ -202,12 +202,6 @@ export default function ThemeChooser(props: ThemeChooserProps) {
           onValueChange={props.setTrueBlack}
         />
       </SegmentedGroup>
-      <ColorPickerDialog
-        open={pickerOpen}
-        onClose={() => setPickerOpen(false)}
-        initialSeed={selectedSeed}
-        onConfirm={(seed) => void updateSeed(seed)}
-      />
     </>
   );
 }

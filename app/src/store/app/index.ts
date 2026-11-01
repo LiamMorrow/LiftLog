@@ -7,6 +7,8 @@ const initialState: AppState = {
   currentSnackbar: undefined,
   exerciseSearchResult: undefined,
   cardioSetEdit: undefined,
+  routeEditorInput: undefined,
+  routeEditorOutput: undefined,
 };
 
 type AppState = {
@@ -14,6 +16,8 @@ type AppState = {
   currentSnackbar: SnackbarDescriptor | undefined;
   exerciseSearchResult: ExerciseSearchResult | undefined;
   cardioSetEdit: CardioSetEdit | undefined;
+  routeEditorInput: RouteEditorMessage | undefined;
+  routeEditorOutput: RouteEditorMessage | undefined;
 };
 
 // The exercise search is its own route, so it hands its result back through the store rather than a
@@ -30,6 +34,13 @@ export type CardioSetEdit = {
   requestId: string;
   setIndex: number;
   set: CardioExerciseSetBlueprintJSON | null;
+};
+
+// The generic form of the handoffs above, used through useRouteEditor: the opener posts the value to edit, and the
+// route posts each change back.
+export type RouteEditorMessage = {
+  requestId: string;
+  value: unknown;
 };
 
 const appSlice = createSlice({
@@ -58,6 +69,18 @@ const appSlice = createSlice({
 
     clearCardioSetEdit(state) {
       state.cardioSetEdit = undefined;
+    },
+
+    setRouteEditorInput(state, action: PayloadAction<RouteEditorMessage>) {
+      state.routeEditorInput = action.payload;
+    },
+
+    setRouteEditorOutput(state, action: PayloadAction<RouteEditorMessage>) {
+      state.routeEditorOutput = action.payload;
+    },
+
+    clearRouteEditorOutput(state) {
+      state.routeEditorOutput = undefined;
     },
   },
 });
@@ -95,6 +118,9 @@ export const {
   clearExerciseSearchResult,
   setCardioSetEdit,
   clearCardioSetEdit,
+  setRouteEditorInput,
+  setRouteEditorOutput,
+  clearRouteEditorOutput,
 } = appSlice.actions;
 
 export default appSlice.reducer;

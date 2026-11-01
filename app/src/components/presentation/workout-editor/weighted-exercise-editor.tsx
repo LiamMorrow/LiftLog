@@ -8,13 +8,14 @@ import { SegmentedGroup, SegmentListFormElement } from '@/components/presentatio
 import { TitledSection } from '@/components/presentation/foundation/titled-section';
 import { SegmentedListSelect } from '@/components/presentation/foundation/segmented-list-select';
 import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
-import { RestEditorDialog } from '@/components/presentation/workout-editor/rest-editor-dialog';
+import { useRouteEditor } from '@/hooks/useRouteEditor';
 import { ProgressionRulesEditor } from '@/components/presentation/workout-editor/progressive-overload';
 import { SharedFieldsEditor } from '@/components/presentation/workout-editor/shared-fields-editor';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import {
   ExerciseBlueprint,
   Resistance,
+  Rest,
   RepsConfig,
   RepsType,
   uniformTarget,
@@ -54,7 +55,7 @@ export function WeightedExerciseEditor({
   const { t } = useTranslate();
   const { colors } = useAppTheme();
   const restTimersEnabled = useAppSelector((x) => x.settings.restTimersEnabled);
-  const [restDialogOpen, setRestDialogOpen] = useState(false);
+  const openRouteEditor = useRouteEditor((restBetweenSets: Rest) => updateExercise({ restBetweenSets }));
 
   // Only the targets persist, so a uniform list cannot say whether it was authored as fixed or as a
   // range; the chosen mode lives here for as long as the editor is open.
@@ -112,7 +113,7 @@ export function WeightedExerciseEditor({
               label={t('rest.rest.label')}
               icon={AirlineSeatReclineExtraIcon}
               systemImage="chair.lounge"
-              onPress={() => setRestDialogOpen(true)}
+              onPress={() => openRouteEditor('/rest-editor', exercise.restBetweenSets)}
               right={<RestFormat style={{ color: colors.onSurface }} rest={exercise.restBetweenSets} />}
             />
           ) : undefined}
@@ -133,15 +134,6 @@ export function WeightedExerciseEditor({
       <TitledSection title={t('exercise.progressive_overload.label')}>
         <ProgressionRulesEditor exercise={exercise} onChange={(progression) => updateExercise({ progression })} />
       </TitledSection>
-
-      {restTimersEnabled && (
-        <RestEditorDialog
-          onRestUpdated={(restBetweenSets) => updateExercise({ restBetweenSets })}
-          rest={exercise.restBetweenSets}
-          dialogOpen={restDialogOpen}
-          setDialogOpen={setRestDialogOpen}
-        />
-      )}
     </>
   );
 }
