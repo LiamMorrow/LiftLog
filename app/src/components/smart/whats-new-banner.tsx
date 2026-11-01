@@ -1,4 +1,4 @@
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
 import CloseIcon from '@expo/material-symbols/close.xml';
 import { Pager } from '@/components/presentation/foundation/pager';
@@ -59,6 +59,7 @@ export function WhatsNewBanner() {
 
 function Feature({ entry, onPress }: { entry: WhatsNewEntry; onPress: (route: Href) => void }) {
   const { colors } = useAppTheme();
+  const { t } = useTranslate();
   return (
     <>
       <View style={styles.featureRow}>
@@ -74,9 +75,12 @@ function Feature({ entry, onPress }: { entry: WhatsNewEntry; onPress: (route: Hr
       </AppText>
       {entry.cta && (
         <View style={styles.ctaRow}>
-          <Button mode="text" textColor={colors.onTertiaryContainer} onPress={() => onPress(entry.cta!.route)}>
-            <T keyName={entry.cta.labelKey} />
-          </Button>
+          <NativeButton
+            variant="text"
+            contentColor={colors.onTertiaryContainer}
+            label={t(entry.cta.labelKey)}
+            onPress={() => onPress(entry.cta!.route)}
+          />
         </View>
       )}
     </>

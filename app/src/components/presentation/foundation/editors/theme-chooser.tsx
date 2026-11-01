@@ -5,12 +5,12 @@ import { ColorSchemeSeed, ThemeMode } from '@/store/settings';
 import { hsvToHex, type HexColor } from '@/utils/color';
 import { sleep } from '@/utils/sleep';
 import { createMaterial3Theme } from '@pchmn/expo-material3-theme';
-import { T, useTranslate } from '@tolgee/react';
+import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Svg, { Path } from 'react-native-svg';
-import Button from '@/components/presentation/foundation/button';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import ColorPickerDialog from '@/components/presentation/foundation/editors/color-picker-dialog';
 import { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
@@ -114,6 +114,7 @@ const PRESET_SEEDS = ['#550000', '#005500', '#000055', '#AA00AA', '#00AAAA', '#A
 
 export default function ThemeChooser(props: ThemeChooserProps) {
   const { t } = useTranslate();
+  const { colors } = useAppTheme();
   const [selectedSeed, setSelectedSeed] = useState(props.seed);
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -151,9 +152,24 @@ export default function ThemeChooser(props: ThemeChooserProps) {
               }}
             >
               <FocusRing isSelected={selectedSeed === 'default'}>
-                <Button style={{ position: 'relative' }} onPress={() => void updateSeed('default')}>
-                  <T keyName="generic.default.label" />
-                </Button>
+                <TouchableRipple
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: selectedSeed === 'default' }}
+                  style={{
+                    height: spacing[12],
+                    justifyContent: 'center',
+                    paddingHorizontal: spacing[4],
+                    borderRadius: spacing[12],
+                    borderWidth: 2,
+                    borderColor: colors.outlineVariant,
+                    overflow: 'hidden',
+                  }}
+                  onPress={() => void updateSeed('default')}
+                >
+                  <AppText variant="labelLarge" color="primary">
+                    {t('generic.default.label')}
+                  </AppText>
+                </TouchableRipple>
               </FocusRing>
               <FlatList
                 horizontal

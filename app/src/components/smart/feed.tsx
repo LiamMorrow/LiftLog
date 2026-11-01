@@ -32,7 +32,8 @@ import { T, useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import ShareIcon from '@expo/material-symbols/share.xml';
 import { useDispatch } from 'react-redux';
 import { LegendList, LegendListRef } from '@legendapp/list/react-native';
 import { useEffect, useRef } from 'react';
@@ -136,14 +137,13 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
             <AppText variant="bodyLarge" color="error">
               <T keyName="feed.not_publishing_workouts.error" />
             </AppText>
-            <Button
+            <NativeButton
+              variant="outlined"
               style={{ marginLeft: 'auto' }}
               testID="feed-fix-button"
+              label={t('generic.fix.button')}
               onPress={() => push(getFeedSettingsHref({ focus: 'publish' }))}
-              mode="outlined"
-            >
-              <T keyName="generic.fix.button" />
-            </Button>
+            />
           </CardContent>
         </Card>
       )}
@@ -156,10 +156,11 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
             </AppText>
           </CardContent>
           <CardActions>
-            <Button
+            <NativeButton
               testID="feed-share-button"
-              mode="contained"
-              icon={'share'}
+              icon={ShareIcon}
+              systemImage="square.and.arrow.up"
+              label={t('generic.share.button')}
               onPress={() => {
                 dispatch(
                   shareString({
@@ -168,9 +169,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
                   }),
                 );
               }}
-            >
-              <T keyName="generic.share.button" />
-            </Button>
+            />
           </CardActions>
         </Card>
       )}

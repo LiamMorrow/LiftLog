@@ -5,7 +5,7 @@ import PageMenu from '@/components/presentation/foundation/page-menu';
 import { Platform } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { MenuItem } from '@/components/presentation/foundation/menu';
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import Edit from '@expo/material-symbols/edit.xml';
 
 export default function SessionMoreMenuComponent(props: {
@@ -36,9 +36,7 @@ export default function SessionMoreMenuComponent(props: {
         ),
         android: (
           <Stack.Toolbar.View>
-            <Button mode="text" compact onPress={save}>
-              {finishText}
-            </Button>
+            <NativeButton variant="text" compact label={finishText} onPress={save} />
           </Stack.Toolbar.View>
         ),
       })}

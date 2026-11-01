@@ -1,4 +1,4 @@
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import { Popover } from '@/components/presentation/foundation/popover';
 import { SegmentedList } from '@/components/presentation/foundation/segmented-list';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
@@ -135,16 +135,15 @@ function RecordPopoverContent({
       <AppText variant="labelLarge">{exerciseName}</AppText>
       <RecordRows records={records} scope={scope} />
       {scope === 'history' && (
-        <Button
-          mode="text"
+        <NativeButton
+          variant="text"
           style={{ alignSelf: 'flex-end', marginBottom: -spacing[2], marginRight: -spacing[2] }}
+          label={t('history.pr_badge.see_history.button')}
           onPress={() => {
             close();
             push(getExerciseHistoryHref({ name: exerciseName, type: 'WeightedExerciseBlueprint' }));
           }}
-        >
-          {t('history.pr_badge.see_history.button')}
-        </Button>
+        />
       )}
     </View>
   );

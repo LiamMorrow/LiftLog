@@ -1,4 +1,4 @@
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import { SegmentedList } from '@/components/presentation/foundation/segmented-list';
 import { TitledSection } from '@/components/presentation/foundation/titled-section';
 import { WeightedExerciseStatSummary } from '@/components/presentation/stats/weighted-exercise-stat-summary';
@@ -20,9 +20,12 @@ export function ExerciseListSummary(props: { stats: GranularStatisticView }) {
       title={t('stats.weighted_exercise_list.title')}
       style={{ marginHorizontal: spacing.pageHorizontalMargin }}
       trailing={
-        <Button mode="text" onPress={() => push('/stats/exercise-list')} style={{ alignSelf: 'flex-end' }}>
-          {t('stats.see_more.button')}
-        </Button>
+        <NativeButton
+          variant="text"
+          style={{ alignSelf: 'flex-end' }}
+          label={t('stats.see_more.button')}
+          onPress={() => push('/stats/exercise-list')}
+        />
       }
     >
       <SegmentedList

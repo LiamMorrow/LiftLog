@@ -1,11 +1,12 @@
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
-import { T } from '@tolgee/react';
+import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { Fragment } from 'react';
 import { View } from 'react-native';
 import { useDispatch } from 'react-redux';
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import AssignmentAddIcon from '@expo/material-symbols/assignment_add.xml';
 import { uuid } from '@/utils/uuid';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
@@ -17,6 +18,7 @@ import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 
 export function PlanMessage({ message, isUser }: { message: AiChatPlanResponseV2 & ChatMessage; isUser: boolean }) {
   const dispatch = useDispatch();
+  const { t } = useTranslate();
   const { push } = useRouter();
   const preferredWeightUnit = usePreferredWeightUnit();
   const blueprint = message.plan.blueprint;
@@ -46,9 +48,12 @@ export function PlanMessage({ message, isUser }: { message: AiChatPlanResponseV2
       ))}
       {!message.isLoading && (
         <View style={{ alignSelf: 'flex-end' }}>
-          <Button mode="contained" icon={'assignmentAdd'} onPress={saveAiPlan}>
-            <T keyName="plan.save_new.button" />
-          </Button>
+          <NativeButton
+            icon={AssignmentAddIcon}
+            systemImage="plus"
+            label={t('plan.save_new.button')}
+            onPress={saveAiPlan}
+          />
         </View>
       )}
     </View>

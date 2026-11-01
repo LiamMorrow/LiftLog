@@ -5,6 +5,9 @@ import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
 import ShareIcon from '@expo/material-symbols/share.xml';
 import PlayCircleIcon from '@expo/material-symbols/play_circle.xml';
+import EditIcon from '@expo/material-symbols/edit.xml';
+import AddIcon from '@expo/material-symbols/add.xml';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import DeleteIcon from '@expo/material-symbols/delete.xml';
 import { HistoryActivityCalendar } from '@/components/smart/history-activity-calendar';
 import { PrStrip } from '@/components/smart/pr-badges';
@@ -37,7 +40,7 @@ import {
 } from '@/store/stored-sessions';
 import { uuid } from '@/utils/uuid';
 import { LocalDate, YearMonth } from '@js-joda/core';
-import { T, useTranslate } from '@tolgee/react';
+import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useDeferredValue, useState } from 'react';
 import { View } from 'react-native';
@@ -45,7 +48,6 @@ import { LegendList } from '@legendapp/list/react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeIcon } from '@/components/presentation/foundation/native-icon';
 import CloseIcon from '@expo/material-symbols/close.xml';
-import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useStartWorkout } from '@/hooks/useStartWorkout';
@@ -224,14 +226,13 @@ function History() {
                 label={t('generic.delete.button')}
                 onPress={() => deleteWorkout(session)}
               />
-              <Button
-                onPress={() => onSelectSession(session)}
-                icon="edit"
-                mode="contained"
+              <NativeButton
+                icon={EditIcon}
+                systemImage="pencil"
                 testID="history-edit-workout"
-              >
-                <T keyName="workout.edit.button" />
-              </Button>
+                label={t('workout.edit.button')}
+                onPress={() => onSelectSession(session)}
+              />
             </CardActions>
           </Card>
         )}
@@ -245,14 +246,13 @@ function History() {
                   })}
                 />
               </EmptyInfo>
-              <Button
-                mode="contained"
-                icon="plus"
+              <NativeButton
+                icon={AddIcon}
+                systemImage="plus"
                 testID="history-add-workout-on-day"
+                label={t('history.calendar.add_workout.button')}
                 onPress={() => createSessionAtDate(listedDate)}
-              >
-                <T keyName="history.calendar.add_workout.button" />
-              </Button>
+              />
             </View>
           ) : (
             <EmptyInfo>

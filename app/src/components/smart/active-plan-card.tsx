@@ -1,4 +1,5 @@
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import EditIcon from '@expo/material-symbols/edit.xml';
 import { Card } from '@/components/presentation/foundation/card';
 import CardActions from '@/components/presentation/foundation/card-actions';
 import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
@@ -73,9 +74,12 @@ export function ActivePlanCard({ id }: { id: string }) {
             )
           }
         />
-        <Button mode="contained" icon={'edit'} onPress={() => push(`/settings/manage-workouts/${id}`)}>
-          {t('plan.edit.button')}
-        </Button>
+        <NativeButton
+          icon={EditIcon}
+          systemImage="pencil"
+          label={t('plan.edit.button')}
+          onPress={() => push(`/settings/manage-workouts/${id}`)}
+        />
       </CardActions>
     </Card>
   );

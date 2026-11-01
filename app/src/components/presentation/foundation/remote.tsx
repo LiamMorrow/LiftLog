@@ -5,7 +5,7 @@ import { RemoteData } from '@/models/remote';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
 import { Icon } from '@/components/presentation/foundation/icon';
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 
 interface RemoteProps<T> {
   value: RemoteData<T>;
@@ -27,7 +27,7 @@ export function Remote<T>(props: RemoteProps<T>) {
         <AppText variant="bodyLarge" style={{ textAlign: 'center' }}>
           {typeof value === 'string' ? value : 'Unknown error'}
         </AppText>
-        {retry ? <Button onPress={retry}>Retry</Button> : undefined}
+        {retry ? <NativeButton variant="text" label="Retry" onPress={retry} /> : undefined}
       </View>
     </View>
   );

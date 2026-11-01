@@ -9,7 +9,8 @@ import ShareIcon from '@expo/material-symbols/share.xml';
 import DeleteIcon from '@expo/material-symbols/delete.xml';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
-import NativeButton from '@/components/presentation/foundation/native-button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import PlayCircleIcon from '@expo/material-symbols/play_circle.xml';
 import EditIcon from '@expo/material-symbols/edit.xml';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import PlanMenu, { usePlanNavigation } from '@/components/smart/plan-menu';
@@ -26,12 +27,11 @@ import { encryptAndShare, publishUnpublishedSessions } from '@/store/feed';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import { executeRemoteBackup } from '@/store/settings';
 import { LocalDate } from '@js-joda/core';
-import { T, useTranslate } from '@tolgee/react';
+import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { WelcomeWizard } from '@/components/smart/welcome-wizard';
 import { WhatsNewBanner } from '@/components/smart/whats-new-banner';
@@ -106,14 +106,13 @@ function ListUpcomingWorkouts({
                 label={t('workout.clear_current.button')}
                 onPress={() => setConfirmDeleteSessionOpen(true)}
               />
-              <Button
-                icon={'playCircle'}
-                mode="contained"
+              <NativeButton
+                icon={PlayCircleIcon}
+                systemImage="play.circle"
                 testID="resume-workout-button"
+                label={t('workout.resume.button')}
                 onPress={() => startSession(currentSession)}
-              >
-                <T keyName="workout.resume.button" />
-              </Button>
+              />
             </CardActions>
           </Card>
         </TitledSection>
@@ -153,14 +152,13 @@ function ListUpcomingWorkouts({
                       onPress={handleEditPress}
                     />
                   ) : undefined}
-                  <Button
-                    mode="contained"
-                    icon={'playCircle'}
+                  <NativeButton
+                    icon={PlayCircleIcon}
+                    systemImage="play.circle"
                     testID="start-resume-workout-button"
+                    label={session.isStarted ? t('workout.resume.button') : t('workout.start.button')}
                     onPress={() => startSession(session)}
-                  >
-                    {session.isStarted ? <T keyName="workout.resume.button" /> : <T keyName="workout.start.button" />}
-                  </Button>
+                  />
                 </CardActions>
               );
             }}

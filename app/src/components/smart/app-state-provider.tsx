@@ -1,9 +1,11 @@
 import { Loader } from '@/components/presentation/foundation/loader';
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import BugReportIcon from '@expo/material-symbols/bug_report.xml';
+import TerminalIcon from '@expo/material-symbols/terminal.xml';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { copyLogs } from '@/store/app';
-import { T } from '@tolgee/react';
+import { T, useTranslate } from '@tolgee/react';
 import * as Application from 'expo-application';
 import { ReactNode, useEffect, useState } from 'react';
 import { Animated, Platform, Text, useAnimatedValue, View } from 'react-native';
@@ -50,6 +52,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
 function StuckHelp() {
   const { colors } = useAppTheme();
+  const { t } = useTranslate();
   const dispatch = useDispatch();
   const [isStuck, setIsStuck] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -79,12 +82,20 @@ function StuckHelp() {
       <Text style={{ color: colors.onSurfaceVariant, textAlign: 'center' }}>
         <T keyName="app.stuck_loading.message" />
       </Text>
-      <Button icon="bugReport" onPress={openBugReport}>
-        <T keyName="app.stuck_loading.report.button" />
-      </Button>
-      <Button icon="terminal" onPress={doCopyLogs}>
-        <T keyName="app.stuck_loading.copy_logs.button" />
-      </Button>
+      <NativeButton
+        variant="text"
+        icon={BugReportIcon}
+        systemImage="ladybug"
+        label={t('app.stuck_loading.report.button')}
+        onPress={openBugReport}
+      />
+      <NativeButton
+        variant="text"
+        icon={TerminalIcon}
+        systemImage="apple.terminal"
+        label={t('app.stuck_loading.copy_logs.button')}
+        onPress={doCopyLogs}
+      />
       {copied && (
         <Text style={{ color: colors.onSurfaceVariant, textAlign: 'center' }}>
           <T keyName="app.stuck_loading.copied.label" />

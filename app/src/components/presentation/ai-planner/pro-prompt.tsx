@@ -4,7 +4,7 @@ import { useTranslate } from '@tolgee/react';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useDispatch } from 'react-redux';
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import { restartChat } from '@/store/ai-planner';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
@@ -38,9 +38,7 @@ export function ProPrompt() {
         <LimitedHtml value={t('ai.upgrade_to_pro.explanation')} />
       </AppText>
       <ProPrice />
-      <Button style={{ alignSelf: 'flex-end' }} mode="contained" onPress={upgrade}>
-        {t('generic.upgrade.button')}
-      </Button>
+      <NativeButton style={{ alignSelf: 'flex-end' }} label={t('generic.upgrade.button')} onPress={upgrade} />
     </View>
   );
 }

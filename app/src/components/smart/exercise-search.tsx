@@ -1,4 +1,5 @@
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import AddIcon from '@expo/material-symbols/add.xml';
 import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
 import { spacing } from '@/hooks/useAppTheme';
 import { useHeaderInset } from '@/hooks/useHeaderInset';
@@ -84,16 +85,16 @@ function SuggestedExerciseSearchListItem(props: {
   const dispatch = useDispatch();
   return (
     <View style={{ padding: spacing.pageHorizontalMargin }}>
-      <Button
-        icon={'plus'}
-        mode="outlined"
+      <NativeButton
+        variant="outlined"
+        icon={AddIcon}
+        systemImage="plus"
+        label={`Add ${props.exercise.name}`}
         onPress={() => {
           dispatch(updateExercise({ id: uuid(), exercise: props.exercise }));
           props.onPress(props.exercise);
         }}
-      >
-        Add {props.exercise.name}
-      </Button>
+      />
     </View>
   );
 }

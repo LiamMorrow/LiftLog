@@ -1,7 +1,7 @@
 import { FloatingEmoji, FloatingEmojiLayer } from '@/components/presentation/feed/floating-emoji';
-import Button from '@/components/presentation/foundation/button';
+import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { spacing } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { REACTION_EMOJIS, ReactionEmoji } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import { cheerFeedItem, selectSentReactionsByEvent } from '@/store/feed';
@@ -17,6 +17,7 @@ interface ReactionBarProps {
 
 export function ReactionBar({ eventId, animateOnMount }: ReactionBarProps) {
   const dispatch = useDispatch();
+  const { colors } = useAppTheme();
   const sentByEvent = useAppSelector(selectSentReactionsByEvent);
   const sent = useMemo(() => sentByEvent.get(eventId) ?? [], [sentByEvent, eventId]);
 
@@ -59,19 +60,23 @@ export function ReactionBar({ eventId, animateOnMount }: ReactionBarProps) {
         const count = countFor(emoji);
         return (
           <View key={emoji}>
-            <Button
+            <TouchableRipple
+              accessibilityRole="button"
+              style={{ borderRadius: 20, borderWidth: 1, borderColor: colors.outline, overflow: 'hidden' }}
               onPress={() => {
                 dispatch(cheerFeedItem({ eventId, emoji, fromUserAction: true }));
                 emit(emoji, 1);
               }}
-              labelStyle={{
-                marginHorizontal: spacing[3],
-                marginVertical: spacing[1],
-              }}
-              compact
-              mode="outlined"
             >
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: spacing[1],
+                  paddingHorizontal: spacing[3],
+                  paddingVertical: spacing[1] + 2,
+                }}
+              >
                 <Text style={{ fontSize: 16 }}>{emoji}</Text>
                 {count > 0 && (
                   <AppText variant="bodyMedium" color="onSecondaryContainer" style={{ fontVariant: ['tabular-nums'] }}>
@@ -79,7 +84,7 @@ export function ReactionBar({ eventId, animateOnMount }: ReactionBarProps) {
                   </AppText>
                 )}
               </View>
-            </Button>
+            </TouchableRipple>
             <FloatingEmojiLayer emojis={floating.filter((x) => x.emoji === emoji)} onFinished={handleFinished} />
           </View>
         );

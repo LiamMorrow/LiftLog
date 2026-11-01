@@ -1,6 +1,6 @@
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { T } from '@tolgee/react';
+import { useTranslate } from '@tolgee/react';
 import {
   createContext,
   ReactNode,
@@ -187,6 +187,7 @@ function EditPane(props: {
   children: ReactNode;
 }) {
   const { colors } = useAppTheme();
+  const { t } = useTranslate();
   return (
     <FloatingPane
       testID="edit-dock"
@@ -205,9 +206,7 @@ function EditPane(props: {
           ) : undefined}
         </View>
         {props.headerAction}
-        <Button mode="contained" testID="edit-dock-done" onPress={props.onDone}>
-          <T keyName="generic.done.button" />
-        </Button>
+        <NativeButton testID="edit-dock-done" label={t('generic.done.button')} onPress={props.onDone} />
       </View>
       <KeyboardDoneButtonContext value={false}>{props.children}</KeyboardDoneButtonContext>
     </FloatingPane>

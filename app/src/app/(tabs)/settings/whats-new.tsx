@@ -1,6 +1,6 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { Card, CardContent } from '@/components/presentation/foundation/card';
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { latestWhatsNewId, whatsNewEntries, WhatsNewEntry } from '@/models/whats-new';
 import { useAppSelector } from '@/store';
@@ -40,6 +40,7 @@ export default function WhatsNew() {
 
 function WhatsNewCard({ entry }: { entry: WhatsNewEntry }) {
   const { colors } = useAppTheme();
+  const { t } = useTranslate();
   const { push } = useRouter();
   const goToFeature = (route: Href) => push(route);
 
@@ -68,9 +69,7 @@ function WhatsNewCard({ entry }: { entry: WhatsNewEntry }) {
         </AppText>
         {entry.cta && (
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-            <Button mode="text" onPress={() => goToFeature(entry.cta!.route)}>
-              {entry.cta.labelKey && <T keyName={entry.cta.labelKey} />}
-            </Button>
+            <NativeButton variant="text" label={t(entry.cta.labelKey)} onPress={() => goToFeature(entry.cta!.route)} />
           </View>
         )}
       </CardContent>

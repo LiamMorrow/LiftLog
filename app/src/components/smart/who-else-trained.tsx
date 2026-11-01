@@ -1,5 +1,5 @@
 import { getFeedItemHref } from '@/components/smart/feed-item';
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelectorWithArg } from '@/store';
@@ -29,9 +29,11 @@ export function WhoElseTrained({ date }: WhoElseTrainedProps) {
           <AppText variant="bodyMedium" numberOfLines={1} style={{ flex: 1 }}>
             {t('history.calendar.friend_trained.label', { name: name ?? t('feed.anonymous_user.label') })}
           </AppText>
-          <Button mode="text" onPress={() => push(getFeedItemHref(event.eventId))}>
-            {t('feed.view_workout.button')}
-          </Button>
+          <NativeButton
+            variant="text"
+            label={t('feed.view_workout.button')}
+            onPress={() => push(getFeedItemHref(event.eventId))}
+          />
         </View>
       ))}
     </View>

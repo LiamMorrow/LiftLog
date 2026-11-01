@@ -1,8 +1,15 @@
 import { InlineHost } from '@/components/presentation/foundation/inline-host';
 import { NativeButtonProps, NativeButtonVariant } from './native-button-props';
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { Button } from '@expo/ui/swift-ui';
-import { buttonStyle, controlSize, disabled as disabledModifier, tint } from '@expo/ui/swift-ui/modifiers';
+import { Button, HStack, ProgressView, Text } from '@expo/ui/swift-ui';
+import {
+  accessibilityIdentifier,
+  buttonStyle,
+  controlSize,
+  disabled as disabledModifier,
+  foregroundStyle,
+  tint,
+} from '@expo/ui/swift-ui/modifiers';
 
 const styleForVariant: Record<NativeButtonVariant, Parameters<typeof buttonStyle>[0]> = {
   filled: 'borderedProminent',
@@ -12,29 +19,45 @@ const styleForVariant: Record<NativeButtonVariant, Parameters<typeof buttonStyle
   text: 'borderless',
 };
 
-export default function NativeButton({
+export function NativeButton({
   label,
   onPress,
   systemImage,
   variant = 'filled',
   disabled,
+  loading,
+  compact,
+  contentColor,
+  testID,
   style,
 }: NativeButtonProps) {
   const { colors } = useAppTheme();
+  const inactive = disabled || loading;
+  const tintsLabel = variant === 'text' || variant === 'outlined';
+  const labelColor = contentColor ?? (variant === 'filled' ? colors.onPrimary : undefined);
 
   return (
     <InlineHost matchContents style={style}>
       <Button
-        label={label}
-        systemImage={systemImage}
+        label={loading ? undefined : label}
+        systemImage={loading ? undefined : systemImage}
         onPress={onPress}
         modifiers={[
           buttonStyle(styleForVariant[variant]),
-          controlSize('large'),
-          tint(colors.primary),
-          ...(disabled ? [disabledModifier(true)] : []),
+          controlSize(compact ? 'small' : 'regular'),
+          tint((tintsLabel && contentColor) || colors.primary),
+          ...(labelColor && !tintsLabel && !inactive ? [foregroundStyle(labelColor)] : []),
+          ...(inactive ? [disabledModifier(true)] : []),
+          ...(testID ? [accessibilityIdentifier(testID)] : []),
         ]}
-      />
+      >
+        {loading ? (
+          <HStack spacing={8}>
+            <ProgressView />
+            <Text>{label}</Text>
+          </HStack>
+        ) : undefined}
+      </Button>
     </InlineHost>
   );
 }

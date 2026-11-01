@@ -1,10 +1,9 @@
-import WeightFormat from '@/components/presentation/foundation/weight-format';
-import { font } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
-import Button from '@/components/presentation/foundation/button';
-import { Weight } from '@/models/weight';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
+import { shortFormatWeightUnit, Weight } from '@/models/weight';
+import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
 import { DockedEditor } from '@/components/presentation/workout/edit-dock';
 import { WeightEditor } from '@/components/presentation/foundation/editors/weight-editor';
 
@@ -28,17 +27,12 @@ type WeightDisplayProps = {
 export default function WeightDisplay(props: WeightDisplayProps) {
   const { t } = useTranslate();
   const [editorOpen, setEditorOpen] = useState(false);
+  const value = localeDisplayFormatBigNumber(props.weight?.value.decimalPlaces(4)) || '-';
+  const label = `${value} ${shortFormatWeightUnit(props.weight?.unit)}`.trim();
 
   return (
     <>
-      <Button
-        testID="weight-display"
-        mode="text"
-        onPress={() => setEditorOpen(true)}
-        labelStyle={{ ...font['text-lg'] }}
-      >
-        <WeightFormat weight={props.weight} color={'primary'} />
-      </Button>
+      <NativeButton testID="weight-display" variant="text" label={label} onPress={() => setEditorOpen(true)} />
       {props.isReadonly ? null : (
         <DockedEditor
           open={editorOpen}

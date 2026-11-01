@@ -5,7 +5,7 @@ import LanguageIcon from '@expo/material-symbols/language.xml';
 import LinkIcon from '@expo/material-symbols/link.xml';
 import NotificationsIcon from '@expo/material-symbols/notifications.xml';
 import WeightIcon from '@expo/material-symbols/weight.xml';
-import Button from '@/components/presentation/foundation/button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import { Pager } from '@/components/presentation/foundation/pager';
 import { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
@@ -259,12 +259,16 @@ export function WelcomeWizard() {
 
             <View style={styles.footer}>
               <View style={styles.buttonRow}>
-                <Button mode="text" onPress={handlePrevious} disabled={currentPage === 0} style={styles.button}>
-                  {t('generic.previous.button')}
-                </Button>
-                <Button mode="contained" onPress={() => void handleNext()} style={styles.button}>
-                  {currentPage === totalPages - 1 ? t('onboarding.get_started.button') : t('generic.next.button')}
-                </Button>
+                <NativeButton
+                  variant="text"
+                  label={t('generic.previous.button')}
+                  disabled={currentPage === 0}
+                  onPress={handlePrevious}
+                />
+                <NativeButton
+                  label={currentPage === totalPages - 1 ? t('onboarding.get_started.button') : t('generic.next.button')}
+                  onPress={() => void handleNext()}
+                />
               </View>
             </View>
           </View>
@@ -312,9 +316,7 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     gap: spacing[4],
-  },
-  button: {
-    flex: 1,
   },
 });
