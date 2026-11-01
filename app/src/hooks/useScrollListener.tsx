@@ -1,92 +1,53 @@
-import { useAppTheme } from '@/hooks/useAppTheme';
-import { createContext, useContext, useState, ReactNode, useRef } from 'react';
-import { ColorValue, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { NavigationRouteContext } from 'expo-router/react-navigation';
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 
 type ScrollContextValues = {
-  isScrolled: boolean;
-  setScrolled: (_: boolean) => void;
-  isScrollingDown: boolean;
-  setScrollingDown: (_: boolean) => void;
-  handleScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  scrolledRoutes: ReadonlySet<string>;
+  setRouteScrolled: (routeKey: string, scrolled: boolean) => void;
 };
 
-// Create a context with default value
 const ScrollContext = createContext<ScrollContextValues>({
-  isScrolled: false,
-  setScrolled: (_: boolean) => {},
-  isScrollingDown: false,
-  setScrollingDown: (_: boolean) => {},
-  handleScroll: (_event: NativeSyntheticEvent<NativeScrollEvent>) => {},
+  scrolledRoutes: new Set(),
+  setRouteScrolled: () => {},
 });
 
-type ScrollProviderCallbackProps =
-  | {
-      setScrolled: (scroll: boolean) => void;
-      isScrolled: boolean;
-    }
-  | {
-      setScrolled?: undefined;
-      isScrolled?: undefined;
-    };
+export function ScrollProvider({ children }: { children: ReactNode }) {
+  const [scrolledRoutes, setScrolledRoutes] = useState<ReadonlySet<string>>(() => new Set());
 
-type ScrollProviderProps = {
-  children: ReactNode;
-} & ScrollProviderCallbackProps;
+  const setRouteScrolled = (routeKey: string, scrolled: boolean) =>
+    setScrolledRoutes((current) => {
+      if (current.has(routeKey) === scrolled) {
+        return current;
+      }
+      const next = new Set(current);
+      if (scrolled) {
+        next.add(routeKey);
+      } else {
+        next.delete(routeKey);
+      }
+      return next;
+    });
 
-// Create a provider component
-export const ScrollProvider = ({
-  children,
-  isScrolled: isScrolledOverride,
-  setScrolled: setScrolledOverride,
-}: ScrollProviderProps) => {
-  const [isScrolledGlobal, setScrolledGlobal] = useState(false);
-  const [isScrollingDown, setScrollingDown] = useState(false);
+  return <ScrollContext value={{ scrolledRoutes, setRouteScrolled }}>{children}</ScrollContext>;
+}
 
-  return (
-    <ScrollContext.Provider
-      value={{
-        isScrolled: isScrolledOverride ?? isScrolledGlobal,
-        setScrolled: setScrolledOverride ?? setScrolledGlobal,
-        isScrollingDown,
-        setScrollingDown,
-        handleScroll: () => {},
-      }}
-    >
-      {children}
-    </ScrollContext.Provider>
-  );
-};
+export function useScrolledRoutes() {
+  return useContext(ScrollContext).scrolledRoutes;
+}
 
-// Create a hook to use the ScrollContext
-export const useScroll = (invertedScroll?: boolean): ScrollContextValues => {
-  const ctx = useContext(ScrollContext);
-  const [scrollHandlerLastFired, setScrollHandlerLastFired] = useState<boolean | undefined>(undefined);
-  const lastOffset = useRef(0);
+export function useScroll(invertedScroll?: boolean) {
+  const { setRouteScrolled } = useContext(ScrollContext);
+  const route = useContext(NavigationRouteContext);
+
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    const contentHeight = event.nativeEvent.contentSize.height;
-    const layoutHeight = event.nativeEvent.layoutMeasurement.height;
-    const scrollHeight = contentHeight - layoutHeight;
-
-    // Clamp so that an overscroll bounce past the top doesn't read as scrolling down on the way back.
-    ctx.setScrollingDown(offsetY > Math.max(lastOffset.current, 0));
-    lastOffset.current = offsetY;
-
-    const isScrolled = invertedScroll ? offsetY < scrollHeight : offsetY > 0;
-    if (scrollHandlerLastFired === isScrolled) {
+    if (!route) {
       return;
     }
-    setScrollHandlerLastFired(isScrolled);
-    ctx.setScrolled(isScrolled);
+    const offsetY = event.nativeEvent.contentOffset.y;
+    const scrollHeight = event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height;
+    setRouteScrolled(route.key, invertedScroll ? offsetY < scrollHeight : offsetY > 0);
   };
-  return {
-    ...ctx,
-    handleScroll,
-  };
-};
 
-export const useScrollHeaderColor = (): ColorValue => {
-  const { isScrolled } = useScroll();
-  const { colors } = useAppTheme();
-  return isScrolled ? colors.surfaceContainer : colors.surface;
-};
+  return { handleScroll };
+}
