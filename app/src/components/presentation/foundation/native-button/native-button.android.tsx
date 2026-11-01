@@ -3,6 +3,7 @@ import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import {
   Button,
   CircularProgressIndicator,
+  ElevatedButton,
   FilledTonalButton,
   Host,
   Icon,
@@ -21,6 +22,18 @@ const buttonForVariant = {
 } satisfies Record<NativeButtonVariant, unknown>;
 
 const iconSize = 18;
+
+type Colors = ReturnType<typeof useAppTheme>['colors'];
+
+function floatingContainer(variant: NativeButtonVariant, colors: Colors) {
+  if (variant === 'filled') {
+    return { containerColor: colors.primary, contentColor: colors.onPrimary };
+  }
+  if (variant === 'tonal') {
+    return { containerColor: colors.secondaryContainer, contentColor: colors.onSecondaryContainer };
+  }
+  return undefined;
+}
 
 function contentPadding({
   variant,
@@ -50,19 +63,21 @@ export function NativeButton({
   disabled,
   loading,
   compact,
+  floating,
   contentColor,
   testID,
   style,
 }: NativeButtonProps) {
   const { colors } = useAppTheme();
-  const MaterialButton = buttonForVariant[variant];
+  const floatingColors = floating ? floatingContainer(variant, colors) : undefined;
+  const MaterialButton = floatingColors ? ElevatedButton : buttonForVariant[variant];
 
   return (
     <Host matchContents seedColor={colors.seedColor} style={style} colorScheme={colors.scheme}>
       <MaterialButton
         onClick={onPress}
         enabled={!disabled && !loading}
-        colors={{ contentColor }}
+        colors={{ ...floatingColors, contentColor: contentColor ?? floatingColors?.contentColor }}
         contentPadding={contentPadding({ variant, compact, hasLeading: loading || icon !== undefined })}
         modifiers={testID ? [testIDModifier(testID)] : undefined}
       >
