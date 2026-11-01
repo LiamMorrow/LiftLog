@@ -56,6 +56,7 @@ const booleanPrefs: BoolPref[] = [
   { key: 'welcomeWizardCompleted', default: false },
   { key: 'notesExpandedByDefault', default: true },
   { key: 'showPlanNotesInWorkout', default: true },
+  { key: 'showPreviousRepsInWorkout', default: true },
   { key: 'keepScreenAwakeDuringWorkout', default: true },
   { key: 'exportToHealthAggregator', default: false },
   { key: 'showPostWorkoutSummary', default: true },

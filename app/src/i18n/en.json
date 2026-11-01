@@ -596,6 +596,8 @@
   "workout.notes_expanded_by_default.subtitle": "Expand notes during a workout by default",
   "workout.show_plan_notes.label": "Show plan notes",
   "workout.show_plan_notes.subtitle": "Show notes from the plan on exercises during a workout",
+  "workout.show_previous_reps.label": "Show previous reps",
+  "workout.show_previous_reps.subtitle": "Show the reps from your last workout on each set",
   "workout.previously_completed.label": "Previously completed",
   "workout.post_workout.compared_with.title": "Compared with {date}",
   "workout.post_workout.exercises.title": "Exercises",

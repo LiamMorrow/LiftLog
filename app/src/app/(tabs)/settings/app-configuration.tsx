@@ -1,5 +1,6 @@
 import AssignmentTurnedInIcon from '@expo/material-symbols/assignment_turned_in.xml';
 import DescriptionIcon from '@expo/material-symbols/description.xml';
+import HistoryIcon from '@expo/material-symbols/history.xml';
 import MonitorWeightIcon from '@expo/material-symbols/monitor_weight.xml';
 import NotesIcon from '@expo/material-symbols/notes.xml';
 import ReplayIcon from '@expo/material-symbols/replay.xml';
@@ -12,6 +13,7 @@ import {
   setKeepScreenAwakeDuringWorkout,
   setNotesExpandedByDefault,
   setShowPlanNotesInWorkout,
+  setShowPreviousRepsInWorkout,
   setShowAccomplishments,
   setShowBodyweight,
   setShowPostWorkoutSummary,
@@ -77,6 +79,15 @@ export default function AppConfigurationPage() {
           supportingText={t('workout.show_plan_notes.subtitle')}
           value={settings.showPlanNotesInWorkout}
           onValueChange={(value) => dispatch(setShowPlanNotesInWorkout(value))}
+        />
+        <SegmentedListSwitch
+          testID="setShowPreviousRepsInWorkout"
+          label={t('workout.show_previous_reps.label')}
+          icon={HistoryIcon}
+          systemImage="clock.arrow.circlepath"
+          supportingText={t('workout.show_previous_reps.subtitle')}
+          value={settings.showPreviousRepsInWorkout}
+          onValueChange={(value) => dispatch(setShowPreviousRepsInWorkout(value))}
         />
         <SegmentedListSwitch
           label={t('workout.keep_screen_awake.label')}

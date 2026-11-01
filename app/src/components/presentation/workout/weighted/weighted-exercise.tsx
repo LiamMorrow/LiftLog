@@ -7,6 +7,7 @@ import ExerciseSection from '@/components/presentation/workout/exercise-section'
 import { OffsetDateTime } from '@js-joda/core';
 import { Updater } from '@/utils/types';
 import { useTranslate } from '@tolgee/react';
+import { useAppSelector } from '@/store';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedWeightedExercise;
@@ -29,6 +30,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
   const { recordedExercise } = props;
   const { t } = useTranslate();
   const [weightEditOriginal, setWeightEditOriginal] = useState<RecordedWeightedExercise>();
+  const showPreviousReps = useAppSelector((x) => x.settings.showPreviousRepsInWorkout);
 
   const setToStartNext = recordedExercise.potentialSets.findIndex((x) => !x.isComplete);
 
@@ -56,7 +58,9 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
               const time = timeProvider();
               updateExercise((ex) => ex.withCycledRepCount(index, time));
             }}
-            previousRepCount={props.previousLineageExercise?.potentialSets[index]?.set?.repsCompleted}
+            previousRepCount={
+              showPreviousReps ? props.previousLineageExercise?.potentialSets[index]?.set?.repsCompleted : undefined
+            }
             onUpdateReps={(reps) => {
               const time = timeProvider();
               updateExercise((ex) => ex.withRepCount(index, reps, time));
