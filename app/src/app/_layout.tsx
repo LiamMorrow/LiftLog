@@ -60,6 +60,8 @@ function Layout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="exercise-search" options={{ presentation: 'modal' }} />
       <Stack.Screen name="cardio-set-editor" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="copy-exercise" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="copy-workout" options={{ presentation: 'modal' }} />
       <Stack.Screen name="exercise-editor" options={{}} />
       <Stack.Screen name="exercise-descriptor-editor" />
       <Stack.Screen name="backend-header" />

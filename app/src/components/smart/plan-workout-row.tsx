@@ -4,7 +4,7 @@ import ArrowDownwardIcon from '@expo/material-symbols/arrow_downward.xml';
 import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
 import Menu from '@/components/presentation/foundation/menu';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
-import CopyWorkoutDialog from '@/components/smart/copy-workout-dialog';
+import { getCopyWorkoutHref } from '@/components/smart/copy-workout-picker';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { SessionBlueprint } from '@/models/blueprint-models';
 import { useAppSelectorWithArg } from '@/store';
@@ -21,7 +21,7 @@ import ContentCopy from '@expo/material-symbols/content_copy.xml';
 import CopyAll from '@expo/material-symbols/copy_all.xml';
 import Delete from '@expo/material-symbols/delete.xml';
 import { useTranslate } from '@tolgee/react';
-import { useState } from 'react';
+import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { useDispatch } from 'react-redux';
@@ -45,7 +45,7 @@ export function PlanWorkoutRow({
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const plan = useAppSelectorWithArg(selectProgram, programId);
-  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
+  const { push } = useRouter();
 
   const exerciseCount = sessionBlueprint.exercises.length;
   const summary = [
@@ -154,7 +154,7 @@ export function PlanWorkoutRow({
                 label: t('exercise.copy_to.button'),
                 icon: CopyAll,
                 systemImage: 'doc.on.clipboard',
-                onPress: () => setCopyDialogOpen(true),
+                onPress: () => push(getCopyWorkoutHref({ programId, sessionIndex })),
               },
               {
                 label: t('generic.remove.button'),
@@ -166,12 +166,6 @@ export function PlanWorkoutRow({
           />
         )}
       </View>
-      <CopyWorkoutDialog
-        visible={copyDialogOpen}
-        onDismiss={() => setCopyDialogOpen(false)}
-        sessionBlueprint={sessionBlueprint}
-        currentProgramId={programId}
-      />
     </>
   );
 }

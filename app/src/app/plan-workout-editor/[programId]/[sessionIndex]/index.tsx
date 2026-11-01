@@ -9,11 +9,11 @@ import { SegmentedListTextInput } from '@/components/presentation/foundation/seg
 import { ExerciseBlueprintRow } from '@/components/presentation/workout-editor/exercise-blueprint-row';
 import { SupersetLink } from '@/components/presentation/workout-editor/superset-link';
 import AddIcon from '@expo/material-symbols/add.xml';
-import CopyExerciseDialog from '@/components/smart/copy-exercise-dialog';
+import { getCopyExerciseHref } from '@/components/smart/copy-exercise-picker';
 import { useReorderToolbarItem } from '@/components/smart/reorder-toolbar-item';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
-import { WeightedExerciseBlueprint, Rest, SessionBlueprint, ExerciseBlueprint } from '@/models/blueprint-models';
+import { WeightedExerciseBlueprint, Rest, SessionBlueprint } from '@/models/blueprint-models';
 import { Session } from '@/models/session-models';
 import { useAppSelector } from '@/store';
 import { ProgramSessionLocation, selectProgramSession, updateProgram } from '@/store/program';
@@ -52,7 +52,6 @@ function SessionEditor({ session, location }: { session: SessionBlueprint; locat
     );
   };
   const confirm = useConfirm();
-  const [exerciseToCopy, setExerciseToCopy] = useState<ExerciseBlueprint | undefined>(undefined);
   const [reordering, setReordering] = useState(false);
   const reorderToolbarItem = useReorderToolbarItem({
     reordering,
@@ -194,7 +193,7 @@ function SessionEditor({ session, location }: { session: SessionBlueprint; locat
                                   onOk: () => updateSession((s) => s.withoutExercise(blueprint)),
                                 })
                               }
-                              onCopyTo={() => setExerciseToCopy(blueprint)}
+                              onCopyTo={() => push(getCopyExerciseHref({ ...location, exerciseIndex: index }))}
                             />
                           </SegmentedListItem>
                         </Fragment>
@@ -215,15 +214,6 @@ function SessionEditor({ session, location }: { session: SessionBlueprint; locat
           )}
         </TitledSection>
       </Form>
-      {exerciseToCopy ? (
-        <CopyExerciseDialog
-          visible
-          onDismiss={() => setExerciseToCopy(undefined)}
-          exerciseBlueprint={exerciseToCopy}
-          currentSessionIndex={location.sessionIndex}
-          programId={location.programId}
-        />
-      ) : undefined}
     </FullHeightScrollView>
   );
 }

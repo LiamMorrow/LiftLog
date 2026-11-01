@@ -95,6 +95,8 @@
               "Divider",
               "HelperText",
               "Icon",
+              "List",
+              "RadioButton",
               "Snackbar",
               "Switch",
               "Text",
