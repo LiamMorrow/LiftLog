@@ -5,7 +5,7 @@ import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { LegendList } from '@legendapp/list/react-native';
 import { Children, isValidElement, ReactNode } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { match } from 'ts-pattern';
 type TupleKeysNum<T extends readonly unknown[]> = Exclude<Partial<T>['length'], T['length']>;
 
@@ -143,14 +143,15 @@ export function SegmentedListItem(props: { isFirst: boolean; isLast: boolean; ch
     .with({ isLast: true }, () => styles.lastItem)
     .with({ isFirst: false, isLast: false }, () => styles.middleItem)
     .exhaustive();
-  return (
-    <Card mode="contained" style={[style, { padding: 0, overflow: 'hidden' }]}>
-      {props.children}
-    </Card>
-  );
+  const { colors } = useAppTheme();
+  return <View style={[styles.item, { backgroundColor: colors.surfaceVariant }, style]}>{props.children}</View>;
 }
 
 const styles = StyleSheet.create({
+  item: {
+    borderRadius: rounding.cardRadius,
+    overflow: 'hidden',
+  },
   rowAction: {
     marginBlock: -spacing[4],
     marginInlineEnd: -spacing[4],

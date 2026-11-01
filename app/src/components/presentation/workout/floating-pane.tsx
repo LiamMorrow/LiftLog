@@ -3,6 +3,7 @@ import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Platform, StyleProp, useWindowDimensions, View, ViewStyle } from 'react-native';
 import { GlassBackground } from '@/components/presentation/foundation/glass-background';
 import { floatingShadowStyle } from '@/components/presentation/foundation/floating-shadow';
+import { withAlpha } from '@/utils/color';
 
 const barRadius = spacing[5];
 
@@ -65,11 +66,4 @@ export function FloatingPane({ children, testID, style, contentStyle }: Floating
       </View>
     </View>
   );
-}
-
-function withAlpha(hex: string, alpha: number): string {
-  const a = Math.round(alpha * 255)
-    .toString(16)
-    .padStart(2, '0');
-  return `${hex}${a}`;
 }

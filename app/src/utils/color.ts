@@ -67,3 +67,7 @@ export function hexToHsv(hex: string): Hsv {
   const s = max === 0 ? 0 : delta / max;
   return { h, s, v: max };
 }
+
+export function withAlpha(hex: string, alpha: number): string {
+  return `${hex}${toHexByte(alpha * 255)}`;
+}

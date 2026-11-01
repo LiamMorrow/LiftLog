@@ -11,6 +11,7 @@ export const rounding = {
   roundedRectangleRadius: 10,
   roundedRectangleFocusRingRadius: 15,
   segmentedBetweenRadius: 2,
+  cardRadius: 12,
 };
 
 export const spacing = {

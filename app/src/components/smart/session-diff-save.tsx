@@ -1,6 +1,7 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
-import ListSwitch from '@/components/presentation/foundation/list-switch';
+import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
+import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import SaveIcon from '@expo/material-symbols/save.xml';
 import CloseIcon from '@expo/material-symbols/close.xml';
@@ -24,7 +25,6 @@ import {
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { useOnDismiss } from '@/hooks/useOnDismiss';
@@ -162,16 +162,16 @@ export function SessionDiffSaveEditor() {
           t('plan.diff.dialog_add.body')
         )}
       </Text>
-      <View style={{ marginHorizontal: -spacing.pageHorizontalMargin }}>
-        {canEditExistingWorkout && (
-          <ListSwitch
+      {canEditExistingWorkout && (
+        <SegmentedGroup style={{ marginBlockEnd: spacing[2] }}>
+          <SegmentedListSwitch
             value={isCreatingNewWorkout}
             supportingText={<LimitedHtml value={getSwitchSubtitle()} />}
             onValueChange={handleSaveModeChange}
-            headline={t('plan.diff.dialog_save_as_new_switch.title')}
+            label={t('plan.diff.dialog_save_as_new_switch.title')}
           />
-        )}
-      </View>
+        </SegmentedGroup>
+      )}
       <SessionDiffView
         diff={currentPlanDiff?.diff ?? EmptySessionBlueprintDiff}
         onSelectedDiffChange={setSelectedDiff}

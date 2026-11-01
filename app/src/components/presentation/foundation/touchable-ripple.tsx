@@ -1,15 +1,22 @@
 import { GesturePressableProps } from '@/components/presentation/foundation/pressable-props';
+import { useAppTheme } from '@/hooks/useAppTheme';
+import { withAlpha } from '@/utils/color';
 import { isNotNullOrUndefined } from '@/utils/null';
+import { ReactNode } from 'react';
+import { Platform, Pressable, PressableProps, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-// oxlint-disable-next-line no-restricted-imports
-import { TouchableRippleProps, TouchableRipple as NativeTouchableRipple } from 'react-native-paper';
+
+type TouchableRippleProps = Omit<PressableProps, 'children'> & { children: ReactNode };
 
 export default function TouchableRipple({
   onPress,
   onLongPress,
   disabled,
+  children,
   ...rest
 }: GesturePressableProps<TouchableRippleProps>) {
+  const { colors } = useAppTheme();
+  const rippleColor = withAlpha(colors.onSurface, 0.12);
   const tap = Gesture.Tap()
     .runOnJS(true)
     .onStart(() => !disabled && onPress?.());
@@ -19,15 +26,30 @@ export default function TouchableRipple({
         .onStart(() => !disabled && onLongPress())
     : undefined;
   const gesture = Gesture.Race(...[tap, longPress].filter(isNotNullOrUndefined));
+  const interactive = !disabled && (onPress || onLongPress);
   return (
     <GestureDetector gesture={gesture}>
-      <NativeTouchableRipple
-        disabled={disabled}
-        onPress={onPress ? () => {} : undefined!}
-        // Disable long press since we should be using Holdable for this
-        onLongPress={onLongPress || onPress ? () => {} : undefined!}
+      <Pressable
         {...rest}
-      />
+        disabled={!interactive}
+        onPress={() => {}}
+        android_ripple={Platform.OS === 'android' ? { color: rippleColor } : undefined}
+      >
+        {({ pressed }) => (
+          <>
+            {Platform.OS !== 'android' && pressed && (
+              <View style={[StyleSheet.absoluteFill, styles.underlay, { backgroundColor: rippleColor }]} />
+            )}
+            {children}
+          </>
+        )}
+      </Pressable>
     </GestureDetector>
   );
 }
+
+const styles = StyleSheet.create({
+  underlay: {
+    zIndex: 2,
+  },
+});

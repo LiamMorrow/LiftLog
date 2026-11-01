@@ -93,7 +93,6 @@ import { msMonitorWeightFill } from '@material-symbols-react-native/outlined-400
 import { msPerson } from '@material-symbols-react-native/outlined-400/msPerson';
 import { msPersonFill } from '@material-symbols-react-native/outlined-400/msPersonFill';
 import { MsIcon } from 'material-symbols-react-native';
-import { IconProps } from 'react-native-paper/lib/typescript/components/MaterialCommunityIcon';
 import { Platform } from 'react-native';
 import { msReplay } from '@material-symbols-react-native/outlined-400/msReplay';
 import { msAssignmentAdd } from '@material-symbols-react-native/outlined-400/msAssignmentAdd';
@@ -294,7 +293,14 @@ const MaterialSymbols = {
 
 export type AppIconSource = keyof typeof MaterialSymbols | keyof typeof CustomIcons | (() => JSX.Element);
 
-export function MsIconSrc({ name, ...rest }: IconProps) {
+interface MsIconSrcProps {
+  name: string;
+  size: number;
+  color?: string;
+  testID?: string;
+}
+
+export function MsIconSrc({ name, ...rest }: MsIconSrcProps) {
   if ((name as keyof typeof CustomIcons) in CustomIcons) {
     return (
       <SvgXml

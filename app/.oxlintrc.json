@@ -85,6 +85,11 @@
             "message": "Use TextField, SegmentedListTextInput, PillTextField or SearchField from @/components/presentation/foundation/"
           },
           {
+            "name": "react-native-paper",
+            "importNames": ["Switch"],
+            "message": "react-native-paper is being removed. Use the equivalent from @/components/presentation/foundation/"
+          },
+          {
             "name": "react-native",
             "importNames": ["TextInput"],
             "allowTypeImports": true,
