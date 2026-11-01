@@ -23,7 +23,7 @@ import { useTranslate } from '@tolgee/react';
 import { Href, Stack, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Chip } from 'react-native-paper';
+import { Chip } from '@/components/presentation/foundation/chip';
 import { useDispatch } from 'react-redux';
 
 export function getBackendHeaderFormHref(backendId: BackendId, headerIndex: number): Href {
@@ -113,7 +113,6 @@ function HeaderForm({ backend, headerIndex }: { backend: Backend; headerIndex: n
             {commonHeaderNames.map((suggestion) => (
               <Chip
                 key={suggestion}
-                compact
                 showSelectedCheck={false}
                 selected={name.trim().toLowerCase() === suggestion.toLowerCase()}
                 onPress={() => setName(suggestion)}

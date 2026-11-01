@@ -6,7 +6,7 @@ import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
-import Icon from '@/components/presentation/foundation/icon';
+import { Icon } from '@/components/presentation/foundation/icon';
 import { match } from 'ts-pattern';
 
 interface PotentialSetDisplayProps {

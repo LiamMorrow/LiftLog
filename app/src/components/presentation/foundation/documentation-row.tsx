@@ -1,4 +1,4 @@
-import Icon from '@/components/presentation/foundation/icon';
+import { Icon } from '@/components/presentation/foundation/icon';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { openUrl } from '@/utils/open-url';
 import { useTranslate } from '@tolgee/react';

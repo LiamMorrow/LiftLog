@@ -21,7 +21,7 @@ import { Href, Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Chip } from 'react-native-paper';
+import { Chip } from '@/components/presentation/foundation/chip';
 import { useDispatch } from 'react-redux';
 
 export function getMuscleAnalysisHref(programId: string): Href {

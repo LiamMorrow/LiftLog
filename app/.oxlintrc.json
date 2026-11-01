@@ -86,7 +86,19 @@
           },
           {
             "name": "react-native-paper",
-            "importNames": ["Card", "Switch", "Text"],
+            "importNames": [
+              "Appbar",
+              "Badge",
+              "Card",
+              "Checkbox",
+              "Chip",
+              "Divider",
+              "HelperText",
+              "Icon",
+              "Switch",
+              "Text",
+              "Tooltip"
+            ],
             "message": "react-native-paper is being removed. Use the equivalent from @/components/presentation/foundation/"
           },
           {

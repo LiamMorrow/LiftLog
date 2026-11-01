@@ -40,7 +40,8 @@ import { useDeferredValue, useState } from 'react';
 import { View } from 'react-native';
 import { LegendList } from '@legendapp/list/react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Icon, Tooltip } from 'react-native-paper';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import CloseIcon from '@expo/material-symbols/close.xml';
 import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -198,15 +199,24 @@ function History() {
               <ReactionSummary eventId={session.id} />
             </CardContent>
             <CardActions style={{ marginTop: spacing[2] }}>
-              <Tooltip title={t('workout.share_workout.button')}>
-                <IconButton icon={'share'} mode="contained" onPress={() => handleSharePress(session)} />
-              </Tooltip>
-              <Tooltip title={t('workout.start_this.button')}>
-                <IconButton mode="contained" icon={'playCircle'} onPress={() => startWorkout(session)} />
-              </Tooltip>
-              <Tooltip title={t('generic.delete.button')}>
-                <IconButton mode="contained" icon={'delete'} onPress={() => deleteWorkout(session)} />
-              </Tooltip>
+              <IconButton
+                icon={'share'}
+                mode="contained"
+                accessibilityLabel={t('workout.share_workout.button')}
+                onPress={() => handleSharePress(session)}
+              />
+              <IconButton
+                mode="contained"
+                icon={'playCircle'}
+                accessibilityLabel={t('workout.start_this.button')}
+                onPress={() => startWorkout(session)}
+              />
+              <IconButton
+                mode="contained"
+                icon={'delete'}
+                accessibilityLabel={t('generic.delete.button')}
+                onPress={() => deleteWorkout(session)}
+              />
               <Button
                 onPress={() => onSelectSession(session)}
                 icon="edit"
@@ -325,7 +335,7 @@ function SelectedDayChip({ date, onClear }: { date: LocalDate; onClear: () => vo
               year: date.year() !== LocalDate.now().year() ? 'numeric' : undefined,
             })}
           </AppText>
-          <Icon source="close" size={18} color={colors.onSecondaryContainer} />
+          <NativeIcon icon={CloseIcon} systemImage="xmark" size={18} color={colors.onSecondaryContainer} />
         </View>
       </TouchableRipple>
     </View>

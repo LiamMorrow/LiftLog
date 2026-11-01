@@ -9,7 +9,7 @@ import { T } from '@tolgee/react';
 import { Href, useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Icon } from 'react-native-paper';
+import { Icon } from '@/components/presentation/foundation/icon';
 import { shallowEqual, useDispatch } from 'react-redux';
 
 export function WhatsNewBanner() {

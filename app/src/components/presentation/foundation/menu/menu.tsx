@@ -3,11 +3,16 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { Button, Host, Menu as NativeMenu } from '@expo/ui/swift-ui';
 import { disabled, frame } from '@expo/ui/swift-ui/modifiers';
 
-export default function Menu({ trigger, items, testID, size = 40 }: MenuProps) {
+export default function Menu({ trigger, items, testID, size: touchSize }: MenuProps) {
   const { colors } = useAppTheme();
+  const size = touchSize ?? 40;
 
   return (
-    <Host style={{ width: size, height: size, margin: 6 }} seedColor={colors.seedColor} colorScheme={colors.scheme}>
+    <Host
+      style={{ width: size, height: size, margin: touchSize === undefined ? 6 : 0 }}
+      seedColor={colors.seedColor}
+      colorScheme={colors.scheme}
+    >
       <NativeMenu label={trigger(() => {})} testID={testID} modifiers={[frame({ width: size, height: size })]}>
         {items.map((item) => (
           <Button

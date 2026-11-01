@@ -1,6 +1,7 @@
 import { showSnackbar } from '@/store/app';
 import { Card, CardContent } from '@/components/presentation/foundation/card';
-import { Icon } from 'react-native-paper';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import NotesIcon from '@expo/material-symbols/notes.xml';
 import { useDispatch } from 'react-redux';
 import { View } from 'react-native';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
@@ -97,7 +98,7 @@ export default function SessionComponent(props: {
           alignItems: 'center',
         }}
       >
-        <Icon source={'text'} size={20} />
+        <NativeIcon icon={NotesIcon} systemImage="text.alignleft" size={20} />
         <View style={{ paddingRight: spacing[2] }}>
           <AppText variant="bodyLarge">{session.blueprint.notes}</AppText>
         </View>

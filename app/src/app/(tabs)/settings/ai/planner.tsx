@@ -8,7 +8,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/icon-button';
-import { Appbar, Tooltip } from 'react-native-paper';
+import Replay from '@expo/material-symbols/replay.xml';
 import { PillTextField, pillTextFieldHeight } from '@/components/presentation/foundation/pill-text-field';
 import { useAppSelector } from '@/store';
 import {
@@ -95,13 +95,13 @@ export default function AiPlanner() {
           scrollEdgeEffects: { top: 'hidden' },
           headerBlurEffect: 'systemMaterial',
           title: t('ai.planner.title'),
-          headerRight: () => (
-            <Tooltip title={t('ai.restart_chat.button')}>
-              <Appbar.Action icon={'replay'} onPress={reset}></Appbar.Action>
-            </Tooltip>
-          ),
         }}
       />
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button accessibilityLabel={t('ai.restart_chat.button')} onPress={reset}>
+          <Stack.Toolbar.Icon sf="arrow.counterclockwise" {...(Platform.OS === 'ios' ? {} : { src: Replay })} />
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
       <Animated.View style={chatStyle}>
         <FlatList<ChatMessage>
           ref={listRef}

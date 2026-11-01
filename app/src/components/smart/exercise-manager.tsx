@@ -2,7 +2,8 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, View } from 'react-native';
-import { Icon, List } from 'react-native-paper';
+import { Icon } from '@/components/presentation/foundation/icon';
+import { ListItem } from '@/components/presentation/foundation/list-item';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import AddIcon from '@expo/material-symbols/add.xml';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
@@ -67,7 +68,7 @@ function ExerciseListItem({ exerciseId, onDelete }: { exerciseId: string; onDele
           <Icon source={'delete'} size={30} color={colors.onError} />
         </TouchableRipple>
       </View>
-      <List.Item
+      <ListItem
         title={exercise.name}
         // Important to have a space to ensure they are all the same size
         // Otherwise delete button can show through when there is no desc

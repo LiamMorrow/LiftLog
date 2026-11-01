@@ -1,7 +1,7 @@
 import { LiveChip } from '@/components/presentation/feed/live-chip';
 import { Card } from '@/components/presentation/foundation/card';
 import { PersonAvatar } from '@/components/presentation/feed/person-avatar';
-import Icon from '@/components/presentation/foundation/icon';
+import { Icon } from '@/components/presentation/foundation/icon';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { TitledSection } from '@/components/presentation/foundation/titled-section';

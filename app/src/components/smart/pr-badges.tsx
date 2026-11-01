@@ -1,4 +1,3 @@
-import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import Button from '@/components/presentation/foundation/button';
 import { Popover } from '@/components/presentation/foundation/popover';
 import { SegmentedList } from '@/components/presentation/foundation/segmented-list';
@@ -13,7 +12,13 @@ import { PersonalRecord, PersonalRecordKind } from '@/store/stats/personal-recor
 import { useOwnHistory } from '@/components/smart/own-history-provider';
 import { TranslationKey, useTranslate } from '@tolgee/react';
 import { View } from 'react-native';
-import { Icon } from 'react-native-paper';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import { NativeIconProps } from '@/components/presentation/foundation/native-icon';
+import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
+import FunctionIcon from '@expo/material-symbols/function.xml';
+import StacksIcon from '@expo/material-symbols/stacks.xml';
+import BoltIcon from '@expo/material-symbols/bolt.xml';
+import TrophyIcon from '@expo/material-symbols/trophy.xml';
 import { useRouter } from 'expo-router';
 
 export type RecordScope = 'history' | 'feed';
@@ -23,11 +28,11 @@ export interface ScopedRecords {
   scope: RecordScope;
 }
 
-const icons: Record<PersonalRecordKind, AppIconSource> = {
-  heaviest: 'fitnessCenter',
-  oneRepMax: 'function',
-  mostReps: 'stacks',
-  bestSet: 'bolt',
+const icons: Record<PersonalRecordKind, Pick<NativeIconProps, 'icon' | 'systemImage'>> = {
+  heaviest: { icon: FitnessCenterIcon, systemImage: 'dumbbell' },
+  oneRepMax: { icon: FunctionIcon, systemImage: 'function' },
+  mostReps: { icon: StacksIcon, systemImage: 'square.stack.3d.up' },
+  bestSet: { icon: BoltIcon, systemImage: 'bolt' },
 };
 
 const labelKeys = {
@@ -101,7 +106,7 @@ function RecordRows({ records, scope }: { records: PersonalRecord[]; scope: Reco
   const { label, amount, gain } = useRecordFormat(scope);
   return records.map((record) => (
     <View key={record.kind} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
-      <Icon source={icons[record.kind]} size={16} color={colors.amber} />
+      <NativeIcon {...icons[record.kind]} size={16} color={colors.amber} />
       <AppText variant="bodyMedium" style={{ flex: 1 }}>
         {label(record)}
       </AppText>
@@ -186,7 +191,7 @@ export function PrStrip({ records, scope }: ScopedRecords) {
                       paddingRight: spacing[3],
                     }}
                   >
-                    <Icon source="trophy" size={16} color={colors.amber} />
+                    <NativeIcon icon={TrophyIcon} systemImage="trophy" size={16} color={colors.amber} />
                     <AppText variant="labelLarge" numberOfLines={1} style={{ flexShrink: 1, marginLeft: spacing[0.5] }}>
                       {exerciseName}
                     </AppText>

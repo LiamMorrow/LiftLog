@@ -29,7 +29,7 @@ import BigNumber from 'bignumber.js';
 import { Portal } from 'react-native-paper';
 import { OffsetDateTime } from '@js-joda/core';
 import { Weight } from '@/models/weight';
-import Icon from '@/components/presentation/foundation/icon';
+import { Icon } from '@/components/presentation/foundation/icon';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
 import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';

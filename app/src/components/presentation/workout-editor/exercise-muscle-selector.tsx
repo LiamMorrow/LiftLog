@@ -1,4 +1,4 @@
-import Icon from '@/components/presentation/foundation/icon';
+import { Icon } from '@/components/presentation/foundation/icon';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { MuscleMap } from '@/components/presentation/muscles/muscle-map';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
@@ -9,7 +9,7 @@ import { translateExerciseMeta } from '@/utils/exercise-meta';
 import { secondaryMuscleWeight } from '@/utils/muscle-volume';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Chip } from 'react-native-paper';
+import { Chip } from '@/components/presentation/foundation/chip';
 
 export default function ExerciseMuscleSelector(props: {
   muscles: string[];
@@ -61,7 +61,6 @@ export default function ExerciseMuscleSelector(props: {
               mode="outlined"
               key={x}
               onPress={() => toggle(x)}
-              showSelectedOverlay
               selected={muscles.includes(x)}
               showSelectedCheck={!isSecondary}
               icon={isSecondary ? 'contrast' : undefined}

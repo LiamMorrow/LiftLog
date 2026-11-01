@@ -12,7 +12,7 @@ import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { List } from 'react-native-paper';
+import { ListItem } from '@/components/presentation/foundation/list-item';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 
@@ -72,9 +72,9 @@ export function ExerciseSearch(props: { requestId: string; exerciseName: string 
 function ExerciseIdSearchListItem(props: { exerciseId: string; onPress: (exercise: ExerciseDescriptor) => void }) {
   const exercise = useAppSelectorWithArg(selectExerciseById, props.exerciseId);
   if (!exercise) {
-    return <List.Item title={'Unknown'} />;
+    return <ListItem title={'Unknown'} />;
   }
-  return <List.Item title={exercise.name} onPress={() => props.onPress(exercise)} />;
+  return <ListItem title={exercise.name} onPress={() => props.onPress(exercise)} />;
 }
 
 function SuggestedExerciseSearchListItem(props: {

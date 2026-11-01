@@ -1,4 +1,4 @@
-import Icon from '@/components/presentation/foundation/icon';
+import { Icon } from '@/components/presentation/foundation/icon';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { PillTextField } from '@/components/presentation/foundation/pill-text-field';
 import { TextFieldProps } from '@/components/presentation/foundation/text-field';

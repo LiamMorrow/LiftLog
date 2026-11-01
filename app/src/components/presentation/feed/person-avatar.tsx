@@ -1,5 +1,5 @@
 import { AppText } from '@/components/presentation/foundation/app-text';
-import Icon from '@/components/presentation/foundation/icon';
+import { Icon } from '@/components/presentation/foundation/icon';
 import { ColorChoice, useAppTheme } from '@/hooks/useAppTheme';
 import { View } from 'react-native';
 

@@ -1,5 +1,5 @@
 import { Card } from '@/components/presentation/foundation/card';
-import Icon from '@/components/presentation/foundation/icon';
+import { Icon } from '@/components/presentation/foundation/icon';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';

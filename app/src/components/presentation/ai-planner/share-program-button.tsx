@@ -1,7 +1,6 @@
 import { useTranslate } from '@tolgee/react';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/icon-button';
-import { Tooltip } from 'react-native-paper';
 import { useAppSelector } from '@/store';
 import { addMessage } from '@/store/ai-planner';
 import { uuid } from '@/utils/uuid';
@@ -27,8 +26,12 @@ export function ShareProgramButton({ disabled }: { disabled: boolean }) {
   };
 
   return (
-    <Tooltip title={t('ai.share_program.button')}>
-      <IconButton mode="outlined" icon={'assignment'} disabled={disabled || !activeProgram} onPress={share} />
-    </Tooltip>
+    <IconButton
+      mode="outlined"
+      icon={'assignment'}
+      accessibilityLabel={t('ai.share_program.button')}
+      disabled={disabled || !activeProgram}
+      onPress={share}
+    />
   );
 }

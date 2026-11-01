@@ -13,7 +13,7 @@ import StraightenIcon from '@expo/material-symbols/straighten.xml';
 import TimerIcon from '@expo/material-symbols/timer.xml';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { DecimalInput, DurationInput } from '@/components/presentation/foundation/editors/number-inputs';
-import Icon from '@/components/presentation/foundation/icon';
+import { Icon } from '@/components/presentation/foundation/icon';
 import { TitledSection } from '@/components/presentation/foundation/titled-section';
 import { formatCardioTarget } from '@/utils/format-cardio-target';
 import {

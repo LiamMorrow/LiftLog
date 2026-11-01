@@ -6,7 +6,7 @@ import { useAppSelector } from '@/store';
 import { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Divider } from 'react-native-paper';
+import { Divider } from '@/components/presentation/foundation/divider';
 import IconButton from '@/components/presentation/foundation/icon-button';
 
 interface ExerciseNotesDisplayProps {

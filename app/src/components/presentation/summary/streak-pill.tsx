@@ -6,7 +6,8 @@ import { StreakStats } from '@/store/activity';
 import { flameIcon } from '@/components/presentation/summary/flame-icon';
 import { useStreakCopy } from '@/components/presentation/summary/streak-copy';
 import { Image, Platform, View } from 'react-native';
-import { Icon } from 'react-native-paper';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import CheckIcon from '@expo/material-symbols/check.xml';
 
 const PILL_HEIGHT = 36;
 
@@ -55,7 +56,7 @@ export function StreakPill({ stats }: StreakPillProps) {
           <AppText variant="titleLarge">{title}</AppText>
           {isSafe ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
-              <Icon source="check" size={16} color={colors.onSurface} />
+              <NativeIcon icon={CheckIcon} systemImage="checkmark" size={16} />
               <AppText variant="labelLarge">{safeLabel}</AppText>
             </View>
           ) : (

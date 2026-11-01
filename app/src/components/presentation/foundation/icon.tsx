@@ -10,7 +10,7 @@ interface IconProps {
   testID?: string;
 }
 
-export default function Icon({ source, size, color, mirrored, testID }: IconProps) {
+export function Icon({ source, size, color, mirrored, testID }: IconProps) {
   const { colors } = useAppTheme();
   const icon =
     typeof source === 'function' ? (

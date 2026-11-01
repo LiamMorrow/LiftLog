@@ -1,4 +1,4 @@
-import Icon from '@/components/presentation/foundation/icon';
+import { Icon } from '@/components/presentation/foundation/icon';
 import { Card } from '@/components/presentation/foundation/card';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';

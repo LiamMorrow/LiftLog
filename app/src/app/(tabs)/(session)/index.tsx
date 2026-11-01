@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/presentation/foundation/card';
 import CardList from '@/components/presentation/foundation/card-list';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
@@ -28,7 +29,6 @@ import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Icon as PaperIcon, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { WelcomeWizard } from '@/components/smart/welcome-wizard';
@@ -88,17 +88,19 @@ function ListUpcomingWorkouts({
               <SessionCardContent session={currentSession} />
             </CardContent>
             <CardActions style={{ marginTop: spacing[2] }}>
-              <Tooltip title={t('workout.share_workout.button')}>
-                <IconButton icon={'share'} mode="contained" onPress={() => handleSharePress(currentSession)} />
-              </Tooltip>
-              <Tooltip title={t('workout.clear_current.button')}>
-                <IconButton
-                  testID="clear-current-workout"
-                  icon={'delete'}
-                  mode="contained"
-                  onPress={() => setConfirmDeleteSessionOpen(true)}
-                />
-              </Tooltip>
+              <IconButton
+                icon={'share'}
+                mode="contained"
+                accessibilityLabel={t('workout.share_workout.button')}
+                onPress={() => handleSharePress(currentSession)}
+              />
+              <IconButton
+                testID="clear-current-workout"
+                icon={'delete'}
+                mode="contained"
+                accessibilityLabel={t('workout.clear_current.button')}
+                onPress={() => setConfirmDeleteSessionOpen(true)}
+              />
               <Button
                 icon={'playCircle'}
                 mode="contained"
@@ -182,7 +184,7 @@ function NoUpcomingWorkouts() {
       }}
     >
       <View style={{ alignItems: 'center', gap: spacing[3] }}>
-        <PaperIcon source="fitnessCenter" size={40} color={colors.onSurfaceVariant} />
+        <NativeIcon icon={FitnessCenterIcon} systemImage="dumbbell" size={40} color={colors.onSurfaceVariant} />
         <AppText variant="titleLarge" style={{ textAlign: 'center' }}>
           {t('plan.no_upcoming_workouts.title')}
         </AppText>

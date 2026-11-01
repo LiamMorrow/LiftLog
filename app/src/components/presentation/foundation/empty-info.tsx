@@ -1,7 +1,7 @@
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { View, ViewProps } from 'react-native';
-import Icon from '@/components/presentation/foundation/icon';
+import { Icon } from '@/components/presentation/foundation/icon';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 
 export default function EmptyInfo(props: ViewProps & { icon?: AppIconSource }) {

@@ -1,4 +1,4 @@
-import Icon from '@/components/presentation/foundation/icon';
+import { Icon } from '@/components/presentation/foundation/icon';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { useAppTheme } from '@/hooks/useAppTheme';

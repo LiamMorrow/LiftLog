@@ -1,4 +1,5 @@
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { Divider } from '@/components/presentation/foundation/divider';
+import { spacing } from '@/hooks/useAppTheme';
 import { Fragment, ReactNode } from 'react';
 import { View, ViewProps } from 'react-native';
 
@@ -11,7 +12,6 @@ export default function ItemList<T>(
   } & ViewProps,
 ) {
   const { items, renderItem, verticalPadding, ...rest } = props;
-  const { colors } = useAppTheme();
   if (!items.length && props.empty) {
     return props.empty;
   }
@@ -25,7 +25,7 @@ export default function ItemList<T>(
       {items.map((item, index) => (
         <Fragment key={index}>
           <View>{renderItem(item, index)}</View>
-          {items.length - 1 !== index && <View style={{ height: 1, backgroundColor: colors.outlineVariant }} />}
+          {items.length - 1 !== index && <Divider />}
         </Fragment>
       ))}
     </View>

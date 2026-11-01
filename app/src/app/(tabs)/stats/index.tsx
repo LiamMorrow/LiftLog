@@ -1,6 +1,6 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { Card, CardContent } from '@/components/presentation/foundation/card';
-import Icon from '@/components/presentation/foundation/icon';
+import { Icon } from '@/components/presentation/foundation/icon';
 import { Remote } from '@/components/presentation/foundation/remote';
 import { ExerciseListSummary } from '@/components/presentation/stats/exercise-list-summary';
 import SingleValueStatisticCard from '@/components/presentation/stats/single-value-statistic-card';

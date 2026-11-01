@@ -28,8 +28,9 @@ import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import ExperimentIcon from '@expo/material-symbols/experiment.xml';
 import DeleteIcon from '@expo/material-symbols/delete.xml';
-import { HelperText } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { spacing } from '@/hooks/useAppTheme';
 
 const kindOptions = [
   { value: 'liftlog', label: 'backends.kind.liftlog.label', body: 'backends.kind.liftlog.body' },
@@ -229,9 +230,13 @@ function BackendEditor({ backend }: { backend: Backend }) {
       />
 
       {probe.status === 'idle' ? null : (
-        <HelperText type={probe.status === 'done' && !probe.ok ? 'error' : 'info'}>
+        <AppText
+          variant="bodySmall"
+          color={probe.status === 'done' && !probe.ok ? 'error' : 'onSurfaceVariant'}
+          style={{ paddingHorizontal: spacing[3], paddingVertical: spacing[1] }}
+        >
           {probe.status === 'checking' ? t('backends.test.checking') : probe.message}
-        </HelperText>
+        </AppText>
       )}
 
       <ConfirmationDialog

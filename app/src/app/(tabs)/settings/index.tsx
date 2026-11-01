@@ -1,14 +1,14 @@
 import { SettingsPage } from '@/components/layout/settings-page';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
-import AppIcon from '@/components/presentation/foundation/icon';
+import { Icon as AppIcon } from '@/components/presentation/foundation/icon';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Platform, View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
-import { Badge, Dialog, Icon, Portal } from 'react-native-paper';
+import { Dialog, Portal } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import * as Application from 'expo-application';
 import { useDispatch } from 'react-redux';
@@ -115,7 +115,9 @@ export default function SettingsPageIndex() {
           onPress={() => push('/settings/whats-new')}
           right={
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
-              {hasUnseenWhatsNew ? <Badge size={10} style={{ alignSelf: 'center' }} /> : undefined}
+              {hasUnseenWhatsNew ? (
+                <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: colors.error }} />
+              ) : undefined}
               <AppIcon source="chevronRight" size={20} color={colors.onSurfaceVariant} />
             </View>
           }
@@ -137,7 +139,7 @@ export default function SettingsPageIndex() {
               LiftLog is an entirely open source app, licensed under the AGPL-3.0 license. You can find the source code
               on{' '}
               <Link style={{ color: colors.primary, fontWeight: 'bold' }} href="https://github.com/LiamMorrow/LiftLog">
-                <Icon size={16} source={'share'} color={colors.primary} />
+                <AppIcon size={16} source={'share'} color={colors.primary} />
                 GitHub
               </Link>
               .

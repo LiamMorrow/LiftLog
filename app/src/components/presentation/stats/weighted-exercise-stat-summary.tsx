@@ -1,4 +1,4 @@
-import Icon from '@/components/presentation/foundation/icon';
+import { Icon } from '@/components/presentation/foundation/icon';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { spacing } from '@/hooks/useAppTheme';
 import { WeightedExerciseStatistics } from '@/store/stats';

@@ -30,7 +30,8 @@ import { useTranslate } from '@tolgee/react';
 import { Href, Stack, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { Icon } from 'react-native-paper';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import TrophyIcon from '@expo/material-symbols/trophy.xml';
 
 export function getPostWorkoutHref(sessionId: string): Href {
   return `/post-workout?sessionId=${encodeURIComponent(sessionId)}`;
@@ -170,7 +171,7 @@ function SessionStatTiles(props: { session: Session; recordCount: number; record
       label: t('workout.post_workout.records.title'),
       value: (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
-          <Icon source="trophy" size={22} color={colors.onGoldContainer} />
+          <NativeIcon icon={TrophyIcon} systemImage="trophy" size={22} color={colors.onGoldContainer} />
           <StatValue color="onGoldContainer">{props.recordCount}</StatValue>
         </View>
       ),
