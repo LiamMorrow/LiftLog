@@ -28,7 +28,35 @@
           "background": false
         }
       ],
-      "expo-localization",
+      [
+        "expo-localization",
+        {
+          "allowDynamicLocaleChangesAndroid": true,
+          "supportedLocales": {
+            "android": [
+              "ar",
+              "cs",
+              "de",
+              "en",
+              "es",
+              "fi",
+              "fr",
+              "hu",
+              "it",
+              "ko",
+              "nl",
+              "pl",
+              "pt",
+              "ru",
+              "sr",
+              "sv",
+              "tr",
+              "uk",
+              "zh-Hans"
+            ]
+          }
+        }
+      ],
       "expo-sharing",
       "./plugins/override-health-connect-min-version.js",
       "./plugins/android-signing.js",

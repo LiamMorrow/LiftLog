@@ -3,7 +3,7 @@ import { BuiltInExerciseJSON, loadBuiltInExercises, resolveCatalog } from '@/ser
 
 const detector = vi.hoisted(() => ({ detected: undefined as string | undefined }));
 vi.mock('@/utils/language-detector', () => ({
-  detectLanguageFromDateLocale: () => detector.detected,
+  detectSystemLanguage: () => detector.detected,
 }));
 
 const baseSample: BuiltInExerciseJSON[] = [

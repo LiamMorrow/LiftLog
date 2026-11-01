@@ -1,10 +1,17 @@
 import { PreferenceService } from '@/services/preference-service';
 import { detectLanguage, LanguageDetectorMiddleware, TolgeePlugin } from '@tolgee/react';
+import { getLocales } from 'expo-localization';
 
 // Tolgee's types claim `detectLanguage` returns a string, but it returns undefined for a locale with
 // no exact or two-letter match.
-export function detectLanguageFromDateLocale(availableLanguages: string[]): string | undefined {
-  return detectLanguage(Intl.DateTimeFormat().resolvedOptions().locale, availableLanguages);
+export function detectSystemLanguage(availableLanguages: string[]): string | undefined {
+  for (const locale of getLocales()) {
+    const language = detectLanguage(locale.languageTag, availableLanguages) as string | undefined;
+    if (language) {
+      return language;
+    }
+  }
+  return undefined;
 }
 
 export const detectLanguageOrPreferred = (preferenceService: PreferenceService, availableLanguages: string[]) => {
@@ -12,8 +19,7 @@ export const detectLanguageOrPreferred = (preferenceService: PreferenceService, 
   if (preference) {
     return preference;
   }
-  const lang = detectLanguageFromDateLocale(availableLanguages);
-  return lang;
+  return detectSystemLanguage(availableLanguages);
 };
 
 const createLanguageDetector = (preferenceService: PreferenceService): LanguageDetectorMiddleware => ({

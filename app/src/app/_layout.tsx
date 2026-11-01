@@ -14,6 +14,7 @@ import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { requireOptionalNativeModule } from 'expo';
 import { useEffect } from 'react';
+import { useSystemLanguageSync } from '@/hooks/useSystemLanguageSync';
 
 install();
 
@@ -57,6 +58,7 @@ export default function RootLayout() {
 function Layout() {
   const { colors } = useAppTheme();
   const router = useRouter();
+  useSystemLanguageSync();
   useEffect(() => {
     if (process.env.EXPO_PUBLIC_STORYBOOK_ENABLED === 'true') {
       router.push('/storybook');
@@ -74,6 +76,7 @@ function Layout() {
       <Stack.Screen name="progression-rule" options={{ presentation: 'modal' }} />
       <Stack.Screen name="progression-example" options={{ presentation: 'modal' }} />
       <Stack.Screen name="color-picker" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="language" options={{ presentation: 'modal' }} />
       <Stack.Screen
         name="welcome"
         options={{ presentation: 'fullScreenModal', headerShown: false, gestureEnabled: false }}

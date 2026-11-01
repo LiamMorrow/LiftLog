@@ -13,10 +13,11 @@ export function SettingsPage(props: {
   docs?: string;
   actions?: ReactNode;
   scrollRef?: Ref<ScrollView>;
+  modal?: boolean;
   children?: ReactNode;
 }) {
   return (
-    <FullHeightScrollView scrollRef={props.scrollRef} floatingChildren={props.actions}>
+    <FullHeightScrollView scrollRef={props.scrollRef} floatingChildren={props.actions} modal={props.modal}>
       <Stack.Screen options={{ title: props.title }} />
       {props.caption ? <PageCaption value={props.caption} /> : undefined}
       <Form>

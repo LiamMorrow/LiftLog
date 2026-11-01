@@ -1,7 +1,6 @@
 import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
 import DescriptionIcon from '@expo/material-symbols/description.xml';
 import ForumIcon from '@expo/material-symbols/forum.xml';
-import LanguageIcon from '@expo/material-symbols/language.xml';
 import LinkIcon from '@expo/material-symbols/link.xml';
 import OpenInBrowserIcon from '@expo/material-symbols/open_in_browser.xml';
 import NotificationsIcon from '@expo/material-symbols/notifications.xml';
@@ -15,13 +14,12 @@ import { SegmentedListSelect } from '@/components/presentation/foundation/segmen
 import { NativeIcon } from '@/components/presentation/foundation/native-icon';
 import ThemeChooser from '@/components/presentation/foundation/editors/theme-chooser';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { supportedLanguages } from '@/services/tolgee';
+import { LanguageLink } from '@/components/smart/language-link';
 import { useAppSelector } from '@/store';
 import {
   setColorSchemeSeed,
   setFirstDayOfWeek,
   setLastSeenWhatsNewId,
-  setPreferredLanguage,
   setRestNotifications,
   setShowFeed,
   setThemeMode,
@@ -33,7 +31,7 @@ import { latestWhatsNewId } from '@/models/whats-new';
 import { getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -85,17 +83,6 @@ export function WelcomeWizard() {
   const { colors } = useAppTheme();
   const [currentPage, setCurrentPage] = useState(0);
   const canExportHealth = useCanExportHealth();
-
-  const languageOptions: SelectPickerOption<string | undefined>[] = useMemo(
-    () => [
-      {
-        value: undefined,
-        label: t('settings.system_default.label'),
-      },
-      ...supportedLanguages.map((x) => ({ value: x.code, label: x.label })),
-    ],
-    [t],
-  );
 
   const totalPages = 3;
 
@@ -184,15 +171,7 @@ export function WelcomeWizard() {
             options={daysOfWeekOptions}
             onChange={(value) => dispatch(setFirstDayOfWeek(value))}
           />
-          <SegmentedListSelect
-            label={t('settings.set_language.button')}
-            icon={LanguageIcon}
-            systemImage="globe"
-            supportingText={t('settings.set_language.subtitle')}
-            value={settings.preferredLanguage}
-            options={languageOptions}
-            onChange={(value) => dispatch(setPreferredLanguage(value))}
-          />
+          <LanguageLink />
         </SegmentedGroup>
         <ThemeChooser
           seed={settings.colorSchemeSeed}

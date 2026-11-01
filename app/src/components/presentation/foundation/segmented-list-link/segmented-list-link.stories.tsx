@@ -24,3 +24,5 @@ export const Default: Story = {};
 export const WithSupportingText: Story = { args: { supportingText: 'Choose where your data lives' } };
 
 export const WithIcon: Story = { args: { icon: SettingsIcon, systemImage: 'gearshape' } };
+
+export const WithValue: Story = { args: { value: 'English' } };

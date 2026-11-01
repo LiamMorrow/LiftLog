@@ -1,5 +1,5 @@
 import { ExerciseDescriptor } from '@/models/exercise-models';
-import { detectLanguageFromDateLocale } from '@/utils/language-detector';
+import { detectSystemLanguage } from '@/utils/language-detector';
 import { supportedLanguages } from '@/services/tolgee';
 
 // The language-neutral base catalog: the id (English name) plus the fixed-vocabulary metadata
@@ -103,7 +103,7 @@ function matchLoader(locale: string | undefined): string | undefined {
 // An unset preference means "system default", so resolve the same locale the UI displays. An
 // unsupported system locale resolves to nothing, leaving the English overlay on its own.
 function resolveLocale(preferredLanguage: string | undefined): string | undefined {
-  return preferredLanguage ?? detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code));
+  return preferredLanguage ?? detectSystemLanguage(supportedLanguages.map((x) => x.code));
 }
 
 async function loadTranslations(preferredLanguage: string | undefined): Promise<ExerciseTranslationMap> {

@@ -4,6 +4,6 @@
     "modules": ["LiftLogHapticsModule", "ReactNativeFileSystemModule"]
   },
   "android": {
-    "modules": ["expo.modules.nativelib.LiftLogHapticsModule"]
+    "modules": ["expo.modules.nativelib.LiftLogHapticsModule", "expo.modules.nativelib.LiftLogLocaleModule"]
   }
 }

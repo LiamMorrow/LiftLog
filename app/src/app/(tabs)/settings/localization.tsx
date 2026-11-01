@@ -1,18 +1,16 @@
 import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
-import LanguageIcon from '@expo/material-symbols/language.xml';
 import WeightIcon from '@expo/material-symbols/weight.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
 import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
 import { SegmentedListSelect } from '@/components/presentation/foundation/segmented-list-select';
 import { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
-import { supportedLanguages } from '@/services/tolgee';
+import { LanguageLink } from '@/components/smart/language-link';
 import { RootState, useAppSelector } from '@/store';
-import { setFirstDayOfWeek, setPreferredLanguage, setUseImperialUnits } from '@/store/settings';
+import { setFirstDayOfWeek, setUseImperialUnits } from '@/store/settings';
 import { getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
-import { useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
@@ -66,17 +64,6 @@ export default function LocalizationPage() {
     },
   ];
 
-  const languageOptions: SelectPickerOption<string | undefined>[] = useMemo(
-    () => [
-      {
-        value: undefined,
-        label: t('settings.system_default.label'),
-      },
-      ...supportedLanguages.map((x) => ({ value: x.code, label: x.label })),
-    ],
-    [t],
-  );
-
   return (
     <SettingsPage title={t('settings.localisation.title')} caption={t('settings.localisation.subtitle')}>
       <SegmentedGroup>
@@ -99,16 +86,7 @@ export default function LocalizationPage() {
           options={daysOfWeekOptions}
           onChange={(value) => dispatch(setFirstDayOfWeek(value))}
         />
-        <SegmentedListSelect
-          testID="setPreferredLanguage"
-          icon={LanguageIcon}
-          systemImage="globe"
-          label={t('settings.set_language.button')}
-          supportingText={t('settings.set_language.subtitle')}
-          value={settings.preferredLanguage}
-          options={languageOptions}
-          onChange={(value) => dispatch(setPreferredLanguage(value))}
-        />
+        <LanguageLink testID="setPreferredLanguage" />
       </SegmentedGroup>
     </SettingsPage>
   );

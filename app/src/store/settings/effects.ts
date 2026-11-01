@@ -25,10 +25,12 @@ import { addRemoteBackupEffects } from '@/store/settings/remote-backup-effects';
 
 import Purchases from 'react-native-purchases';
 import { I18nManager, Platform } from 'react-native';
-import { detectLanguageFromDateLocale } from '@/utils/language-detector';
+import { detectSystemLanguage } from '@/utils/language-detector';
 import { supportedLanguages } from '@/services/tolgee';
 import { initializeStoredSessionsStateSlice } from '@/store/stored-sessions';
 import { builtInBackendId } from '@/models/backend';
+import { getSystemLanguage, hasSystemLanguagePicker, setSystemLanguage } from '@/utils/system-language';
+import { PreferenceService } from '@/services/preference-service';
 
 // Read every generically-hydrated key, then dispatch its setter.
 async function hydrateGenericPreferences(
@@ -46,6 +48,19 @@ async function hydrateGenericPreferences(
   );
 }
 
+async function hydratePreferredLanguage(preferenceService: PreferenceService) {
+  const storedLanguage = preferenceService.getPreferredLanguage();
+  if (!hasSystemLanguagePicker()) {
+    return storedLanguage;
+  }
+  if (storedLanguage) {
+    setSystemLanguage(storedLanguage);
+    await preferenceService.setPreferredLanguage(undefined);
+    return storedLanguage;
+  }
+  return getSystemLanguage();
+}
+
 export function applySettingsEffects(addEffect: AddEffectFn) {
   addEffect(
     initializeSettingsStateSlice,
@@ -56,7 +71,7 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
       await hydrateGenericPreferences(preferenceService, dispatch);
 
       // Bespoke hydration: sync read, composite keys, and composed values.
-      dispatch(setPreferredLanguage(preferenceService.getPreferredLanguage()));
+      dispatch(setPreferredLanguage(await hydratePreferredLanguage(preferenceService)));
 
       const [lastSuccessfulRemoteBackupHash, lastBackupTime, lastBackupBackendId] = await Promise.all([
         preferenceService.getLastSuccessfulRemoteBackupHash(),
@@ -123,9 +138,13 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
   // Bespoke write-back for keys the generic effect skips (persist: false).
   addEffect(setPreferredLanguage, async (action, { stateAfterReduce, extra: { preferenceService, tolgee } }) => {
     if (stateAfterReduce.settings.isHydrated) {
-      await preferenceService.setPreferredLanguage(action.payload);
+      if (hasSystemLanguagePicker()) {
+        setSystemLanguage(action.payload);
+      } else {
+        await preferenceService.setPreferredLanguage(action.payload);
+      }
     }
-    const languageCode = action.payload ?? detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code)) ?? 'en';
+    const languageCode = action.payload ?? detectSystemLanguage(supportedLanguages.map((x) => x.code)) ?? 'en';
     const languageSettings = supportedLanguages.find((x) => x.code === languageCode);
     await tolgee.changeLanguage(languageCode);
     I18nManager.forceRTL(!!languageSettings?.isRTL);
