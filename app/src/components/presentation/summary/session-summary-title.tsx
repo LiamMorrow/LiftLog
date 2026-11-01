@@ -36,7 +36,7 @@ export default function SessionSummaryTitle({
     .filter((x) => !!x)
     .join(' · ');
   return (
-    <View style={{ flexShrink: 1, alignItems: 'flex-start', overflow: 'hidden' }} testID="session-summary-title">
+    <View style={{ flexShrink: 1, minWidth: 0, alignItems: 'stretch' }} testID="session-summary-title">
       <ItemTitle title={session.blueprint.name} color={color} />
       {subtitle ? (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2], paddingTop: spacing[0.5] }}>
