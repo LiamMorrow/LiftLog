@@ -1,7 +1,7 @@
 import CardActions from '@/components/presentation/foundation/card-actions';
 import { Card, CardContent } from '@/components/presentation/foundation/card';
 import CardList from '@/components/presentation/foundation/card-list';
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { NativeIcon } from '@/components/presentation/foundation/native-icon';
 import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
@@ -29,7 +29,6 @@ import { executeRemoteBackup } from '@/store/settings';
 import { LocalDate } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
-import { useState } from 'react';
 import { View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { useDispatch } from 'react-redux';
@@ -55,7 +54,7 @@ function ListUpcomingWorkouts({
   const planId = useAppSelector((x) => x.program.activePlanId);
   const { push } = useRouter();
   const dispatch = useDispatch();
-  const [confirmDeleteSessionOpen, setConfirmDeleteSessionOpen] = useState(false);
+  const confirm = useConfirm();
   const clearCurrentSession = () => {
     if (currentSession) {
       dispatch(deleteStoredSession(currentSession.id));
@@ -104,7 +103,15 @@ function ListUpcomingWorkouts({
                 systemImage="trash"
                 colors={{ content: colors.primary }}
                 label={t('workout.clear_current.button')}
-                onPress={() => setConfirmDeleteSessionOpen(true)}
+                onPress={() =>
+                  confirm({
+                    title: t('workout.clear_current.confirm.title'),
+                    message: t('workout.clear_current.confirm.body'),
+                    okText: t('generic.clear.button'),
+                    destructive: true,
+                    onOk: clearCurrentSession,
+                  })
+                }
               />
               <NativeButton
                 icon={PlayCircleIcon}
@@ -167,17 +174,6 @@ function ListUpcomingWorkouts({
       ) : currentSession ? undefined : (
         <NoUpcomingWorkouts />
       )}
-      <ConfirmationDialog
-        headline={t('workout.clear_current.confirm.title')}
-        textContent={t('workout.clear_current.confirm.body')}
-        okText={t('generic.clear.button')}
-        onOk={() => {
-          clearCurrentSession();
-          setConfirmDeleteSessionOpen(false);
-        }}
-        open={confirmDeleteSessionOpen}
-        onCancel={() => setConfirmDeleteSessionOpen(false)}
-      />
     </View>
   );
 }
@@ -235,7 +231,7 @@ export default function Index() {
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const currentBodyweight = upcomingSessions.map((x) => x.at(0)?.bodyweight).unwrapOr(undefined);
-  const { start, confirmationDialog } = useStartWorkoutWithConfirmation();
+  const { start } = useStartWorkoutWithConfirmation();
   const streakToolbarItem = useStreakToolbarItem(useStreakStats());
 
   useFocusEffect(() => {
@@ -278,7 +274,6 @@ export default function Index() {
           return <ListUpcomingWorkouts startSession={start} upcoming={upcoming} />;
         }}
       />
-      {confirmationDialog}
     </FullHeightScrollView>
   );
 }

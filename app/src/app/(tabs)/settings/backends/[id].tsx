@@ -2,7 +2,7 @@ import SettingsIcon from '@expo/material-symbols/settings.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
 import { BackendHeaderEditor } from '@/components/presentation/backends/backend-header-editor';
 import { getBackendHeaderFormHref } from '@/components/smart/backend-header-form';
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListSelect } from '@/components/presentation/foundation/segmented-list-select';
@@ -24,7 +24,7 @@ import {
 } from '@/services/backend-probe';
 import { useAppSelector } from '@/store';
 import { putBackend, removeBackend } from '@/store/backends';
-import { T, TranslationKey, useTranslate } from '@tolgee/react';
+import { TranslationKey, useTranslate } from '@tolgee/react';
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import ExperimentIcon from '@expo/material-symbols/experiment.xml';
@@ -66,7 +66,7 @@ function BackendEditor({ backend }: { backend: Backend }) {
   const [probe, setProbe] = useState<ProbeState>({ status: 'idle' });
   const probeSignature = probeSignatureOf(backend);
   const [previousProbeSignature, setPreviousProbeSignature] = useState(probeSignatureOf(backend));
-  const [deleteOpen, setDeleteOpen] = useState(false);
+  const confirm = useConfirm();
 
   const update = (changes: Partial<Backend>) => dispatch(putBackend({ ...backend, ...changes }));
 
@@ -179,7 +179,16 @@ function BackendEditor({ backend }: { backend: Backend }) {
           secondary={[
             {
               label: t('generic.delete.button'),
-              onPress: () => setDeleteOpen(true),
+              onPress: () =>
+                confirm({
+                  title: t('backends.delete.title'),
+                  message: t('backends.delete.message'),
+                  destructive: true,
+                  onOk: () => {
+                    dispatch(removeBackend(backend.id));
+                    router.back();
+                  },
+                }),
               icon: DeleteIcon,
               systemImage: 'trash',
             },
@@ -240,17 +249,6 @@ function BackendEditor({ backend }: { backend: Backend }) {
           {probe.status === 'checking' ? t('backends.test.checking') : probe.message}
         </AppText>
       )}
-
-      <ConfirmationDialog
-        open={deleteOpen}
-        headline={t('backends.delete.title')}
-        textContent={<T keyName="backends.delete.message" />}
-        onCancel={() => setDeleteOpen(false)}
-        onOk={() => {
-          dispatch(removeBackend(backend.id));
-          router.back();
-        }}
-      />
     </SettingsPage>
   );
 }

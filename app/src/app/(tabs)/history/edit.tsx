@@ -31,7 +31,7 @@ export default function HistoryEditPage() {
       dispatch(sessionFinished(sessionId));
     }
   });
-  const { start: resume, confirmationDialog } = useStartWorkoutWithConfirmation({
+  const { start: resume } = useStartWorkoutWithConfirmation({
     onStarted: () => {
       resumed.current = true;
       dismissTo('/history');
@@ -74,7 +74,6 @@ export default function HistoryEditPage() {
           },
         ]}
       />
-      {confirmationDialog}
       <SessionComponent
         session={session}
         updateSession={(update) => dispatch(updateStoredSession({ sessionId, update }))}

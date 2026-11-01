@@ -1,7 +1,6 @@
 import QrCodeIcon from '@expo/material-symbols/qr_code.xml';
 import ShareIcon from '@expo/material-symbols/share.xml';
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
-import LimitedHtml from '@/components/presentation/foundation/limited-html';
+import { useConfirm } from '@/hooks/useConfirm';
 import Menu from '@/components/presentation/foundation/menu';
 import { PersonRow } from '@/components/presentation/feed/person-row';
 import { AppText } from '@/components/presentation/foundation/app-text';
@@ -36,7 +35,6 @@ import {
   shareBackWithFriend,
 } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
-import { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
@@ -164,17 +162,20 @@ function ShareProfileRows() {
 function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingActivity | undefined }) {
   const dispatch = useDispatch();
   const { t } = useTranslate();
-  const [confirmRemoveVisible, setConfirmRemoveVisible] = useState(false);
+  const confirm = useConfirm();
   const { colors } = useAppTheme();
   const name = friend.name || t('feed.anonymous_user.label');
   const friendId = friend.id;
 
-  const remove = () => {
-    setConfirmRemoveVisible(false);
-    dispatch(removeFriend({ friendId, notify: true, fromUserAction: true }));
-  };
-
   const removeLabel = friend.status === 'pending' ? t('feed.cancel_request.button') : t('feed.remove_friend.button');
+  const confirmRemove = () =>
+    confirm({
+      title: removeLabel,
+      message: t('feed.remove_friend.confirm.body', { user: name }),
+      okText: t('generic.remove.button'),
+      destructive: true,
+      onOk: () => dispatch(removeFriend({ friendId, notify: true, fromUserAction: true })),
+    });
   const removeMenu = (
     <Menu
       trigger={{
@@ -189,7 +190,7 @@ function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingA
           icon: PersonRemove,
           systemImage: 'person.badge.minus',
           destructive: true,
-          onPress: () => setConfirmRemoveVisible(true),
+          onPress: confirmRemove,
         },
       ]}
     />
@@ -236,7 +237,7 @@ function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingA
               systemImage="xmark"
               colors={{ content: colors.error }}
               label={t('generic.remove.button')}
-              onPress={() => setConfirmRemoveVisible(true)}
+              onPress={confirmRemove}
             />
             <NativeIconButton
               testID="feed-share-back"
@@ -276,19 +277,7 @@ function FriendItem({ friend, activity }: { friend: Friend; activity: FollowingA
     ))
     .exhaustive();
 
-  return (
-    <>
-      <ConfirmationDialog
-        open={confirmRemoveVisible}
-        headline={removeLabel}
-        textContent={<LimitedHtml value={t('feed.remove_friend.confirm.body', { user: name })} />}
-        onOk={remove}
-        okText={t('generic.remove.button')}
-        onCancel={() => setConfirmRemoveVisible(false)}
-      />
-      {row}
-    </>
-  );
+  return row;
 }
 
 function ActivitySummary({ activity }: { activity: FollowingActivity | undefined }) {

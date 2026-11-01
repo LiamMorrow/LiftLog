@@ -59,5 +59,16 @@ appId: com.limajuice.liftlog
 # Finish the (incomplete) session and confirm
 - tapOn:
     id: 'finish-session-button'
-- tapOn:
-    id: 'action-ok'
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          id: 'action-ok'
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          text: 'Finish'
+          below: 'Finish workout\?'

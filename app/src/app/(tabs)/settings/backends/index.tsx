@@ -14,14 +14,13 @@ import {
   isBackendComplete,
 } from '@/models/backend';
 import { useAppSelector } from '@/store';
-import { T, useTranslate } from '@tolgee/react';
+import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { BackendPicker } from '@/components/smart/backend-picker';
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
 import { putBackend, selectAllBackends, switchFeedBackend } from '@/store/backends';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { uuid } from '@/utils/uuid';
-import { useState } from 'react';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { useDispatch } from 'react-redux';
 import AddIcon from '@expo/material-symbols/add.xml';
@@ -35,7 +34,18 @@ export default function BackendsPage() {
   const dispatch = useDispatch();
   const backends = useAppSelector(selectAllBackends);
   const { colors } = useAppTheme();
-  const [pendingFeedBackend, setPendingFeedBackend] = useState<string | undefined>(undefined);
+  const confirm = useConfirm();
+  const confirmFeedSwitch = (backendId: string | undefined) => {
+    if (!backendId) {
+      return;
+    }
+    confirm({
+      title: t('backends.feed_switch.title'),
+      message: t('backends.feed_switch.body'),
+      destructive: true,
+      onOk: () => dispatch(switchFeedBackend({ backendId })),
+    });
+  };
 
   // The editor edits a backend rather than filling in a form, so one exists before it opens. An
   // editor left with nothing typed into it removes what it was given.
@@ -74,7 +84,7 @@ export default function BackendsPage() {
           label={t('backends.feed.label')}
           icon={ForumIcon}
           systemImage="bubble.left.and.bubble.right"
-          right={<BackendPicker feature="feed" onChange={setPendingFeedBackend} />}
+          right={<BackendPicker feature="feed" onChange={confirmFeedSwitch} />}
         />
         <SegmentListFormElement
           label={t('backends.ai_planner.label')}
@@ -119,19 +129,6 @@ export default function BackendsPage() {
           ),
         )}
       </SegmentedGroup>
-
-      <ConfirmationDialog
-        open={pendingFeedBackend !== undefined}
-        headline={t('backends.feed_switch.title')}
-        textContent={<T keyName="backends.feed_switch.body" />}
-        onCancel={() => setPendingFeedBackend(undefined)}
-        onOk={() => {
-          if (pendingFeedBackend) {
-            dispatch(switchFeedBackend({ backendId: pendingFeedBackend }));
-          }
-          setPendingFeedBackend(undefined);
-        }}
-      />
     </SettingsPage>
   );
 }

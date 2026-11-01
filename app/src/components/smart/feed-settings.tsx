@@ -5,7 +5,7 @@ import MonitorWeightIcon from '@expo/material-symbols/monitor_weight.xml';
 import PodcastsIcon from '@expo/material-symbols/podcasts.xml';
 import ShareIcon from '@expo/material-symbols/share.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
 import { CreateFeedAccountCard } from '@/components/smart/create-feed-account-card';
 import { Remote } from '@/components/presentation/foundation/remote';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
@@ -18,7 +18,6 @@ import { getFeedQrCodeHref } from '@/components/smart/feed-qr-code';
 import { setShowFeed } from '@/store/settings';
 import { useTranslate } from '@tolgee/react';
 import { Href, useRouter } from 'expo-router';
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 export type FeedSettingsFocus = 'publish' | 'live';
@@ -86,7 +85,7 @@ function FeedSettingsForm({
   const deleteAccount = () => {
     dispatch(resetFeedAccount({ fromUserAction: true, createNewIdentity: false }));
   };
-  const [deleteAccountDialogOpen, setDeleteAccountDialogOpen] = useState(false);
+  const confirm = useConfirm();
   return (
     <>
       <SegmentedGroup>
@@ -142,17 +141,17 @@ function FeedSettingsForm({
           systemImage="trash"
           destructive
           label={t('feed.delete_account.button')}
-          onPress={() => setDeleteAccountDialogOpen(true)}
+          onPress={() =>
+            confirm({
+              title: t('feed.delete_account.button'),
+              message: t('feed.delete_account.confirm.body'),
+              okText: t('feed.delete_account.button'),
+              destructive: true,
+              onOk: deleteAccount,
+            })
+          }
         />
       </SegmentedGroup>
-      <ConfirmationDialog
-        headline={t('feed.delete_account.button')}
-        textContent={t('feed.delete_account.confirm.body')}
-        open={deleteAccountDialogOpen}
-        onOk={deleteAccount}
-        okText={t('feed.delete_account.button')}
-        onCancel={() => setDeleteAccountDialogOpen(false)}
-      />
     </>
   );
 }

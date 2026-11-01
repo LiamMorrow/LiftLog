@@ -1,6 +1,6 @@
 import CardActions from '@/components/presentation/foundation/card-actions';
 import { Card, CardContent } from '@/components/presentation/foundation/card';
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
 import ShareIcon from '@expo/material-symbols/share.xml';
@@ -102,33 +102,39 @@ function History() {
     dispatch(putStoredSession(newSession));
     onSelectSession(newSession);
   };
-  const [replaceCurrentSessionConfirmOpen, setReplaceCurrentSessionConfirmOpen] = useState(false);
-  const [deleteSelectedWorkoutConfirmOpen, setDeleteSelectedWorkoutConfirmOpen] = useState(false);
-  const [selectedWorkout, setSelectedWorkout] = useState<Session>();
-  const deleteWorkout = (session: Session, force = false) => {
-    if (!force) {
-      setSelectedWorkout(session);
-      setDeleteSelectedWorkoutConfirmOpen(true);
-    } else if (selectedWorkout) {
-      dispatch(deleteStoredSession(selectedWorkout.id));
-      dispatch(addUnpublishedSessionId(selectedWorkout.id));
-      dispatch(removeReactionsForEvents([selectedWorkout.id]));
-      setDeleteSelectedWorkoutConfirmOpen(false);
-      setSelectedWorkout(undefined);
-    }
-  };
+  const confirm = useConfirm();
+  const deleteWorkout = (session: Session) =>
+    confirm({
+      title: t('workout.delete.confirm.title'),
+      message: t('workout.delete.confirm.body', {
+        sessionName: session.blueprint.name,
+        date: formatDate(session.date, { day: 'numeric', month: 'long', year: 'numeric' }),
+      }),
+      okText: t('generic.delete.button'),
+      destructive: true,
+      onOk: () => {
+        dispatch(deleteStoredSession(session.id));
+        dispatch(addUnpublishedSessionId(session.id));
+        dispatch(removeReactionsForEvents([session.id]));
+      },
+    });
 
-  const startWorkout = (session: Session, force = false) => {
-    if (currentWorkoutSession && !force) {
-      setSelectedWorkout(session);
-      setReplaceCurrentSessionConfirmOpen(true);
-    } else {
+  const startWorkout = (session: Session) => {
+    const start = () => {
       startWorkoutSession(session.withNothingCompleted().with({ date: LocalDate.now(), id: uuid() }));
-      setReplaceCurrentSessionConfirmOpen(false);
-      setSelectedWorkout(undefined);
-
       push('/(tabs)/(session)/session', { withAnchor: true });
+    };
+    if (!currentWorkoutSession) {
+      start();
+      return;
     }
+    confirm({
+      title: t('workout.replace_current.confirm.title'),
+      message: t('workout.replace_in_progress.confirm.body'),
+      okText: t('generic.replace.button'),
+      destructive: true,
+      onOk: start,
+    });
   };
   const handleSharePress = (session: Session) => {
     dispatch(
@@ -266,39 +272,6 @@ function History() {
             </EmptyInfo>
           )
         }
-      />
-      <ConfirmationDialog
-        headline={t('workout.replace_current.confirm.title')}
-        textContent={t('workout.replace_in_progress.confirm.body')}
-        open={replaceCurrentSessionConfirmOpen}
-        okText={t('generic.replace.button')}
-        onOk={() => selectedWorkout && startWorkout(selectedWorkout, true)}
-        onCancel={() => {
-          setSelectedWorkout(undefined);
-          setReplaceCurrentSessionConfirmOpen(false);
-        }}
-      />
-      <ConfirmationDialog
-        headline={t('workout.delete.confirm.title')}
-        textContent={
-          <LimitedHtml
-            value={t('workout.delete.confirm.body', {
-              sessionName: selectedWorkout?.blueprint.name ?? '',
-              date: formatDate(selectedWorkout?.date ?? LocalDate.now(), {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-              }),
-            })}
-          />
-        }
-        open={deleteSelectedWorkoutConfirmOpen}
-        okText={t('generic.delete.button')}
-        onOk={() => selectedWorkout && deleteWorkout(selectedWorkout, true)}
-        onCancel={() => {
-          setSelectedWorkout(undefined);
-          setDeleteSelectedWorkoutConfirmOpen(false);
-        }}
       />
     </>
   );

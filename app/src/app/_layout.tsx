@@ -4,6 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppStateProvider } from '@/components/smart/app-state-provider';
 import { PlanImportGate } from '@/components/smart/plan-import-gate';
 import { SnackbarProvider } from '@/components/smart/snackbar-provider';
+import { ConfirmProvider } from '@/components/presentation/foundation/confirm';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import ServicesProvider from '@/components/smart/services-provider';
@@ -37,9 +38,11 @@ export default function RootLayout() {
             <AppThemeProvider>
               <AppStateProvider>
                 <SnackbarProvider>
-                  {Platform.OS === 'android' && <StatusBar style="auto" />}
-                  <PlanImportGate />
-                  <Layout />
+                  <ConfirmProvider>
+                    {Platform.OS === 'android' && <StatusBar style="auto" />}
+                    <PlanImportGate />
+                    <Layout />
+                  </ConfirmProvider>
                 </SnackbarProvider>
               </AppStateProvider>
             </AppThemeProvider>

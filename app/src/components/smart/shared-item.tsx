@@ -120,7 +120,7 @@ function SharedSessionActions({ sharedItem }: { sharedItem: SharedSession }) {
   const { t } = useTranslate();
   const activeProgramId = useAppSelector((x) => x.program.activePlanId);
   const { push } = useRouter();
-  const { start, confirmationDialog } = useStartWorkoutWithConfirmation();
+  const { start } = useStartWorkoutWithConfirmation();
 
   const saveToPlan = () => {
     dispatch(
@@ -133,26 +133,23 @@ function SharedSessionActions({ sharedItem }: { sharedItem: SharedSession }) {
   };
 
   return (
-    <>
-      {confirmationDialog}
-      <PageActions
-        primaryKind="commit"
-        primary={{
-          label: t('feed.shared_session.start_workout.button'),
-          icon: PlayCircleIcon,
-          systemImage: 'play.circle',
-          onPress: () => start(session.with({ id: uuid() })),
-        }}
-        secondary={[
-          {
-            label: t('feed.shared_session.save_to_plan.button'),
-            icon: AssignmentAddIcon,
-            systemImage: 'plus',
-            onPress: saveToPlan,
-          },
-        ]}
-      />
-    </>
+    <PageActions
+      primaryKind="commit"
+      primary={{
+        label: t('feed.shared_session.start_workout.button'),
+        icon: PlayCircleIcon,
+        systemImage: 'play.circle',
+        onPress: () => start(session.with({ id: uuid() })),
+      }}
+      secondary={[
+        {
+          label: t('feed.shared_session.save_to_plan.button'),
+          icon: AssignmentAddIcon,
+          systemImage: 'plus',
+          onPress: saveToPlan,
+        },
+      ]}
+    />
   );
 }
 

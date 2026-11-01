@@ -6,7 +6,7 @@ import { View } from 'react-native';
 import { openUrl } from '@/utils/open-url';
 import Menu, { MenuItem } from '@/components/presentation/foundation/menu';
 import { useTranslate } from '@tolgee/react';
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
 import ExerciseNotesDisplay from '@/components/presentation/workout/exercise-notes-display';
 import RecordedExerciseNotesEditor from '@/components/presentation/workout/recorded-exercise-notes-editor';
 import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
@@ -46,7 +46,7 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
   const { push } = useRouter();
   const { recordedExercise } = props;
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
-  const [removeExerciseDialogOpen, setRemoveExerciseDialogOpen] = useState(false);
+  const confirm = useConfirm();
   const showStats = recordedExercise instanceof RecordedWeightedExercise;
   const showPrevious = () => {
     push(getExerciseHistoryHref(recordedExercise.blueprint), { withAnchor: true });
@@ -143,7 +143,14 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
             label: t('generic.remove.button'),
             icon: Delete,
             systemImage: 'trash',
-            onPress: () => setRemoveExerciseDialogOpen(true),
+            onPress: () =>
+              confirm({
+                title: t('exercise.remove.confirm.title'),
+                message: t('exercise.remove.confirm.body'),
+                okText: t('generic.remove.button'),
+                destructive: true,
+                onOk: onRemoveExercise,
+              }),
           },
           ...(props.recordedExercise.blueprint.link
             ? [
@@ -198,18 +205,6 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
         open={notesDialogOpen}
         notes={recordedExercise.notes}
         onUpdateNotes={(notes) => updateExercise((ex) => ex.with({ notes }) as T)}
-      />
-      <ConfirmationDialog
-        headline={t('exercise.remove.confirm.title')}
-        textContent={t('exercise.remove.confirm.body')}
-        okText={t('generic.remove.button')}
-        open={removeExerciseDialogOpen}
-        onOk={() => {
-          setRemoveExerciseDialogOpen(false);
-          onRemoveExercise();
-        }}
-        onCancel={() => setRemoveExerciseDialogOpen(false)}
-        preventCancel={false}
       />
     </View>
   );

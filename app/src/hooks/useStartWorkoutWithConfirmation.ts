@@ -1,15 +1,14 @@
-import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import { Session } from '@/models/session-models';
 import { useAppSelector } from '@/store';
 import { selectActiveSession } from '@/store/stored-sessions';
 import { useStartWorkout } from '@/hooks/useStartWorkout';
-import { T, useTranslate } from '@tolgee/react';
+import { useConfirm } from '@/hooks/useConfirm';
+import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 
 /**
  * Opens a session as the workout in progress, asking first when that would discard a different
- * unfinished one. Returns the dialog to render alongside whatever triggers `start`.
+ * unfinished one.
  *
  * `onStarted` runs once the session is going ahead, before its screen is opened - after the prompt is
  * confirmed, not when it is raised.
@@ -19,7 +18,7 @@ export function useStartWorkoutWithConfirmation({ onStarted }: { onStarted?: (se
   const { push } = useRouter();
   const activeSession = useAppSelector(selectActiveSession);
   const startWorkout = useStartWorkout();
-  const [pendingReplace, setPendingReplace] = useState<Session | undefined>();
+  const confirm = useConfirm();
 
   const open = (session: Session) => {
     if (activeSession?.id !== session.id) {
@@ -31,27 +30,17 @@ export function useStartWorkoutWithConfirmation({ onStarted }: { onStarted?: (se
 
   const start = (session: Session) => {
     if (activeSession && activeSession.id !== session.id) {
-      setPendingReplace(session);
+      confirm({
+        title: t('workout.replace_current.confirm.title'),
+        message: t('workout.replace_in_progress.confirm.body'),
+        okText: t('generic.replace.button'),
+        destructive: true,
+        onOk: () => open(session),
+      });
       return;
     }
     open(session);
   };
 
-  const confirmationDialog = (
-    <ConfirmationDialog
-      open={!!pendingReplace}
-      onCancel={() => setPendingReplace(undefined)}
-      okText={t('generic.replace.button')}
-      onOk={() => {
-        if (pendingReplace) {
-          open(pendingReplace);
-        }
-        setPendingReplace(undefined);
-      }}
-      headline={<T keyName="workout.replace_current.confirm.title" />}
-      textContent={<T keyName="workout.replace_in_progress.confirm.body" />}
-    />
-  );
-
-  return { start, confirmationDialog };
+  return { start };
 }

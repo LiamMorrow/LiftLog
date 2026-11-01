@@ -42,8 +42,19 @@ appId: com.limajuice.liftlog
 # Finish the (incomplete) session and confirm
 - tapOn:
     id: 'finish-session-button'
-- tapOn:
-    id: 'action-ok'
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          id: 'action-ok'
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          text: 'Finish'
+          below: 'Finish workout\?'
 
 # A freeform session names itself and adds an exercise, so finishing it offers to fold both back into
 # the plan. This flow is not about that, so decline and leave the plan alone.
