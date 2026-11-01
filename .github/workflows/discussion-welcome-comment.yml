@@ -15,14 +15,14 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const body = `Thanks for starting a discussion!
+            const body = `Thanks for starting a discussion! This is an automated message on all new discussions.
 
-            Please write in your own words. AI-generated summaries tend to be more verbose than necessary.
+            If you have used an LLM to write this, please rewrite in your own words. AI-generated summaries tend to be more verbose than necessary.
 
-            A few things that help:
+            A few things that help reduce the burden on the maintainer:
 
-            - Written in your own words, describing the problem or idea clearly.
-            - Written in your original language. If you're not comfortable in English, write in your own language and it can be translated if needed.
+            - Write in your own words, describing the problem or idea clearly.
+            - Write in your original language. If you're not comfortable in English, write in your own language and it can be translated if needed.
             - Search existing [discussions](https://github.com/LiamMorrow/LiftLog/discussions) to check this hasn't already been raised.
 
             See the [Contributing guide](https://github.com/LiamMorrow/LiftLog/blob/main/CONTRIBUTING.md) for more.`;
