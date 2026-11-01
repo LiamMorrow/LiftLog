@@ -1,4 +1,4 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { StyleProp, View, ViewStyle } from 'react-native';
 
@@ -42,14 +42,13 @@ function RepsSegment(props: { set: RepsStripSet; compact?: boolean; isFirst: boo
         backgroundColor: set.isDone ? colors.primary : colors.surface,
       }}
     >
-      <SurfaceText
-        font={props.compact ? 'text-sm' : 'text-base'}
-        weight={set.isDone ? 'bold' : undefined}
+      <AppText
+        variant={props.compact ? (set.isDone ? 'labelLarge' : 'bodyMedium') : set.isDone ? 'titleMedium' : 'bodyLarge'}
         color={set.isDone ? 'onPrimary' : 'onSurfaceVariant'}
         style={{ fontVariant: ['tabular-nums'] }}
       >
         {set.label}
-      </SurfaceText>
+      </AppText>
     </View>
   );
 }

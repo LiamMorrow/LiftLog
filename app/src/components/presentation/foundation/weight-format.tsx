@@ -1,4 +1,5 @@
-import { ColorChoice, font, FontChoice, useAppTheme } from '@/hooks/useAppTheme';
+import { AppText, TextVariant } from '@/components/presentation/foundation/app-text';
+import { ColorChoice } from '@/hooks/useAppTheme';
 import { shortFormatWeightUnit, Weight } from '@/models/weight';
 import { localeDisplayFormatBigNumber } from '@/utils/locale-bignumber';
 import { useTranslate } from '@tolgee/react';
@@ -9,43 +10,39 @@ interface WeightFormatProps {
 
   /** When set, the weight is the added/assisted load on top of bodyweight, shown as `BW`, `BW +10 kg`, `BW −20 kg`. */
   usesBodyweight?: boolean;
-  fontSize?: FontChoice;
+  variant?: TextVariant;
   color?: ColorChoice;
   fontWeight?: TextStyle['fontWeight'];
   decimalPlaces?: number;
 }
 export default function WeightFormat(props: WeightFormatProps) {
   const { t } = useTranslate();
-  const { colors } = useAppTheme();
   const value = props.weight?.value.decimalPlaces(props.decimalPlaces ?? 4);
-  const style = {
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'row',
-    color: colors[props.color ?? 'onSurface'],
-    fontWeight: props.fontWeight,
-    ...(props.fontSize ? { ...font[props.fontSize] } : undefined),
+  const textProps = {
+    variant: props.variant,
+    color: props.color,
+    style: { display: 'flex', alignItems: 'center', flexDirection: 'row', fontWeight: props.fontWeight },
   } as const;
 
   if (props.usesBodyweight) {
     const label = t('exercise.short_bodyweight.label');
     if (!value || value.isZero()) {
-      return <Text style={style}>{label}</Text>;
+      return <AppText {...textProps}>{label}</AppText>;
     }
     const sign = value.isGreaterThan(0) ? '+' : '';
     return (
-      <Text style={style}>
+      <AppText {...textProps}>
         {label} {sign}
         {localeDisplayFormatBigNumber(value)}{' '}
         <Text style={{ fontSize: 12 }}>{shortFormatWeightUnit(props.weight?.unit)}</Text>
-      </Text>
+      </AppText>
     );
   }
 
   const weightDisplay = localeDisplayFormatBigNumber(value) || '-';
   return (
-    <Text style={style}>
+    <AppText {...textProps}>
       {weightDisplay} <Text style={{ fontSize: 12 }}>{shortFormatWeightUnit(props.weight?.unit)}</Text>
-    </Text>
+    </AppText>
   );
 }

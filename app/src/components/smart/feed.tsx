@@ -5,7 +5,7 @@ import { Remote } from '@/components/presentation/foundation/remote';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { CreateFeedAccountCard } from '@/components/smart/create-feed-account-card';
 import { getFeedItemHref } from '@/components/smart/feed-item';
 import { getFeedSettingsHref } from '@/components/smart/feed-settings';
@@ -131,9 +131,9 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
               gap: spacing[2],
             }}
           >
-            <SurfaceText color="error">
+            <AppText variant="bodyLarge" color="error">
               <T keyName="feed.not_publishing_workouts.error" />
-            </SurfaceText>
+            </AppText>
             <Button
               style={{ marginLeft: 'auto' }}
               testID="feed-fix-button"
@@ -149,9 +149,9 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
       {isAlone && (
         <Card mode="contained" style={{ marginBottom: spacing[2] }}>
           <Card.Content style={{ gap: spacing[2] }}>
-            <SurfaceText>
+            <AppText variant="bodyLarge">
               <T keyName="feed.friends_explanation.body" />
-            </SurfaceText>
+            </AppText>
           </Card.Content>
           <CardActions>
             <Button

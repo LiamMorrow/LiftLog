@@ -2,7 +2,7 @@ import { TextField, TextFieldProps } from '@/components/presentation/foundation/
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode, useRef } from 'react';
 import { Pressable, type TextInput, View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 
 type SegmentedListTextInputProps = Omit<TextFieldProps, 'ref' | 'style' | 'font' | 'underline'> & {
   label: string;
@@ -34,9 +34,9 @@ export function SegmentedListTextInput({
       }}
     >
       <View style={{ flex: 1, gap: spacing[0.5] }}>
-        <Text variant="labelMedium" style={{ color: accentColor }}>
+        <AppText variant="labelMedium" style={{ color: accentColor }}>
           {label}
-        </Text>
+        </AppText>
         <TextField
           ref={input}
           underline="focused"
@@ -46,9 +46,9 @@ export function SegmentedListTextInput({
           {...props}
         />
         {supportingText ? (
-          <Text variant="bodySmall" style={{ color: accentColor }}>
+          <AppText variant="bodySmall" style={{ color: accentColor }}>
             {supportingText}
-          </Text>
+          </AppText>
         ) : undefined}
       </View>
       {trailing}

@@ -7,7 +7,8 @@ import { T, useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import { Dialog, List, Portal, RadioButton, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Dialog, List, Portal, RadioButton } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import Button from '@/components/presentation/foundation/button';
 
@@ -78,13 +79,13 @@ export default function CopyWorkoutDialog({
         </Dialog.Title>
         <Dialog.Content>
           <View style={{ gap: spacing[2] }}>
-            <Text variant="bodyMedium">
+            <AppText variant="bodyMedium">
               <T keyName="workout.copy_to_plan.select_plan.label" params={{ workoutName: sessionBlueprint.name }} />
-            </Text>
+            </AppText>
             {otherPrograms.length === 0 ? (
-              <Text variant="bodyMedium" style={{ fontStyle: 'italic' }}>
+              <AppText variant="bodyMedium" style={{ fontStyle: 'italic' }}>
                 <T keyName="plan.no_other_available.message" />
-              </Text>
+              </AppText>
             ) : (
               <View style={{ maxHeight: 200 }}>
                 <FlatList data={otherPrograms} keyExtractor={(item) => item.id} renderItem={renderProgramItem} />

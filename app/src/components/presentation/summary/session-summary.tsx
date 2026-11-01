@@ -34,7 +34,6 @@ export default function SessionSummary({
           key={group.members[0]!.index}
           style={
             showSets && {
-              borderTopWidth: groupIndex === 0 ? 1 : 0,
               borderBottomWidth: 1,
               borderColor: colorScheme === 'light' ? colors.outlineVariant : colors.outline,
               paddingTop: groupIndex === 0 ? spacing[2] : 0,

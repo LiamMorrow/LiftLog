@@ -8,7 +8,8 @@ import { T, useTranslate } from '@tolgee/react';
 import { translateExerciseMeta } from '@/utils/exercise-meta';
 import { secondaryMuscleWeight } from '@/utils/muscle-volume';
 import { View } from 'react-native';
-import { Chip, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Chip } from 'react-native-paper';
 
 export default function ExerciseMuscleSelector(props: {
   muscles: string[];
@@ -37,9 +38,9 @@ export default function ExerciseMuscleSelector(props: {
 
   return (
     <View style={{ gap: spacing[2] }}>
-      <Text variant="labelLarge">
+      <AppText variant="labelLarge">
         <T keyName="muscles.muscle.label" />
-      </Text>
+      </AppText>
       {canMarkSecondary && (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing[4] }}>
           <KeyItem icon="check" label={t('muscles.primary.label')} />
@@ -88,9 +89,9 @@ function KeyItem(props: { icon: AppIconSource; label: string }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
       <Icon source={props.icon} size={16} color={colors.onSurfaceVariant} />
-      <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
+      <AppText variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
         {props.label}
-      </Text>
+      </AppText>
     </View>
   );
 }

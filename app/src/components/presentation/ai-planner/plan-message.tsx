@@ -1,4 +1,4 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { T } from '@tolgee/react';
 import { useRouter } from 'expo-router';
@@ -32,10 +32,12 @@ export function PlanMessage({ message, isUser }: { message: AiChatPlanResponseV2
   };
   return (
     <View style={{ gap: spacing[2] }}>
-      <SurfaceText font="text-2xl" weight={'bold'} color={isUser ? 'onPrimary' : 'onSurface'}>
+      <AppText variant="headlineSmall" color={isUser ? 'onPrimary' : 'onSurface'}>
         {message.plan.name}
-      </SurfaceText>
-      <SurfaceText color={isUser ? 'onPrimary' : 'onSurface'}>{message.plan.description}</SurfaceText>
+      </AppText>
+      <AppText variant="bodyLarge" color={isUser ? 'onPrimary' : 'onSurface'}>
+        {message.plan.description}
+      </AppText>
       {blueprint.sessions.map((s, i) => (
         <Fragment key={i}>
           <SessionSummaryTitle session={Session.getEmptySession(s, preferredWeightUnit)} />

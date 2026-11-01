@@ -14,7 +14,7 @@ import {
 } from 'react';
 import { Animated, Dimensions, Easing, Keyboard, useAnimatedValue, View } from 'react-native';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { FloatingPane } from '@/components/presentation/workout/floating-pane';
 import { KeyboardDoneButtonContext } from '@/components/presentation/foundation/editors/number-inputs';
 
@@ -195,13 +195,13 @@ function EditPane(props: {
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
         <View style={{ flex: 1 }}>
-          <Text variant="titleMedium" numberOfLines={1}>
+          <AppText variant="titleMedium" numberOfLines={1}>
             {props.title}
-          </Text>
+          </AppText>
           {props.subtitle ? (
-            <Text variant="bodySmall" numberOfLines={1} style={{ color: colors.onSurfaceVariant }}>
+            <AppText variant="bodySmall" numberOfLines={1} style={{ color: colors.onSurfaceVariant }}>
               {props.subtitle}
-            </Text>
+            </AppText>
           ) : undefined}
         </View>
         {props.headerAction}

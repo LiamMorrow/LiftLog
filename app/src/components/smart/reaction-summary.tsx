@@ -1,5 +1,5 @@
 import { FloatingEmoji, FloatingEmojiLayer } from '@/components/presentation/feed/floating-emoji';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { ReceivedReaction } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
@@ -64,20 +64,20 @@ export function ReactionSummary({ eventId, animateOnMount, compact }: ReactionSu
         {[...totals].map(([emoji, count]) => (
           <View key={emoji} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
             <Text style={{ fontSize: 16 }}>{emoji}</Text>
-            <SurfaceText font="text-sm">{count.toString()}</SurfaceText>
+            <AppText variant="bodyMedium">{count.toString()}</AppText>
             <FloatingEmojiLayer emojis={floating.filter((x) => x.emoji === emoji)} onFinished={handleFinished} />
           </View>
         ))}
       </View>
 
-      <SurfaceText font="text-sm" color="onSurfaceVariant">
+      <AppText variant="bodyMedium" color="onSurfaceVariant">
         {t('feed.cheers.from.message', { names: names.join(', ') })}
-      </SurfaceText>
+      </AppText>
 
       {compact ? undefined : (
-        <SurfaceText font="text-xs" color="onSurfaceVariant">
+        <AppText variant="bodySmall" color="onSurfaceVariant">
           {t('feed.cheers.private.explanation')}
-        </SurfaceText>
+        </AppText>
       )}
     </View>
   );

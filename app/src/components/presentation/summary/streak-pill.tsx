@@ -1,5 +1,5 @@
 import { Popover } from '@/components/presentation/foundation/popover';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { StreakStats } from '@/store/activity';
@@ -52,20 +52,16 @@ export function StreakPill({ stats }: StreakPillProps) {
     >
       {() => (
         <View style={{ gap: spacing[1] }}>
-          <SurfaceText font="text-lg" weight="bold">
-            {title}
-          </SurfaceText>
+          <AppText variant="titleLarge">{title}</AppText>
           {isSafe ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
               <Icon source="check" size={16} color={colors.onSurface} />
-              <SurfaceText font="text-sm" weight="500">
-                {safeLabel}
-              </SurfaceText>
+              <AppText variant="labelLarge">{safeLabel}</AppText>
             </View>
           ) : (
-            <SurfaceText font="text-sm" color="onSurfaceVariant">
+            <AppText variant="bodyMedium" color="onSurfaceVariant">
               {body}
-            </SurfaceText>
+            </AppText>
           )}
         </View>
       )}

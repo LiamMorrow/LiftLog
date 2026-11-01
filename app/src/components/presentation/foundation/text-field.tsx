@@ -1,17 +1,18 @@
-import { font, FontChoice, useAppTheme } from '@/hooks/useAppTheme';
+import { textVariants, TextVariant } from '@/components/presentation/foundation/app-text';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import { Ref, useState } from 'react';
 import { Platform, TextInput, TextInputProps } from 'react-native';
 
 export type TextFieldProps = Omit<TextInputProps, 'selectionColor' | 'selectionHandleColor' | 'cursorColor'> & {
   ref?: Ref<TextInput>;
-  font?: FontChoice;
+  variant?: TextVariant;
   underline?: 'always' | 'focused';
 };
 
-export function TextField({ ref, font: fontChoice = 'text-base', underline, style, ...props }: TextFieldProps) {
+export function TextField({ ref, variant = 'bodyLarge', underline, style, ...props }: TextFieldProps) {
   const { colors } = useAppTheme();
   const [focused, setFocused] = useState(false);
-  const { fontSize, lineHeight } = font[fontChoice];
+  const { fontSize, lineHeight } = textVariants[variant];
 
   return (
     <TextInput

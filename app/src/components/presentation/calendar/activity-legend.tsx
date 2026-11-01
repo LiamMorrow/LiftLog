@@ -1,4 +1,4 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { ACTIVITY_LEVELS } from '@/store/activity';
 import { useTranslate } from '@tolgee/react';
@@ -24,18 +24,18 @@ export function ActivityLegend() {
         marginTop: spacing[2],
       }}
     >
-      <SurfaceText font="text-xs" color="onSurfaceVariant" style={{ marginRight: spacing[0.5] }}>
+      <AppText variant="bodySmall" color="onSurfaceVariant" style={{ marginRight: spacing[0.5] }}>
         {t('history.calendar.legend.less.label')}
-      </SurfaceText>
+      </AppText>
       {swatches.map((color, index) => (
         <View
           key={index}
           style={{ width: SWATCH_SIZE, height: SWATCH_SIZE, borderRadius: 3, backgroundColor: color }}
         />
       ))}
-      <SurfaceText font="text-xs" color="onSurfaceVariant" style={{ marginLeft: spacing[0.5] }}>
+      <AppText variant="bodySmall" color="onSurfaceVariant" style={{ marginLeft: spacing[0.5] }}>
         {t('history.calendar.legend.more.label')}
-      </SurfaceText>
+      </AppText>
     </View>
   );
 }

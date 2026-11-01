@@ -7,7 +7,8 @@ import { T, useTranslate } from '@tolgee/react';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Platform, View } from 'react-native';
-import { Text, Badge, Dialog, Icon, Portal } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Badge, Dialog, Icon, Portal } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import * as Application from 'expo-application';
 import { useDispatch } from 'react-redux';
@@ -132,7 +133,7 @@ export default function SettingsPageIndex() {
             <T keyName="settings.app_info.title" />
           </Dialog.Title>
           <Dialog.Content>
-            <Text>
+            <AppText>
               LiftLog is an entirely open source app, licensed under the AGPL-3.0 license. You can find the source code
               on{' '}
               <Link style={{ color: colors.primary, fontWeight: 'bold' }} href="https://github.com/LiamMorrow/LiftLog">
@@ -140,8 +141,8 @@ export default function SettingsPageIndex() {
                 GitHub
               </Link>
               .
-            </Text>
-            <Text>LiftLog is currently version {appVersion}</Text>
+            </AppText>
+            <AppText>LiftLog is currently version {appVersion}</AppText>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setAppInfoOpen(false)}>

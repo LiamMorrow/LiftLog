@@ -1,4 +1,4 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -58,13 +58,12 @@ export const ActivityDayCell = memo(function ActivityDayCell({ cell, isSelected,
               borderWidth: 1.5,
             }}
           >
-            <SurfaceText
-              font="text-sm"
-              weight={cell.isToday ? 'bold' : undefined}
+            <AppText
+              variant={cell.isToday ? 'labelLarge' : 'bodyMedium'}
               style={{ color: isEmpty ? (outlineToday ? colors.onSurface : emptyForeground) : foreground }}
             >
               {formatDate(cell.date, { day: 'numeric' })}
-            </SurfaceText>
+            </AppText>
           </View>
         </TouchableRipple>
       </View>

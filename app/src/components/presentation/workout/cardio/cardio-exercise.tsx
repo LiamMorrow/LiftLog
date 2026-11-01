@@ -9,7 +9,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import BigNumber from 'bignumber.js';
 import { useAppSelector } from '@/store';
 import { formatDuration } from '@/utils/format-duration';
@@ -340,14 +340,14 @@ function CardioTargetHandler(props: { target: CardioTarget }) {
   const isDistance = props.target.type === 'distance';
   return (
     <View style={{ flexDirection: 'row', gap: spacing[2] }}>
-      <Text variant="bodyLarge">
+      <AppText variant="bodyLarge">
         <T keyName={isDistance ? 'exercise.target_distance.label' : 'exercise.target_time.label'} />
-      </Text>
-      <Text variant="bodyLarge" style={{ color: colors.primary }}>
+      </AppText>
+      <AppText variant="bodyLarge" style={{ color: colors.primary }}>
         {props.target.type === 'distance'
           ? localeDisplayFormatBigNumber(props.target.value.value) + getShortUnit(props.target.value.unit)
           : formatDuration(props.target.value)}
-      </Text>
+      </AppText>
     </View>
   );
 }

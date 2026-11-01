@@ -26,7 +26,8 @@ import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Card, Icon as PaperIcon, Text, Tooltip } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Card, Icon as PaperIcon, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import { useDispatch } from 'react-redux';
 import { WelcomeWizard } from '@/components/smart/welcome-wizard';
@@ -182,12 +183,12 @@ function NoUpcomingWorkouts() {
     >
       <View style={{ alignItems: 'center', gap: spacing[3] }}>
         <PaperIcon source="fitnessCenter" size={40} color={colors.onSurfaceVariant} />
-        <Text variant="titleLarge" style={{ textAlign: 'center' }}>
+        <AppText variant="titleLarge" style={{ textAlign: 'center' }}>
           {t('plan.no_upcoming_workouts.title')}
-        </Text>
-        <Text variant="bodyMedium" style={{ textAlign: 'center', color: colors.onSurfaceVariant }}>
+        </AppText>
+        <AppText variant="bodyMedium" style={{ textAlign: 'center', color: colors.onSurfaceVariant }}>
           {t('plan.no_upcoming_workouts.message')}
-        </Text>
+        </AppText>
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: spacing[2] }}>
         <NativeButton

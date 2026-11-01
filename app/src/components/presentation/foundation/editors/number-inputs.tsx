@@ -12,7 +12,7 @@ import { Duration } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { createContext, useContext, useRef } from 'react';
 import { Platform, type TextInput, View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 
 /** Off inside a container that brings its own Done, so iOS does not add a second one above number pads. */
 export const KeyboardDoneButtonContext = createContext(true);
@@ -47,7 +47,7 @@ export function NumberInput(props: NumberInputProps) {
     <TextField
       ref={input}
       underline="always"
-      font={large ? 'text-4xl' : 'text-xl'}
+      variant={large ? 'displaySmall' : 'titleLarge'}
       testID={props.testID}
       value={props.value}
       onChangeText={props.onChangeText}
@@ -182,9 +182,9 @@ export function DurationInput(props: {
             autoFocus={props.autoFocus && index === 0}
             size={props.size}
           />
-          <Text variant="bodyLarge" style={{ color: colors.onSurfaceVariant }}>
+          <AppText variant="bodyLarge" style={{ color: colors.onSurfaceVariant }}>
             {suffix}
-          </Text>
+          </AppText>
         </View>
       ))}
     </View>

@@ -11,7 +11,8 @@ import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import SplitCardControl from '@/components/presentation/foundation/split-card-control';
 import { useStreakToolbarItem } from '@/components/smart/streak-toolbar-item';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { SectionHeader } from '@/components/presentation/foundation/section-header';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
@@ -167,14 +168,16 @@ function History() {
               </View>
             ) : (
               visibleSessions.length > 0 && (
-                <SurfaceText font="text-sm" weight="500" color="onSurfaceVariant" testID="history-month-count">
-                  {visibleSessions.length === 1
-                    ? t('history.month.workouts.one', { month: listedMonthName })
-                    : t('history.month.workouts.other', {
-                        count: visibleSessions.length.toString(),
-                        month: listedMonthName,
-                      })}
-                </SurfaceText>
+                <SectionHeader
+                  title={
+                    visibleSessions.length === 1
+                      ? t('history.month.workouts.one', { month: listedMonthName })
+                      : t('history.month.workouts.other', {
+                          count: visibleSessions.length.toString(),
+                          month: listedMonthName,
+                        })
+                  }
+                />
               )
             )}
           </View>
@@ -313,14 +316,14 @@ function SelectedDayChip({ date, onClear }: { date: LocalDate; onClear: () => vo
             paddingRight: spacing[2],
           }}
         >
-          <SurfaceText font="text-sm" weight="500" color="onSecondaryContainer">
+          <AppText variant="labelLarge" color="onSecondaryContainer">
             {formatDate(date, {
               weekday: 'long',
               day: 'numeric',
               month: 'long',
               year: date.year() !== LocalDate.now().year() ? 'numeric' : undefined,
             })}
-          </SurfaceText>
+          </AppText>
           <Icon source="close" size={18} color={colors.onSecondaryContainer} />
         </View>
       </TouchableRipple>

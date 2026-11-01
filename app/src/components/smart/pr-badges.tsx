@@ -3,7 +3,7 @@ import Button from '@/components/presentation/foundation/button';
 import { Popover } from '@/components/presentation/foundation/popover';
 import { SegmentedList } from '@/components/presentation/foundation/segmented-list';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { getExerciseHistoryHref } from '@/components/smart/exercise-history';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Weight } from '@/models/weight';
@@ -102,15 +102,13 @@ function RecordRows({ records, scope }: { records: PersonalRecord[]; scope: Reco
   return records.map((record) => (
     <View key={record.kind} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
       <Icon source={icons[record.kind]} size={16} color={colors.amber} />
-      <SurfaceText font="text-sm" style={{ flex: 1 }}>
+      <AppText variant="bodyMedium" style={{ flex: 1 }}>
         {label(record)}
-      </SurfaceText>
-      <SurfaceText font="text-sm" weight="bold">
-        {amount(record)}
-      </SurfaceText>
-      <SurfaceText font="text-sm" weight="500" color="amber">
+      </AppText>
+      <AppText variant="labelLarge">{amount(record)}</AppText>
+      <AppText variant="labelLarge" color="amber">
         {gain(record)}
-      </SurfaceText>
+      </AppText>
     </View>
   ));
 }
@@ -129,9 +127,7 @@ function RecordPopoverContent({
   const { exerciseName } = records[0]!;
   return (
     <View style={{ gap: spacing[2] }}>
-      <SurfaceText font="text-sm" weight="bold">
-        {exerciseName}
-      </SurfaceText>
+      <AppText variant="labelLarge">{exerciseName}</AppText>
       <RecordRows records={records} scope={scope} />
       {scope === 'history' && (
         <Button
@@ -191,14 +187,9 @@ export function PrStrip({ records, scope }: ScopedRecords) {
                     }}
                   >
                     <Icon source="trophy" size={16} color={colors.amber} />
-                    <SurfaceText
-                      font="text-sm"
-                      weight="500"
-                      numberOfLines={1}
-                      style={{ flexShrink: 1, marginLeft: spacing[0.5] }}
-                    >
+                    <AppText variant="labelLarge" numberOfLines={1} style={{ flexShrink: 1, marginLeft: spacing[0.5] }}>
                       {exerciseName}
-                    </SurfaceText>
+                    </AppText>
                   </View>
                 </TouchableRipple>
               </View>
@@ -252,9 +243,7 @@ export function PrRecordSegmentedList({ records, scope }: ScopedRecords) {
 function ExerciseRecords({ records, scope }: { records: PersonalRecord[]; scope: RecordScope }) {
   return (
     <View style={{ gap: spacing[1] }}>
-      <SurfaceText font="text-sm" weight="bold">
-        {records[0]!.exerciseName}
-      </SurfaceText>
+      <AppText variant="labelLarge">{records[0]!.exerciseName}</AppText>
       <RecordRows records={records} scope={scope} />
     </View>
   );

@@ -3,7 +3,7 @@ import IconButton from '@/components/presentation/foundation/icon-button';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { useAppTheme, spacing, rounding } from '@/hooks/useAppTheme';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { match } from 'ts-pattern';
 
 interface FixedIncrementerProps {
@@ -26,14 +26,14 @@ export default function FixedIncrementer(props: FixedIncrementerProps) {
         justifyContent: 'center',
       }}
     >
-      <Text
+      <AppText
         variant="labelLarge"
         style={{
           textAlign: 'center',
         }}
       >
         {props.label}
-      </Text>
+      </AppText>
 
       <View
         style={{

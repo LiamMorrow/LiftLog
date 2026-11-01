@@ -6,7 +6,8 @@ import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { match } from 'ts-pattern';
-import { Dialog, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Dialog } from 'react-native-paper';
 import { Portal } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/button';
 import SegmentedPicker from '@/components/presentation/foundation/segmented-picker';
@@ -68,9 +69,9 @@ export function RestEditorDialog(props: RestEditorDialogProps) {
               backgroundColor: thumbStyles[key].fill,
             }}
           />
-          <Text variant="labelLarge" style={{ flex: 1 }}>
+          <AppText variant="labelLarge" style={{ flex: 1 }}>
             {label}
-          </Text>
+          </AppText>
           <DurationInput duration={rest[key]} onDurationUpdated={updateRest(key)} />
         </View>
       ))}

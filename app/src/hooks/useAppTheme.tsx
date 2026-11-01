@@ -47,47 +47,6 @@ export const spacing = {
   64: 256,
 } as const;
 
-export const font = {
-  'text-2xs': {
-    fontSize: 10,
-    lineHeight: 14,
-  },
-  'text-xs': {
-    fontSize: 12,
-    lineHeight: 16,
-  },
-  'text-sm': {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  'text-base': {
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  'text-lg': {
-    fontSize: 18,
-    lineHeight: 28,
-  },
-  'text-xl': {
-    fontSize: 20,
-    lineHeight: 28,
-  },
-  'text-2xl': {
-    fontSize: 24,
-    lineHeight: 32,
-  },
-  'text-3xl': {
-    fontSize: 30,
-    lineHeight: 40,
-  },
-  'text-4xl': {
-    fontSize: 40,
-    lineHeight: 50,
-  },
-} as const;
-
-export type FontChoice = keyof typeof font;
-
 type ColorPair<T extends string> = { [k in T | `on${Capitalize<T>}`]: string };
 
 /** Level 0 is the absence of a session, so it has no fill of its own and no entry here. */

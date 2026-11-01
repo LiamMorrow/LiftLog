@@ -1,5 +1,5 @@
 import { SegmentedList } from '@/components/presentation/foundation/segmented-list';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { formatExerciseSummary } from '@/components/presentation/summary/format-exercise-summary';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
@@ -52,11 +52,13 @@ function ExerciseComparisonRow({ comparison }: { comparison: ExerciseComparison 
   return (
     <View style={{ padding: spacing[4], flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}>
       <View style={{ flex: 1, gap: spacing[0.5] }}>
-        <SurfaceText color={wasDone ? 'onSurface' : 'onSurfaceVariant'}>{comparison.name}</SurfaceText>
+        <AppText variant="bodyLarge" color={wasDone ? 'onSurface' : 'onSurfaceVariant'}>
+          {comparison.name}
+        </AppText>
         {detail ? (
-          <SurfaceText font="text-sm" color="onSurfaceVariant">
+          <AppText variant="bodyMedium" color="onSurfaceVariant">
             {detail}
-          </SurfaceText>
+          </AppText>
         ) : null}
       </View>
       <View style={{ alignItems: 'flex-end', gap: spacing[1] }}>
@@ -64,9 +66,9 @@ function ExerciseComparisonRow({ comparison }: { comparison: ExerciseComparison 
           (measure.kind === 'volume' ? (
             <WeightFormat weight={measure.current} decimalPlaces={0} fontWeight="bold" />
           ) : (
-            <SurfaceText weight="bold" style={{ fontVariant: ['tabular-nums'] }}>
+            <AppText variant="titleMedium" style={{ fontVariant: ['tabular-nums'] }}>
               {formatReps(measure.current)}
-            </SurfaceText>
+            </AppText>
           ))}
         <ChangeChip change={change} measure={measure} />
       </View>
@@ -134,9 +136,9 @@ function ChangeChip({ change, measure }: { change: ExerciseChange; measure: Exer
         borderColor: colors.outline,
       }}
     >
-      <SurfaceText font="text-xs" weight="600" style={{ color: chip.ink, fontVariant: ['tabular-nums'] }}>
+      <AppText variant="labelMedium" style={{ color: chip.ink, fontVariant: ['tabular-nums'] }}>
         {chip.text}
-      </SurfaceText>
+      </AppText>
     </View>
   );
 }

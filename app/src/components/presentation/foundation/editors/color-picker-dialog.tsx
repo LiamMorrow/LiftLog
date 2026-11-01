@@ -1,6 +1,6 @@
 import Button from '@/components/presentation/foundation/button';
 import { ColorSliders } from '@/components/presentation/foundation/editors/color-sliders';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { ColorSchemeSeed } from '@/store/settings';
 import { type HexColor } from '@/utils/color';
@@ -87,9 +87,9 @@ function PalettePreview({ seed }: { seed: HexColor }) {
         gap: spacing[3],
       }}
     >
-      <SurfaceText font="text-sm" weight="600" color="onSurfaceVariant">
+      <AppText variant="labelLarge" color="onSurfaceVariant">
         <T keyName="settings.theme.custom.preview" />
-      </SurfaceText>
+      </AppText>
       <View style={{ flexDirection: 'row', gap: spacing[2] }}>
         {swatches.map((color, i) => (
           <View key={i} style={{ flex: 1, height: spacing[10], borderRadius: spacing[2], backgroundColor: color }} />

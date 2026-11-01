@@ -1,4 +1,4 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { View, ViewStyle } from 'react-native';
 
@@ -22,9 +22,9 @@ export function LiveChip({ label, style }: { label: string; style?: ViewStyle })
       ]}
     >
       <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.inverseOnSurface }} />
-      <SurfaceText font="text-xs" weight="bold" color="inverseOnSurface">
+      <AppText variant="labelMedium" color="inverseOnSurface">
         {label}
-      </SurfaceText>
+      </AppText>
     </View>
   );
 }

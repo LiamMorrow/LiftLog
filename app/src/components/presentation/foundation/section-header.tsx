@@ -1,7 +1,7 @@
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';
 import { View, ViewStyle } from 'react-native';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 
 export function SectionHeader({ title, trailing, style }: { title: string; trailing?: ReactNode; style?: ViewStyle }) {
   const { colors } = useAppTheme();
@@ -18,13 +18,13 @@ export function SectionHeader({ title, trailing, style }: { title: string; trail
         style,
       ]}
     >
-      <Text variant="titleMedium" numberOfLines={1} style={{ flexShrink: 1 }}>
+      <AppText variant="titleMedium" numberOfLines={1} style={{ flexShrink: 1 }}>
         {title}
-      </Text>
+      </AppText>
       {typeof trailing === 'string' ? (
-        <Text variant="bodyMedium" numberOfLines={1} style={{ flexShrink: 1, color: colors.onSurfaceVariant }}>
+        <AppText variant="bodyMedium" numberOfLines={1} style={{ flexShrink: 1, color: colors.onSurfaceVariant }}>
           {trailing}
-        </Text>
+        </AppText>
       ) : (
         trailing
       )}

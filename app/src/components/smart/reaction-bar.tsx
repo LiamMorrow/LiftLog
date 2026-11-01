@@ -1,6 +1,6 @@
 import { FloatingEmoji, FloatingEmojiLayer } from '@/components/presentation/feed/floating-emoji';
 import Button from '@/components/presentation/foundation/button';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { REACTION_EMOJIS, ReactionEmoji } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
@@ -74,9 +74,9 @@ export function ReactionBar({ eventId, animateOnMount }: ReactionBarProps) {
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1] }}>
                 <Text style={{ fontSize: 16 }}>{emoji}</Text>
                 {count > 0 && (
-                  <SurfaceText font="text-sm" color="onSecondaryContainer" style={{ fontVariant: ['tabular-nums'] }}>
+                  <AppText variant="bodyMedium" color="onSecondaryContainer" style={{ fontVariant: ['tabular-nums'] }}>
                     {count.toString()}
-                  </SurfaceText>
+                  </AppText>
                 )}
               </View>
             </Button>

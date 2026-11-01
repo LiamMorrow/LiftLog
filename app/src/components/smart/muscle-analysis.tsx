@@ -20,7 +20,8 @@ import { useTranslate } from '@tolgee/react';
 import { Href, Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { Chip, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Chip } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export function getMuscleAnalysisHref(programId: string): Href {
@@ -99,16 +100,16 @@ export function MuscleAnalysis(props: { programId: string }) {
               intensities={Object.fromEntries(analysis.muscles.map((m) => [m.muscle, topSets ? m.sets / topSets : 0]))}
               style={{ maxWidth: 320, alignSelf: 'center' }}
             />
-            <Text variant="labelMedium" style={{ alignSelf: 'flex-end', color: colors.onSurfaceVariant }}>
+            <AppText variant="labelMedium" style={{ alignSelf: 'flex-end', color: colors.onSurfaceVariant }}>
               {t('plan.muscle_analysis.sets_per_cycle.label')}
-            </Text>
+            </AppText>
             <MuscleVolumeList muscles={analysis.muscles} />
             {analysis.unmatchedExercises.length > 0 && (
               <View style={{ gap: spacing[2] }}>
-                <Text variant="titleSmall">{t('plan.muscle_analysis.unmatched.title')}</Text>
-                <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
+                <AppText variant="titleSmall">{t('plan.muscle_analysis.unmatched.title')}</AppText>
+                <AppText variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
                   {t('plan.muscle_analysis.unmatched.subtitle')}
-                </Text>
+                </AppText>
                 <SegmentedList
                   items={analysis.unmatchedExercises}
                   itemKey={(exercise) => exercise.name}
@@ -121,7 +122,7 @@ export function MuscleAnalysis(props: { programId: string }) {
           </>
         ) : (
           <EmptyInfo style={{ marginTop: spacing[8] }}>
-            <Text>{t('plan.muscle_analysis.empty.body')}</Text>
+            <AppText>{t('plan.muscle_analysis.empty.body')}</AppText>
           </EmptyInfo>
         )}
       </View>

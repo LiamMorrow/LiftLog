@@ -1,4 +1,4 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
@@ -32,14 +32,14 @@ export function StatTiles({ tiles }: { tiles: StatTile[] }) {
                 style={[{ flex: 1 }, tile.gold && { backgroundColor: colors.goldContainer }]}
               >
                 <View style={{ padding: spacing[3], gap: spacing[0.5] }}>
-                  <SurfaceText font="text-xs" color={ink}>
+                  <AppText variant="bodySmall" color={ink}>
                     {tile.label}
-                  </SurfaceText>
+                  </AppText>
                   {tile.value}
                   {tile.caption ? (
-                    <SurfaceText font="text-xs" color={ink} numberOfLines={1}>
+                    <AppText variant="bodySmall" color={ink} numberOfLines={1}>
                       {tile.caption}
-                    </SurfaceText>
+                    </AppText>
                   ) : null}
                 </View>
               </Card>
@@ -54,19 +54,13 @@ export function StatTiles({ tiles }: { tiles: StatTile[] }) {
 export function StatValue(props: { children: ReactNode; suffix?: string | undefined; color?: ColorChoice }) {
   const { children, suffix } = props;
   return (
-    <SurfaceText
-      font="text-2xl"
-      weight="bold"
-      color={props.color}
-      numberOfLines={1}
-      style={{ fontVariant: ['tabular-nums'] }}
-    >
+    <AppText variant="headlineSmall" color={props.color} numberOfLines={1} style={{ fontVariant: ['tabular-nums'] }}>
       {children}
       {suffix ? (
-        <SurfaceText font="text-sm" weight="normal" color="onSurfaceVariant">
+        <AppText variant="bodyMedium" color="onSurfaceVariant">
           {suffix}
-        </SurfaceText>
+        </AppText>
       ) : null}
-    </SurfaceText>
+    </AppText>
   );
 }

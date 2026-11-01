@@ -2,7 +2,7 @@ import ConfirmationDialog from '@/components/presentation/foundation/confirmatio
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import Menu from '@/components/presentation/foundation/menu';
 import { PersonRow } from '@/components/presentation/feed/person-row';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import {
   SegmentedGroup,
   SegmentedListItem,
@@ -109,14 +109,13 @@ export function FeedFriends() {
 
 function SectionHeader(props: { label: string; count: number }) {
   return (
-    <SurfaceText
-      font="text-sm"
-      weight="500"
+    <AppText
+      variant="labelLarge"
       color="onSurfaceVariant"
       style={{ paddingTop: spacing[5], paddingBottom: spacing[2], paddingHorizontal: spacing[1] }}
     >
       {`${props.label} · ${props.count}`}
-    </SurfaceText>
+    </AppText>
   );
 }
 

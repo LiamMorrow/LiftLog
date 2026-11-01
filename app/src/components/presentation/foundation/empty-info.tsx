@@ -1,4 +1,4 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { View, ViewProps } from 'react-native';
 import Icon from '@/components/presentation/foundation/icon';
@@ -20,9 +20,9 @@ export default function EmptyInfo(props: ViewProps & { icon?: AppIconSource }) {
       ]}
     >
       <Icon source={icon ?? 'info'} size={30} />
-      <SurfaceText color="onSurface" style={{ textAlign: 'center' }}>
+      <AppText variant="bodyLarge" color="onSurface" style={{ textAlign: 'center' }}>
         {props.children}
-      </SurfaceText>
+      </AppText>
     </View>
   );
 }

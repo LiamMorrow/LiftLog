@@ -1,4 +1,4 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { ActivityCell, ActivityRow } from '@/store/activity';
@@ -62,15 +62,14 @@ export function ActivityCalendar({
           {headerDates.map((date, index) => {
             const isToday = isWeek && !!rows[0]?.cells[index]?.isToday;
             return (
-              <SurfaceText
+              <AppText
                 key={index}
-                font="text-xs"
-                weight={isToday ? 'bold' : undefined}
+                variant={isToday ? 'labelMedium' : 'bodySmall'}
                 color={isToday ? 'onSurface' : 'onSurfaceVariant'}
                 style={{ flex: 1, textAlign: 'center', letterSpacing: 0.6 }}
               >
                 {formatDate(date, { weekday: 'narrow' }).toUpperCase()}
-              </SurfaceText>
+              </AppText>
             );
           })}
         </ForceLTRRow>

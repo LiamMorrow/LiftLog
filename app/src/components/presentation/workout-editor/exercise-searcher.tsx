@@ -9,7 +9,7 @@ import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Keyboard, Pressable } from 'react-native';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { useDispatch } from 'react-redux';
 
 interface ExerciseSearcherProps {
@@ -47,9 +47,9 @@ export function ExerciseSearcher({ currentExercise, onSelectExercise }: Exercise
       onPress={openSearch}
       style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}
     >
-      <Text variant="headlineMedium" style={{ flex: 1 }}>
+      <AppText variant="headlineMedium" style={{ flex: 1 }}>
         {currentExercise.name}
-      </Text>
+      </AppText>
       <IconButton
         icon="search"
         mode="contained-tonal"

@@ -1,7 +1,7 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { PageActions } from '@/components/presentation/foundation/page-actions';
 import AssignmentAddIcon from '@expo/material-symbols/assignment_add.xml';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import { spacing } from '@/hooks/useAppTheme';
@@ -54,9 +54,7 @@ export default function ImportPlan() {
       <Stack.Screen options={{ title: t('plan.import.title') }} />
       {pending && (
         <View style={{ gap: spacing[2], padding: spacing.pageHorizontalMargin }}>
-          <SurfaceText font="text-2xl" weight="bold">
-            {pending.name}
-          </SurfaceText>
+          <AppText variant="headlineSmall">{pending.name}</AppText>
           {pending.sessions.map((session, i) => (
             <Fragment key={i}>
               <SessionSummaryTitle session={Session.getEmptySession(session, preferredWeightUnit)} />

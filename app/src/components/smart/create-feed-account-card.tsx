@@ -1,6 +1,6 @@
 import Button from '@/components/presentation/foundation/button';
 import CardActions from '@/components/presentation/foundation/card-actions';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { createFeedIdentity, selectFeedIdentityRemote } from '@/store/feed';
@@ -29,9 +29,9 @@ export function CreateFeedAccountCard() {
   return (
     <Card mode="contained" style={{ marginBottom: spacing[2] }}>
       <Card.Content>
-        <SurfaceText>
+        <AppText variant="bodyLarge">
           <T keyName="feed.create_account.body" />
-        </SurfaceText>
+        </AppText>
       </Card.Content>
       <CardActions>
         <Button

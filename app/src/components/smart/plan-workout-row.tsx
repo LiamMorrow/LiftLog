@@ -20,7 +20,7 @@ import Delete from '@expo/material-symbols/delete.xml';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { useDispatch } from 'react-redux';
 
 interface PlanWorkoutRowProps {
@@ -100,13 +100,13 @@ export function PlanWorkoutRow({
               justifyContent: 'center',
             }}
           >
-            <Text variant="titleMedium">{sessionIndex + 1}</Text>
+            <AppText variant="titleMedium">{sessionIndex + 1}</AppText>
           </View>
           <View style={{ flex: 1, gap: spacing[0.5] }}>
-            <Text variant="titleMedium">{sessionBlueprint.name}</Text>
-            <Text variant="bodyMedium" numberOfLines={1} style={{ color: colors.onSurfaceVariant }}>
+            <AppText variant="titleMedium">{sessionBlueprint.name}</AppText>
+            <AppText variant="bodyMedium" numberOfLines={1} style={{ color: colors.onSurfaceVariant }}>
               {summary}
-            </Text>
+            </AppText>
           </View>
           {reordering ? (
             <View style={{ flexDirection: 'row' }}>

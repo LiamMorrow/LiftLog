@@ -1,7 +1,7 @@
 import Button from '@/components/presentation/foundation/button';
 import CardActions from '@/components/presentation/foundation/card-actions';
 import IconButton from '@/components/presentation/foundation/icon-button';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { SharedProgramBlueprint } from '@/models/feed-models';
 import { useAppSelectorWithArg } from '@/store';
@@ -40,18 +40,18 @@ export function ActivePlanCard({ id }: { id: string }) {
             paddingVertical: spacing[1],
           }}
         >
-          <SurfaceText font="text-xs" weight="700" style={{ letterSpacing: 1 }}>
+          <AppText variant="labelMedium" style={{ letterSpacing: 1 }}>
             {t('plan.active.label').toUpperCase()}
-          </SurfaceText>
+          </AppText>
         </View>
 
         <View style={{ gap: spacing[0.5] }}>
-          <SurfaceText font="text-3xl" numberOfLines={2}>
+          <AppText variant="headlineLarge" numberOfLines={2}>
             {program.name}
-          </SurfaceText>
-          <SurfaceText font="text-sm" style={{ opacity: 0.7 }}>
+          </AppText>
+          <AppText variant="bodyMedium" style={{ opacity: 0.7 }}>
             {summary}
-          </SurfaceText>
+          </AppText>
         </View>
       </View>
 

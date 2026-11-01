@@ -6,7 +6,7 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { useState } from 'react';
 import { verticalBarChartProps } from '@/components/presentation/stats/line-graph-props';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 
 export function StatisticBarChart<T>({
   statistics: { statistics, maxValue, minValue },
@@ -25,7 +25,7 @@ export function StatisticBarChart<T>({
       value: axis.toNumber(stat.value),
       barWidth: charWidth * (topLabelText.length + 3),
       topLabelComponent: () => (
-        <Text style={{ width: 200, textAlign: 'center', pointerEvents: 'none' }}>{topLabelText}</Text>
+        <AppText style={{ width: 200, textAlign: 'center', pointerEvents: 'none' }}>{topLabelText}</AppText>
       ),
 
       label: formatDate(stat.dateTime.toLocalDate(), {

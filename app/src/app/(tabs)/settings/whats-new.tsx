@@ -8,7 +8,8 @@ import { T, useTranslate } from '@tolgee/react';
 import { Href, Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { View } from 'react-native';
-import { Card, Icon, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Card, Icon } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export default function WhatsNew() {
@@ -57,13 +58,13 @@ function WhatsNewCard({ entry }: { entry: WhatsNewEntry }) {
           >
             <Icon source={entry.icon} size={24} color={colors.onSecondaryContainer} />
           </View>
-          <Text variant="titleMedium" style={{ flexShrink: 1 }}>
+          <AppText variant="titleMedium" style={{ flexShrink: 1 }}>
             <T keyName={entry.titleKey} />
-          </Text>
+          </AppText>
         </View>
-        <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant }}>
+        <AppText variant="bodyMedium" style={{ color: colors.onSurfaceVariant }}>
           <T keyName={entry.bodyKey} />
-        </Text>
+        </AppText>
         {entry.cta && (
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
             <Button mode="text" onPress={() => goToFeature(entry.cta!.route)}>

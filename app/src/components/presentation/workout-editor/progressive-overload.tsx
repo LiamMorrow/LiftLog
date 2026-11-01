@@ -14,7 +14,8 @@ import {
 import { useTranslate } from '@tolgee/react';
 import { ScrollView, View } from 'react-native';
 import { DecimalInput, IntegerInput } from '@/components/presentation/foundation/editors/number-inputs';
-import { Dialog, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Dialog } from 'react-native-paper';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import Button from '@/components/presentation/foundation/button';
 import IconButton from '@/components/presentation/foundation/icon-button';
@@ -164,11 +165,11 @@ export function ProgressionRulesEditor(props: Props) {
                   onChange={(next) => replaceRule(editingIndex, next)}
                 />
                 {deadFrom === editingIndex + 1 && (
-                  <Text variant="bodySmall" style={{ color: colors.error, marginBlockStart: spacing[2] }}>
+                  <AppText variant="bodySmall" style={{ color: colors.error, marginBlockStart: spacing[2] }}>
                     {editingRule.axis === 'load'
                       ? t('exercise.progression.blocks_later.load.body')
                       : t('exercise.progression.blocks_later.reps.body')}
-                  </Text>
+                  </AppText>
                 )}
               </Dialog.Content>
               <Dialog.Actions>
@@ -254,9 +255,9 @@ function RuleEditor(props: {
         />
       </Row>
       {rule.axis === 'load' && !props.canMoveLoad && (
-        <Text variant="bodySmall" style={{ color: colors.error }}>
+        <AppText variant="bodySmall" style={{ color: colors.error }}>
           {t('exercise.progression.axis.no_load.body')}
-        </Text>
+        </AppText>
       )}
 
       <Row
@@ -330,10 +331,10 @@ function SwitchRow(props: { label: string; description: string; value: boolean; 
     <TouchableRipple onPress={() => props.onValueChange(!props.value)}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[4], paddingBlock: spacing[2] }}>
         <View style={{ flex: 1, gap: spacing[0.5] }}>
-          <Text>{props.label}</Text>
-          <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
+          <AppText>{props.label}</AppText>
+          <AppText variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
             {props.description}
-          </Text>
+          </AppText>
         </View>
         <Switch value={props.value} onValueChange={props.onValueChange} />
       </View>
@@ -371,7 +372,7 @@ function Row(props: { label: string; children: React.ReactNode }) {
         minHeight: spacing[11],
       }}
     >
-      <Text style={{ flexShrink: 1 }}>{props.label}</Text>
+      <AppText style={{ flexShrink: 1 }}>{props.label}</AppText>
       {props.children}
     </View>
   );

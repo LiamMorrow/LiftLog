@@ -35,7 +35,7 @@ import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { ReactNode, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { clearCardioSetEdit } from '@/store/app';
@@ -117,7 +117,7 @@ export function CardioExerciseEditor({
                 onPress={() => openSet(index, set, exercise.sets.length)}
                 right={
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
-                    <Text variant="labelLarge">{formatCardioTarget(set.target)}</Text>
+                    <AppText variant="labelLarge">{formatCardioTarget(set.target)}</AppText>
                     <Icon source="chevronRight" size={20} color={colors.onSurfaceVariant} />
                   </View>
                 }
@@ -358,9 +358,9 @@ function TargetRow(props: { label: string; children: ReactNode }) {
         paddingVertical: spacing[3],
       }}
     >
-      <Text variant="labelLarge" style={{ flex: 1 }}>
+      <AppText variant="labelLarge" style={{ flex: 1 }}>
         {props.label}
-      </Text>
+      </AppText>
       {props.children}
     </View>
   );

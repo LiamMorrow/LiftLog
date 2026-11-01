@@ -6,7 +6,7 @@ import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { type LayoutChangeEvent, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 
 const THUMB = 28;
 const TRACK = 6;
@@ -151,12 +151,12 @@ export function RestRangeSlider({ rest, onChange }: { rest: Rest; onChange: (res
         )}
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: THUMB / 2 }}>
-        <Text variant="labelSmall" style={{ color: colors.onSurfaceVariant }}>
+        <AppText variant="labelSmall" style={{ color: colors.onSurfaceVariant }}>
           {formatTimeSpan(Duration.ZERO)}
-        </Text>
-        <Text variant="labelSmall" style={{ color: colors.onSurfaceVariant }}>
+        </AppText>
+        <AppText variant="labelSmall" style={{ color: colors.onSurfaceVariant }}>
           {formatTimeSpan(Duration.ofSeconds(span))}
-        </Text>
+        </AppText>
       </View>
     </View>
   );

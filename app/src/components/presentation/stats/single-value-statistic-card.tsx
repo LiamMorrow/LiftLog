@@ -4,7 +4,8 @@ import { AppIconSource } from '@/components/presentation/foundation/ms-icon-sour
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Card } from 'react-native-paper';
 
 export default function SingleValueStatisticCard(props: {
   title: string;
@@ -31,11 +32,11 @@ export default function SingleValueStatisticCard(props: {
             }}
           >
             <Icon size={16} source={props.icon} color={colors.primary} />
-            <Text variant="labelLarge" lineBreakMode="tail" numberOfLines={1}>
+            <AppText variant="labelLarge" lineBreakMode="tail" numberOfLines={1}>
               {props.title}
-            </Text>
+            </AppText>
           </View>
-          <Text>{props.value}</Text>
+          <AppText>{props.value}</AppText>
         </View>
       </Wrapper>
     </Card>

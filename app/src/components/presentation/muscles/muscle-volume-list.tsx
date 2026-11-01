@@ -5,7 +5,7 @@ import { MuscleContribution, MuscleVolume } from '@/utils/muscle-volume';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 
 export function MuscleVolumeList(props: { muscles: MuscleVolume[] }) {
   const [expanded, setExpanded] = useState<string>();
@@ -45,11 +45,11 @@ function MuscleVolumeRow(props: {
 
   return (
     <SegmentListFormElement
-      label={<Text style={{ color: textColor }}>{translateExerciseMeta(t, 'muscle', volume.muscle)}</Text>}
+      label={<AppText style={{ color: textColor }}>{translateExerciseMeta(t, 'muscle', volume.muscle)}</AppText>}
       right={
-        <Text variant="labelLarge" style={{ color: textColor }}>
+        <AppText variant="labelLarge" style={{ color: textColor }}>
           {volume.sets.toLocaleString()}
-        </Text>
+        </AppText>
       }
       onPress={props.onPress}
       line2={
@@ -76,13 +76,13 @@ function ContributionRow({ contribution }: { contribution: MuscleContribution })
   const { colors } = useAppTheme();
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: spacing[2] }}>
-      <Text variant="bodySmall" style={{ flex: 1, color: colors.onSurfaceVariant }}>
+      <AppText variant="bodySmall" style={{ flex: 1, color: colors.onSurfaceVariant }}>
         {contribution.exerciseName}
-      </Text>
-      <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
+      </AppText>
+      <AppText variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
         {contribution.sets.toLocaleString()} ·{' '}
         {contribution.secondary ? t('plan.muscle_analysis.secondary.label') : t('plan.muscle_analysis.primary.label')}
-      </Text>
+      </AppText>
     </View>
   );
 }

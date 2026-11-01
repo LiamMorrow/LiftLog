@@ -3,7 +3,7 @@ import { ActivityCalendar } from '@/components/presentation/calendar/activity-ca
 import { PersonAvatar } from '@/components/presentation/feed/person-avatar';
 import { Popover } from '@/components/presentation/foundation/popover';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useToday } from '@/hooks/useToday';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
@@ -54,9 +54,9 @@ export function FeedWeekStrip() {
       />
 
       {overflow > 0 && (
-        <SurfaceText font="text-sm" color="onSurfaceVariant">
+        <AppText variant="bodyMedium" color="onSurfaceVariant">
           {t('feed.this_week.more_people', { count: overflow.toString() })}
-        </SurfaceText>
+        </AppText>
       )}
     </TitledSection>
   );
@@ -88,14 +88,12 @@ function NamedAvatar({ userId, name, fallbackName, row }: NamedAvatarProps) {
     >
       {() => (
         <View style={{ gap: spacing[1] }}>
-          <SurfaceText font="text-lg" weight="bold">
-            {displayName}
-          </SurfaceText>
-          <SurfaceText font="text-sm" color="onSurfaceVariant">
+          <AppText variant="titleLarge">{displayName}</AppText>
+          <AppText variant="bodyMedium" color="onSurfaceVariant">
             {workouts === 1
               ? t('feed.workouts_this_week.one')
               : t('feed.workouts_this_week.other', { count: workouts.toString() })}
-          </SurfaceText>
+          </AppText>
         </View>
       )}
     </Popover>

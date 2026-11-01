@@ -4,7 +4,7 @@ import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 import { View } from 'react-native';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useState } from 'react';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { useTranslate } from '@tolgee/react';
 import { useAppSelector } from '@/store';
 import { lineGraphProps } from '@/components/presentation/stats/line-graph-props';
@@ -30,9 +30,9 @@ export default function BodyweightStatGraphCard(props: { bodyweightStats: Weight
       style={{ gap: spacing[2] }}
       testID="bodyweight-stat-card"
     >
-      <SurfaceText font="text-2xl" style={{ textAlign: 'center' }}>
+      <AppText variant="headlineSmall" style={{ textAlign: 'center' }}>
         {t('exercise.bodyweight.label')}
-      </SurfaceText>
+      </AppText>
       <LineChart
         color={colors.primary}
         data={points}

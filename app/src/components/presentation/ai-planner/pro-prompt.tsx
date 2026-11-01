@@ -1,4 +1,4 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { useEffect, useState } from 'react';
@@ -33,10 +33,10 @@ export function ProPrompt() {
   };
   return (
     <View style={{ gap: spacing[2] }}>
-      <SurfaceText>{t('ai.upgrade_to_pro.button')}</SurfaceText>
-      <SurfaceText>
+      <AppText variant="bodyLarge">{t('ai.upgrade_to_pro.button')}</AppText>
+      <AppText variant="bodyLarge">
         <LimitedHtml value={t('ai.upgrade_to_pro.explanation')} />
-      </SurfaceText>
+      </AppText>
       <ProPrice />
       <Button style={{ alignSelf: 'flex-end' }} mode="contained" onPress={upgrade}>
         {t('generic.upgrade.button')}
@@ -63,7 +63,7 @@ function ProPrice() {
     );
   }
 
-  return <SurfaceText>{product.priceString}</SurfaceText>;
+  return <AppText variant="bodyLarge">{product.priceString}</AppText>;
 }
 
 async function presentPaywall(): Promise<boolean> {

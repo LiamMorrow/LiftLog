@@ -16,7 +16,8 @@ import { Stack, useFocusEffect } from 'expo-router';
 import { useLocalSearchParams, useRouter } from 'expo-router/build/hooks';
 import { ReactNode, useEffect } from 'react';
 import { View } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Card } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export default function ExpandedExercisePage() {
@@ -52,9 +53,9 @@ function LoadedStats({ stats }: { stats: WeightedExerciseStatistics | undefined 
   return stats ? (
     <LoadedStatsFilled stats={stats} />
   ) : (
-    <Text>
+    <AppText>
       <T keyName="stats.no_data.message" />
-    </Text>
+    </AppText>
   );
 }
 
@@ -87,7 +88,7 @@ function LoadedStatsFilled({ stats }: { stats: WeightedExerciseStatistics }) {
       )}
       <StatCardWithTitle title={t('stats.exercise.reps_breakdown.title')}>
         <RepsBarChart statistics={stats.repsStatistics} />
-        <Text style={{ textAlign: 'center' }}>{t('stats.exercise.reps_breakdown_sets_x_axis.label')}</Text>
+        <AppText style={{ textAlign: 'center' }}>{t('stats.exercise.reps_breakdown_sets_x_axis.label')}</AppText>
       </StatCardWithTitle>
     </View>
   );

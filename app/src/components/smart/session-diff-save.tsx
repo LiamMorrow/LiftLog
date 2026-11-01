@@ -25,7 +25,7 @@ import {
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { useDispatch } from 'react-redux';
 import { useOnDismiss } from '@/hooks/useOnDismiss';
 
@@ -146,7 +146,7 @@ export function SessionDiffSaveEditor() {
       scrollStyle={{ padding: spacing.pageHorizontalMargin }}
     >
       <Stack.Screen options={{ title: t('plan.diff.dialog.title') }} />
-      <Text
+      <AppText
         style={{
           paddingBlockEnd: spacing[2],
         }}
@@ -161,7 +161,7 @@ export function SessionDiffSaveEditor() {
         ) : (
           t('plan.diff.dialog_add.body')
         )}
-      </Text>
+      </AppText>
       {canEditExistingWorkout && (
         <SegmentedGroup style={{ marginBlockEnd: spacing[2] }}>
           <SegmentedListSwitch

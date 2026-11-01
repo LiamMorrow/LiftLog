@@ -3,7 +3,7 @@ import { SegmentedList, SegmentListFormElement } from '@/components/presentation
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { BackendHeader, isSecretHeader } from '@/models/backend';
 import { useTranslate } from '@tolgee/react';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 
 // A fixed length, so the list does not report how long a secret is.
 const maskedValue = '•'.repeat(12);
@@ -43,9 +43,9 @@ export function BackendHeaderEditor(props: {
               />
             }
             line2={
-              <Text variant="bodySmall" numberOfLines={1} style={bodyStyle}>
+              <AppText variant="bodySmall" numberOfLines={1} style={bodyStyle}>
                 {isSecretHeader(header.name) ? maskedValue : header.value}
-              </Text>
+              </AppText>
             }
           />
         )),

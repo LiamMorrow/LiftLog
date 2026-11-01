@@ -1,6 +1,6 @@
 import { formatExerciseSummary } from '@/components/presentation/summary/format-exercise-summary';
 import { summarySetRuns } from '@/components/presentation/summary/summary-set-runs';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { RepsStrip } from '@/components/presentation/workout/reps-strip';
 import { ColorChoice, spacing } from '@/hooks/useAppTheme';
@@ -39,19 +39,19 @@ export function ExerciseSummaryLine({
         columnGap: spacing[3],
       }}
     >
-      <SurfaceText color={color} style={{ flexShrink: 1 }}>
+      <AppText variant="bodyLarge" color={color} style={{ flexShrink: 1 }}>
         {exercise.blueprint.name}
-      </SurfaceText>
+      </AppText>
       {showsStrip ? (
         <SetRuns exercise={exercise} isFilled={isFilled} showWeight={showWeight} />
       ) : (
-        <SurfaceText color="onSurfaceVariant" style={{ maxWidth: SETS_MAX_WIDTH, textAlign: 'right' }}>
+        <AppText variant="bodyLarge" color="onSurfaceVariant" style={{ maxWidth: SETS_MAX_WIDTH, textAlign: 'right' }}>
           {formatExerciseSummary(exercise, {
             isFilled,
             showWeight,
             bodyweightLabel: t('exercise.short_bodyweight.label'),
           })}
-        </SurfaceText>
+        </AppText>
       )}
     </View>
   );
@@ -72,7 +72,7 @@ function SetRuns(props: { exercise: RecordedWeightedExercise; isFilled: boolean;
               <WeightFormat
                 weight={run.weight}
                 usesBodyweight={usesBodyweight}
-                fontSize="text-sm"
+                variant="bodyMedium"
                 color="onSurfaceVariant"
               />
             </View>

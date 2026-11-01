@@ -17,7 +17,8 @@ import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Card } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { match } from 'ts-pattern';
 
@@ -132,7 +133,7 @@ function formatWeeklyRate(value: number) {
 function BodyweightStatValue({ stats: { bodyweightStats } }: { stats: GranularStatisticView }) {
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
   if (!showBodyweight) {
-    return <Text>-</Text>;
+    return <AppText>-</AppText>;
   }
   const currentValue = bodyweightStats.currentValue;
   const earliestValue = bodyweightStats.statistics[0]?.value ?? Weight.NIL;
@@ -147,9 +148,9 @@ function BodyweightStatValue({ stats: { bodyweightStats } }: { stats: GranularSt
     .exhaustive();
 
   return (
-    <Text>
+    <AppText>
       {currentValue.shortLocaleFormat(0)} ({changeDirection}
       {change.abs().shortLocaleFormat(2)})
-    </Text>
+    </AppText>
   );
 }

@@ -5,7 +5,7 @@ import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { LegendList } from '@legendapp/list/react-native';
 import { Children, isValidElement, ReactNode } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { match } from 'ts-pattern';
 type TupleKeysNum<T extends readonly unknown[]> = Exclude<Partial<T>['length'], T['length']>;
 
@@ -109,16 +109,16 @@ export function SegmentListFormElement(props: {
             }}
           >
             {props.icon ? <Icon size={20} source={props.icon} color={labelColor} /> : undefined}
-            <Text variant="labelLarge" style={{ color: labelColor }}>
+            <AppText variant="labelLarge" style={{ color: labelColor }}>
               {props.label}
-            </Text>
+            </AppText>
           </View>
-          {typeof props.right === 'string' ? <Text variant="labelLarge">{props.right}</Text> : props.right}
+          {typeof props.right === 'string' ? <AppText variant="labelLarge">{props.right}</AppText> : props.right}
         </View>
         {props.supportingText ? (
-          <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginBlockStart: spacing[2] }}>
+          <AppText variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginBlockStart: spacing[2] }}>
             {props.supportingText}
-          </Text>
+          </AppText>
         ) : undefined}
         {props.line2}
       </View>

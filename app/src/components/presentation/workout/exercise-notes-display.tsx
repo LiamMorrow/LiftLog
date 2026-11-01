@@ -4,7 +4,8 @@ import { RecordedExercise } from '@/models/session-models';
 import { useAppSelector } from '@/store';
 import { useCallback, useState } from 'react';
 import { View } from 'react-native';
-import { Card, Divider, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Card, Divider } from 'react-native-paper';
 import IconButton from '@/components/presentation/foundation/icon-button';
 
 interface ExerciseNotesDisplayProps {
@@ -41,21 +42,21 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
     return (
       <>
         {renderNotes && (
-          <Text testID="exercise-notes" numberOfLines={maxNumberOfLines}>
+          <AppText testID="exercise-notes" numberOfLines={maxNumberOfLines}>
             {notes}
-          </Text>
+          </AppText>
         )}
         {renderNotes && (renderPreviousNotes || renderBlueprintNotes) && <Divider />}
         {renderBlueprintNotes && (
-          <Text testID="exercise-blueprint-notes" numberOfLines={maxNumberOfLines}>
+          <AppText testID="exercise-blueprint-notes" numberOfLines={maxNumberOfLines}>
             {blueprintNotes}
-          </Text>
+          </AppText>
         )}
         {renderPreviousNotes && renderBlueprintNotes && <Divider />}
         {renderPreviousNotes && (
-          <Text testID="exercise-previous-notes" numberOfLines={maxNumberOfLines}>
+          <AppText testID="exercise-previous-notes" numberOfLines={maxNumberOfLines}>
             {previousNotes}
-          </Text>
+          </AppText>
         )}
       </>
     );

@@ -1,4 +1,3 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useDerivedState } from '@/hooks/useDerivedState';
 import {
@@ -12,7 +11,8 @@ import {
 import { useTranslate } from '@tolgee/react';
 import { useEffect } from 'react';
 import { View } from 'react-native';
-import { Checkbox, List, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Checkbox, List } from 'react-native-paper';
 import { match } from 'ts-pattern';
 
 interface SessionDiffViewProps {
@@ -52,7 +52,9 @@ export default function SessionDiffView({ diff: fullDiff, onSelectedDiffChange }
   if (!fullDiff.hasChanges) {
     return (
       <View style={{ padding: spacing[4] }}>
-        <SurfaceText style={{ textAlign: 'center' }}>{t('plan.diff.no_changes.body')}</SurfaceText>
+        <AppText variant="bodyLarge" style={{ textAlign: 'center' }}>
+          {t('plan.diff.no_changes.body')}
+        </AppText>
       </View>
     );
   }
@@ -148,7 +150,7 @@ function DiffSection({ title, children }: DiffSectionProps) {
           paddingVertical: spacing[2],
         }}
       >
-        <Text variant="titleSmall">{title}</Text>
+        <AppText variant="titleSmall">{title}</AppText>
       </View>
       {children}
     </View>

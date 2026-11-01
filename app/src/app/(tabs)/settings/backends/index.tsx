@@ -16,7 +16,7 @@ import { putBackend, selectAllBackends, switchFeedBackend } from '@/store/backen
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { uuid } from '@/utils/uuid';
 import { useState } from 'react';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { useDispatch } from 'react-redux';
 import AddIcon from '@expo/material-symbols/add.xml';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
@@ -98,7 +98,7 @@ export default function BackendsPage() {
                 isBackendComplete(backend) ? (
                   describe(backend)
                 ) : (
-                  <Text style={{ color: colors.error }}>{t('backends.incomplete.label')}</Text>
+                  <AppText style={{ color: colors.error }}>{t('backends.incomplete.label')}</AppText>
                 )
               }
               icon={isBackendComplete(backend) ? 'dnsFill' : 'error'}

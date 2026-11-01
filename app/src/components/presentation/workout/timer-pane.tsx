@@ -3,7 +3,7 @@ import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Animated, StyleSheet, useAnimatedValue, View, ViewStyle } from 'react-native';
 import { FloatingPane } from '@/components/presentation/workout/floating-pane';
 import { Reveal } from '@/components/presentation/foundation/reveal';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { Jiggler } from '@/components/presentation/foundation/jiggler';
 
 const trackHeight = 6;
@@ -61,11 +61,12 @@ export function TimerPane({
       </Reveal>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Jiggler jiggling={!!jiggling}>
-          <SurfaceText style={{ fontVariant: ['tabular-nums'] }} font="text-3xl" weight="bold" color={accent}>
+          <AppText variant="headlineLarge" style={{ fontVariant: ['tabular-nums'] }} color={accent}>
             {time}
-          </SurfaceText>
+          </AppText>
         </Jiggler>
-        <SurfaceText
+        <AppText
+          variant="labelMedium"
           style={{
             marginLeft: spacing[2],
             textTransform: 'uppercase',
@@ -73,12 +74,10 @@ export function TimerPane({
             marginRight: 'auto',
           }}
           numberOfLines={1}
-          font="text-xs"
-          weight="bold"
           color={accent}
         >
           {status}
-        </SurfaceText>
+        </AppText>
         {controls}
       </View>
       <View style={{ paddingBottom: spacing[2] }}>

@@ -1,4 +1,4 @@
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { T } from '@tolgee/react';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
@@ -91,7 +91,7 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
       >
         <Dialog.Title>{headline}</Dialog.Title>
         <Dialog.Content>
-          <SurfaceText>{textContent}</SurfaceText>
+          <AppText variant="bodyLarge">{textContent}</AppText>
         </Dialog.Content>
         {buttons}
       </Dialog>

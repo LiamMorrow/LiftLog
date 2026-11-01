@@ -1,5 +1,5 @@
 import { Loader } from '@/components/presentation/foundation/loader';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { RemoteData } from '@/models/remote';
 import { ReactNode } from 'react';
@@ -24,7 +24,9 @@ export function Remote<T>(props: RemoteProps<T>) {
     <View style={{ alignItems: 'center', gap: spacing[4] }}>
       <Icon source={'error'} size={30} />
       <View style={{ justifyContent: 'center' }}>
-        <SurfaceText style={{ textAlign: 'center' }}>{typeof value === 'string' ? value : 'Unknown error'}</SurfaceText>
+        <AppText variant="bodyLarge" style={{ textAlign: 'center' }}>
+          {typeof value === 'string' ? value : 'Unknown error'}
+        </AppText>
         {retry ? <Button onPress={retry}>Retry</Button> : undefined}
       </View>
     </View>

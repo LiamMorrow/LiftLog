@@ -17,7 +17,7 @@ import CopyAll from '@expo/material-symbols/copy_all.xml';
 import Delete from '@expo/material-symbols/delete.xml';
 import { useTranslate } from '@tolgee/react';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { match, P } from 'ts-pattern';
 
 interface ExerciseBlueprintRowProps {
@@ -59,13 +59,13 @@ export function ExerciseBlueprintRow(props: ExerciseBlueprintRowProps) {
         <View style={{ flex: 1, gap: spacing[0.5] }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
             {props.supersetLabel ? <SupersetBadge label={props.supersetLabel} /> : undefined}
-            <Text variant="titleMedium" style={{ flexShrink: 1 }}>
+            <AppText variant="titleMedium" style={{ flexShrink: 1 }}>
               {props.blueprint.name}
-            </Text>
+            </AppText>
           </View>
-          <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant }}>
+          <AppText variant="bodyMedium" style={{ color: colors.onSurfaceVariant }}>
             {detail}
-          </Text>
+          </AppText>
         </View>
         {props.reordering ? (
           <View style={{ flexDirection: 'row' }}>

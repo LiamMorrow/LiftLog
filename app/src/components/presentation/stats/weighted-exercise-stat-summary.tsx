@@ -3,7 +3,7 @@ import TouchableRipple from '@/components/presentation/foundation/touchable-ripp
 import { spacing } from '@/hooks/useAppTheme';
 import { WeightedExerciseStatistics } from '@/store/stats';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 
 export function WeightedExerciseStatSummary({
   exerciseStats,
@@ -23,19 +23,19 @@ export function WeightedExerciseStatSummary({
         }}
       >
         <View style={{ flex: 1 }}>
-          <Text variant="bodyMedium">{exerciseStats.exerciseName}</Text>
+          <AppText variant="bodyMedium">{exerciseStats.exerciseName}</AppText>
           <View
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}
           >
-            <Text variant="bodySmall">
+            <AppText variant="bodySmall">
               Total lifted: {exerciseStats.totalVolumeStatistics.totalValue.shortLocaleFormat(0)}
-            </Text>
-            <Text variant="bodySmall">
+            </AppText>
+            <AppText variant="bodySmall">
               1RM: {exerciseStats.max1RMPerSessionStatistics.currentValue.shortLocaleFormat(0)}
-            </Text>
+            </AppText>
           </View>
         </View>
         <Icon source="chevronRight" size={24} />

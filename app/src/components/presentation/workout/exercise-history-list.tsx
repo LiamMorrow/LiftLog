@@ -1,7 +1,7 @@
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import Icon from '@/components/presentation/foundation/icon';
 import { SegmentedListItem } from '@/components/presentation/foundation/segmented-list';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { RepsStrip } from '@/components/presentation/workout/reps-strip';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
@@ -84,14 +84,13 @@ function MonthHeader(props: { month: LocalDate }) {
   const { colors } = useAppTheme();
   const formatDate = useFormatDate();
   return (
-    <SurfaceText
-      font="text-sm"
-      weight="500"
+    <AppText
+      variant="labelLarge"
       color="onSurfaceVariant"
       style={{ backgroundColor: colors.surface, paddingTop: spacing[3], paddingBottom: spacing[1] }}
     >
       {formatDate(props.month, { month: 'long', year: 'numeric' })}
-    </SurfaceText>
+    </AppText>
   );
 }
 
@@ -131,12 +130,12 @@ function HistoryDate(props: { date: LocalDate | undefined }) {
     <View style={{ width: spacing[10] }}>
       {props.date && (
         <>
-          <SurfaceText font="text-base" weight="bold" style={{ fontVariant: ['tabular-nums'] }}>
+          <AppText variant="titleMedium" style={{ fontVariant: ['tabular-nums'] }}>
             {formatDate(props.date, { day: 'numeric' })}
-          </SurfaceText>
-          <SurfaceText font="text-xs" color="onSurfaceVariant">
+          </AppText>
+          <AppText variant="bodySmall" color="onSurfaceVariant">
             {formatDate(props.date, { weekday: 'short' })}
-          </SurfaceText>
+          </AppText>
         </>
       )}
     </View>
@@ -161,8 +160,7 @@ function WeightedRuns(props: { exercise: RecordedWeightedExercise }) {
             <WeightFormat
               weight={run[0]!.weight}
               usesBodyweight={exercise.blueprint.resistance === 'bodyweight'}
-              fontSize="text-base"
-              fontWeight="bold"
+              variant="titleMedium"
             />
           )}
           <RepsStrip style={{ flexShrink: 1, justifyContent: 'flex-end' }} sets={run} />
@@ -218,12 +216,12 @@ function CardioSetValues(props: { set: RecordedCardioExerciseSet }) {
 
 function CardioValue(props: { value: string | undefined; label: string }) {
   return (
-    <SurfaceText font="text-sm" weight="bold" style={{ fontVariant: ['tabular-nums'] }}>
+    <AppText variant="labelLarge" style={{ fontVariant: ['tabular-nums'] }}>
       {props.value ?? '-'}{' '}
-      <SurfaceText font="text-xs" color="onSurfaceVariant">
+      <AppText variant="bodySmall" color="onSurfaceVariant">
         {props.label}
-      </SurfaceText>
-    </SurfaceText>
+      </AppText>
+    </AppText>
   );
 }
 
@@ -236,9 +234,14 @@ function HistoryNotes(props: { notes: string }) {
       style={{ flexDirection: 'row', gap: spacing[2], alignItems: 'flex-start' }}
     >
       <Icon source="notes" size={14} color={colors.onSurfaceVariant} />
-      <SurfaceText font="text-xs" color="onSurfaceVariant" numberOfLines={expanded ? undefined : 2} style={{ flex: 1 }}>
+      <AppText
+        variant="bodySmall"
+        color="onSurfaceVariant"
+        numberOfLines={expanded ? undefined : 2}
+        style={{ flex: 1 }}
+      >
         {props.notes}
-      </SurfaceText>
+      </AppText>
     </Pressable>
   );
 }

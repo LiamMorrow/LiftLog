@@ -8,7 +8,8 @@ import { selectUnseenWhatsNew, setLastSeenWhatsNewId } from '@/store/settings';
 import { T } from '@tolgee/react';
 import { Href, useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
-import { Icon, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Icon } from 'react-native-paper';
 import { shallowEqual, useDispatch } from 'react-redux';
 
 export function WhatsNewBanner() {
@@ -30,9 +31,9 @@ export function WhatsNewBanner() {
   return (
     <View style={[styles.container, { backgroundColor: colors.tertiaryContainer }]}>
       <View style={styles.header}>
-        <Text variant="labelSmall" style={{ color: colors.onTertiaryContainer, letterSpacing: 1 }}>
+        <AppText variant="labelSmall" style={{ color: colors.onTertiaryContainer, letterSpacing: 1 }}>
           <T keyName="whats_new.eyebrow" />
-        </Text>
+        </AppText>
         <IconButton
           icon="close"
           size={18}
@@ -59,13 +60,13 @@ function Feature({ entry, onPress }: { entry: WhatsNewEntry; onPress: (route: Hr
         <View style={[styles.iconWell, { backgroundColor: colors.tertiary }]}>
           <Icon source={entry.icon} size={22} color={colors.onTertiary} />
         </View>
-        <Text variant="titleMedium" style={{ color: colors.onTertiaryContainer, flexShrink: 1 }}>
+        <AppText variant="titleMedium" style={{ color: colors.onTertiaryContainer, flexShrink: 1 }}>
           <T keyName={entry.titleKey} />
-        </Text>
+        </AppText>
       </View>
-      <Text variant="bodySmall" style={{ color: colors.onTertiaryContainer, marginTop: spacing[2], opacity: 0.9 }}>
+      <AppText variant="bodySmall" style={{ color: colors.onTertiaryContainer, marginTop: spacing[2], opacity: 0.9 }}>
         <T keyName={entry.bodyKey} />
-      </Text>
+      </AppText>
       {entry.cta && (
         <View style={styles.ctaRow}>
           <Button mode="text" textColor={colors.onTertiaryContainer} onPress={() => onPress(entry.cta!.route)}>

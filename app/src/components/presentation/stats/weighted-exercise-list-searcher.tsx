@@ -5,7 +5,7 @@ import { GranularStatisticView, WeightedExerciseStatistics } from '@/store/stats
 import { T } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { SearchField } from '@/components/presentation/foundation/search-field';
 
 export function WeightedExerciseListSearcher({
@@ -33,9 +33,9 @@ export function WeightedExerciseListSearcher({
     >
       <SearchField value={searchText} onChangeText={handleChangeText} />
       {!filteredExercises.length && (
-        <Text>
+        <AppText>
           <T keyName="stats.no_data.message" />
-        </Text>
+        </AppText>
       )}
       <SegmentedList
         scrollable

@@ -3,7 +3,8 @@ import { formatRepsTarget, Resistance, RepsTarget } from '@/models/blueprint-mod
 import { ReactNode, useEffect } from 'react';
 import { AccessibilityInfo, Animated, Easing, StyleSheet, Text, useAnimatedValue, View } from 'react-native';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
-import { font, rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import Icon from '@/components/presentation/foundation/icon';
 import { match } from 'ts-pattern';
@@ -38,9 +39,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
     .with({ isNext: true }, () => ({ background: colors.secondaryContainer, text: colors.onSecondaryContainer }))
     .with({}, () => ({ background: colors.surfaceContainerHighest, text: colors.onSurfaceVariant + '99' }))
     .exhaustive();
-  const weightColors = isLater
-    ? { background: colors.surfaceContainerHigh, text: colors.onSurfaceVariant }
-    : { background: colors.secondaryContainer + 'AA', text: colors.onSecondaryContainer };
+  const weightBackground = isLater ? colors.surfaceContainerHigh : colors.secondaryContainer + 'AA';
 
   return (
     <View
@@ -73,15 +72,12 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
           }}
         >
           <View style={{ alignItems: 'center' }}>
-            <Text
-              style={{
-                color: setColors.text,
-                ...font['text-xl'],
-              }}
-            >
+            <AppText variant="titleLarge" style={{ color: setColors.text }}>
               <Text style={{ fontWeight: isFilled ? 'bold' : undefined }}>{repCountValue ?? '-'}</Text>
-              <Text style={{ ...font['text-base'], verticalAlign: 'top' }}>/{formatRepsTarget(props.repsTarget)}</Text>
-            </Text>
+              <AppText variant="bodyLarge" style={{ color: setColors.text, verticalAlign: 'top' }}>
+                /{formatRepsTarget(props.repsTarget)}
+              </AppText>
+            </AppText>
             {props.previousRepCount !== undefined && (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[0.5] }}>
                 <Icon source={'history'} size={12} color={setColors.text} />
@@ -94,7 +90,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
       {showsWeight && (
         <View
           style={{
-            backgroundColor: weightColors.background,
+            backgroundColor: weightBackground,
             borderTopLeftRadius: rounding.segmentedBetweenRadius,
             borderTopRightRadius: rounding.segmentedBetweenRadius,
             borderBottomLeftRadius: rounding.roundedRectangleRadius,
@@ -113,9 +109,11 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
               padding: spacing[2],
             }}
           >
-            <Text style={{ color: weightColors.text, ...font['text-sm'] }}>
-              <WeightFormat weight={props.set.weight} usesBodyweight={props.resistance === 'bodyweight'} />
-            </Text>
+            <WeightFormat
+              variant="bodyMedium"
+              weight={props.set.weight}
+              usesBodyweight={props.resistance === 'bodyweight'}
+            />
           </Pressable>
         </View>
       )}

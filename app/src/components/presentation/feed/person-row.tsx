@@ -1,5 +1,5 @@
 import { PersonAvatar } from '@/components/presentation/feed/person-avatar';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { ReactNode } from 'react';
@@ -32,13 +32,13 @@ export function PersonRow({ userId, name, subtitle, trailing }: PersonRowProps) 
       <PersonAvatar userId={userId} name={name} size={40} />
 
       <View style={{ flex: 1, minWidth: 0 }}>
-        <SurfaceText weight="500" numberOfLines={1}>
+        <AppText variant="titleMedium" numberOfLines={1}>
           {name || t('feed.anonymous_user.label')}
-        </SurfaceText>
+        </AppText>
         {subtitle ? (
-          <SurfaceText font="text-sm" color="onSurfaceVariant" numberOfLines={2}>
+          <AppText variant="bodyMedium" color="onSurfaceVariant" numberOfLines={2}>
             {subtitle}
-          </SurfaceText>
+          </AppText>
         ) : null}
       </View>
 

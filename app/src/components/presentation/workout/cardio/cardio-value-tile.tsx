@@ -1,7 +1,7 @@
-import { font, rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
 import { DockedEditor } from '@/components/presentation/workout/edit-dock';
 
@@ -52,10 +52,15 @@ export function CardioValueTile<T>({
 
   const face = (
     <View style={{ alignItems: 'center' }}>
-      <Text style={[styles.value, { color: filled ? colors.onSecondaryContainer : colors.outline }]}>
+      <AppText
+        variant="titleLarge"
+        style={[styles.value, { color: filled ? colors.onSecondaryContainer : colors.outline }]}
+      >
         {filled ? format(value) : emptyDisplay}
-      </Text>
-      <Text style={[styles.label, { color: colors.onSurfaceVariant }]}>{label}</Text>
+      </AppText>
+      <AppText variant="bodySmall" style={[styles.label, { color: colors.onSurfaceVariant }]}>
+        {label}
+      </AppText>
     </View>
   );
   const tileStyle = [
@@ -106,10 +111,8 @@ const styles = StyleSheet.create({
   value: {
     fontVariant: ['tabular-nums'],
     textAlign: 'center',
-    ...font['text-xl'],
   },
   label: {
     textAlign: 'center',
-    ...font['text-xs'],
   },
 });

@@ -6,7 +6,7 @@ import {
 import { ActivityLegend } from '@/components/presentation/calendar/activity-legend';
 import IconButton from '@/components/presentation/foundation/icon-button';
 import { InfinitePager } from '@/components/presentation/foundation/infinite-pager';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import { AppText } from '@/components/presentation/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useToday } from '@/hooks/useToday';
@@ -47,12 +47,12 @@ export function HistoryActivityCalendar({
 
   const header = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2], height: 48 }}>
-      <SurfaceText testID="calendar-month" font="text-xl" weight="500" style={{ flex: 1 }}>
+      <AppText variant="titleLarge" testID="calendar-month" style={{ flex: 1 }}>
         {formatDate(firstOfMonth, {
           month: 'long',
           year: currentYearMonth.year() === Year.now().value() ? undefined : 'numeric',
         })}
-      </SurfaceText>
+      </AppText>
       <View style={{ flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row', gap: spacing[2] }}>
         <IconButton
           testID="calendar-nav-previous-month"

@@ -27,7 +27,8 @@ import { DayOfWeek } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Portal, Text } from 'react-native-paper';
+import { AppText } from '@/components/presentation/foundation/app-text';
+import { Portal } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { openUrl } from '@/utils/open-url';
@@ -111,19 +112,19 @@ export function WelcomeWizard() {
   const renderCrashReportsPage = () => (
     <View style={styles.pageContent}>
       <View style={styles.headerSection}>
-        <Text variant="headlineMedium" style={styles.pageTitle}>
+        <AppText variant="headlineMedium" style={styles.pageTitle}>
           {t('onboarding.welcome.title')}
-        </Text>
-        <Text variant="bodyLarge" style={styles.pageSubtitle}>
+        </AppText>
+        <AppText variant="bodyLarge" style={styles.pageSubtitle}>
           {t('onboarding.welcome.subtitle')}
-        </Text>
+        </AppText>
       </View>
 
       <View style={styles.settingsSection}>
-        <Text variant="titleMedium">{t('onboarding.open_source.title')}</Text>
-        <Text variant="bodyMedium" style={styles.sectionDescription}>
+        <AppText variant="titleMedium">{t('onboarding.open_source.title')}</AppText>
+        <AppText variant="bodyMedium" style={styles.sectionDescription}>
           {t('onboarding.open_source.body')}
-        </Text>
+        </AppText>
         <SegmentedGroup>
           <SegmentListFormElement
             label={t('onboarding.open_source.button')}
@@ -145,12 +146,12 @@ export function WelcomeWizard() {
   const renderLocalizationPage = () => (
     <View style={styles.pageContent}>
       <View style={styles.headerSection}>
-        <Text variant="headlineMedium" style={styles.pageTitle}>
+        <AppText variant="headlineMedium" style={styles.pageTitle}>
           {t('settings.localisation.title')}
-        </Text>
-        <Text variant="bodyLarge" style={styles.pageSubtitle}>
+        </AppText>
+        <AppText variant="bodyLarge" style={styles.pageSubtitle}>
           {t('settings.localisation.subtitle')}
-        </Text>
+        </AppText>
       </View>
 
       <View style={styles.settingsSection}>
@@ -194,16 +195,16 @@ export function WelcomeWizard() {
   const renderNotificationsAndFeedPage = () => (
     <View style={styles.pageContent}>
       <View style={styles.headerSection}>
-        <Text variant="headlineMedium" style={styles.pageTitle}>
+        <AppText variant="headlineMedium" style={styles.pageTitle}>
           {t('onboarding.notifications_and_feed.title')}
-        </Text>
-        <Text variant="bodyLarge" style={styles.pageSubtitle}>
+        </AppText>
+        <AppText variant="bodyLarge" style={styles.pageSubtitle}>
           {t('onboarding.notifications_and_feed.subtitle')}
-        </Text>
+        </AppText>
       </View>
 
       <View style={styles.settingsSection}>
-        <Text variant="titleMedium">{t('settings.notifications.title')}</Text>
+        <AppText variant="titleMedium">{t('settings.notifications.title')}</AppText>
         <SegmentedGroup>
           <SegmentedListSwitch
             label={t('rest.notifications.title')}
@@ -214,9 +215,9 @@ export function WelcomeWizard() {
           />
         </SegmentedGroup>
 
-        <Text variant="titleMedium" style={styles.topSpacing}>
+        <AppText variant="titleMedium" style={styles.topSpacing}>
           {t('feed.feed.title')}
-        </Text>
+        </AppText>
         <SegmentedGroup>
           <SegmentedListSwitch
             label={t('feed.show_feed.label')}
