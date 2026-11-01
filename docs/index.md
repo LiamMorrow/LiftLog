@@ -16,6 +16,8 @@ work to find the docs relevant to your area, and update it whenever you add, rem
 - [WorkoutWorker.md](./WorkoutWorker.md) - the platform-specific, message-driven execution environment
   for an in-progress workout (persistent notifications, background timers, system UI). Redux stays the
   source of truth; the worker is disposable.
+- [Storybook.md](./Storybook.md) - on-device Storybook for the foundation components: how to run it, where
+  stories live, and the generated `storybook.requires.ts`.
 
 ## Features
 

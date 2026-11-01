@@ -14,6 +14,7 @@
     "plugins",
     "scripts",
     ".expo",
+    ".rnstorybook/storybook.requires.ts",
     "expo-env.d.ts",
     "metro.config.js",
     "babel.config.js",

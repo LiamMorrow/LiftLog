@@ -5,5 +5,14 @@
   "semi": true,
   "printWidth": 120,
   "sortPackageJson": false,
-  "ignorePatterns": ["src/gen", "src/drizzle", "src/types/dom.slim.d.ts", "android", "ios", "dist", ".expo"]
+  "ignorePatterns": [
+    "src/gen",
+    "src/drizzle",
+    "src/types/dom.slim.d.ts",
+    "android",
+    "ios",
+    "dist",
+    ".expo",
+    ".rnstorybook/storybook.requires.ts"
+  ]
 }

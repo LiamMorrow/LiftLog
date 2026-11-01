@@ -10,9 +10,10 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import ServicesProvider from '@/components/smart/services-provider';
 import { install } from 'react-native-quick-crypto';
 import StackWithHeader from '@/components/layout/stack-with-header';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { requireOptionalNativeModule } from 'expo';
+import { useEffect } from 'react';
 
 install();
 
@@ -55,6 +56,13 @@ export default function RootLayout() {
 
 function Layout() {
   const { colors } = useAppTheme();
+  const router = useRouter();
+  useEffect(() => {
+    if (process.env.EXPO_PUBLIC_STORYBOOK_ENABLED === 'true') {
+      router.push('/storybook');
+    }
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <StackWithHeader>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -88,6 +96,7 @@ function Layout() {
       <Stack.Screen name="post-workout" />
       <Stack.Screen name="diff-save" />
       <Stack.Screen name="muscle-analysis" />
+      <Stack.Screen name="storybook" options={{ headerShown: false }} />
     </StackWithHeader>
   );
 }
