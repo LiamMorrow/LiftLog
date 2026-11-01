@@ -1,4 +1,5 @@
 import { defaultIconSize, NativeIconButtonProps, NativeIconButtonVariant } from './native-icon-button-props';
+import { sfSymbolSize } from '../native-icon/native-icon-props';
 import { AppThemeColors } from '@/hooks/useAppTheme';
 import { Image } from '@expo/ui/swift-ui';
 import { buttonBorderShape, buttonStyle, contentShape, frame, shapes, tint } from '@expo/ui/swift-ui/modifiers';
@@ -32,7 +33,7 @@ export function SwiftIconButtonImage({
   return (
     <Image
       systemName={props.systemImage}
-      size={Math.round((iconSize * 5) / 6)}
+      size={sfSymbolSize(iconSize)}
       color={contentColor}
       modifiers={[frame({ width: frameSize, height: frameSize }), contentShape(shapes.circle())]}
     />

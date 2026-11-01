@@ -1,15 +1,14 @@
-import { NativeIconProps } from './native-icon-props';
+import { InlineHost } from '@/components/presentation/foundation/inline-host';
+import { NativeIconProps, sfSymbolSize } from './native-icon-props';
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { Host, Image } from '@expo/ui/swift-ui';
+import { Image } from '@expo/ui/swift-ui';
 import { accessibilityLabel as accessibilityLabelModifier, frame } from '@expo/ui/swift-ui/modifiers';
 import { I18nManager } from 'react-native';
 
 export function NativeIcon({ systemImage, size, color, mirrored, accessibilityLabel }: NativeIconProps) {
   const { colors } = useAppTheme();
   return (
-    <Host
-      seedColor={colors.seedColor}
-      colorScheme={colors.scheme}
+    <InlineHost
       style={{
         width: size,
         height: size,
@@ -18,13 +17,13 @@ export function NativeIcon({ systemImage, size, color, mirrored, accessibilityLa
     >
       <Image
         systemName={systemImage}
-        size={size}
+        size={sfSymbolSize(size)}
         color={color ?? colors.onSurface}
         modifiers={[
           frame({ width: size, height: size }),
           ...(accessibilityLabel ? [accessibilityLabelModifier(accessibilityLabel)] : []),
         ]}
       />
-    </Host>
+    </InlineHost>
   );
 }

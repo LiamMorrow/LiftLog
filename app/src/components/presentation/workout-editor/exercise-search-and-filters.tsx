@@ -10,8 +10,8 @@ import { View } from 'react-native';
 
 import { SearchField } from '@/components/presentation/foundation/search-field';
 import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
-import ExpandCircleUpIcon from '@expo/material-symbols/expand_circle_up.xml';
-import ExpandCircleDownIcon from '@expo/material-symbols/expand_circle_down.xml';
+import KeyboardArrowUpIcon from '@expo/material-symbols/keyboard_arrow_up.xml';
+import KeyboardArrowDownIcon from '@expo/material-symbols/keyboard_arrow_down.xml';
 
 export default function ExerciseSearchAndFilters({
   searchText,
@@ -45,7 +45,15 @@ export default function ExerciseSearchAndFilters({
       />
 
       <Card style={{ marginHorizontal: spacing.pageHorizontalMargin }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', minHeight: 72, paddingInlineStart: spacing[4] }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            minHeight: 72,
+            paddingInlineStart: spacing[4],
+            paddingInlineEnd: spacing[2],
+          }}
+        >
           <View style={{ flex: 1, paddingInlineEnd: spacing[4] }}>
             <AppText variant="bodyLarge" numberOfLines={1}>
               {t('generic.filters.title')}
@@ -55,8 +63,8 @@ export default function ExerciseSearchAndFilters({
             </AppText>
           </View>
           <NativeIconButton
-            icon={filtersExpanded ? ExpandCircleUpIcon : ExpandCircleDownIcon}
-            systemImage={filtersExpanded ? 'chevron.up.circle' : 'chevron.down.circle'}
+            icon={filtersExpanded ? KeyboardArrowUpIcon : KeyboardArrowDownIcon}
+            systemImage={filtersExpanded ? 'chevron.up' : 'chevron.down'}
             testID="expand-filters-btn"
             variant="tonal"
             label={t(filtersExpanded ? 'generic.collapse.button' : 'generic.expand.button')}

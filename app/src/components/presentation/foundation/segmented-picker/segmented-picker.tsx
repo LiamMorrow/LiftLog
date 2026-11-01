@@ -1,6 +1,6 @@
+import { InlineHost } from '@/components/presentation/foundation/inline-host';
 import { SegmentedPickerProps, SegmentedPickerValue } from './segmented-picker-props';
-import { useAppTheme } from '@/hooks/useAppTheme';
-import { Host, Label, Picker } from '@expo/ui/swift-ui';
+import { Label, Picker } from '@expo/ui/swift-ui';
 import { accessibilityIdentifier, disabled as disabledModifier, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 
 export default function SegmentedPicker<T extends SegmentedPickerValue>({
@@ -9,16 +9,10 @@ export default function SegmentedPicker<T extends SegmentedPickerValue>({
   onChange,
   enabled = true,
 }: SegmentedPickerProps<T>) {
-  const { colors } = useAppTheme();
   const selectedIndex = options.findIndex((x) => x.value === value);
 
   return (
-    <Host
-      matchContents={{ vertical: true }}
-      seedColor={colors.seedColor}
-      colorScheme={colors.scheme}
-      style={{ width: '100%' }}
-    >
+    <InlineHost matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <Picker
         selection={selectedIndex}
         onSelectionChange={(index) => {
@@ -38,6 +32,6 @@ export default function SegmentedPicker<T extends SegmentedPickerValue>({
           />
         ))}
       </Picker>
-    </Host>
+    </InlineHost>
   );
 }

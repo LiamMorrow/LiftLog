@@ -1,3 +1,6 @@
+import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
+import LanguageIcon from '@expo/material-symbols/language.xml';
+import WeightIcon from '@expo/material-symbols/weight.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
 import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
@@ -79,7 +82,8 @@ export default function LocalizationPage() {
       <SegmentedGroup>
         <SegmentedListSwitch
           testID="setUseImperialUnits"
-          icon={'weight'}
+          icon={WeightIcon}
+          systemImage="scalemass"
           label={t('settings.use_imperial_units.label')}
           supportingText={t('settings.use_imperial_units.subtitle')}
           value={settings.useImperialUnits}
@@ -87,7 +91,8 @@ export default function LocalizationPage() {
         />
         <SegmentedListSelect
           testID="setFirstDayOfWeek"
-          icon={'calendar'}
+          icon={CalendarMonthIcon}
+          systemImage="calendar"
           label={t('settings.first_day_of_week.label')}
           supportingText={t('settings.first_day_of_week.subtitle')}
           value={settings.firstDayOfWeek}
@@ -96,7 +101,8 @@ export default function LocalizationPage() {
         />
         <SegmentedListSelect
           testID="setPreferredLanguage"
-          icon={'language'}
+          icon={LanguageIcon}
+          systemImage="globe"
           label={t('settings.set_language.button')}
           supportingText={t('settings.set_language.subtitle')}
           value={settings.preferredLanguage}

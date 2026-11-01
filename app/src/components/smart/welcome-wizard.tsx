@@ -1,3 +1,10 @@
+import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
+import DescriptionIcon from '@expo/material-symbols/description.xml';
+import ForumIcon from '@expo/material-symbols/forum.xml';
+import LanguageIcon from '@expo/material-symbols/language.xml';
+import LinkIcon from '@expo/material-symbols/link.xml';
+import NotificationsIcon from '@expo/material-symbols/notifications.xml';
+import WeightIcon from '@expo/material-symbols/weight.xml';
 import Button from '@/components/presentation/foundation/button';
 import { Pager } from '@/components/presentation/foundation/pager';
 import { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
@@ -128,13 +135,15 @@ export function WelcomeWizard() {
         <SegmentedGroup>
           <SegmentListFormElement
             label={t('onboarding.open_source.button')}
-            icon={'link'}
+            icon={LinkIcon}
+            systemImage="link"
             onPress={() => openUrl('https://github.com/LiamMorrow/LiftLog')}
             right={<Icon source="openInBrowser" size={20} />}
           />
           <SegmentListFormElement
             label={t('onboarding.privacy_policy.button')}
-            icon={'description'}
+            icon={DescriptionIcon}
+            systemImage="doc.text"
             onPress={() => openUrl('https://liftlog.online/privacy.html')}
             right={<Icon source="openInBrowser" size={20} />}
           />
@@ -158,14 +167,16 @@ export function WelcomeWizard() {
         <SegmentedGroup>
           <SegmentedListSwitch
             label={t('settings.use_imperial_units.label')}
-            icon={'weight'}
+            icon={WeightIcon}
+            systemImage="scalemass"
             supportingText={t('settings.use_imperial_units.subtitle')}
             value={settings.useImperialUnits}
             onValueChange={(value) => dispatch(setUseImperialUnits(value))}
           />
           <SegmentedListSelect
             label={t('settings.first_day_of_week.label')}
-            icon={'calendar'}
+            icon={CalendarMonthIcon}
+            systemImage="calendar"
             supportingText={t('settings.first_day_of_week.subtitle')}
             value={settings.firstDayOfWeek}
             options={daysOfWeekOptions}
@@ -173,7 +184,8 @@ export function WelcomeWizard() {
           />
           <SegmentedListSelect
             label={t('settings.set_language.button')}
-            icon={'language'}
+            icon={LanguageIcon}
+            systemImage="globe"
             supportingText={t('settings.set_language.subtitle')}
             value={settings.preferredLanguage}
             options={languageOptions}
@@ -208,7 +220,8 @@ export function WelcomeWizard() {
         <SegmentedGroup>
           <SegmentedListSwitch
             label={t('rest.notifications.title')}
-            icon={'notifications'}
+            icon={NotificationsIcon}
+            systemImage="bell"
             supportingText={t('rest.notifications.subtitle')}
             value={settings.restNotifications}
             onValueChange={(value) => dispatch(setRestNotifications(value))}
@@ -221,7 +234,8 @@ export function WelcomeWizard() {
         <SegmentedGroup>
           <SegmentedListSwitch
             label={t('feed.show_feed.label')}
-            icon={'forum'}
+            icon={ForumIcon}
+            systemImage="bubble.left.and.bubble.right"
             supportingText={t('feed.show_feed.subtitle')}
             value={settings.showFeed}
             onValueChange={(value) => dispatch(setShowFeed(value))}

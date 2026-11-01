@@ -1,3 +1,5 @@
+import AccessibilityNewIcon from '@expo/material-symbols/accessibility_new.xml';
+import ShareIcon from '@expo/material-symbols/share.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
@@ -109,12 +111,14 @@ export default function ManageWorkouts() {
         <SegmentedGroup>
           <SegmentedListLink
             label={t('plan.muscle_analysis.title')}
-            icon="accessibilityNew"
+            icon={AccessibilityNewIcon}
+            systemImage="figure.arms.open"
             onPress={() => push(getMuscleAnalysisHref(programId))}
           />
           <SegmentListFormElement
             label={t('plan.share.button')}
-            icon="share"
+            icon={ShareIcon}
+            systemImage="square.and.arrow.up"
             onPress={() =>
               dispatch(
                 encryptAndShare({

@@ -1,3 +1,4 @@
+import SettingsIcon from '@expo/material-symbols/settings.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
 import { BackendHeaderEditor } from '@/components/presentation/backends/backend-header-editor';
 import { getBackendHeaderFormHref } from '@/components/smart/backend-header-form';
@@ -215,7 +216,8 @@ function BackendEditor({ backend }: { backend: Backend }) {
       <SegmentedGroup>
         <SegmentedListSelect
           label={t('backends.kind.label')}
-          icon={'settingsFill'}
+          icon={SettingsIcon}
+          systemImage="gearshape.fill"
           value={backend.kind}
           options={kindOptions.map(({ value, label }) => ({ value, label: t(label) }))}
           onChange={(kind) => update({ kind })}

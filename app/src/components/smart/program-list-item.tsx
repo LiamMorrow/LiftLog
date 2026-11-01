@@ -10,7 +10,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { NativeIconButtonProps } from '@/components/presentation/foundation/native-icon-button';
 import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
-import { SegmentedListRowAction, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
+import { SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import Menu from '@/components/presentation/foundation/menu';
 import { useDispatch } from 'react-redux';
 import Edit from '@expo/material-symbols/edit.xml';
@@ -127,11 +127,7 @@ export default function ProgramListItem({ id, isFocused, onSelect }: ProgramList
       label={program.name}
       style={focusStyle}
       onLongPress={() => push(`/settings/manage-workouts/${id}`)}
-      right={
-        <SegmentedListRowAction>
-          <ItemMenu id={id} />
-        </SegmentedListRowAction>
-      }
+      action={<ItemMenu id={id} />}
       onPress={onSelect}
     />
   );

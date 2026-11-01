@@ -1,6 +1,7 @@
+import { InlineHost } from '@/components/presentation/foundation/inline-host';
 import { NativeButtonProps, NativeButtonVariant } from './native-button-props';
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { Button, Host } from '@expo/ui/swift-ui';
+import { Button } from '@expo/ui/swift-ui';
 import { buttonStyle, controlSize, disabled as disabledModifier, tint } from '@expo/ui/swift-ui/modifiers';
 
 const styleForVariant: Record<NativeButtonVariant, Parameters<typeof buttonStyle>[0]> = {
@@ -22,7 +23,7 @@ export default function NativeButton({
   const { colors } = useAppTheme();
 
   return (
-    <Host matchContents seedColor={colors.seedColor} colorScheme={colors.scheme} style={style}>
+    <InlineHost matchContents style={style}>
       <Button
         label={label}
         systemImage={systemImage}
@@ -34,6 +35,6 @@ export default function NativeButton({
           ...(disabled ? [disabledModifier(true)] : []),
         ]}
       />
-    </Host>
+    </InlineHost>
   );
 }

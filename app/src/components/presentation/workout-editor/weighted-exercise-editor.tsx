@@ -1,3 +1,6 @@
+import AirlineSeatReclineExtraIcon from '@expo/material-symbols/airline_seat_recline_extra.xml';
+import DirectionsRunIcon from '@expo/material-symbols/directions_run.xml';
+import LinkIcon from '@expo/material-symbols/link.xml';
 import FixedIncrementer from '@/components/presentation/foundation/editors/fixed-incrementer';
 import RestFormat from '@/components/presentation/foundation/rest-format';
 import SegmentedPicker from '@/components/presentation/foundation/segmented-picker';
@@ -107,7 +110,8 @@ export function WeightedExerciseEditor({
             <SegmentListFormElement
               key="rest"
               label={t('rest.rest.label')}
-              icon={'airlineSeatReclineExtraFill'}
+              icon={AirlineSeatReclineExtraIcon}
+              systemImage="chair.lounge"
               onPress={() => setRestDialogOpen(true)}
               right={<RestFormat style={{ color: colors.onSurface }} rest={exercise.restBetweenSets} />}
             />
@@ -115,7 +119,8 @@ export function WeightedExerciseEditor({
           <SegmentedListSwitch
             key="superset"
             label={t('workout.superset_next_exercise.button')}
-            icon={'link'}
+            icon={LinkIcon}
+            systemImage="link"
             value={exercise.supersetWithNext}
             testID="exercise-superset"
             onValueChange={(supersetWithNext) => updateExercise({ supersetWithNext })}
@@ -152,7 +157,8 @@ export function ResistanceSelect({
   return (
     <SegmentedListSelect
       label={t('exercise.resistance.label')}
-      icon={'directionsRun'}
+      icon={DirectionsRunIcon}
+      systemImage="figure.run"
       testID="load-basis"
       value={exercise.resistance}
       options={resistanceOptions.map(({ value, label }) => ({ value, label: t(label) }))}

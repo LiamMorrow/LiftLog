@@ -1,3 +1,5 @@
+import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
+import DirectionsRunIcon from '@expo/material-symbols/directions_run.xml';
 import Form from '@/components/presentation/foundation/form';
 import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
 import { SegmentedListSelect } from '@/components/presentation/foundation/segmented-list-select';
@@ -68,7 +70,9 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
         <SegmentedListSelect
           key="type"
           label={t('exercise.type.label')}
-          icon={exercise instanceof WeightedExerciseBlueprint ? 'fitnessCenter' : 'directionsRun'}
+          {...(exercise instanceof WeightedExerciseBlueprint
+            ? { icon: FitnessCenterIcon, systemImage: 'dumbbell' as const }
+            : { icon: DirectionsRunIcon, systemImage: 'figure.run' as const })}
           testID="exercise-type"
           value={exercise instanceof WeightedExerciseBlueprint ? 'weighted' : 'cardio'}
           options={[

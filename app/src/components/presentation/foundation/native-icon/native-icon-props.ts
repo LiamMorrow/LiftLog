@@ -11,3 +11,8 @@ export interface NativeIconProps {
   mirrored?: boolean;
   accessibilityLabel?: string;
 }
+
+/** SF Symbols draw larger than Material Symbols at the same point size. */
+export function sfSymbolSize(materialSize: number) {
+  return Math.round((materialSize * 5) / 6);
+}

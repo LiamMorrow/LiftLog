@@ -47,19 +47,23 @@ export function ExerciseBlueprintRow(props: ExerciseBlueprintRowProps) {
     .exhaustive();
 
   return (
-    <TouchableRipple testID="exercise-blueprint-row" onPress={props.reordering ? undefined : props.onEdit}>
-      <View
-        style={{
-          minHeight: spacing[16],
-          paddingVertical: spacing[2],
-          paddingLeft: spacing[4],
-          paddingRight: spacing[1],
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: spacing[3],
-        }}
+    <View style={{ flexDirection: 'row', alignItems: 'center', paddingRight: spacing[1] }}>
+      <TouchableRipple
+        testID="exercise-blueprint-row"
+        onPress={props.reordering ? undefined : props.onEdit}
+        style={{ flex: 1, alignSelf: 'stretch' }}
       >
-        <View style={{ flex: 1, gap: spacing[0.5] }}>
+        <View
+          style={{
+            flex: 1,
+            minHeight: spacing[16],
+            justifyContent: 'center',
+            paddingVertical: spacing[2],
+            paddingLeft: spacing[4],
+            paddingRight: spacing[3],
+            gap: spacing[0.5],
+          }}
+        >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
             {props.supersetLabel ? <SupersetBadge label={props.supersetLabel} /> : undefined}
             <AppText variant="titleMedium" style={{ flexShrink: 1 }}>
@@ -70,48 +74,48 @@ export function ExerciseBlueprintRow(props: ExerciseBlueprintRowProps) {
             {detail}
           </AppText>
         </View>
-        {props.reordering ? (
-          <View style={{ flexDirection: 'row' }}>
-            <NativeIconButton
-              icon={ArrowUpwardIcon}
-              systemImage="arrow.up"
-              disabled={!props.canMoveUp}
-              label={t('generic.move_up.button')}
-              onPress={props.onMoveUp}
-            />
-            <NativeIconButton
-              icon={ArrowDownwardIcon}
-              systemImage="arrow.down"
-              disabled={!props.canMoveDown}
-              label={t('generic.move_down.button')}
-              onPress={props.onMoveDown}
-            />
-          </View>
-        ) : (
-          <Menu
-            trigger={{
-              icon: MoreHorizIcon,
-              systemImage: 'ellipsis',
-              label: t('generic.more_options.button'),
-            }}
-            items={[
-              {
-                label: t('exercise.copy_to.button'),
-                icon: CopyAll,
-                systemImage: 'doc.on.clipboard',
-                onPress: props.onCopyTo,
-              },
-              {
-                label: t('generic.remove.button'),
-                icon: Delete,
-                systemImage: 'trash',
-                onPress: props.onRemove,
-              },
-            ]}
+      </TouchableRipple>
+      {props.reordering ? (
+        <View style={{ flexDirection: 'row' }}>
+          <NativeIconButton
+            icon={ArrowUpwardIcon}
+            systemImage="arrow.up"
+            disabled={!props.canMoveUp}
+            label={t('generic.move_up.button')}
+            onPress={props.onMoveUp}
           />
-        )}
-      </View>
-    </TouchableRipple>
+          <NativeIconButton
+            icon={ArrowDownwardIcon}
+            systemImage="arrow.down"
+            disabled={!props.canMoveDown}
+            label={t('generic.move_down.button')}
+            onPress={props.onMoveDown}
+          />
+        </View>
+      ) : (
+        <Menu
+          trigger={{
+            icon: MoreHorizIcon,
+            systemImage: 'ellipsis',
+            label: t('generic.more_options.button'),
+          }}
+          items={[
+            {
+              label: t('exercise.copy_to.button'),
+              icon: CopyAll,
+              systemImage: 'doc.on.clipboard',
+              onPress: props.onCopyTo,
+            },
+            {
+              label: t('generic.remove.button'),
+              icon: Delete,
+              systemImage: 'trash',
+              onPress: props.onRemove,
+            },
+          ]}
+        />
+      )}
+    </View>
   );
 }
 

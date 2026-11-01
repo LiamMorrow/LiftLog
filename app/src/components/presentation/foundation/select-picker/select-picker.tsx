@@ -1,6 +1,6 @@
+import { InlineHost } from '@/components/presentation/foundation/inline-host';
 import { isSelectPickerValueEqual, SelectPickerProps, SelectPickerValue } from './select-picker-props';
-import { useAppTheme } from '@/hooks/useAppTheme';
-import { Host, Picker } from '@expo/ui';
+import { Picker } from '@expo/ui';
 
 export default function SelectPicker<T extends SelectPickerValue>({
   value,
@@ -10,12 +10,11 @@ export default function SelectPicker<T extends SelectPickerValue>({
   appearance = 'menu',
   testID,
 }: SelectPickerProps<T>) {
-  const { colors } = useAppTheme();
   const items = options.filter((x) => !x.disabledAndHidden);
   const selectedIndex = items.findIndex((x) => isSelectPickerValueEqual(x.value, value));
 
   return (
-    <Host matchContents seedColor={colors.seedColor} colorScheme={colors.scheme}>
+    <InlineHost matchContents>
       <Picker
         selectedValue={String(selectedIndex)}
         onValueChange={(key) => {
@@ -32,6 +31,6 @@ export default function SelectPicker<T extends SelectPickerValue>({
           <Picker.Item key={option.label} label={option.label} value={String(index)} />
         ))}
       </Picker>
-    </Host>
+    </InlineHost>
   );
 }

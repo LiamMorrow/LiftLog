@@ -1,3 +1,9 @@
+import DnsIcon from '@expo/material-symbols/dns.xml';
+import ErrorIcon from '@expo/material-symbols/error.xml';
+import BoltIcon from '@expo/material-symbols/bolt.xml';
+import CloudUploadIcon from '@expo/material-symbols/cloud_upload.xml';
+import ForumIcon from '@expo/material-symbols/forum.xml';
+import PublicIcon from '@expo/material-symbols/public.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
 import {
   Backend,
@@ -66,17 +72,20 @@ export default function BackendsPage() {
       <SegmentedGroup>
         <SegmentListFormElement
           label={t('backends.feed.label')}
-          icon={'forum'}
+          icon={ForumIcon}
+          systemImage="bubble.left.and.bubble.right"
           right={<BackendPicker feature="feed" onChange={setPendingFeedBackend} />}
         />
         <SegmentListFormElement
           label={t('backends.ai_planner.label')}
-          icon={'boltFill'}
+          icon={BoltIcon}
+          systemImage="bolt.fill"
           right={<BackendPicker feature="aiPlanner" />}
         />
         <SegmentListFormElement
           label={t('backends.backup.label')}
-          icon={'cloudUploadFill'}
+          icon={CloudUploadIcon}
+          systemImage="icloud.and.arrow.up.fill"
           right={<BackendPicker feature="backup" />}
         />
       </SegmentedGroup>
@@ -88,7 +97,8 @@ export default function BackendsPage() {
               key={backend.id}
               label={backend.name}
               supportingText={describe(backend)}
-              icon={'publicFill'}
+              icon={PublicIcon}
+              systemImage="globe.americas.fill"
             />
           ) : (
             <SegmentedListLink
@@ -101,7 +111,9 @@ export default function BackendsPage() {
                   <AppText style={{ color: colors.error }}>{t('backends.incomplete.label')}</AppText>
                 )
               }
-              icon={isBackendComplete(backend) ? 'dnsFill' : 'error'}
+              {...(isBackendComplete(backend)
+                ? { icon: DnsIcon, systemImage: 'server.rack' as const }
+                : { icon: ErrorIcon, systemImage: 'exclamationmark.circle' as const })}
               onPress={() => push(`/settings/backends/${backend.id}`)}
             />
           ),

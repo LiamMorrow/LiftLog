@@ -1,3 +1,10 @@
+import AddIcon from '@expo/material-symbols/add.xml';
+import AirlineSeatReclineExtraIcon from '@expo/material-symbols/airline_seat_recline_extra.xml';
+import ElevationIcon from '@expo/material-symbols/elevation.xml';
+import SpeedIcon from '@expo/material-symbols/speed.xml';
+import StepsIcon from '@expo/material-symbols/steps.xml';
+import TrailLengthIcon from '@expo/material-symbols/trail_length.xml';
+import WeightIcon from '@expo/material-symbols/weight.xml';
 import RestFormat from '@/components/presentation/foundation/rest-format';
 import SelectPicker from '@/components/presentation/foundation/select-picker';
 import SegmentedPicker from '@/components/presentation/foundation/segmented-picker';
@@ -127,7 +134,8 @@ export function CardioExerciseEditor({
               key="add"
               testID="cardio-add-set"
               label={t('exercise.cardio_set.add.button')}
-              icon="add"
+              icon={AddIcon}
+              systemImage="plus"
               onPress={addSet}
             />,
           ]}
@@ -168,7 +176,8 @@ export function CardioSetEditor(props: {
               key="track-time"
               value={set.trackDuration || set.target.type === 'time'}
               testID="track-time-switch"
-              icon={'timer'}
+              icon={TimerIcon}
+              systemImage="timer"
               onValueChange={toggleSetItem('trackDuration')}
               label={t('exercise.track_time.label')}
               disabled={set.target.type === 'time'}
@@ -176,7 +185,8 @@ export function CardioSetEditor(props: {
             <SegmentedListSwitch
               key="track-distance"
               value={set.trackDistance || set.target.type === 'distance'}
-              icon={'trailLength'}
+              icon={TrailLengthIcon}
+              systemImage="point.topleft.down.to.point.bottomright.curvepath"
               testID="track-distance-switch"
               onValueChange={toggleSetItem('trackDistance')}
               label={t('exercise.track_distance.label')}
@@ -184,7 +194,8 @@ export function CardioSetEditor(props: {
             />,
             <SegmentedListSwitch
               key="track-resistance"
-              icon={'speed'}
+              icon={SpeedIcon}
+              systemImage="speedometer"
               value={set.trackResistance}
               onValueChange={toggleSetItem('trackResistance')}
               label={t('exercise.track_resistance.label')}
@@ -192,21 +203,24 @@ export function CardioSetEditor(props: {
             <SegmentedListSwitch
               key="track-incline"
               value={set.trackIncline}
-              icon={'elevation'}
+              icon={ElevationIcon}
+              systemImage="mountain.2"
               onValueChange={toggleSetItem('trackIncline')}
               label={t('exercise.track_incline.label')}
             />,
             <SegmentedListSwitch
               key="track-weight"
               value={set.trackWeight}
-              icon={'weight'}
+              icon={WeightIcon}
+              systemImage="scalemass"
               onValueChange={toggleSetItem('trackWeight')}
               label={t('exercise.track_weight.label')}
             />,
             <SegmentedListSwitch
               key="track-steps"
               value={set.trackSteps}
-              icon={'steps'}
+              icon={StepsIcon}
+              systemImage="shoeprints.fill"
               onValueChange={toggleSetItem('trackSteps')}
               label={t('exercise.track_steps.label')}
             />,
@@ -217,7 +231,8 @@ export function CardioSetEditor(props: {
                   <SegmentedListSwitch
                     key="rest-enabled"
                     value={!!rest}
-                    icon={'airlineSeatReclineExtraFill'}
+                    icon={AirlineSeatReclineExtraIcon}
+                    systemImage="chair.lounge"
                     testID="cardio-rest-switch"
                     onValueChange={(enabled) =>
                       updateSet(
@@ -235,7 +250,8 @@ export function CardioSetEditor(props: {
                   <SegmentListFormElement
                     key="rest-edit"
                     label={t('rest.rest.label')}
-                    icon={'timer'}
+                    icon={TimerIcon}
+                    systemImage="timer"
                     onPress={() => setRestDialogOpen(true)}
                     right={<RestFormat style={{ color: colors.onSurface }} rest={rest} />}
                   />,

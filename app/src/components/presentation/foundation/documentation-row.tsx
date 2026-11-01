@@ -1,4 +1,6 @@
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import DescriptionIcon from '@expo/material-symbols/description.xml';
+import OpenInBrowserIcon from '@expo/material-symbols/open_in_browser.xml';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { openUrl } from '@/utils/open-url';
 import { useTranslate } from '@tolgee/react';
@@ -11,9 +13,10 @@ export function DocumentationRow(props: { doc: string }) {
     <SegmentedGroup>
       <SegmentListFormElement
         label={t('generic.read_documentation.button')}
-        icon={'description'}
+        icon={DescriptionIcon}
+        systemImage="doc.text"
         onPress={() => openUrl(docsBaseUrl + props.doc)}
-        right={<Icon source="openInBrowser" size={20} />}
+        right={<NativeIcon icon={OpenInBrowserIcon} systemImage="arrow.up.right.square" size={20} />}
       />
     </SegmentedGroup>
   );

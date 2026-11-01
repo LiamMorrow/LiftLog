@@ -9,7 +9,7 @@ import { uuid } from '@/utils/uuid';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Keyboard, Pressable } from 'react-native';
+import { Keyboard, Pressable, View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { useDispatch } from 'react-redux';
 
@@ -42,15 +42,10 @@ export function ExerciseSearcher({ currentExercise, onSelectExercise }: Exercise
   };
 
   return (
-    <Pressable
-      testID="exercise-name"
-      accessibilityRole="button"
-      onPress={openSearch}
-      style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}
-    >
-      <AppText variant="headlineMedium" style={{ flex: 1 }}>
-        {currentExercise.name}
-      </AppText>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}>
+      <Pressable testID="exercise-name" accessibilityRole="button" onPress={openSearch} style={{ flex: 1 }}>
+        <AppText variant="headlineMedium">{currentExercise.name}</AppText>
+      </Pressable>
       <NativeIconButton
         icon={SearchIcon}
         systemImage="magnifyingglass"
@@ -58,6 +53,6 @@ export function ExerciseSearcher({ currentExercise, onSelectExercise }: Exercise
         label={t('generic.search.button')}
         onPress={openSearch}
       />
-    </Pressable>
+    </View>
   );
 }

@@ -1,3 +1,4 @@
+import HeartCheckIcon from '@expo/material-symbols/heart_check.xml';
 import { useTranslate } from '@tolgee/react';
 import { useDispatch } from 'react-redux';
 import { useServices } from './services-provider';
@@ -27,7 +28,8 @@ export function HealthExportSwitch() {
     <SegmentedListSwitch
       label={Platform.OS === 'ios' ? t('export.healthkit.title') : t('export.health_connect.title')}
       supportingText={Platform.OS === 'ios' ? t('export.healthkit.subtitle') : t('export.health_connect.subtitle')}
-      icon={'heartCheck'}
+      icon={HeartCheckIcon}
+      systemImage="heart.text.square"
       value={exportToHealthAggregator}
       onValueChange={(val) => dispatch(setExportToHealthAggregator(val))}
     />

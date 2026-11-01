@@ -1,5 +1,5 @@
-import { Icon } from '@/components/presentation/foundation/icon';
-import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
+import { NativeIcon, NativeIconProps } from '@/components/presentation/foundation/native-icon';
+import ChevronRightIcon from '@expo/material-symbols/chevron_right.xml';
 import { SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';
@@ -7,7 +7,8 @@ import { ReactNode } from 'react';
 export function SegmentedListLink(props: {
   label: ReactNode;
   supportingText?: ReactNode;
-  icon?: AppIconSource;
+  icon?: NativeIconProps['icon'];
+  systemImage?: NativeIconProps['systemImage'];
   onPress: () => void;
   testID?: string;
 }) {
@@ -17,8 +18,17 @@ export function SegmentedListLink(props: {
       label={props.label}
       supportingText={props.supportingText}
       icon={props.icon}
+      systemImage={props.systemImage}
       onPress={props.onPress}
-      right={<Icon source="chevronRight" size={20} color={colors.onSurfaceVariant} />}
+      right={
+        <NativeIcon
+          icon={ChevronRightIcon}
+          systemImage="chevron.right"
+          size={20}
+          mirrored
+          color={colors.onSurfaceVariant}
+        />
+      }
     />
   );
 }

@@ -1,3 +1,4 @@
+import AddIcon from '@expo/material-symbols/add.xml';
 import SelectPicker, { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
 import {
   applyProgression,
@@ -135,7 +136,8 @@ export function ProgressionRulesEditor(props: Props) {
             key="add"
             testID="progression-add-rule"
             label={t('exercise.progression.add_rule.label')}
-            icon="add"
+            icon={AddIcon}
+            systemImage="plus"
             supportingText={rules.length ? undefined : t('exercise.progression.none.body')}
             onPress={addRule}
           />,

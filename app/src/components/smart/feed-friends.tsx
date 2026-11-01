@@ -1,3 +1,5 @@
+import QrCodeIcon from '@expo/material-symbols/qr_code.xml';
+import ShareIcon from '@expo/material-symbols/share.xml';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import Menu from '@/components/presentation/foundation/menu';
@@ -136,7 +138,8 @@ function ShareProfileRows() {
   return (
     <SegmentedGroup>
       <SegmentListFormElement
-        icon="share"
+        icon={ShareIcon}
+        systemImage="square.and.arrow.up"
         label={t('feed.share_link.row')}
         supportingText={t('feed.share_link.row.supporting')}
         onPress={() => {
@@ -148,7 +151,12 @@ function ShareProfileRows() {
           );
         }}
       />
-      <SegmentedListLink icon="qrCode" label={t('feed.qr_code.row')} onPress={() => push(getFeedQrCodeHref())} />
+      <SegmentedListLink
+        icon={QrCodeIcon}
+        systemImage="qrcode"
+        label={t('feed.qr_code.row')}
+        onPress={() => push(getFeedQrCodeHref())}
+      />
     </SegmentedGroup>
   );
 }

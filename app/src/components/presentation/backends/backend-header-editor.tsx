@@ -1,3 +1,5 @@
+import AddIcon from '@expo/material-symbols/add.xml';
+import VpnKeyIcon from '@expo/material-symbols/vpn_key.xml';
 import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
 import CloseIcon from '@expo/material-symbols/close.xml';
 import { SegmentedList, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
@@ -27,16 +29,18 @@ export function BackendHeaderEditor(props: {
         <SegmentListFormElement
           key="title"
           label={t('backends.headers.label')}
-          icon={'vpnKeyFill'}
+          icon={VpnKeyIcon}
+          systemImage="key.fill"
           supportingText={t('backends.headers.explanation')}
         />,
         ...headers.map((header, index) => (
           <SegmentListFormElement
             key={`header-${index}`}
             label={header.name}
-            icon={'vpnKey'}
+            icon={VpnKeyIcon}
+            systemImage="key"
             onPress={() => props.onEdit(index)}
-            right={
+            action={
               <NativeIconButton
                 icon={CloseIcon}
                 systemImage="xmark"
@@ -54,7 +58,8 @@ export function BackendHeaderEditor(props: {
         <SegmentListFormElement
           key="add"
           label={t('backends.headers.add.button')}
-          icon={'add'}
+          icon={AddIcon}
+          systemImage="plus"
           onPress={() => props.onEdit(headers.length)}
         />,
       ]}

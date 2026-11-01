@@ -1,7 +1,6 @@
 import { Card } from '@/components/presentation/foundation/card';
-import { Icon } from '@/components/presentation/foundation/icon';
+import { NativeIcon, NativeIconProps } from '@/components/presentation/foundation/native-icon';
 import TouchableRipple from '@/components/presentation/foundation/touchable-ripple';
-import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { LegendList } from '@legendapp/list/react-native';
 import { Children, isValidElement, ReactNode } from 'react';
@@ -77,12 +76,15 @@ export function SegmentedGroup(props: { children: ReactNode; style?: ViewStyle }
 
 export function SegmentListFormElement(props: {
   label: ReactNode;
-  icon?: AppIconSource;
+  icon?: NativeIconProps['icon'];
+  systemImage?: NativeIconProps['systemImage'];
   onPress?: () => void;
   onLongPress?: () => void;
   supportingText?: ReactNode;
   line2?: ReactNode | string;
   right?: ReactNode | string;
+  /** A control of its own, such as a menu or icon button, kept out of the row's tap area. */
+  action?: ReactNode;
   style?: StyleProp<ViewStyle>;
   destructive?: boolean;
   testID?: string;
@@ -92,43 +94,31 @@ export function SegmentListFormElement(props: {
   const pressable = props.onPress ?? props.onLongPress;
   const Wrapper = pressable ? TouchableRipple : View;
   return (
-    <Wrapper testID={props.testID} onPress={props.onPress} onLongPress={props.onLongPress}>
-      <View style={[{ padding: spacing[4] }, props.style]}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              gap: spacing[2],
-              alignItems: 'center',
-            }}
-          >
-            {props.icon ? <Icon size={20} source={props.icon} color={labelColor} /> : undefined}
-            <AppText variant="labelLarge" style={{ color: labelColor }}>
-              {props.label}
-            </AppText>
+    <View style={[styles.row, props.style]}>
+      <Wrapper testID={props.testID} onPress={props.onPress} onLongPress={props.onLongPress} style={styles.main}>
+        <View style={[styles.mainContent, props.action ? styles.mainContentBesideAction : undefined]}>
+          <View style={styles.labelRow}>
+            <View style={styles.label}>
+              {props.icon && props.systemImage ? (
+                <NativeIcon icon={props.icon} systemImage={props.systemImage} size={20} color={labelColor} />
+              ) : undefined}
+              <AppText variant="labelLarge" style={{ color: labelColor }}>
+                {props.label}
+              </AppText>
+            </View>
+            {typeof props.right === 'string' ? <AppText variant="labelLarge">{props.right}</AppText> : props.right}
           </View>
-          {typeof props.right === 'string' ? <AppText variant="labelLarge">{props.right}</AppText> : props.right}
+          {props.supportingText ? (
+            <AppText variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginBlockStart: spacing[2] }}>
+              {props.supportingText}
+            </AppText>
+          ) : undefined}
+          {props.line2}
         </View>
-        {props.supportingText ? (
-          <AppText variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginBlockStart: spacing[2] }}>
-            {props.supportingText}
-          </AppText>
-        ) : undefined}
-        {props.line2}
-      </View>
-    </Wrapper>
+      </Wrapper>
+      {props.action ? <View style={styles.action}>{props.action}</View> : undefined}
+    </View>
   );
-}
-
-export function SegmentedListRowAction(props: { children: ReactNode }) {
-  return <View style={styles.rowAction}>{props.children}</View>;
 }
 
 export function SegmentedListItem(props: { isFirst: boolean; isLast: boolean; children: ReactNode }) {
@@ -151,9 +141,35 @@ const styles = StyleSheet.create({
   item: {
     overflow: 'hidden',
   },
-  rowAction: {
-    marginBlock: -spacing[4],
-    marginInlineEnd: -spacing[4],
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  main: {
+    flex: 1,
+    alignSelf: 'stretch',
+  },
+  mainContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    padding: spacing[4],
+  },
+  mainContentBesideAction: {
+    paddingInlineEnd: 0,
+  },
+  labelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  label: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: spacing[2],
+    alignItems: 'center',
+  },
+  action: {
+    paddingInlineEnd: spacing[1],
   },
   onlyItem: {},
   firstItem: {

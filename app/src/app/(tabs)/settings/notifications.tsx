@@ -1,3 +1,5 @@
+import NotificationsIcon from '@expo/material-symbols/notifications.xml';
+import TimerIcon from '@expo/material-symbols/timer.xml';
 import { RootState, useAppSelector } from '@/store';
 import { broadcastWorkoutEvent } from '@/store/workout-worker';
 import { workoutUpdatedEvent } from '@/store/workout-worker/helpers';
@@ -19,7 +21,8 @@ export default function NotificationsPage() {
       <SegmentedGroup>
         <SegmentedListSwitch
           label={t('rest.notifications.title')}
-          icon={'notifications'}
+          icon={NotificationsIcon}
+          systemImage="bell"
           supportingText={t('rest.notifications.subtitle')}
           value={settings.restNotifications}
           onValueChange={(value) => {
@@ -37,7 +40,8 @@ export default function NotificationsPage() {
         <SegmentedListSwitch
           testID="setRestTimersEnabled"
           label={t('workout.rest_timers.label')}
-          icon={'timer'}
+          icon={TimerIcon}
+          systemImage="timer"
           supportingText={t('workout.rest_timers.subtitle')}
           value={settings.restTimersEnabled}
           onValueChange={(value) => dispatch(setRestTimersEnabled(value))}

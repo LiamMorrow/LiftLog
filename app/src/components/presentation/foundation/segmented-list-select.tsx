@@ -1,4 +1,4 @@
-import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
+import { NativeIconProps } from '@/components/presentation/foundation/native-icon';
 import { SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
 import SelectPicker from '@/components/presentation/foundation/select-picker';
 import {
@@ -10,7 +10,8 @@ import { ReactNode } from 'react';
 export function SegmentedListSelect<T extends SelectPickerValue>(props: {
   label: ReactNode;
   supportingText?: ReactNode;
-  icon?: AppIconSource;
+  icon?: NativeIconProps['icon'];
+  systemImage?: NativeIconProps['systemImage'];
   value: T;
   options: SelectPickerOption<T>[];
   onChange: (value: T) => void;
@@ -22,6 +23,7 @@ export function SegmentedListSelect<T extends SelectPickerValue>(props: {
       label={props.label}
       supportingText={props.supportingText}
       icon={props.icon}
+      systemImage={props.systemImage}
       right={
         <SelectPicker
           value={props.value}

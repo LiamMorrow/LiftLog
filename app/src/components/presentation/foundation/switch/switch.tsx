@@ -1,12 +1,11 @@
+import { InlineHost } from '@/components/presentation/foundation/inline-host';
 import { SwitchProps } from './switch-props';
-import { useAppTheme } from '@/hooks/useAppTheme';
-import { Host, Toggle } from '@expo/ui/swift-ui';
+import { Toggle } from '@expo/ui/swift-ui';
 import { accessibilityIdentifier, disabled, labelsHidden } from '@expo/ui/swift-ui/modifiers';
 
 export function Switch(props: SwitchProps) {
-  const { colors } = useAppTheme();
   return (
-    <Host matchContents seedColor={colors.seedColor} colorScheme={colors.scheme}>
+    <InlineHost matchContents>
       <Toggle
         isOn={props.value}
         onIsOnChange={props.onValueChange}
@@ -16,6 +15,6 @@ export function Switch(props: SwitchProps) {
           ...(props.testID ? [accessibilityIdentifier(props.testID)] : []),
         ]}
       />
-    </Host>
+    </InlineHost>
   );
 }

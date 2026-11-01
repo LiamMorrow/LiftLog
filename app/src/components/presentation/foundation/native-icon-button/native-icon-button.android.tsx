@@ -13,7 +13,12 @@ import {
   IconButton,
   OutlinedIconButton,
 } from '@expo/ui/jetpack-compose';
-import { size, testID as testIDModifier } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  size,
+  testID as testIDModifier,
+  wrapContentHeight,
+  wrapContentWidth,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 const buttonForVariant = {
   standard: IconButton,
@@ -38,7 +43,12 @@ export function NativeIconButton(props: NativeIconButtonProps) {
           contentColor: props.colors?.content ?? (variant === 'standard' ? colors.onSurfaceVariant : undefined),
           containerColor: props.colors?.container,
         }}
-        modifiers={[size(containerSize, containerSize), ...(props.testID ? [testIDModifier(props.testID)] : [])]}
+        modifiers={[
+          wrapContentWidth('centerHorizontally'),
+          wrapContentHeight('centerVertically'),
+          size(containerSize, containerSize),
+          ...(props.testID ? [testIDModifier(props.testID)] : []),
+        ]}
       >
         <Icon source={props.icon} size={iconSize} contentDescription={props.label} />
       </MaterialIconButton>

@@ -1,3 +1,8 @@
+import BackupIcon from '@expo/material-symbols/backup.xml';
+import CloudUploadIcon from '@expo/material-symbols/cloud_upload.xml';
+import DescriptionIcon from '@expo/material-symbols/description.xml';
+import DownloadIcon from '@expo/material-symbols/download.xml';
+import HistoryIcon from '@expo/material-symbols/history.xml';
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import { SettingsPage } from '@/components/layout/settings-page';
@@ -29,13 +34,15 @@ export default function BackupAndRestorePage() {
         <SegmentListFormElement
           label={t('backup.backup_data.title')}
           supportingText={t('backup.backup_data.subtitle')}
-          icon={'backup'}
+          icon={BackupIcon}
+          systemImage="externaldrive"
           onPress={() => setFeedExportDialogOpen(true)}
         />
         <SegmentListFormElement
           label={t('backup.restore_data.title')}
           supportingText={t('backup.restore_data.subtitle')}
-          icon={'history'}
+          icon={HistoryIcon}
+          systemImage="clock.arrow.circlepath"
           onPress={() => {
             dispatch(importData());
             dispatch(setStatsIsDirty(true));
@@ -47,19 +54,22 @@ export default function BackupAndRestorePage() {
         <SegmentedListLink
           label={t('backup.automatic_remote.title')}
           supportingText={t('backup.automatic_remote.subtitle')}
-          icon={'cloudUpload'}
+          icon={CloudUploadIcon}
+          systemImage="icloud.and.arrow.up"
           onPress={() => push('/settings/backup-and-restore/remote-backup')}
         />
         <SegmentedListLink
           label={t('backup.import_from_other_apps.title')}
           supportingText={t('backup.import_from_other_apps.subtitle')}
-          icon={'download'}
+          icon={DownloadIcon}
+          systemImage="square.and.arrow.down"
           onPress={() => push('/settings/backup-and-restore/import-from-other-apps')}
         />
         <SegmentedListLink
           label={t('backup.plaintext_export.title')}
           supportingText={t('backup.plaintext_export.subtitle')}
-          icon={'description'}
+          icon={DescriptionIcon}
+          systemImage="doc.text"
           onPress={() => push('/settings/backup-and-restore/plain-text-export')}
         />
       </SegmentedGroup>

@@ -81,84 +81,91 @@ export function PlanWorkoutRow({
 
   return (
     <>
-      <TouchableRipple testID="plan-workout-row" onPress={reordering ? undefined : onPress}>
-        <View
-          style={{
-            minHeight: spacing[20] - spacing[2],
-            paddingVertical: spacing[2],
-            paddingLeft: spacing[4],
-            paddingRight: spacing[1],
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: spacing[4],
-          }}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingRight: spacing[1] }}>
+        <TouchableRipple
+          testID="plan-workout-row"
+          onPress={reordering ? undefined : onPress}
+          style={{ flex: 1, alignSelf: 'stretch' }}
         >
           <View
             style={{
-              width: spacing[10],
-              height: spacing[10],
-              borderRadius: rounding.roundedRectangleRadius,
-              backgroundColor: colors.surface,
+              flex: 1,
+              minHeight: spacing[20] - spacing[2],
+              paddingVertical: spacing[2],
+              paddingLeft: spacing[4],
+              paddingRight: spacing[3],
+              flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'center',
+              gap: spacing[4],
             }}
           >
-            <AppText variant="titleMedium">{sessionIndex + 1}</AppText>
-          </View>
-          <View style={{ flex: 1, gap: spacing[0.5] }}>
-            <AppText variant="titleMedium">{sessionBlueprint.name}</AppText>
-            <AppText variant="bodyMedium" numberOfLines={1} style={{ color: colors.onSurfaceVariant }}>
-              {summary}
-            </AppText>
-          </View>
-          {reordering ? (
-            <View style={{ flexDirection: 'row' }}>
-              <NativeIconButton
-                icon={ArrowUpwardIcon}
-                systemImage="arrow.up"
-                disabled={sessionIndex === 0}
-                label={t('generic.move_up.button')}
-                onPress={() => dispatch(moveSessionBlueprintUpInProgram({ programId, sessionBlueprint }))}
-              />
-              <NativeIconButton
-                icon={ArrowDownwardIcon}
-                systemImage="arrow.down"
-                disabled={sessionIndex === plan.sessions.length - 1}
-                label={t('generic.move_down.button')}
-                onPress={() => dispatch(moveSessionBlueprintDownInProgram({ programId, sessionBlueprint }))}
-              />
-            </View>
-          ) : (
-            <Menu
-              trigger={{
-                icon: MoreHorizIcon,
-                systemImage: 'ellipsis',
-                label: t('generic.more_options.button'),
+            <View
+              style={{
+                width: spacing[10],
+                height: spacing[10],
+                borderRadius: rounding.roundedRectangleRadius,
+                backgroundColor: colors.surface,
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
-              items={[
-                {
-                  label: t('generic.duplicate.button'),
-                  icon: ContentCopy,
-                  systemImage: 'doc.on.doc',
-                  onPress: duplicateSession,
-                },
-                {
-                  label: t('exercise.copy_to.button'),
-                  icon: CopyAll,
-                  systemImage: 'doc.on.clipboard',
-                  onPress: () => setCopyDialogOpen(true),
-                },
-                {
-                  label: t('generic.remove.button'),
-                  icon: Delete,
-                  systemImage: 'trash',
-                  onPress: removeSession,
-                },
-              ]}
+            >
+              <AppText variant="titleMedium">{sessionIndex + 1}</AppText>
+            </View>
+            <View style={{ flex: 1, gap: spacing[0.5] }}>
+              <AppText variant="titleMedium">{sessionBlueprint.name}</AppText>
+              <AppText variant="bodyMedium" numberOfLines={1} style={{ color: colors.onSurfaceVariant }}>
+                {summary}
+              </AppText>
+            </View>
+          </View>
+        </TouchableRipple>
+        {reordering ? (
+          <View style={{ flexDirection: 'row' }}>
+            <NativeIconButton
+              icon={ArrowUpwardIcon}
+              systemImage="arrow.up"
+              disabled={sessionIndex === 0}
+              label={t('generic.move_up.button')}
+              onPress={() => dispatch(moveSessionBlueprintUpInProgram({ programId, sessionBlueprint }))}
             />
-          )}
-        </View>
-      </TouchableRipple>
+            <NativeIconButton
+              icon={ArrowDownwardIcon}
+              systemImage="arrow.down"
+              disabled={sessionIndex === plan.sessions.length - 1}
+              label={t('generic.move_down.button')}
+              onPress={() => dispatch(moveSessionBlueprintDownInProgram({ programId, sessionBlueprint }))}
+            />
+          </View>
+        ) : (
+          <Menu
+            trigger={{
+              icon: MoreHorizIcon,
+              systemImage: 'ellipsis',
+              label: t('generic.more_options.button'),
+            }}
+            items={[
+              {
+                label: t('generic.duplicate.button'),
+                icon: ContentCopy,
+                systemImage: 'doc.on.doc',
+                onPress: duplicateSession,
+              },
+              {
+                label: t('exercise.copy_to.button'),
+                icon: CopyAll,
+                systemImage: 'doc.on.clipboard',
+                onPress: () => setCopyDialogOpen(true),
+              },
+              {
+                label: t('generic.remove.button'),
+                icon: Delete,
+                systemImage: 'trash',
+                onPress: removeSession,
+              },
+            ]}
+          />
+        )}
+      </View>
       <CopyWorkoutDialog
         visible={copyDialogOpen}
         onDismiss={() => setCopyDialogOpen(false)}
