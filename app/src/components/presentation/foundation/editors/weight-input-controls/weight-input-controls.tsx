@@ -1,6 +1,7 @@
 import { NumberInput } from '@/components/presentation/foundation/editors/number-inputs';
 import SelectPicker from '@/components/presentation/foundation/select-picker';
 import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import { NativeButton } from '@/components/presentation/foundation/native-button';
 import RemoveIcon from '@expo/material-symbols/remove.xml';
 import AddIcon from '@expo/material-symbols/add.xml';
 import ExposureIcon from '@expo/material-symbols/exposure.xml';
@@ -65,12 +66,12 @@ export function NegateWeightButton(props: { weight: Weight | undefined; onChange
   const { t } = useTranslate();
   const { weight } = props;
   return (
-    <NativeIconButton
+    <NativeButton
       icon={ExposureIcon}
       systemImage="plusminus"
       variant="tonal"
+      floating
       label={t('exercise.toggle_negative.button')}
-      disabled={!weight || weight.value.isZero()}
       onPress={() => weight && props.onChange(new Weight(weight.value.negated(), weight.unit))}
     />
   );

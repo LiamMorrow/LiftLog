@@ -30,6 +30,8 @@ export type NativeButtonProps = NativeButtonIcon & {
   loading?: boolean;
   /** Tighter padding, for toolbars and other cramped spots. */
   compact?: boolean;
+  /** For a `filled` or `tonal` button floating over content, with no surface of its own beneath it. */
+  floating?: boolean;
   /** The label colour, for buttons drawn on a surface other than the page's. */
   contentColor?: string;
   testID?: string;

@@ -152,7 +152,7 @@ export function DockedEditor(props: {
   onClose: () => void;
   title: string;
   subtitle?: string;
-  headerAction?: ReactNode;
+  actions?: (close: () => void) => ReactNode;
   children: ReactNode;
 }) {
   const store = useContext(EditDockContext);
@@ -162,7 +162,7 @@ export function DockedEditor(props: {
     props.onClose();
   };
   const pane = props.open ? (
-    <EditPane title={props.title} subtitle={props.subtitle} headerAction={props.headerAction} onDone={close}>
+    <EditPane title={props.title} subtitle={props.subtitle} actions={props.actions?.(close)} onDone={close}>
       {props.children}
     </EditPane>
   ) : undefined;
@@ -182,20 +182,29 @@ export function DockedEditor(props: {
 function EditPane(props: {
   title: string;
   subtitle: string | undefined;
-  headerAction: ReactNode;
+  actions: ReactNode;
   onDone: () => void;
   children: ReactNode;
 }) {
   const { colors } = useAppTheme();
   const { t } = useTranslate();
   return (
-    <FloatingPane
-      testID="edit-dock"
-      style={{ marginHorizontal: spacing.pageHorizontalMargin, marginBottom: spacing[3] }}
-      contentStyle={{ paddingVertical: spacing[4], paddingLeft: spacing[4], paddingRight: spacing[4], gap: spacing[4] }}
-    >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
-        <View style={{ flex: 1 }}>
+    <View style={{ marginHorizontal: spacing.pageHorizontalMargin, marginBottom: spacing[3], gap: spacing[2] }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: spacing[2] }}>
+        {props.actions}
+        <NativeButton floating testID="edit-dock-done" label={t('generic.done.button')} onPress={props.onDone} />
+      </View>
+      <FloatingPane
+        testID="edit-dock"
+        style={{ marginTop: 0 }}
+        contentStyle={{
+          paddingVertical: spacing[4],
+          paddingLeft: spacing[4],
+          paddingRight: spacing[4],
+          gap: spacing[4],
+        }}
+      >
+        <View>
           <AppText variant="titleMedium" numberOfLines={1}>
             {props.title}
           </AppText>
@@ -205,10 +214,8 @@ function EditPane(props: {
             </AppText>
           ) : undefined}
         </View>
-        {props.headerAction}
-        <NativeButton testID="edit-dock-done" label={t('generic.done.button')} onPress={props.onDone} />
-      </View>
-      <KeyboardDoneButtonContext value={false}>{props.children}</KeyboardDoneButtonContext>
-    </FloatingPane>
+        <KeyboardDoneButtonContext value={false}>{props.children}</KeyboardDoneButtonContext>
+      </FloatingPane>
+    </View>
   );
 }

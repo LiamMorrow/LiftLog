@@ -10,7 +10,7 @@ import { DockedEditor } from '@/components/presentation/workout/edit-dock';
 import { WeightEditor } from '@/components/presentation/foundation/editors/weight-editor';
 import { NegateWeightButton } from '@/components/presentation/foundation/editors/weight-input-controls';
 import SegmentedPicker from '@/components/presentation/foundation/segmented-picker';
-import { RepsEditor } from '@/components/presentation/workout/weighted/reps-editor';
+import { ClearRepsButton, RepsEditor } from '@/components/presentation/workout/weighted/reps-editor';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;
@@ -64,9 +64,9 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
         onClose={close}
         title={t('weight.weight.label')}
         subtitle={props.editorSubtitle}
-        headerAction={
+        actions={() => (
           <NegateWeightButton weight={props.set.weight} onChange={(weight) => props.onUpdateWeight(weight, applyTo)} />
-        }
+        )}
       >
         <WeightEditor
           allowNegative
@@ -105,6 +105,14 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
         onClose={close}
         title={t('exercise.reps.label')}
         subtitle={props.editorSubtitle}
+        actions={(closeEditor) => (
+          <ClearRepsButton
+            onPress={() => {
+              props.onUpdateReps(undefined);
+              closeEditor();
+            }}
+          />
+        )}
       >
         <RepsEditor
           reps={props.set.set?.repsCompleted}

@@ -21,6 +21,10 @@ export const Outlined: Story = { args: { variant: 'outlined' } };
 
 export const Text: Story = { args: { variant: 'text' } };
 
+export const Floating: Story = { args: { floating: true } };
+
+export const FloatingTonal: Story = { args: { variant: 'tonal', floating: true } };
+
 export const Loading: Story = { args: { loading: true } };
 
 export const Disabled: Story = { args: { disabled: true } };

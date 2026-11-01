@@ -13,7 +13,7 @@ type CardioValueTileProps<T> = {
   label: string;
   editorStyle?: ViewStyle;
   editorSubtitle?: string;
-  headerAction?: (value: T, setValue: (value: T) => void) => ReactNode;
+  actions?: (value: T, setValue: (value: T) => void) => ReactNode;
   testID?: string;
 } & (
   | {
@@ -40,7 +40,7 @@ export function CardioValueTile<T>({
   children,
   editorStyle,
   editorSubtitle,
-  headerAction,
+  actions,
   testID,
   isReadonly,
 }: CardioValueTileProps<T>) {
@@ -89,7 +89,7 @@ export function CardioValueTile<T>({
           onClose={() => setEditorOpen(false)}
           title={label}
           subtitle={editorSubtitle}
-          headerAction={headerAction?.(editorValue, setEditorValue)}
+          actions={actions && (() => actions(editorValue, setEditorValue))}
         >
           <View style={[{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }, editorStyle]}>
             {children?.(editorValue, setEditorValue)}

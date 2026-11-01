@@ -1,3 +1,5 @@
+import { glassButtonStyle } from '@/components/presentation/foundation/glass-button-style';
+import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import { InlineHost } from '@/components/presentation/foundation/inline-host';
 import { NativeButtonProps, NativeButtonVariant } from './native-button-props';
 import { useAppTheme } from '@/hooks/useAppTheme';
@@ -19,6 +21,29 @@ const styleForVariant: Record<NativeButtonVariant, Parameters<typeof buttonStyle
   text: 'borderless',
 };
 
+type Colors = ReturnType<typeof useAppTheme>['colors'];
+
+function appearance(variant: NativeButtonVariant, floating: boolean | undefined, colors: Colors) {
+  const floats = floating && (variant === 'filled' || variant === 'tonal');
+  if (floats && isLiquidGlassAvailable()) {
+    return variant === 'filled'
+      ? { style: glassButtonStyle('prominent'), tint: colors.primary, label: colors.onPrimary }
+      : { style: glassButtonStyle('regular'), tint: colors.primary, label: undefined };
+  }
+  if (floats && variant === 'tonal') {
+    return {
+      style: buttonStyle('borderedProminent'),
+      tint: colors.secondaryContainer,
+      label: colors.onSecondaryContainer,
+    };
+  }
+  return {
+    style: buttonStyle(styleForVariant[variant]),
+    tint: colors.primary,
+    label: variant === 'filled' ? colors.onPrimary : undefined,
+  };
+}
+
 export function NativeButton({
   label,
   onPress,
@@ -27,6 +52,7 @@ export function NativeButton({
   disabled,
   loading,
   compact,
+  floating,
   contentColor,
   testID,
   style,
@@ -34,7 +60,8 @@ export function NativeButton({
   const { colors } = useAppTheme();
   const inactive = disabled || loading;
   const tintsLabel = variant === 'text' || variant === 'outlined';
-  const labelColor = contentColor ?? (variant === 'filled' ? colors.onPrimary : undefined);
+  const look = appearance(variant, floating, colors);
+  const labelColor = contentColor ?? look.label;
 
   return (
     <InlineHost matchContents style={style}>
@@ -43,9 +70,9 @@ export function NativeButton({
         systemImage={loading ? undefined : systemImage}
         onPress={onPress}
         modifiers={[
-          buttonStyle(styleForVariant[variant]),
+          look.style,
           controlSize(compact ? 'small' : 'regular'),
-          tint((tintsLabel && contentColor) || colors.primary),
+          tint((tintsLabel && contentColor) || look.tint),
           ...(labelColor && !tintsLabel && !inactive ? [foregroundStyle(labelColor)] : []),
           ...(inactive ? [disabledModifier(true)] : []),
           ...(testID ? [accessibilityIdentifier(testID)] : []),

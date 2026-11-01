@@ -23,6 +23,7 @@ interface NumberInputProps {
   value: string;
   onChangeText: (value: string) => void;
   onBlur?: () => void;
+  placeholder?: string;
   keyboardType: 'decimal-pad' | 'number-pad';
   accessibilityLabel: string;
   minWidth?: number;
@@ -51,6 +52,7 @@ export function NumberInput(props: NumberInputProps) {
       testID={props.testID}
       value={props.value}
       onChangeText={props.onChangeText}
+      placeholder={props.placeholder}
       onFocus={selectAllOnAndroid}
       onBlur={props.onBlur}
       keyboardType={props.keyboardType}

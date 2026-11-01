@@ -205,7 +205,7 @@ function CardioExerciseSet(props: CardioExerciseSetProps) {
             testID="cardio-weight-tile"
             editorStyle={{ flexDirection: 'column', alignItems: 'stretch' }}
             onChange={(weight) => updateSet((s) => s.with({ weight }))}
-            headerAction={(value, setValue) => <NegateWeightButton weight={value} onChange={setValue} />}
+            actions={(value, setValue) => <NegateWeightButton weight={value} onChange={setValue} />}
           >
             {(value, setValue) => (
               <WeightEditor increment={BigNumber(2.5)} updateWeight={setValue} weight={value} allowNegative />
