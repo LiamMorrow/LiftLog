@@ -5,7 +5,6 @@ import {
   CircularProgressIndicator,
   ElevatedButton,
   FilledTonalButton,
-  Host,
   Icon,
   OutlinedButton,
   Row,
@@ -13,6 +12,7 @@ import {
   TextButton,
 } from '@expo/ui/jetpack-compose';
 import { size, testID as testIDModifier } from '@expo/ui/jetpack-compose/modifiers';
+import { FloatingHost } from '@/components/presentation/foundation/floating-host';
 
 const buttonForVariant = {
   filled: Button,
@@ -73,7 +73,7 @@ export function NativeButton({
   const MaterialButton = floatingColors ? ElevatedButton : buttonForVariant[variant];
 
   return (
-    <Host matchContents seedColor={colors.seedColor} style={style} colorScheme={colors.scheme}>
+    <FloatingHost matchContents style={style}>
       <MaterialButton
         onClick={onPress}
         enabled={!disabled && !loading}
@@ -90,6 +90,6 @@ export function NativeButton({
           <Text>{label}</Text>
         </Row>
       </MaterialButton>
-    </Host>
+    </FloatingHost>
   );
 }

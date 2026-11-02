@@ -1,10 +1,9 @@
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { spacing } from '@/hooks/useAppTheme';
 import { PageAction, PageActionsProps } from './page-actions-props';
 import {
   Button,
   ExtendedFloatingActionButton,
   HorizontalFloatingToolbar,
-  Host,
   Icon,
   Row,
   Shape,
@@ -13,6 +12,7 @@ import {
 } from '@expo/ui/jetpack-compose';
 import { PageActionsAccessory } from './page-actions-accessory';
 import { View } from 'react-native';
+import { FloatingHost } from '@/components/presentation/foundation/floating-host';
 
 const contentPadding = { start: 24, top: 16, end: 24, bottom: 16 };
 
@@ -23,8 +23,6 @@ export function PageActions({
   primaryExpanded = true,
   accessory,
 }: PageActionsProps) {
-  const { colors } = useAppTheme();
-
   const label = (action: PageAction, iconSize: number) => (
     <Row horizontalArrangement={{ spacedBy: spacing[2] }} verticalAlignment="center">
       <Icon source={action.icon} size={iconSize} />
@@ -68,7 +66,7 @@ export function PageActions({
         paddingBottom: spacing[3],
       }}
     >
-      <Host matchContents seedColor={colors.seedColor} colorScheme={colors.scheme}>
+      <FloatingHost matchContents>
         {primaryKind === 'surface' ? (
           surfaceActions
         ) : (
@@ -88,7 +86,7 @@ export function PageActions({
             </Button>
           </Row>
         )}
-      </Host>
+      </FloatingHost>
       <PageActionsAccessory>{accessory}</PageActionsAccessory>
     </View>
   );
