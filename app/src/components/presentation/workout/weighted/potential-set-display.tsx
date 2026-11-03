@@ -1,7 +1,7 @@
 import { PotentialSet } from '@/models/session-models';
 import { formatRepsTarget, Resistance, RepsTarget } from '@/models/blueprint-models';
 import { ReactNode, useEffect } from 'react';
-import { AccessibilityInfo, Animated, Easing, StyleSheet, Text, useAnimatedValue, View } from 'react-native';
+import { AccessibilityInfo, Animated, Easing, StyleSheet, Text, useAnimatedValue, View, ViewStyle } from 'react-native';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { AppText } from '@/components/presentation/foundation/app-text';
@@ -42,6 +42,12 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
     .exhaustive();
   const weightBackground = isLater ? colors.surfaceContainerHigh : colors.secondaryContainer + 'AA';
 
+  const repsShape = {
+    borderRadius: rounding.roundedRectangleRadius,
+    borderBottomLeftRadius: showsWeight ? rounding.segmentedBetweenRadius : rounding.roundedRectangleRadius,
+    borderBottomRightRadius: showsWeight ? rounding.segmentedBetweenRadius : rounding.roundedRectangleRadius,
+  };
+
   return (
     <View
       style={{
@@ -50,16 +56,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
         gap: 2,
       }}
     >
-      <View
-        style={{
-          borderRadius: rounding.roundedRectangleRadius,
-          // The weight row closes the tile off when there is one.
-          borderBottomLeftRadius: showsWeight ? rounding.segmentedBetweenRadius : rounding.roundedRectangleRadius,
-          borderBottomRightRadius: showsWeight ? rounding.segmentedBetweenRadius : rounding.roundedRectangleRadius,
-          overflow: 'hidden',
-        }}
-      >
-        {isNext ? <NextSetPulse /> : undefined}
+      <View style={{ ...repsShape, overflow: 'hidden' }}>
         <Pressable
           onPress={props.onPressReps}
           testID="repcount"
@@ -68,7 +65,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
             height: spacing[15],
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: isNext ? 'transparent' : setColors.background,
+            backgroundColor: setColors.background,
             paddingHorizontal: spacing[2],
           }}
         >
@@ -87,6 +84,7 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
             )}
           </View>
         </Pressable>
+        {isNext ? <NextSetPulse shape={repsShape} /> : undefined}
       </View>
       {showsWeight && (
         <View
@@ -137,16 +135,14 @@ function Pressable(props: { onPress: (() => void) | undefined; style: object; te
   );
 }
 
-const pulseStrength = 0.35;
-
-function NextSetPulse() {
+function NextSetPulse(props: { shape: ViewStyle }) {
   const { colors } = useAppTheme();
   const strength = useAnimatedValue(0);
 
   useEffect(() => {
     const pulse = Animated.loop(
       Animated.sequence(
-        [pulseStrength, 0].map((toValue) =>
+        [1, 0].map((toValue) =>
           Animated.timing(strength, {
             toValue,
             duration: 1200,
@@ -168,10 +164,10 @@ function NextSetPulse() {
     };
   }, [strength]);
 
-  const backgroundColor = strength.interpolate({
-    inputRange: [0, 1],
-    outputRange: [colors.secondaryContainer, colors.primary],
-  });
-
-  return <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor }]} />;
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[StyleSheet.absoluteFill, props.shape, { borderWidth: 2, borderColor: colors.primary, opacity: strength }]}
+    />
+  );
 }
