@@ -15,8 +15,13 @@ import { StatusBar } from 'expo-status-bar';
 import { requireOptionalNativeModule } from 'expo';
 import { useEffect } from 'react';
 import { useSystemLanguageSync } from '@/hooks/useSystemLanguageSync';
+import { featureFlags } from 'react-native-screens';
 
 install();
+// On Android this reset leaves screens that were covered during a rotation measuring one header height too low,
+// which breaks everything positioned from measure/measureInWindow (edit dock, popovers). Fixed in
+// react-native-screens 4.29.0 (software-mansion/react-native-screens#4760); see docs/TechDebt.md.
+featureFlags.experiment.androidResetScreenShadowStateOnOrientationChangeEnabled = false;
 
 if (__DEV__) {
   // oxlint-disable-next-line typescript/no-unsafe-assignment

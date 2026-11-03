@@ -19,6 +19,9 @@ work to find the docs relevant to your area, and update it whenever you add, rem
 - [Storybook.md](./Storybook.md) - on-device Storybook for the foundation components: how to run it, where
   stories live, and the generated `storybook.requires.ts`.
 
+- [TechDebt.md](./TechDebt.md) - the ledger of workarounds for bugs in dependencies: where each lives, why, when
+  it can be removed, and how to check it is safe to remove. Read it before upgrading a dependency.
+
 ## Features
 
 - [FeedProcess.md](./FeedProcess.md) - the opt-in social feed: mutual friends (request, accept, remove),

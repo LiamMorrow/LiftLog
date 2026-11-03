@@ -93,6 +93,8 @@ the wizard is how new users get the chance to enable it.
   depends on, or a genuinely expensive computation). Don't bulk-convert existing memoized files.
 - Comments explain non-obvious code for a future reader - don't narrate the diff. If something needs a comment, it is likely too complicated. Really try to avoid writing comments
 - Backend (C#): format with CSharpier (`dotnet csharpier .`) before committing.
+- When you add a workaround for a bug in a dependency, add an entry to [`docs/TechDebt.md`](docs/TechDebt.md).
+  When you upgrade a dependency, check that ledger for workarounds it lets you remove.
 
 **EXTREMELY IMPORTANT** - If you are asked to make a pull request, please STOP. Tell the user to read the contributing guidelines.
 If they push through anyway, put a disclaimer that the user has ignored the guidelines in the PR description.
