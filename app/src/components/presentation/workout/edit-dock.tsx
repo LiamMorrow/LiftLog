@@ -2,6 +2,7 @@ import { NativeButton } from '@/components/presentation/foundation/native-button
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import {
+  Children,
   createContext,
   ReactNode,
   useContext,
@@ -12,7 +13,16 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { Animated, BackHandler, Dimensions, Easing, Keyboard, useAnimatedValue, View } from 'react-native';
+import {
+  Animated,
+  BackHandler,
+  Dimensions,
+  Easing,
+  Keyboard,
+  useAnimatedValue,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { AppText } from '@/components/presentation/foundation/app-text';
@@ -200,34 +210,71 @@ function EditPane(props: {
 }) {
   const { colors } = useAppTheme();
   const { t } = useTranslate();
-  return (
-    <View style={{ marginHorizontal: spacing.pageHorizontalMargin, marginBottom: spacing[3], gap: spacing[2] }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: spacing[2] }}>
-        {props.actions}
-        <NativeButton floating testID="edit-dock-done" label={t('generic.done.button')} onPress={props.onDone} />
-      </View>
-      <FloatingPane
-        testID="edit-dock"
-        style={{ marginTop: 0 }}
-        contentStyle={{
-          paddingVertical: spacing[4],
-          paddingLeft: spacing[4],
-          paddingRight: spacing[4],
-          gap: spacing[4],
-        }}
-      >
-        <View>
-          <AppText variant="titleMedium" numberOfLines={1}>
-            {props.title}
-          </AppText>
-          {props.subtitle ? (
-            <AppText variant="bodySmall" numberOfLines={1} style={{ color: colors.onSurfaceVariant }}>
-              {props.subtitle}
-            </AppText>
-          ) : undefined}
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+
+  const buttons = (
+    <View
+      style={{
+        flexDirection: isLandscape ? 'column' : 'row',
+        alignItems: isLandscape ? 'flex-end' : 'center',
+        justifyContent: 'flex-end',
+        gap: spacing[2],
+      }}
+    >
+      {props.actions}
+      <NativeButton floating testID="edit-dock-done" label={t('generic.done.button')} onPress={props.onDone} />
+    </View>
+  );
+  const editors = isLandscape ? (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[4] }}>
+      {Children.toArray(props.children).map((child, index) => (
+        <View key={index} style={{ flex: 1 }}>
+          {child}
         </View>
-        <KeyboardDoneButtonContext value={false}>{props.children}</KeyboardDoneButtonContext>
-      </FloatingPane>
+      ))}
+    </View>
+  ) : (
+    props.children
+  );
+  const pane = (
+    <FloatingPane
+      testID="edit-dock"
+      style={{ marginTop: 0, alignSelf: 'stretch', flex: isLandscape ? 1 : undefined }}
+      contentStyle={{
+        paddingVertical: spacing[4],
+        paddingLeft: spacing[4],
+        paddingRight: spacing[4],
+        gap: spacing[4],
+      }}
+    >
+      <View>
+        <AppText variant="titleMedium" numberOfLines={1}>
+          {props.title}
+        </AppText>
+        {props.subtitle ? (
+          <AppText variant="bodySmall" numberOfLines={1} style={{ color: colors.onSurfaceVariant }}>
+            {props.subtitle}
+          </AppText>
+        ) : undefined}
+      </View>
+      <KeyboardDoneButtonContext value={false}>{editors}</KeyboardDoneButtonContext>
+    </FloatingPane>
+  );
+
+  return (
+    <View
+      style={{
+        flexDirection: isLandscape ? 'row' : 'column',
+        alignItems: isLandscape ? 'flex-end' : undefined,
+        marginHorizontal: spacing.pageHorizontalMargin,
+        marginBottom: spacing[3],
+        gap: spacing[2],
+      }}
+    >
+      {isLandscape ? undefined : buttons}
+      {pane}
+      {isLandscape ? buttons : undefined}
     </View>
   );
 }

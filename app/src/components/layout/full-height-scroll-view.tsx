@@ -78,7 +78,8 @@ export default function FullHeightScrollView({
           style={{
             position: 'absolute',
             bottom: modal || Platform.OS === 'ios' ? insets.bottom : 0,
-            width: '100%',
+            left: insets.left,
+            right: insets.right,
           }}
         >
           {floatingChildren}
