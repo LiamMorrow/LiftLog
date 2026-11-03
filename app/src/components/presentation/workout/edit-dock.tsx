@@ -12,7 +12,8 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { Animated, Dimensions, Easing, Keyboard, useAnimatedValue, View } from 'react-native';
+import { Animated, BackHandler, Dimensions, Easing, Keyboard, useAnimatedValue, View } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { FloatingPane } from '@/components/presentation/workout/floating-pane';
@@ -72,6 +73,17 @@ export function EditDockHost(props: { children: ReactNode }) {
   const host = useRef<View>(null);
   const [distanceToScreenBottom, setDistanceToScreenBottom] = useState(0);
   const isOpen = entry !== undefined;
+
+  useFocusEffect(() => {
+    if (!entry) {
+      return;
+    }
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      entry.close();
+      return true;
+    });
+    return () => subscription.remove();
+  });
 
   // The keyboard's height counts from the bottom of the screen, which can sit below the page: under the safe
   // area on iOS, under the tab and navigation bars on Android.
