@@ -1,4 +1,3 @@
-import CardActions from '@/components/presentation/foundation/card-actions';
 import { Card, CardContent } from '@/components/presentation/foundation/card';
 import { PersonAvatar } from '@/components/presentation/feed/person-avatar';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
@@ -150,28 +149,32 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
       )}
 
       {isAlone && (
-        <Card style={{ marginBottom: spacing[2] }}>
-          <CardContent style={{ gap: spacing[2], paddingBottom: 0 }}>
+        <Card
+          style={{ marginBottom: spacing[2] }}
+          actions={
+            <>
+              <NativeButton
+                testID="feed-share-button"
+                icon={ShareIcon}
+                systemImage="square.and.arrow.up"
+                label={t('generic.share.button')}
+                onPress={() => {
+                  dispatch(
+                    shareString({
+                      title: 'Share feed profile',
+                      value: t('feed.share_link.message', { link: shareUrl }),
+                    }),
+                  );
+                }}
+              />
+            </>
+          }
+        >
+          <CardContent style={{ gap: spacing[2] }}>
             <AppText variant="bodyLarge">
               <T keyName="feed.friends_explanation.body" />
             </AppText>
           </CardContent>
-          <CardActions>
-            <NativeButton
-              testID="feed-share-button"
-              icon={ShareIcon}
-              systemImage="square.and.arrow.up"
-              label={t('generic.share.button')}
-              onPress={() => {
-                dispatch(
-                  shareString({
-                    title: 'Share feed profile',
-                    value: t('feed.share_link.message', { link: shareUrl }),
-                  }),
-                );
-              }}
-            />
-          </CardActions>
         </Card>
       )}
     </>

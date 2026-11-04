@@ -1,7 +1,6 @@
 import { NativeButton } from '@/components/presentation/foundation/native-button';
 import EditIcon from '@expo/material-symbols/edit.xml';
 import { Card } from '@/components/presentation/foundation/card';
-import CardActions from '@/components/presentation/foundation/card-actions';
 import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
 import ShareIcon from '@expo/material-symbols/share.xml';
 import { AppText } from '@/components/presentation/foundation/app-text';
@@ -32,7 +31,33 @@ export function ActivePlanCard({ id }: { id: string }) {
   ].join(' · ');
 
   return (
-    <Card>
+    <Card
+      actions={
+        <>
+          <ItemMenu id={id} colors={{ content: colors.primary }} />
+          <NativeIconButton
+            icon={ShareIcon}
+            systemImage="square.and.arrow.up"
+            colors={{ content: colors.primary }}
+            label={t('generic.share.button')}
+            onPress={() =>
+              dispatch(
+                encryptAndShare({
+                  title: t('plan.shared_item.title'),
+                  item: new SharedProgramBlueprint(program),
+                }),
+              )
+            }
+          />
+          <NativeButton
+            icon={EditIcon}
+            systemImage="pencil"
+            label={t('plan.edit.button')}
+            onPress={() => push(`/settings/manage-workouts/${id}`)}
+          />
+        </>
+      }
+    >
       <View style={{ padding: spacing[4], gap: spacing[3] }}>
         <View
           style={{
@@ -57,30 +82,6 @@ export function ActivePlanCard({ id }: { id: string }) {
           </AppText>
         </View>
       </View>
-
-      <CardActions style={{ marginTop: spacing[2] }}>
-        <ItemMenu id={id} colors={{ content: colors.primary }} />
-        <NativeIconButton
-          icon={ShareIcon}
-          systemImage="square.and.arrow.up"
-          colors={{ content: colors.primary }}
-          label={t('generic.share.button')}
-          onPress={() =>
-            dispatch(
-              encryptAndShare({
-                title: t('plan.shared_item.title'),
-                item: new SharedProgramBlueprint(program),
-              }),
-            )
-          }
-        />
-        <NativeButton
-          icon={EditIcon}
-          systemImage="pencil"
-          label={t('plan.edit.button')}
-          onPress={() => push(`/settings/manage-workouts/${id}`)}
-        />
-      </CardActions>
     </Card>
   );
 }

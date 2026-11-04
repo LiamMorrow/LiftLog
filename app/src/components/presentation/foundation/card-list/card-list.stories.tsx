@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react-native';
 import { fn } from 'storybook/test';
 import { AppText } from '@/components/presentation/foundation/app-text';
 import { CardContent } from '@/components/presentation/foundation/card';
-import CardActions from '@/components/presentation/foundation/card-actions';
 import CardList from '@/components/presentation/foundation/card-list';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { NativeButton } from '@/components/presentation/foundation/native-button';
@@ -32,11 +31,7 @@ export const Default: Story = {};
 
 export const WithActions: Story = {
   args: {
-    renderItemActions: () => (
-      <CardActions>
-        <NativeButton variant="text" label="Start" onPress={fn()} />
-      </CardActions>
-    ),
+    renderItemActions: () => <NativeButton variant="text" label="Start" onPress={fn()} />,
   },
 };
 

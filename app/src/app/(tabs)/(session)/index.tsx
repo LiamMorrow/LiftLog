@@ -1,4 +1,3 @@
-import CardActions from '@/components/presentation/foundation/card-actions';
 import { Card, CardContent } from '@/components/presentation/foundation/card';
 import CardList from '@/components/presentation/foundation/card-list';
 import { useConfirm } from '@/hooks/useConfirm';
@@ -84,42 +83,45 @@ function ListUpcomingWorkouts({
             month: 'long',
           })}
         >
-          <Card>
-            <CardContent style={{ paddingBottom: 0 }}>
+          <Card
+            actions={
+              <>
+                <NativeIconButton
+                  icon={ShareIcon}
+                  systemImage="square.and.arrow.up"
+                  colors={{ content: colors.primary }}
+                  label={t('workout.share_workout.button')}
+                  onPress={() => handleSharePress(currentSession)}
+                />
+                <NativeIconButton
+                  testID="clear-current-workout"
+                  icon={DeleteIcon}
+                  systemImage="trash"
+                  colors={{ content: colors.primary }}
+                  label={t('workout.clear_current.button')}
+                  onPress={() =>
+                    confirm({
+                      title: t('workout.clear_current.confirm.title'),
+                      message: t('workout.clear_current.confirm.body'),
+                      okText: t('generic.clear.button'),
+                      destructive: true,
+                      onOk: clearCurrentSession,
+                    })
+                  }
+                />
+                <NativeButton
+                  icon={PlayCircleIcon}
+                  systemImage="play.circle"
+                  testID="resume-workout-button"
+                  label={t('workout.resume.button')}
+                  onPress={() => startSession(currentSession)}
+                />
+              </>
+            }
+          >
+            <CardContent>
               <SessionCardContent session={currentSession} />
             </CardContent>
-            <CardActions style={{ marginTop: spacing[2] }}>
-              <NativeIconButton
-                icon={ShareIcon}
-                systemImage="square.and.arrow.up"
-                colors={{ content: colors.primary }}
-                label={t('workout.share_workout.button')}
-                onPress={() => handleSharePress(currentSession)}
-              />
-              <NativeIconButton
-                testID="clear-current-workout"
-                icon={DeleteIcon}
-                systemImage="trash"
-                colors={{ content: colors.primary }}
-                label={t('workout.clear_current.button')}
-                onPress={() =>
-                  confirm({
-                    title: t('workout.clear_current.confirm.title'),
-                    message: t('workout.clear_current.confirm.body'),
-                    okText: t('generic.clear.button'),
-                    destructive: true,
-                    onOk: clearCurrentSession,
-                  })
-                }
-              />
-              <NativeButton
-                icon={PlayCircleIcon}
-                systemImage="play.circle"
-                testID="resume-workout-button"
-                label={t('workout.resume.button')}
-                onPress={() => startSession(currentSession)}
-              />
-            </CardActions>
           </Card>
         </TitledSection>
       )}
@@ -130,7 +132,7 @@ function ListUpcomingWorkouts({
             items={upcoming}
             renderItemContent={(session) => {
               return (
-                <CardContent style={{ paddingBottom: 0 }}>
+                <CardContent>
                   <SessionCardContent session={session} />
                 </CardContent>
               );
@@ -141,7 +143,7 @@ function ListUpcomingWorkouts({
                 push(`/plan-workout-editor/${planId}/${sessionPlanIndex}`);
               };
               return (
-                <CardActions style={{ marginTop: spacing[2] }}>
+                <>
                   <NativeIconButton
                     icon={ShareIcon}
                     systemImage="square.and.arrow.up"
@@ -165,7 +167,7 @@ function ListUpcomingWorkouts({
                     label={session.isStarted ? t('workout.resume.button') : t('workout.start.button')}
                     onPress={() => startSession(session)}
                   />
-                </CardActions>
+                </>
               );
             }}
           />

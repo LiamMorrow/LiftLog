@@ -26,9 +26,8 @@ export default function CardList<T>(props: CardListProps<T>) {
     >
       {!!items.length || emptyTemplate}
       {items.map((item, i) => (
-        <Card key={keySelector?.(item) ?? i}>
+        <Card key={keySelector?.(item) ?? i} actions={renderItemActions?.(item, i)}>
           {renderItemContent(item, i)}
-          {renderItemActions?.(item, i)}
         </Card>
       ))}
     </View>

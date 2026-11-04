@@ -1,4 +1,3 @@
-import CardActions from '@/components/presentation/foundation/card-actions';
 import { Card, CardContent } from '@/components/presentation/foundation/card';
 import { useConfirm } from '@/hooks/useConfirm';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
@@ -198,8 +197,41 @@ function History() {
           </View>
         }
         renderItem={({ item: session }) => (
-          <Card>
-            <CardContent style={{ paddingBottom: 0 }}>
+          <Card
+            actions={
+              <>
+                <NativeIconButton
+                  icon={ShareIcon}
+                  systemImage="square.and.arrow.up"
+                  colors={{ content: colors.primary }}
+                  label={t('workout.share_workout.button')}
+                  onPress={() => handleSharePress(session)}
+                />
+                <NativeIconButton
+                  icon={PlayCircleIcon}
+                  systemImage="play.circle"
+                  colors={{ content: colors.primary }}
+                  label={t('workout.start_this.button')}
+                  onPress={() => startWorkout(session)}
+                />
+                <NativeIconButton
+                  icon={DeleteIcon}
+                  systemImage="trash"
+                  colors={{ content: colors.primary }}
+                  label={t('generic.delete.button')}
+                  onPress={() => deleteWorkout(session)}
+                />
+                <NativeButton
+                  icon={EditIcon}
+                  systemImage="pencil"
+                  testID="history-edit-workout"
+                  label={t('workout.edit.button')}
+                  onPress={() => onSelectSession(session)}
+                />
+              </>
+            }
+          >
+            <CardContent>
               <SplitCardControl
                 titleContent={<SessionSummaryTitle showDate session={session} />}
                 mainContent={
@@ -211,36 +243,6 @@ function History() {
               />
               <ReactionSummary eventId={session.id} />
             </CardContent>
-            <CardActions style={{ marginTop: spacing[2] }}>
-              <NativeIconButton
-                icon={ShareIcon}
-                systemImage="square.and.arrow.up"
-                colors={{ content: colors.primary }}
-                label={t('workout.share_workout.button')}
-                onPress={() => handleSharePress(session)}
-              />
-              <NativeIconButton
-                icon={PlayCircleIcon}
-                systemImage="play.circle"
-                colors={{ content: colors.primary }}
-                label={t('workout.start_this.button')}
-                onPress={() => startWorkout(session)}
-              />
-              <NativeIconButton
-                icon={DeleteIcon}
-                systemImage="trash"
-                colors={{ content: colors.primary }}
-                label={t('generic.delete.button')}
-                onPress={() => deleteWorkout(session)}
-              />
-              <NativeButton
-                icon={EditIcon}
-                systemImage="pencil"
-                testID="history-edit-workout"
-                label={t('workout.edit.button')}
-                onPress={() => onSelectSession(session)}
-              />
-            </CardActions>
           </Card>
         )}
         ListEmptyComponent={
