@@ -16,6 +16,10 @@ import { requireOptionalNativeModule } from 'expo';
 import { useEffect } from 'react';
 import { useSystemLanguageSync } from '@/hooks/useSystemLanguageSync';
 import { featureFlags } from 'react-native-screens';
+import * as SplashScreen from 'expo-splash-screen';
+
+void SplashScreen.preventAutoHideAsync();
+SplashScreen.setOptions({ fade: true });
 
 install();
 // Workaround for a react-native-screens bug, see docs/TechDebt.md.

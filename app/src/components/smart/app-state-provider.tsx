@@ -8,11 +8,11 @@ import { copyLogs } from '@/store/app';
 import { T, useTranslate } from '@tolgee/react';
 import * as Application from 'expo-application';
 import { ReactNode, useEffect, useState } from 'react';
-import { Animated, Platform, Text, useAnimatedValue, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
 import { openUrl } from '@/utils/open-url';
 import { useDispatch } from 'react-redux';
 
-// How long to wait before assuming startup has stalled and offering an escape hatch.
 const STUCK_TIMEOUT_MS = 7_000;
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
@@ -24,47 +24,56 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       getLoadMessage(s.storedSessions, 'stored sessions') ||
       getLoadMessage(s.aiPlanner, 'ai planner'),
   );
+  const isUpcomingLoaded = useAppSelector((s) => s.program.upcomingSessions.isSuccess());
+  const isHydrated = !waitingOn;
+  const isReady = isHydrated && isUpcomingLoaded;
+  const isStuck = useIsStuck();
+
+  useEffect(() => {
+    if (isReady || isStuck) {
+      SplashScreen.hide();
+    }
+  }, [isReady, isStuck]);
+
+  return (
+    <>
+      {isHydrated && children}
+      {!isReady && isStuck && <StuckScreen loadingText={waitingOn ?? 'Loading upcoming workouts'} />}
+    </>
+  );
+}
+
+function useIsStuck() {
+  const [isStuck, setIsStuck] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsStuck(true), STUCK_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, []);
+  return isStuck;
+}
+
+function StuckScreen({ loadingText }: { loadingText: string }) {
   const { colors } = useAppTheme();
-  const isWaiting = !!waitingOn;
-  const anim = useAnimatedValue(1);
-
-  if (isWaiting) {
-    return (
-      <Animated.View
-        style={{
-          flex: 1,
-          backgroundColor: colors.surface,
-          alignItems: 'center',
-          justifyContent: 'center',
-          opacity: anim,
-        }}
-      >
-        <View>
-          <Loader loadingText={waitingOn ?? ''} />
-        </View>
-        <StuckHelp />
-      </Animated.View>
-    );
-  }
-
-  return children;
+  return (
+    <View
+      style={[
+        StyleSheet.absoluteFill,
+        { backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
+      ]}
+    >
+      <View>
+        <Loader loadingText={loadingText} />
+      </View>
+      <StuckHelp />
+    </View>
+  );
 }
 
 function StuckHelp() {
   const { colors } = useAppTheme();
   const { t } = useTranslate();
   const dispatch = useDispatch();
-  const [isStuck, setIsStuck] = useState(false);
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsStuck(true), STUCK_TIMEOUT_MS);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (!isStuck) {
-    return null;
-  }
 
   const appVersion = Application.nativeApplicationVersion ?? Application.nativeBuildVersion ?? 'Unknown';
   const bugReportUrl = `https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=bug&projects=&template=bug_report.yaml&app-version=${encodeURIComponent(appVersion)}&platform=${Platform.OS}&os-version=${Platform.Version}`;

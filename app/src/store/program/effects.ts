@@ -67,6 +67,7 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
       dispatch(setActivePlan({ activePlanId }));
 
       dispatch(setIsHydrated(true));
+      dispatch(fetchUpcomingSessions());
       const end = performance.now();
       logger.info(`initializeProgramStateSlice effect took ${(end - start).toFixed(2)} ms`);
     },
@@ -101,6 +102,9 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
       await yieldToEventLoop();
 
       const state = getState();
+      if (!state.program.isHydrated || !state.storedSessions.isHydrated) {
+        return;
+      }
       const sessionBlueprints = selectActiveProgram(state).sessions;
       const numberOfUpcomingSessions = sessionBlueprints.length;
 

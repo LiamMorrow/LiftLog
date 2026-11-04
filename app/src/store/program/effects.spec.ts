@@ -97,6 +97,7 @@ function makeProgramState(savedPrograms: Record<string, ProgramBlueprint> = {}, 
       savedPrograms,
       upcomingSessions: RemoteData.notAsked(),
     },
+    storedSessions: { isHydrated: true },
   } as Partial<RootState>;
 }
 
@@ -128,6 +129,19 @@ describe('program effects', () => {
 
       const action = testBed.getDispatchedAction(setSavedPlans);
       expect(action.payload['id-1']).toBeDefined();
+    });
+
+    it('fetches upcoming sessions once hydrated', async () => {
+      const testBed = createAddEffectTestBed({
+        services: { db, keyValueStore: makeKvStore({ hasSavedDefaultPlans2: 'true' }) },
+      });
+      applyProgramEffects(testBed.addEffect);
+      testBed.setState(makeProgramState({}, ''));
+
+      await testBed.dispatchHandled(initializeProgramStateSlice());
+
+      const types = testBed.dispatchedActions.map((x) => x.type);
+      expect(types.indexOf(fetchUpcomingSessions.type)).toBeGreaterThan(types.indexOf(setIsHydrated.type));
     });
 
     it('creates an empty program when DB is empty', async () => {
@@ -335,6 +349,39 @@ describe('program effects', () => {
 
       const action = testBed.getDispatchedAction(setUpcomingSessions);
       expect(action.payload.isSuccess()).toBe(true);
+    });
+
+    it('does not fetch before the program is hydrated', async () => {
+      const state = makeProgramState({ 'id-1': makeProgram('Plan', []) }, 'id-1', false);
+      const sessionService = makeSessionService([]);
+
+      const testBed = createAddEffectTestBed({
+        initialState: state,
+        services: { sessionService },
+      });
+      applyProgramEffects(testBed.addEffect);
+
+      await testBed.dispatchHandled(fetchUpcomingSessions());
+
+      testBed.expectNotDispatched(setUpcomingSessions);
+    });
+
+    it('does not fetch before stored sessions are hydrated', async () => {
+      const state = {
+        ...makeProgramState({ 'id-1': makeProgram('Plan', []) }, 'id-1'),
+        storedSessions: { isHydrated: false },
+      };
+      const sessionService = makeSessionService([]);
+
+      const testBed = createAddEffectTestBed({
+        initialState: state,
+        services: { sessionService },
+      });
+      applyProgramEffects(testBed.addEffect);
+
+      await testBed.dispatchHandled(fetchUpcomingSessions());
+
+      testBed.expectNotDispatched(setUpcomingSessions);
     });
 
     it('takes only as many sessions as there are blueprints', async () => {
