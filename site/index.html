@@ -611,6 +611,90 @@
         color: var(--text-muted);
       }
 
+      .footer-link-button {
+        background: none;
+        border: none;
+        padding: 0;
+        font: inherit;
+        color: var(--text-faint);
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: color 0.15s;
+      }
+      .footer-link-button:hover {
+        color: var(--text-muted);
+      }
+
+      /* CONTACT DIALOG */
+      .contact-dialog {
+        margin: auto;
+        width: min(440px, calc(100% - 2rem));
+        padding: 0;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--base);
+        color: var(--text);
+        box-shadow: 0 24px 64px rgba(0, 30, 0, 0.18);
+      }
+      .contact-dialog-body {
+        padding: 2rem;
+      }
+      .contact-dialog :focus-visible {
+        outline: 2px solid var(--accent-mid);
+        outline-offset: 2px;
+      }
+      .contact-dialog::backdrop {
+        background: rgba(26, 42, 26, 0.4);
+        backdrop-filter: blur(4px);
+      }
+      .contact-dialog h2 {
+        font-family: "DM Serif Display", serif;
+        font-weight: 400;
+        font-size: 1.75rem;
+        line-height: 1.1;
+        margin-bottom: 0.75rem;
+      }
+      .contact-dialog p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin-bottom: 1.25rem;
+      }
+      .contact-dialog a:not([class]) {
+        color: var(--accent-mid);
+      }
+      .contact-options {
+        display: grid;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+      .contact-option {
+        display: block;
+        padding: 0.9rem 1rem;
+        border: 1px solid var(--border-strong);
+        border-radius: 10px;
+        text-decoration: none;
+        color: var(--text);
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .contact-option:hover {
+        border-color: rgba(0, 60, 0, 0.35);
+        background: var(--accent-dim);
+      }
+      .contact-option strong {
+        display: block;
+        font-weight: 500;
+      }
+      .contact-option span {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+      .contact-dialog form {
+        display: flex;
+        justify-content: flex-end;
+      }
+
       /* SCREENSHOTS */
       .screenshots-section {
         text-align: center;
@@ -795,11 +879,10 @@
           Free &amp; open source
         </div>
 
-        <h1>Log every<br /><em>rep.</em> Own every<br />record.</h1>
+        <h1>Lift tracking that gets out of <br /><em>your</em> way.</h1>
 
         <p class="hero-sub">
-          LiftLog makes gym tracking as fast as the tap of a finger. No subscription, no cloud lock-in. Your data lives
-          on your device.
+          LiftLog makes gym tracking as fast as the tap of a finger. Stored on your device with no account necessary, free <em>forever.</em>
         </p>
 
         <div class="hero-actions">
@@ -941,8 +1024,8 @@
 
     <section class="section" id="features">
       <p class="section-label">Features</p>
-      <h2 class="section-title">Everything a lifter needs.<br /><em>Nothing they don't.</em></h2>
-      <p class="section-body">Every feature exists because it makes tracking faster or more useful. Nothing else.</p>
+      <h2 class="section-title">Everything you need to track your progress.<br /></h2>
+      <p class="section-body">Every feature exists because it makes tracking faster or more useful.</p>
 
       <div class="features-grid">
         <div class="feature-card">
@@ -981,8 +1064,7 @@
           </div>
           <h3 class="feature-title">Progressive overload</h3>
           <p class="feature-desc">
-            LiftLog tracks your weights and reps over time and automatically suggests when to add more load. That
-            progression is the core of actually getting stronger.
+            LiftLog tracks your weights and reps over time and automatically suggests when to add more load.
           </p>
         </div>
 
@@ -1010,7 +1092,7 @@
           </div>
           <h3 class="feature-title">Fully offline</h3>
           <p class="feature-desc">
-            Your data is stored locally. No account or sync required. It works underground, in a dead zone, everywhere.
+            Your data is stored locally. No account or sync required.
           </p>
         </div>
 
@@ -1022,7 +1104,7 @@
           </div>
           <h3 class="feature-title">Open source</h3>
           <p class="feature-desc">
-            Every line of code is public on GitHub. Audit it, fork it, contribute to it. No black boxes.
+            Every line of code is public on GitHub. Come over and fork your own copy! Or request features.
           </p>
         </div>
       </div>
@@ -1066,7 +1148,6 @@
 
     <section class="section screenshots-section">
       <p class="section-label">See it in action</p>
-      <h2 class="section-title">Everything you need.<br /><em>Nothing you don't.</em></h2>
 
       <div class="screenshots-row">
         <div class="phone-mockup">
@@ -1089,7 +1170,7 @@
         <h3>Proudly open source</h3>
         <p>
           LiftLog is AGPL-licensed and built in the open.
-          <span class="star-count">455</span>+ stars on GitHub, 68 forks, and a community that's helped shape every
+          <span class="star-count">455</span>+ stars on GitHub, <span class="fork-count">102</span> forks, and a community that's helped shape every
           release. Available in 19+ languages -
           <a href="https://translate.liftlog.online/" target="_blank" rel="noopener" style="color: var(--accent-mid)"
             >help translate on Weblate</a
@@ -1119,9 +1200,9 @@
             Everything above is free, forever. If you want an AI-generated workout plan tailored to your goals and
             schedule, that's available as a one-time purchase with no subscription or recurring charge.
           </p>
-          <p class="section-body">
-            Logging, tracking, stats, progressive overload, and rest timers, <b>everything else</b>, never cost
-            anything.
+          <p class="section-body" style="margin-bottom: 2rem">
+            This isn't gated though, if you want to run your own backend to serve your AI planner, you can at <em> no cost</em> to you.
+            The server is open source, and there are instructions for running it.
           </p>
         </div>
         <div class="phone-mockup pro-mockup">
@@ -1176,13 +1257,51 @@
       <div style="display: flex; gap: 2rem">
         <a href="https://liftlog.online/privacy.html" target="_blank" rel="noopener">Privacy</a>
         <a href="https://github.com/LiamMorrow/LiftLog" target="_blank" rel="noopener">GitHub</a>
-        <a href="mailto:support@liftlog.online">Contact</a>
+        <button type="button" class="footer-link-button" id="contact-open">Contact</button>
       </div>
       <span style="font-size: 0.8rem; color: var(--text-faint)">© LiftLog <span id="copyright-year">2025</span></span>
     </footer>
 
+    <dialog class="contact-dialog" id="contact-dialog" aria-labelledby="contact-title">
+      <div class="contact-dialog-body">
+        <h2 id="contact-title">Get in touch</h2>
+        <p>Most questions are best asked on GitHub, where others can find the answer too.</p>
+        <div class="contact-options">
+          <a
+            class="contact-option"
+            href="https://github.com/LiamMorrow/LiftLog/issues"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>Report a bug</strong>
+            <span>Open an issue on GitHub</span>
+          </a>
+          <a
+            class="contact-option"
+            href="https://github.com/LiamMorrow/LiftLog/discussions"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>Request a feature</strong>
+            <span>Start a discussion on GitHub</span>
+          </a>
+        </div>
+        <p>For anything else, email <a href="mailto:support@liftlog.online">support@liftlog.online</a>.</p>
+        <form method="dialog">
+          <button type="submit" class="btn-secondary" autofocus>Close</button>
+        </form>
+      </div>
+    </dialog>
+
     <script>
       document.getElementById("copyright-year").textContent = new Date().getFullYear();
+      var contactDialog = document.getElementById("contact-dialog");
+      document.getElementById("contact-open").addEventListener("click", function () {
+        contactDialog.showModal();
+      });
+      contactDialog.addEventListener("click", function (e) {
+        if (e.target === contactDialog) contactDialog.close();
+      });
       fetch("https://api.github.com/repos/LiamMorrow/LiftLog")
         .then(function (r) {
           return r.json();
@@ -1192,6 +1311,12 @@
             var count = d.stargazers_count.toLocaleString();
             document.querySelectorAll(".star-count, #star-count-hero").forEach(function (el) {
               el.textContent = count;
+            });
+          }
+          if (typeof d.forks_count === "number") {
+            var forks = d.forks_count.toLocaleString();
+            document.querySelectorAll(".fork-count").forEach(function (el) {
+              el.textContent = forks;
             });
           }
         })
