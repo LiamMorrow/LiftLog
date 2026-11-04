@@ -3,7 +3,7 @@ import { Animated, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 export interface PageIndicatorProps {
   count: number;
-  progress: Animated.AnimatedInterpolation<number> | Animated.Value;
+  progress: Pick<Animated.AnimatedInterpolation<number>, 'interpolate'>;
   color: string;
   style?: StyleProp<ViewStyle>;
 }

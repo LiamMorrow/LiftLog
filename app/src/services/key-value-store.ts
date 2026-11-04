@@ -27,7 +27,7 @@ export class KeyValueStore {
     tempFile.create();
 
     if (typeof value === 'string') {
-      tempFile.write(value);
+      await tempFile.write(value);
       if (finalFile.exists) {
         finalFile.delete();
       }

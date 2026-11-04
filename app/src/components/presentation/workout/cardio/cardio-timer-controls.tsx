@@ -17,7 +17,7 @@ export function CardioTimerControls({ onStop }: CardioTimerControlsProps) {
 
   return (
     <InlineHost matchContents>
-      <HStack alignment="center">
+      <HStack alignment="center" spacing={0}>
         <Button
           onPress={onStop}
           modifiers={[glassButtonStyle('prominent'), controlPadding, accessibilityLabel(t('cardio_timer.stop'))]}

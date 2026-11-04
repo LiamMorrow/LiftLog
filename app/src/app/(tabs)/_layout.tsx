@@ -2,7 +2,7 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { selectIncomingFriendRequestCount } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 
 export default function TabsLayout() {
   const { t } = useTranslate();

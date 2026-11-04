@@ -67,7 +67,6 @@ export class HealthExportService implements HES {
         convert(workout.lastExercise.latestTime!.toLocalDateTime()).toDate(),
         convert(workout.lastExercise.latestTime!.toLocalDateTime()).toDate(),
         {
-          // @ts-expect-error -- This was fine
           workoutId: workout.id,
         },
       );

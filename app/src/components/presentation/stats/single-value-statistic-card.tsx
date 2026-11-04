@@ -30,7 +30,7 @@ export default function SingleValueStatisticCard(props: {
           }}
         >
           <NativeIcon icon={props.icon} systemImage={props.systemImage} size={16} color={colors.primary} />
-          <AppText variant="labelLarge" lineBreakMode="tail" numberOfLines={1}>
+          <AppText variant="labelLarge" numberOfLines={1}>
             {props.title}
           </AppText>
         </View>

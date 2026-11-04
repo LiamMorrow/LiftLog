@@ -1,7 +1,7 @@
 import { PopoverProps } from './popover-props';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, useWindowDimensions, View, type ViewInstance } from 'react-native';
 import Animated, { cubicBezier } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -32,7 +32,7 @@ function place(anchor: Frame, width: number, height: number, windowWidth: number
     top: above ? anchor.y - GAP - height : anchor.y + anchor.height + GAP,
     above,
     arrowLeft,
-    arrowTip: [arrowLeft + ARROW_SIZE / 2, above ? height : 0, 0],
+    arrowTip: [arrowLeft + ARROW_SIZE / 2, above ? height : 0, 0] satisfies [number, number, number],
   };
 }
 
@@ -44,7 +44,7 @@ export function Popover({ trigger, children, accessibilityLabel, width = 300 }: 
   const { colors } = useAppTheme();
   const window = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const [triggerView, setTriggerView] = useState<View | null>(null);
+  const [triggerView, setTriggerView] = useState<ViewInstance | null>(null);
   const [anchor, setAnchor] = useState<Frame>();
   const [height, setHeight] = useState<number>();
   const isOpen = anchor !== undefined;

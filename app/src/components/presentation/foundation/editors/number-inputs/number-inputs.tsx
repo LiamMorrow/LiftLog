@@ -11,7 +11,7 @@ import { localeFormatBigNumber, localeParseBigNumber } from '@/utils/locale-bign
 import { Duration } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { createContext, useContext, useRef } from 'react';
-import { Platform, type TextInput, View } from 'react-native';
+import { Platform, type TextInputInstance, View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
 
 /** Off inside a container that brings its own Done, so iOS does not add a second one above number pads. */
@@ -36,7 +36,7 @@ interface NumberInputProps {
 
 export function NumberInput(props: NumberInputProps) {
   const keyboardDoneButton = useContext(KeyboardDoneButtonContext);
-  const input = useRef<TextInput>(null);
+  const input = useRef<TextInputInstance>(null);
   const selectAllOnAndroid = () => {
     if (Platform.OS === 'android' && props.value) {
       // A 50-100ms timeout bypasses Android's native keyboard-layout cursor reset

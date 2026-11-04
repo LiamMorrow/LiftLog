@@ -82,7 +82,7 @@ export class Logger {
     const content = existingLines.join('\n') + '\n';
 
     tempFile.create();
-    tempFile.write(content);
+    await tempFile.write(content);
 
     if (finalFile.exists) {
       finalFile.delete();

@@ -8,6 +8,7 @@
   "ignorePatterns": [
     "src/gen",
     "src/drizzle",
+    "src/models/generated",
     "src/types/dom.slim.d.ts",
     "android",
     "ios",

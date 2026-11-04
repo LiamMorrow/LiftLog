@@ -20,7 +20,7 @@ import {
 import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
 import { useDispatch, useStore } from 'react-redux';
 import { uuid } from '@/utils/uuid';
-import { SwipeRow } from 'react-native-swipe-list-view';
+import { SwipeRow, type SwipeRowRef } from 'react-native-swipe-list-view';
 import { showSnackbar } from '@/store/app';
 import { useMountEffect } from '@/hooks/useMountEffect';
 import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
@@ -36,7 +36,7 @@ function ExerciseListItem({ exerciseId, onDelete }: { exerciseId: string; onDele
   const { push } = useRouter();
   const exercise = useAppSelectorWithArg(selectExerciseById, exerciseId);
 
-  const rowRef = useRef<SwipeRow<unknown>>(null);
+  const rowRef = useRef<SwipeRowRef>(null);
   useEffect(() => {
     rowRef.current?.closeRowWithoutAnimation();
   }, [exerciseId]);
@@ -45,7 +45,6 @@ function ExerciseListItem({ exerciseId, onDelete }: { exerciseId: string; onDele
   }
 
   return (
-    // @ts-expect-error -- Swipe row seems to have trouble with typescript, it works
     <SwipeRow disableRightSwipe ref={rowRef} rightActivationValue={-70} rightActionValue={-70} rightOpenValue={-70}>
       <View
         style={{

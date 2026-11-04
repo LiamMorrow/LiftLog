@@ -5,7 +5,7 @@ import {
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  ScrollView,
+  type ScrollViewInstance,
   StyleProp,
   StyleSheet,
   useAnimatedValue,
@@ -40,7 +40,7 @@ export function Pager({
   const { colors } = useAppTheme();
   const [pageWidth, setPageWidth] = useState(0);
   const scrollX = useAnimatedValue(0);
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const pages = Children.toArray(children);
 
   useEffect(() => {

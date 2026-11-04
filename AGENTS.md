@@ -4,9 +4,9 @@ Paths below are relative to the repository root.
 
 ## Where work happens
 
-The vast majority of work is in **`app/`** - an **Expo ~57 / React Native 0.86 / React 19** app.
+The vast majority of work is in **`app/`** - an **Expo ~58 / React Native 0.88 / React 19** app.
 Stack: expo-router (file-based routes in `app/src/app/`), Redux Toolkit, `@expo/ui` (SwiftUI on iOS, Jetpack
-Compose on Android), Drizzle ORM + expo-sqlite, Tolgee i18n, React Compiler, TypeScript ~6.
+Compose on Android), Drizzle ORM + expo-sqlite, Tolgee i18n, React Compiler, TypeScript ~7.
 
 `backend/` is a **.NET / C# Web API** (end-to-end-encrypted feeds + AI planner). It **usually does not
 need changing** to add app features - only touch it when the task is explicitly backend work.

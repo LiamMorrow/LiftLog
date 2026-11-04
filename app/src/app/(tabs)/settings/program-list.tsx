@@ -15,18 +15,17 @@ import DownloadIcon from '@expo/material-symbols/download.xml';
 
 import { useDispatch } from 'react-redux';
 import { useRef } from 'react';
-import { ScrollView } from 'react-native-gesture-handler';
 import { showSnackbar } from '@/store/app';
 import { setActivePlan } from '@/store/program';
 import { setPlansSortOrder } from '@/store/settings';
 import SelectPicker from '@/components/presentation/foundation/select-picker';
-import { View } from 'react-native';
+import { type ScrollViewInstance, View } from 'react-native';
 
 export default function ProgramListPage() {
   const ps = useAppSelector(selectAllPrograms);
   const activePlanId = useAppSelector((state) => state.program.activePlanId);
   const sortOrder = useAppSelector((state) => state.settings.plansSortOrder);
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
 
   const selectPlan = (planId: string, name: string) => {
     const previousPlanId = activePlanId;

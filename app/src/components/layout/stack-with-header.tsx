@@ -30,7 +30,10 @@ function ScrollAwareStack({ children }: { children?: ReactNode }) {
         // shorter than the screen.
         headerStyle: headerOverlapsContent
           ? undefined
-          : { backgroundColor: scrolledRoutes.has(route.key) ? colors.surfaceContainer : colors.surface },
+          : {
+              backgroundColor:
+                route.key !== undefined && scrolledRoutes.has(route.key) ? colors.surfaceContainer : colors.surface,
+            },
         gestureEnabled: true,
         headerTransparent: headerOverlapsContent,
       })}

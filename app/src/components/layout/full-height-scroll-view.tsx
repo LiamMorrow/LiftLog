@@ -2,7 +2,7 @@ import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useHeaderInset } from '@/hooks/useHeaderInset';
 import { useScroll } from '@/hooks/useScrollListener';
 import { useState } from 'react';
-import { View, StyleProp, ViewStyle, Platform } from 'react-native';
+import { View, StyleProp, ViewStyle, Platform, type ScrollViewInstance } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,7 +18,7 @@ export default function FullHeightScrollView({
 }: {
   children: React.ReactNode;
   floatingChildren?: React.ReactNode;
-  scrollRef?: React.Ref<ScrollView>;
+  scrollRef?: React.Ref<ScrollViewInstance>;
   avoidKeyboard?: boolean;
   scrollStyle?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;

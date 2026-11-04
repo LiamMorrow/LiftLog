@@ -1,7 +1,7 @@
 import { TextField, TextFieldProps } from '@/components/presentation/foundation/text-field';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode, useRef } from 'react';
-import { Pressable, type TextInput, View } from 'react-native';
+import { Pressable, type TextInputInstance, View } from 'react-native';
 import { AppText } from '@/components/presentation/foundation/app-text';
 
 type SegmentedListTextInputProps = Omit<TextFieldProps, 'ref' | 'style' | 'font' | 'underline'> & {
@@ -19,7 +19,7 @@ export function SegmentedListTextInput({
   ...props
 }: SegmentedListTextInputProps) {
   const { colors } = useAppTheme();
-  const input = useRef<TextInput>(null);
+  const input = useRef<TextInputInstance>(null);
   const accentColor = error ? colors.error : colors.onSurfaceVariant;
   return (
     <Pressable

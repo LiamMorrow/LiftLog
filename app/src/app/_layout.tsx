@@ -18,9 +18,7 @@ import { useSystemLanguageSync } from '@/hooks/useSystemLanguageSync';
 import { featureFlags } from 'react-native-screens';
 
 install();
-// On Android this reset leaves screens that were covered during a rotation measuring one header height too low,
-// which breaks everything positioned from measure/measureInWindow (edit dock, popovers). Fixed in
-// react-native-screens 4.29.0 (software-mansion/react-native-screens#4760); see docs/TechDebt.md.
+// Workaround for a react-native-screens bug, see docs/TechDebt.md.
 featureFlags.experiment.androidResetScreenShadowStateOnOrientationChangeEnabled = false;
 
 if (__DEV__) {
@@ -32,9 +30,7 @@ if (__DEV__) {
 
 LogBox.ignoreAllLogs();
 
-if (Platform.OS !== 'web') {
-  I18nManager.swapLeftAndRightInRTL?.(true);
-}
+I18nManager.swapLeftAndRightInRTL?.(true);
 
 export default function RootLayout() {
   return (

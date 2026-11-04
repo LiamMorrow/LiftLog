@@ -1,10 +1,10 @@
 import { textVariants, TextVariant } from '@/components/presentation/foundation/app-text';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { Ref, useState } from 'react';
-import { Platform, TextInput, TextInputProps } from 'react-native';
+import { Platform, TextInput, type TextInputInstance, TextInputProps } from 'react-native';
 
 export type TextFieldProps = Omit<TextInputProps, 'selectionColor' | 'selectionHandleColor' | 'cursorColor'> & {
-  ref?: Ref<TextInput>;
+  ref?: Ref<TextInputInstance>;
   variant?: TextVariant;
   underline?: 'always' | 'focused';
 };

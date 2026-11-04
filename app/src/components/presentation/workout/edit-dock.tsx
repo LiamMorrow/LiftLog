@@ -22,6 +22,7 @@ import {
   useAnimatedValue,
   useWindowDimensions,
   View,
+  type ViewInstance,
 } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
@@ -80,7 +81,7 @@ export function EditDockProvider(props: { children: ReactNode }) {
 export function EditDockHost(props: { children: ReactNode }) {
   const store = useContext(EditDockContext);
   const entry = useSyncExternalStore(store?.subscribe ?? noSubscribe, () => store?.get());
-  const host = useRef<View>(null);
+  const host = useRef<ViewInstance>(null);
   const [distanceToScreenBottom, setDistanceToScreenBottom] = useState(0);
   const isOpen = entry !== undefined;
 

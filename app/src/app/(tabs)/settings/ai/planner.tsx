@@ -3,7 +3,7 @@ import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { Dimensions, FlatList, Platform, View } from 'react-native';
+import { Dimensions, FlatList, Platform, View, type ViewInstance } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
@@ -48,7 +48,7 @@ export default function AiPlanner() {
   // bottom, so we slide the whole chat up by only (keyboardHeight - restGap) to land the composer
   // on the keyboard rather than overshooting past it.
   const [restGap, setRestGap] = useState(0);
-  const composerRef = useRef<View>(null);
+  const composerRef = useRef<ViewInstance>(null);
   const listRef = useRef<FlatList>(null);
   const onComposerLayout = useCallback(() => {
     composerRef.current?.measureInWindow((_x, y, _width, height) => {

@@ -5,7 +5,7 @@ the real app, so they pick up the live theme, native expo-ui controls and every 
 
 ## Running it
 
-- `npm run storybook` (from `app/`) starts the dev client with `EXPO_PUBLIC_STORYBOOK_ENABLED=true`.
+- `npm run storybook:start` (from `app/`) starts the dev client with `EXPO_PUBLIC_STORYBOOK_ENABLED=true`.
 - The app pushes the `/storybook` route on launch while that variable is set.
 - With the variable unset, Metro stubs Storybook out of the bundle, so release builds do not include it.
 

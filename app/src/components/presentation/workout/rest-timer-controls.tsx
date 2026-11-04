@@ -22,7 +22,7 @@ export function RestTimerControls({ paused, onRestart, onTogglePause, onDismiss 
 
   return (
     <InlineHost matchContents>
-      <HStack alignment="center">
+      <HStack alignment="center" spacing={0}>
         <Button
           onPress={onRestart}
           modifiers={[glassButtonStyle('regular'), controlPadding, accessibilityLabel(t('rest_timer.restart'))]}

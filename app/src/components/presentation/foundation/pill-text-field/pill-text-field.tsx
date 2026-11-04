@@ -2,7 +2,7 @@ import { TextField, TextFieldProps } from '@/components/presentation/foundation/
 import { textVariants } from '@/components/presentation/foundation/app-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode, useRef } from 'react';
-import { Pressable, StyleProp, type TextInput, View, ViewStyle } from 'react-native';
+import { Pressable, StyleProp, type TextInputInstance, View, ViewStyle } from 'react-native';
 
 export const pillTextFieldHeight = spacing[14];
 
@@ -16,7 +16,7 @@ type PillTextFieldProps = Omit<TextFieldProps, 'ref' | 'style' | 'variant' | 'un
 
 export function PillTextField({ leading, trailing, maxLines = 6, style, ...props }: PillTextFieldProps) {
   const { colors } = useAppTheme();
-  const input = useRef<TextInput>(null);
+  const input = useRef<TextInputInstance>(null);
   const verticalPadding = (pillTextFieldHeight - textVariants.bodyLarge.lineHeight) / 2;
 
   return (
