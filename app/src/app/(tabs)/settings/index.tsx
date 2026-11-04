@@ -103,7 +103,7 @@ export default function SettingsPageIndex() {
           onPress={() => push('/settings/notifications')}
         />
         <SegmentedListLink
-          label={t('feed.settings.title')}
+          label={t('settings.feed.title')}
           icon={ForumIcon}
           systemImage="bubble.left.and.bubble.right"
           onPress={() => push(getFeedSettingsHref({ fromSettings: true }))}

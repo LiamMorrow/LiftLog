@@ -43,7 +43,7 @@ export function FeedSettings({
   const showFeed = useAppSelector((x) => x.settings.showFeed);
   const lockedOn = showFeed && identityRemote.isSuccess();
   return (
-    <SettingsPage title={t('feed.settings.title')} docs="FeedProcess.md">
+    <SettingsPage title={t('settings.feed.title')} docs="FeedProcess.md" caption={t('settings.feed.subtitle')}>
       <SegmentedGroup>
         <SegmentedListSwitch
           testID="feed-show-feed-switch"
