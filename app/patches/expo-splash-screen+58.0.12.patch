@@ -1,0 +1,11 @@
+diff --git a/node_modules/expo-splash-screen/android/src/main/java/expo/modules/splashscreen/SplashScreenManager.kt b/node_modules/expo-splash-screen/android/src/main/java/expo/modules/splashscreen/SplashScreenManager.kt
+--- a/node_modules/expo-splash-screen/android/src/main/java/expo/modules/splashscreen/SplashScreenManager.kt
++++ b/node_modules/expo-splash-screen/android/src/main/java/expo/modules/splashscreen/SplashScreenManager.kt
+@@ -24,6 +24,7 @@ object SplashScreenManager {
+   }
+ 
+   fun registerOnActivity(mainActivity: Activity) {
++    keepSplashScreenOnScreen = true
+     val splashScreen = mainActivity.installSplashScreen()
+     ReactMarker.addListener(contentAppearedListener)
+ 

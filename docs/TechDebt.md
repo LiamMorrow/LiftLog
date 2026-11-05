@@ -31,3 +31,14 @@ it is safe.
   but that has not been confirmed.
 - **Verify:** On Android, push a screen over Home, rotate to landscape and back, go back. The Home scroll view
   should reach the bottom of the screen.
+
+## expo-splash-screen keeps the Android splash up on every launch
+
+- **Where:** `app/patches/expo-splash-screen+58.0.12.patch` resets `keepSplashScreenOnScreen` in
+  `SplashScreenManager.registerOnActivity`.
+- **Why:** `SplashScreenManager` is a process-wide singleton, and the flag is never reset after the first `hide()`.
+  On a warm start, where the app was swiped away but the process is still alive, the activity is recreated and
+  the splash drops on the first frame. A blank window shows until the animated splash overlay draws.
+- **Remove when:** expo-splash-screen resets the flag itself when it registers on an activity.
+- **Verify:** On a release build on Android, open the app, swipe it away from recents without force stopping it, and
+  open it again. The logo should be on screen from the first frame, with no blank window before it.
