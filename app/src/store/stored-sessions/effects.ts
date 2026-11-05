@@ -4,6 +4,7 @@ import {
   deleteExercise,
   deleteStoredSession,
   initializeStoredSessionsStateSlice,
+  loadBuiltInExerciseCatalog,
   openSession,
   putStoredSession,
   restoreExercise,
@@ -65,9 +66,6 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
       );
       dispatch(setExercises(savedExercises));
 
-      const builtInExercises = await loadBuiltInExercises(getState().settings.preferredLanguage);
-      dispatch(setBuiltInExercises(builtInExercises));
-
       const hiddenBuiltInIds = JSON.parse(
         (await keyValueStore.getItem(hiddenBuiltInExerciseIdsStorageKey)) ?? '[]',
       ) as string[];
@@ -75,15 +73,23 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
 
       dispatch(setIsHydrated(true));
       dispatch(fetchUpcomingSessions());
+      dispatch(loadBuiltInExerciseCatalog());
     },
   );
 
-  // Re-resolve the built-in catalog when the language changes (startup load is handled above).
-  addEffect(setPreferredLanguage, async (action, { getState, dispatch }) => {
-    if (!getState().storedSessions.isHydrated) {
+  addEffect(loadBuiltInExerciseCatalog, async (_, { cancelActiveListeners, getState, dispatch, signal }) => {
+    cancelActiveListeners();
+    const builtInExercises = await loadBuiltInExercises(getState().settings.preferredLanguage);
+    if (signal.aborted) {
       return;
     }
-    dispatch(setBuiltInExercises(await loadBuiltInExercises(action.payload)));
+    dispatch(setBuiltInExercises(builtInExercises));
+  });
+
+  addEffect(setPreferredLanguage, async (_, { getState, dispatch }) => {
+    if (getState().storedSessions.isHydrated) {
+      dispatch(loadBuiltInExerciseCatalog());
+    }
   });
 
   // Completion, not content: a session is only exported and queued for the feed once the user is done

@@ -9,7 +9,10 @@ import { applyStoredSessionsEffects } from '@/store/stored-sessions/effects';
 import {
   deleteStoredSession,
   initializeStoredSessionsStateSlice,
+  loadBuiltInExerciseCatalog,
   putStoredSession,
+  setBuiltInExercises,
+  setIsHydrated,
   sessionFinished,
   sessionsChanged,
   setActiveSessionId,
@@ -19,6 +22,7 @@ import {
   upsertStoredSessions,
 } from '@/store/stored-sessions';
 import { addUnpublishedSessionId } from '@/store/feed';
+import { setPreferredLanguage } from '@/store/settings';
 import { setStatsIsDirty } from '@/store/stats';
 import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
 import { exercisesSchema, sessionsSchema } from '@/db/schema';
@@ -354,6 +358,42 @@ describe('stored-sessions effects', () => {
       expect(testBed.getDispatchedAction(openSession).payload.id).toBe(session.id);
       expect(testBed.dispatchedActions.filter((x) => openSession.match(x))).toHaveLength(1);
       expect(testBed.getDispatchedAction(setActiveSessionId).payload).toBe(session.id);
+    });
+  });
+
+  describe('the built-in exercise catalog', () => {
+    it('loads after hydration rather than holding it up', async () => {
+      const testBed = bed({});
+
+      await testBed.dispatchHandled(initializeStoredSessionsStateSlice());
+
+      const types = testBed.dispatchedActions.map((x) => x.type);
+      expect(types.indexOf(loadBuiltInExerciseCatalog.type)).toBeGreaterThan(types.indexOf(setIsHydrated.type));
+      testBed.expectNotDispatched(setBuiltInExercises);
+    });
+
+    it('resolves the catalog for the preferred language', async () => {
+      const testBed = bed({});
+
+      await testBed.dispatchHandled(loadBuiltInExerciseCatalog());
+
+      expect(Object.keys(testBed.getDispatchedAction(setBuiltInExercises).payload).length).toBeGreaterThan(0);
+    });
+
+    it('reloads when the language changes after hydration', async () => {
+      const testBed = bed({ state: { storedSessions: { isHydrated: true } } as Partial<RootState> });
+
+      await testBed.dispatchHandled(setPreferredLanguage('de'));
+
+      testBed.getDispatchedAction(loadBuiltInExerciseCatalog);
+    });
+
+    it('leaves the startup load to hydration when the language changes before it', async () => {
+      const testBed = bed({ state: { storedSessions: { isHydrated: false } } as Partial<RootState> });
+
+      await testBed.dispatchHandled(setPreferredLanguage('de'));
+
+      testBed.expectNotDispatched(loadBuiltInExerciseCatalog);
     });
   });
 });

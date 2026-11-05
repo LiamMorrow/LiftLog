@@ -1,4 +1,5 @@
 import { Loader } from '@/components/presentation/foundation/loader';
+import { AnimatedSplash } from '@/components/presentation/startup/animated-splash';
 import { NativeButton } from '@/components/presentation/foundation/native-button';
 import BugReportIcon from '@expo/material-symbols/bug_report.xml';
 import TerminalIcon from '@expo/material-symbols/terminal.xml';
@@ -21,24 +22,28 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       getLoadMessage(s.app, 'app settings') ||
       getLoadMessage(s.program, 'program') ||
       getLoadMessage(s.settings, 'settings') ||
-      getLoadMessage(s.storedSessions, 'stored sessions') ||
-      getLoadMessage(s.aiPlanner, 'ai planner'),
+      getLoadMessage(s.storedSessions, 'stored sessions'),
   );
   const isUpcomingLoaded = useAppSelector((s) => s.program.upcomingSessions.isSuccess());
   const isHydrated = !waitingOn;
   const isReady = isHydrated && isUpcomingLoaded;
   const isStuck = useIsStuck();
+  const [isSplashFinished, setIsSplashFinished] = useState(false);
+  const showStuck = !isReady && isStuck;
 
   useEffect(() => {
-    if (isReady || isStuck) {
+    if (showStuck) {
       SplashScreen.hide();
     }
-  }, [isReady, isStuck]);
+  }, [showStuck]);
 
   return (
     <>
       {isHydrated && children}
-      {!isReady && isStuck && <StuckScreen loadingText={waitingOn ?? 'Loading upcoming workouts'} />}
+      {!isSplashFinished && !showStuck && (
+        <AnimatedSplash isReady={isReady} onFinished={() => setIsSplashFinished(true)} />
+      )}
+      {showStuck && <StuckScreen loadingText={waitingOn ?? 'Loading upcoming workouts'} />}
     </>
   );
 }

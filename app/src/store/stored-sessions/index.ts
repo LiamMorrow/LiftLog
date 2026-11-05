@@ -166,6 +166,7 @@ const storedSessionsSlice = createSlice({
 });
 
 export const initializeStoredSessionsStateSlice = createAction('initializeStoredSessionsStateSlice');
+export const loadBuiltInExerciseCatalog = createAction('loadBuiltInExerciseCatalog');
 
 export const {
   setIsHydrated,

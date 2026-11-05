@@ -19,7 +19,7 @@ import { featureFlags } from 'react-native-screens';
 import * as SplashScreen from 'expo-splash-screen';
 
 void SplashScreen.preventAutoHideAsync();
-SplashScreen.setOptions({ fade: true });
+SplashScreen.setOptions({ fade: true, duration: 100 });
 
 install();
 // Workaround for a react-native-screens bug, see docs/TechDebt.md.

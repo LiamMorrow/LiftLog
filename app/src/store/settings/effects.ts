@@ -104,7 +104,11 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
           });
         }
       }
-      // migrate pro token to a revenuecat
+      dispatch(setIsHydrated(true));
+      dispatch(initializeStoredSessionsStateSlice());
+      const end = performance.now();
+      logger.log(`initializeSettingsStateSlice effect took ${(end - start).toFixed(2)}ms`);
+
       if (proToken && !proToken.startsWith('$RCAnonymousID')) {
         try {
           const customerInfo = await Purchases.getCustomerInfo();
@@ -115,10 +119,6 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
           logger.error('Failed to migrate user', err);
         }
       }
-      dispatch(setIsHydrated(true));
-      dispatch(initializeStoredSessionsStateSlice());
-      const end = performance.now();
-      logger.log(`initializeSettingsStateSlice effect took ${(end - start).toFixed(2)}ms`);
     },
   );
 
