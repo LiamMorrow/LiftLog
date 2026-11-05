@@ -28,6 +28,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const isHydrated = !waitingOn;
   const isReady = isHydrated && isUpcomingLoaded;
   const isStuck = useIsStuck();
+  const { colors } = useAppTheme();
+  const isThemeLoaded = useAppSelector((s) => s.settings.isHydrated);
+  const splashTheme = isThemeLoaded ? { logo: colors.primary, ground: colors.surface } : undefined;
   const [isSplashFinished, setIsSplashFinished] = useState(false);
   const showStuck = !isReady && isStuck;
 
@@ -41,7 +44,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     <>
       {isHydrated && children}
       {!isSplashFinished && !showStuck && (
-        <AnimatedSplash isReady={isReady} onFinished={() => setIsSplashFinished(true)} />
+        <AnimatedSplash isReady={isReady} theme={splashTheme} onFinished={() => setIsSplashFinished(true)} />
       )}
       {showStuck && <StuckScreen loadingText={waitingOn ?? 'Loading upcoming workouts'} />}
     </>

@@ -72,7 +72,11 @@
         {
           "backgroundColor": "#fcfdf6",
           "image": "./assets/splash.png",
-          "resizeMode": "contain"
+          "resizeMode": "contain",
+          "dark": {
+            "backgroundColor": "#1a1c18",
+            "image": "./assets/splash-dark.png"
+          }
         }
       ],
       "expo-status-bar",
