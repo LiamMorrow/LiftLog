@@ -10,8 +10,8 @@ description: >-
 
 # Adding / changing a storage migration
 
-LiftLog persists everything on-device as JSON. Stored data does not change when the app's types do, so
-every model has a **migration chain** that brings any previously-persisted shape up to the current one.
+LiftLog persists most models on-device as JSON, and sessions travel as JSON in feed items and backups.
+Stored data does not change when the app's types do, so every model has a **migration chain** that brings any previously-persisted shape up to the current one.
 Full reference: `docs/Migrations.md`. Code: `app/src/models/storage/versions/`.
 
 **Read `docs/Migrations.md` before doing anything non-trivial** (nested models, brand-new models, feed
@@ -32,10 +32,10 @@ ingest/version-rejection). This skill is the fast path for the common case.
 ## Changing an existing model (the common case)
 
 1. **Edit the type in `latest/<domain>.ts`** to the new desired shape.
-2. That domain's `build<...>()` in `migrations/<domain>.ts` **stops compiling** - its output no longer
-   matches the latest type. This compile error is the signal, not a nuisance.
+2. That domain's `build<...>()` in `migrations/<domain>.ts` **stops compiling**, because its output does
+   not match the latest type. This compile error is the signal, not a nuisance.
 3. **Append one new `.add()`** to the chain transforming the previous shape into the new one. Set
-   `version` to the `as const` number TypeScript asks for (it enforces the incrementing value). Keep the
+   `version` to the `as const` number TypeScript asks for (TypeScript enforces the incrementing value). Keep the
    per-field transform explicit, mirroring the existing steps.
 4. Non-trivial or reused field logic → put it in a **new file under `migrations/steps/`** and call it
    from the `.add()` (see `steps/add-uses-bodyweight.ts`, imported into `blueprint.ts`).
@@ -60,16 +60,17 @@ ingest/version-rejection). This skill is the fast path for the common case.
 ## Sessions are relational
 
 On the device, sessions are typed SQLite tables, not one JSON payload (see `docs/Storage.md`).
-`sessionMigrations` still matters: feed items, backups and protobuf imports carry sessions as JSON. So
+`sessionMigrations` matters too: feed items, backups and protobuf imports carry sessions as JSON. So
 a change to `latest/session.ts` needs **both** a `.add()` step **and** the table side:
 
-- If existing rows need new values, a **JS migration** pinned to that SQL migration
-  (`services/js-migrations/`). Not a data migration: it must also reach restored backups.
+- If existing rows need new values, a **JS migration** pinned to the SQL migration that changes the
+  tables (`services/js-migrations/`). Not a data migration: data migrations do not run on restored
+  backups.
 - `services/js-migrations/explode-sessions.ts` maps the latest `SessionJSON` into the tables as they
-  were at `0009_relational_sessions`. When `SessionJSON` changes it stops compiling; keep it writing only
-  those columns.
+  were at `0009_relational_sessions`. When `SessionJSON` changes, `explode-sessions.ts` stops compiling;
+  keep `explode-sessions.ts` writing only the `0009` columns.
 - A change to an **exercise blueprint** also reaches `recorded_exercise` (columns, plus `plannedSets` /
-  `progression` JSON, which has no version) and `cardio_set`: add a JS migration that rewrites them,
+  `progression` JSON, which has no version) and `cardio_set`: add a JS migration that rewrites those columns,
   reusing the step functions from `migrations/steps/`.
 - If `movementKey()` / `progressionKey()` would return something different, add a JS migration that
   recomputes `recorded_exercise.movementKey` / `progressionKey`.
@@ -80,7 +81,7 @@ a change to `latest/session.ts` needs **both** a `.add()` step **and** the table
   already on users' devices.
 - **Never edit or remove an existing `initial/` interface.** It describes the oldest data still in the
   wild and must stay frozen. Adding a new interface is fine.
-- **Never pass a raw stored payload to `fromJSON`.** Run it through the model's `migrate()` first - the
+- **Never pass a raw stored payload to `fromJSON`.** Run the payload through the model's `migrate()` first - the
   any-version payload type enforces this at compile time, so a read site that won't compile is telling
   you to migrate.
 - Always update `latest/` **and** add the migration together - never one without the other.
@@ -88,4 +89,4 @@ a change to `latest/session.ts` needs **both** a `.add()` step **and** the table
 ## Verify
 
 From `app/`: `npm run typecheck` (the `build<...>()` pin must be green) and `npm test` (migration specs).
-Run `npm run lint` before calling it done.
+Run `npm run lint` before calling the change done.

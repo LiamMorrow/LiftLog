@@ -16,7 +16,7 @@ Please follow these rules when **adding or modifying translation keys**.
 - Do **not** include spaces, punctuation, or casing rules
 - Keys should describe **where the text is used**, not what it says
 
-**Allowed characters:** `a–z`, `0–9`, `.`, `_`
+**Allowed characters:** `a-z`, `0-9`, `.`, `_`
 
 ### ✅ Good
 

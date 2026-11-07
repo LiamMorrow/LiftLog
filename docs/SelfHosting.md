@@ -50,18 +50,19 @@ In the app, go to **Settings → Backends → Add backend** and enter:
 
 | Field   | Value                                                                               |
 | ------- | ----------------------------------------------------------------------------------- |
-| Name    | Whatever you want to call it.                                                       |
+| Name    | Whatever you want to call the backend.                                              |
 | URL     | `https://your-host`                                                                 |
 | Type    | **LiftLog backend**.                                                                |
 | Headers | `X-API-Key` set to your `Auth__ApiKey__Value` , or any other headers you might need |
 
 **Test** calls `GET /features` and reports which features that instance offers. Then assign the feed,
-the AI planner and remote backup to it.
+the AI planner and remote backup to the backend.
 
 Two things worth knowing before you switch:
 
-- **Remote backup is not assigned to anything by default.** It uploads your whole database, so it
-  stays off until you pick a backend for it.
+- **Remote backup is not assigned to anything by default.** Remote backup uploads your whole
+  database. In order to send that database only where you choose, remote backup stays off until you
+  pick a backend for it.
 - **Moving the feed deletes your feed account**, including your friends.
 
 [Backends.md](./Backends.md) covers both in full, along with the separate "backup endpoint only"
@@ -69,7 +70,7 @@ backend type for bare implementations of the backup protocol.
 
 ## Turning features off
 
-Every feature is **on** by default. Turn one off with an `Enabled: false` in its configuration
+Every feature is **on** by default. Turn a feature off with an `Enabled: false` in its configuration
 section, and its endpoints answer `423 Locked` instead:
 
 ```yaml
@@ -85,7 +86,7 @@ Beyond the flags above, features must be configured to work.
 
 ### Social feed
 
-Nothing to configure. It works as soon as the server is running. See [FeedProcess.md](./FeedProcess.md) for a breakdown of the end to end encryption process.
+Nothing to configure. The feed works as soon as the server is running. See [FeedProcess.md](./FeedProcess.md) for a breakdown of the end to end encryption process.
 
 ### Authentication
 
@@ -96,7 +97,7 @@ Nothing to configure. It works as soon as the server is running. See [FeedProces
 | `Auth__PurchaseToken` | `Authorization: Bearer RevenueCat <token>` | AI planner            |
 
 `Auth__PurchaseToken` verifies App Store / Play Store purchases through RevenueCat, which a
-self-hosted deployment has no way to issue - so **a shared API key is the one you want**:
+self-hosted deployment has no way to issue - so **a shared API key is the method you want**:
 
 ```yaml
 Auth__ApiKey__Value: some-long-random-key
@@ -108,14 +109,14 @@ A method with no configuration never authenticates anyone. With no API key set, 
 #### Forward auth
 
 If you already run a single sign-on proxy - Authelia, Authentik, oauth2-proxy, Caddy `forward_auth`,
-Traefik `ForwardAuth` - it can authenticate people for you and pass the username along in a header:
+Traefik `ForwardAuth` - the proxy can authenticate people for you and pass the username along in a header:
 
 ```yaml
 Auth__ForwardAuth__UserHeader: Remote-User
 Auth__ForwardAuth__TrustedProxies: "10.0.0.0/8"
 ```
 
-Unlike the shared API key this carries a real identity, so each person's backups land in their own
+Unlike the shared API key, forward auth carries a real identity, so each person's backups land in their own
 folder rather than a shared `default` one.
 
 Leaving `UserHeader` unset disables the whole scheme.
@@ -129,8 +130,8 @@ Backups can be stored in different locations:
 
 #### Directly on disk
 
-Store backups in a directory. **The directory must already exist** - the server fails to start if it
-does not, so mount a volume straight at it:
+Store backups in a directory. **The directory must already exist** - the server fails to start if the
+directory does not exist, so mount a volume straight at the directory:
 
 ```yaml
 environment:
@@ -154,7 +155,7 @@ Backup__SinkOptions__Region: ap-southeast-2
 
 ### AI planner
 
-Bring your own Anthropic API key. This calls a paid API on your own account.
+Bring your own Anthropic API key. The planner calls a paid API on your own account.
 
 ```yaml
 AiPlanner__AnthropicApiKey: sk-ant-...

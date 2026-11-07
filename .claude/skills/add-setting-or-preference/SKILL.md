@@ -32,8 +32,8 @@ From that one entry the system derives, automatically:
 
 - the `SettingsState` field and its type,
 - the `initialState` default,
-- a typed action creator named `setShowPostWorkoutSummary` (the historical `set<Capitalize<key>>`
-  name), reduced by a single matcher,
+- a typed action creator named `setShowPostWorkoutSummary` (`set<Capitalize<key>>`), reduced by a
+  single matcher,
 - generic hydration (read on launch) and generic persistence (write-back on change, guarded by
   `isHydrated`).
 
@@ -41,7 +41,7 @@ Then do the two things that can't be derived:
 
 1. **Re-export the setter.** ESM can't spread named exports, so add `setShowPostWorkoutSummary` to the
    destructured `export const { … } = preferenceSetters;` list in `app/src/store/settings/index.ts`.
-   This is compiler-enforced - omit it and the call sites fail to typecheck.
+   This is compiler-enforced - omit the re-export and the call sites fail to typecheck.
 2. **The settings UI** - usually a `ListSwitch` in `app/src/app/(tabs)/settings/app-configuration.tsx`,
    reading `useAppSelector((state: RootState) => state.settings)` and dispatching the action. Labels are
    Tolgee keys (`<T keyName="…" />`); add `<area>.<thing>.label` and `.subtitle` to
@@ -53,9 +53,9 @@ That's it - no `PreferenceService` method, no hydration wiring, no per-key write
 
 The codec (in `app/src/store/settings/codecs.ts`) maps the value to/from its on-disk string. `deserialize`
 returns `undefined` for an absent/unparseable key (the descriptor `default` then wins); `serialize`
-returns `undefined` to remove the key. Reuse an existing one where possible:
+returns `undefined` to remove the key. Reuse an existing codec where possible:
 
-- `boolCodec` - `'True'` / `'False'` (historical casing, don't "fix" it).
+- `boolCodec` - `'True'` / `'False'`. Devices already store this casing, so keep it.
 - `intCodec` - `parseInt`, falls back to the default on `NaN`.
 - `stringCodec` - passthrough; an `undefined` value removes the key.
 - `colorSchemeSeedCodec`, `dayOfWeekCodec`, `instantCodec` - worked examples of validated / typed values.
@@ -69,7 +69,7 @@ old form (see `getPreferredLanguage`, which rewrites the legacy `zh_Hans` value 
 Most keys need nothing beyond `{ default, codec }`. A `PrefDescriptor` also accepts:
 
 - `persist: false` - the generic write-back skips the key; a dedicated effect in
-  `app/src/store/settings/effects.ts` owns saving it. Use for permission gates (`exportToHealthAggregator`),
+  `app/src/store/settings/effects.ts` owns saving the key. Use for permission gates (`exportToHealthAggregator`),
   dev-only guards (`proToken`), or values spread across several storage keys (`remoteBackupSettings`).
 - `hydrate: 'manual'` - the init effect reads the key explicitly instead of the generic loop. Use for
   sync reads, composite keys, or values composed from multiple keys (`lastBackup`).
@@ -83,16 +83,16 @@ hand in `effects.ts`.
 
 ## Traps
 
-- **One default, one source.** The default lives only in the descriptor, so the pre-hydration value and
-  the never-written value can no longer drift apart (they used to).
+- **One default, one source.** In order to keep the pre-hydration value and the never-written value in
+  step, the default lives only in the descriptor.
 - **Preferences are not backed up.** `getBackupBytes` serializes the SQLite database only, so a preference
-  does not survive export/restore or remote backup. If the user would be upset to lose it on a device
-  switch, it belongs in the DB.
+  does not survive export/restore or remote backup. If the user would be upset to lose the value on a
+  device switch, the value belongs in the DB.
 - **Don't read preferences from components.** Components read `state.settings`; only effects touch
   `preferenceService`. The sanctioned reads outside effects are `getPreference` in data-migrations and the
   sync `getPreferredLanguage` for Tolgee.
-- **`setProToken` no-ops in `__DEV__`.** Expected, not a bug - that's why it's a bespoke `persist: false`
-  key rather than a generic one.
+- **`setProToken` no-ops in `__DEV__`.** Expected, not a bug - the no-op is why `proToken` is a bespoke
+  `persist: false` key rather than a generic one.
 
 ## Removing a preference
 
@@ -104,4 +104,4 @@ its UI. Don't bother deleting the on-disk file - an orphaned key in the document
 From `app/`: `npm run typecheck`, then `npm run lint`. `app/src/services/preference-service.spec.ts`
 characterizes the storage encodings and `app/src/store/settings/preferences.spec.ts` covers the generated
 action + generic hydrate/persist - extend them if you add a new codec or a bespoke key. A straight
-round-trip preference otherwise needs no new test; if it drives behaviour elsewhere, test that.
+round-trip preference otherwise needs no new test; if the preference drives behaviour elsewhere, test that behaviour.

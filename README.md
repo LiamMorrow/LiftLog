@@ -23,7 +23,7 @@ LiftLog also supports privacy focused, end to end encrypted, social feeds to tra
 
 - 🗿 Intuitive UI which lets you log your progression, without getting in your way
 - 📱 Entirely device local workouts
-- 📱 Runs on Android and iOS. Web support was removed in [this commit](https://github.com/LiamMorrow/LiftLog/commit/d77d94e5eeffd3a9a81af6f61f47e9c57fb91738)
+- 📱 Runs on Android and iOS. There is no web build; the last web version is at [this commit](https://github.com/LiamMorrow/LiftLog/commit/d77d94e5eeffd3a9a81af6f61f47e9c57fb91738)
 - 🔒 End-to-end encrypted social feeds
 - 🎨 Material Design 3 / Liquid glass
 - 🌐 Internationalization with Tolgee/Weblate (10+ languages)
@@ -108,7 +108,7 @@ AI/LLM-assisted contributions are welcome, but issues and feature requests shoul
 
 ## 📚 Documentation
 
-- [Self Hosting](./docs/SelfHosting.md) - Documents the how to self host the backend for backups or your own AI planner and private feed.
+- [Self Hosting](./docs/SelfHosting.md) - Documents how to self host the backend for backups or your own AI planner and private feed.
 - [Plan Files](./docs/PlanFileFormat.md) - Documents the `.liftlogplan` file format, and how to generate plans with an AI for import into the app.
 - [Feed Process](./docs/FeedProcess.md) - Documents how the feed and sharing works, especially around e2e encryption.
 - [Remote Backup](./docs/RemoteBackup.md) - Documents how to connect LiftLog to a remote backup server.
@@ -123,4 +123,4 @@ AI/LLM-assisted contributions are welcome, but issues and feature requests shoul
 
 ---
 
-> **Note:** LiftLog was rewritten from the ground up in React Native. The previous .NET MAUI Blazor implementation is in the `dotnet` branch.
+> **Note:** The .NET MAUI Blazor implementation of LiftLog lives in the `dotnet` branch.

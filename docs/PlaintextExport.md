@@ -1,6 +1,6 @@
 # Plaintext Export
 
-LiftLog supports exporting your data as plaintext. Currently it supports CSV and JSON files.
+LiftLog can export your data as plaintext CSV or JSON files.
 These exports must NOT be used as a backup mechanism, as LiftLog cannot read these plaintext exports.
 
 To create an export, simply navigate to `Settings -> Export, Backup, and Restore -> Plaintext Export`.

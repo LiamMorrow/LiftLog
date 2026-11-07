@@ -2,7 +2,7 @@
 
 The base catalog lives one level up in `assets/exercises.json`: the language-neutral data for each
 built-in exercise - its **English name** (the stable id) plus fixed-vocabulary metadata (muscles,
-category, equipment, …, localized via Tolgee keys). It holds no free-text translated fields.
+category, equipment, …, localized via Tolgee keys). `exercises.json` holds no free-text translated fields.
 
 Each `<locale>.json` here is a read-only overlay onto that base, keyed by the English name, holding the
 translated free-text fields:

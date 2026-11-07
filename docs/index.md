@@ -20,7 +20,7 @@ work to find the docs relevant to your area, and update it whenever you add, rem
   stories live, and the generated `storybook.requires.ts`.
 
 - [TechDebt.md](./TechDebt.md) - the ledger of workarounds for bugs in dependencies: where each lives, why, when
-  it can be removed, and how to check it is safe to remove. Read it before upgrading a dependency.
+  it can be removed, and how to check removing it is safe. Read the ledger before upgrading a dependency.
 
 ## Features
 
@@ -35,18 +35,18 @@ work to find the docs relevant to your area, and update it whenever you add, rem
 - [PersonalRecords.md](./PersonalRecords.md) - How personal records for an exercise are calculated
 - [PlanFileFormat.md](./PlanFileFormat.md) - the `.liftlogplan` file format, how plans are imported and
   exported, and the Claude skill that authors plan files against the schema.
-- [PlaintextExport.md](./PlaintextExport.md) — CSV/JSON export of workout data, including which fields
+- [PlaintextExport.md](./PlaintextExport.md) - CSV/JSON export of workout data, including which fields
   are included. Explicitly _not_ a backup mechanism; LiftLog cannot read these files back.
-- [CsvImport.md](./CsvImport.md) — user guide for Import from other apps (FitNotes-style and
+- [CsvImport.md](./CsvImport.md) - user guide for Import from other apps (FitNotes-style and
   StrongLifts-style CSV); contributor notes at the end. Separate from plaintext export.
-- [RemoteBackup.md](./RemoteBackup.md) — the automatic remote backup: the app-side settings, and the contract a self-hosted backup endpoint must satisfy.
+- [RemoteBackup.md](./RemoteBackup.md) - the automatic remote backup: the app-side settings, and the contract a self-hosted backup endpoint must satisfy.
 
-## Running it yourself
+## Running your own backend
 
-- [SelfHosting.md](./SelfHosting.md) — quickstart for running your own backend: a copy-paste Docker
+- [SelfHosting.md](./SelfHosting.md) - quickstart for running your own backend: a copy-paste Docker
   Compose file, how to point the app at it, and the environment variables that switch on the feed,
   remote backup, and AI planner. Pairs with the [backend README](../backend/README.md).
-- [Backends.md](./Backends.md) — the app side: creating backends, assigning the feed, AI planner and
+- [Backends.md](./Backends.md) - the app side: creating backends, assigning the feed, AI planner and
   remote backup to different ones, custom headers for API keys and forward auth, and why moving the
   feed destroys the account. Read alongside `SelfHosting.md`.
 

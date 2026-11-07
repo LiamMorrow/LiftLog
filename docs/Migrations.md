@@ -3,7 +3,7 @@
 LiftLog stores most models on-device as JSON (programs, the social feed, etc.),
 and sessions travel as JSON in feed items and backups. Those shapes change over
 time, but data already on a user's phone does not. **Migrations** bring any
-previously-persisted value up to the shape the app currently expects.
+previously-persisted value up to the shape the app expects.
 
 Sessions on the device are relational tables rather than JSON, so changing how
 they are stored is a SQL migration instead - see
@@ -54,20 +54,20 @@ model that embeds another versioned model declares it with `dependsOn` - see
 
 ### Why `latest` is the source of truth
 
-The output of each chain is **pinned** to the latest type with
-`build<TFinal>()`. The builder asserts (via `NoInfer` + a mutual-assignability
-check) that what the chain actually produces matches the hand-declared latest
-type. If they drift apart, **the chain stops compiling**. That compile error is
-the whole point - it forces you to add a migration whenever you change a model.
+In order to force a migration whenever you change a model, the output of each
+chain is **pinned** to the latest type with `build<TFinal>()`. The builder
+asserts (via `NoInfer` + a mutual-assignability check) that what the chain
+actually produces matches the hand-declared latest type. If the chain output and
+the latest type drift apart, **the chain stops compiling**.
 
 ---
 
 ## When migrations run
 
-Migrations run **lazily, on read** Every DB payload column is typed as the model's `AnyVersion*`
+Migrations run **lazily, on read**. Every DB payload column is typed as the model's `AnyVersion*`
 union (see [`db/schema.ts`](../app/src/db/schema.ts)), so a freshly decoded row
 could be any persisted version. Code that turns a stored row into a domain model
-migrates it first:
+migrates the payload first:
 
 ```ts
 ProgramBlueprint.fromJSON(programBlueprintMigrations.migrate(row.payload));
@@ -86,13 +86,13 @@ re-saved.
 This is the common case. Follow these steps:
 
 1. **Update the type in `latest/<domain>.ts`** to the new desired shape.
-2. The corresponding chain's `build<...>()` call will **no longer compile** - its
-   output no longer matches the latest type.
+2. The corresponding chain's `build<...>()` call **stops compiling**, because its
+   output does not match the latest type.
 3. **Append a new `.add()`** to that chain describing how to transform the
    previous shape into the new one. Set the `version` field to the value
    TypeScript asks for (the builder enforces the correct, incrementing number).
-4. If your model **embeds another model** that has its own chain, declare it with
-   `dependsOn` (see [Nested models](#nested-models)) - you don't add a step to the
+4. If your model **embeds another model** that has its own chain, declare the
+   embedded model with `dependsOn` (see [Nested models](#nested-models)) - you don't add a step to the
    parent when only the embedded child changes.
 5. If the changed type feeds a generated JSON schema (e.g. anything reachable
    from the workout-worker messages, or the program blueprint), regenerate the
@@ -100,7 +100,7 @@ This is the common case. Follow these steps:
    ```bash
    cd app && npm run json-schema
    ```
-   As well as the schemas themselves, this rebuilds the plan-file validator
+   As well as the schemas themselves, `npm run json-schema` rebuilds the plan-file validator
    shipped inside the plan-builder skill. Both are committed build artifacts, so
    include them in your change. See [Plan Files](./PlanFileFormat.md).
 
@@ -130,8 +130,8 @@ export const programBlueprintMigrations = createMigrations<InitialProgramBluepri
   .build<ProgramBlueprintJSON>();
 ```
 
-`dependsOn` handles a single embedded child, an array of them, or an optional
-one, and it recurses (a wrapper may depend on another wrapper). The field's
+`dependsOn` handles a single embedded child, an array of children, or an
+optional child, and `dependsOn` recurses (a wrapper may depend on another wrapper). The field's
 latest and any-version types are **derived from the child migrator**, so the
 `build<TFinal>()` pin re-verifies automatically when the child's latest shape
 changes - you never touch the parent when only a child bumps.
@@ -139,14 +139,14 @@ changes - you never touch the parent when only a child bumps.
 ### `pseudoMigrateUntil` and versions
 
 A pure wrapper has no numbered `.add()` steps, so nothing in its own transform
-stamps a `version`. But existing on-disk rows already carry one (wrappers
-historically bumped in lockstep with their children), and the latest type still
-declares it. `pseudoMigrateUntil` is that legacy version - the wrapper keeps
-stamping it on write so old and new rows agree, and it's contributed to the
-`build<TFinal>()` pin automatically.
+stamps a `version`. But rows written by earlier app versions carry a `version`,
+and the latest type declares the field. `pseudoMigrateUntil` is the highest
+version those rows carry. In order for every row to agree, the wrapper stamps
+`pseudoMigrateUntil` on write, and `build<TFinal>()` includes it in the pin
+automatically.
 
 The number is bookkeeping only. A wrapper's staleness is decided **per embedded
-leaf**, on each leaf's own chain - not by this scalar - so a child bump is picked
+leaf**, on each leaf's own chain - not by `pseudoMigrateUntil` - so a child bump is picked
 up even though the wrapper's own version never moves. A value whose version is
 _higher_ than the wrapper understands (data from a newer app version) is
 rejected; that's how untrusted feed items from the future are dropped on ingest.
@@ -159,15 +159,15 @@ rejected; that's how untrusted feed items from the future are dropped on ingest.
   latest shape without adding the corresponding `.add()` step (the compiler will
   stop you anyway).
 - **Never touch an existing migration.** Each `.add()` step transforms real data
-  already on users' devices. Editing one rewrites history and corrupts
+  already on users' devices. Editing a step rewrites history and corrupts
   migration of older data. Migrations are append-only.
 - **Step files never import from `latest/`.** A step in
   [`migrations/steps/`](../app/src/models/storage/versions/migrations/steps)
-  describes a transform between two _historical_ shapes. Pinning either end of it
-  to a type that keeps moving makes an append-only migration silently rewrite
+  describes a transform between two _historical_ shapes. Pinning either end of the
+  step to a type that keeps moving makes an append-only migration silently rewrite
   itself - and deleting a field from `latest/` breaks a step that has been frozen
   for years. Declare the shapes the step reads and writes locally, in the step
-  file, even when they currently duplicate a `latest/` type. Importing from
+  file, even when they duplicate a `latest/` type. Importing from
   `initial/` is fine: that folder is frozen by the same rule.
 - **Never edit existing `initial/` interface definitions.** They describe the
   oldest data that still exists in the wild and must stay frozen. You may _add_
@@ -175,15 +175,15 @@ rejected; that's how untrusted feed items from the future are dropped on ingest.
   existing one.
 - **`latest/` is yours to edit freely** - it's the source of truth for the
   current shape.
-- **`latest/` is self-contained: duplicate, don't forward.** Even when a latest
-  type is currently identical to its `initial/` counterpart, declare it in full
-  in `latest/` rather than re-exporting from `initial/`. This keeps `latest` an
-  independent description of the current shape and keeps JSON-schema generation
-  working.
+- **`latest/` is self-contained: duplicate, don't forward.** In order to keep
+  `latest` an independent description of the current shape and keep JSON-schema
+  generation working, declare every latest type in full in `latest/` rather than
+  re-exporting from `initial/`, even when the type is identical to its
+  `initial/` counterpart.
 - **Use `dependsOn` for nested models** rather than reimplementing a child's
   migration inside its parent.
-- **Migrate on read.** Never pass a raw stored payload to a `fromJSON` - run it
-  through the model's `migrate()` first (the any-version payload type enforces
+- **Migrate on read.** Never pass a raw stored payload to a `fromJSON` - run the
+  payload through the model's `migrate()` first (the any-version payload type enforces
   this at compile time).
 
 ---

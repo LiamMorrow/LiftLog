@@ -18,7 +18,7 @@ A session sets a record for an exercise when it beats every **earlier** session.
 ## Code
 
 - `app/src/store/stats/personal-records.ts`: `performancesOf` reduces an exercise in a session to what
-  records compare, and `personalRecordsOf` walks them oldest first.
+  records compare, and `personalRecordsOf` walks the performances oldest first.
 - Your own history reads the same performances from summary columns on `recorded_exercise`
   (`readPerformances` in `app/src/db/sessions.ts`). `db/sessions.spec.ts` checks both paths agree.
 - The feed only holds 90 days of a friend's sessions, so its labels say "in 90 days".

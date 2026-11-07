@@ -38,7 +38,7 @@ where you leave it until you add one.
 and nothing moves; you repeat the same numbers next time.
 
 **Rules run in order, and only one runs per session.** LiftLog takes the first rule that still has room
-to move and stops there. This is what lets you chain them.
+to move and stops there. Running one rule per session is what lets you chain rules.
 
 Each rule has:
 
@@ -58,7 +58,7 @@ way, both ends still move by the same amount, so the range keeps its width inste
 
 **A rule with no limit never stops**, so nothing after it can ever run. Weight rules have no limit at
 all, so a weight rule always has to be last. The editor dims any rule that can never run and tells you
-how to fix it, and **Add rule** arranges new rules so this does not happen - adding a rule to a
+how to fix the order, and **Add rule** arranges new rules so every rule can run - adding a rule to a
 weight-only exercise puts the new reps rung _in front_ of the weight rule, not behind it.
 
 Tap **Example** to see four sessions of your actual exercise played out under the rules you have set.

@@ -1,6 +1,6 @@
 # The `.liftlogplan` format
 
-A `.liftlogplan` file is a single JSON object. `ProgramBlueprint.json` in this directory is the authoritative JSON Schema; this page explains it.
+A `.liftlogplan` file is a single JSON object. `ProgramBlueprint.json` in this directory is the authoritative JSON Schema; this page explains the schema.
 
 ## Rules that catch everyone
 
@@ -11,7 +11,7 @@ Read these first. They are the reason most generated plans fail to import.
 3. **Weights and steps are strings, not numbers.** `"step": "2.5"`, never `"step": 2.5`. Rep counts (`min`, `max`) are the exception: those are plain integers.
 4. **Rests and times are ISO-8601 durations.** `"PT3M"` is three minutes, `"PT90S"` is ninety seconds, `"PT1M30S"` also works. A bare `"90"` or `90` is invalid.
 5. **A weighted exercise has no set count.** One entry in `plannedSets` _is_ one set, so three sets of five means three identical entries. Cardio exercises use `sets`, an array, one entry per interval.
-6. **`type` values are case-sensitive**, and the casing is not consistent across the format. Exercise types use PascalCase (`"WeightedExerciseBlueprint"`); everything else - cardio targets, progression scopes, resistance - is lowercase or camelCase (`"time"`, `"allSets"`, `"bodyweight"`, `"allSetsMetTarget"`). Copy them exactly as written below.
+6. **`type` values are case-sensitive**, and the casing is not consistent across the format. Exercise types use PascalCase (`"WeightedExerciseBlueprint"`); everything else - cardio targets, progression scopes, resistance - is lowercase or camelCase (`"time"`, `"allSets"`, `"bodyweight"`, `"allSetsMetTarget"`). Copy the `type` values exactly as written below.
 
 ## Root
 
@@ -102,7 +102,7 @@ target:
 ]
 ```
 
-Sets do not have to match each other - this is how you write a ramp or a back-off set:
+Sets do not have to match each other - differing sets are how you write a ramp or a back-off set:
 
 ```json
 "plannedSets": [
@@ -125,7 +125,7 @@ Where the load on the movement comes from. One of:
 | `"bodyweight"` | Pull ups, dips, push ups.            | The weight logged is what is _added_ to the lifter (belt weight, or negative for assistance). |
 | `"none"`       | Crunches, planks, air squats.        | No weight at all. The app hides weight while logging and in stats; reps are the whole story. |
 
-Use `"none"` whenever added weight is not part of the exercise - it is better than `"external"` with a
+Use `"none"` whenever added weight is not part of the exercise - `"none"` is better than `"external"` with a
 weight of zero, which pollutes the stats with a zero-weight line.
 
 ### Rest
@@ -138,17 +138,17 @@ All three are required ISO-8601 durations.
 | `maxRest`     | The longest.                                                                            |
 | `failureRest` | Rest after a set where they missed the target reps - normally the longest of the three. |
 
-Pick rests from the effort of the lift: heavy compounds 3–5 minutes, accessories 60–90 seconds.
+Pick rests from the effort of the lift: heavy compounds 3-5 minutes, accessories 60-90 seconds.
 
 ### Supersets
 
-There is no superset group. `"supersetWithNext": true` means "do this exercise back to back with the **next one in the array**, with no rest between them". To superset A with B, set it on A and leave it `false` on B. For a three-exercise circuit, set it `true` on the first two.
+There is no superset group. `"supersetWithNext": true` means "do this exercise back to back with the **next one in the array**, with no rest between them". To superset A with B, set `supersetWithNext` on A and leave `supersetWithNext` `false` on B. For a three-exercise circuit, set `supersetWithNext` `true` on the first two.
 
 ### Progression
 
 `progression` is an **ordered list of rules**. After a session where every set hit its target, the app
-takes the **first rule that still has room to move** and applies only that one. An empty list - `[]` -
-means the exercise never moves on its own; use it for bodyweight work you are not loading, or when the
+takes the **first rule that still has room to move** and applies only that rule. An empty list - `[]` -
+means the exercise never moves on its own; use an empty list for bodyweight work you are not loading, or when the
 user doesn't want automatic progression.
 
 The usual rule, and the one most exercises want:
@@ -168,10 +168,10 @@ The usual rule, and the one most exercises want:
 | `step`      | string | How much to add, as a decimal **string**. Unitless: `"2.5"` is a pair of small plates in a kilo gym and in a pound gym alike. |
 | `scope`     | object | `{ "type": "allSets" }`, or `{ "type": "lowestSets", "pick": "first" \| "middle" \| "last" \| "all" }`.                        |
 | `trigger`   | string | Always `"allSetsMetTarget"` - the only trigger there is.                                                                      |
-| `ceiling`   | string | _Optional, reps only._ The rule stops once reps reach this, and the next rule takes over.                                     |
+| `ceiling`   | string | _Optional, reps only._ The rule stops once reps reach the ceiling, and the next rule takes over.                                     |
 | `onCeiling` | string | _Optional, reps only._ `"reset"` drops the reps back to what the plan asks once a later rule takes over.                      |
 
-`step` is unitless - it is plate increments, not a weight. Use `"2.5"` for most lifts and `"5"` for
+`step` is unitless - `step` is plate increments, not a weight. Use `"2.5"` for most lifts and `"5"` for
 squats and deadlifts if the user lifts in kilos; `"5"` and `"10"` if they lift in pounds.
 
 `"lowestSets"` raises only the lowest sets, for lifts where a jump across the board is too much
@@ -208,7 +208,7 @@ reps then load, is a rep ladder:
 
 Six reps climb one at a time to eight, then the weight goes up and the reps drop back to six.
 
-Don't do this _and_ write a rep range - a reps rule whose ceiling is the top of the exercise's own rep
+Don't combine a rep ladder with a rep range - a reps rule whose ceiling is the top of the exercise's own rep
 range can never move, and does nothing at all. Pick one: a range with a load rule, or a point target
 with a reps rule ahead of the load rule.
 
@@ -239,7 +239,7 @@ a rule on.
 
 `sets` is an **array** here - one object per interval or round. There is no resistance or progression on cardio.
 
-Every set needs a `target` plus all six `track*` booleans, which control the fields the app shows while logging. A set may also carry the same `restBetweenSets` object a weighted exercise takes; leave it out for steady-state work, where there is nothing to rest between. Turn on the ones that make sense for the movement (a bike: duration + resistance; a treadmill run: duration, distance, incline) and leave the rest `false`.
+Every set needs a `target` plus all six `track*` booleans, which control the fields the app shows while logging. A set may also carry the same `restBetweenSets` object a weighted exercise takes; leave `restBetweenSets` out for steady-state work, where there is nothing to rest between. Turn on the `track*` booleans that make sense for the movement (a bike: duration + resistance; a treadmill run: duration, distance, incline) and leave the rest `false`.
 
 A target is one of:
 
@@ -250,13 +250,13 @@ A target is one of:
 
 Note the lowercase `type`. `unit` must be one of `"metre"`, `"yard"`, `"mile"`, `"kilometre"`, and `value.value` is a decimal **string**.
 
-## Validate before you hand it over
+## Validate before you hand the plan over
 
 ```bash
 node scripts/validate-plan.mjs "My Plan.liftlogplan"
 ```
 
-No install, no network. It lists every problem with the path to the field, e.g.:
+No install, no network. The validator lists every problem with the path to the field, e.g.:
 
 ```
   plan/sessions/0/exercises/0/restBetweenSets/minRest must match format "duration"

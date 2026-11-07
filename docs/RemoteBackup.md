@@ -1,6 +1,6 @@
 # Automatic Remote Backup
 
-LiftLog supports an automatic remote backup, whereby every time the app is opened, if there have been changes, it can send a backup to a remote server. It supports auth through an `X-API-KEY` header.
+LiftLog supports an automatic remote backup, whereby every time the app is opened, if there have been changes, the app can send a backup to a remote server. The backup supports auth through an `X-API-KEY` header.
 
 Setting up this remote server is somewhat involved and recommended for advanced users who are comfortable running a server.
 
@@ -15,15 +15,15 @@ implementing the protocol yourself.
 
 Create a **backend** under `Settings -> Backends`. See [Backends.md](./Backends.md) for an explanation of the fields.
 
-Then assign it to your remote backend.
+Then assign remote backup to that backend.
 
 ## The backup protocol
 
-The endpoint which is being hit should simply accept a `POST` request where the body will be the raw bytes of a `liftlogbackup.gz` file. It MUST NOT decompress the gzipped data, the LiftLog app only understands gzipped files.
+The endpoint which is being hit should simply accept a `POST` request where the body will be the raw bytes of a `liftlogbackup.gz` file. The endpoint MUST NOT decompress the gzipped data, because the LiftLog app only understands gzipped files.
 
-An example implementation which stores the backups as files on disk can be found [here](../examples/remote-backup/LiftLog.BackupServer/).
+An example implementation which stores the backups as files on disk can be found [here](../examples/remote-backup/reference-server-implementation/LiftLog.BackupServer/).
 
-You can test if it is correctly set up by pressing the `Test` button in app. Any errors will be displayed, or a success toast on success.
+You can test whether the endpoint is correctly set up by pressing the `Test` button in app. Any errors will be displayed, or a success toast on success.
 
 ## The probe header
 
@@ -33,7 +33,7 @@ uploading your database.
 
 Honour it if you can: authenticate the request as usual, then answer `200` and store nothing. A server
 that ignores the header stores an empty `liftlogbackup.gz`, which is harmless but untidy. Our backend
-and both reference implementations do this.
+and both reference implementations honour the probe header.
 
 ## AWS Lambda S3 Deployable Backup Server
 

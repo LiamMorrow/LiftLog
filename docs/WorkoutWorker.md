@@ -22,7 +22,7 @@ The `WorkoutWorker` is **not the authority** for workout state:
 
 The `WorkoutWorker`:
 
-- Is started explicitly when a workout begins and stopped explicitly when it ends
+- Is started explicitly when a workout begins and stopped explicitly when the workout ends
 - May run in the background using platform-appropriate mechanisms (e.g. Android Foreground Service)
 - Does **not** access Redux state, application services, or business logic
 - Does **not** decide what should happen next in a workout
@@ -82,8 +82,7 @@ When the app broadcasts an event:
 ### External representation (cross-platform)
 
 For cross-platform communication (JS ↔ native, and parity with iOS), workout messages are serialized using **json** via the json schema we generate.
-JSON schemas are generated from our types via (in ./app dir) `npm run json-schema`. This will generate schemas in the docs directory.
-_Note this is currently broken, but may work in a future world_. Manually edit json schemas in the mean time.
+JSON schemas are generated from our types by running `npm run json-schema` in `app/`, which writes them to `docs/schemas/`.
 
 ---
 
@@ -126,15 +125,16 @@ The native bridge receives a json string directly and uses generated classes for
 ## Auto-finish
 
 In order to stop a forgotten Finish tap from leaving a workout in progress, the app finishes a workout once
-nothing has been recorded for a few hours, or sooner once every set is filled. It is finished as of its
-last set, and only where the user cannot see it happen:
+nothing has been recorded for a few hours, or sooner once every set is filled. The finished workout ends at
+its last set, and auto-finish only happens where the user cannot see the workout finish:
 
 - At launch, before the workout is resumed.
 - On Android, while the app is in the background: each `WorkoutUpdatedEvent` carries the `autoFinishAt`
   the app computed, and the worker sends `WorkoutAutoFinishDueEvent` back once that time passes. The app
   re-checks and finishes the workout, which ends the worker as usual.
 
-A running cardio timer holds the workout open, and the app never finishes one while it is in the foreground.
+A running cardio timer holds the workout open, and the app never auto-finishes a workout while the app is in the
+foreground.
 
 ---
 

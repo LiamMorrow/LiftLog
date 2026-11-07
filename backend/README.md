@@ -37,7 +37,7 @@ The backend supports two providers, chosen with `Database:Provider`:
 | `Postgres` (default) | When you expect more than a few users                                    |
 | `Sqlite`             | Self-hosting a single instance. No database server to run - just a file. |
 
-For Postgres, a local instance is available from the [Docker Compose override](LiftLog.Api/docker-compose.postgres.yml). For SQLite there is nothing to install - the schema is created on first boot, and it is what the default Docker Compose stack uses.
+For Postgres, a local instance is available from the [Docker Compose override](LiftLog.Api/docker-compose.postgres.yml). For SQLite there is nothing to install - the schema is created on first boot, and SQLite is what the default Docker Compose stack uses.
 
 ### Configuration
 
@@ -80,13 +80,13 @@ To run against SQLite instead, replace the `Database` section with a file path:
 }
 ```
 
-**Note:** the `Auth:PurchaseToken` section can be omitted if `Auth:ApiKey:Value` is provided. It is
-used only for validating in-app purchases, which a self-hosted deployment has no way to issue.
+**Note:** the `Auth:PurchaseToken` section can be omitted if `Auth:ApiKey:Value` is provided.
+`Auth:PurchaseToken` is used only for validating in-app purchases, which a self-hosted deployment has no way to issue.
 
 ### Authentication
 
 All authentication configuration lives under the `Auth` section. Each subsection is one way a caller
-can prove who it is, and endpoints choose which of them they accept:
+can prove who it is, and endpoints choose which methods they accept:
 
 | Method               | Header                                     | Configured by         | Accepted by           |
 | -------------------- | ------------------------------------------ | --------------------- | --------------------- |
@@ -115,25 +115,24 @@ can prove who it is, and endpoints choose which of them they accept:
 
 A method with no configuration never authenticates anyone, so leaving `Auth:ApiKey:Value` unset
 means every `/backup` request is rejected with 401. An endpoint that accepts more than one method
-succeeds as soon as any of them does.
+succeeds as soon as any accepted method does.
 
 #### Forward auth
 
-`Auth:ForwardAuth` trusts a header set by a reverse proxy that has already authenticated the caller
+`Auth:ForwardAuth` trusts a header set by a reverse proxy that has already authenticated the caller.
+Authelia, Authentik, oauth2-proxy, Caddy `forward_auth` and Traefik `ForwardAuth` all implement this
+pattern. `UserHeader` names the header carrying the username (`Remote-User` is the usual choice);
+leaving `UserHeader` unset disables forward auth.
 
-- the pattern Authelia, Authentik, oauth2-proxy, Caddy `forward_auth` and Traefik `ForwardAuth` all
-  implement. `UserHeader` names the header carrying the username (`Remote-User` is the usual choice);
-  leaving it unset disables forward auth.
-
-The header is only as trustworthy as the network path in front of it: anything that can reach the
-server directly can set it. `TrustedProxies` is a comma separated list of CIDR ranges that the
+The header is only as trustworthy as the network path in front of the server: anything that can reach
+the server directly can set the header. `TrustedProxies` is a comma separated list of CIDR ranges that the
 connecting peer must fall inside, checked against the immediate peer.
 
 ### Features
 
 The four remote features - `Feed`, `Sharing`, `Backup` and `AiPlanner` - are each gated by an
-`Enabled` flag in their own configuration section. All default to **on**, so an existing deployment
-needs no change. Setting one to `false` makes its controllers return `423 Locked`:
+`Enabled` flag in their own configuration section. All default to **on**. Setting a feature's flag to
+`false` makes the feature's controllers return `423 Locked`:
 
 ```json
 {
@@ -145,16 +144,16 @@ needs no change. Setting one to `false` makes its controllers return `423 Locked
 ```
 
 Controllers declare their feature with `[FeatureCheck(Feature.Feed)]`. Some
-controllers list more than one feature and stay reachable while any of them is on -
+controllers list more than one feature and stay reachable while any listed feature is on -
 `UserController` is `[FeatureCheck(Feature.Feed, Feature.Sharing)]` because a shared item is
 authenticated against a feed account, so sharing cannot work without user endpoints.
 
 ### Backups
 
 All backup configuration lives under the `Backup` section. The `/backup` endpoint accepts a backup
-body, and stores it through a sink chosen by `Backup:Sink`.
+body, and stores the backup through a sink chosen by `Backup:Sink`.
 The chosen sink is configured by `Backup:SinkOptions`. No sink is configured by default, and the
-endpoint returns 422 until one is.
+endpoint returns 422 until a sink is configured.
 
 Writing to a directory on disk:
 
@@ -186,13 +185,13 @@ Writing to S3 (or an S3 compatible service such as Cloudflare R2 or MinIO):
 
 Backups are stored as `{KeyPrefix}/{authenticated name}/{timestamp}.liftlogbackup.gz`.
 
-`Region` is required unless `ServiceUrl` points at an S3 compatible endpoint, in which case it becomes
+`Region` is required unless `ServiceUrl` points at an S3 compatible endpoint, in which case `Region` becomes
 the signing region. Credentials come from the ambient AWS chain (environment variables, profile, instance role)
 unless `AccessKeyId` and `SecretAccessKey` are both set.
 
 ### Running the Backend
 
-The quickest start is Docker Compose, which builds the API image and runs it against SQLite with no
+The quickest start is Docker Compose, which builds the API image and runs the image against SQLite with no
 database server and no configuration:
 
 ```bash
@@ -200,19 +199,19 @@ cd ./backend/LiftLog.Api
 docker compose up
 ```
 
-The backend is now running at `http://localhost:5264`, with its SQLite file on the `liftlog_data`
+This runs the backend at `http://localhost:5264`, with its SQLite file on the `liftlog_data`
 volume. Set `ANTHROPIC_API_KEY` in the environment (or a `.env` file beside the compose file) if you
 want the AI planner to work.
 
 To run against Postgres instead, layer the override, which adds the database service and repoints the
-API at it:
+API at Postgres:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.postgres.yml up
 ```
 
-Postgres is also published on host port `5400`, so you can bring up just the database and run the API
-from source against it:
+In order to run the API from source against Postgres, the database is also published on host port
+`5400`. Bring up just the database, then run the API:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.postgres.yml up -d postgres
@@ -233,14 +232,14 @@ Either way the schema is migrated on startup (set `SkipDatabaseMigrations` to op
 The image is built by [backend/Dockerfile](Dockerfile) and published to
 `ghcr.io/liammorrow/liftlog:api` for `linux/amd64` and `linux/arm64`.
 
-Build it yourself **from the repository root**.
+Build the image yourself **from the repository root**.
 
 ```bash
 docker build -f backend/Dockerfile -t liftlog-api .
 ```
 
 The container listens on port `8080`, runs as a non-root user, and treats `/var/lib/liftlog` as its
-data directory - mount a volume there when using SQLite.:
+data directory - mount a volume at that directory when using SQLite:
 
 ```bash
 docker run -p 8080:8080 \
@@ -274,12 +273,12 @@ public class EventsControllerTests(ApiFactory factory) { ... }
 
 Write new database-backed tests this way rather than against a provider directly.
 
-Tests boot the API in the `Test` environment, not `Development`, so the `appsettings.Development.json`
-you keep for local runs never selects the database out from under them. Every host is configured from
+In order to stop the `appsettings.Development.json` you keep for local runs selecting the database out
+from under the tests, tests boot the API in the `Test` environment, not `Development`. Every host is configured from
 `tests/LiftLog.Tests.Api/appsettings.json` plus whatever the test itself overrides.
 
 A few tests call the real Anthropic API and are skipped by default, since a live model is neither
-deterministic nor free. To include them:
+deterministic nor free. To include the live tests:
 
 ```bash
 LIFTLOG_LIVE_AI_TESTS=true dotnet run
@@ -287,4 +286,4 @@ LIFTLOG_LIVE_AI_TESTS=true dotnet run
 
 ### Connecting the Development App
 
-When running the app in development mode (as specified in the [root README](../README.md)), it will automatically connect to your local backend instance.
+When running the app in development mode (as specified in the [root README](../README.md)), the app automatically connects to your local backend instance.

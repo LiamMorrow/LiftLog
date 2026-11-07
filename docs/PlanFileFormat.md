@@ -2,15 +2,15 @@
 
 LiftLog plans can be exported to, and imported from, `.liftlogplan` files. A plan file is plain JSON, so you can write one yourself, share one with a friend, keep one in version control - or have an AI write one for you.
 
-To import a plan, either tap a `.liftlogplan` file on your device (LiftLog is registered to open them), or open the app and go to `Plans -> Import`.
+To import a plan, either tap a `.liftlogplan` file on your device (LiftLog is registered to open plan files), or open the app and go to `Plans -> Import`.
 
-To export one, open `Plans`, tap the `⋮` next to the plan and choose `Export to file`. LiftLog writes the `.liftlogplan` and hands it to the system share sheet, so you can save it to Files or Drive, AirDrop it, or mail it to yourself - whatever gets it somewhere you can reach it again.
+To export a plan, open `Plans`, tap the `⋮` next to the plan and choose `Export to file`. LiftLog writes the `.liftlogplan` and hands it to the system share sheet, so you can save it to Files or Drive, AirDrop it, or mail it to yourself - whatever gets the file somewhere you can reach again.
 
-The authoritative definition of the format is the JSON Schema at [`docs/schemas/program-blueprint/ProgramBlueprint.json`](./schemas/program-blueprint/ProgramBlueprint.json). It is generated from the app's own models, so it is always in step with what the app will accept.
+The authoritative definition of the format is the JSON Schema at [`docs/schemas/program-blueprint/ProgramBlueprint.json`](./schemas/program-blueprint/ProgramBlueprint.json). The schema is generated from the app's own models, so the schema is always in step with what the app will accept.
 
 ## Generating a plan with Claude
 
-This repository ships a Claude skill that writes plan files for you. Describe the training you want - "a 4-day upper/lower split for an intermediate lifter, dumbbells only" - and it produces a `.liftlogplan` file, validated against the schema above before you ever see it.
+This repository ships a Claude skill that writes plan files for you. Describe the training you want - "a 4-day upper/lower split for an intermediate lifter, dumbbells only" - and the skill produces a `.liftlogplan` file, validated against the schema above before you ever see it.
 
 ### Claude Code
 
@@ -21,11 +21,11 @@ This repository ships a Claude skill that writes plan files for you. Describe th
 
 ### Claude chat (claude.ai)
 
-Download [`create-liftlog-plan.zip`](https://github.com/LiamMorrow/LiftLog/releases/download/plan-builder-skill/create-liftlog-plan.zip), then in Claude go to `Customize -> Skills -> + -> Upload a skill` and select it.
+Download [`create-liftlog-plan.zip`](https://github.com/LiamMorrow/LiftLog/releases/download/plan-builder-skill/create-liftlog-plan.zip), then in Claude go to `Customize -> Skills -> + -> Upload a skill` and select the zip.
 
-That zip is rebuilt whenever the skill is released, so it always matches the newest released format rather than whatever is on `main`.
+In order to match the newest released format rather than whatever is on `main`, the zip is rebuilt whenever the skill is released.
 
-Once it is installed, just ask for what you want:
+Once the skill is installed, just ask for what you want:
 
 > Build me a 5x5 strength program, three days a week.
 
@@ -33,7 +33,7 @@ Get the resulting file onto your phone (AirDrop, email, or save it to Files) and
 
 ### Changing a plan you already run
 
-The skill reads plans as happily as it writes them, so you can send it the one you are training on rather than describing it. Export the plan from `Plans -> ⋮ -> Export to file`, save it somewhere you can get at it from your computer (Drive, or mail it to yourself), then give the `.liftlogplan` to Claude and say what you want changed:
+The skill reads plans as happily as it writes them, so you can send the skill the plan you are training on rather than describing your plan. Export the plan from `Plans -> ⋮ -> Export to file`, save it somewhere you can get at it from your computer (Drive, or mail it to yourself), then give the `.liftlogplan` to Claude and say what you want changed:
 
 > Here's my current plan. Swap all the barbell work for dumbbells, and add a fourth day.
 
@@ -41,13 +41,13 @@ The skill reads plans as happily as it writes them, so you can send it the one y
 
 > Have a look at my plan and tell me what's missing.
 
-Exporting means Claude sees your real exercise names, rest times, and progressive overload settings, so what comes back is your plan with the change made - not an approximation of it rebuilt from a description.
+Exporting means Claude sees your real exercise names, rest times, and progressive overload settings, so what comes back is your plan with the change made - not an approximation rebuilt from a description.
 
-Importing the result **adds a new plan**; it does not overwrite the original. Delete the old one from `Plans` once the replacement is in. Your logged workout history is kept separately and is untouched by either.
+Importing the result **adds a new plan**; it does not overwrite the original. Delete the original from `Plans` once the replacement is in. Your logged workout history is kept separately and is untouched by importing or deleting plans.
 
 ## Generating a plan with another AI
 
-Nothing about the format is Claude-specific. To use ChatGPT, Gemini, or anything else, give it the schema and the rules below:
+Nothing about the format is Claude-specific. To use ChatGPT, Gemini, or anything else, give the AI the schema and the rules below:
 
 > Write me a LiftLog workout plan as a single JSON object matching the schema at
 > https://github.com/LiamMorrow/LiftLog/blob/main/docs/schemas/program-blueprint/ProgramBlueprint.json
@@ -115,7 +115,7 @@ Complete examples live in [`plugins/liftlog-plan-builder/skills/create-liftlog-p
 
 An exercise is either a `WeightedExerciseBlueprint` or a `CardioExerciseBlueprint`, chosen by its `type`. The two can be mixed within a session.
 
-**Weighted exercises** have a list of planned sets, rest times, a resistance, and a list of progression rules. `plannedSets` holds one entry per set, each with that set's rep target as a `min`/`max` band - `min === max` is a plain "five reps". `restBetweenSets` needs all three of `minRest`, `maxRest`, and `failureRest` (the last being the rest taken after missing a rep target). `link` is a URL explaining the movement, and should stay `""` unless you have a real one.
+**Weighted exercises** have a list of planned sets, rest times, a resistance, and a list of progression rules. `plannedSets` holds one entry per set, each with that set's rep target as a `min`/`max` band - `min === max` is a plain "five reps". `restBetweenSets` needs all three of `minRest`, `maxRest`, and `failureRest` (`failureRest` is the rest taken after missing a rep target). `link` is a URL explaining the movement, and should stay `""` unless you have a real URL.
 
 `resistance` says where the load comes from: `external` for barbells, dumbbells and machines (the logged weight is the weight lifted), `bodyweight` for pull ups and dips (the logged weight is what is added on top of the lifter), or `none` for movements like crunches, where there is no weight at all and reps are the whole story.
 
@@ -125,7 +125,7 @@ An exercise is either a `WeightedExerciseBlueprint` or a `CardioExerciseBlueprin
 
 ### Progression
 
-`progression` is an ordered list of rules. After a session where every set met its target, the first rule that still has room to move is applied - and only that one. An empty list means the exercise never moves on its own.
+`progression` is an ordered list of rules. After a session where every set met its target, the first rule that still has room to move is applied - and only that rule. An empty list means the exercise never moves on its own.
 
 | Field       | Effect                                                                                                                              |
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------- |
@@ -133,7 +133,7 @@ An exercise is either a `WeightedExerciseBlueprint` or a `CardioExerciseBlueprin
 | `step`      | How much to add, as a decimal string. Unitless - `"2.5"` is the same pair of small plates in a kilo gym and a pound gym.            |
 | `scope`     | `{ "type": "allSets" }`, or `{ "type": "lowestSets", "pick": … }` with `first`, `middle`, `last` or `all` to raise only the lowest. |
 | `trigger`   | Always `allSetsMetTarget`.                                                                                                          |
-| `ceiling`   | Optional, reps only. Where the rule stops, handing over to the next one.                                                            |
+| `ceiling`   | Optional, reps only. Where the rule stops, handing over to the next rule.                                                           |
 | `onCeiling` | Optional, reps only. `reset` drops the reps back to the plan's when a later rule takes over.                                        |
 
 Only a reps rule takes a ceiling, so a load rule never runs out of room and must come last - anything after it can never fire. Reps to a ceiling followed by weight is double progression: the reps climb, then the weight goes up and the reps start again.
@@ -142,13 +142,13 @@ See [Progression](./Progression.md) for how the rules behave in the app.
 
 ## Validating a plan
 
-The skill ships a validator, and you can run it directly on any file. It needs no dependencies and no network:
+The skill ships a validator, and you can run the validator directly on any file. It needs no dependencies and no network:
 
 ```bash
 node plugins/liftlog-plan-builder/skills/create-liftlog-plan/scripts/validate-plan.mjs "My Plan.liftlogplan"
 ```
 
-It lists every problem at once, with the path to the offending field:
+The validator lists every problem at once, with the path to the offending field:
 
 ```
 My Plan.liftlogplan is not a valid LiftLog plan:
@@ -157,16 +157,16 @@ My Plan.liftlogplan is not a valid LiftLog plan:
   plan/sessions/1/exercises/0/progression/0/step must be string
 ```
 
-This is worth doing, because when a field is wrong the app will only tell you _"That file isn't a valid workout plan"_ - it cannot tell you which one.
+Validating is worth doing, because when a field is wrong the app will only tell you _"That file isn't a valid workout plan"_ and cannot tell you which field.
 
 ## Regenerating the schema
 
-Both the schema and the validator are generated from `app/src/models/storage/versions/latest/blueprint.ts`. After changing that model:
+Both the schema and the validator are generated from `app/src/models/storage/versions/latest/blueprint.ts`. After changing `blueprint.ts`:
 
 ```bash
 cd app && npm run json-schema
 ```
 
-This rewrites the published schema, the copy bundled into the app, the copy inside the skill, and the skill's validator. CI checks the committed copies still match the models on every branch, so all four move together on `main`. Users only see the change once the `plan-builder-skill` tag advances, which `scripts/release-plan-builder-skill.ts` does - run by hand once the release is live in the stores, not when it is uploaded to them.
+`npm run json-schema` rewrites the published schema, the copy bundled into the app, the copy inside the skill, and the skill's validator. In order to keep all four in step on `main`, CI checks on every branch that the committed copies still match the models. Users only see the change once the `plan-builder-skill` tag advances, which `scripts/release-plan-builder-skill.ts` does - run by hand once the release is live in the stores, not when it is uploaded to them.
 
 See [Storage Migrations](./Migrations.md) for the full process of changing a stored model.

@@ -7,4 +7,4 @@ assignees: ''
 
 ---
 
-DO NOT ADD A FEATURE REQUEST HERE. Please search for discussions related to your feature request and add one if there is not already one there
+DO NOT ADD A FEATURE REQUEST HERE. Please search for discussions related to your feature request and add a discussion if none exists

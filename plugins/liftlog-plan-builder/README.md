@@ -1,8 +1,8 @@
 # LiftLog Plan Builder
 
-A Claude skill that builds [LiftLog](https://liftlog.online) workout plans. Describe the training you want - "a 4-day upper/lower split for an intermediate lifter, dumbbells only" - and it writes a `.liftlogplan` file you can import into the app.
+A Claude skill that builds [LiftLog](https://liftlog.online) workout plans. Describe the training you want - "a 4-day upper/lower split for an intermediate lifter, dumbbells only" - and the skill writes a `.liftlogplan` file you can import into the app.
 
-The plan is validated against LiftLog's own schema before you get it, so it will import cleanly.
+In order to import cleanly, the plan is validated against LiftLog's own schema before you get it.
 
 ## Install
 
@@ -15,9 +15,9 @@ The plan is validated against LiftLog's own schema before you get it, so it will
 
 ### Claude chat (claude.ai)
 
-Download [`create-liftlog-plan.zip`](https://github.com/LiamMorrow/LiftLog/releases/download/plan-builder-skill/create-liftlog-plan.zip), then go to **Customize → Skills → + → Upload a skill** and pick it.
+Download [`create-liftlog-plan.zip`](https://github.com/LiamMorrow/LiftLog/releases/download/plan-builder-skill/create-liftlog-plan.zip), then go to **Customize → Skills → + → Upload a skill** and pick the zip.
 
-The zip is rebuilt by CI on every change to this folder, so it always matches `main`.
+In order to match the newest released format rather than `main`, the zip is rebuilt whenever the skill is released. See [scripts/README.md](../../scripts/README.md#releasing-the-plan-builder-skill).
 
 ## Use
 
@@ -29,13 +29,13 @@ Just ask:
 
 > Take my push-pull-legs plan and swap the barbell work for dumbbells.
 
-When it's done, get the file onto your phone (AirDrop, email, or Files) and tap it - LiftLog will open it. Or open LiftLog and go to **Plans → Import**.
+When the plan is ready, get the file onto your phone (AirDrop, email, or Files) and tap the file - LiftLog opens the plan. Or open LiftLog and go to **Plans → Import**.
 
 ## Editing a plan you already have
 
-You don't have to describe your current plan - send it. In LiftLog, open **Plans**, tap the `⋮` next to the plan and choose **Export to file**; the share sheet lets you save it to Files/Drive or mail it to yourself. Hand that `.liftlogplan` to Claude along with what you want changed, and you get the same plan back with the change made.
+You don't have to describe your current plan - send it. In LiftLog, open **Plans**, tap the `⋮` next to the plan and choose **Export to file**; the share sheet lets you save the file to Files/Drive or mail it to yourself. Hand that `.liftlogplan` to Claude along with what you want changed, and you get the same plan back with the change made.
 
-Importing the result adds a _new_ plan rather than overwriting the old one, so delete the original once the replacement is in. Your workout history is stored separately and isn't affected.
+Importing the result adds a _new_ plan rather than overwriting the original, so delete the original once the replacement is in. Your workout history is stored separately and isn't affected.
 
 ## What's in here
 

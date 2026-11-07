@@ -35,8 +35,8 @@ Platform-specific implementations use the `foo.tsx` + `foo.android.tsx` split (M
 
 ## Check `docs/` before starting
 
-**Start every task by reading [`docs/index.md`](docs/index.md)** - it lists every doc with a one-line
-description, so you can tell in one read whether a doc covers the area you're about to touch. Read the
+**Start every task by reading [`docs/index.md`](docs/index.md)**. In order to tell in one read whether a
+doc covers the area you're about to touch, the index lists every doc with a one-line description. Read the
 ones that do; they explain the patterns and architecture you'll need.
 
 When you add, remove, rename, or repurpose a doc, **update `docs/index.md` in the same change** so the
@@ -68,7 +68,7 @@ or is significant enough that it **would belong in the welcome wizard**. Do _not
 improvements that users discover naturally along the app's hot paths (e.g. a new per-exercise option) -
 those don't need a banner.
 
-Give an entry a `condition` predicate when it should disappear once adopted (e.g. hide the health-sync
+Give an entry a `condition` predicate when the entry should disappear once the feature is adopted (e.g. hide the health-sync
 card once the user has enabled health export).
 
 For an opt-in feature, also consider surfacing the toggle in the **welcome wizard**
@@ -91,7 +91,7 @@ the wizard is how new users get the chance to enable it.
   `useCallback`, or `React.memo` by default. Write plain values, functions, and inline objects; only add
   manual memoization for a proven need the compiler can't cover (e.g. a stable identity a non-React API
   depends on, or a genuinely expensive computation). Don't bulk-convert existing memoized files.
-- Comments explain non-obvious code for a future reader - don't narrate the diff. If something needs a comment, it is likely too complicated. Really try to avoid writing comments
+- Comments explain non-obvious code for a future reader - don't narrate the diff. If something needs a comment, the code is likely too complicated. Really try to avoid writing comments
 - Backend (C#): format with CSharpier (`dotnet csharpier .`) before committing.
 - When you add a workaround for a bug in a dependency, add an entry to [`docs/TechDebt.md`](docs/TechDebt.md).
   When you upgrade a dependency, check that ledger for workarounds it lets you remove.

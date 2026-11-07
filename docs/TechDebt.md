@@ -1,10 +1,10 @@
 # Tech debt ledger
 
-Workarounds we carry for bugs or gaps in other projects, and what has to happen before each one can go. Check
-this list when upgrading a dependency it names, and add an entry whenever you add a workaround like these.
+Workarounds we carry for bugs or gaps in other projects, and what has to happen before each workaround can go. Check
+this list when upgrading a dependency the list names, and add an entry whenever you add a workaround like these.
 
 Each entry says where the workaround lives, why it exists, when it can be removed, and how to check that removing
-it is safe.
+the workaround is safe.
 
 ## react-native-screens orientation-reset flag
 
@@ -26,9 +26,9 @@ it is safe.
 - **Why:** A `headerBackground` makes expo-router mark the header translucent. After a covered screen is rebuilt
   during a rotation on Android, react-native-screens and expo-router disagree about the header offset and the
   content ends up a header shorter than the screen. Tinting natively loses the colour fade on scroll.
-- **Remove when:** Unknown. This is likely the same covered-screen state bug fixed in react-native-screens 4.29.0
+- **Remove when:** Unknown. The cause is likely the same covered-screen state bug fixed in react-native-screens 4.29.0
   ([software-mansion/react-native-screens#4760](https://github.com/software-mansion/react-native-screens/pull/4760)),
-  but that has not been confirmed.
+  but the link has not been confirmed.
 - **Verify:** On Android, push a screen over Home, rotate to landscape and back, go back. The Home scroll view
   should reach the bottom of the screen.
 

@@ -29,7 +29,8 @@ Metro picks `.android.tsx` on Android and `.tsx` elsewhere. **Reference exemplar
 
 - On every `Host`, pass **`seedColor={colors.seedColor}`** from `useAppTheme()` - **never**
   `colors.primary`. `seedColor` is the real source colour that seeds the whole M3/SwiftUI palette;
-  `colors.primary` is already _derived_ from it, so re-seeding from it produces the wrong ramp.
+  `colors.primary` is already _derived_ from `seedColor`, so re-seeding from `colors.primary` produces
+  the wrong ramp.
   `seedColor` is `undefined` for the default scheme, which correctly lets Compose fall back to Material
   You / the wallpaper palette.
 - **Let native components own their slot colours.** Don't pass a `colors={{ containerColor, contentColor,
@@ -37,10 +38,10 @@ checked… }}` object to a native control, and don't `tint`/`foregroundStyle` an
   a native button/toggle - the component already colours its container/content/checked slots from the
   seeded palette, and an `Icon` child inherits the content colour. Hand-colouring only fights the palette.
 - Do pick the right **variant** (e.g. `HorizontalFloatingToolbar variant="standard"` vs `"vibrant"`),
-  since that changes which ramp a slot sources from.
+  since the variant changes which ramp a slot sources from.
 - `tint` / `foregroundStyle` is warranted only for a **bare** `Icon`/label not inside a colour-providing
   native control (e.g. an `Icon` in a `Row`), or on iOS where a `borderless`/`plain` button drops its
-  label tint - reach for it last.
+  label tint - reach for `tint` last.
 
 ## Icons inside Compose must be native
 
@@ -55,9 +56,9 @@ import AddIcon from "@expo/material-symbols/add.xml";
 
 An RN `Icon` hosted inside a **Compose button** does not survive interop and fails _differently per
 component_ (mangled FAB with the icon stranded; or the icon silently renders to nothing while the label
-shows) - it looks like a styling bug but it's interop; manual sizing won't fix it. No Metro config
+shows) - the failure looks like a styling bug but comes from interop; manual sizing won't fix it. No Metro config
 needed: `xml` is in Expo's default `assetExts` and `@expo/ui/jetpack-compose` registers its own asset
-transformer (don't import that subpath yourself - it isn't in the package `exports`).
+transformer (don't import the transformer subpath yourself - the subpath isn't in the package `exports`).
 
 ## Compose gotchas
 

@@ -3,7 +3,7 @@
 You can bring workout history from another app into LiftLog by importing a CSV export. Imported
 workouts are added to History. Nothing already in LiftLog is deleted or overwritten.
 
-This is not the same as [plaintext export](./PlaintextExport.md). LiftLog’s own CSV and JSON
+Importing is not the same as [plaintext export](./PlaintextExport.md). LiftLog’s own CSV and JSON
 exports cannot be imported back in.
 
 ## How to import
@@ -24,9 +24,9 @@ there, LiftLog tells you nothing new was added.
   sets or comments in the other app and exporting again does not update or duplicate a workout
   you already imported. Delete that workout in History and import again if you want the new
   version.
-- If you delete an imported workout and import the same file again, it comes back.
+- If you delete an imported workout and import the same file again, the workout comes back.
 - Only weighted sets are imported. Cardio-only or timed-only rows are skipped.
-- Comments and notes from the file become exercise notes. 
+- Comments and notes from the file become exercise notes.
 
 ## Supported formats
 
@@ -40,7 +40,7 @@ The file should have a header row with at least **Date**, **Exercise**, **Weight
 and **Reps**. A typical FitNotes CSV export also includes Category, Distance, Distance Unit, Time, and
 Comment.
 
-- All sets on the same calendar day become one workout. 
+- All sets on the same calendar day become one workout.
 - Weight units come from the file when present; otherwise LiftLog uses your app unit preference.
 - **Imported:** date, exercise name, weight, weight unit, reps, comment.
 - **Not imported:** category, distance, and time (cardio). Those columns can still be in the file.
@@ -78,10 +78,10 @@ with the same path as Restore (`importBackupData`). Session IDs are grouping-key
 over the FitNotes calendar date, or StrongLifts date + Workout id (A/B) - not Workout Name, and not
 sets or notes. Re-import skips IDs already in History (first import wins). Changing sets or comments
 in the source app and exporting again does not create a second session for that day; delete the
-imported session and import again to refresh it. Stats invalidation (`setStatsIsDirty`) runs on the
+imported session and import again to refresh the session. Stats invalidation (`setStatsIsDirty`) runs on the
 external-import path only, not inside full backup restore.
 
-Internal format ids (UI dropdown / `importFromExternal`): `FitNotes` | `StrongLifts`. These are
+Internal format ids (UI dropdown / `importFromExternal`): `FitNotes` | `StrongLifts`. The format ids are
 unrelated to plaintext export’s own `CSV` value.
 
 ```text
@@ -96,10 +96,10 @@ importFromExternal({ format })
 ```
 
 - Package: `app/src/services/csv-import/`
-  - `external-import-formats.ts` — registry (`FitNotes` | `StrongLifts`)
-  - `fitnotes-csv.ts` / `stronglifts-csv.ts` — parse + normalize
-  - `csv-to-sessions.ts` — `sessionsFromNormalized`, `sessionIdFromCsvContent`
-  - `importers.ts` — `getImportForFitNotes` / `getImportForStrongLifts`
-  - `csv-parse-utils.ts` — shared cell/number/Papa preamble helpers
+  - `external-import-formats.ts` - registry (`FitNotes` | `StrongLifts`)
+  - `fitnotes-csv.ts` / `stronglifts-csv.ts` - parse + normalize
+  - `csv-to-sessions.ts` - `sessionsFromNormalized`, `sessionIdFromCsvContent`
+  - `importers.ts` - `getImportForFitNotes` / `getImportForStrongLifts`
+  - `csv-parse-utils.ts` - shared cell/number/Papa preamble helpers
 - Settings effect: `import-external-effects.ts` uses the registry; filters existing session IDs;
   dispatches `importBackupData` + `setStatsIsDirty` (or already-imported snackbar).
