@@ -20,7 +20,3 @@ ApiKey - The API key that the client must pass as an X-API-KEY header
 ```
 
 When the endpoint receives a backup, it simply stores it as a timestamped file in the backup directory. If the `user` query param is specified, it will be within a subdirectory with that `user` value.
-
-### Notes on HTTPS
-
-Mobile devices require that HTTPS is used for all requests, and LiftLog validates the endpoint you specify to ensure it is HTTPS. As it stands, this server will require a reverse proxy such as NGINX to terminate a HTTPS connection and route to HTTP.

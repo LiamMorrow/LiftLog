@@ -39,8 +39,7 @@ work to find the docs relevant to your area, and update it whenever you add, rem
   are included. Explicitly _not_ a backup mechanism; LiftLog cannot read these files back.
 - [CsvImport.md](./CsvImport.md) — user guide for Import from other apps (FitNotes-style and
   StrongLifts-style CSV); contributor notes at the end. Separate from plaintext export.
-- [RemoteBackup.md](./RemoteBackup.md) — the automatic remote backup: the app-side settings, the HTTPS
-  requirement, and the contract a self-hosted backup endpoint must satisfy.
+- [RemoteBackup.md](./RemoteBackup.md) — the automatic remote backup: the app-side settings, and the contract a self-hosted backup endpoint must satisfy.
 
 ## Running it yourself
 

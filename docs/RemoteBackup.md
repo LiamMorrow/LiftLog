@@ -4,10 +4,6 @@ LiftLog supports an automatic remote backup, whereby every time the app is opene
 
 Setting up this remote server is somewhat involved and recommended for advanced users who are comfortable running a server.
 
-## Notes on HTTPS
-
-Mobile devices require that HTTPS is used for connections, which means that users of this feature will require that the server supports HTTPS (could be through a reverse proxy such as nginx). As there are many ways to achieve this, and it is heavily context dependant, this document assumes the reader can do this without guidance.
-
 ## The simplest option: the main backend
 
 The LiftLog backend serves `POST /backup` itself, storing to disk or to any S3-compatible bucket. If
@@ -25,7 +21,7 @@ Then assign it to your remote backend.
 
 The endpoint which is being hit should simply accept a `POST` request where the body will be the raw bytes of a `liftlogbackup.gz` file. It MUST NOT decompress the gzipped data, the LiftLog app only understands gzipped files.
 
-An example implementation which stores the backups as files on disk can be found [here](../examples/remote-backup/LiftLog.BackupServer/). Note that this server requires a reverse proxy for HTTPS termination.
+An example implementation which stores the backups as files on disk can be found [here](../examples/remote-backup/LiftLog.BackupServer/).
 
 You can test if it is correctly set up by pressing the `Test` button in app. Any errors will be displayed, or a success toast on success.
 

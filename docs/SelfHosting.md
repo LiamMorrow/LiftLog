@@ -1,5 +1,8 @@
 # Self-hosting LiftLog
 
+The LiftLog backend is entirely self hostable. The app can be configured to point any combination of its remote features at your self hosted backend, or the primary LiftLog backend.
+Self hosting enables the remote backup feature, as well as the ability to completely self host your own feeds and AI planner with no paywall necessary.
+
 ## Quickstart
 
 Docker is required to run the backend.
@@ -37,7 +40,7 @@ file on the `liftlog_data` volume.
 
 Images are published for `linux/amd64` and `linux/arm64`, so this even works on a Raspberry Pi!
 
-## Pointing the app at it
+## Pointing the app at the server
 
 The server must be reachable over **HTTPS** from your phone - put it behind a reverse proxy that
 terminates TLS (Caddy, Traefik, nginx) rather than exposing port 8080 directly. Mobile platforms
