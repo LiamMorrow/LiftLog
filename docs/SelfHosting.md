@@ -164,6 +164,76 @@ Auth__ApiKey__Value: some-long-random-key
 
 `AiPlanner__AnthropicModelId` overrides the model, defaulting to `claude-sonnet-4-6`.
 
+#### Using a different provider (OpenRouter via LiteLLM)
+
+> Community-contributed and best-effort. This is not officially supported.
+
+The API builds its Anthropic client without setting a base URL, so the SDK honours the
+`ANTHROPIC_BASE_URL` environment variable. Point it at anything that speaks Anthropic's
+`/v1/messages` format. A [LiteLLM](https://docs.litellm.ai/) proxy can translate that to
+[OpenRouter](https://openrouter.ai/) or another provider, which makes it possible to run the planner
+on OpenRouter's free models. No LiftLog code changes are needed.
+
+Add a `litellm` service next to the API and aim the API at it. `AiPlanner__AnthropicApiKey` is then
+the LiteLLM master key, not an Anthropic key:
+
+```yaml
+services:
+  api:
+    image: ghcr.io/liammorrow/liftlog:api
+    environment:
+      Database__Provider: Sqlite
+      Database__ConnectionString: "Data Source=/var/lib/liftlog/liftlog.db"
+      Auth__ApiKey__Value: ${LIFTLOG_API_KEY}
+      AiPlanner__AnthropicApiKey: ${LITELLM_MASTER_KEY}
+      ANTHROPIC_BASE_URL: "http://litellm:4000"
+    volumes:
+      - liftlog_data:/var/lib/liftlog
+    depends_on:
+      - litellm
+
+  litellm:
+    image: ghcr.io/berriai/litellm:main-stable
+    restart: unless-stopped
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+    volumes:
+      - ./litellm-config.yaml:/app/config.yaml:ro
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+
+volumes:
+  liftlog_data:
+```
+
+`litellm-config.yaml`:
+
+```yaml
+model_list:
+  - model_name: claude-sonnet-4-6 # must match AiPlanner__AnthropicModelId
+    litellm_params:
+      model: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
+      api_key: os.environ/OPENROUTER_API_KEY
+  - model_name: claude-sonnet-4-6-fallback-1
+    litellm_params:
+      model: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+      api_key: os.environ/OPENROUTER_API_KEY
+
+router_settings:
+  fallbacks:
+    - claude-sonnet-4-6: ["claude-sonnet-4-6-fallback-1"]
+  cooldown_time: 30
+```
+
+Caveats:
+
+- OpenRouter's free models are rate limited (typically around 20 requests/minute and 200/day) and
+  sometimes return `provider_unavailable` under load. The `fallbacks` block makes LiteLLM try the
+  next model instead of failing.
+- Free models follow the planner's tool-calling JSON schema less reliably than Claude. Larger
+  reasoning models do better, but expect the occasional malformed plan.
+- Model names and free-tier limits change often. Check OpenRouter for what is currently available.
+
 ## Using Postgres instead
 
 SQLite is the right default for one household. Switch to Postgres if you expect real traffic:
