@@ -25,28 +25,41 @@ import PersonAddIcon from '@expo/material-symbols/person_add.xml';
 import CheckIcon from '@expo/material-symbols/check.xml';
 import { useDispatch } from 'react-redux';
 import { match } from 'ts-pattern';
+import { base64UrlToUint8Array } from '@/utils/base64';
+import { ShareSecretLengthBytes } from '@/services/encryption-service';
 
 export default function FeedSharePage() {
   const { t } = useTranslate();
-  const { id, name } = useLocalSearchParams<{
+  const {
+    id,
+    name,
+    '#': fragment,
+  } = useLocalSearchParams<{
     id?: string;
     name?: string;
+    '#'?: string;
   }>();
   const dispatch = useDispatch();
 
   const fetchUser = useCallback(() => {
+    const shareSecret = fragment ? base64UrlToUint8Array(fragment) : undefined;
     if (!id) {
       dispatch(setSharedFeedUser(RemoteData.error('Failed to load user')));
+      return;
+    }
+    if (shareSecret?.length !== ShareSecretLengthBytes) {
+      dispatch(setSharedFeedUser(RemoteData.error(t('feed.share_link.outdated.error'))));
       return;
     }
     dispatch(
       fetchAndSetSharedFeedUser({
         idOrLookup: id,
         name: name ?? '',
+        shareSecret,
         fromUserAction: true,
       }),
     );
-  }, [dispatch, id, name]);
+  }, [dispatch, id, name, fragment, t]);
 
   useEffect(() => {
     fetchUser();

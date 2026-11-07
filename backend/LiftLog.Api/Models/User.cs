@@ -28,4 +28,6 @@ public class User
     public byte[] EncryptionIV { get; set; } = null!;
 
     public byte[] RsaPublicKey { get; set; } = null!;
+
+    public byte[]? ShareTag { get; set; }
 }

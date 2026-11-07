@@ -25,3 +25,15 @@ export function base64ToUint8Array(value: string): Uint8Array {
   }
   return bytes;
 }
+
+export function uint8ArrayToBase64Url(value: Uint8Array): string {
+  return uint8ArrayToBase64(value).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+export function base64UrlToUint8Array(value: string): Uint8Array | undefined {
+  if (!/^[A-Za-z0-9_-]*$/.test(value) || value.length % 4 === 1) {
+    return undefined;
+  }
+  const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
+  return base64ToUint8Array(base64.padEnd(Math.ceil(base64.length / 4) * 4, '='));
+}

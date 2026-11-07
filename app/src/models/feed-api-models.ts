@@ -26,6 +26,7 @@ export type PutUserDataRequest = {
   encryptedName: Uint8Array | undefined;
   encryptionIV: Uint8Array;
   rsaPublicKey: Uint8Array;
+  shareTag?: Uint8Array;
 };
 
 export type GetUserResponse = {
@@ -35,6 +36,7 @@ export type GetUserResponse = {
   encryptedName: Uint8Array | undefined;
   encryptionIV: Uint8Array;
   rsaPublicKey: Uint8Array;
+  shareTag?: Uint8Array;
 };
 
 export type PutUserEventRequest = {

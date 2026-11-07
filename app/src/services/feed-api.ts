@@ -101,6 +101,7 @@ export class FeedApiService {
         encryptedName: base64Response.encryptedName ? base64ToUint8Array(base64Response.encryptedName) : undefined,
         encryptionIV: base64ToUint8Array(base64Response.encryptionIV),
         rsaPublicKey: base64ToUint8Array(base64Response.rsaPublicKey),
+        shareTag: base64Response.shareTag ? base64ToUint8Array(base64Response.shareTag) : undefined,
       };
     });
   }

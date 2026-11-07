@@ -27,6 +27,7 @@ export interface FeedIdentityJSON {
   publishPlan: boolean;
   publishWorkouts: boolean;
   shareLiveWorkouts?: boolean;
+  shareSecret?: Base64Uint8ArrayJSON;
 }
 
 export type FriendStatusJSON = 'incoming' | 'pending' | 'friend' | 'legacyFollowing' | 'legacyFollower';
@@ -119,6 +120,8 @@ export interface InboxDeliveryJSON {
 
 export interface FriendRequestJSON {
   name: string | undefined;
+  publicKey?: Base64Uint8ArrayJSON;
+  shareSecret?: Base64Uint8ArrayJSON;
 }
 
 export interface FriendKeysJSON {

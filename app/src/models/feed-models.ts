@@ -80,6 +80,7 @@ export interface SharedFeedUser {
   id: string;
   publicKey: RsaPublicKey;
   name: string | undefined;
+  shareSecret: Uint8Array;
 }
 
 export class Friend {
@@ -132,6 +133,7 @@ export class Friend {
       this.status === other.status &&
       this.theirSecret === other.theirSecret &&
       this.mySecret === other.mySecret &&
+      equalBytes(this.publicKey.spkiPublicKeyBytes, other.publicKey.spkiPublicKeyBytes) &&
       equal(this.theirKeysSentAt, other.theirKeysSentAt) &&
       this.theirKeys.length === other.theirKeys.length &&
       this.theirKeys.every((key, i) => equalKeys(key, other.theirKeys[i]!)) &&
@@ -155,7 +157,14 @@ export class Friend {
 }
 
 function equalKeys(a: AesKey, b: AesKey) {
-  return a.algorithm === b.algorithm && a.value.length === b.value.length && a.value.every((x, i) => x === b.value[i]);
+  return a.algorithm === b.algorithm && equalBytes(a.value, b.value);
+}
+
+export function equalBytes(a: Uint8Array | undefined, b: Uint8Array | undefined): boolean {
+  if (!a || !b) {
+    return a === b;
+  }
+  return a.length === b.length && a.every((x, i) => x === b[i]);
 }
 
 // ---------------------------------------------------------------------------
@@ -360,6 +369,7 @@ export class FeedIdentity {
     readonly publishWorkouts: boolean,
     readonly previousAesKeys: PreviousAesKey[] = [],
     readonly shareLiveWorkouts: boolean = false,
+    readonly shareSecret?: Uint8Array,
   ) {}
 
   get sharesLiveWorkouts(): boolean {
@@ -382,6 +392,7 @@ export class FeedIdentity {
         supersededAt: fromInstantJson(x.supersededAt),
       })),
       json.shareLiveWorkouts ?? false,
+      json.shareSecret && fromBase64Uint8ArrayJSON(json.shareSecret),
     );
   }
 
@@ -402,6 +413,7 @@ export class FeedIdentity {
       publishPlan: this.publishPlan,
       publishWorkouts: this.publishWorkouts,
       shareLiveWorkouts: this.shareLiveWorkouts,
+      shareSecret: this.shareSecret && toBase64Uint8ArrayJSON(this.shareSecret),
     };
   }
 
@@ -416,7 +428,8 @@ export class FeedIdentity {
       this.publishBodyweight === other.publishBodyweight &&
       this.publishPlan === other.publishPlan &&
       this.publishWorkouts === other.publishWorkouts &&
-      this.shareLiveWorkouts === other.shareLiveWorkouts
+      this.shareLiveWorkouts === other.shareLiveWorkouts &&
+      equalBytes(this.shareSecret, other.shareSecret)
     );
   }
 
@@ -433,6 +446,7 @@ export class FeedIdentity {
       other.publishWorkouts ?? this.publishWorkouts,
       other.previousAesKeys ?? this.previousAesKeys,
       other.shareLiveWorkouts ?? this.shareLiveWorkouts,
+      'shareSecret' in other ? other.shareSecret : this.shareSecret,
     );
   }
 
@@ -924,10 +938,18 @@ export class FriendRequestInboxMessage {
   constructor(
     readonly senderUserId: string,
     readonly name: string | undefined,
+    readonly publicKey: RsaPublicKey | undefined,
+    readonly shareSecret: Uint8Array | undefined,
   ) {}
 
   static fromJSON(json: FriendRequestInboxMessageJSON): FriendRequestInboxMessage {
-    return new FriendRequestInboxMessage(json.senderUserId, fromJsonString(json.payloadJson).name);
+    const payload = fromJsonString(json.payloadJson);
+    return new FriendRequestInboxMessage(
+      json.senderUserId,
+      payload.name,
+      payload.publicKey && { spkiPublicKeyBytes: fromBase64Uint8ArrayJSON(payload.publicKey) },
+      payload.shareSecret && fromBase64Uint8ArrayJSON(payload.shareSecret),
+    );
   }
 }
 

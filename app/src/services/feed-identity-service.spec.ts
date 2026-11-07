@@ -3,6 +3,7 @@ import { EncryptionService, splitNonceAndCiphertext } from '@/services/encryptio
 import { FeedIdentityService } from '@/services/feed-identity-service';
 import { ApiResult } from '@/services/api-error';
 import { FeedIdentity } from '@/models/feed-models';
+import { getFeedShareUrl } from '@/store/feed';
 import { PutUserDataRequest } from '@/models/feed-api-models';
 import { AesAlgorithm, RsaKeyPair } from '@/models/encryption-models';
 
@@ -66,5 +67,52 @@ describe('publishProfileAsync', () => {
         ),
       ).toBe('Me');
     });
+  });
+});
+
+describe('share secret', () => {
+  it('a new identity publishes the tag its share secret makes for its public key', async () => {
+    const putUserDataAsync = vi.fn().mockResolvedValue(ApiResult.success());
+    const createUserAsync = vi
+      .fn()
+      .mockResolvedValue(ApiResult.success({ id: 'me', lookup: 'lookup', password: 'pw' }));
+    const service = new FeedIdentityService({ putUserDataAsync, createUserAsync } as never, encryptionService);
+
+    const result = await service.createFeedIdentityAsync('Me', false, true);
+    if (!result.isSuccess()) {
+      throw new Error('identity was not created');
+    }
+    const identity = result.data;
+
+    const request = putUserDataAsync.mock.calls[0]![0] as PutUserDataRequest;
+    expect(identity.shareSecret).toHaveLength(12);
+    expect(request.shareTag).toEqual(
+      await encryptionService.shareTagAsync(identity.shareSecret!, identity.rsaKeyPair.publicKey),
+    );
+  });
+
+  it('an identity without a share secret publishes no tag', async () => {
+    const { requests } = await publish('AES-GCM');
+
+    expect(requests[0]!.shareTag).toBeUndefined();
+  });
+
+  it('the share link carries the secret in the fragment', () => {
+    const identity = new FeedIdentity(
+      'me',
+      'lookup',
+      { value: new Uint8Array(), algorithm: 'AES-GCM' },
+      rsaKeyPair,
+      'pw',
+      'Me',
+      false,
+      true,
+      true,
+      [],
+      false,
+      new Uint8Array([251, 255, 0]),
+    );
+
+    expect(getFeedShareUrl(identity)).toBe('https://app.liftlog.online/feed/share?id=lookup&name=Me#-_8A');
   });
 });

@@ -19,6 +19,7 @@ import {
   Base64Uint8ArrayJSON,
   InboxMessageJSON,
   ReactionJSON,
+  toBase64Uint8ArrayJSON,
   toJsonString,
 } from '@/models/storage/versions/latest';
 import { OutboxMessage } from '@/db/feed-outbox';
@@ -39,6 +40,9 @@ export const identity = new FeedIdentity(
   false,
   false,
   true,
+  [],
+  false,
+  new Uint8Array([8, 8, 8]),
 );
 
 function envelope(type: InboxMessageJSON['type'], senderUserId: string, payload: object): InboxMessageJSON {
@@ -51,7 +55,17 @@ function envelope(type: InboxMessageJSON['type'], senderUserId: string, payload:
 }
 
 export const inbox = {
-  friendRequest: (sender: string, name = `name-${sender}`) => envelope('FriendRequest', sender, { name }),
+  friendRequest: (
+    sender: string,
+    name = `name-${sender}`,
+    carried: { publicKey?: number; shareSecret?: Uint8Array } = { publicKey: 1, shareSecret: identity.shareSecret },
+  ) =>
+    envelope('FriendRequest', sender, {
+      name,
+      publicKey:
+        carried.publicKey === undefined ? undefined : toBase64Uint8ArrayJSON(new Uint8Array([carried.publicKey])),
+      shareSecret: carried.shareSecret && toBase64Uint8ArrayJSON(carried.shareSecret),
+    }),
   friendKeys: (sender: string, keys: string[] = ['a2V5'], followSecret = `their-secret-${sender}`) =>
     envelope('FriendKeys', sender, {
       aesKeys: keys.map((value) => ({ value }) as AesKeyJSON),
@@ -119,7 +133,7 @@ export async function makeInboxTestBed(options?: {
     },
     feedFollowService: {
       issueFollowSecretAsync: vi.fn(() => Promise.resolve(ApiResult.success(`issued-${Math.random()}`))),
-      friendRequestMessage: vi.fn((_: FeedIdentity, r: InboxRecipient) =>
+      friendRequestMessage: vi.fn((_: FeedIdentity, r: InboxRecipient, _recipientShareSecret?: Uint8Array) =>
         Promise.resolve(outboxMessage('FriendRequest', r)),
       ),
       friendKeysMessage: vi.fn((_: FeedIdentity, r: InboxRecipient, _secret: string) =>

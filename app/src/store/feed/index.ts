@@ -11,6 +11,7 @@ import {
   SharedItem,
 } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
+import { uint8ArrayToBase64Url } from '@/utils/base64';
 import { FeedBackupData } from '@/models/backup';
 import { ApiError } from '@/services/api-error';
 import type { FeedHubLease } from '@/services/feed-hub-service';
@@ -243,7 +244,7 @@ export const initializeFeedStateSlice = createAction('initializeFeedStateSlice')
 export function getFeedShareUrl(identity: FeedIdentity) {
   return `https://app.liftlog.online/feed/share?id=${identity.lookup}${
     identity.name ? `&name=${encodeURIComponent(identity.name)}` : ''
-  }`;
+  }${identity.shareSecret ? `#${uint8ArrayToBase64Url(identity.shareSecret)}` : ''}`;
 }
 
 type FeedAction = {
@@ -279,9 +280,9 @@ export const feedApiError = createAction<{
   action: PayloadAction<FeedAction>;
 }>('feedApiError');
 
-export const fetchAndSetSharedFeedUser = createAction<{ idOrLookup: string; name?: string } & FeedAction>(
-  'fetchAndSetSharedFeedUser',
-);
+export const fetchAndSetSharedFeedUser = createAction<
+  { idOrLookup: string; name?: string; shareSecret: Uint8Array } & FeedAction
+>('fetchAndSetSharedFeedUser');
 
 export const requestFriend = createAction<{ user: SharedFeedUser } & FeedAction>('requestFriend');
 

@@ -102,6 +102,10 @@ namespace LiftLog.Api.Migrations.Sqlite.UserData
                         .HasColumnType("BLOB")
                         .HasColumnName("salt");
 
+                    b.Property<byte[]>("ShareTag")
+                        .HasColumnType("BLOB")
+                        .HasColumnName("share_tag");
+
                     b.Property<string>("UserLookup")
                         .IsRequired()
                         .HasColumnType("TEXT")

@@ -67,9 +67,15 @@ export class FeedFollowService {
     return { messageId, recipientId: recipient.id, type, encryptedMessage: encryptedMessage.dataChunks };
   }
 
-  friendRequestMessage(identity: FeedIdentity, recipient: InboxRecipient): Promise<OutboxMessage> {
+  friendRequestMessage(
+    identity: FeedIdentity,
+    recipient: InboxRecipient,
+    recipientShareSecret?: Uint8Array,
+  ): Promise<OutboxMessage> {
     return this.buildMessage('FriendRequest', identity, recipient, {
       name: identity.name?.slice(0, MAX_NAME_LENGTH),
+      publicKey: toBase64Uint8ArrayJSON(identity.rsaKeyPair.publicKey.spkiPublicKeyBytes),
+      shareSecret: recipientShareSecret && toBase64Uint8ArrayJSON(recipientShareSecret),
     });
   }
 

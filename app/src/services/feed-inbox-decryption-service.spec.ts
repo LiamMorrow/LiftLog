@@ -85,6 +85,43 @@ describe('FeedInboxDecryptionService', () => {
     expect(ok.json.senderUserId).toBe(thirdPartyUser.user.id);
   });
 
+  it('verifies a friend request with the key the request carries, not the key the server returns', async () => {
+    vi.mocked(feedApiService.getUserAsync).mockResolvedValue(ApiResult.success(toGetUserResponse(maliciousUser)));
+    const followService = new FeedFollowService(feedApiService, encryptionService);
+    const outgoing = await followService.friendRequestMessage(thirdPartyUser.identity, victimUser.user);
+
+    const result = await sut.decrypt(victimUser.identity, {
+      id: SERVER_ID,
+      encryptedMessage: outgoing.encryptedMessage,
+    });
+
+    expect(result.kind).toBe('ok');
+    expect(feedApiService.getUserAsync).not.toHaveBeenCalled();
+  });
+
+  it('rejects a friend request signed by a key other than the key the request carries', async () => {
+    const message: Omit<InboxMessageJSON, 'signature'> = {
+      senderUserId: thirdPartyUser.user.id,
+      type: 'FriendRequest',
+      payloadJson: toJsonString({
+        name: 'Some user',
+        publicKey: toBase64Uint8ArrayJSON(thirdPartyUser.user.publicKey.spkiPublicKeyBytes),
+      }),
+    };
+    const signature = await encryptionService.signRsaPssSha256Async(
+      FeedInboxDecryptionService.getSignaturePayload(message, victimUser.user.id),
+      maliciousUser.privateKey,
+    );
+    const encrypted = await encryptionService.encryptRsaOaepSha256Async(
+      toJsonBytes({ ...message, signature: toBase64Uint8ArrayJSON(signature) }),
+      victimUser.user.publicKey,
+    );
+
+    const result = await sut.decrypt(victimUser.identity, { id: SERVER_ID, encryptedMessage: encrypted.dataChunks });
+
+    expect(result).toEqual({ kind: 'invalid', serverId: SERVER_ID });
+  });
+
   it('falls back to the server id for a message from an older app', async () => {
     const result = await sut.decrypt(victimUser.identity, await legacyMessage(thirdPartyUser, thirdPartyUser));
 
@@ -124,7 +161,7 @@ async function createFeedUser(encryptionService: EncryptionService): Promise<Use
   const userId = crypto.randomUUID();
 
   return {
-    user: { id: userId, publicKey: rsaKeyPair.publicKey, name: 'Some user' },
+    user: { id: userId, publicKey: rsaKeyPair.publicKey, name: 'Some user', shareSecret: new Uint8Array(12) },
     identity: new FeedIdentity(userId, userId, aesKey, rsaKeyPair, 'password', 'Some user', true, true, true),
     privateKey: rsaKeyPair.privateKey,
   };

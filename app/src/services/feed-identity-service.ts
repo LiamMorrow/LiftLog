@@ -35,13 +35,14 @@ export class FeedIdentityService {
       publishWorkouts,
       [],
       shareLiveWorkouts,
+      this.encryptionService.generateShareSecret(),
     );
     const published = await this.publishProfileAsync(identity);
     return published.isSuccess() ? ApiResult.success(identity) : ApiResult.fromFailure(published);
   }
 
   async publishProfileAsync(identity: FeedIdentity): Promise<ApiResult<void>> {
-    const { aesKey, rsaKeyPair, name } = identity;
+    const { aesKey, rsaKeyPair, name, shareSecret } = identity;
     const nameBytes = name ? new TextEncoder().encode(name) : undefined;
     const encrypted = await match(aesKey.algorithm)
       .with('AES-GCM', () => this.encryptGcmProfileAsync(identity, nameBytes))
@@ -53,6 +54,7 @@ export class FeedIdentityService {
       password: identity.password,
       ...encrypted,
       rsaPublicKey: rsaKeyPair.publicKey.spkiPublicKeyBytes,
+      shareTag: shareSecret && (await this.encryptionService.shareTagAsync(shareSecret, rsaKeyPair.publicKey)),
     });
   }
 

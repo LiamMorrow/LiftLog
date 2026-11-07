@@ -5,6 +5,7 @@ import { GetInboxMessageResponse } from '@/models/feed-api-models';
 import {
   fromBase64Uint8ArrayJSON,
   fromInstantJson,
+  FriendRequestJSON,
   InboxDeliveryJSON,
   InboxMessageJSON,
 } from '@/models/storage/versions/latest';
@@ -49,18 +50,27 @@ export class FeedInboxDecryptionService {
       return invalid('malformed envelope');
     }
 
-    const sender = await this.feedApiService.getUserAsync(unverified.senderUserId);
-    if (!sender.isSuccess()) {
-      return sender.error?.type === ApiErrorType.NotFound
-        ? invalid('sender no longer exists')
-        : { kind: 'retry', serverId };
+    let senderPublicKey: Uint8Array | undefined;
+    try {
+      senderPublicKey = FeedInboxDecryptionService.publicKeyInFriendRequest(unverified);
+    } catch (error) {
+      return invalid('unreadable payload', error);
+    }
+    if (!senderPublicKey) {
+      const sender = await this.feedApiService.getUserAsync(unverified.senderUserId);
+      if (!sender.isSuccess()) {
+        return sender.error?.type === ApiErrorType.NotFound
+          ? invalid('sender no longer exists')
+          : { kind: 'retry', serverId };
+      }
+      senderPublicKey = sender.data.rsaPublicKey;
     }
 
     try {
       const verified = await this.encryptionService.verifyRsaPssSha256Async(
         FeedInboxDecryptionService.getSignaturePayload(unverified, identity.id),
         fromBase64Uint8ArrayJSON(unverified.signature),
-        { spkiPublicKeyBytes: sender.data.rsaPublicKey },
+        { spkiPublicKeyBytes: senderPublicKey },
       );
       if (!verified) {
         return invalid('bad signature');
@@ -75,6 +85,14 @@ export class FeedInboxDecryptionService {
     } catch (error) {
       return invalid('unreadable payload', error);
     }
+  }
+
+  private static publicKeyInFriendRequest(message: AnyVersionInboxMessageJSON): Uint8Array | undefined {
+    if (message.type !== 'FriendRequest') {
+      return undefined;
+    }
+    const { publicKey } = JSON.parse(message.payloadJson) as Partial<FriendRequestJSON>;
+    return typeof publicKey === 'string' ? fromBase64Uint8ArrayJSON(publicKey) : undefined;
   }
 
   static getSignaturePayload(inboxMessage: Omit<InboxMessageJSON, 'signature'>, toUserId: string): Uint8Array {

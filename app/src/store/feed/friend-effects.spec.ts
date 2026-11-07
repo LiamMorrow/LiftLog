@@ -1,9 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { combineReducers } from '@reduxjs/toolkit';
 import { Instant } from '@js-joda/core';
 import {
   acceptFriendRequest,
   denyFriendRequest,
   feedApiError,
+  fetchAndSetSharedFeedUser,
   fetchInboxItems,
   rejectLegacyFollowRequests,
   removeFriend,
@@ -15,7 +17,13 @@ import {
   shareBackWithFriend,
 } from '@/store/feed';
 import { RemoteData } from '@/models/remote';
-import { AesKey } from '@/models/encryption-models';
+import { AesKey, RsaPublicKey } from '@/models/encryption-models';
+import { EncryptionService } from '@/services/encryption-service';
+import { createAddEffectTestBed } from '@/utils/__test__/add-effect-testbed';
+import { addFriendEffects } from '@/store/feed/friend-effects';
+import feedReducer from '@/store/feed';
+import { backendsReducer } from '@/store/backends';
+import { builtInBackendId } from '@/models/backend';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { feedFollowRequestsSchema, feedRevokedFollowSecretsSchema } from '@/db/schema';
 import { readFriends } from '@/db/feed-friends';
@@ -34,7 +42,12 @@ import {
 
 const poll = (testBed: InboxTestBed['testBed']) => testBed.dispatchHandled(fetchInboxItems({ fromUserAction: false }));
 const friend = (testBed: InboxTestBed['testBed'], id: string) => testBed.getState().feed.friends[id];
-const sharedUser = (id: string) => ({ id, publicKey: { spkiPublicKeyBytes: new Uint8Array([1]) }, name: `name-${id}` });
+const sharedUser = (id: string) => ({
+  id,
+  publicKey: { spkiPublicKeyBytes: new Uint8Array([1]) },
+  name: `name-${id}`,
+  shareSecret: new Uint8Array([9]),
+});
 const rotations = (bed: InboxTestBed) => bed.testBed.dispatchedActions.filter(rotateFeedKey.match).length;
 const revoked = (bed: InboxTestBed) =>
   bed.db
@@ -72,6 +85,35 @@ describe('friend actions', () => {
 
     expect(bed.testBed.getDispatchedAction(acceptFriendRequest).payload.friendId).toBe('bob');
     expect(outboxRows(bed.db)).toEqual([]);
+  });
+
+  it('a request through a link carries the secret from the link', async () => {
+    const bed = await makeInboxTestBed();
+
+    await bed.testBed.dispatchHandled(requestFriend({ user: sharedUser('bob'), fromUserAction: true }));
+
+    expect(bed.services.feedFollowService.friendRequestMessage).toHaveBeenCalledWith(
+      identity,
+      expect.objectContaining({ id: 'bob' }),
+      new Uint8Array([9]),
+    );
+  });
+
+  it('accepting through a link pins the key the link was checked against', async () => {
+    const bed = await makeInboxTestBed({
+      friends: [
+        makeFriend('bob', {
+          status: 'incoming',
+          mySecret: undefined,
+          publicKey: { spkiPublicKeyBytes: new Uint8Array([4]) },
+        }),
+      ],
+    });
+
+    await bed.testBed.dispatchHandled(requestFriend({ user: sharedUser('bob'), fromUserAction: true }));
+
+    expect(friend(bed.testBed, 'bob')?.publicKey.spkiPublicKeyBytes).toEqual(new Uint8Array([1]));
+    expect(bed.testBed.getDispatchedAction(acceptFriendRequest).payload.friendId).toBe('bob');
   });
 
   it('does nothing for someone who is already a friend', async () => {
@@ -242,6 +284,59 @@ describe('friend messages', () => {
     expect(friend(bed.testBed, 'alice')?.status).toBe('incoming');
     expect(friend(bed.testBed, 'alice')?.name).toBe('Alice');
     expect(outboxRows(bed.db)).toEqual([]);
+  });
+
+  it('a request carrying our link secret keeps the key the request carries', async () => {
+    const bed = await makeInboxTestBed();
+    deliver(bed.services, [inbox.friendRequest('alice', 'Alice', { publicKey: 3, shareSecret: identity.shareSecret })]);
+
+    await poll(bed.testBed);
+
+    expect(friend(bed.testBed, 'alice')?.publicKey.spkiPublicKeyBytes).toEqual(new Uint8Array([3]));
+    expect(bed.services.feedApiService.getUserAsync).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['the wrong link secret', { publicKey: 3, shareSecret: new Uint8Array([1]) }],
+    ['no link secret', { publicKey: 3 }],
+    ['no key, as an older app sends', {}],
+  ])('drops a request from a stranger with %s', async (_, carried) => {
+    const bed = await makeInboxTestBed();
+    deliver(bed.services, [inbox.friendRequest('alice', 'Alice', carried)]);
+
+    await poll(bed.testBed);
+
+    expect(friend(bed.testBed, 'alice')).toBeUndefined();
+    expect(outboxRows(bed.db)).toEqual([]);
+  });
+
+  it('a later request with our link secret updates the request we have', async () => {
+    const bed = await makeInboxTestBed({ friends: [makeFriend('alice', { status: 'incoming', mySecret: undefined })] });
+    deliver(bed.services, [inbox.friendRequest('alice', 'Alice', { publicKey: 3, shareSecret: identity.shareSecret })]);
+
+    await poll(bed.testBed);
+
+    expect(friend(bed.testBed, 'alice')?.name).toBe('Alice');
+    expect(friend(bed.testBed, 'alice')?.publicKey.spkiPublicKeyBytes).toEqual(new Uint8Array([3]));
+  });
+
+  it('a request without our link secret leaves the request we have alone', async () => {
+    const bed = await makeInboxTestBed({ friends: [makeFriend('alice', { status: 'incoming', mySecret: undefined })] });
+    deliver(bed.services, [inbox.friendRequest('alice', 'Impostor', { publicKey: 4 })]);
+
+    await poll(bed.testBed);
+
+    expect(friend(bed.testBed, 'alice')?.name).toBe('name-alice');
+    expect(friend(bed.testBed, 'alice')?.publicKey.spkiPublicKeyBytes).toEqual(new Uint8Array([1]));
+  });
+
+  it('a friend asking again from an older app still gets our keys', async () => {
+    const bed = await makeInboxTestBed({ friends: [makeFriend('bob')] });
+    deliver(bed.services, [inbox.friendRequest('bob', 'Bob', {})]);
+
+    await poll(bed.testBed);
+
+    expect(outboxRows(bed.db)).toEqual([['bob', 'FriendKeys']]);
   });
 
   it('crossed requests accept each other', async () => {
@@ -536,5 +631,94 @@ describe('repairing a friendship end to end', () => {
 
     expect(friend(alice.testBed, 'bob')).toMatchObject({ status: 'friend', theirSecret: 'bobs-secret' });
     expect(friend(bob.testBed, 'alice')).toMatchObject({ status: 'friend', theirSecret: alicesSecret });
+  });
+});
+
+describe('opening a share link', () => {
+  const encryptionService = new EncryptionService();
+
+  async function openLink(options: {
+    shareSecret: Uint8Array;
+    shareTag?: (publicKey: RsaPublicKey) => Promise<Uint8Array>;
+    feedBackendId?: string;
+  }) {
+    const { publicKey } = await encryptionService.generateRsaKeys();
+    const feedBackendId = options.feedBackendId ?? builtInBackendId;
+    const testBed = createAddEffectTestBed({
+      initialState: {
+        backends: {
+          backends: [{ id: 'self', name: 'Home', url: 'https://liftlog.example.com', kind: 'liftlog', headers: [] }],
+          assignments: { feed: feedBackendId },
+          isHydrated: true,
+        },
+      },
+      services: {
+        encryptionService,
+        tolgee: { t: (key: string) => key },
+        feedApiService: {
+          getUserAsync: vi.fn(async (id: string) =>
+            ApiResult.success({
+              id,
+              lookup: id,
+              encryptedCurrentPlan: undefined,
+              encryptedName: undefined,
+              encryptionIV: new Uint8Array(),
+              rsaPublicKey: publicKey.spkiPublicKeyBytes,
+              shareTag: await options.shareTag?.(publicKey),
+            }),
+          ),
+        },
+      },
+      reducer: combineReducers({
+        feed: feedReducer,
+        backends: backendsReducer,
+        settings: (state: { proToken?: string } = {}) => state,
+      }),
+    });
+    addFriendEffects(testBed.addEffect);
+    await testBed.dispatchHandled(
+      fetchAndSetSharedFeedUser({
+        idOrLookup: 'bob',
+        name: 'Bob',
+        shareSecret: options.shareSecret,
+        fromUserAction: true,
+      }),
+    );
+    return { sharedUser: testBed.getState().feed.sharedFeedUser, publicKey };
+  }
+
+  const shareSecret = encryptionService.generateShareSecret();
+  const errorOf = (remote: RemoteData<unknown>) =>
+    remote.match({ notAsked: () => undefined, loading: () => undefined, success: () => undefined, error: (e) => e });
+
+  it('accepts a link whose secret matches the tag the server holds for the key', async () => {
+    const { sharedUser, publicKey } = await openLink({
+      shareSecret,
+      shareTag: (key) => encryptionService.shareTagAsync(shareSecret, key),
+    });
+
+    expect(sharedUser.unwrapOr(undefined)).toMatchObject({ id: 'bob', publicKey, shareSecret });
+  });
+
+  it('refuses a link when the server returns a key the link secret was not used to tag', async () => {
+    const { sharedUser } = await openLink({
+      shareSecret,
+      shareTag: async () =>
+        encryptionService.shareTagAsync(shareSecret, (await encryptionService.generateRsaKeys()).publicKey),
+    });
+
+    expect(errorOf(sharedUser)).toBe('feed.share_link.unverified.error');
+  });
+
+  it('refuses a link with a secret when the server holds no tag', async () => {
+    const { sharedUser } = await openLink({ shareSecret });
+
+    expect(errorOf(sharedUser)).toBe('feed.share_link.unverified.error');
+  });
+
+  it('suggests updating the server when the feed runs on a custom backend', async () => {
+    const { sharedUser } = await openLink({ shareSecret, feedBackendId: 'self' });
+
+    expect(errorOf(sharedUser)).toBe('feed.share_link.unverified_custom_backend.error');
   });
 });

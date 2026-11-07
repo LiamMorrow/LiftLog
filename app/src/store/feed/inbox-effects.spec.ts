@@ -220,7 +220,7 @@ describe('inbox-effects delivery', () => {
 
   it('keeps a message queued when handling it needs the network and the network is down', async () => {
     const { testBed, services, db } = await makeTestBed({ friends: [] });
-    deliver(services, [inbox.friendRequest('alice')]);
+    deliver(services, [inbox.legacyFollowRequest('alice')]);
     services.feedApiService.getUserAsync.mockResolvedValue(
       ApiResult.fromError({ type: ApiErrorType.Unknown, message: 'offline', exception: undefined }),
     );
@@ -234,7 +234,7 @@ describe('inbox-effects delivery', () => {
   it('holds back a sender’s later messages while an earlier one waits to retry', async () => {
     const { testBed, services, db } = await makeTestBed({ friends: [] });
     deliver(services, [
-      { json: inbox.friendRequest('alice'), sentAtMs: 1000 },
+      { json: inbox.legacyFollowRequest('alice'), sentAtMs: 1000 },
       { json: inbox.unfriend('alice'), sentAtMs: 2000 },
     ]);
     services.feedApiService.getUserAsync.mockResolvedValueOnce(

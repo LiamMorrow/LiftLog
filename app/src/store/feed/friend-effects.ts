@@ -21,8 +21,15 @@ import {
   setSharedFeedUser,
   shareBackWithFriend,
 } from '@/store/feed';
-import { FeedIdentity, Friend, FriendKeysInboxMessage, FriendRequestInboxMessage } from '@/models/feed-models';
+import {
+  equalBytes,
+  FeedIdentity,
+  Friend,
+  FriendKeysInboxMessage,
+  FriendRequestInboxMessage,
+} from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
+import { selectBackendForFeature } from '@/store/backends';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { FeedApiService } from '@/services/feed-api';
 import { FeedFollowService } from '@/services/feed-follow-service';
@@ -145,34 +152,34 @@ export type InboxHandlerResult = 'done' | 'retry';
 
 export async function handleFriendRequest(
   message: FriendRequestInboxMessage,
-  { identity, getState, feedApiService, feedFollowService, commit }: InboxHandlerContext,
+  { identity, getState, feedFollowService, commit }: InboxHandlerContext,
 ): Promise<InboxHandlerResult> {
   const friend = getState().feed.friends[message.senderUserId];
-  if (!friend) {
-    const sender = await feedApiService.getUserAsync(message.senderUserId);
-    if (!sender.isSuccess()) {
-      return sender.error?.type === ApiErrorType.NotFound ? 'done' : 'retry';
+  const publicKeyFromOurLink =
+    message.shareSecret && identity.shareSecret && equalBytes(message.shareSecret, identity.shareSecret)
+      ? message.publicKey
+      : undefined;
+  if (!friend || friend.status === 'incoming') {
+    if (publicKeyFromOurLink) {
+      commit({
+        put: [
+          (
+            friend ??
+            new Friend(
+              message.senderUserId,
+              publicKeyFromOurLink,
+              message.name,
+              undefined,
+              'incoming',
+              [],
+              undefined,
+              undefined,
+              undefined,
+            )
+          ).with({ name: message.name, publicKey: publicKeyFromOurLink }),
+        ],
+      });
     }
-    commit({
-      put: [
-        new Friend(
-          message.senderUserId,
-          { spkiPublicKeyBytes: sender.data.rsaPublicKey },
-          message.name,
-          undefined,
-          'incoming',
-          [],
-          undefined,
-          undefined,
-          undefined,
-        ),
-      ],
-    });
-    return 'done';
-  }
-
-  if (friend.status === 'incoming') {
-    commit({ put: [friend.with({ name: message.name })] });
     return 'done';
   }
   if (friend.status === 'legacyFollowing') {
@@ -257,32 +264,48 @@ export async function handleLegacyFollowRequest(
 }
 
 export function addFriendEffects(addEffect: AddEffectFn) {
-  addEffect(fetchAndSetSharedFeedUser, async (action, { dispatch, extra: { feedApiService } }) => {
-    dispatch(setSharedFeedUser(RemoteData.loading()));
+  addEffect(
+    fetchAndSetSharedFeedUser,
+    async (action, { dispatch, getState, extra: { feedApiService, encryptionService, tolgee } }) => {
+      dispatch(setSharedFeedUser(RemoteData.loading()));
 
-    const result = await feedApiService.getUserAsync(action.payload.idOrLookup);
+      const { shareSecret } = action.payload;
+      const result = await feedApiService.getUserAsync(action.payload.idOrLookup);
 
-    if (result.isSuccess()) {
-      dispatch(
-        setSharedFeedUser(
-          RemoteData.success({
-            id: result.data.id,
-            publicKey: { spkiPublicKeyBytes: result.data.rsaPublicKey },
-            name: action.payload.name,
+      if (result.isSuccess()) {
+        const publicKey = { spkiPublicKeyBytes: result.data.rsaPublicKey };
+        if (!equalBytes(result.data.shareTag, await encryptionService.shareTagAsync(shareSecret, publicKey))) {
+          const onCustomBackend = selectBackendForFeature(getState(), 'feed')?.isBuiltIn === false;
+          dispatch(
+            setSharedFeedUser(
+              RemoteData.error(
+                tolgee.t(
+                  onCustomBackend
+                    ? 'feed.share_link.unverified_custom_backend.error'
+                    : 'feed.share_link.unverified.error',
+                ),
+              ),
+            ),
+          );
+          return;
+        }
+        dispatch(
+          setSharedFeedUser(
+            RemoteData.success({ id: result.data.id, publicKey, name: action.payload.name, shareSecret }),
+          ),
+        );
+      } else {
+        dispatch(
+          feedApiError({
+            message: 'Failed to fetch user',
+            error: result.error!,
+            action,
           }),
-        ),
-      );
-    } else {
-      dispatch(
-        feedApiError({
-          message: 'Failed to fetch user',
-          error: result.error!,
-          action,
-        }),
-      );
-      dispatch(setSharedFeedUser(RemoteData.error(result.error!)));
-    }
-  });
+        );
+        dispatch(setSharedFeedUser(RemoteData.error(result.error!)));
+      }
+    },
+  );
 
   addEffect(requestFriend, async (action, { dispatch, getState, extra: { db, feedFollowService } }) => {
     const identity = selectFeedIdentityRemote(getState()).unwrapOr(undefined);
@@ -294,6 +317,7 @@ export function addFriendEffects(addEffect: AddEffectFn) {
 
     const existing = getState().feed.friends[user.id];
     if (existing?.status === 'incoming') {
+      commitFriendChange(db, dispatch, { put: [existing.with({ publicKey: user.publicKey })] });
       dispatch(acceptFriendRequest({ friendId: user.id, fromUserAction: action.payload.fromUserAction }));
       return;
     }
@@ -307,7 +331,7 @@ export function addFriendEffects(addEffect: AddEffectFn) {
 
     commitFriendChange(db, dispatch, {
       put: [new Friend(user.id, user.publicKey, user.name, undefined, 'pending', [], undefined, undefined, undefined)],
-      outbox: [await feedFollowService.friendRequestMessage(identity, user)],
+      outbox: [await feedFollowService.friendRequestMessage(identity, user, user.shareSecret)],
     });
   });
 

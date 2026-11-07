@@ -43,6 +43,7 @@ public class PutUserDataRequestValidator : AbstractValidator<PutUserDataRequest>
         RuleFor(x => x.EncryptedName!.Length)
             .InclusiveBetween(0, 2 * KB)
             .When(x => x.EncryptedName != null);
+        RuleFor(x => x.ShareTag!.Length).Equal(32).When(x => x.ShareTag != null);
     }
 }
 

@@ -64,6 +64,56 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
     }
 
     [Test]
+    [Arguments(12)]
+    [Arguments(16)]
+    public async Task Post_SharedItemAcceptsAesGcmAndAesCbcIvLengths(int ivLength)
+    {
+        var client = _factory.CreateClient();
+        var user = await UserHelper.CreateUserAsync(
+            client,
+            encryptedPayload.IV.Value,
+            rsaPublicKey
+        );
+        var payload = new AesEncryptedAndRsaSignedData([0x01], new(new byte[ivLength]));
+
+        var response = await client.PostAsJsonAsync(
+            url,
+            new CreateSharedItemRequest(
+                user.Id,
+                user.Password,
+                payload,
+                DateTimeOffset.UtcNow.AddDays(1)
+            )
+        );
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    [Test]
+    public async Task Post_SharedItemWithAnIvOfAnotherLength_ReturnsBadRequest()
+    {
+        var client = _factory.CreateClient();
+        var user = await UserHelper.CreateUserAsync(
+            client,
+            encryptedPayload.IV.Value,
+            rsaPublicKey
+        );
+        var payload = new AesEncryptedAndRsaSignedData([0x01], new(new byte[8]));
+
+        var response = await client.PostAsJsonAsync(
+            url,
+            new CreateSharedItemRequest(
+                user.Id,
+                user.Password,
+                payload,
+                DateTimeOffset.UtcNow.AddDays(1)
+            )
+        );
+
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
+    }
+
+    [Test]
     public async Task Post_SharedItemWithInvalidUserId_ReturnsUnauthorized()
     {
         // Arrange

@@ -42,7 +42,8 @@ public class UsersController(UserDataContext db) : ControllerBase
                         EncryptedProfilePicture: x.EncryptedProfilePicture,
                         EncryptedName: x.EncryptedName,
                         EncryptionIV: x.EncryptionIV,
-                        RsaPublicKey: x.RsaPublicKey
+                        RsaPublicKey: x.RsaPublicKey,
+                        ShareTag: x.ShareTag
                     )
                 )
             )

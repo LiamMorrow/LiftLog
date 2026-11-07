@@ -79,7 +79,8 @@ public class UserController(
                 EncryptedProfilePicture: user.EncryptedProfilePicture,
                 EncryptedName: user.EncryptedName,
                 EncryptionIV: user.EncryptionIV,
-                RsaPublicKey: user.RsaPublicKey
+                RsaPublicKey: user.RsaPublicKey,
+                ShareTag: user.ShareTag
             )
         );
     }
@@ -143,6 +144,7 @@ public class UserController(
         user.EncryptedName = request.EncryptedName;
         user.EncryptionIV = request.EncryptionIV;
         user.RsaPublicKey = request.RsaPublicKey;
+        user.ShareTag = request.ShareTag ?? user.ShareTag;
         await db.SaveChangesAsync();
         return Ok();
     }

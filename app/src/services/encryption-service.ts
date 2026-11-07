@@ -16,6 +16,7 @@ import { match } from 'ts-pattern';
 const HashLengthBytes = 32;
 const SignatureLengthBytes = 256;
 const IvLengthBytes: Record<AesAlgorithm, number> = { 'AES-CBC': 16, 'AES-GCM': 12 };
+export const ShareSecretLengthBytes = 12;
 
 export function toJsonBytes(object: unknown): Uint8Array {
   return new TextEncoder().encode(JSON.stringify(object));
@@ -132,6 +133,16 @@ export class EncryptionService {
       encryptedPayload: new Uint8Array(encrypted),
       iv: { value: iv },
     };
+  }
+
+  generateShareSecret(): Uint8Array {
+    return crypto.getRandomValues(new Uint8Array(ShareSecretLengthBytes));
+  }
+
+  async shareTagAsync(shareSecret: Uint8Array, publicKey: RsaPublicKey): Promise<Uint8Array> {
+    const params: webcrypto.HmacImportParams = { name: 'HMAC', hash: 'SHA-256' };
+    const key = await crypto.subtle.importKey('raw', shareSecret, params, false, ['sign']);
+    return new Uint8Array(await crypto.subtle.sign('HMAC', key, publicKey.spkiPublicKeyBytes));
   }
 
   async sha256(data: Uint8Array): Promise<Uint8Array> {

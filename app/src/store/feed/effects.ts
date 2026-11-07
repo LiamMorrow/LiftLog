@@ -125,7 +125,13 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
         dispatch(setIsHydrated(true));
         dispatch(revokeFollowSecrets({ fromUserAction: false }));
         // Refreshes the identity if it no longer exists on the server
-        dispatch(updateFeedIdentity({ fromUserAction: false, updates: {} }));
+        const hydrated = selectFeedIdentityRemote(getState()).unwrapOr(undefined);
+        dispatch(
+          updateFeedIdentity({
+            fromUserAction: false,
+            updates: hydrated && !hydrated.shareSecret ? { shareSecret: encryptionService.generateShareSecret() } : {},
+          }),
+        );
         dispatch(rejectLegacyFollowRequests());
         dispatch(fetchInboxItems({ fromUserAction: false }));
         const elapsedMilliseconds = performance.now() - sw;
