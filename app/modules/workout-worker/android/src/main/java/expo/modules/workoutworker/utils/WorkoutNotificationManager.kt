@@ -112,6 +112,7 @@ class WorkoutNotificationManager(private val context: Context) {
             .setContentIntent(context.getLaunchAppAtWorkoutPagePendingIntent())
             .setSmallIcon(R.drawable.fitness_center_24px)
             .setOngoing(false)
+            .setAutoCancel(true)
             .setSilent(false)
             .setOnlyAlertOnce(true)
     }

@@ -126,10 +126,12 @@ class WorkoutUpdatedHandler(
             val restNotif: Notification? = when {
                 partialProgressMax in (previousProgress + 1)..progress && partialProgressMax != 0L -> notificationManager.createRestNotificationBuilder()
                     .setContentTitle(translations.workoutPersistentNotificationMinRestOverMessage)
+                    .apply { if (currentExerciseMessage.isNotEmpty()) setContentText(currentExerciseMessage) }
                     .build()
 
                 fullProgressMax in (previousProgress + 1)..progress && fullProgressMax != 0L -> notificationManager.createRestNotificationBuilder()
                     .setContentTitle(translations.workoutPersistentNotificationMaxRestOverMessage)
+                    .apply { if (currentExerciseMessage.isNotEmpty()) setContentText(currentExerciseMessage) }
                     .build()
 
                 else -> null
@@ -211,6 +213,7 @@ class WorkoutUpdatedHandler(
                 notificationManager.notifyRest(
                     notificationManager.createRestNotificationBuilder()
                         .setContentTitle(translations.workoutPersistentNotificationCardioTargetReachedMessage)
+                        .apply { if (currentExerciseMessage.isNotEmpty()) setContentText(currentExerciseMessage) }
                         .build()
                 )
             }
