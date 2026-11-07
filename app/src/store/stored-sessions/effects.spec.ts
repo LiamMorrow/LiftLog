@@ -7,6 +7,7 @@ import { eq } from 'drizzle-orm';
 import { DatabaseMigrationService } from '@/services/database-migration-service';
 import { applyStoredSessionsEffects } from '@/store/stored-sessions/effects';
 import {
+  autoFinishWorkout,
   deleteStoredSession,
   initializeStoredSessionsStateSlice,
   loadBuiltInExerciseCatalog,
@@ -30,6 +31,15 @@ import { readSession, setActiveSession, writeSession } from '@/db/sessions';
 import { Session } from '@/models/session-models';
 import { toJsonString } from '@/models/storage/versions/latest';
 import type { RootState } from '@/store/store';
+import { makeRecordedExercise, makeSession, makeWeightedBlueprint } from '@/models/session-models/__test__/helpers';
+
+function sessionWithLastSetAt(time: OffsetDateTime) {
+  const blueprint = makeWeightedBlueprint();
+  return makeSession([blueprint], time.toLocalDate()).withExercise(
+    0,
+    makeRecordedExercise(blueprint, [10, undefined], undefined, () => time),
+  );
+}
 
 async function createTestDb(): Promise<ExpoSQLiteDatabase> {
   const expoDb = await openDatabaseAsync(':memory:');
@@ -358,6 +368,75 @@ describe('stored-sessions effects', () => {
       expect(testBed.getDispatchedAction(openSession).payload.id).toBe(session.id);
       expect(testBed.dispatchedActions.filter((x) => openSession.match(x))).toHaveLength(1);
       expect(testBed.getDispatchedAction(setActiveSessionId).payload).toBe(session.id);
+    });
+  });
+
+  describe('auto-finishing a workout left running', () => {
+    it('finishes it at its last set on launch instead of resuming it', async () => {
+      const lastSetAt = OffsetDateTime.now().minusHours(4).withNano(0);
+      const session = sessionWithLastSetAt(lastSetAt);
+      db.transaction((tx) => setActiveSession(tx, session));
+      const testBed = bed({});
+
+      await testBed.dispatchHandled(initializeStoredSessionsStateSlice());
+
+      testBed.expectNotDispatched(setActiveSessionId);
+      expect(testBed.getDispatchedAction(sessionFinished).payload).toBe(session.id);
+      expect(testBed.getDispatchedAction(openSession).payload.finishedAt?.isEqual(lastSetAt)).toBe(true);
+      const [row] = await db.select().from(sessionsSchema).where(eq(sessionsSchema.id, session.id));
+      expect(row?.active).toBe(false);
+      expect(readSession(db, session.id)?.finishedAt?.isEqual(lastSetAt)).toBe(true);
+    });
+
+    it('resumes it on launch when it is not yet due', async () => {
+      const session = sessionWithLastSetAt(OffsetDateTime.now().minusHours(1));
+      db.transaction((tx) => setActiveSession(tx, session));
+      const testBed = bed({});
+
+      await testBed.dispatchHandled(initializeStoredSessionsStateSlice());
+
+      expect(testBed.getDispatchedAction(setActiveSessionId).payload).toBe(session.id);
+      testBed.expectNotDispatched(sessionFinished);
+    });
+
+    it('stamps the last set as the finish time when the user finishes it late', async () => {
+      const lastSetAt = OffsetDateTime.now().minusHours(14).withNano(0);
+      const session = sessionWithLastSetAt(lastSetAt);
+      const testBed = bed({
+        state: {
+          storedSessions: { openSessions: { [session.id]: session }, activeSessionId: session.id },
+        } as Partial<RootState>,
+      });
+
+      await testBed.dispatchHandled(sessionFinished(session.id));
+
+      expect(readSession(db, session.id)?.finishedAt?.isEqual(lastSetAt)).toBe(true);
+    });
+
+    it('finishes the workout in progress once it is due', async () => {
+      const session = sessionWithLastSetAt(OffsetDateTime.now().minusHours(4));
+      const testBed = bed({
+        state: {
+          storedSessions: { openSessions: { [session.id]: session }, activeSessionId: session.id },
+        } as Partial<RootState>,
+      });
+
+      await testBed.dispatchHandled(autoFinishWorkout());
+
+      expect(testBed.getDispatchedAction(sessionFinished).payload).toBe(session.id);
+    });
+
+    it('leaves the workout in progress alone before it is due', async () => {
+      const session = sessionWithLastSetAt(OffsetDateTime.now().minusHours(1));
+      const testBed = bed({
+        state: {
+          storedSessions: { openSessions: { [session.id]: session }, activeSessionId: session.id },
+        } as Partial<RootState>,
+      });
+
+      await testBed.dispatchHandled(autoFinishWorkout());
+
+      testBed.expectNotDispatched(sessionFinished);
     });
   });
 

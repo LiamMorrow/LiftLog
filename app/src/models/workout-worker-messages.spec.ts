@@ -18,6 +18,7 @@ import type {
   WorkoutUpdatedEvent,
   WorkoutEndedEvent,
   FinishWorkoutCommand,
+  WorkoutAutoFinishDueEvent,
   Translations,
   AppConfiguration,
 } from './workout-worker-messages';
@@ -157,7 +158,32 @@ describe('WorkoutMessage JSON schema validation', () => {
     });
   });
 
+  describe('WorkoutAutoFinishDueEvent', () => {
+    it('validates a WorkoutAutoFinishDueEvent payload', () => {
+      const payload: WorkoutAutoFinishDueEvent = { type: 'WorkoutAutoFinishDueEvent' };
+      expect(validate('WorkoutAutoFinishDueEvent', payload)).toBe(true);
+    });
+
+    it('validates a full WorkoutMessage wrapping WorkoutAutoFinishDueEvent', () => {
+      expect(validate('WorkoutMessage', wrapMessage({ type: 'WorkoutAutoFinishDueEvent' }))).toBe(true);
+    });
+  });
+
   describe('WorkoutUpdatedEvent', () => {
+    it('validates a WorkoutUpdatedEvent with an auto-finish time', () => {
+      const payload: WorkoutUpdatedEvent = {
+        type: 'WorkoutUpdatedEvent',
+        workout: makeSession().toJSON(),
+        restTimerInfo: undefined,
+        cardioTimerInfo: undefined,
+        currentExerciseDetails: undefined,
+        totalWeightLifted: new Weight(0, 'kilograms').toJSON(),
+        workoutDuration: toDurationJSON(Duration.parse('PT0S')),
+        autoFinishAt: toInstantJson(Instant.now().plusSeconds(3 * 60 * 60)),
+      };
+      expect(validate('WorkoutUpdatedEvent', payload)).toBe(true);
+    });
+
     it('validates a WorkoutUpdatedEvent with no active timers or current exercise', () => {
       const session = makeSession();
       const payload: WorkoutUpdatedEvent = {
@@ -168,6 +194,7 @@ describe('WorkoutMessage JSON schema validation', () => {
         currentExerciseDetails: undefined,
         totalWeightLifted: new Weight(0, 'kilograms').toJSON(),
         workoutDuration: toDurationJSON(Duration.parse('PT0S')), // DurationJSON - ISO-8601 string
+        autoFinishAt: undefined,
       };
       expect(validate('WorkoutUpdatedEvent', payload)).toBe(true);
     });
@@ -186,6 +213,7 @@ describe('WorkoutMessage JSON schema validation', () => {
         },
         totalWeightLifted: new Weight(0, 'kilograms').toJSON(),
         workoutDuration: toDurationJSON(Duration.parse('PT5M30S')),
+        autoFinishAt: undefined,
       };
       expect(validate('WorkoutUpdatedEvent', payload)).toBe(true);
     });
@@ -204,6 +232,7 @@ describe('WorkoutMessage JSON schema validation', () => {
         },
         totalWeightLifted: new Weight(0, 'kilograms').toJSON(),
         workoutDuration: toDurationJSON(Duration.parse('PT5M30S')),
+        autoFinishAt: undefined,
       };
       expect(validate('WorkoutUpdatedEvent', payload)).toBe(true);
     });
@@ -223,6 +252,7 @@ describe('WorkoutMessage JSON schema validation', () => {
         currentExerciseDetails: undefined,
         totalWeightLifted: new Weight(100, 'kilograms').toJSON(),
         workoutDuration: toDurationJSON(Duration.parse('PT5M30S')),
+        autoFinishAt: undefined,
       };
       expect(validate('WorkoutUpdatedEvent', payload)).toBe(true);
     });
@@ -247,6 +277,7 @@ describe('WorkoutMessage JSON schema validation', () => {
         },
         totalWeightLifted: new Weight(0, 'kilograms').toJSON(),
         workoutDuration: toDurationJSON(Duration.parse('PT5M30S')),
+        autoFinishAt: undefined,
       };
       expect(validate('WorkoutUpdatedEvent', payload)).toBe(true);
     });
@@ -265,6 +296,7 @@ describe('WorkoutMessage JSON schema validation', () => {
         },
         totalWeightLifted: exercise.totalWeightLifted.toJSON(),
         workoutDuration: toDurationJSON(Duration.parse('PT5M30S')),
+        autoFinishAt: undefined,
       };
       expect(validate('WorkoutUpdatedEvent', payload)).toBe(true);
     });
@@ -300,6 +332,7 @@ describe('WorkoutMessage JSON schema validation', () => {
         currentExerciseDetails: undefined,
         totalWeightLifted: new Weight(0, 'kilograms').toJSON(),
         workoutDuration: toDurationJSON(Duration.parse('PT5M30S')),
+        autoFinishAt: undefined,
       });
       expect(validate('WorkoutMessage', message)).toBe(true);
     });
@@ -389,6 +422,7 @@ describe('WorkoutMessage JSON schema validation', () => {
           currentExerciseDetails: undefined,
           totalWeightLifted: { value: 0, unit: 'stones' }, // invalid unit
           workoutDuration: toDurationJSON(Duration.parse('PT0S')),
+          autoFinishAt: undefined,
         };
         expect(validate('WorkoutUpdatedEvent', payload)).toBe(false);
       });
@@ -408,6 +442,7 @@ describe('WorkoutMessage JSON schema validation', () => {
           currentExerciseDetails: undefined,
           totalWeightLifted: new Weight(0, 'kilograms').toJSON(),
           workoutDuration: toDurationJSON(Duration.parse('PT0S')),
+          autoFinishAt: undefined,
         };
         expect(validate('WorkoutUpdatedEvent', payload)).toBe(false);
       });
@@ -427,6 +462,7 @@ describe('WorkoutMessage JSON schema validation', () => {
           currentExerciseDetails: undefined,
           totalWeightLifted: new Weight(0, 'kilograms').toJSON(),
           workoutDuration: toDurationJSON(Duration.parse('PT0S')),
+          autoFinishAt: undefined,
         };
         expect(validate('WorkoutUpdatedEvent', payload)).toBe(false);
       });

@@ -33,6 +33,9 @@ import { IndexOutOfBoundsError } from '@/utils/index-out-of-bounds';
 
 export const freeformSessionName = 'Freeform Workout';
 
+export const autoFinishWorkoutAfter = Duration.ofHours(3);
+export const autoFinishCompletedWorkoutAfter = Duration.ofMinutes(20);
+
 export class Session {
   constructor(
     readonly id: string,
@@ -582,6 +585,30 @@ export class Session {
       .where((x) => x.isStarted)
       .defaultIfEmpty(undefined)
       .maxBy((x) => x.latestTime?.toInstant().toEpochMilli());
+  }
+
+  get autoFinishAt(): OffsetDateTime | undefined {
+    if (this.runningCardioSet) {
+      return undefined;
+    }
+    return this.recordedExercises
+      .map((x) => (x instanceof RecordedCardioExercise ? x.latestEndTime : x.latestTime))
+      .filter((x) => x !== undefined)
+      .sort(TemporalComparer)
+      .at(-1)
+      ?.plus(this.isComplete ? autoFinishCompletedWorkoutAfter : autoFinishWorkoutAfter);
+  }
+
+  isDueToAutoFinishAt(now: OffsetDateTime): boolean {
+    const autoFinishAt = this.autoFinishAt;
+    return autoFinishAt !== undefined && !now.isBefore(autoFinishAt);
+  }
+
+  finishedAsOf(now: OffsetDateTime): Session {
+    if (this.finishedAt) {
+      return this;
+    }
+    return this.with({ finishedAt: this.isDueToAutoFinishAt(now) ? (this.lastExercise?.latestTime ?? now) : now });
   }
 
   get latestWeightedExercise(): RecordedWeightedExercise | undefined {

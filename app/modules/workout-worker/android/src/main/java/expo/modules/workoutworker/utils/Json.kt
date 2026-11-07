@@ -12,6 +12,7 @@ import com.limajuice.liftlog.RecordedExercise
 import com.limajuice.liftlog.RecordedWeightedExercise
 import com.limajuice.liftlog.TimeCardioTarget
 import com.limajuice.liftlog.WeightedExerciseBlueprint
+import com.limajuice.liftlog.WorkoutAutoFinishDueEvent
 import com.limajuice.liftlog.WorkoutEndedEvent
 import com.limajuice.liftlog.WorkoutMessagePayload
 import com.limajuice.liftlog.WorkoutStartedEvent
@@ -51,6 +52,7 @@ object Json {
                 .withSubtype(WorkoutStartedEvent::class.java, "WorkoutStartedEvent")
                 .withSubtype(WorkoutUpdatedEvent::class.java, "WorkoutUpdatedEvent")
                 .withSubtype(WorkoutEndedEvent::class.java, "WorkoutEndedEvent")
+                .withSubtype(WorkoutAutoFinishDueEvent::class.java, "WorkoutAutoFinishDueEvent")
                 .withSubtype(FinishWorkoutCommand::class.java, "FinishWorkoutCommand")
         )
         .add(

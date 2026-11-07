@@ -266,6 +266,15 @@ export class RecordedCardioExercise {
       .at(-1);
   }
 
+  /** A timed set records its completion when the timer first saves, so the set can run its duration past it. */
+  get latestEndTime(): OffsetDateTime | undefined {
+    return this.sets
+      .map((x) => x.completionDateTime?.plus(x.duration ?? Duration.ZERO))
+      .filter((x) => x !== undefined)
+      .sort(TemporalComparer)
+      .at(-1);
+  }
+
   get earliestTime(): OffsetDateTime | undefined {
     return this.sets
       .map((x) => x.completionDateTime)

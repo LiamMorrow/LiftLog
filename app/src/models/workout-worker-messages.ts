@@ -13,6 +13,7 @@ export type WorkoutMessagePayload =
   | WorkoutStartedEvent
   | WorkoutUpdatedEvent
   | WorkoutEndedEvent
+  | WorkoutAutoFinishDueEvent
   | FinishWorkoutCommand;
 
 export type WorkoutMessage = {
@@ -34,6 +35,7 @@ export interface WorkoutUpdatedEvent {
   currentExerciseDetails: CurrentExerciseDetails | undefined;
   totalWeightLifted: WeightJSON;
   workoutDuration: DurationJSON;
+  autoFinishAt: InstantJSON | undefined;
 }
 
 export interface CurrentExerciseDetails {
@@ -65,6 +67,10 @@ export interface RestTimerInfo {
 
 export interface WorkoutEndedEvent {
   type: 'WorkoutEndedEvent';
+}
+
+export interface WorkoutAutoFinishDueEvent {
+  type: 'WorkoutAutoFinishDueEvent';
 }
 
 export interface FinishWorkoutCommand {

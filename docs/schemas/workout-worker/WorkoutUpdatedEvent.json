@@ -23,6 +23,9 @@
     },
     "workoutDuration": {
       "$ref": "./Duration.json"
+    },
+    "autoFinishAt": {
+      "$ref": "./Instant.json"
     }
   },
   "required": [

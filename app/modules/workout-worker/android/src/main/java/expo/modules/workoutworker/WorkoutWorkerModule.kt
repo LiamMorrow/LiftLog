@@ -31,7 +31,7 @@ class WorkoutWorkerModule : Module() {
     }
 
     private var service: WorkoutWorkerService? = null
-    private var pendingEvent: WorkoutMessage? = null
+    private val pendingEvents = mutableListOf<WorkoutMessage>()
 
     // The observer for this instance of the module, used only for removing it when app stops listening
     private var workoutMessageReceivedObserver: ((WorkoutMessage) -> Unit)? =
@@ -49,10 +49,9 @@ class WorkoutWorkerModule : Module() {
                 sendEvent("on", bundleOf("jsonString" to jsonString, "type" to type))
             }
 
-            // Send any event that was waiting for the service to be ready
-            pendingEvent?.let { event ->
-                service?.enqueue(event)
-                pendingEvent = null
+            synchronized(pendingEvents) {
+                pendingEvents.forEach { service?.enqueue(it) }
+                pendingEvents.clear()
             }
         }
 
@@ -107,23 +106,33 @@ class WorkoutWorkerModule : Module() {
                         ContextCompat.startForegroundService(context, intent)
                         context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
 
-                        // Store event to send once service is connected
-                        pendingEvent = event
+                        synchronized(pendingEvents) {
+                            pendingEvents.clear()
+                            pendingEvents.add(event)
+                        }
                     }
                 }
 
                 event.payload is WorkoutEndedEvent -> {
                     // Forward the event, unbind, then stop the service
+                    synchronized(pendingEvents) { pendingEvents.clear() }
                     service?.enqueue(event)
                     unbindIfNeeded()
                     val intent = Intent(context, WorkoutWorkerService::class.java)
                     context.stopService(intent)
                 }
 
-                else -> {
-                    // Forward all other events to the running service
-                    service?.enqueue(event)
-                }
+                else -> forwardToService(event)
+            }
+        }
+    }
+
+    private fun forwardToService(event: WorkoutMessage) {
+        synchronized(pendingEvents) {
+            val connectedService = service
+            when {
+                connectedService != null -> connectedService.enqueue(event)
+                pendingEvents.isNotEmpty() -> pendingEvents.add(event)
             }
         }
     }

@@ -3,9 +3,9 @@ import { Duration, LocalDate, OffsetDateTime, ZoneOffset } from '@js-joda/core';
 import { v4 as uuid } from 'uuid';
 import { SessionBlueprint, CardioExerciseBlueprint } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
-import { Session } from '@/models/session-models/session';
+import { autoFinishCompletedWorkoutAfter, autoFinishWorkoutAfter, Session } from '@/models/session-models/session';
 import { RestTimer } from '@/models/session-models/rest-timer';
-import { RecordedCardioExercise } from '@/models/session-models/recorded-cardio-exercise';
+import { RecordedCardioExercise, RecordedCardioExerciseSet } from '@/models/session-models/recorded-cardio-exercise';
 import { RecordedWeightedExercise } from '@/models/session-models/recorded-weighted-exercise';
 import {
   tick,
@@ -1077,5 +1077,84 @@ describe('Session cardio timer', () => {
     const session = makeSession([makeWeightedBlueprint()]);
 
     expect(session.withCardioSet(0, 0, (s) => s.with({ duration: Duration.ofMinutes(4) }), tick())).toBe(session);
+  });
+});
+
+describe('Session auto-finish', () => {
+  const lastSetAt = tickAt(10, 0);
+
+  function sessionWithLastSetAt(time: OffsetDateTime) {
+    const blueprint = makeWeightedBlueprint();
+    return makeSession([blueprint]).withExercise(
+      0,
+      makeRecordedExercise(blueprint, [10, undefined], undefined, () => time),
+    );
+  }
+
+  function sessionWithCardioSet(update: (set: RecordedCardioExerciseSet) => RecordedCardioExerciseSet) {
+    const session = makeSession([makeCardioBlueprint(1)]);
+    return session.withExercise(0, (session.recordedExercises[0] as RecordedCardioExercise).withSet(0, update));
+  }
+
+  it('is never due before a set is recorded', () => {
+    const session = makeSession([makeWeightedBlueprint()]);
+
+    expect(session.autoFinishAt).toBeUndefined();
+    expect(session.isDueToAutoFinishAt(lastSetAt.plusDays(1))).toBe(false);
+  });
+
+  it('is due three hours after the last set', () => {
+    const session = sessionWithLastSetAt(lastSetAt);
+
+    expect(session.autoFinishAt).toEqual(lastSetAt.plus(autoFinishWorkoutAfter));
+    expect(session.isDueToAutoFinishAt(lastSetAt.plusHours(3).minusSeconds(1))).toBe(false);
+    expect(session.isDueToAutoFinishAt(lastSetAt.plusHours(3))).toBe(true);
+  });
+
+  it('is due an hour after the last set once every set is filled', () => {
+    const blueprint = makeWeightedBlueprint();
+    const session = makeSession([blueprint]).withExercise(
+      0,
+      makeRecordedExercise(blueprint, [10, 10, 10], undefined, () => lastSetAt),
+    );
+
+    expect(session.isComplete).toBe(true);
+    expect(session.autoFinishAt).toEqual(lastSetAt.plus(autoFinishCompletedWorkoutAfter));
+  });
+
+  it('counts a timed cardio set from the end of its duration', () => {
+    const session = sessionWithCardioSet((s) =>
+      s.with({ completionDateTime: lastSetAt, duration: Duration.ofHours(2) }),
+    );
+
+    expect(session.autoFinishAt).toEqual(lastSetAt.plusHours(2).plus(autoFinishWorkoutAfter));
+  });
+
+  it('is never due while a cardio timer is running', () => {
+    const session = sessionWithCardioSet((s) =>
+      s.with({ completionDateTime: lastSetAt, duration: Duration.ofMinutes(1) }).withTimerStarted(lastSetAt),
+    );
+
+    expect(session.autoFinishAt).toBeUndefined();
+    expect(session.isDueToAutoFinishAt(lastSetAt.plusDays(1))).toBe(false);
+  });
+
+  it('finishes at the given time when it is not yet due', () => {
+    const now = lastSetAt.plusHours(1);
+
+    expect(sessionWithLastSetAt(lastSetAt).finishedAsOf(now).finishedAt).toEqual(now);
+  });
+
+  it('finishes at the last set when it is due', () => {
+    const now = lastSetAt.plusHours(14);
+
+    expect(sessionWithLastSetAt(lastSetAt).finishedAsOf(now).finishedAt).toEqual(lastSetAt);
+  });
+
+  it('keeps a finish time it already has', () => {
+    const finishedAt = lastSetAt.plusMinutes(5);
+    const session = sessionWithLastSetAt(lastSetAt).with({ finishedAt });
+
+    expect(session.finishedAsOf(lastSetAt.plusHours(14)).finishedAt).toEqual(finishedAt);
   });
 });

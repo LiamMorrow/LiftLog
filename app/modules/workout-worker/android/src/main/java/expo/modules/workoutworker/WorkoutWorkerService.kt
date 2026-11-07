@@ -12,7 +12,10 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
+import com.limajuice.liftlog.WorkoutAutoFinishDueEvent
+import com.limajuice.liftlog.WorkoutEndedEvent
 import com.limajuice.liftlog.WorkoutMessage
+import com.limajuice.liftlog.WorkoutUpdatedEvent
 import expo.modules.workoutworker.handlers.WorkoutEndedHandler
 import expo.modules.workoutworker.handlers.WorkoutMessageHandler
 import expo.modules.workoutworker.handlers.WorkoutStartedHandler
@@ -20,12 +23,21 @@ import expo.modules.workoutworker.handlers.WorkoutUpdatedHandler
 import expo.modules.workoutworker.utils.WorkoutNotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
 
 class WorkoutWorkerService : Service() {
+
+    companion object {
+        // delay() runs on a clock that stops while the device sleeps, so the wall clock is checked again each interval.
+        private val AUTO_FINISH_CHECK_INTERVAL = 1.minutes
+    }
 
     /** Binder that gives clients access to this service instance */
     inner class LocalBinder : Binder() {
@@ -42,6 +54,8 @@ class WorkoutWorkerService : Service() {
     private val scope = CoroutineScope(
         SupervisorJob() + Dispatchers.Default
     )
+
+    private var autoFinishJob: Job? = null
 
     private val events = MutableSharedFlow<WorkoutMessage>(
         extraBufferCapacity = 64
@@ -106,7 +120,26 @@ class WorkoutWorkerService : Service() {
     }
 
     fun enqueue(event: WorkoutMessage) {
+        watchForAutoFinish(event)
         events.tryEmit(event)
+    }
+
+    private fun watchForAutoFinish(event: WorkoutMessage) {
+        val payload = event.payload
+        if (payload !is WorkoutUpdatedEvent && payload !is WorkoutEndedEvent) {
+            return
+        }
+        autoFinishJob?.cancel()
+        val autoFinishAt = (payload as? WorkoutUpdatedEvent)?.autoFinishAt ?: return
+        autoFinishJob = scope.launch {
+            while (Clock.System.now() < autoFinishAt) {
+                delay(minOf(autoFinishAt - Clock.System.now(), AUTO_FINISH_CHECK_INTERVAL))
+            }
+            eventDispatch(
+                "WorkoutAutoFinishDueEvent",
+                event.copy(payload = WorkoutAutoFinishDueEvent(type = "WorkoutAutoFinishDueEvent"))
+            )
+        }
     }
 
     private suspend fun dispatchToHandlers(event: WorkoutMessage) {

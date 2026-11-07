@@ -194,6 +194,8 @@ export const { selectSession, selectActiveSession, selectActiveSessionId, select
 /** Fired when a session is done being edited: publish it, export it, and re-derive what depends on it. */
 export const sessionFinished = createAction<string>('sessionFinished');
 
+export const autoFinishWorkout = createAction('autoFinishWorkout');
+
 export const selectExerciseById = createSelector(
   [selectExercises, (_, id: string) => id],
   (exercises, id) => exercises[id],

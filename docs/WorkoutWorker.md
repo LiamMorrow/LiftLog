@@ -60,6 +60,7 @@ The service is responsible only for execution concerns (notifications, timers, s
 - `WorkoutStartedEvent`
 - `WorkoutUpdatedEvent`
 - `WorkoutEndedEvent`
+- `WorkoutAutoFinishDueEvent`
 
 **Commands** represent instructions for actions to perform:
 
@@ -68,7 +69,8 @@ The service is responsible only for execution concerns (notifications, timers, s
 Messages are **bidirectional**:
 
 - **App → Worker**: Events describing workout state changes (start, update, end)
-- **Worker → App**: Commands requesting actions (e.g. finish workout from notification)
+- **Worker → App**: Commands requesting actions (e.g. finish workout from notification), and observations
+  (e.g. the auto-finish time passed)
 
 When the app broadcasts an event:
 
@@ -118,6 +120,21 @@ The native bridge receives a json string directly and uses generated classes for
 2. The worker creates a command message (e.g. `FinishWorkoutCommand`)
 3. The command is dispatched back to the app via the event bridge
 4. The app handles the command (e.g. dispatches Redux action to finish workout)
+
+---
+
+## Auto-finish
+
+In order to stop a forgotten Finish tap from leaving a workout in progress, the app finishes a workout once
+nothing has been recorded for a few hours, or sooner once every set is filled. It is finished as of its
+last set, and only where the user cannot see it happen:
+
+- At launch, before the workout is resumed.
+- On Android, while the app is in the background: each `WorkoutUpdatedEvent` carries the `autoFinishAt`
+  the app computed, and the worker sends `WorkoutAutoFinishDueEvent` back once that time passes. The app
+  re-checks and finishes the workout, which ends the worker as usual.
+
+A running cardio timer holds the workout open, and the app never finishes one while it is in the foreground.
 
 ---
 

@@ -3,11 +3,13 @@ import {
   closeSession,
   deleteExercise,
   deleteStoredSession,
+  autoFinishWorkout,
   initializeStoredSessionsStateSlice,
   loadBuiltInExerciseCatalog,
   openSession,
   putStoredSession,
   restoreExercise,
+  selectActiveSession,
   selectSession,
   sessionFinished,
   sessionsChanged,
@@ -47,9 +49,18 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
       }
       await logger.time('initializeStoredSessions', async () => {
         const activeSession = readActiveSession(db);
-        // Only when there is one: dispatching `undefined` would clear every flag in the table, and a
-        // kill between that write and the migration below would lose the workout in progress.
-        if (activeSession) {
+        const now = OffsetDateTime.now();
+        if (activeSession?.isDueToAutoFinishAt(now)) {
+          const finished = activeSession.finishedAsOf(now);
+          db.transaction((tx) => {
+            writeSession(tx, finished);
+            setActiveSession(tx, undefined);
+          });
+          dispatch(openSession(finished));
+          dispatch(sessionFinished(finished.id));
+        } else if (activeSession) {
+          // Only when there is one: dispatching `undefined` would clear every flag in the table, and a
+          // kill between that write and the migration below would lose the workout in progress.
           dispatch(openSession(activeSession));
           dispatch(setActiveSessionId(activeSession.id));
         }
@@ -102,9 +113,7 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
     }
 
     const isActive = state.storedSessions.activeSessionId === openWorkout.id;
-    const workout = isActive
-      ? openWorkout.with({ finishedAt: openWorkout.finishedAt ?? OffsetDateTime.now() })
-      : openWorkout;
+    const workout = isActive ? openWorkout.finishedAsOf(OffsetDateTime.now()) : openWorkout;
     if (isActive) {
       dispatch(setActiveSessionId(undefined));
     }
@@ -123,6 +132,13 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
       await healthExportService.exportWorkout(workout);
     } catch (e) {
       logger.error('Failed to sync to health aggregator', e);
+    }
+  });
+
+  addEffect(autoFinishWorkout, (_, { getState, dispatch }) => {
+    const activeSession = selectActiveSession(getState());
+    if (activeSession?.isDueToAutoFinishAt(OffsetDateTime.now())) {
+      dispatch(sessionFinished(activeSession.id));
     }
   });
 

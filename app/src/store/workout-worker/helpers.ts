@@ -12,6 +12,7 @@ export function workoutUpdatedEvent(session: Session, restTimersEnabled: boolean
     currentExerciseDetails: getCurrentExerciseDetails(session),
     totalWeightLifted: session.totalWeightLifted.toJSON(),
     workoutDuration: toDurationJSON(session.duration ?? Duration.ZERO),
+    autoFinishAt: toInstantJson(session.autoFinishAt?.toInstant()),
   } as const;
 }
 

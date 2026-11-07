@@ -18,6 +18,9 @@
       "$ref": "./WorkoutEndedEvent.json"
     },
     {
+      "$ref": "./WorkoutAutoFinishDueEvent.json"
+    },
+    {
       "$ref": "./FinishWorkoutCommand.json"
     }
   ]

@@ -1,9 +1,10 @@
 import { AppConfiguration, Translations, WorkoutMessage } from '@/models/workout-worker-messages';
 import WorkoutWorkerModule from '~/modules/workout-worker/src/WorkoutWorkerModule';
 import { RootState } from '@/store';
-import { selectActiveSessionId, sessionFinished } from '@/store/stored-sessions';
+import { autoFinishWorkout, selectActiveSessionId, sessionFinished } from '@/store/stored-sessions';
 import { Dispatch } from '@reduxjs/toolkit';
 import { TolgeeInstance, TranslationKey } from '@tolgee/react';
+import { AppState } from 'react-native';
 
 export class WorkoutWorker {
   private readonly listeners = new Map<WorkoutMessage['payload']['type'], ((e: WorkoutMessage['payload']) => void)[]>();
@@ -20,6 +21,7 @@ export class WorkoutWorker {
     });
 
     this.on('FinishWorkoutCommand', () => this.handleFinishWorkout());
+    this.on('WorkoutAutoFinishDueEvent', () => this.handleWorkoutAutoFinishDue());
   }
 
   broadcast(event: WorkoutMessage['payload']) {
@@ -42,6 +44,12 @@ export class WorkoutWorker {
     const activeSessionId = selectActiveSessionId(this.getState());
     if (activeSessionId) {
       this.dispatch(sessionFinished(activeSessionId));
+    }
+  }
+
+  private handleWorkoutAutoFinishDue() {
+    if (AppState.currentState !== 'active') {
+      this.dispatch(autoFinishWorkout());
     }
   }
 
