@@ -387,12 +387,14 @@ describe('fetchFeedItems with real encryption', () => {
     ]);
   });
 
-  const publisher = (aesKey: AesKey) =>
-    new FeedIdentity(FOLLOWED_ID, 'lookup', aesKey, rsaKeyPair, 'pw', 'Bob', false, true, true);
+  const OTHER_FRIEND_ID = 'other-friend';
 
-  async function publishedEvent(aesKey: AesKey) {
+  const publisher = (aesKey: AesKey, authorId = FOLLOWED_ID) =>
+    new FeedIdentity(authorId, 'lookup', aesKey, rsaKeyPair, 'pw', 'Bob', false, true, true);
+
+  async function publishedEvent(aesKey: AesKey, authorId = FOLLOWED_ID) {
     const putUserEventAsync = vi.fn().mockResolvedValue(ApiResult.success());
-    await publishSessionAsync(publisher(aesKey), sessionWithBodyweight(undefined), encryptionService, {
+    await publishSessionAsync(publisher(aesKey, authorId), sessionWithBodyweight(undefined), encryptionService, {
       putUserEventAsync,
     } as never);
     return { ...(putUserEventAsync.mock.calls[0]![0] as Omit<UserEventResponse, 'userId'>), userId: FOLLOWED_ID };
@@ -413,7 +415,10 @@ describe('fetchFeedItems with real encryption', () => {
     const testBed = createAddEffectTestBed({
       initialState: {
         feed: {
-          friends: { [FOLLOWED_ID]: makeFriend(FOLLOWED_ID, { publicKey: rsaKeyPair.publicKey, theirKeys }) },
+          friends: {
+            [FOLLOWED_ID]: makeFriend(FOLLOWED_ID, { publicKey: rsaKeyPair.publicKey, theirKeys }),
+            [OTHER_FRIEND_ID]: makeFriend(OTHER_FRIEND_ID),
+          },
         },
       },
       services: {
@@ -447,6 +452,15 @@ describe('fetchFeedItems with real encryption', () => {
     const events = [await publishedEvent(algorithm === 'AES-CBC' ? cbcKey : gcmKey)];
 
     expect(eventIds(await fetchWithKeys([gcmKey, cbcKey], { events }))).toEqual(['session-1']);
+  });
+
+  it("drops an event a friend signed in another user's name, without treating it as a key problem", async () => {
+    const events = [await publishedEvent(gcmKey, OTHER_FRIEND_ID)];
+
+    const testBed = await fetchWithKeys([gcmKey], { events });
+
+    expect(eventIds(testBed)).toEqual([]);
+    expect(testBed.getDispatchedAction(repairFriends).payload).toEqual({ undecryptable: [] });
   });
 
   it('cannot read an AES-CBC event once only the AES-GCM key is left', async () => {

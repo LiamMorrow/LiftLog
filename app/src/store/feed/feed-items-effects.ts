@@ -370,7 +370,8 @@ export async function toFeedItemAsync(
       encryptionService,
     );
     const payload = fromJsonBytes<AnyVersionUserEventJSON>(decryptedPayload);
-    return fromFeedUserEventJSON(userEventMigrations.migrate(payload));
+    const item = fromFeedUserEventJSON(userEventMigrations.migrate(payload));
+    return item.userId === friend.id ? item : null;
   } catch (error) {
     console.error('Failed to decrypt feed item. Skipping.', error);
     return error instanceof NoKeyDecrypts ? 'undecryptable' : null;

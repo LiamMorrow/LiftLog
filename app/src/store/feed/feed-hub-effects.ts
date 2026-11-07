@@ -133,7 +133,7 @@ async function decryptLiveFrameAsync(
     return undefined;
   }
   const item = await toFeedItemAsync(frame, friend, encryptionService);
-  if (!(item instanceof LiveSessionUserEvent) || item.userId !== frame.userId || item.isStale(Instant.now())) {
+  if (!(item instanceof LiveSessionUserEvent) || item.isStale(Instant.now())) {
     return undefined;
   }
   const finished = getState().feed.feed.some((x) => x.userId === item.userId && x.eventId === item.eventId);

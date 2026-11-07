@@ -7,7 +7,7 @@ import { fromJsonBytes, toJsonBytes } from '@/services/encryption-service';
 import { encryptAndShare, feedApiError, fetchSharedItem, setSharedItem } from '@/store/feed';
 import { AddEffectFn } from '@/store/store';
 import { createAndStoreFeedIdentity } from '@/store/feed/create-feed-identity';
-import { toUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
+import { toSharedItemKeyFragment } from '@/utils/shared-item-key';
 
 export function addSharedItemEffects(addEffect: AddEffectFn) {
   addEffect(
@@ -33,7 +33,7 @@ export function addSharedItemEffects(addEffect: AddEffectFn) {
         return;
       }
 
-      const aesKey = await encryptionService.generateAesKey('AES-CBC');
+      const aesKey = await encryptionService.generateAesKey('AES-GCM');
       const payload = action.payload.item.toJSON();
       const payloadBytes = toJsonBytes(payload);
 
@@ -90,5 +90,5 @@ export function addSharedItemEffects(addEffect: AddEffectFn) {
 }
 
 function getShareUrl(sharedItemId: string, aesKey: AesKey) {
-  return `https://app.liftlog.online/feed/shared-item/${sharedItemId}#${toUrlSafeHexString(aesKey.value)}`;
+  return `https://app.liftlog.online/feed/shared-item/${sharedItemId}#${toSharedItemKeyFragment(aesKey)}`;
 }

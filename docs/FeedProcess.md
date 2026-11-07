@@ -134,13 +134,13 @@ sequenceDiagram
 
 The inbox message types:
 
-| Type            | Payload                                           | On receipt                                                                                                                                                                                                                                                     |
-| --------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `FriendRequest` | name                                              | From a stranger: stored as `incoming`. From a `pending`, `friend` or `legacyFollower`: they get our keys. Ignored from a `legacyFollowing`.                                                                                                                    |
+| Type            | Payload                                           | On receipt                                                                                                                                                                                                                                                              |
+| --------------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FriendRequest` | name                                              | From a stranger: stored as `incoming`. From a `pending`, `friend` or `legacyFollower`: they get our keys. Ignored from a `legacyFollowing`.                                                                                                                             |
 | `FriendKeys`    | AES keys (newest first, at most 20), FollowSecret | Replaces their keys and secret. A `pending` or `legacyFollower` becomes a `friend`. Our keys are resent if they were `pending`, or if we asked them to repair the friendship. Ignored from strangers and `incoming`, and when older than the last `FriendKeys` applied. |
-| `FriendReject`  | none                                              | Ends a request we are waiting on.                                                                                                                                                                                                                              |
-| `Unfriend`      | none                                              | Removes them ([see Removing a friend](#removing-a-friend)).                                                                                                                                                                                                    |
-| `Reaction`      | a cheer on a feed item                            | Accepted only from a `friend`                                                                                                                                                                                                                                  |
+| `FriendReject`  | none                                              | Ends a request we are waiting on.                                                                                                                                                                                                                                       |
+| `Unfriend`      | none                                              | Removes them ([see Removing a friend](#removing-a-friend)).                                                                                                                                                                                                             |
+| `Reaction`      | a cheer on a feed item                            | Accepted only from a `friend`                                                                                                                                                                                                                                           |
 
 PUT /inbox is unauthenticated by design: anyone who knows a user id can post into that user's inbox. The signature proves who wrote a message, never that the sender was entitled to send it, which is why every rule above checks the sender's status first.
 
@@ -242,11 +242,11 @@ On decryption, each key held for that user is tried, newest first:
 4. The Signature is verified using the PublicKey and the UnverifiedPayloadHash
 5. If the signature is valid, then the payload is valid
 
+A feed item is shown only if the user named inside the payload is the friend whose key verified the payload. Otherwise one friend could sign an item in another friend's name.
+
 #### AES-CBC keys
 
 Keys created before AES-GCM are AES-CBC, and a key with no recorded algorithm is AES-CBC. AES-CBC keys use the same steps with a random 16-byte IV, and a profile encrypts every field under the one `encryptionIV`. AES-CBC does not authenticate ciphertext, so an attacker who knows part of the plaintext can modify the ciphertext without the key, as described in [this post by Seald](https://www.seald.io/blog/3-common-mistakes-when-implementing-encryption). The RSA signature covers this attack, because a modified payload hashes differently and its signature no longer verifies.
-
-Shared-item links carry a one-off AES-128-CBC key in the URL fragment, which browsers never send to the server.
 
 ## Where the code is
 
