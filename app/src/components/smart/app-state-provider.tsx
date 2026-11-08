@@ -1,5 +1,4 @@
 import { Loader } from '@/components/presentation/foundation/loader';
-import { AnimatedSplash } from '@/components/presentation/startup/animated-splash';
 import { NativeButton } from '@/components/presentation/foundation/native-button';
 import BugReportIcon from '@expo/material-symbols/bug_report.xml';
 import TerminalIcon from '@expo/material-symbols/terminal.xml';
@@ -28,24 +27,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const isHydrated = !waitingOn;
   const isReady = isHydrated && isUpcomingLoaded;
   const isStuck = useIsStuck();
-  const { colors } = useAppTheme();
-  const isThemeLoaded = useAppSelector((s) => s.settings.isHydrated);
-  const splashTheme = isThemeLoaded ? { logo: colors.primary, ground: colors.surface } : undefined;
-  const [isSplashFinished, setIsSplashFinished] = useState(false);
   const showStuck = !isReady && isStuck;
 
   useEffect(() => {
-    if (showStuck) {
+    if (isReady || showStuck) {
       SplashScreen.hide();
     }
-  }, [showStuck]);
+  }, [isReady, showStuck]);
 
   return (
     <>
       {isHydrated && children}
-      {!isSplashFinished && !showStuck && (
-        <AnimatedSplash isReady={isReady} theme={splashTheme} onFinished={() => setIsSplashFinished(true)} />
-      )}
       {showStuck && <StuckScreen loadingText={waitingOn ?? 'Loading upcoming workouts'} />}
     </>
   );
