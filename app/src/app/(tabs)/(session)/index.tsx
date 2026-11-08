@@ -128,7 +128,6 @@ function ListUpcomingWorkouts({
       {upcoming.length ? (
         <TitledSection style={{ marginTop: spacing[2] }} title={t('workout.upcoming.title')} trailing={plan.name}>
           <CardList
-            keySelector={(x) => x.id}
             items={upcoming}
             renderItemContent={(session) => {
               return (
