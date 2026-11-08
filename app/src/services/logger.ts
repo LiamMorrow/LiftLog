@@ -157,6 +157,10 @@ export class Logger {
     }
   }
 
+  logAppStart(appDetails: string): void {
+    this.info(`========== App started: ${appDetails} ==========`);
+  }
+
   log(message: string): void {
     this.store('log', message);
     console.log(message);

@@ -134,6 +134,22 @@ describe('Logger', () => {
     });
   });
 
+  describe('logAppStart', () => {
+    it('writes a separator line naming the app details, keeping the output one JSON entry per line', async () => {
+      logger.info('from the previous run');
+      logger.logAppStart('LiftLog 4.26.0');
+      logger.info('from this run');
+
+      const lines = (await logger.getLogsAsString()).split('\n');
+
+      expect(lines).toHaveLength(3);
+      expect(JSON.parse(lines[1]!)).toMatchObject({
+        level: 'info',
+        message: '========== App started: LiftLog 4.26.0 ==========',
+      });
+    });
+  });
+
   describe('time', () => {
     it('logs completion time for sync actions', () => {
       logger.time('sync-task', () => {});

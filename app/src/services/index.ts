@@ -25,11 +25,16 @@ import { DatabaseMigrationService } from './database-migration-service';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { SQLiteDatabase } from 'expo-sqlite';
 import { DatabaseImportService } from '@/services/database-import-service';
+import * as Application from 'expo-application';
+import { Platform } from 'react-native';
 
 export type Services = ReturnType<typeof createServices>;
 
 export function createServices(store: Store<RootState>, db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
   const logger = new Logger();
+  logger.logAppStart(
+    `LiftLog ${Application.nativeApplicationVersion ?? 'unknown'} (${Application.nativeBuildVersion ?? 'unknown'}) on ${Platform.OS} ${Platform.Version}`,
+  );
   const keyValueStore = new KeyValueStore();
   const sessionService = new SessionService(db, store.getState);
   const notificationService = new NotificationService(store.getState, store.dispatch);
