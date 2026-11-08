@@ -1,6 +1,7 @@
 import { NativeButtonProps, NativeButtonVariant } from './native-button-props';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import {
+  Box,
   Button,
   CircularProgressIndicator,
   ElevatedButton,
@@ -85,7 +86,11 @@ export function NativeButton({
           {loading ? (
             <CircularProgressIndicator strokeWidth={2} modifiers={[size(iconSize, iconSize)]} />
           ) : (
-            icon !== undefined && <Icon source={icon} size={iconSize} />
+            icon !== undefined && (
+              <Box modifiers={[size(iconSize, iconSize)]}>
+                <Icon source={icon} size={iconSize} />
+              </Box>
+            )
           )}
           <Text>{label}</Text>
         </Row>

@@ -42,3 +42,16 @@ the workaround is safe.
 - **Remove when:** expo-splash-screen resets the flag itself when it registers on an activity.
 - **Verify:** On a release build on Android, open the app, swipe it away from recents without force stopping it, and
   open it again. The logo should be on screen from the first frame, with no blank window before it.
+
+## Compose icons in native buttons and page actions sit in a fixed-size box
+
+- **Where:** `app/src/components/presentation/foundation/native-button/native-button.android.tsx` and
+  `app/src/components/presentation/foundation/page-actions/page-actions.android.tsx` wrap each `Icon` in a `Box`
+  sized to the icon.
+- **Why:** The expo-ui Android `Icon` loads its source asynchronously and draws nothing until the load finishes.
+  A `matchContents` host measures the button without the icon on its first frame, then grows once the icon
+  arrives. Because the host is laid out narrower than the button for that frame, the button overflows to the
+  right and pushes its neighbours with it, such as the card actions on Home.
+- **Remove when:** expo-ui's `Icon` reserves its `size` while the source loads.
+- **Verify:** On Android, start a workout from Home. The card actions should not shift right for a frame when
+  the current workout card appears.

@@ -1,6 +1,7 @@
 import { spacing } from '@/hooks/useAppTheme';
 import { PageAction, PageActionsProps } from './page-actions-props';
 import {
+  Box,
   Button,
   ExtendedFloatingActionButton,
   HorizontalFloatingToolbar,
@@ -10,6 +11,7 @@ import {
   Text,
   TextButton,
 } from '@expo/ui/jetpack-compose';
+import { size } from '@expo/ui/jetpack-compose/modifiers';
 import { PageActionsAccessory } from './page-actions-accessory';
 import { View } from 'react-native';
 import { FloatingHost } from '@/components/presentation/foundation/floating-host';
@@ -25,7 +27,9 @@ export function PageActions({
 }: PageActionsProps) {
   const label = (action: PageAction, iconSize: number) => (
     <Row horizontalArrangement={{ spacedBy: spacing[2] }} verticalAlignment="center">
-      <Icon source={action.icon} size={iconSize} />
+      <Box modifiers={[size(iconSize, iconSize)]}>
+        <Icon source={action.icon} size={iconSize} />
+      </Box>
       <Text>{action.label}</Text>
     </Row>
   );
@@ -35,7 +39,11 @@ export function PageActions({
   // A FAB shows its label as a Compose Text, which never reaches the accessibility tree, and the
   // extended one drops the label entirely once collapsed. Either way the icon is the only thing
   // left to name the button, so it carries the description.
-  const primaryIcon = <Icon source={primary.icon} size={24} contentDescription={primary.label} />;
+  const primaryIcon = (
+    <Box modifiers={[size(24, 24)]}>
+      <Icon source={primary.icon} size={24} contentDescription={primary.label} />
+    </Box>
+  );
 
   const surfaceActions = secondary.length ? (
     <HorizontalFloatingToolbar variant="standard">
