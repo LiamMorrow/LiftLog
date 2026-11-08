@@ -1,23 +1,24 @@
 import { Logger } from '@/services/logger';
 import { Component, ErrorInfo, ReactNode } from 'react';
 
-interface UncaughtErrorLoggerProps {
+interface AppErrorBoundaryProps {
   logger: Logger;
+  fallback: ReactNode;
   children: ReactNode;
 }
 
-interface UncaughtErrorLoggerState {
-  caught?: { error: unknown };
+interface AppErrorBoundaryState {
+  hasCaughtError: boolean;
   isLogPersisted: boolean;
 }
 
-export class UncaughtErrorLogger extends Component<UncaughtErrorLoggerProps, UncaughtErrorLoggerState> {
-  override state: UncaughtErrorLoggerState = { isLogPersisted: false };
+export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundaryState> {
+  override state: AppErrorBoundaryState = { hasCaughtError: false, isLogPersisted: false };
 
   private restoreGlobalHandler?: () => void;
 
-  static getDerivedStateFromError(error: unknown): Partial<UncaughtErrorLoggerState> {
-    return { caught: { error } };
+  static getDerivedStateFromError(): Partial<AppErrorBoundaryState> {
+    return { hasCaughtError: true };
   }
 
   override componentDidMount() {
@@ -41,13 +42,10 @@ export class UncaughtErrorLogger extends Component<UncaughtErrorLoggerProps, Unc
   }
 
   override render() {
-    const { caught, isLogPersisted } = this.state;
-    if (!caught) {
+    const { hasCaughtError, isLogPersisted } = this.state;
+    if (!hasCaughtError) {
       return this.props.children;
     }
-    if (isLogPersisted) {
-      throw caught.error;
-    }
-    return null;
+    return isLogPersisted ? this.props.fallback : null;
   }
 }

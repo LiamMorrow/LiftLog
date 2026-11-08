@@ -1,4 +1,6 @@
-import { UncaughtErrorLogger } from '@/components/app-shell/uncaught-error-logger';
+import { AppErrorBoundary } from '@/components/app-shell/app-error-boundary';
+import { ErrorPage } from '@/components/app-shell/error-page';
+import { AppThemeProvider } from '@/hooks/useAppTheme';
 import { Services } from '@/services';
 import { resolveStore } from '@/store';
 import { TolgeeProvider } from '@tolgee/react';
@@ -35,13 +37,22 @@ export default function ServicesProvider(props: { children: ReactNode }) {
   }
 
   return (
-    <UncaughtErrorLogger logger={services.logger}>
-      <Provider store={store}>
-        <ServicesContext.Provider value={services}>
-          <TolgeeProvider tolgee={services.tolgee}>{props.children}</TolgeeProvider>
-        </ServicesContext.Provider>
-      </Provider>
-    </UncaughtErrorLogger>
+    <Provider store={store}>
+      <ServicesContext.Provider value={services}>
+        <TolgeeProvider tolgee={services.tolgee}>
+          <AppErrorBoundary
+            logger={services.logger}
+            fallback={
+              <AppThemeProvider>
+                <ErrorPage />
+              </AppThemeProvider>
+            }
+          >
+            {props.children}
+          </AppErrorBoundary>
+        </TolgeeProvider>
+      </ServicesContext.Provider>
+    </Provider>
   );
 }
 export function useServices() {

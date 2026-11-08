@@ -1,12 +1,12 @@
-import { UncaughtErrorLogger } from '@/components/app-shell/uncaught-error-logger';
+import { AppErrorBoundary } from '@/components/app-shell/app-error-boundary';
 import { Logger } from '@/services/logger';
-import { act, render } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { Component, ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 type GlobalHandler = (error: unknown, isFatal?: boolean) => void;
 
-class RethrownErrorCapture extends Component<{ onRethrown: (error: unknown) => void; children: ReactNode }> {
+class OuterErrorCapture extends Component<{ onError: (error: unknown) => void; children: ReactNode }> {
   override state = { hasError: false };
 
   static getDerivedStateFromError() {
@@ -14,7 +14,7 @@ class RethrownErrorCapture extends Component<{ onRethrown: (error: unknown) => v
   }
 
   override componentDidCatch(error: unknown) {
-    this.props.onRethrown(error);
+    this.props.onError(error);
   }
 
   override render() {
@@ -26,7 +26,7 @@ function ThrowsOnRender({ error }: { error: Error }): ReactNode {
   throw error;
 }
 
-describe('UncaughtErrorLogger', () => {
+describe('AppErrorBoundary', () => {
   let logger: Logger;
   let globalHandler: GlobalHandler;
   let reactNativeHandler: ReturnType<typeof vi.fn<GlobalHandler>>;
@@ -50,25 +50,31 @@ describe('UncaughtErrorLogger', () => {
     vi.restoreAllMocks();
   });
 
-  it('persists a render error with its component stack before rethrowing it', async () => {
-    const error = new Error('render failed');
-    const onRethrown = vi.fn();
-
+  it('renders children when nothing throws', () => {
     render(
-      <RethrownErrorCapture onRethrown={onRethrown}>
-        <UncaughtErrorLogger logger={logger}>
-          <ThrowsOnRender error={error} />
-        </UncaughtErrorLogger>
-      </RethrownErrorCapture>,
+      <AppErrorBoundary logger={logger} fallback={<p>error page</p>}>
+        <p>content</p>
+      </AppErrorBoundary>,
     );
 
-    expect(onRethrown).not.toHaveBeenCalled();
+    expect(screen.queryByText('content')).not.toBeNull();
+    expect(screen.queryByText('error page')).toBeNull();
+  });
+
+  it('persists a render error with its component stack before showing the fallback', async () => {
+    render(
+      <AppErrorBoundary logger={logger} fallback={<p>error page</p>}>
+        <ThrowsOnRender error={new Error('render failed')} />
+      </AppErrorBoundary>,
+    );
+
+    expect(screen.queryByText('error page')).toBeNull();
 
     await act(async () => {
       await logger.writeQueue;
     });
 
-    expect(onRethrown).toHaveBeenCalledWith(error);
+    expect(screen.queryByText('error page')).not.toBeNull();
     const entry = JSON.parse(await logger.getLogsAsString()) as {
       level: string;
       message: string;
@@ -80,11 +86,30 @@ describe('UncaughtErrorLogger', () => {
     expect(entry.options.componentStack).toContain('ThrowsOnRender');
   });
 
+  it('lets an error from the fallback reach the root', async () => {
+    const onError = vi.fn();
+    const fallbackError = new Error('fallback failed');
+
+    render(
+      <OuterErrorCapture onError={onError}>
+        <AppErrorBoundary logger={logger} fallback={<ThrowsOnRender error={fallbackError} />}>
+          <ThrowsOnRender error={new Error('render failed')} />
+        </AppErrorBoundary>
+      </OuterErrorCapture>,
+    );
+
+    await act(async () => {
+      await logger.writeQueue;
+    });
+
+    expect(onError).toHaveBeenCalledWith(fallbackError);
+  });
+
   it('persists a global error before forwarding it to the React Native handler', async () => {
     render(
-      <UncaughtErrorLogger logger={logger}>
+      <AppErrorBoundary logger={logger} fallback={null}>
         <></>
-      </UncaughtErrorLogger>,
+      </AppErrorBoundary>,
     );
     const error = new Error('timer failed');
 
@@ -101,9 +126,9 @@ describe('UncaughtErrorLogger', () => {
 
   it('restores the React Native handler on unmount', () => {
     const { unmount } = render(
-      <UncaughtErrorLogger logger={logger}>
+      <AppErrorBoundary logger={logger} fallback={null}>
         <></>
-      </UncaughtErrorLogger>,
+      </AppErrorBoundary>,
     );
     expect(globalHandler).not.toBe(reactNativeHandler);
 

@@ -276,6 +276,8 @@
   "app.stuck_loading.report.button": "Submit a bug report",
   "app.stuck_loading.copy_logs.button": "Copy logs",
   "app.stuck_loading.copied.label": "Logs copied to clipboard",
+  "app.error_page.title": "Something went wrong",
+  "app.error_page.message": "LiftLog ran into an unexpected error. Close and reopen the app to keep going. Copying your logs into a bug report helps us fix it.",
   "generic.minute.label": "Minute",
   "generic.never.label": "Never",
   "generic.next.button": "Next",
