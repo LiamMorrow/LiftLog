@@ -37,7 +37,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   return (
     <>
-      {isHydrated && children}
+      {isReady && children}
       {showStuck && <StuckScreen loadingText={waitingOn ?? 'Loading upcoming workouts'} />}
     </>
   );

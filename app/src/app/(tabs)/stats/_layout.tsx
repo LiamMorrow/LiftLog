@@ -1,5 +1,5 @@
-import StackWithHeader from '@/components/layout/stack-with-header';
+import { LazyTabStack } from '@/components/layout/lazy-tab-stack';
 
 export default function Layout() {
-  return <StackWithHeader />;
+  return <LazyTabStack />;
 }
