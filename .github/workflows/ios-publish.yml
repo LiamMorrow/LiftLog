@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-15
+    runs-on: macos-26
 
     env:
       # App Store Connect API auth (required for automatic signing)
