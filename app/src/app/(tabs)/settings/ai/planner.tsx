@@ -7,11 +7,11 @@ import { Dimensions, FlatList, Platform, View, type ViewInstance } from 'react-n
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
-import { NativeIconButton } from '@/components/presentation/foundation/native-icon-button';
+import { NativeIconButton } from '@/components/foundation/native-icon-button';
 import StopIcon from '@expo/material-symbols/stop.xml';
 import SendIcon from '@expo/material-symbols/send.xml';
 import Replay from '@expo/material-symbols/replay.xml';
-import { PillTextField, pillTextFieldHeight } from '@/components/presentation/foundation/pill-text-field';
+import { PillTextField, pillTextFieldHeight } from '@/components/foundation/pill-text-field';
 import { useAppSelector } from '@/store';
 import {
   addMessage,
@@ -25,8 +25,8 @@ import { uuid } from '@/utils/uuid';
 import { useScroll } from '@/hooks/useScrollListener';
 import { useMountEffect } from '@/hooks/useMountEffect';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChatBubble } from '@/components/presentation/ai-planner/chat-bubble';
-import { ShareProgramButton } from '@/components/presentation/ai-planner/share-program-button';
+import { ChatBubble } from '@/components/ai-planner/chat-bubble';
+import { ShareProgramButton } from '@/components/ai-planner/share-program-button';
 
 const COMPOSER_GAP = spacing[2];
 

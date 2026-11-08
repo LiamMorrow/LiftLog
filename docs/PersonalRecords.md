@@ -22,4 +22,4 @@ A session sets a record for an exercise when it beats every **earlier** session.
 - Your own history reads the same performances from summary columns on `recorded_exercise`
   (`readPerformances` in `app/src/db/sessions.ts`). `db/sessions.spec.ts` checks both paths agree.
 - The feed only holds 90 days of a friend's sessions, so its labels say "in 90 days".
-- UI: `app/src/components/smart/pr-badges.tsx`.
+- UI: `app/src/components/exercises/pr-badges.tsx`.

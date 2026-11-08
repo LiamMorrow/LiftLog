@@ -1,4 +1,4 @@
-import { ExerciseSearch } from '@/components/smart/exercise-search';
+import { ExerciseSearch } from '@/components/exercises/exercise-search';
 import { useLocalSearchParams } from 'expo-router';
 
 export default function ExerciseSearchPage() {

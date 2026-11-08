@@ -1,4 +1,4 @@
-import { CopyExercisePicker } from '@/components/smart/copy-exercise-picker';
+import { CopyExercisePicker } from '@/components/plans/copy-exercise-picker';
 import { useLocalSearchParams } from 'expo-router';
 
 export default function CopyExercisePage() {

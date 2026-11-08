@@ -1,5 +1,5 @@
-import { FeedItem } from '@/components/smart/feed-item';
-import { OwnHistoryProvider } from '@/components/smart/own-history-provider';
+import { FeedItem } from '@/components/feed/feed-item';
+import { OwnHistoryProvider } from '@/components/history/own-history-provider';
 import { useLocalSearchParams } from 'expo-router';
 
 export default function FeedItemPage() {

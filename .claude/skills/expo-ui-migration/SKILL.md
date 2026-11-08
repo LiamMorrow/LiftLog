@@ -14,7 +14,7 @@ Android. Each migrated control is a **platform-split triple**.
 
 ## The triple
 
-For a control `foo`, in its own folder under the relevant `components/presentation/.../foo/`:
+For a control `foo`, in its own folder under `components/foundation/foo/` (or the feature folder that owns it):
 
 - `foo-props.ts` - the shared props interface + any shared enums. Both platform files import from here.
   Mark platform-only props (`icon` is Android XML drawable; `systemImage` is an iOS SF Symbol).
@@ -23,7 +23,7 @@ For a control `foo`, in its own folder under the relevant `components/presentati
 - `foo.android.tsx` - the **Android** implementation, using `@expo/ui/jetpack-compose`.
 
 Metro picks `.android.tsx` on Android and `.tsx` elsewhere. **Reference exemplar:**
-`components/presentation/foundation/native-button/` (props + both platforms, clean and current).
+`components/foundation/native-button/` (props + both platforms, clean and current).
 
 ## Theming: seedColor is (almost) the only input
 

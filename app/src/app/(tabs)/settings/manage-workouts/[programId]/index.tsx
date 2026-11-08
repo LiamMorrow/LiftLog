@@ -1,20 +1,16 @@
 import AccessibilityNewIcon from '@expo/material-symbols/accessibility_new.xml';
 import ShareIcon from '@expo/material-symbols/share.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
-import EmptyInfo from '@/components/presentation/foundation/empty-info';
-import LimitedHtml from '@/components/presentation/foundation/limited-html';
-import { PageActions } from '@/components/presentation/foundation/page-actions';
-import { TitledSection } from '@/components/presentation/foundation/titled-section';
-import {
-  SegmentedGroup,
-  SegmentedListItem,
-  SegmentListFormElement,
-} from '@/components/presentation/foundation/segmented-list';
-import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
-import { SegmentedListTextInput } from '@/components/presentation/foundation/segmented-list-text-input';
-import { getMuscleAnalysisHref } from '@/components/smart/muscle-analysis';
-import { PlanWorkoutRow } from '@/components/smart/plan-workout-row';
-import { useReorderToolbarItem } from '@/components/smart/reorder-toolbar-item';
+import EmptyInfo from '@/components/foundation/empty-info';
+import LimitedHtml from '@/components/foundation/limited-html';
+import { PageActions } from '@/components/foundation/page-actions';
+import { TitledSection } from '@/components/foundation/titled-section';
+import { SegmentedGroup, SegmentedListItem, SegmentListFormElement } from '@/components/foundation/segmented-list';
+import { SegmentedListLink } from '@/components/foundation/segmented-list-link';
+import { SegmentedListTextInput } from '@/components/foundation/segmented-list-text-input';
+import { getMuscleAnalysisHref } from '@/components/muscles/muscle-analysis';
+import { PlanWorkoutRow } from '@/components/plans/plan-workout-row';
+import { useReorderToolbarItem } from '@/components/plans/reorder-toolbar-item';
 import { spacing } from '@/hooks/useAppTheme';
 import { SharedProgramBlueprint } from '@/models/feed-models';
 import { EmptySession } from '@/models/session-models';

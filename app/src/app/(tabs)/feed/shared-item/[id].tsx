@@ -1,6 +1,6 @@
-import { Remote } from '@/components/presentation/foundation/remote';
+import { Remote } from '@/components/foundation/remote';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import SharedItem, { SharedItemActions } from '@/components/smart/shared-item';
+import SharedItem, { SharedItemActions } from '@/components/feed/shared-item';
 import { RemoteData } from '@/models/remote';
 import { useAppSelector } from '@/store';
 import { fetchSharedItem, selectSharedItem, setSharedItem } from '@/store/feed';

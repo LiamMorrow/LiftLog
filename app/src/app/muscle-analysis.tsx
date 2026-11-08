@@ -1,4 +1,4 @@
-import { MuscleAnalysis } from '@/components/smart/muscle-analysis';
+import { MuscleAnalysis } from '@/components/muscles/muscle-analysis';
 import { useLocalSearchParams } from 'expo-router';
 
 export default function MuscleAnalysisPage() {

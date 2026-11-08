@@ -1,0 +1,61 @@
+import { AppText } from '@/components/foundation/app-text';
+import { spacing } from '@/hooks/useAppTheme';
+import { useTranslate } from '@tolgee/react';
+import { useRouter } from 'expo-router';
+import { Fragment } from 'react';
+import { View } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { NativeButton } from '@/components/foundation/native-button';
+import AssignmentAddIcon from '@expo/material-symbols/assignment_add.xml';
+import { uuid } from '@/utils/uuid';
+import SessionSummary from '@/components/session-summary/session-summary';
+import SessionSummaryTitle from '@/components/session-summary/session-summary-title';
+import { AiChatPlanResponseV2 } from '@/models/ai-models';
+import { ChatMessage } from '@/store/ai-planner';
+import { savePlan } from '@/store/program';
+import { Session } from '@/models/session-models';
+import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
+
+export function PlanMessage({ message, isUser }: { message: AiChatPlanResponseV2 & ChatMessage; isUser: boolean }) {
+  const dispatch = useDispatch();
+  const { t } = useTranslate();
+  const { push } = useRouter();
+  const preferredWeightUnit = usePreferredWeightUnit();
+  const blueprint = message.plan.blueprint;
+  const saveAiPlan = () => {
+    const programId = uuid();
+    dispatch(
+      savePlan({
+        programId,
+        programBlueprint: blueprint,
+      }),
+    );
+    push(`/settings/program-list?focusprogramId=${programId}`);
+  };
+  return (
+    <View style={{ gap: spacing[2] }}>
+      <AppText variant="headlineSmall" color={isUser ? 'onPrimary' : 'onSurface'}>
+        {message.plan.name}
+      </AppText>
+      <AppText variant="bodyLarge" color={isUser ? 'onPrimary' : 'onSurface'}>
+        {message.plan.description}
+      </AppText>
+      {blueprint.sessions.map((s, i) => (
+        <Fragment key={i}>
+          <SessionSummaryTitle session={Session.getEmptySession(s, preferredWeightUnit)} />
+          <SessionSummary session={Session.getEmptySession(s, preferredWeightUnit)} />
+        </Fragment>
+      ))}
+      {!message.isLoading && (
+        <View style={{ alignSelf: 'flex-end' }}>
+          <NativeButton
+            icon={AssignmentAddIcon}
+            systemImage="plus"
+            label={t('plan.save_new.button')}
+            onPress={saveAiPlan}
+          />
+        </View>
+      )}
+    </View>
+  );
+}

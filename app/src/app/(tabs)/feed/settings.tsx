@@ -1,4 +1,4 @@
-import { FeedSettings, FeedSettingsFocus } from '@/components/smart/feed-settings';
+import { FeedSettings, FeedSettingsFocus } from '@/components/feed/feed-settings';
 import { useLocalSearchParams } from 'expo-router';
 
 export default function FeedSettingsPage() {

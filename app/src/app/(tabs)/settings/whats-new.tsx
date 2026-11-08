@@ -1,6 +1,6 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import { Card, CardContent } from '@/components/presentation/foundation/card';
-import { NativeButton } from '@/components/presentation/foundation/native-button';
+import { Card, CardContent } from '@/components/foundation/card';
+import { NativeButton } from '@/components/foundation/native-button';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { latestWhatsNewId, whatsNewEntries, WhatsNewEntry } from '@/models/whats-new';
 import { useAppSelector } from '@/store';
@@ -9,8 +9,8 @@ import { T, useTranslate } from '@tolgee/react';
 import { Href, Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { View } from 'react-native';
-import { AppText } from '@/components/presentation/foundation/app-text';
-import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import { AppText } from '@/components/foundation/app-text';
+import { NativeIcon } from '@/components/foundation/native-icon';
 import { useDispatch } from 'react-redux';
 
 export default function WhatsNew() {

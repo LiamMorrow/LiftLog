@@ -1,13 +1,13 @@
 import { AppThemeProvider, useAppTheme } from '@/hooks/useAppTheme';
 import { I18nManager, LogBox, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { AppStateProvider } from '@/components/smart/app-state-provider';
-import { PlanImportGate } from '@/components/smart/plan-import-gate';
-import { SnackbarProvider } from '@/components/smart/snackbar-provider';
-import { ConfirmProvider } from '@/components/presentation/foundation/confirm';
+import { AppStateProvider } from '@/components/app-shell/app-state-provider';
+import { PlanImportGate } from '@/components/app-shell/plan-import-gate';
+import { SnackbarProvider } from '@/components/app-shell/snackbar-provider';
+import { ConfirmProvider } from '@/components/foundation/confirm';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
-import ServicesProvider from '@/components/smart/services-provider';
+import ServicesProvider from '@/components/app-shell/services-provider';
 import { install } from 'react-native-quick-crypto';
 import StackWithHeader from '@/components/layout/stack-with-header';
 import { Stack, useRouter } from 'expo-router';

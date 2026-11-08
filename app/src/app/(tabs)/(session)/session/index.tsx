@@ -1,6 +1,6 @@
-import SessionComponent from '@/components/smart/session-component';
-import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
-import { getPostWorkoutHref } from '@/components/smart/post-workout';
+import SessionComponent from '@/components/workout/session-component';
+import SessionMoreMenuComponent from '@/components/workout/session-more-menu-component';
+import { getPostWorkoutHref } from '@/components/workout/post-workout';
 import { useAppSelector } from '@/store';
 import { selectSharingLive } from '@/store/feed';
 import { useDispatch } from 'react-redux';

@@ -1,4 +1,4 @@
-import { ColorPicker } from '@/components/presentation/foundation/editors/color-picker';
+import { ColorPicker } from '@/components/foundation/editors/color-picker';
 import { useRouteEditorSession } from '@/hooks/useRouteEditor';
 import { ColorSchemeSeed } from '@/store/settings';
 import { HexColor } from '@/utils/color';

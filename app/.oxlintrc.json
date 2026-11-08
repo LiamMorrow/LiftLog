@@ -75,7 +75,7 @@
             "name": "react-native",
             "importNames": ["TextInput"],
             "allowTypeImports": true,
-            "message": "Use TextField, SegmentedListTextInput, PillTextField or SearchField from @/components/presentation/foundation/"
+            "message": "Use TextField, SegmentedListTextInput, PillTextField or SearchField from @/components/foundation/"
           }
         ]
       }
@@ -83,9 +83,58 @@
   },
   "overrides": [
     {
-      "files": ["src/components/presentation/foundation/text-field/text-field.tsx"],
+      "files": ["src/components/foundation/**/*.{ts,tsx}"],
       "rules": {
-        "no-restricted-imports": "off"
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "react-redux",
+                "importNames": ["useSelector"],
+                "message": "Use useAppSelector from @/store"
+              },
+              {
+                "name": "react-native",
+                "importNames": ["TextInput"],
+                "allowTypeImports": true,
+                "message": "Use TextField, SegmentedListTextInput, PillTextField or SearchField from @/components/foundation/"
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["@/components/**", "!@/components/foundation/**", "!@/components/layout/**"],
+                "message": "Foundation components cannot depend on feature components"
+              },
+              {
+                "group": ["@/store", "@/store/*", "@/services/*", "@/db/*"],
+                "allowTypeImports": true,
+                "message": "Foundation components take state through props, not from the store or services"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/components/foundation/text-field/text-field.tsx"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/components/**", "!@/components/foundation/**", "!@/components/layout/**"],
+                "message": "Foundation components cannot depend on feature components"
+              },
+              {
+                "group": ["@/store", "@/store/*", "@/services/*", "@/db/*"],
+                "allowTypeImports": true,
+                "message": "Foundation components take state through props, not from the store or services"
+              }
+            ]
+          }
+        ]
       }
     },
     {

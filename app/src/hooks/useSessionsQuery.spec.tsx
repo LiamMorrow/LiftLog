@@ -6,7 +6,7 @@ const screen = { isFocused: true };
 const state = { storedSessions: { sessionsRevision: 0 } };
 const db = {};
 
-vi.mock('@/components/smart/services-provider', () => ({ useServices: () => ({ db }) }));
+vi.mock('@/components/app-shell/services-provider', () => ({ useServices: () => ({ db }) }));
 vi.mock('@/store', () => ({ useAppSelector: (selector: (s: typeof state) => unknown) => selector(state) }));
 vi.mock('expo-router', () => ({ useIsFocused: () => screen.isFocused }));
 

@@ -4,8 +4,8 @@ import DescriptionIcon from '@expo/material-symbols/description.xml';
 import DownloadIcon from '@expo/material-symbols/download.xml';
 import HistoryIcon from '@expo/material-symbols/history.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
-import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
-import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
+import { SegmentedGroup, SegmentListFormElement } from '@/components/foundation/segmented-list';
+import { SegmentedListLink } from '@/components/foundation/segmented-list-link';
 import { useActionEffect } from '@/hooks/useActionEffect';
 import { useConfirm } from '@/hooks/useConfirm';
 import { restoreFeedBackup } from '@/store/feed';
@@ -15,7 +15,7 @@ import { setStatsIsDirty } from '@/store/stats';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
-import { HealthExportSwitch, useCanExportHealth } from '@/components/smart/health-export-switch';
+import { HealthExportSwitch, useCanExportHealth } from '@/components/settings/health-export-switch';
 
 export default function BackupAndRestorePage() {
   const { t } = useTranslate();

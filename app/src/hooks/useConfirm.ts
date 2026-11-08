@@ -1,4 +1,4 @@
-import { Confirmation, ConfirmContext } from '@/components/presentation/foundation/confirm';
+import { Confirmation, ConfirmContext } from '@/components/foundation/confirm';
 import { useTranslate } from '@tolgee/react';
 import { useContext } from 'react';
 

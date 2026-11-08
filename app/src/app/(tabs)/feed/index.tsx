@@ -1,6 +1,6 @@
-import Feed from '@/components/smart/feed';
-import { FeedMenu } from '@/components/smart/feed-menu';
-import { OwnHistoryProvider } from '@/components/smart/own-history-provider';
+import Feed from '@/components/feed/feed';
+import { FeedMenu } from '@/components/feed/feed-menu';
+import { OwnHistoryProvider } from '@/components/history/own-history-provider';
 import { useFeedHubLease } from '@/hooks/useFeedHubLease';
 import { fetchInboxItems } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';

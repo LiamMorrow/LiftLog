@@ -2,7 +2,7 @@ import { SettingsPage } from '@/components/layout/settings-page';
 import { importPlanFromPicker } from '@/store/program';
 import { useTranslate } from '@tolgee/react';
 import { useDispatch } from 'react-redux';
-import { PageActions } from '@/components/presentation/foundation/page-actions';
+import { PageActions } from '@/components/foundation/page-actions';
 import FileOpenIcon from '@expo/material-symbols/file_open.xml';
 
 export default function ImportPlanInfoPage() {

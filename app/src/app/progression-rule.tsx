@@ -1,7 +1,4 @@
-import {
-  ProgressionRuleEditor,
-  ProgressionRuleEditorInput,
-} from '@/components/presentation/workout-editor/progressive-overload';
+import { ProgressionRuleEditor, ProgressionRuleEditorInput } from '@/components/exercise-editor/progressive-overload';
 import { useRouteEditorSession } from '@/hooks/useRouteEditor';
 import { ProgressionRule } from '@/models/blueprint-models';
 import { useLocalSearchParams, useRouter } from 'expo-router';

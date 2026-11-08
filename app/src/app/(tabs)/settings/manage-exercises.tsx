@@ -1,4 +1,4 @@
-import ExerciseManager from '@/components/smart/exercise-manager';
+import ExerciseManager from '@/components/exercises/exercise-manager';
 import { useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
 

@@ -1,19 +1,19 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import { Card, CardContent } from '@/components/presentation/foundation/card';
-import { Remote } from '@/components/presentation/foundation/remote';
-import { RepsBarChart } from '@/components/presentation/stats/reps-bar-chart';
+import { Card, CardContent } from '@/components/foundation/card';
+import { Remote } from '@/components/foundation/remote';
+import { RepsBarChart } from '@/components/stats/reps-bar-chart';
 import AnchorIcon from '@expo/material-symbols/anchor.xml';
 import BarChartIcon from '@expo/material-symbols/bar_chart.xml';
 import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
 import FunctionIcon from '@expo/material-symbols/function.xml';
 import WeightIcon from '@expo/material-symbols/weight.xml';
-import SingleValueStatisticCard from '@/components/presentation/stats/single-value-statistic-card';
-import { SingleValueStatisticsGrid } from '@/components/presentation/stats/single-value-statistics-grid';
-import { TimePeriodSelector } from '@/components/presentation/stats/time-period-selector';
-import { TitledSection } from '@/components/presentation/foundation/titled-section';
-import { StatisticBarChart } from '@/components/presentation/stats/statistic-bar-chart';
-import { StatisticLineChart } from '@/components/presentation/stats/statistic-line-chart';
-import { useLoadAxis, useRepsAxis } from '@/components/presentation/stats/quantity-axis';
+import SingleValueStatisticCard from '@/components/stats/single-value-statistic-card';
+import { SingleValueStatisticsGrid } from '@/components/stats/single-value-statistics-grid';
+import { TimePeriodSelector } from '@/components/stats/time-period-selector';
+import { TitledSection } from '@/components/foundation/titled-section';
+import { StatisticBarChart } from '@/components/stats/statistic-bar-chart';
+import { StatisticLineChart } from '@/components/stats/statistic-line-chart';
+import { useLoadAxis, useRepsAxis } from '@/components/stats/quantity-axis';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { fetchOverallStats, selectExerciseView, setOverallViewTime, WeightedExerciseStatistics } from '@/store/stats';
@@ -21,7 +21,7 @@ import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { ReactNode, useEffect } from 'react';
 import { View } from 'react-native';
-import { AppText } from '@/components/presentation/foundation/app-text';
+import { AppText } from '@/components/foundation/app-text';
 
 import { useDispatch } from 'react-redux';
 

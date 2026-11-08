@@ -1,4 +1,4 @@
-import { NativeIcon } from '@/components/presentation/foundation/native-icon';
+import { NativeIcon } from '@/components/foundation/native-icon';
 import OpenInBrowserIcon from '@expo/material-symbols/open_in_browser.xml';
 import ChevronRightIcon from '@expo/material-symbols/chevron_right.xml';
 import AssignmentIcon from '@expo/material-symbols/assignment.xml';
@@ -18,8 +18,8 @@ import StarIcon from '@expo/material-symbols/star.xml';
 import TerminalIcon from '@expo/material-symbols/terminal.xml';
 import TranslateIcon from '@expo/material-symbols/translate.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
-import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
-import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
+import { SegmentedGroup, SegmentListFormElement } from '@/components/foundation/segmented-list';
+import { SegmentedListLink } from '@/components/foundation/segmented-list-link';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
@@ -31,7 +31,7 @@ import { useConfirm } from '@/hooks/useConfirm';
 import { copyLogs } from '@/store/app';
 import { useAppSelector } from '@/store';
 import { selectHasUnseenWhatsNew } from '@/store/settings';
-import { getFeedSettingsHref } from '@/components/smart/feed-settings';
+import { getFeedSettingsHref } from '@/components/feed/feed-settings';
 
 export default function SettingsPageIndex() {
   const { t } = useTranslate();

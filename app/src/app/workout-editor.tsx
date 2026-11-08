@@ -1,4 +1,4 @@
-import { SessionWorkoutEditor } from '@/components/smart/session-workout-editor';
+import { SessionWorkoutEditor } from '@/components/workout/session-workout-editor';
 import { useLocalSearchParams } from 'expo-router';
 
 export default function WorkoutEditorPage() {

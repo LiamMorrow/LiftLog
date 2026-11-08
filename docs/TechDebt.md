@@ -45,8 +45,8 @@ the workaround is safe.
 
 ## Compose icons in native buttons and page actions sit in a fixed-size box
 
-- **Where:** `app/src/components/presentation/foundation/native-button/native-button.android.tsx` and
-  `app/src/components/presentation/foundation/page-actions/page-actions.android.tsx` wrap each `Icon` in a `Box`
+- **Where:** `app/src/components/foundation/native-button/native-button.android.tsx` and
+  `app/src/components/foundation/page-actions/page-actions.android.tsx` wrap each `Icon` in a `Box`
   sized to the icon.
 - **Why:** The expo-ui Android `Icon` loads its source asynchronously and draws nothing until the load finishes.
   A `matchContents` host measures the button without the icon on its first frame, then grows once the icon

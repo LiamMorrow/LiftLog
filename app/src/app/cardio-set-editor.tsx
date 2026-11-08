@@ -1,8 +1,8 @@
 import DeleteIcon from '@expo/material-symbols/delete.xml';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import Form from '@/components/presentation/foundation/form';
-import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
-import { CardioSetEditor } from '@/components/presentation/workout-editor/cardio-exercise-editor';
+import Form from '@/components/foundation/form';
+import { SegmentedGroup, SegmentListFormElement } from '@/components/foundation/segmented-list';
+import { CardioSetEditor } from '@/components/exercise-editor/cardio-exercise-editor';
 import { CardioExerciseSetBlueprint } from '@/models/blueprint-models';
 import { CardioExerciseSetBlueprintJSON } from '@/models/storage/versions/latest';
 import { setCardioSetEdit } from '@/store/app';

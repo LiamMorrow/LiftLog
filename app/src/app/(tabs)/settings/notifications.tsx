@@ -8,8 +8,8 @@ import { setRestNotifications, setRestTimersEnabled } from '@/store/settings';
 import { useTranslate } from '@tolgee/react';
 import { useDispatch } from 'react-redux';
 import { SettingsPage } from '@/components/layout/settings-page';
-import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
-import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
+import { SegmentedListSwitch } from '@/components/foundation/segmented-list-switch';
+import { SegmentedGroup } from '@/components/foundation/segmented-list';
 
 export default function NotificationsPage() {
   const { t } = useTranslate();

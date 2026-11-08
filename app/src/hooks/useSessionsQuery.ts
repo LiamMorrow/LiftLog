@@ -1,4 +1,4 @@
-import { useServices } from '@/components/smart/services-provider';
+import { useServices } from '@/components/app-shell/services-provider';
 import { useAppSelector } from '@/store';
 import { selectSessionsRevision } from '@/store/stored-sessions';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';

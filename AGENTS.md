@@ -15,14 +15,16 @@ need changing** to add app features - only touch it when the task is explicitly 
 
 - `app/` - expo-router routes (file-based; the URL structure of the app).
 - `components/`
-  - `presentation/foundation/` - our very core, reusable UI primitives: buttons, cards, forms,
-    dialogs, list items, `editors/`. Single-file primitives live flat; multi-file
-    ones (platform-split `.android.tsx` + shared `-props`) get a folder with an `index.tsx` barrel
-    (e.g. `menu/`, `page-actions/`, `switch/`). Reach for these before building a new control.
-  - `presentation/<feature>/` - presentational components for one feature area: `feed/`, `calendar/`,
-    `stats/`, `workout/`, `workout-editor/`, `ai-planner/`, `summary/`. Dumb-ish; take props.
-  - `smart/` - container components that wire presentation up to state/services (providers, dialogs,
-    managers, e.g. `exercise-manager.tsx`, `feed-item.tsx`).
+  - `foundation/` - our very core, reusable UI primitives: buttons, cards, forms, dialogs, list items,
+    `editors/`. Each primitive gets a folder with an `index.tsx` barrel (e.g. `menu/`, `page-actions/`,
+    `switch/`). Reach for these before building a new control. Foundation knows nothing about features:
+    it takes state through props, and lint rejects imports from feature folders, the store, services or
+    the database.
+  - `<feature>/` - everything for one feature area, whether it reads state or only takes props:
+    `workout/` (performing and editing a session), `exercise-editor/`, `exercises/`, `plans/`,
+    `session-summary/`, `history/`, `calendar/`, `feed/`, `stats/`, `muscles/`, `ai-planner/`,
+    `settings/`, `onboarding/`. Feature folders may import from each other.
+  - `app-shell/` - the providers and gates mounted by the root layout.
   - `layout/` - page scaffolding (`stack-with-header.tsx`, scroll containers).
 - `store/` - Redux Toolkit slices, thunks, and the app store.
 - `services/` - business logic and platform integrations (sessions, feed, sync, etc.).
@@ -72,14 +74,14 @@ Give an entry a `condition` predicate when the entry should disappear once the f
 card once the user has enabled health export).
 
 For an opt-in feature, also consider surfacing the toggle in the **welcome wizard**
-(`components/smart/welcome-wizard.tsx`) - fresh installs never see the banner (it starts all-seen), so
+(`components/onboarding/welcome-wizard.tsx`) - fresh installs never see the banner (it starts all-seen), so
 the wizard is how new users get the chance to enable it.
 
 ## Conventions
 
 - Use **named exports** for new files (`export function Foo`), not default exports - even though older
   files use defaults. Don't bulk-convert existing files.
-- **Prefer foundation components** (`components/presentation/foundation/`) over raw React Native
+- **Prefer foundation components** (`components/foundation/`) over raw React Native
   primitives or one-off controls. Text, cards, buttons, icons, list rows and inputs all have one.
 - If the task needs a control that has no foundation component, **stop and ask** whether one should be
   made for it, rather than building a one-off in the feature code.

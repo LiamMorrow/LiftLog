@@ -1,4 +1,4 @@
-import { BackendHeaderForm } from '@/components/smart/backend-header-form';
+import { BackendHeaderForm } from '@/components/settings/backend-header-form';
 import { useLocalSearchParams } from 'expo-router';
 
 export default function BackendHeaderPage() {

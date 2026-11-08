@@ -1,4 +1,4 @@
-import { getSessionExerciseEditorHref } from '@/components/smart/session-exercise-editor';
+import { getSessionExerciseEditorHref } from '@/components/workout/session-exercise-editor';
 import { EmptyExerciseBlueprint } from '@/models/blueprint-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { selectSession, updateStoredSession } from '@/store/stored-sessions';

@@ -1,7 +1,7 @@
 import MonitorWeightIcon from '@expo/material-symbols/monitor_weight.xml';
 import ReplayIcon from '@expo/material-symbols/replay.xml';
 import TrophyIcon from '@expo/material-symbols/trophy.xml';
-import ThemeChooser from '@/components/presentation/foundation/editors/theme-chooser';
+import ThemeChooser from '@/components/settings/theme-chooser';
 import { RootState, useAppSelector } from '@/store';
 import {
   setColorSchemeSeed,
@@ -14,9 +14,9 @@ import { useTranslate } from '@tolgee/react';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'expo-router';
 import { SettingsPage } from '@/components/layout/settings-page';
-import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
-import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
-import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
+import { SegmentedGroup } from '@/components/foundation/segmented-list';
+import { SegmentedListSwitch } from '@/components/foundation/segmented-list-switch';
+import { SegmentedListLink } from '@/components/foundation/segmented-list-link';
 
 export default function AppConfigurationPage() {
   const { t } = useTranslate();

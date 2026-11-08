@@ -76,7 +76,7 @@ table on first launch and then deletes the keys.
 ## User data - SQLite via Drizzle
 
 Schema lives in `app/src/db/schema.ts`; generated SQL migrations in `app/src/drizzle/`. The database is
-opened in `components/smart/services-provider.tsx` (`openDatabaseAsync('db.db')` → `drizzle(expoDb)`)
+opened in `components/app-shell/services-provider.tsx` (`openDatabaseAsync('db.db')` → `drizzle(expoDb)`)
 and passed into `createStore` / `createServices`, so effects get it as `extra.db` (and the raw handle as
 `extra.expoDb`, needed for backup/export).
 

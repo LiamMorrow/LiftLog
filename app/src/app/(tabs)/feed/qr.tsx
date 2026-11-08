@@ -1,4 +1,4 @@
-import { FeedQrCode } from '@/components/smart/feed-qr-code';
+import { FeedQrCode } from '@/components/feed/feed-qr-code';
 
 export default function FeedQrCodePage() {
   return <FeedQrCode />;

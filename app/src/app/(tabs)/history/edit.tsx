@@ -1,5 +1,5 @@
-import SessionComponent from '@/components/smart/session-component';
-import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
+import SessionComponent from '@/components/workout/session-component';
+import SessionMoreMenuComponent from '@/components/workout/session-more-menu-component';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { sessionFinished, updateStoredSession } from '@/store/stored-sessions';
@@ -14,8 +14,8 @@ import { useTranslate } from '@tolgee/react';
 import { useRef } from 'react';
 import PlayCircle from '@expo/material-symbols/play_circle.xml';
 import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
-import { DatePicker } from '@/components/presentation/foundation/date-picker';
-import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
+import { DatePicker } from '@/components/foundation/date-picker';
+import { SegmentedGroup, SegmentListFormElement } from '@/components/foundation/segmented-list';
 
 export default function HistoryEditPage() {
   const dispatch = useDispatch();

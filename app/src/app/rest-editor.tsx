@@ -1,6 +1,6 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import Form from '@/components/presentation/foundation/form';
-import { RestEditor } from '@/components/presentation/workout-editor/rest-editor';
+import Form from '@/components/foundation/form';
+import { RestEditor } from '@/components/exercise-editor/rest-editor';
 import { useRouteEditorSession } from '@/hooks/useRouteEditor';
 import { Rest } from '@/models/blueprint-models';
 import { useTranslate } from '@tolgee/react';

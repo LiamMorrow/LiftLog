@@ -1,6 +1,6 @@
 import { SettingsPage } from '@/components/layout/settings-page';
-import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
-import { SegmentedListOption } from '@/components/presentation/foundation/segmented-list-option';
+import { SegmentedGroup } from '@/components/foundation/segmented-list';
+import { SegmentedListOption } from '@/components/foundation/segmented-list-option';
 import { supportedLanguages } from '@/services/tolgee';
 import { useAppSelector } from '@/store';
 import { setPreferredLanguage } from '@/store/settings';

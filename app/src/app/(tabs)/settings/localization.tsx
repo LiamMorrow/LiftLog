@@ -1,11 +1,11 @@
 import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
 import WeightIcon from '@expo/material-symbols/weight.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
-import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
-import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
-import { SegmentedListSelect } from '@/components/presentation/foundation/segmented-list-select';
-import { SelectPickerOption } from '@/components/presentation/foundation/select-picker';
-import { LanguageLink } from '@/components/smart/language-link';
+import { SegmentedGroup } from '@/components/foundation/segmented-list';
+import { SegmentedListSwitch } from '@/components/foundation/segmented-list-switch';
+import { SegmentedListSelect } from '@/components/foundation/segmented-list-select';
+import { SelectPickerOption } from '@/components/foundation/select-picker';
+import { LanguageLink } from '@/components/settings/language-link';
 import { RootState, useAppSelector } from '@/store';
 import { setFirstDayOfWeek, setUseImperialUnits } from '@/store/settings';
 import { getDateOnDay } from '@/utils/format-date';

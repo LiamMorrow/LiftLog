@@ -1,4 +1,4 @@
-import { ProgressionExample } from '@/components/presentation/workout-editor/progressive-overload';
+import { ProgressionExample } from '@/components/exercise-editor/progressive-overload';
 import { useRouteEditorSession } from '@/hooks/useRouteEditor';
 import { WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { useLocalSearchParams } from 'expo-router';

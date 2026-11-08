@@ -1,0 +1,181 @@
+import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import LimitedHtml from '@/components/foundation/limited-html';
+import { SegmentedGroup } from '@/components/foundation/segmented-list';
+import { SegmentedListSwitch } from '@/components/foundation/segmented-list-switch';
+import { PageActions } from '@/components/foundation/page-actions';
+import SaveIcon from '@expo/material-symbols/save.xml';
+import CloseIcon from '@expo/material-symbols/close.xml';
+import SessionDiffView from '@/components/session-summary/session-diff-view';
+import { spacing } from '@/hooks/useAppTheme';
+import {
+  diffSessionBlueprints,
+  EmptySessionBlueprintDiff,
+  PlanDiff,
+  SessionBlueprintDiff,
+} from '@/models/blueprint-diff';
+import { EmptySession } from '@/models/session-models';
+import { useAppSelector, useAppSelectorWithArg } from '@/store';
+import {
+  applyDiffToPlan,
+  fetchUpcomingSessions,
+  selectNewWorkoutName,
+  selectPendingPlanDiff,
+  setPendingPlanDiff,
+} from '@/store/program';
+import { useTranslate } from '@tolgee/react';
+import { Stack, useRouter } from 'expo-router';
+import { useState } from 'react';
+import { AppText } from '@/components/foundation/app-text';
+import { useDispatch } from 'react-redux';
+import { useOnDismiss } from '@/hooks/useOnDismiss';
+
+/**
+ * Creates a diff for updating an existing workout in the plan.
+ * Compares the original session blueprint against the modified session.
+ */
+function createUpdateExistingWorkoutDiff(currentPlanDiff: PlanDiff): SessionBlueprintDiff {
+  return diffSessionBlueprints(currentPlanDiff.diff.originalSession, currentPlanDiff.diff.newSession);
+}
+
+/**
+ * Creates a diff for adding a new workout to the plan.
+ * Compares against an empty session so all exercises appear as "added".
+ * Preserves the original session references for potential undo/comparison.
+ */
+function createAddNewWorkoutDiff(currentPlanDiff: PlanDiff, newWorkoutName: string): SessionBlueprintDiff {
+  const newSessionWithName = currentPlanDiff.diff.newSession.with({
+    name: newWorkoutName,
+  });
+
+  return {
+    // Diff against empty session so everything shows as "added"
+    ...diffSessionBlueprints(EmptySession.blueprint, newSessionWithName),
+    // Preserve original references so we can use them again when we turn the switch off
+    originalSession: currentPlanDiff.diff.originalSession,
+    newSession: currentPlanDiff.diff.newSession,
+  };
+}
+
+export function SessionDiffSaveEditor() {
+  const dispatch = useDispatch();
+  const { t } = useTranslate();
+  const { dismiss } = useRouter();
+  const currentPlanDiff = useAppSelector(selectPendingPlanDiff);
+  const [selectedDiff, setSelectedDiff] = useState<SessionBlueprintDiff>();
+  const newWorkoutName = useAppSelectorWithArg(selectNewWorkoutName, currentPlanDiff?.programId ?? '');
+
+  // Track whether user has opted to create a new workout instead of updating existing
+  const [isCreatingNewWorkout, setIsCreatingNewWorkout] = useState(false);
+
+  // Can only edit existing if we have a diff (not an add operation)
+  const canEditExistingWorkout = currentPlanDiff?.type === 'diff';
+
+  // If user selected "create new" OR we can't edit existing, we're adding a new workout
+  const saveAsNewWorkout = isCreatingNewWorkout || !canEditExistingWorkout;
+
+  // Clear the diff on any exit so the trigger can reopen for a later diff
+  useOnDismiss(() => dispatch(setPendingPlanDiff(undefined)));
+
+  /**
+   * Handles toggling between "update existing workout" and "save as new workout" modes.
+   * Recalculates the diff based on the selected mode:
+   * - Update existing: compares original → modified session
+   * - Save as new: compares empty → modified session (shows all as additions)
+   */
+  const handleSaveModeChange = (createNew: boolean) => {
+    if (!currentPlanDiff) return;
+
+    setIsCreatingNewWorkout(createNew);
+
+    const newDiff = createNew
+      ? createAddNewWorkoutDiff(currentPlanDiff, newWorkoutName)
+      : createUpdateExistingWorkoutDiff(currentPlanDiff);
+
+    dispatch(setPendingPlanDiff({ ...currentPlanDiff, diff: newDiff }));
+  };
+
+  const getSwitchSubtitle = (): string => {
+    if (!canEditExistingWorkout || isCreatingNewWorkout) {
+      return t('plan.diff.dialog_save_as_new_switch_on.subtitle', {
+        newWorkoutName,
+      });
+    }
+    return t('plan.diff.dialog_save_as_new_switch_off.subtitle', {
+      originalSessionName: currentPlanDiff?.diff.originalSession.name,
+    });
+  };
+
+  const save = () => {
+    if (selectedDiff && currentPlanDiff) {
+      dispatch(
+        applyDiffToPlan(
+          saveAsNewWorkout
+            ? { type: 'add', programId: currentPlanDiff.programId, diff: selectedDiff }
+            : { ...currentPlanDiff, diff: selectedDiff },
+        ),
+      );
+    }
+    dispatch(fetchUpcomingSessions());
+    dismiss();
+  };
+
+  const floatingBottomContainer = (
+    <PageActions
+      primaryKind="commit"
+      primary={{
+        label: t('generic.save.button'),
+        icon: SaveIcon,
+        systemImage: 'square.and.arrow.down',
+        onPress: save,
+      }}
+      secondary={[
+        {
+          label: t('generic.close.button'),
+          icon: CloseIcon,
+          systemImage: 'xmark',
+          onPress: () => dismiss(),
+        },
+      ]}
+    />
+  );
+
+  return (
+    <FullHeightScrollView
+      modal
+      floatingChildren={floatingBottomContainer}
+      scrollStyle={{ paddingHorizontal: spacing.pageHorizontalMargin }}
+    >
+      <Stack.Screen options={{ title: t('plan.diff.dialog.title') }} />
+      <AppText
+        style={{
+          paddingBlockEnd: spacing[2],
+        }}
+        variant="bodyMedium"
+      >
+        {currentPlanDiff?.type === 'diff' ? (
+          <LimitedHtml
+            value={t('plan.diff.dialog_update.body', {
+              originalSessionName: currentPlanDiff?.diff.originalSession.name,
+            })}
+          />
+        ) : (
+          t('plan.diff.dialog_add.body')
+        )}
+      </AppText>
+      {canEditExistingWorkout && (
+        <SegmentedGroup style={{ marginBlockEnd: spacing[2] }}>
+          <SegmentedListSwitch
+            value={isCreatingNewWorkout}
+            supportingText={<LimitedHtml value={getSwitchSubtitle()} />}
+            onValueChange={handleSaveModeChange}
+            label={t('plan.diff.dialog_save_as_new_switch.title')}
+          />
+        </SegmentedGroup>
+      )}
+      <SessionDiffView
+        diff={currentPlanDiff?.diff ?? EmptySessionBlueprintDiff}
+        onSelectedDiffChange={setSelectedDiff}
+      />
+    </FullHeightScrollView>
+  );
+}

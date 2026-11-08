@@ -1,5 +1,5 @@
-import { OwnHistoryProvider } from '@/components/smart/own-history-provider';
-import { PostWorkout } from '@/components/smart/post-workout';
+import { OwnHistoryProvider } from '@/components/history/own-history-provider';
+import { PostWorkout } from '@/components/workout/post-workout';
 import { useLocalSearchParams } from 'expo-router';
 
 export default function PostWorkoutPage() {

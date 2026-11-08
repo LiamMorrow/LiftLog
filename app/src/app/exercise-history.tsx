@@ -1,4 +1,4 @@
-import { ExerciseHistory } from '@/components/smart/exercise-history';
+import { ExerciseHistory } from '@/components/exercises/exercise-history';
 import { ExerciseBlueprint, movementKeyFor } from '@/models/blueprint-models';
 import { useLocalSearchParams } from 'expo-router';
 

@@ -1,12 +1,12 @@
 import SettingsIcon from '@expo/material-symbols/settings.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
-import { BackendHeaderEditor } from '@/components/presentation/backends/backend-header-editor';
-import { getBackendHeaderFormHref } from '@/components/smart/backend-header-form';
+import { BackendHeaderEditor } from '@/components/settings/backend-header-editor';
+import { getBackendHeaderFormHref } from '@/components/settings/backend-header-form';
 import { useConfirm } from '@/hooks/useConfirm';
-import { PageActions } from '@/components/presentation/foundation/page-actions';
-import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
-import { SegmentedListSelect } from '@/components/presentation/foundation/segmented-list-select';
-import { SegmentedListTextInput } from '@/components/presentation/foundation/segmented-list-text-input';
+import { PageActions } from '@/components/foundation/page-actions';
+import { SegmentedGroup } from '@/components/foundation/segmented-list';
+import { SegmentedListSelect } from '@/components/foundation/segmented-list-select';
+import { SegmentedListTextInput } from '@/components/foundation/segmented-list-text-input';
 import {
   Backend,
   backendFeatureNameKey,
@@ -30,7 +30,7 @@ import { useEffect, useRef, useState } from 'react';
 import ExperimentIcon from '@expo/material-symbols/experiment.xml';
 import DeleteIcon from '@expo/material-symbols/delete.xml';
 import { useDispatch } from 'react-redux';
-import { AppText } from '@/components/presentation/foundation/app-text';
+import { AppText } from '@/components/foundation/app-text';
 import { spacing } from '@/hooks/useAppTheme';
 
 const kindOptions = [

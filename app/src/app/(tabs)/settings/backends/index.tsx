@@ -16,17 +16,17 @@ import {
 import { useAppSelector } from '@/store';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
-import { BackendPicker } from '@/components/smart/backend-picker';
+import { BackendPicker } from '@/components/settings/backend-picker';
 import { useConfirm } from '@/hooks/useConfirm';
 import { putBackend, selectAllBackends, switchFeedBackend } from '@/store/backends';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { uuid } from '@/utils/uuid';
-import { AppText } from '@/components/presentation/foundation/app-text';
+import { AppText } from '@/components/foundation/app-text';
 import { useDispatch } from 'react-redux';
 import AddIcon from '@expo/material-symbols/add.xml';
-import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
-import { SegmentedListLink } from '@/components/presentation/foundation/segmented-list-link';
-import { PageActions } from '@/components/presentation/foundation/page-actions';
+import { SegmentedGroup, SegmentListFormElement } from '@/components/foundation/segmented-list';
+import { SegmentedListLink } from '@/components/foundation/segmented-list-link';
+import { PageActions } from '@/components/foundation/page-actions';
 
 export default function BackendsPage() {
   const { t } = useTranslate();

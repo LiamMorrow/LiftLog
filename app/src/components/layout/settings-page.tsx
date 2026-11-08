@@ -1,7 +1,7 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import { DocumentationRow } from '@/components/presentation/foundation/documentation-row';
-import Form from '@/components/presentation/foundation/form';
-import { PageCaption } from '@/components/presentation/foundation/page-caption';
+import { DocumentationRow } from '@/components/foundation/documentation-row';
+import Form from '@/components/foundation/form';
+import { PageCaption } from '@/components/foundation/page-caption';
 import { Stack } from 'expo-router';
 import { ReactNode, Ref } from 'react';
 import type { ScrollViewInstance } from 'react-native';

@@ -1,9 +1,9 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import { PageActions } from '@/components/presentation/foundation/page-actions';
+import { PageActions } from '@/components/foundation/page-actions';
 import AssignmentAddIcon from '@expo/material-symbols/assignment_add.xml';
-import { AppText } from '@/components/presentation/foundation/app-text';
-import SessionSummary from '@/components/presentation/summary/session-summary';
-import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
+import { AppText } from '@/components/foundation/app-text';
+import SessionSummary from '@/components/session-summary/session-summary';
+import SessionSummaryTitle from '@/components/session-summary/session-summary-title';
 import { spacing } from '@/hooks/useAppTheme';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { Session } from '@/models/session-models';

@@ -1,6 +1,6 @@
 import { spacing } from '@/hooks/useAppTheme';
-import { Remote } from '@/components/presentation/foundation/remote';
-import { WeightedExerciseListSearcher } from '@/components/presentation/stats/weighted-exercise-list-searcher';
+import { Remote } from '@/components/foundation/remote';
+import { WeightedExerciseListSearcher } from '@/components/stats/weighted-exercise-list-searcher';
 import { useHeaderInset } from '@/hooks/useHeaderInset';
 import { useAppSelector } from '@/store';
 import { fetchOverallStats, selectOverallView, WeightedExerciseStatistics } from '@/store/stats';

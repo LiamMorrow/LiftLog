@@ -1,7 +1,7 @@
 import { SettingsPage } from '@/components/layout/settings-page';
-import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
-import ProgramListItem from '@/components/smart/program-list-item';
-import { ActivePlanCard } from '@/components/smart/active-plan-card';
+import { SegmentedGroup } from '@/components/foundation/segmented-list';
+import ProgramListItem from '@/components/plans/program-list-item';
+import { ActivePlanCard } from '@/components/plans/active-plan-card';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { useAppSelector } from '@/store';
 import { savePlan, selectAllPrograms } from '@/store/program';
@@ -9,7 +9,7 @@ import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { PageActions } from '@/components/presentation/foundation/page-actions';
+import { PageActions } from '@/components/foundation/page-actions';
 import AddIcon from '@expo/material-symbols/add.xml';
 import DownloadIcon from '@expo/material-symbols/download.xml';
 
@@ -18,7 +18,7 @@ import { useRef } from 'react';
 import { showSnackbar } from '@/store/app';
 import { setActivePlan } from '@/store/program';
 import { setPlansSortOrder } from '@/store/settings';
-import SelectPicker from '@/components/presentation/foundation/select-picker';
+import SelectPicker from '@/components/foundation/select-picker';
 import { type ScrollViewInstance, View } from 'react-native';
 
 export default function ProgramListPage() {

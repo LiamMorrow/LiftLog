@@ -1,5 +1,5 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import { ExerciseEditor } from '@/components/presentation/workout-editor/exercise-editor';
+import { ExerciseEditor } from '@/components/exercise-editor/exercise-editor';
 import { ExerciseBlueprint } from '@/models/blueprint-models';
 import { useAppSelector } from '@/store';
 import { selectProgramSessionExercise, updateProgram } from '@/store/program';

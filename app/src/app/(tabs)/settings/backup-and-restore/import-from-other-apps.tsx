@@ -5,9 +5,9 @@ import { ExternalImportFormat, importFromExternal } from '@/store/settings';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
-import { SegmentedListSelect } from '@/components/presentation/foundation/segmented-list-select';
-import { PageActions } from '@/components/presentation/foundation/page-actions';
+import { SegmentedGroup } from '@/components/foundation/segmented-list';
+import { SegmentedListSelect } from '@/components/foundation/segmented-list-select';
+import { PageActions } from '@/components/foundation/page-actions';
 import ImportIcon from '@expo/material-symbols/download.xml';
 
 export default function ImportFromOtherAppsPage() {

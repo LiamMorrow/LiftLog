@@ -1,0 +1,112 @@
+import { AccordionItem } from '@/components/foundation/accordion-item';
+import { Card, CardContent } from '@/components/foundation/card';
+import { spacing } from '@/hooks/useAppTheme';
+import { RecordedExercise } from '@/models/session-models';
+import { useAppSelector } from '@/store';
+import { useCallback, useState } from 'react';
+import { View } from 'react-native';
+import { AppText } from '@/components/foundation/app-text';
+import { Divider } from '@/components/foundation/divider';
+import { useTranslate } from '@tolgee/react';
+import { NativeIconButton } from '@/components/foundation/native-icon-button';
+import UnfoldLessIcon from '@expo/material-symbols/unfold_less.xml';
+import UnfoldMoreIcon from '@expo/material-symbols/unfold_more.xml';
+
+interface ExerciseNotesDisplayProps {
+  exercise: RecordedExercise;
+  previousExercise: RecordedExercise | undefined;
+}
+export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
+  const { t } = useTranslate();
+  const expandByDefault = useAppSelector((x) => x.settings.notesExpandedByDefault);
+  const notes = props.exercise.notes ?? '';
+  const showPlanNotes = useAppSelector((x) => x.settings.showPlanNotesInWorkout);
+  const blueprintNotes = showPlanNotes ? (props.exercise.blueprint.notes ?? '') : '';
+  const previousNotes = props.previousExercise?.notes ? 'Last time: ' + props.previousExercise.notes : '';
+  const [expanded, setExpanded] = useState(expandByDefault);
+  const [maxNumberOfLines, setMaxNumberOfLines] = useState(expandByDefault ? undefined : 1);
+  const iconButtonHeight = 40;
+  const hasNotes = !(!notes && !blueprintNotes && !previousNotes);
+  const handleAccordionToggle = (accordionExpanded: boolean) => {
+    if (!accordionExpanded) {
+      setMaxNumberOfLines(1);
+    }
+  };
+  const handleToggleExpanded = useCallback(() => {
+    const nowExpanded = !expanded;
+    if (nowExpanded) {
+      setMaxNumberOfLines(undefined);
+    }
+    setExpanded(nowExpanded);
+  }, [expanded]);
+
+  const renderText = (maxNumberOfLines: number | undefined) => {
+    const renderNotes = notes;
+    const renderBlueprintNotes = (maxNumberOfLines === undefined && blueprintNotes) || (!renderNotes && blueprintNotes);
+    const renderPreviousNotes =
+      (maxNumberOfLines === undefined && previousNotes) || (!renderBlueprintNotes && !renderNotes && previousNotes);
+    return (
+      <>
+        {renderNotes && (
+          <AppText testID="exercise-notes" numberOfLines={maxNumberOfLines}>
+            {notes}
+          </AppText>
+        )}
+        {renderNotes && (renderPreviousNotes || renderBlueprintNotes) && <Divider />}
+        {renderBlueprintNotes && (
+          <AppText testID="exercise-blueprint-notes" numberOfLines={maxNumberOfLines}>
+            {blueprintNotes}
+          </AppText>
+        )}
+        {renderPreviousNotes && renderBlueprintNotes && <Divider />}
+        {renderPreviousNotes && (
+          <AppText testID="exercise-previous-notes" numberOfLines={maxNumberOfLines}>
+            {previousNotes}
+          </AppText>
+        )}
+      </>
+    );
+  };
+  if (!hasNotes) {
+    return undefined;
+  }
+  return (
+    <Card style={[{ marginTop: spacing[4] }]}>
+      <CardContent style={{ flexDirection: 'row' }}>
+        <View style={{ marginInlineStart: -spacing[3], alignSelf: 'flex-start' }}>
+          <NativeIconButton
+            icon={expanded ? UnfoldLessIcon : UnfoldMoreIcon}
+            systemImage={
+              expanded ? 'arrow.down.and.line.horizontal.and.arrow.up' : 'arrow.up.and.line.horizontal.and.arrow.down'
+            }
+            label={t(expanded ? 'generic.collapse.button' : 'generic.expand.button')}
+            onPress={handleToggleExpanded}
+          />
+        </View>
+
+        <View style={{ flex: 1 }}>
+          <AccordionItem
+            isExpanded={expanded}
+            startsExpanded={expandByDefault}
+            onToggled={handleAccordionToggle}
+            unexpandedHeight={iconButtonHeight}
+          >
+            <View
+              style={{
+                flexDirection: 'row',
+                gap: spacing[2],
+                marginTop: spacing[3],
+              }}
+            >
+              <View style={{ flex: 1, paddingRight: spacing[2] }}>
+                <View style={{ position: 'absolute', gap: spacing[2] }}>{renderText(maxNumberOfLines)}</View>
+                {/* Render this so it doesn't jump around when expanding - need to always reserve the full text space */}
+                <View style={{ visibility: 'hidden', opacity: 0, gap: spacing[2] }}>{renderText(undefined)}</View>
+              </View>
+            </View>
+          </AccordionItem>
+        </View>
+      </CardContent>
+    </Card>
+  );
+}

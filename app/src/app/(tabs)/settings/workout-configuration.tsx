@@ -14,8 +14,8 @@ import {
 import { useTranslate } from '@tolgee/react';
 import { useDispatch } from 'react-redux';
 import { SettingsPage } from '@/components/layout/settings-page';
-import { SegmentedGroup } from '@/components/presentation/foundation/segmented-list';
-import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
+import { SegmentedGroup } from '@/components/foundation/segmented-list';
+import { SegmentedListSwitch } from '@/components/foundation/segmented-list-switch';
 
 export default function WorkoutConfigurationPage() {
   const { t } = useTranslate();

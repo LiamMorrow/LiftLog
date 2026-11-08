@@ -1,5 +1,5 @@
-import { FeedFriends } from '@/components/smart/feed-friends';
-import { OwnHistoryProvider } from '@/components/smart/own-history-provider';
+import { FeedFriends } from '@/components/feed/feed-friends';
+import { OwnHistoryProvider } from '@/components/history/own-history-provider';
 import { useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
 

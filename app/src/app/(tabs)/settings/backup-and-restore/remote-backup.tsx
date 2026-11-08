@@ -6,10 +6,10 @@ import { executeRemoteBackup, setBackupIncludeFeedAccount } from '@/store/settin
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
-import { SegmentedGroup, SegmentListFormElement } from '@/components/presentation/foundation/segmented-list';
-import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
-import { PageActions } from '@/components/presentation/foundation/page-actions';
-import { BackendPicker } from '@/components/smart/backend-picker';
+import { SegmentedGroup, SegmentListFormElement } from '@/components/foundation/segmented-list';
+import { SegmentedListSwitch } from '@/components/foundation/segmented-list-switch';
+import { PageActions } from '@/components/foundation/page-actions';
+import { BackendPicker } from '@/components/settings/backend-picker';
 import PlayIcon from '@expo/material-symbols/play_arrow.xml';
 import DnsIcon from '@expo/material-symbols/dns.xml';
 

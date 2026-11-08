@@ -1,0 +1,72 @@
+import { AppText } from '@/components/foundation/app-text';
+import TouchableRipple from '@/components/foundation/touchable-ripple';
+import { useAppTheme } from '@/hooks/useAppTheme';
+import { useFormatDate } from '@/hooks/useFormatDate';
+import { ActivityCell } from '@/store/activity';
+import { memo } from 'react';
+import { View } from 'react-native';
+import { levelColor } from '@/components/calendar/activity-colors';
+import FocusRing from '@/components/foundation/focus-ring';
+
+export const TILE_HEIGHT = 40;
+const TILE_RADIUS = 14;
+const SELECTED_RING_PADDING = 3;
+
+interface ActivityDayCellProps {
+  cell: ActivityCell;
+  isSelected: boolean;
+  onPress?: (cell: ActivityCell) => void;
+}
+
+export const ActivityDayCell = memo(function ActivityDayCell({ cell, isSelected, onPress }: ActivityDayCellProps) {
+  const { colors } = useAppTheme();
+  const formatDate = useFormatDate();
+
+  const { background, foreground } = levelColor(cell.level, colors);
+  const isEmpty = cell.level === 0;
+  const outlineToday = cell.isToday && isEmpty;
+  const emptyBackground = cell.isFuture ? 'transparent' : colors.surfaceContainer;
+  const emptyForeground = cell.isFuture ? colors.outline : colors.onSurfaceVariant;
+
+  return (
+    <FocusRing
+      isSelected={isSelected}
+      padding={SELECTED_RING_PADDING}
+      radius={TILE_RADIUS + SELECTED_RING_PADDING}
+      pointerEvents="none"
+      style={{
+        flex: 1,
+        height: TILE_HEIGHT,
+        borderRadius: TILE_RADIUS,
+        opacity: cell.isOutsideFocus ? 0.4 : 1,
+      }}
+    >
+      <View style={{ borderRadius: TILE_RADIUS, overflow: 'hidden', flex: 1 }}>
+        <TouchableRipple
+          onPress={onPress && !cell.isFuture ? () => onPress(cell) : undefined}
+          disabled={cell.isFuture}
+          style={{ flex: 1 }}
+        >
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: TILE_RADIUS,
+              backgroundColor: isEmpty ? emptyBackground : background,
+              borderColor: outlineToday ? colors.onSurface : 'transparent',
+              borderWidth: 1.5,
+            }}
+          >
+            <AppText
+              variant={cell.isToday ? 'labelLarge' : 'bodyMedium'}
+              style={{ color: isEmpty ? (outlineToday ? colors.onSurface : emptyForeground) : foreground }}
+            >
+              {formatDate(cell.date, { day: 'numeric' })}
+            </AppText>
+          </View>
+        </TouchableRipple>
+      </View>
+    </FocusRing>
+  );
+});

@@ -81,4 +81,4 @@ move and does nothing at all.
 
 For the code behind this: `progressionKey()` and `applyProgression` in
 `app/src/models/blueprint-models/index.ts`, session start in `app/src/services/session-service.ts`, the
-editor in `app/src/components/presentation/workout-editor/progressive-overload.tsx`.
+editor in `app/src/components/exercise-editor/progressive-overload.tsx`.

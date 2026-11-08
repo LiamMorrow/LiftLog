@@ -1,4 +1,4 @@
-import { ExerciseDescriptorEditor } from '@/components/smart/exercise-descriptor-editor';
+import { ExerciseDescriptorEditor } from '@/components/exercises/exercise-descriptor-editor';
 import { useLocalSearchParams } from 'expo-router';
 
 export default function ExerciseDescriptorEditorPage() {
