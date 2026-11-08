@@ -60,31 +60,36 @@ export function ReactionBar({ eventId, animateOnMount }: ReactionBarProps) {
         const count = countFor(emoji);
         return (
           <View key={emoji}>
-            <TouchableRipple
-              accessibilityRole="button"
-              style={{ borderRadius: 20, borderWidth: 1, borderColor: colors.outline, overflow: 'hidden' }}
-              onPress={() => {
-                dispatch(cheerFeedItem({ eventId, emoji, fromUserAction: true }));
-                emit(emoji, 1);
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: spacing[1],
-                  paddingHorizontal: spacing[3],
-                  paddingVertical: spacing[1] + 2,
+            <View style={{ borderRadius: 20, borderWidth: 1, borderColor: colors.outline, overflow: 'hidden' }}>
+              <TouchableRipple
+                accessibilityRole="button"
+                onPress={() => {
+                  dispatch(cheerFeedItem({ eventId, emoji, fromUserAction: true }));
+                  emit(emoji, 1);
                 }}
               >
-                <Text style={{ fontSize: 16 }}>{emoji}</Text>
-                {count > 0 && (
-                  <AppText variant="bodyMedium" color="onSecondaryContainer" style={{ fontVariant: ['tabular-nums'] }}>
-                    {count.toString()}
-                  </AppText>
-                )}
-              </View>
-            </TouchableRipple>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: spacing[1],
+                    paddingHorizontal: spacing[3],
+                    paddingVertical: spacing[1] + 2,
+                  }}
+                >
+                  <Text style={{ fontSize: 16 }}>{emoji}</Text>
+                  {count > 0 && (
+                    <AppText
+                      variant="bodyMedium"
+                      color="onSecondaryContainer"
+                      style={{ fontVariant: ['tabular-nums'] }}
+                    >
+                      {count.toString()}
+                    </AppText>
+                  )}
+                </View>
+              </TouchableRipple>
+            </View>
             <FloatingEmojiLayer emojis={floating.filter((x) => x.emoji === emoji)} onFinished={handleFinished} />
           </View>
         );
