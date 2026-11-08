@@ -1,3 +1,4 @@
+import { UncaughtErrorLogger } from '@/components/app-shell/uncaught-error-logger';
 import { Services } from '@/services';
 import { resolveStore } from '@/store';
 import { TolgeeProvider } from '@tolgee/react';
@@ -34,11 +35,13 @@ export default function ServicesProvider(props: { children: ReactNode }) {
   }
 
   return (
-    <Provider store={store}>
-      <ServicesContext.Provider value={services}>
-        <TolgeeProvider tolgee={services.tolgee}>{props.children}</TolgeeProvider>
-      </ServicesContext.Provider>
-    </Provider>
+    <UncaughtErrorLogger logger={services.logger}>
+      <Provider store={store}>
+        <ServicesContext.Provider value={services}>
+          <TolgeeProvider tolgee={services.tolgee}>{props.children}</TolgeeProvider>
+        </ServicesContext.Provider>
+      </Provider>
+    </UncaughtErrorLogger>
   );
 }
 export function useServices() {
