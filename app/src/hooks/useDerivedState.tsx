@@ -27,6 +27,9 @@ function isEqual<T>(a: T, b: T): boolean {
   if (a === b) {
     return true;
   }
+  if (b === undefined || b === null) {
+    return false;
+  }
   if (typeof a === 'object' && a && 'isEqualTo' in a && typeof a.isEqualTo === 'function') {
     // oxlint-disable-next-line typescript/no-unsafe-return typescript/no-unsafe-call
     return (a.isEqualTo as any)(b);
