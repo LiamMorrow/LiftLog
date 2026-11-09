@@ -8,7 +8,7 @@ import EmptyInfo from '@/components/foundation/empty-info';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
 import ItemList from '@/components/foundation/item-list';
-import { RecordedCardioExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
+import { RecordedCardioExercise, RecordedExercise, RecordedWeightedExercise, Session } from '@/models/session-models';
 import { CardioTimer } from '@/components/workout/cardio/cardio-timer';
 import WeightDisplay from '@/components/foundation/editors/weight-display';
 import BigNumber from 'bignumber.js';
@@ -24,7 +24,11 @@ import { ExerciseGroup, groupSupersets } from '@/utils/superset-groups';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { OffsetDateTime } from '@js-joda/core';
 import { useAppSelector } from '@/store';
-import { readPreviousExercises } from '@/db/sessions';
+import { readLatestExercises, readPreviousExercises } from '@/db/sessions';
+import { nextRecordedExercise } from '@/services/session-service';
+import { deloadDifference } from '@/models/deload';
+import { DeloadNotice } from '@/components/workout/deload-notice';
+import { switchToNormalWorkout } from '@/store/stored-sessions';
 import { useSessionsQuery } from '@/hooks/useSessionsQuery';
 import { PageActions } from '@/components/foundation/page-actions';
 import AddIcon from '@expo/material-symbols/add.xml';
@@ -64,6 +68,29 @@ export default function SessionComponent(props: {
     (db) => readPreviousExercises(db, progressionKeys, session.id),
     `${session.id}:${progressionKeys.join('\n')}`,
   );
+  const latestExercisesForDeload = useSessionsQuery(
+    (db) => (isActiveWorkout && session.deload ? readLatestExercises(db, progressionKeys) : undefined),
+    `${session.id}:${isActiveWorkout && session.deload}:${progressionKeys.join('\n')}`,
+  );
+  const defaultWeightUnit = useAppSelector((x) => (x.settings.useImperialUnits ? 'pounds' : 'kilograms'));
+  const deloadCaption = (exercise: RecordedExercise): string | undefined => {
+    if (!latestExercisesForDeload || !(exercise instanceof RecordedWeightedExercise)) {
+      return undefined;
+    }
+    const normal = nextRecordedExercise(
+      exercise.blueprint,
+      latestExercisesForDeload[exercise.progressionKey()],
+      defaultWeightUnit,
+    );
+    const difference = normal instanceof RecordedWeightedExercise ? deloadDifference(exercise, normal) : undefined;
+    return match(difference)
+      .with({ type: 'weight' }, ({ normal }) =>
+        t('workout.deload.normally_weight.label', { weight: normal.shortLocaleFormat() }),
+      )
+      .with({ type: 'sets' }, ({ normal }) => t('workout.deload.normally_sets.label', { count: normal }))
+      .with(undefined, () => undefined)
+      .exhaustive();
+  };
   const addExercise = useAddExercise(editableSessionId);
   const updateSession = (reducer: (session: Session) => Session) => props.updateSession?.(reducer);
   const resetTimer = (time: OffsetDateTime | undefined) => {
@@ -133,6 +160,7 @@ export default function SessionComponent(props: {
           sessionDate={session.date}
           lastCompletedAt={isActiveWorkout ? undefined : lastExercise?.latestTime}
           previousLineageExercise={previousExercises?.[exercise.progressionKey()]}
+          deloadCaption={deloadCaption(exercise)}
           updateSession={updateSession}
         />
       );
@@ -263,6 +291,13 @@ export default function SessionComponent(props: {
   const content = (
     <>
       {props.header}
+      {session.deload ? (
+        <DeloadNotice
+          onSwitchToNormal={
+            isActiveWorkout && !isReadonly ? () => dispatch(switchToNormalWorkout(session.id)) : undefined
+          }
+        />
+      ) : undefined}
       {notesComponent}
       {emptyInfo}
       <ItemList items={groupSupersets(session.recordedExercises)} renderItem={renderGroup} />

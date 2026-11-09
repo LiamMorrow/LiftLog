@@ -55,3 +55,16 @@ the workaround is safe.
 - **Remove when:** expo-ui's `Icon` reserves its `size` while the source loads.
 - **Verify:** On Android, start a workout from Home. The card actions should not shift right for a frame when
   the current workout card appears.
+
+## The edit dock turns off Android keyboard panning
+
+- **Where:** `EditDockHost` in `app/src/components/foundation/edit-dock/edit-dock.tsx` sets
+  `SOFT_INPUT_ADJUST_NOTHING` while its page is focused, and restores the default mode when the page loses focus.
+- **Why:** The app uses `softwareKeyboardLayoutMode: "pan"`. Android pans the whole window when an input takes focus
+  behind a keyboard that is already open, and the window stays panned after the input slides into view. The edit
+  dock then floats above the keyboard by the pan distance. `measure` and `measureInWindow` stay correct, because the
+  pan moves the window and not the layout.
+- **Remove when:** The app uses `softwareKeyboardLayoutMode: "resize"`, after checking every screen that relies on
+  the pan to reveal an input.
+- **Verify:** On Android, open the exercise editor from a workout with the keyboard up, go back to the workout and
+  open workout notes. The edit dock should sit directly on the keyboard.

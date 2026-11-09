@@ -131,6 +131,7 @@ export function sessionToRows(session: Session): SessionRows {
       bodyweightUnit: json.bodyweight?.unit ?? null,
       finishedAt: json.finishedAt ?? null,
       finishedAtMs: json.finishedAt ? toEpochMs(json.finishedAt) : null,
+      deload: json.deload ?? false,
     },
     exercises: [],
     weightedSets: [],
@@ -329,6 +330,7 @@ function sessionsFromRows(rows: {
       bodyweight: bodyweightFromColumns(session),
       recordedExercises,
       finishedAt: session.finishedAt ?? undefined,
+      deload: session.deload || undefined,
     };
     return Session.fromJSON(json);
   });
@@ -337,6 +339,7 @@ function sessionsFromRows(rows: {
 type SetsTable = typeof weightedSetsSchema | typeof cardioSetsSchema;
 
 const isFinished = eq(sessionsSchema.active, false);
+const isNotDeload = eq(sessionsSchema.deload, false);
 
 const ofExercise = (sets: SetsTable) =>
   and(eq(recordedExercisesSchema.sessionId, sets.sessionId), eq(recordedExercisesSchema.ord, sets.exerciseOrd));
@@ -501,7 +504,11 @@ export function readPreviousExercises(
   progressionKeys: ProgressionKey[],
   excludeSessionId: string,
 ): Record<ProgressionKey, RecordedExercise | undefined> {
-  return readLatestOfLineages(db, progressionKeys, and(isFinished, ne(sessionsSchema.id, excludeSessionId)));
+  return readLatestOfLineages(
+    db,
+    progressionKeys,
+    and(isFinished, isNotDeload, ne(sessionsSchema.id, excludeSessionId)),
+  );
 }
 
 /** When a session was performed: its last completed set, or the start of its date when it has none. */
@@ -622,7 +629,7 @@ export function readLatestExercises(
   db: ExpoSQLiteDatabase,
   progressionKeys: ProgressionKey[],
 ): Record<ProgressionKey, RecordedExercise | undefined> {
-  return readLatestOfLineages(db, progressionKeys, undefined);
+  return readLatestOfLineages(db, progressionKeys, isNotDeload);
 }
 
 /** `where` may filter on the session and recorded exercise tables. */

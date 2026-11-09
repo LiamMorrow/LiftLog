@@ -38,6 +38,10 @@
     },
     "finishedAt": {
       "$ref": "./OffsetDateTime.json"
+    },
+    "deload": {
+      "type": "boolean",
+      "description": "A lighter session that is left out of carry-over and never triggers progression."
     }
   },
   "required": [

@@ -20,6 +20,7 @@ import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { match } from 'ts-pattern';
+import { restoreNormalExercise } from '@/models/deload';
 
 export class SessionService {
   constructor(
@@ -55,53 +56,85 @@ export class SessionService {
     sessionBlueprint: SessionBlueprint,
     latestRecordedExercises: Record<ProgressionKey, RecordedExercise | undefined>,
   ): Session {
-    // oxlint-disable-next-line typescript/no-this-alias
-    const $this = this;
-    function getNextExercise(e: ExerciseBlueprint): RecordedExercise {
-      const lastExercise = latestRecordedExercises[e.progressionKey()];
-      if (e instanceof CardioExerciseBlueprint) {
-        const cardioLastExercise = lastExercise instanceof RecordedCardioExercise ? lastExercise : undefined;
-        return RecordedCardioExercise.empty(e).with({
-          sets: e.sets.map((s, i) =>
-            RecordedCardioExerciseSet.empty(s).with({
-              incline: cardioLastExercise?.sets[i]?.incline,
-              resistance: cardioLastExercise?.sets[i]?.resistance,
-            }),
-          ),
-        });
-      }
-      const weightedLastExercise = lastExercise instanceof RecordedWeightedExercise ? lastExercise : undefined;
-      const potentialSets: PotentialSet[] = match(weightedLastExercise)
-        .returnType<PotentialSet[]>()
-        .with(undefined, () =>
-          e.plannedSets.map((s) => new PotentialSet(undefined, new Weight(0, $this.getDefaultWeightUnit()), s.reps)),
-        )
-        // Where reps are what advances, the target carries forward alongside the weight so the
-        // lineage keeps what a rule won for it. Where they are a fixed prescription it is re-seeded
-        // from the plan, because the only thing that could have changed it is an edit to the plan -
-        // and that edit already had its own say in the save-changes dialog.
-        .otherwise((x) =>
-          x.potentialSets.map(
-            (ps, index) =>
-              new PotentialSet(undefined, ps.weight, e.repsAreProgressed ? ps.target : e.repsTargetForSet(index)),
-          ),
-        );
-      const newExercise = new RecordedWeightedExercise(e, potentialSets, undefined);
-      return weightedLastExercise?.isSuccessForProgressiveOverload
-        ? applyProgression(e.progression, newExercise)
-        : newExercise;
-    }
+    const defaultWeightUnit = this.getDefaultWeightUnit();
     return new Session(
       uuid(),
       sessionBlueprint,
-      sessionBlueprint.exercises.map(getNextExercise),
+      sessionBlueprint.exercises.map((e) =>
+        nextRecordedExercise(e, latestRecordedExercises[e.progressionKey()], defaultWeightUnit),
+      ),
       LocalDate.now(),
       undefined,
       undefined,
     );
   }
 
+  /** Takes `session` out of being a deload, putting back the plan's weights and sets on everything not yet logged. */
+  restoreNormalSession(session: Session): Session {
+    const latestExercises = readLatestExercises(
+      this.db,
+      session.recordedExercises.map((exercise) => exercise.progressionKey()),
+    );
+    const defaultWeightUnit = this.getDefaultWeightUnit();
+    return session.with({
+      deload: false,
+      recordedExercises: session.recordedExercises.map((exercise) => {
+        if (!(exercise instanceof RecordedWeightedExercise)) {
+          return exercise;
+        }
+        const normal = nextRecordedExercise(
+          exercise.blueprint,
+          latestExercises[exercise.progressionKey()],
+          defaultWeightUnit,
+        );
+        return normal instanceof RecordedWeightedExercise ? restoreNormalExercise(exercise, normal) : exercise;
+      }),
+    });
+  }
+
   private getDefaultWeightUnit(): WeightUnit {
     return this.getState().settings.useImperialUnits ? 'pounds' : 'kilograms';
   }
+}
+
+/**
+ * The exercise the plan asks for next: last time's weights carried over, then moved by progression when last
+ * time succeeded.
+ */
+export function nextRecordedExercise(
+  e: ExerciseBlueprint,
+  lastExercise: RecordedExercise | undefined,
+  defaultWeightUnit: WeightUnit,
+): RecordedExercise {
+  if (e instanceof CardioExerciseBlueprint) {
+    const cardioLastExercise = lastExercise instanceof RecordedCardioExercise ? lastExercise : undefined;
+    return RecordedCardioExercise.empty(e).with({
+      sets: e.sets.map((s, i) =>
+        RecordedCardioExerciseSet.empty(s).with({
+          incline: cardioLastExercise?.sets[i]?.incline,
+          resistance: cardioLastExercise?.sets[i]?.resistance,
+        }),
+      ),
+    });
+  }
+  const weightedLastExercise = lastExercise instanceof RecordedWeightedExercise ? lastExercise : undefined;
+  const potentialSets: PotentialSet[] = match(weightedLastExercise)
+    .returnType<PotentialSet[]>()
+    .with(undefined, () =>
+      e.plannedSets.map((s) => new PotentialSet(undefined, new Weight(0, defaultWeightUnit), s.reps)),
+    )
+    // Where reps are what advances, the target carries forward alongside the weight so the
+    // lineage keeps what a rule won for it. Where they are a fixed prescription it is re-seeded
+    // from the plan, because the only thing that could have changed it is an edit to the plan -
+    // and that edit already had its own say in the save-changes dialog.
+    .otherwise((x) =>
+      x.potentialSets.map(
+        (ps, index) =>
+          new PotentialSet(undefined, ps.weight, e.repsAreProgressed ? ps.target : e.repsTargetForSet(index)),
+      ),
+    );
+  const newExercise = new RecordedWeightedExercise(e, potentialSets, undefined);
+  return weightedLastExercise?.isSuccessForProgressiveOverload
+    ? applyProgression(e.progression, newExercise)
+    : newExercise;
 }

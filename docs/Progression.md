@@ -18,6 +18,8 @@ numbers in.
 - **Reps you completed last time normally do not.** The target comes back from the plan each session.
 - A workout you opened but never logged a set in is ignored, so an abandoned session cannot become the
   number you are stuck chasing.
+- The workout after a **deload** picks up from the numbers before it, because a deload workout is ignored
+  too. See [Deloads](./Deloads.md).
 
 **Reps carry over too when reps are what you are progressing on** - either the exercise's Resistance is
 set to None (there is nothing else to advance on), or you have given it a rule that increases reps. In
@@ -35,7 +37,8 @@ Found under **Progressive Overload** in the exercise editor. A new exercise has 
 where you leave it until you add one.
 
 **Rules only fire after a successful session** - every set logged, each at or above its target. Miss one
-and nothing moves; you repeat the same numbers next time.
+and nothing moves; you repeat the same numbers next time. A deload can neither fire a rule nor hold one
+back, because it is never the session that counts.
 
 **Rules run in order, and only one runs per session.** LiftLog takes the first rule that still has room
 to move and stops there. Running one rule per session is what lets you chain rules.

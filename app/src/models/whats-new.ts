@@ -1,3 +1,4 @@
+import ArrowDownwardIcon from '@expo/material-symbols/arrow_downward.xml';
 import AssignmentIcon from '@expo/material-symbols/assignment.xml';
 import DnsIcon from '@expo/material-symbols/dns.xml';
 import HeartCheckIcon from '@expo/material-symbols/heart_check.xml';
@@ -75,6 +76,13 @@ export const whatsNewEntries: WhatsNewEntry[] = [
       state.settings.showFeed &&
       Object.values(state.feed.friends).some((friend) => friend.status === 'friend') &&
       !state.feed.identity.unwrapOr(undefined)?.shareLiveWorkouts,
+  },
+  {
+    id: 5,
+    icon: ArrowDownwardIcon,
+    systemImage: 'arrow.down',
+    titleKey: 'whats_new.deloads.title',
+    bodyKey: 'whats_new.deloads.body',
   },
 ];
 

@@ -1,0 +1,1 @@
+ALTER TABLE `session` ADD `deload` integer DEFAULT false NOT NULL;

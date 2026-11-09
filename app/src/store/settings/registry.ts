@@ -1,4 +1,5 @@
 import { BackendId } from '@/models/backend';
+import type { DeloadStyle } from '@/models/deload';
 import { RemoteData } from '@/models/remote';
 import { DayOfWeek, Instant } from '@js-joda/core';
 import { ActionCreatorWithPreparedPayload, createAction, UnknownAction } from '@reduxjs/toolkit';
@@ -8,6 +9,7 @@ import {
   colorSchemeSeedCodec,
   ColorSchemeSeed,
   dayOfWeekCodec,
+  deloadStyleCodec,
   intCodec,
   PlansSortOrder,
   plansSortOrderCodec,
@@ -70,6 +72,9 @@ export const preferenceRegistry = {
   showPreviousRepsInWorkout: pref({ default: true, codec: boolCodec }),
   keepScreenAwakeDuringWorkout: pref({ default: true, codec: boolCodec }),
   showPostWorkoutSummary: pref({ default: true, codec: boolCodec }),
+  deloadStyle: pref<DeloadStyle>({ default: 'lighterWeight', codec: deloadStyleCodec }),
+  deloadWeightPercent: pref({ default: 60, codec: intCodec }),
+  deloadSetsPercent: pref({ default: 50, codec: intCodec }),
   trueBlackDarkTheme: pref({ default: false, codec: boolCodec }),
   tipToShow: pref({ default: 1, codec: intCodec }),
   lastSeenWhatsNewId: pref({ default: 0, codec: intCodec }),

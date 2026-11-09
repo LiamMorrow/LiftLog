@@ -11,6 +11,8 @@ import { Stack, useRouter } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
 import { useFeedHubLease } from '@/hooks/useFeedHubLease';
 import { useConfirm } from '@/hooks/useConfirm';
+import { getDeloadOptionsHref } from '@/components/workout/deload-options';
+import ArrowDownwardIcon from '@expo/material-symbols/arrow_downward.xml';
 
 export default function Index() {
   const session = useAppSelector(selectActiveSession);
@@ -62,7 +64,23 @@ export default function Index() {
           headerTitleAlign: 'left',
         }}
       />
-      <SessionMoreMenuComponent session={session} isActiveWorkout save={save} />
+      <SessionMoreMenuComponent
+        session={session}
+        isActiveWorkout
+        save={save}
+        additionalItems={
+          session.deload
+            ? undefined
+            : [
+                {
+                  label: t('workout.deload.button'),
+                  icon: ArrowDownwardIcon,
+                  systemImage: 'arrow.down',
+                  onPress: () => push(getDeloadOptionsHref(session.id)),
+                },
+              ]
+        }
+      />
       <SessionComponent
         session={session}
         updateSession={(update) => dispatch(updateStoredSession({ sessionId: session.id, update }))}

@@ -70,7 +70,15 @@ function Feature({ entry, onPress }: { entry: WhatsNewEntry; onPress: (route: Hr
           <T keyName={entry.titleKey} />
         </AppText>
       </View>
-      <AppText variant="bodySmall" style={{ color: colors.onTertiaryContainer, marginTop: spacing[2], opacity: 0.9 }}>
+      <AppText
+        variant="bodySmall"
+        style={{
+          color: colors.onTertiaryContainer,
+          marginTop: spacing[2],
+          marginBottom: entry.cta ? 0 : spacing[2],
+          opacity: 0.9,
+        }}
+      >
         <T keyName={entry.bodyKey} />
       </AppText>
       {entry.cta && (

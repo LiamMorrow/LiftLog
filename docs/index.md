@@ -32,6 +32,8 @@ work to find the docs relevant to your area, and update it whenever you add, rem
   numbers carry into today (and why weight carries but reps usually do not), and how the progressive
   overload rules move them. Covers rule order, limits and starting over, rules that can never run, and
   the two ways to set up double progression. Ends with pointers to the code.
+- [Deloads.md](./Deloads.md) - deload workouts, how a deload lightens a workout and why deloads never feed
+  carry-over.
 - [PersonalRecords.md](./PersonalRecords.md) - How personal records for an exercise are calculated
 - [PlanFileFormat.md](./PlanFileFormat.md) - the `.liftlogplan` file format, how plans are imported and
   exported, and the Claude skill that authors plan files against the schema.

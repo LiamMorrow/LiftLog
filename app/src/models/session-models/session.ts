@@ -45,6 +45,7 @@ export class Session {
     readonly bodyweight: Weight | undefined,
     readonly restTimer: RestTimer | undefined,
     readonly finishedAt?: OffsetDateTime,
+    readonly deload: boolean = false,
   ) {}
   get duration(): Duration | undefined {
     return this.lastExercise?.latestTime && this.firstExercise?.earliestTime
@@ -65,6 +66,7 @@ export class Session {
       json.bodyweight ? Weight.fromJSON(json.bodyweight) : undefined,
       undefined,
       json.finishedAt ? fromOffsetDateTimeJSON(json.finishedAt) : undefined,
+      json.deload ?? false,
     );
   }
 
@@ -119,6 +121,7 @@ export class Session {
     return (
       this.id === other.id &&
       this.date.equals(other.date) &&
+      this.deload === other.deload &&
       equal(this.bodyweight, other.bodyweight) &&
       this.blueprint.equals(other.blueprint) &&
       this.recordedExercises.length === other.recordedExercises.length &&
@@ -135,6 +138,7 @@ export class Session {
       'bodyweight' in other ? other.bodyweight : this.bodyweight,
       'restTimer' in other ? other.restTimer : this.restTimer,
       'finishedAt' in other ? other.finishedAt : this.finishedAt,
+      'deload' in other ? (other.deload ?? this.deload) : this.deload,
     );
   }
 
@@ -377,6 +381,7 @@ export class Session {
       id: this.id,
       recordedExercises: this.recordedExercises.map((x) => x.toJSON()),
       finishedAt: this.finishedAt ? toOffsetDateTimeJSON(this.finishedAt) : undefined,
+      deload: this.deload || undefined,
     };
   }
 

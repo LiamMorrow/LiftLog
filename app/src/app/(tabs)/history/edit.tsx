@@ -14,6 +14,8 @@ import { useTranslate } from '@tolgee/react';
 import { useRef } from 'react';
 import PlayCircle from '@expo/material-symbols/play_circle.xml';
 import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
+import ArrowDownwardIcon from '@expo/material-symbols/arrow_downward.xml';
+import ArrowUpwardIcon from '@expo/material-symbols/arrow_upward.xml';
 import { DatePicker } from '@/components/foundation/date-picker';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/foundation/segmented-list';
 
@@ -70,6 +72,12 @@ export default function HistoryEditPage() {
             icon: PlayCircle,
             systemImage: 'play.circle',
             onPress: () => resume(session),
+          },
+          {
+            label: session.deload ? t('workout.deload.mark_normal.button') : t('workout.deload.mark.button'),
+            icon: session.deload ? ArrowUpwardIcon : ArrowDownwardIcon,
+            systemImage: session.deload ? 'arrow.up' : 'arrow.down',
+            onPress: () => dispatch(updateStoredSession({ sessionId, update: (s) => s.with({ deload: !s.deload }) })),
           },
         ]}
       />

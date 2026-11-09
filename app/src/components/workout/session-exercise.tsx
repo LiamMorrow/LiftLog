@@ -48,6 +48,8 @@ interface SessionExerciseProps {
   /** Only for a session being edited after the fact, where new sets are stamped from its last one. */
   lastCompletedAt: OffsetDateTime | undefined;
   previousLineageExercise: RecordedExercise | undefined;
+  /** For a deload, what the plan would normally have asked for. */
+  deloadCaption?: string | undefined;
   updateSession: SessionUpdater;
 }
 
@@ -95,6 +97,7 @@ export const SessionExercise = memo(function SessionExercise(props: SessionExerc
         isReadonly={isReadonly}
         showPreviousButton={props.isActiveWorkout}
         previousLineageExercise={props.previousLineageExercise as RecordedWeightedExercise | undefined}
+        deloadCaption={props.deloadCaption}
       />
     ))
     .with(P.instanceOf(RecordedCardioExercise), (exercise) => (

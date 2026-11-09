@@ -32,11 +32,7 @@ export function Chip(
   const backgroundColor = selected || mode === 'flat' ? colors.secondaryContainer : colors.surface;
 
   return (
-    <TouchableRipple
-      testID={props.testID}
-      accessibilityRole="button"
-      accessibilityState={{ selected }}
-      onPress={props.onPress}
+    <View
       style={{
         height: 32,
         borderRadius: 8,
@@ -46,23 +42,31 @@ export function Chip(
         borderColor: colors.outline,
       }}
     >
-      <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: spacing[2],
-          paddingInlineStart: icon.icon ? spacing[2] : spacing[4],
-          paddingInlineEnd: spacing[4],
-        }}
+      <TouchableRipple
+        testID={props.testID}
+        accessibilityRole="button"
+        accessibilityState={{ selected }}
+        onPress={props.onPress}
+        style={{ flex: 1 }}
       >
-        {icon.icon ? (
-          <NativeIcon icon={icon.icon} systemImage={icon.systemImage} size={18} color={contentColor} />
-        ) : undefined}
-        <AppText variant="labelLarge" style={{ color: contentColor }}>
-          {props.children}
-        </AppText>
-      </View>
-    </TouchableRipple>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: spacing[2],
+            paddingInlineStart: icon.icon ? spacing[2] : spacing[4],
+            paddingInlineEnd: spacing[4],
+          }}
+        >
+          {icon.icon ? (
+            <NativeIcon icon={icon.icon} systemImage={icon.systemImage} size={18} color={contentColor} />
+          ) : undefined}
+          <AppText variant="labelLarge" style={{ color: contentColor }}>
+            {props.children}
+          </AppText>
+        </View>
+      </TouchableRipple>
+    </View>
   );
 }

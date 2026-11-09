@@ -18,6 +18,7 @@ import {
   setExercises,
   setHiddenBuiltInIds,
   setIsHydrated,
+  switchToNormalWorkout,
   updateExercise,
   updateStoredSession,
   upsertExercises,
@@ -133,6 +134,14 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
     } catch (e) {
       logger.error('Failed to sync to health aggregator', e);
     }
+  });
+
+  addEffect(switchToNormalWorkout, (action, { getState, dispatch, extra: { sessionService } }) => {
+    const session = selectSession(getState(), action.payload);
+    if (!session?.deload) {
+      return;
+    }
+    dispatch(putStoredSession(sessionService.restoreNormalSession(session)));
   });
 
   addEffect(autoFinishWorkout, (_, { getState, dispatch }) => {

@@ -1,5 +1,6 @@
 import PotentialSetCounter from '@/components/workout/weighted/potential-set-counter';
-import { spacing } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { AppText } from '@/components/foundation/app-text';
 import { RecordedWeightedExercise } from '@/models/session-models';
 import { ReactNode, useState } from 'react';
 import { View } from 'react-native';
@@ -12,6 +13,7 @@ import { useAppSelector } from '@/store';
 interface WeightedExerciseProps {
   recordedExercise: RecordedWeightedExercise;
   previousLineageExercise: RecordedWeightedExercise | undefined;
+  deloadCaption?: string | undefined;
   toStartNext: boolean;
   isReadonly: boolean;
   showPreviousButton: boolean;
@@ -29,6 +31,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
   const { updateExercise, timeProvider } = props;
   const { recordedExercise } = props;
   const { t } = useTranslate();
+  const { colors } = useAppTheme();
   const [weightEditOriginal, setWeightEditOriginal] = useState<RecordedWeightedExercise>();
   const showPreviousReps = useAppSelector((x) => x.settings.showPreviousRepsInWorkout);
 
@@ -48,6 +51,11 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
       onMoveExerciseUp={props.onMoveExerciseUp}
       onMoveExerciseDown={props.onMoveExerciseDown}
     >
+      {props.deloadCaption ? (
+        <AppText variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginBottom: spacing[2] }}>
+          {props.deloadCaption}
+        </AppText>
+      ) : undefined}
       <View style={{ flexDirection: 'row', gap: spacing[2], flexWrap: 'wrap' }}>
         {recordedExercise.potentialSets.map((set, index) => (
           <PotentialSetCounter

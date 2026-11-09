@@ -1,4 +1,5 @@
 import { beforeEach, describe, it, expect, vi } from 'vitest';
+import { deloadSession } from '@/models/deload';
 import { SessionService } from '@/services/session-service';
 import { DatabaseMigrationService } from '@/services/database-migration-service';
 import { setActiveSession, writeSession } from '@/db/sessions';
@@ -343,5 +344,44 @@ describe('SessionService progressive overload', () => {
     const lastWeek = makeRecordedExercise(blueprint, [10, 10], new Weight(60, 'kilograms'));
 
     expect(await upcomingWeights(blueprint, lastWeek)).toEqual([60, 60]);
+  });
+});
+
+describe('SessionService deloads', () => {
+  const weightsOf = (session: Session) =>
+    (session.recordedExercises[0] as RecordedWeightedExercise).potentialSets.map((s) => s.weight.value.toNumber());
+
+  it('picks up after a deload from the numbers before it', async () => {
+    const blueprint = makeWeightedBlueprint({ sets: 2 });
+    const before = makeRecordedExercise(blueprint, [10, 10], new Weight(100, 'kilograms'));
+    const deload = makeRecordedExercise(blueprint, [10, 10], new Weight(60, 'kilograms'));
+    store(performed('Day', [before]), performed('Day', [deload]).with({ deload: true }));
+
+    const [session] = await collect(
+      makeService().getUpcomingSessions([new SessionBlueprint('Day', [blueprint], '')]),
+      1,
+    );
+
+    expect(session!.deload).toBe(false);
+    expect(weightsOf(session!)).toEqual([102.5, 102.5]);
+  });
+
+  it('restores a deload to the normal workout, keeping its id, date and bodyweight', async () => {
+    const blueprint = makeWeightedBlueprint({ sets: 2 });
+    store(performed('Day', [makeRecordedExercise(blueprint, [10, 10], new Weight(100, 'kilograms'))]));
+    const service = makeService();
+    const [session] = await collect(service.getUpcomingSessions([new SessionBlueprint('Day', [blueprint], '')]), 1);
+    const deload = deloadSession(session!, { style: 'lighterWeight', weightPercent: 60, setsPercent: 50 }).with({
+      date: LocalDate.of(2025, 1, 1),
+      bodyweight: new Weight(80, 'kilograms'),
+    });
+
+    const rebuilt = service.restoreNormalSession(deload);
+
+    expect(rebuilt.deload).toBe(false);
+    expect(rebuilt.id).toBe(deload.id);
+    expect(rebuilt.date).toEqual(deload.date);
+    expect(rebuilt.bodyweight).toEqual(deload.bodyweight);
+    expect(weightsOf(rebuilt)).toEqual([102.5, 102.5]);
   });
 });

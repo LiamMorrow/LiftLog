@@ -74,6 +74,7 @@ export const sessionsSchema = sqliteTable(
     lastCompletedAtMs: integer(),
     finishedAt: text().$type<OffsetDateTimeJSON>(),
     finishedAtMs: integer(),
+    deload: integer({ mode: 'boolean' }).notNull().default(false),
   },
   (table) => [
     uniqueIndex('single_active_session')

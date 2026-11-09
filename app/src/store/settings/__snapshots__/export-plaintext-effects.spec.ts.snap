@@ -26,6 +26,7 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
       "notes": "",
     },
     "date": "2024-01-15",
+    "deload": false,
     "id": "123",
     "recordedExercises": [
       {
@@ -132,6 +133,7 @@ exports[`export-plaintext-effects > addExportPlaintextEffects - JSON > JSON outp
       "notes": "",
     },
     "date": "2024-01-15",
+    "deload": false,
     "id": "1234",
     "recordedExercises": [
       {

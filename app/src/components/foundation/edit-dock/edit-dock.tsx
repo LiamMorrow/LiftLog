@@ -25,7 +25,7 @@ import {
   type ViewInstance,
 } from 'react-native';
 import { useFocusEffect } from 'expo-router';
-import { KeyboardStickyView } from 'react-native-keyboard-controller';
+import { AndroidSoftInputModes, KeyboardController, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { AppText } from '@/components/foundation/app-text';
 import { FloatingPane } from '@/components/foundation/floating-pane';
 import { KeyboardDoneButtonContext } from '@/components/foundation/editors/number-inputs';
@@ -84,6 +84,8 @@ export function EditDockHost(props: { children: ReactNode }) {
   const host = useRef<ViewInstance>(null);
   const [distanceToScreenBottom, setDistanceToScreenBottom] = useState(0);
   const isOpen = entry !== undefined;
+
+  useFocusEffect(disableKeyboardWindowPan);
 
   useFocusEffect(() => {
     if (!entry) {
@@ -168,6 +170,11 @@ export function EditDockHost(props: { children: ReactNode }) {
 }
 
 const noSubscribe = () => () => {};
+
+function disableKeyboardWindowPan() {
+  KeyboardController.setInputMode(AndroidSoftInputModes.SOFT_INPUT_ADJUST_NOTHING);
+  return () => KeyboardController.setDefaultMode();
+}
 
 /** Edits a value from the workout in the dock at the bottom of the page, while the workout stays in view. */
 export function DockedEditor(props: {

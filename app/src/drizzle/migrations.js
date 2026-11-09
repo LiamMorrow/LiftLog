@@ -19,6 +19,7 @@ import m0014 from './0014_drop_follow_tables.sql';
 import m0015 from './0015_feed_friend_repair.sql';
 import m0016 from './0016_personal_record_summary.sql';
 import m0017 from './0017_session_finished_at.sql';
+import m0018 from './0018_session_deload.sql';
 
   export default {
     journal,
@@ -40,7 +41,8 @@ m0013,
 m0014,
 m0015,
 m0016,
-m0017
+m0017,
+m0018
     }
   }
   

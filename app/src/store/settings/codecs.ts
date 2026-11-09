@@ -1,3 +1,4 @@
+import type { DeloadStyle } from '@/models/deload';
 import { DayOfWeek, Instant } from '@js-joda/core';
 import { match, P } from 'ts-pattern';
 
@@ -56,6 +57,14 @@ export const plansSortOrderCodec: Codec<PlansSortOrder> = {
   deserialize: (raw) =>
     match(raw)
       .with('name', 'recent', (v) => v)
+      .otherwise(() => undefined),
+  serialize: (value) => value,
+};
+
+export const deloadStyleCodec: Codec<DeloadStyle> = {
+  deserialize: (raw) =>
+    match(raw)
+      .with('lighterWeight', 'fewerSets', 'unchanged', (v) => v)
       .otherwise(() => undefined),
   serialize: (value) => value,
 };

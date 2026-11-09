@@ -16,6 +16,8 @@ export interface SessionJSON {
   date: LocalDateJSON;
   bodyweight: WeightJSON | undefined;
   finishedAt?: OffsetDateTimeJSON | undefined;
+  /** A lighter session that is left out of carry-over and never triggers progression. */
+  deload?: boolean | undefined;
 }
 
 /**

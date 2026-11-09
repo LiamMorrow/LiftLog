@@ -204,7 +204,7 @@ export class SessionUserEvent {
       eventId: this.eventId,
       timestamp: toInstantJson(this.timestamp),
       expiry: toInstantJson(this.expiry),
-      session: this.session.toJSON(),
+      session: this.session.with({ deload: false }).toJSON(),
     };
   }
 
@@ -320,7 +320,7 @@ export class LiveSessionUserEvent {
       eventId: this.eventId,
       timestamp: toInstantJson(this.timestamp),
       expiry: toInstantJson(this.expiry),
-      session: this.session.toJSON(),
+      session: this.session.with({ deload: false }).toJSON(),
     };
   }
 
@@ -508,7 +508,7 @@ export class SharedSession {
     return {
       version: 3,
       type: 'SharedSession',
-      session: this.session.toJSON(),
+      session: this.session.with({ deload: false }).toJSON(),
     };
   }
 

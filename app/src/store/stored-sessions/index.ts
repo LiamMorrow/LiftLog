@@ -196,6 +196,9 @@ export const sessionFinished = createAction<string>('sessionFinished');
 
 export const autoFinishWorkout = createAction('autoFinishWorkout');
 
+/** Rebuilds a deload session that has no logged sets as the normal workout. */
+export const switchToNormalWorkout = createAction<string>('switchToNormalWorkout');
+
 export const selectExerciseById = createSelector(
   [selectExercises, (_, id: string) => id],
   (exercises, id) => exercises[id],

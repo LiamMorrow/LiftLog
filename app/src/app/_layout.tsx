@@ -78,6 +78,7 @@ function Layout() {
       <Stack.Screen name="copy-exercise" options={{ presentation: 'modal' }} />
       <Stack.Screen name="copy-workout" options={{ presentation: 'modal' }} />
       <Stack.Screen name="rest-editor" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="deload-options" options={{ presentation: 'modal' }} />
       <Stack.Screen name="progression-rule" options={{ presentation: 'modal' }} />
       <Stack.Screen name="progression-example" options={{ presentation: 'modal' }} />
       <Stack.Screen name="color-picker" options={{ presentation: 'modal' }} />

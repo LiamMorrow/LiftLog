@@ -120,6 +120,15 @@ describe('session tables', () => {
     );
   });
 
+  it('reads back whether a session is a deload', () => {
+    const deload = workout().with({ deload: true });
+    const normal = workout();
+    db.transaction((tx) => [deload, normal].forEach((session) => writeSession(tx, session)));
+
+    expect(read(db, deload.id)?.deload).toBe(true);
+    expect(read(db, normal.id)?.deload).toBe(false);
+  });
+
   it('replaces the exercises and sets of a session it already stored', () => {
     const session = workout();
     db.transaction((tx) => writeSession(tx, session));
@@ -327,6 +336,28 @@ describe('readLatestExercises', () => {
     ]);
   });
 
+  it('passes over a deload, so the session after it carries over from the one before it', () => {
+    store(
+      sessionOf('Before', [squatAt(tickAt(9, 0), 100)]),
+      sessionOf('Deload', [squatAt(tickAt(10, 0), 60)]).with({ deload: true }),
+    );
+
+    const latest = readLatestExercises(db, [squatKey])[squatKey] as RecordedWeightedExercise;
+
+    expect(latest.potentialSets.map((x) => x.weight.value.toNumber())).toEqual([100]);
+  });
+
+  it('passes over a deload workout in progress', () => {
+    store(sessionOf('Before', [squatAt(tickAt(9, 0), 100)]));
+    db.transaction((tx) =>
+      setActiveSession(tx, sessionOf('Deload', [squatAt(tickAt(10, 0), 60)]).with({ deload: true })),
+    );
+
+    const latest = readLatestExercises(db, [squatKey])[squatKey] as RecordedWeightedExercise;
+
+    expect(latest.potentialSets.map((x) => x.weight.value.toNumber())).toEqual([100]);
+  });
+
   it('reads nothing for a lineage that was never completed', () => {
     store(sessionOf('Day', [makeRecordedExercise(makeWeightedBlueprint(), [undefined])]));
 
@@ -479,6 +510,16 @@ describe('readPreviousExercises', () => {
 
     expect(weightOf(readPreviousExercises(db, [squatKey], excluded.id)[squatKey])).toBe(100);
     expect(readPreviousExercises(db, [], excluded.id)).toEqual({});
+  });
+
+  it('leaves out deload sessions', () => {
+    store(
+      sessionOf('Before', [squatAt(tickAt(8, 0), 100)]),
+      sessionOf('Deload', [squatAt(tickAt(9, 0), 60)]).with({ deload: true }),
+    );
+    const squatKey = makeWeightedBlueprint().progressionKey();
+
+    expect(weightOf(readPreviousExercises(db, [squatKey], uuid())[squatKey])).toBe(100);
   });
 
   it('agrees with the newest performance of each lineage in its history', () => {
