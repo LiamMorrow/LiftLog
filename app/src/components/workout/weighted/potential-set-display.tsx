@@ -20,6 +20,8 @@ interface PotentialSetDisplayProps {
   onPressReps?: () => void;
   onPressWeight?: () => void;
   isNext?: boolean;
+  editing?: 'weight' | 'reps';
+  weightHighlighted?: boolean;
 }
 
 /**
@@ -85,6 +87,12 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
           </View>
         </Pressable>
         {isNext ? <NextSetPulse shape={repsShape} /> : undefined}
+        {props.editing === 'reps' ? (
+          <View
+            pointerEvents="none"
+            style={[StyleSheet.absoluteFill, repsShape, { borderWidth: 2, borderColor: colors.primary }]}
+          />
+        ) : undefined}
       </View>
       {showsWeight && (
         <View
@@ -114,6 +122,22 @@ export function PotentialSetDisplay(props: PotentialSetDisplayProps) {
               usesBodyweight={props.resistance === 'bodyweight'}
             />
           </Pressable>
+          {(props.weightHighlighted ?? props.editing === 'weight') ? (
+            <View
+              pointerEvents="none"
+              style={[
+                StyleSheet.absoluteFill,
+                {
+                  borderTopLeftRadius: rounding.segmentedBetweenRadius,
+                  borderTopRightRadius: rounding.segmentedBetweenRadius,
+                  borderBottomLeftRadius: rounding.roundedRectangleRadius,
+                  borderBottomRightRadius: rounding.roundedRectangleRadius,
+                  borderWidth: 2,
+                  borderColor: colors.primary,
+                },
+              ]}
+            />
+          ) : undefined}
         </View>
       )}
     </View>

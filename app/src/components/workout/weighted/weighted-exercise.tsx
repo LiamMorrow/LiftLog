@@ -1,7 +1,7 @@
 import PotentialSetCounter from '@/components/workout/weighted/potential-set-counter';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { AppText } from '@/components/foundation/app-text';
-import { RecordedWeightedExercise } from '@/models/session-models';
+import { RecordedWeightedExercise, WeightAppliesTo } from '@/models/session-models';
 import { ReactNode, useState } from 'react';
 import { View } from 'react-native';
 import ExerciseSection from '@/components/workout/exercise-section';
@@ -33,6 +33,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
   const [weightEditOriginal, setWeightEditOriginal] = useState<RecordedWeightedExercise>();
+  const [weightEditScope, setWeightEditScope] = useState<{ setIndex: number; applyTo: WeightAppliesTo }>();
   const showPreviousReps = useAppSelector((x) => x.settings.showPreviousRepsInWorkout);
 
   const setToStartNext = recordedExercise.potentialSets.findIndex((x) => !x.isComplete);
@@ -78,6 +79,18 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
               number: index + 1,
             })}
             onBeginWeightEdit={() => setWeightEditOriginal(recordedExercise)}
+            onWeightEditScopeChange={(applyTo) =>
+              setWeightEditScope((current) =>
+                applyTo ? { setIndex: index, applyTo } : current?.setIndex === index ? undefined : current,
+              )
+            }
+            weightHighlighted={
+              !!weightEditScope &&
+              (weightEditScope.applyTo === 'allSets' ||
+                (weightEditScope.applyTo === 'thisSet' && weightEditScope.setIndex === index) ||
+                (weightEditScope.applyTo === 'uncompletedSets' &&
+                  !(weightEditOriginal ?? recordedExercise).potentialSets[index]?.set))
+            }
             onUpdateWeight={(w, applyTo) =>
               updateExercise((ex) => ex.withWeightOver(weightEditOriginal ?? ex, index, w, applyTo))
             }

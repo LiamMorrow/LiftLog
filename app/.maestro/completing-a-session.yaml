@@ -38,6 +38,14 @@ appId: com.limajuice.liftlog
     id: 'increment-weight'
 - tapOn:
     id: 'edit-dock-done'
+- tapOn:
+    id: 'repcount-weight'
+- assertVisible:
+    id: 'edit-dock'
+- tapOn:
+    point: '70%,20%'
+- assertNotVisible:
+    id: 'edit-dock'
 
 # Finish the (incomplete) session and confirm
 - tapOn:

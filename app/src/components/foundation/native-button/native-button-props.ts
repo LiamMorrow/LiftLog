@@ -9,7 +9,7 @@ import { SFSymbol } from 'sf-symbols-typescript';
  * - `outlined`: a secondary action alongside a filled one.
  * - `text`: the quietest option, for actions that shouldn't compete.
  */
-export type NativeButtonVariant = 'filled' | 'tonal' | 'outlined' | 'text';
+export type NativeButtonVariant = 'filled' | 'tonal' | 'outlined' | 'text' | 'error';
 
 /** A leading icon is given for both platforms or not at all. */
 type NativeButtonIcon =

@@ -98,7 +98,7 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
                 marginTop: spacing[3],
               }}
             >
-              <View style={{ flex: 1, paddingRight: spacing[2] }}>
+              <View style={{ flex: 1 }}>
                 <View style={{ position: 'absolute', gap: spacing[2] }}>{renderText(maxNumberOfLines)}</View>
                 {/* Render this so it doesn't jump around when expanding - need to always reserve the full text space */}
                 <View style={{ visibility: 'hidden', opacity: 0, gap: spacing[2] }}>{renderText(undefined)}</View>

@@ -126,7 +126,7 @@ export default function SessionComponent(props: {
         }}
       >
         <NativeIcon icon={NotesIcon} systemImage="text.alignleft" size={20} />
-        <View style={{ paddingRight: spacing[2] }}>
+        <View style={{ flex: 1 }}>
           <AppText variant="bodyLarge">{session.blueprint.notes}</AppText>
         </View>
       </CardContent>

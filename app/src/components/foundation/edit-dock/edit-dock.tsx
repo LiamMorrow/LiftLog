@@ -19,15 +19,23 @@ import {
   Dimensions,
   Easing,
   Keyboard,
+  Platform,
+  Pressable,
+  StyleSheet,
   useAnimatedValue,
   useWindowDimensions,
   View,
   type ViewInstance,
 } from 'react-native';
 import { useFocusEffect } from 'expo-router';
-import { AndroidSoftInputModes, KeyboardController, KeyboardStickyView } from 'react-native-keyboard-controller';
+import {
+  AndroidSoftInputModes,
+  KeyboardController,
+  useReanimatedKeyboardAnimation,
+} from 'react-native-keyboard-controller';
+import Reanimated, { useAnimatedStyle } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppText } from '@/components/foundation/app-text';
-import { FloatingPane } from '@/components/foundation/floating-pane';
 import { KeyboardDoneButtonContext } from '@/components/foundation/editors/number-inputs';
 
 interface DockEntry {
@@ -71,16 +79,35 @@ const EditDockContext = createContext<EditDockStore | undefined>(undefined);
 
 export function EditDockProvider(props: { children: ReactNode }) {
   const [store] = useState(createEditDockStore);
-  return <EditDockContext value={store}>{props.children}</EditDockContext>;
+  const entry = useSyncExternalStore(store.subscribe, store.get);
+  return (
+    <EditDockContext value={store}>
+      <View style={{ flex: 1 }}>
+        <View
+          style={{ flex: 1 }}
+          pointerEvents={entry ? 'none' : 'auto'}
+          importantForAccessibility={entry ? 'no-hide-descendants' : 'auto'}
+          accessibilityElementsHidden={!!entry}
+        >
+          {props.children}
+        </View>
+        <EditDockOverlay />
+      </View>
+    </EditDockContext>
+  );
 }
 
-/**
- * Shows the open editor in place of its children. The children stay laid out underneath, so the space the
- * page reserves for them never changes and the content behind does not reflow.
- */
 export function EditDockHost(props: { children: ReactNode }) {
   const store = useContext(EditDockContext);
   const entry = useSyncExternalStore(store?.subscribe ?? noSubscribe, () => store?.get());
+  return <View style={{ opacity: entry ? 0 : 1 }}>{props.children}</View>;
+}
+
+function EditDockOverlay() {
+  const store = useContext(EditDockContext);
+  const entry = useSyncExternalStore(store?.subscribe ?? noSubscribe, () => store?.get());
+  const { colors } = useAppTheme();
+  const { t } = useTranslate();
   const host = useRef<ViewInstance>(null);
   const [distanceToScreenBottom, setDistanceToScreenBottom] = useState(0);
   const isOpen = entry !== undefined;
@@ -92,11 +119,20 @@ export function EditDockHost(props: { children: ReactNode }) {
       return;
     }
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      Keyboard.dismiss();
       entry.close();
       return true;
     });
     return () => subscription.remove();
   });
+
+  useEffect(() => {
+    if (!entry || Platform.OS !== 'android') {
+      return;
+    }
+    const subscription = Keyboard.addListener('keyboardDidHide', entry.close);
+    return () => subscription.remove();
+  }, [entry]);
 
   // The keyboard's height counts from the bottom of the screen, which can sit below the page: under the safe
   // area on iOS, under the tab and navigation bars on Android.
@@ -104,6 +140,13 @@ export function EditDockHost(props: { children: ReactNode }) {
     host.current?.measureInWindow((_x, y, _width, height) =>
       setDistanceToScreenBottom(Math.max(0, Dimensions.get('screen').height - (y + height))),
     );
+
+  const keyboard = useReanimatedKeyboardAnimation();
+  const insets = useSafeAreaInsets();
+  const restingLift = Platform.OS === 'ios' ? insets.bottom : 0;
+  const liftAboveKeyboard = useAnimatedStyle(() => ({
+    transform: [{ translateY: Math.min(-restingLift, keyboard.height.value + distanceToScreenBottom) }],
+  }));
 
   const progress = useAnimatedValue(0);
   const [paneHeight, setPaneHeight] = useState(() => Dimensions.get('window').height);
@@ -116,46 +159,65 @@ export function EditDockHost(props: { children: ReactNode }) {
   const pane = entry?.pane ?? closingPane;
 
   useEffect(() => {
+    if (isOpen) {
+      progress.setValue(0);
+    }
     const animation = Animated.timing(progress, {
       toValue: isOpen ? 1 : 0,
       duration: isOpen ? 250 : 200,
       easing: isOpen ? Easing.out(Easing.cubic) : Easing.in(Easing.cubic),
       useNativeDriver: true,
     });
-    animation.start(({ finished }) => {
-      if (finished && !isOpen) {
-        setClosingPane(undefined);
-      }
+    const frame = requestAnimationFrame(() => {
+      animation.start(({ finished }) => {
+        if (finished && !isOpen) {
+          setClosingPane(undefined);
+        }
+      });
     });
-    return () => animation.stop();
+    return () => {
+      cancelAnimationFrame(frame);
+      animation.stop();
+    };
   }, [isOpen, progress]);
 
   return (
-    <View ref={host} onLayout={measureDistanceToScreenBottom} style={{ pointerEvents: 'box-none' }}>
-      <Animated.View
-        style={{
-          pointerEvents: isOpen ? 'none' : 'box-none',
-          opacity: progress.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
-        }}
-        importantForAccessibility={isOpen ? 'no-hide-descendants' : 'auto'}
-        accessibilityElementsHidden={isOpen}
-      >
-        {props.children}
+    <View
+      ref={host}
+      onLayout={measureDistanceToScreenBottom}
+      style={[StyleSheet.absoluteFill, { pointerEvents: isOpen ? 'box-none' : 'none' }]}
+      accessibilityViewIsModal={isOpen}
+      onAccessibilityEscape={() => {
+        Keyboard.dismiss();
+        entry?.close();
+      }}
+    >
+      <Animated.View style={[StyleSheet.absoluteFill, { opacity: progress, backgroundColor: colors.scrim + '33' }]}>
+        <Pressable
+          testID="edit-dock-dismiss"
+          style={StyleSheet.absoluteFill}
+          accessibilityRole="button"
+          accessibilityLabel={t('generic.close.button')}
+          onPress={() => {
+            Keyboard.dismiss();
+            entry?.close();
+          }}
+        />
       </Animated.View>
-      <KeyboardStickyView
-        offset={{ opened: distanceToScreenBottom }}
-        style={{ position: 'absolute', left: 0, right: 0, bottom: 0, pointerEvents: 'box-none' }}
+      <Reanimated.View
+        style={[{ position: 'absolute', left: 0, right: 0, bottom: 0, pointerEvents: 'box-none' }, liftAboveKeyboard]}
       >
         {pane ? (
           <Animated.View
             onLayout={(e) => setPaneHeight(e.nativeEvent.layout.height)}
             style={{
               pointerEvents: isOpen ? 'box-none' : 'none',
+              opacity: progress,
               transform: [
                 {
                   translateY: progress.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [paneHeight + distanceToScreenBottom, 0],
+                    outputRange: [paneHeight + restingLift + distanceToScreenBottom, 0],
                   }),
                 },
               ],
@@ -164,7 +226,7 @@ export function EditDockHost(props: { children: ReactNode }) {
             {pane}
           </Animated.View>
         ) : undefined}
-      </KeyboardStickyView>
+      </Reanimated.View>
     </View>
   );
 }
@@ -176,7 +238,6 @@ function disableKeyboardWindowPan() {
   return () => KeyboardController.setDefaultMode();
 }
 
-/** Edits a value from the workout in the dock at the bottom of the page, while the workout stays in view. */
 export function DockedEditor(props: {
   open: boolean;
   onClose: () => void;
@@ -231,7 +292,7 @@ function EditPane(props: {
       }}
     >
       {props.actions}
-      <NativeButton floating testID="edit-dock-done" label={t('generic.done.button')} onPress={props.onDone} />
+      <NativeButton testID="edit-dock-done" label={t('generic.done.button')} onPress={props.onDone} />
     </View>
   );
   const editors = isLandscape ? (
@@ -246,16 +307,33 @@ function EditPane(props: {
     props.children
   );
   const pane = (
-    <FloatingPane
+    <View
       testID="edit-dock"
-      style={{ marginTop: 0, alignSelf: 'stretch', flex: isLandscape ? 1 : undefined }}
-      contentStyle={{
-        paddingVertical: spacing[4],
-        paddingLeft: spacing[4],
-        paddingRight: spacing[4],
-        gap: spacing[4],
+      style={{
+        alignSelf: 'stretch',
+        flex: isLandscape ? 1 : undefined,
+        backgroundColor: colors.surfaceContainer,
+        borderTopLeftRadius: spacing[4],
+        borderTopRightRadius: spacing[4],
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderColor: colors.outlineVariant,
+        padding: spacing[4],
+        gap: spacing[2],
       }}
     >
+      {Platform.OS === 'ios' ? (
+        <View
+          pointerEvents="none"
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: -spacing[8],
+            height: spacing[8],
+            backgroundColor: colors.surfaceContainer,
+          }}
+        />
+      ) : undefined}
       <View>
         <AppText variant="titleMedium" numberOfLines={1}>
           {props.title}
@@ -267,7 +345,8 @@ function EditPane(props: {
         ) : undefined}
       </View>
       <KeyboardDoneButtonContext value={false}>{editors}</KeyboardDoneButtonContext>
-    </FloatingPane>
+      {buttons}
+    </View>
   );
 
   return (
@@ -275,14 +354,10 @@ function EditPane(props: {
       style={{
         flexDirection: isLandscape ? 'row' : 'column',
         alignItems: isLandscape ? 'flex-end' : undefined,
-        marginHorizontal: spacing.pageHorizontalMargin,
-        marginBottom: spacing[3],
         gap: spacing[2],
       }}
     >
-      {isLandscape ? undefined : buttons}
       {pane}
-      {isLandscape ? buttons : undefined}
     </View>
   );
 }

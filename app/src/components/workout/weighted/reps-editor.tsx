@@ -73,8 +73,7 @@ export function ClearRepsButton(props: { onPress: () => void }) {
     <NativeButton
       icon={CloseIcon}
       systemImage="xmark"
-      variant="tonal"
-      floating
+      variant="error"
       testID="clear-reps"
       label={t('generic.clear.button')}
       onPress={props.onPress}

@@ -20,6 +20,7 @@ const buttonForVariant = {
   tonal: FilledTonalButton,
   outlined: OutlinedButton,
   text: TextButton,
+  error: FilledTonalButton,
 } satisfies Record<NativeButtonVariant, unknown>;
 
 const iconSize = 18;
@@ -32,6 +33,9 @@ function floatingContainer(variant: NativeButtonVariant, colors: Colors) {
   }
   if (variant === 'tonal') {
     return { containerColor: colors.secondaryContainer, contentColor: colors.onSecondaryContainer };
+  }
+  if (variant === 'error') {
+    return { containerColor: colors.errorContainer, contentColor: colors.onErrorContainer };
   }
   return undefined;
 }
@@ -71,14 +75,24 @@ export function NativeButton({
 }: NativeButtonProps) {
   const { colors } = useAppTheme();
   const floatingColors = floating ? floatingContainer(variant, colors) : undefined;
-  const MaterialButton = floatingColors ? ElevatedButton : buttonForVariant[variant];
+
+  // Non-floating error button colors using error container theme tokens
+  const defaultColors =
+    variant === 'error' && !floating
+      ? { containerColor: colors.errorContainer, contentColor: colors.onErrorContainer }
+      : undefined;
+
+  const resolvedColors = floatingColors ?? defaultColors;
+
+  // Only use ElevatedButton if `floating` is true. Otherwise use the standard mapped component (FilledTonalButton for error).
+  const MaterialButton = floating ? ElevatedButton : buttonForVariant[variant];
 
   return (
     <FloatingHost matchContents style={style}>
       <MaterialButton
         onClick={onPress}
         enabled={!disabled && !loading}
-        colors={{ ...floatingColors, contentColor: contentColor ?? floatingColors?.contentColor }}
+        colors={{ ...resolvedColors, contentColor: contentColor ?? resolvedColors?.contentColor }}
         contentPadding={contentPadding({ variant, compact, hasLeading: loading || icon !== undefined })}
         modifiers={testID ? [testIDModifier(testID)] : undefined}
       >

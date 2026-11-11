@@ -22,9 +22,11 @@ interface PotentialSetCounterProps {
   resistance: Resistance;
   editorSubtitle?: string;
   hasRemainingSets?: boolean;
+  weightHighlighted?: boolean;
 
   onTap: () => void;
   onBeginWeightEdit?: () => void;
+  onWeightEditScopeChange?: (applyTo: WeightAppliesTo | undefined) => void;
   onUpdateWeight: (weight: Weight, applyTo: WeightAppliesTo) => void;
   onUpdateReps: (reps: number | undefined) => void;
 }
@@ -33,10 +35,14 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const { t } = useTranslate();
   const [editing, setEditing] = useState<'weight' | 'reps'>();
   const [applyTo, setApplyTo] = useState<WeightAppliesTo>('uncompletedSets');
-  const close = () => setEditing(undefined);
+  const close = () => {
+    if (editing === 'weight') props.onWeightEditScopeChange?.(undefined);
+    setEditing(undefined);
+  };
 
   const changeApplyTo = (next: WeightAppliesTo) => {
     setApplyTo(next);
+    props.onWeightEditScopeChange?.(next);
     props.onUpdateWeight(props.set.weight, next);
   };
 
@@ -48,13 +54,17 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
         resistance={props.resistance}
         previousRepCount={props.previousRepCount}
         isNext={props.toStartNext}
+        editing={editing}
+        weightHighlighted={props.weightHighlighted}
         onPressReps={props.isReadonly ? undefined : props.onTap}
         onPressWeight={
           props.isReadonly
             ? undefined
             : () => {
-                setApplyTo(props.set.set ? 'thisSet' : 'uncompletedSets');
+                const initialApplyTo = props.set.set ? 'thisSet' : 'uncompletedSets';
+                setApplyTo(initialApplyTo);
                 props.onBeginWeightEdit?.();
+                props.onWeightEditScopeChange?.(initialApplyTo);
                 setEditing('weight');
               }
         }
@@ -65,7 +75,11 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
         title={t('weight.weight.label')}
         subtitle={props.editorSubtitle}
         actions={() => (
-          <NegateWeightButton weight={props.set.weight} onChange={(weight) => props.onUpdateWeight(weight, applyTo)} />
+          <NegateWeightButton
+            compact
+            weight={props.set.weight}
+            onChange={(weight) => props.onUpdateWeight(weight, applyTo)}
+          />
         )}
       >
         <WeightEditor

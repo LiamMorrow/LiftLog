@@ -19,6 +19,7 @@ const styleForVariant: Record<NativeButtonVariant, Parameters<typeof buttonStyle
   outlined: 'bordered',
   // `plain` drops the tint along with the chrome, leaving a label that doesn't read as a button.
   text: 'borderless',
+  error: 'bordered',
 };
 
 type Colors = ReturnType<typeof useAppTheme>['colors'];
@@ -39,7 +40,7 @@ function appearance(variant: NativeButtonVariant, floating: boolean | undefined,
   }
   return {
     style: buttonStyle(styleForVariant[variant]),
-    tint: colors.primary,
+    tint: variant === 'error' ? colors.error : colors.primary,
     label: variant === 'filled' ? colors.onPrimary : undefined,
   };
 }

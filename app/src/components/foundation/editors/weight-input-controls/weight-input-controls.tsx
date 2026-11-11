@@ -62,17 +62,32 @@ export function WeightInputControls(props: {
   );
 }
 
-export function NegateWeightButton(props: { weight: Weight | undefined; onChange: (weight: Weight) => void }) {
+export function NegateWeightButton(props: {
+  weight: Weight | undefined;
+  onChange: (weight: Weight) => void;
+  compact?: boolean;
+}) {
   const { t } = useTranslate();
   const { weight } = props;
+  const onPress = () => weight && props.onChange(new Weight(weight.value.negated(), weight.unit));
+  if (props.compact) {
+    return (
+      <NativeIconButton
+        icon={ExposureIcon}
+        systemImage="plusminus"
+        label={t('exercise.toggle_negative.button')}
+        onPress={onPress}
+        disabled={!weight}
+      />
+    );
+  }
   return (
     <NativeButton
       icon={ExposureIcon}
       systemImage="plusminus"
       variant="tonal"
-      floating
       label={t('exercise.toggle_negative.button')}
-      onPress={() => weight && props.onChange(new Weight(weight.value.negated(), weight.unit))}
+      onPress={onPress}
     />
   );
 }
