@@ -3,7 +3,6 @@ import { DockedEditor } from '@/components/foundation/edit-dock';
 import { spacing } from '@/hooks/useAppTheme';
 import { useDerivedState } from '@/hooks/useDerivedState';
 import { useTranslate } from '@tolgee/react';
-import { View } from 'react-native';
 
 export default function RecordedExerciseNotesEditor(props: {
   exerciseName: string;

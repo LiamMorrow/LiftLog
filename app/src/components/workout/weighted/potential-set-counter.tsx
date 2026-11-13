@@ -128,11 +128,17 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
           />
         )}
       >
-        <RepsEditor
-          reps={props.set.set?.repsCompleted}
-          repTarget={props.repsTarget.max}
-          onChange={props.onUpdateReps}
-        />
+        {(closeEditor) => (
+          <RepsEditor
+            reps={props.set.set?.repsCompleted}
+            repTarget={props.repsTarget.max}
+            onChange={props.onUpdateReps}
+            onPick={(reps) => {
+              props.onUpdateReps(reps);
+              closeEditor();
+            }}
+          />
+        )}
       </DockedEditor>
     </Holdable>
   );
