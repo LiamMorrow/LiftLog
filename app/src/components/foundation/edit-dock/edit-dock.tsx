@@ -205,7 +205,10 @@ function EditDockOverlay() {
         />
       </Animated.View>
       <Reanimated.View
-        style={[{ position: 'absolute', left: 0, right: 0, bottom: 0, pointerEvents: 'box-none' }, liftAboveKeyboard]}
+        style={[
+          { position: 'absolute', left: insets.left, right: insets.right, bottom: 0, pointerEvents: 'box-none' },
+          liftAboveKeyboard,
+        ]}
       >
         {pane ? (
           <Animated.View
@@ -244,7 +247,7 @@ export function DockedEditor(props: {
   title: string;
   subtitle?: string;
   actions?: (close: () => void) => ReactNode;
-  children: ReactNode;
+  children: ReactNode | ((close: () => void) => ReactNode);
 }) {
   const store = useContext(EditDockContext);
   const id = useId();
@@ -254,7 +257,7 @@ export function DockedEditor(props: {
   };
   const pane = props.open ? (
     <EditPane title={props.title} subtitle={props.subtitle} actions={props.actions?.(close)} onDone={close}>
-      {props.children}
+      {typeof props.children === 'function' ? props.children(close) : props.children}
     </EditPane>
   ) : undefined;
 
@@ -285,8 +288,8 @@ function EditPane(props: {
   const buttons = (
     <View
       style={{
-        flexDirection: isLandscape ? 'column' : 'row',
-        alignItems: isLandscape ? 'flex-end' : 'center',
+        flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'flex-end',
         gap: spacing[2],
       }}
