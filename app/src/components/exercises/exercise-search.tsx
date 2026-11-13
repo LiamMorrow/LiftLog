@@ -5,22 +5,18 @@ import { spacing } from '@/hooks/useAppTheme';
 import { useHeaderInset } from '@/hooks/useHeaderInset';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { setExerciseSearchResult } from '@/store/app';
-import { selectExerciseById, selectExerciseIds, updateExercise } from '@/store/stored-sessions';
-import { uuid } from '@/utils/uuid';
+import { selectExerciseById, selectExerciseIds } from '@/store/stored-sessions';
 import { LegendList } from '@legendapp/list/react-native';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import { ListItem } from '@/components/foundation/list-item';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useDispatch } from 'react-redux';
 
 export function ExerciseSearch(props: { requestId: string; exerciseName: string }) {
   const { t } = useTranslate();
-  const dispatch = useDispatch();
-  const { dismiss } = useRouter();
+  const { push } = useRouter();
   const exerciseIds = useAppSelector(selectExerciseIds);
   const [filteredExerciseIds, setFilteredExerciseIds] = useState(exerciseIds);
   const [suggestedNewExercise, setSuggestedNewExercise] = useState<ExerciseDescriptor | 'NONE'>('NONE');
@@ -31,8 +27,11 @@ export function ExerciseSearch(props: { requestId: string; exerciseName: string 
   );
 
   const onSelect = (exercise: ExerciseDescriptor) => {
-    dispatch(setExerciseSearchResult({ requestId: props.requestId, exercise }));
-    dismiss();
+    Keyboard.dismiss();
+    push({
+      pathname: '/exercise-variation',
+      params: { requestId: props.requestId, exercise: JSON.stringify(exercise) },
+    });
   };
 
   const headerInset = useHeaderInset();
@@ -82,7 +81,6 @@ function SuggestedExerciseSearchListItem(props: {
   exercise: ExerciseDescriptor;
   onPress: (exercise: ExerciseDescriptor) => void;
 }) {
-  const dispatch = useDispatch();
   return (
     <View style={{ padding: spacing.pageHorizontalMargin }}>
       <NativeButton
@@ -90,10 +88,7 @@ function SuggestedExerciseSearchListItem(props: {
         icon={AddIcon}
         systemImage="plus"
         label={`Add ${props.exercise.name}`}
-        onPress={() => {
-          dispatch(updateExercise({ id: uuid(), exercise: props.exercise }));
-          props.onPress(props.exercise);
-        }}
+        onPress={() => props.onPress(props.exercise)}
       />
     </View>
   );
