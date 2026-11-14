@@ -196,7 +196,11 @@ export default function ExerciseSection<T extends RecordedExercise>(props: Exerc
           {interactiveButtons}
         </View>
         {props.children}
-        <ExerciseNotesDisplay exercise={props.recordedExercise} previousExercise={props.previousLineageExercise} />
+        <ExerciseNotesDisplay
+          exercise={props.recordedExercise}
+          previousExercise={props.previousLineageExercise}
+          onPress={props.isReadonly ? undefined : () => setNotesDialogOpen(true)}
+        />
       </View>
 
       <RecordedExerciseNotesEditor
