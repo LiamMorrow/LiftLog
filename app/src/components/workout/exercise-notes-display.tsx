@@ -1,6 +1,6 @@
 import { AccordionItem } from '@/components/foundation/accordion-item';
 import { Card, CardContent } from '@/components/foundation/card';
-import { spacing } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { RecordedExercise } from '@/models/session-models';
 import { useAppSelector } from '@/store';
 import { useCallback, useState } from 'react';
@@ -15,9 +15,12 @@ import UnfoldMoreIcon from '@expo/material-symbols/unfold_more.xml';
 interface ExerciseNotesDisplayProps {
   exercise: RecordedExercise;
   previousExercise: RecordedExercise | undefined;
+  /** Opens the notes editor. Omit to keep the card display-only (e.g. read-only sessions). */
+  onPress?: () => void;
 }
 export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
   const { t } = useTranslate();
+  const { colors } = useAppTheme();
   const expandByDefault = useAppSelector((x) => x.settings.notesExpandedByDefault);
   const notes = props.exercise.notes ?? '';
   const showPlanNotes = useAppSelector((x) => x.settings.showPlanNotesInWorkout);
@@ -68,10 +71,20 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
     );
   };
   if (!hasNotes) {
-    return undefined;
+    if (!props.onPress) {
+      return undefined;
+    }
+    // Nothing to show yet: a compact, tappable row so notes can be added without the header button
+    return (
+      <Card testID="exercise-notes-card" style={[{ marginTop: spacing[4] }]} onPress={props.onPress}>
+        <CardContent style={{ paddingVertical: spacing[3] }}>
+          <AppText style={{ color: colors.onSurfaceVariant }}>{t('workout.notes.add.placeholder')}</AppText>
+        </CardContent>
+      </Card>
+    );
   }
   return (
-    <Card style={[{ marginTop: spacing[4] }]}>
+    <Card testID="exercise-notes-card" style={[{ marginTop: spacing[4] }]} onPress={props.onPress}>
       <CardContent style={{ flexDirection: 'row' }}>
         <View style={{ marginInlineStart: -spacing[3], alignSelf: 'flex-start' }}>
           <NativeIconButton
