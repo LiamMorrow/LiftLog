@@ -30,7 +30,10 @@ export default function RecordedExerciseNotesEditor(props: {
         underline="always"
         testID="exercise-notes-input"
         accessibilityLabel={t('workout.notes.title')}
-        value={editorNotes}
+        // Uncontrolled on purpose: the dock renders this field in another tree (via the dock store), so a
+        // controlled `value` lands one render after the keystroke. TextInput then sees a stale value, pushes
+        // it back to native and the cursor jumps to the start on every character.
+        defaultValue={editorNotes}
         onChangeText={setEditorNotes}
         multiline
         autoFocus
