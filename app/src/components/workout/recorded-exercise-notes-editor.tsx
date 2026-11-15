@@ -30,7 +30,7 @@ export default function RecordedExerciseNotesEditor(props: {
         underline="always"
         testID="exercise-notes-input"
         accessibilityLabel={t('workout.notes.title')}
-        value={editorNotes}
+        defaultValue={editorNotes}
         onChangeText={setEditorNotes}
         multiline
         autoFocus
