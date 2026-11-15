@@ -86,6 +86,8 @@ jobs:
           DISPLAY_VERSION: ${{ inputs.version_code }}
           BUILD_NUMBER: ${{ steps.buildNumber.outputs.build-number }}
         run: ./gradlew bundleRelease
+          "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g"
+          -Pkotlin.daemon.jvmargs=-Xmx2g
           -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
           -PANDROID_UPLOAD_STORE_FILE=liftlog.keystore
           -PANDROID_UPLOAD_KEY_ALIAS=liftlog
@@ -124,6 +126,8 @@ jobs:
           DISPLAY_VERSION: ${{ inputs.version_code }}
           BUILD_NUMBER: ${{ steps.buildNumber.outputs.build-number }}
         run: ./gradlew assembleRelease
+          "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g"
+          -Pkotlin.daemon.jvmargs=-Xmx2g
           -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
           -PANDROID_UPLOAD_STORE_FILE=liftlog.keystore
           -PANDROID_UPLOAD_KEY_ALIAS=liftlog
