@@ -38,7 +38,11 @@ app.Run();
 
 void MapWellKnown(string fileName)
 {
-    var path = Path.Combine(app.Environment.ContentRootPath, "WellKnown", Path.ChangeExtension(fileName, "json"));
+    var path = Path.Combine(
+        app.Environment.ContentRootPath,
+        "WellKnown",
+        Path.ChangeExtension(fileName, "json")
+    );
     app.MapGet($"/.well-known/{fileName}", () => Results.File(path, "application/json"));
 }
 

@@ -25,7 +25,7 @@ namespace LiftLog.Api.Migrations.Sqlite.UserData
 
                     b.Property<byte[]>("EncryptedPayload")
                         .IsRequired()
-                        .HasMaxLength(20480)
+                        .HasMaxLength(131072)
                         .HasColumnType("BLOB")
                         .HasColumnName("encrypted_payload");
 
@@ -133,7 +133,7 @@ namespace LiftLog.Api.Migrations.Sqlite.UserData
 
                     b.Property<byte[]>("EncryptedEvent")
                         .IsRequired()
-                        .HasMaxLength(15360)
+                        .HasMaxLength(131072)
                         .HasColumnType("BLOB")
                         .HasColumnName("encrypted_event");
 

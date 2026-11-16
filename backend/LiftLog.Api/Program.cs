@@ -30,14 +30,15 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddFeatureGating();
 
-builder.Services.AddSignalR(s =>
-{
-    // We need clients to be able to stop in flight chat requests
-    s.MaximumParallelInvocationsPerClient = 2;
-    s.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
-    s.HandshakeTimeout = TimeSpan.FromSeconds(60);
-})
-    .AddHubOptions<FeedHub>(s => s.MaximumReceiveMessageSize = 64 * 1024);
+builder
+    .Services.AddSignalR(s =>
+    {
+        // We need clients to be able to stop in flight chat requests
+        s.MaximumParallelInvocationsPerClient = 2;
+        s.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
+        s.HandshakeTimeout = TimeSpan.FromSeconds(60);
+    })
+    .AddHubOptions<FeedHub>(s => s.MaximumReceiveMessageSize = 256 * 1024);
 
 builder
     .Services.AddAuthentication(PurchaseTokenAuthenticationSchemeOptions.SchemeName)

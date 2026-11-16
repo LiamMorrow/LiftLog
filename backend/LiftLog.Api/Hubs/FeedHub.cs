@@ -22,7 +22,7 @@ public class FeedHub(
 {
     public const int MaxWatchedUsers = 200;
     public const int MaxFollowSecretLength = 40;
-    public const int MaxPayloadBytes = 15 * 1024;
+    public const int MaxPayloadBytes = FeedPayloadLimits.MaxEncryptedPayloadBytes;
     public const int MaxIVBytes = 16;
 
     private const string UserIdKey = "userId";
@@ -82,7 +82,11 @@ public class FeedHub(
         );
     }
 
-    public async Task PublishLive(Guid eventId, byte[] encryptedEventPayload, byte[] encryptedEventIV)
+    public async Task PublishLive(
+        Guid eventId,
+        byte[] encryptedEventPayload,
+        byte[] encryptedEventIV
+    )
     {
         var userId = RequireUserId();
         if (

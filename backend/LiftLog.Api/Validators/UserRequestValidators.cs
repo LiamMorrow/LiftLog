@@ -1,4 +1,5 @@
 using FluentValidation;
+using LiftLog.Api.Models;
 using LiftLog.Lib.Models;
 
 namespace LiftLog.Api.Validators;
@@ -57,7 +58,7 @@ public class PutUserEventRequestValidator : AbstractValidator<PutUserEventReques
         RuleFor(x => x.UserId).NotEmpty();
         RuleFor(x => x.EncryptedEventPayload).NotEmpty();
         RuleFor(x => x.EncryptedEventPayload.Length)
-            .InclusiveBetween(0, 15 * KB)
+            .InclusiveBetween(0, FeedPayloadLimits.MaxEncryptedPayloadBytes)
             .When(x => x.EncryptedEventPayload != null);
         RuleFor(x => x.Expiry).NotEmpty();
         RuleFor(x => x.EncryptedEventIV).NotEmpty();

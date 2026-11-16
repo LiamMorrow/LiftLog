@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Http.Json;
 using LiftLog.Api.Features;
+using LiftLog.Api.Hubs;
 using LiftLog.Api.Models;
 using LiftLog.Lib.Models;
 using LiftLog.Tests.Api.Integration.Providers;
@@ -45,7 +46,10 @@ public class FeedHubTests(ApiFactory factory)
             .Build();
         var received = new Received();
         connection.On<LiveFrame>("LiveFrame", received.Frames.Enqueue);
-        connection.On<Guid, Guid>("LiveEnded", (userId, eventId) => received.Ended.Enqueue((userId, eventId)));
+        connection.On<Guid, Guid>(
+            "LiveEnded",
+            (userId, eventId) => received.Ended.Enqueue((userId, eventId))
+        );
         connection.On("InboxNudge", () => Interlocked.Increment(ref received.Nudges));
         await connection.StartAsync();
         return (connection, received);
@@ -60,7 +64,9 @@ public class FeedHubTests(ApiFactory factory)
         }
     }
 
-    private async Task<(CreateUserResponse User, string Secret)> CreateTrainerAsync(HttpClient client)
+    private async Task<(CreateUserResponse User, string Secret)> CreateTrainerAsync(
+        HttpClient client
+    )
     {
         var user = await FeedHelper.CreateUserAsync(client);
         var secret = Guid.NewGuid().ToString("N");
@@ -106,7 +112,7 @@ public class FeedHubTests(ApiFactory factory)
                 connection.InvokeAsync(
                     "PublishLive",
                     Guid.NewGuid(),
-                    new byte[16 * 1024],
+                    new byte[FeedHub.MaxPayloadBytes + 1],
                     iv
                 )
             )
@@ -206,7 +212,12 @@ public class FeedHubTests(ApiFactory factory)
         (
             await client.PutAsJsonAsync(
                 "/inbox",
-                new PutInboxMessageRequest(alice.Id, [[0x01]])
+                new PutInboxMessageRequest(
+                    alice.Id,
+                    [
+                        [0x01],
+                    ]
+                )
             )
         ).EnsureSuccessStatusCode();
         await WaitForAsync(() => aliceReceived.Nudges > 0);

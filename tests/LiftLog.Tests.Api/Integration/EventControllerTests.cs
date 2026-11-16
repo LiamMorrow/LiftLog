@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using LiftLog.Api.Models;
 using LiftLog.Lib.Models;
 using LiftLog.Tests.Api.Integration.Providers;
 
@@ -117,5 +118,28 @@ public class EventControllerTests(ApiFactory factory)
         );
 
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
+    }
+
+    [Test]
+    [Arguments(FeedPayloadLimits.MaxEncryptedPayloadBytes, HttpStatusCode.OK)]
+    [Arguments(FeedPayloadLimits.MaxEncryptedPayloadBytes + 1, HttpStatusCode.BadRequest)]
+    public async Task Put_AcceptsPayloadsUpToTheLimit(int payloadBytes, HttpStatusCode expected)
+    {
+        var client = factory.CreateClient();
+        var alice = await FeedHelper.CreateUserAsync(client);
+
+        var response = await client.PutAsJsonAsync(
+            "/event",
+            new PutUserEventRequest(
+                alice.Id,
+                alice.Password,
+                Guid.NewGuid(),
+                new byte[payloadBytes],
+                encryptionIV,
+                FarFuture
+            )
+        );
+
+        await Assert.That(response.StatusCode).IsEqualTo(expected);
     }
 }

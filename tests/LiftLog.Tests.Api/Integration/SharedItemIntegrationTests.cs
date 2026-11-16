@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using LiftLog.Api.Models;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -87,6 +88,38 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
         );
 
         response.EnsureSuccessStatusCode();
+    }
+
+    [Test]
+    [Arguments(FeedPayloadLimits.MaxEncryptedPayloadBytes, HttpStatusCode.OK)]
+    [Arguments(FeedPayloadLimits.MaxEncryptedPayloadBytes + 1, HttpStatusCode.BadRequest)]
+    public async Task Post_SharedItemAcceptsPayloadsUpToTheLimit(
+        int payloadBytes,
+        HttpStatusCode expected
+    )
+    {
+        var client = _factory.CreateClient();
+        var user = await UserHelper.CreateUserAsync(
+            client,
+            encryptedPayload.IV.Value,
+            rsaPublicKey
+        );
+        var payload = new AesEncryptedAndRsaSignedData(
+            new byte[payloadBytes],
+            new(encryptedPayload.IV.Value)
+        );
+
+        var response = await client.PostAsJsonAsync(
+            url,
+            new CreateSharedItemRequest(
+                user.Id,
+                user.Password,
+                payload,
+                DateTimeOffset.UtcNow.AddDays(1)
+            )
+        );
+
+        await Assert.That(response.StatusCode).IsEqualTo(expected);
     }
 
     [Test]

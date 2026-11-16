@@ -17,7 +17,7 @@ public class SharedItem
     // This payload is encrypted with a AES key generated for this event.  It is not stored, it only exists in the share url
     // The inner payload is signed with the user's private key
     // Its schema is defined in LiftLog.Ui/Models/SharedItem.proto - we don't reference this proto since the server doesn't need to deserialize it
-    [MaxLength(20 * 1024)]
+    [MaxLength(FeedPayloadLimits.MaxEncryptedPayloadBytes)]
     public byte[] EncryptedPayload { get; set; } = null!;
 
     // The IV can be considered public, as long as the encryption key is kept secret

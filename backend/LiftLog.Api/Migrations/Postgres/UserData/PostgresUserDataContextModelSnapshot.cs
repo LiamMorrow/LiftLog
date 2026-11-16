@@ -30,7 +30,7 @@ namespace LiftLog.Api.Migrations.Postgres.UserData
 
                     b.Property<byte[]>("EncryptedPayload")
                         .IsRequired()
-                        .HasMaxLength(20480)
+                        .HasMaxLength(131072)
                         .HasColumnType("bytea")
                         .HasColumnName("encrypted_payload");
 
@@ -138,7 +138,7 @@ namespace LiftLog.Api.Migrations.Postgres.UserData
 
                     b.Property<byte[]>("EncryptedEvent")
                         .IsRequired()
-                        .HasMaxLength(15360)
+                        .HasMaxLength(131072)
                         .HasColumnType("bytea")
                         .HasColumnName("encrypted_event");
 
