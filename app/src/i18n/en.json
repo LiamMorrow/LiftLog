@@ -596,6 +596,7 @@
   "workout.name.label": "Workout Name",
   "workout.no_sessions_in_month.message": "Nothing recorded in {month}<br>Complete a workout or switch to another month to view your sessions.",
   "workout.no_workouts_in_plan.message": "No workouts in plan<br> Add a workout to get started.",
+  "workout.notes.add.placeholder": "Add a note",
   "workout.notes.label": "Workout Notes",
   "workout.notes.title": "Workout Notes",
   "workout.notes_expanded_by_default.label": "Expand workout notes",
