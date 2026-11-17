@@ -74,6 +74,7 @@ function Layout() {
     <StackWithHeader>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="exercise-search" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="exercise-variation" options={{ presentation: 'modal' }} />
       <Stack.Screen name="cardio-set-editor" options={{ presentation: 'modal' }} />
       <Stack.Screen name="copy-exercise" options={{ presentation: 'modal' }} />
       <Stack.Screen name="copy-workout" options={{ presentation: 'modal' }} />
