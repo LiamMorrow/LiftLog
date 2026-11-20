@@ -5,6 +5,7 @@ import { LocalDateRange } from '@/models/time-models';
 import { RemoteData } from '@/models/remote';
 import { normalizeExerciseName } from '@/models/blueprint-models';
 import { StatAxis } from '@/store/stats/quantity';
+import { BodyweightEntry } from '@/models/bodyweight-entry';
 
 export type { StatAxis };
 
@@ -13,6 +14,8 @@ interface StatsState {
   overallViewSessionName: string | undefined;
   overallViewTime: LocalDateRange | 'all-time';
   overallView: RemoteData<GranularStatisticView>;
+  /** Moves once a change to the stored bodyweight entries has been written. */
+  bodyweightRevision: number;
 }
 
 export interface TimeTrackedStatistic<T> {
@@ -93,6 +96,7 @@ const initialState: StatsState = {
   overallViewSessionName: undefined,
   overallViewTime: { from: today.minusDays(90), to: today },
   overallView: RemoteData.notAsked(),
+  bodyweightRevision: 0,
 };
 
 const statsSlice = createSlice({
@@ -111,13 +115,17 @@ const statsSlice = createSlice({
     setOverallViewSession(state, action: PayloadAction<string | undefined>) {
       state.overallViewSessionName = action.payload;
     },
+    bodyweightEntriesChanged(state) {
+      state.bodyweightRevision++;
+      state.isDirty = true;
+    },
   },
   selectors: {
     selectOverallView: (state: StatsState) => state.overallView,
   },
 });
 
-export const { setOverallStats, setStatsIsDirty, setOverallViewTime } = statsSlice.actions;
+export const { setOverallStats, setStatsIsDirty, setOverallViewTime, bodyweightEntriesChanged } = statsSlice.actions;
 
 export const { selectOverallView } = statsSlice.selectors;
 export const selectExerciseView = createSelector(
@@ -132,5 +140,7 @@ export const selectExerciseView = createSelector(
 );
 
 export const fetchOverallStats = createAction('fetchOverallStats');
+export const putBodyweightEntries = createAction<BodyweightEntry[]>('putBodyweightEntries');
+export const removeBodyweightEntry = createAction<string>('removeBodyweightEntry');
 
 export const statsReducer = statsSlice.reducer;

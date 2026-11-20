@@ -134,6 +134,13 @@
       "when": 1794116817386,
       "tag": "0018_session_deload",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "6",
+      "when": 1794988369940,
+      "tag": "0019_bodyweight_entry",
+      "breakpoints": true
     }
   ]
 }

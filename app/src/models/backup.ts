@@ -2,6 +2,7 @@ import { ProgramBlueprint } from '@/models/blueprint-models';
 import { FeedIdentity, Friend, SessionUserEvent } from '@/models/feed-models';
 import { Session } from '@/models/session-models';
 import { ExerciseDescriptor } from '@/models/exercise-models';
+import { BodyweightEntry } from '@/models/bodyweight-entry';
 
 export interface FeedBackupData {
   identity: FeedIdentity;
@@ -13,5 +14,6 @@ export interface BackupData {
   workouts: Session[];
   programs: Record<string, ProgramBlueprint>;
   exercises?: Record<string, ExerciseDescriptor>;
+  bodyweightEntries?: BodyweightEntry[];
   feed?: FeedBackupData;
 }

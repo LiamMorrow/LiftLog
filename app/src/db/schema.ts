@@ -217,6 +217,17 @@ export const effectiveWeightedSetsView = sqliteView('effective_weighted_set').as
     .innerJoin(sessionsSchema, eq(sessionsSchema.id, weightedSetsSchema.sessionId)),
 );
 
+export const bodyweightEntriesSchema = sqliteTable(
+  'bodyweight_entry',
+  {
+    id: text().primaryKey(),
+    date: text().$type<LocalDateJSON>().notNull(),
+    value: text().$type<BigNumberJSON>().notNull(),
+    unit: text().$type<WeightUnitJSON>().notNull(),
+  },
+  (table) => [index('bodyweight_entry_date').on(table.date)],
+);
+
 export const exercisesSchema = sqliteTable('exercise', {
   id: text().primaryKey(),
   payload: text('payload', { mode: 'json' }).$type<AnyVersionExerciseDescriptorJSON>().notNull(),

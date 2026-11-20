@@ -96,6 +96,9 @@ export const programsSchema = sqliteTable("program", {
 
 Sessions are the exception: they are relational - see [Sessions are relational](#sessions-are-relational).
 
+Bodyweight entries logged outside a workout (`bodyweight_entry`) are plain columns too, read and written only by
+`app/src/db/bodyweight-entries.ts`.
+
 Four mechanisms change what is stored, and all of them matter:
 
 - **SQL migrations** change tables/columns/indexes. Edit `db/schema.ts`, then generate with
