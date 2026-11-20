@@ -20,6 +20,7 @@ import m0015 from './0015_feed_friend_repair.sql';
 import m0016 from './0016_personal_record_summary.sql';
 import m0017 from './0017_session_finished_at.sql';
 import m0018 from './0018_session_deload.sql';
+import m0019 from './0019_bodyweight_entry.sql';
 
   export default {
     journal,
@@ -42,7 +43,8 @@ m0014,
 m0015,
 m0016,
 m0017,
-m0018
+m0018,
+m0019
     }
   }
   
