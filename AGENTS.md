@@ -94,6 +94,9 @@ the wizard is how new users get the chance to enable it.
   manual memoization for a proven need the compiler can't cover (e.g. a stable identity a non-React API
   depends on, or a genuinely expensive computation). Don't bulk-convert existing memoized files.
 - Comments explain non-obvious code for a future reader - don't narrate the diff. If something needs a comment, the code is likely too complicated. Really try to avoid writing comments
+- Use React Native's built-in **`Animated`** (`useAnimatedValue`, `useNativeDriver: true`) for new
+  animations, not Reanimated. Colour interpolates on the native driver too. Only use Reanimated where a
+  dependency requires it (e.g. `KeyboardStickyView`).
 - Backend (C#): format with CSharpier (`dotnet csharpier .`) before committing.
 - When you add a workaround for a bug in a dependency, add an entry to [`docs/TechDebt.md`](docs/TechDebt.md).
   When you upgrade a dependency, check that ledger for workarounds it lets you remove.
