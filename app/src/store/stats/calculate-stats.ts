@@ -16,6 +16,7 @@ import { loadOps, QuantityOps, repsOps, StatAxis } from '@/store/stats/quantity'
 import { Duration, OffsetDateTime, ZoneId } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
+import { BodyweightEntry } from '@/models/bodyweight-entry';
 
 /** Epley: 1RM = weight * (1 + reps/30). `weight` is the effective load, folding in bodyweight. */
 export function calculateOneRepMax(ps: PotentialSet, weight: Weight): Weight {
@@ -27,20 +28,29 @@ export function calculateStats(
   sessions: Session[],
   preferredUnit: WeightUnit,
   timeRange: LocalDateRange,
+  bodyweightEntries: BodyweightEntry[] = [],
 ): GranularStatisticView {
+  const weighInDays = new Set(bodyweightEntries.map((x) => x.date.toEpochDay()));
+  const bodyweightStats: WeightedStatisticOverTime = toStatisticOverTime(
+    [
+      ...sessions
+        .filter((s) => s.bodyweight && !weighInDays.has(s.date.toEpochDay()))
+        .map((s) => ({ date: s.date, weight: s.bodyweight! })),
+      ...bodyweightEntries,
+    ].map(({ date, weight }) => ({
+      dateTime: date.atTime(12, 0).atZone(ZoneId.systemDefault()).toOffsetDateTime(), // Use noon for LocalDate
+      value: weight,
+    })),
+    loadOps,
+  );
+
   if (!sessions.length)
     return {
       workoutsPerWeek: 0,
       setsPerWeek: 0,
       averageSessionLength: Duration.ZERO,
       maxWeightLiftedInAWorkout: undefined,
-      bodyweightStats: {
-        statistics: [],
-        currentValue: Weight.NIL,
-        totalValue: Weight.NIL,
-        minValue: Weight.NIL,
-        maxValue: Weight.NIL,
-      },
+      bodyweightStats,
       weightedExerciseStats: [],
       heaviestLift: undefined,
       sessionStats: [],
@@ -68,16 +78,6 @@ export function calculateStats(
   const totalWeeks = Math.max(totalDays / 7, 1);
   const workoutsPerWeek = workoutCount / totalWeeks;
   const setsPerWeek = totalSets / totalWeeks;
-
-  const bodyWeightStatistics = Enumerable.from(sessions)
-    .where((s) => !!s.bodyweight)
-    .select((session) => ({
-      dateTime: session.date.atTime(12, 0).atZone(ZoneId.systemDefault()).toOffsetDateTime(), // Use noon for LocalDate
-      value: session.bodyweight!,
-    }))
-    .toArray();
-  // --- Bodyweight stats over time ---
-  const bodyweightStats: WeightedStatisticOverTime = toStatisticOverTime(bodyWeightStatistics, loadOps);
 
   // --- Session stats grouped by blueprint name, most recently performed first ---
   const sessionStatGroups: { latestTime: OffsetDateTime; stat: OptionalStatisticOverTime<Weight> }[] = [];

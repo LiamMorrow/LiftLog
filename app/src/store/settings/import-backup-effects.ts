@@ -12,6 +12,8 @@ import {
   selectPreferredWeightUnit,
 } from '@/store/settings';
 import { upsertExercises, upsertStoredSessions } from '@/store/stored-sessions';
+import { putBodyweightEntries } from '@/store/stats';
+import { readBodyweightEntries } from '@/db/bodyweight-entries';
 import { streamToUint8Array, writeInChunks } from '@/utils/stream';
 import { sleep } from '@/utils/sleep';
 import { Session } from '@/models/session-models';
@@ -71,12 +73,15 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
   });
 
   addEffect(importBackupData, async ({ payload }, { dispatch, getState }) => {
-    const { workouts, programs, exercises, feed, successMessage } = payload;
+    const { workouts, programs, exercises, bodyweightEntries, feed, successMessage } = payload;
     const preferredWeightUnit = selectPreferredWeightUnit(getState());
     dispatch(upsertStoredSessions(workouts.map((x) => x.withNoNilWeights(preferredWeightUnit))));
     dispatch(upsertSavedPlans(programs));
     if (exercises) {
       dispatch(upsertExercises(exercises));
+    }
+    if (bodyweightEntries) {
+      dispatch(putBodyweightEntries(bodyweightEntries));
     }
     dispatch(
       showSnackbar({
@@ -114,6 +119,7 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
         ),
         {},
       );
+      const bodyweightEntries = readBodyweightEntries(drizzleBackupDb);
       const feedIdentityDb = (await drizzleBackupDb.select().from(feedIdentitySchema)).at(0);
 
       let feed: FeedBackupData | undefined;
@@ -132,6 +138,7 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
           programs,
           exercises,
           workouts,
+          bodyweightEntries,
           feed,
           successMessage: tolgee.t('Restore complete!'),
         }),

@@ -369,6 +369,28 @@ describe('calculateStats', () => {
 
       expect(result.bodyweightStats.statistics).toHaveLength(0);
     });
+
+    it('merges logged weigh-ins with session bodyweights, preferring a weigh-in on the same day', () => {
+      const [d1, d2, d3] = [LocalDate.of(2024, 2, 1), LocalDate.of(2024, 2, 4), LocalDate.of(2024, 2, 8)];
+      const sessions = [makeSession(d2, 'Squat', 100, 8, 3, 81), makeSession(d3, 'Squat', 100, 8, 3, 78)];
+
+      const result = calculateStats(sessions, 'kilograms', makeRange(d1, d3), [
+        { id: 'a', date: d3, weight: new Weight(79, 'kilograms') },
+        { id: 'b', date: d1, weight: new Weight(82, 'kilograms') },
+      ]);
+
+      expect(result.bodyweightStats.statistics.map((x) => x.value.value.toNumber())).toEqual([82, 81, 79]);
+    });
+
+    it('tracks logged weigh-ins when there are no sessions', () => {
+      const date = LocalDate.of(2024, 2, 1);
+
+      const result = calculateStats([], 'kilograms', makeRange(date, date), [
+        { id: 'a', date, weight: new Weight(80, 'kilograms') },
+      ]);
+
+      expect(result.bodyweightStats.currentValue.value.toNumber()).toBe(80);
+    });
   });
 
   describe('calculateStats - bodyweight exercises', () => {

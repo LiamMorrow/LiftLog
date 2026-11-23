@@ -1,5 +1,4 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-import { Card, CardContent } from '@/components/foundation/card';
 import AssignmentIcon from '@expo/material-symbols/assignment.xml';
 import AvgTimeIcon from '@expo/material-symbols/avg_time.xml';
 import FitnessCenterIcon from '@expo/material-symbols/fitness_center.xml';
@@ -12,16 +11,13 @@ import SingleValueStatisticCard from '@/components/stats/single-value-statistic-
 import { SingleValueStatisticsGrid } from '@/components/stats/single-value-statistics-grid';
 import { TimePeriodSelector } from '@/components/stats/time-period-selector';
 import { TitledSection } from '@/components/foundation/titled-section';
-import { StatisticLineChart } from '@/components/stats/statistic-line-chart';
-import { useLoadAxis } from '@/components/stats/quantity-axis';
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { spacing } from '@/hooks/useAppTheme';
 import { Weight } from '@/models/weight';
 import { useAppSelector } from '@/store';
 import { fetchOverallStats, GranularStatisticView, selectOverallView, setOverallViewTime } from '@/store/stats';
 import { formatDuration } from '@/utils/format-date';
 import { useTranslate } from '@tolgee/react';
-import { Stack, useFocusEffect } from 'expo-router';
-import { useState } from 'react';
+import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { AppText } from '@/components/foundation/app-text';
 
@@ -62,11 +58,8 @@ function LoadedStats({ stats }: { stats: GranularStatisticView }) {
 
 function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
   const { t } = useTranslate();
-  const { colors } = useAppTheme();
-  const loadAxis = useLoadAxis();
+  const { push } = useRouter();
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
-  const [showBodyweightGraph, setShowBodyweightGraph] = useState(false);
-  const canShowBodyweightGraph = showBodyweight && stats.bodyweightStats.statistics.length > 0;
   return (
     <>
       <TitledSection title={t('stats.overview.title')} style={{ marginHorizontal: spacing.pageHorizontalMargin }}>
@@ -100,7 +93,7 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
             icon={MonitorWeightIcon}
             systemImage="figure"
             value={<BodyweightStatValue stats={stats} />}
-            onPress={canShowBodyweightGraph ? () => setShowBodyweightGraph((x) => !x) : undefined}
+            onPress={showBodyweight ? () => push('/stats/bodyweight') : undefined}
           />
           <SingleValueStatisticCard
             title={t('stats.heaviest_lift.label')}
@@ -114,24 +107,6 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
           />
         </SingleValueStatisticsGrid>
       </TitledSection>
-
-      {showBodyweightGraph && canShowBodyweightGraph && (
-        <TitledSection
-          title={t('exercise.bodyweight.label')}
-          style={{ marginHorizontal: spacing.pageHorizontalMargin }}
-        >
-          <Card
-            style={{
-              backgroundColor: colors.surfaceContainer,
-              marginBottom: spacing[2],
-            }}
-          >
-            <CardContent>
-              <StatisticLineChart statistics={stats.bodyweightStats} axis={loadAxis} />
-            </CardContent>
-          </Card>
-        </TitledSection>
-      )}
     </>
   );
 }
