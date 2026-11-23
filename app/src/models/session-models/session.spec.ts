@@ -637,6 +637,56 @@ describe('Session.withEditedExercise', () => {
     });
   });
 
+  describe('deload', () => {
+    const plan = makeWeightedBlueprint({ name: 'Squat', sets: 4 });
+    const deload = new Session(
+      uuid(),
+      new SessionBlueprint('Test', [plan], ''),
+      [new RecordedWeightedExercise(plan, [emptyPotentialSet(60), emptyPotentialSet(60)], undefined)],
+      LocalDate.of(2025, 4, 5),
+      undefined,
+      undefined,
+      undefined,
+      true,
+    );
+    const editedExercise = (session: Session) => session.recordedExercises[0]! as RecordedWeightedExercise;
+
+    it('edits the sets the deload kept', () => {
+      expect((deload.exerciseBlueprintToEdit(0) as typeof plan).plannedSets).toHaveLength(2);
+    });
+
+    it('keeps the deload sets and the plan set count when the edit was about something else', () => {
+      const renoted = (deload.exerciseBlueprintToEdit(0) as typeof plan).with({ notes: 'brace' });
+      const updated = deload.withEditedExercise(0, renoted, false);
+
+      expect(editedExercise(updated).potentialSets.map((s) => s.weight.value.toNumber())).toEqual([60, 60]);
+      expect(editedExercise(updated).blueprint.notes).toBe('brace');
+      expect(editedExercise(updated).blueprint.plannedSets).toEqual(plan.plannedSets);
+      expect(updated.blueprint.exercises[0]).toEqual(editedExercise(updated).blueprint);
+    });
+
+    it('adds a set to the deload without changing the plan set count', () => {
+      const moreSets = (deload.exerciseBlueprintToEdit(0) as typeof plan).withSets(3);
+      const updated = deload.withEditedExercise(0, moreSets, false);
+
+      expect(editedExercise(updated).potentialSets).toHaveLength(3);
+      expect(editedExercise(updated).blueprint.plannedSets).toHaveLength(4);
+    });
+
+    it('gives the plan sets the deload left out the edited reps', () => {
+      const retuned = (deload.exerciseBlueprintToEdit(0) as typeof plan).with({
+        plannedSets: [{ reps: { min: 5, max: 5 } }, { reps: { min: 5, max: 5 } }],
+      });
+      const updated = deload.withEditedExercise(0, retuned, false);
+
+      expect(editedExercise(updated).potentialSets.map((s) => s.target)).toEqual([
+        { min: 5, max: 5 },
+        { min: 5, max: 5 },
+      ]);
+      expect(editedExercise(updated).blueprint.plannedSets.map((s) => s.reps.min)).toEqual([5, 5, 5, 5]);
+    });
+  });
+
   describe('same type: cardio → cardio', () => {
     it('remaps existing set data to the new blueprint by index', () => {
       const bp = makeCardioBlueprint(2);

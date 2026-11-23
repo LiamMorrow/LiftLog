@@ -22,7 +22,7 @@ export function SessionExerciseEditor(props: { sessionId: string; index: number;
   const dispatch = useDispatch();
   const { dismiss } = useRouter();
 
-  const exercise = session?.recordedExercises[exerciseIndex]?.blueprint;
+  const exercise = session?.exerciseBlueprintToEdit(exerciseIndex);
 
   const title = isNew ? t('exercise.add.title') : t('exercise.edit.title');
 

@@ -1,6 +1,7 @@
 import {
   CardioExerciseBlueprint,
   ExerciseBlueprint,
+  plannedSetsEqual,
   repsTargetsEqual,
   SessionBlueprint,
   WeightedExerciseBlueprint,
@@ -142,6 +143,18 @@ export class Session {
     );
   }
 
+  /** The blueprint the exercise editor starts from.  */
+  exerciseBlueprintToEdit(exerciseIndex: number): ExerciseBlueprint | undefined {
+    const exercise = this.recordedExercises[exerciseIndex];
+    return this.deload && exercise instanceof RecordedWeightedExercise
+      ? blueprintWithPerformedSets(exercise)
+      : exercise?.blueprint;
+  }
+
+  /**
+   * `newBlueprint` is an edit of {@link exerciseBlueprintToEdit}. A deload keeps the plan's set count on its
+   * blueprint, because switching back to normal and the deload's captions both read the plan from that blueprint.
+   */
   withEditedExercise(exerciseIndex: number, newBlueprint: ExerciseBlueprint, useImperialUnits: boolean): Session {
     // oxlint-disable-next-line typescript/no-this-alias
     let session: Session = this;
@@ -149,10 +162,16 @@ export class Session {
     if (!existingExercise) {
       throw new IndexOutOfBoundsError(exerciseIndex, session.recordedExercises);
     }
+    const storedBlueprint =
+      this.deload &&
+      existingExercise instanceof RecordedWeightedExercise &&
+      newBlueprint.type === 'WeightedExerciseBlueprint'
+        ? blueprintWithPlannedSetCount(existingExercise, newBlueprint)
+        : newBlueprint;
 
     session = session.with({
       blueprint: session.blueprint.with({
-        exercises: session.blueprint.exercises.with(exerciseIndex, newBlueprint),
+        exercises: session.blueprint.exercises.with(exerciseIndex, storedBlueprint),
       }),
     });
     if (existingExercise.blueprint.type !== newBlueprint.type) {
@@ -169,7 +188,7 @@ export class Session {
         session = session.withExercise(
           exerciseIndex,
           weightedExistingExercise.with({
-            blueprint: newBlueprint as WeightedExerciseBlueprint,
+            blueprint: storedBlueprint as WeightedExerciseBlueprint,
             // A set you already logged was chasing the target it was chasing, so only unrecorded
             // sets take the edited blueprint's targets - and only where the edit actually moved
             // them. A carried target can sit above what the plan asks for, and changing the notes
@@ -634,6 +653,27 @@ export class Session {
   get isFreeform(): boolean {
     return this.blueprint.name === freeformSessionName;
   }
+}
+
+function blueprintWithPerformedSets(exercise: RecordedWeightedExercise): WeightedExerciseBlueprint {
+  return exercise.blueprint.withSets(exercise.potentialSets.length);
+}
+
+/**
+ * Keeps the plan's set count on `edited`. When the reps the editor showed were changed, the plan's other sets take
+ * the edited reps too.
+ */
+function blueprintWithPlannedSetCount(
+  exercise: RecordedWeightedExercise,
+  edited: WeightedExerciseBlueprint,
+): WeightedExerciseBlueprint {
+  const planned = exercise.blueprint.plannedSets;
+  const shownCount = Math.min(exercise.potentialSets.length, edited.plannedSets.length);
+  const repsEdited = !plannedSetsEqual(
+    edited.plannedSets.slice(0, shownCount),
+    blueprintWithPerformedSets(exercise).plannedSets.slice(0, shownCount),
+  );
+  return edited.with({ plannedSets: repsEdited ? edited.withSets(planned.length).plannedSets : planned });
 }
 
 export const EmptySession: Session = new Session(
