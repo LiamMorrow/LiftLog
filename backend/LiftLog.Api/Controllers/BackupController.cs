@@ -39,7 +39,12 @@ public class BackupController(ILogger<BackupController> logger, IBackupSink? bac
             return Results.Ok();
         }
 
-        await backupSink.UploadBackupAsync(user, Request.Body);
+        if (Request.ContentLength is not { } contentLength)
+        {
+            return Results.StatusCode(StatusCodes.Status411LengthRequired);
+        }
+
+        await backupSink.UploadBackupAsync(user, Request.Body, contentLength);
 
         return Results.Ok();
     }

@@ -99,7 +99,9 @@ public class S3BackupSinkIntegrationTests
         using var _ = host;
         using var body = new MemoryStream(Encoding.UTF8.GetBytes("backup-bytes"));
 
-        await host.Services.GetRequiredService<IBackupSink>().UploadBackupAsync("default", body);
+        await host
+            .Services.GetRequiredService<IBackupSink>()
+            .UploadBackupAsync("default", body, body.Length);
 
         var objects = await LocalStackS3.ListAsync(client, bucketName);
         await Assert.That(objects.Count).IsEqualTo(1);
@@ -117,7 +119,9 @@ public class S3BackupSinkIntegrationTests
         using var _ = host;
         using var body = new MemoryStream(Encoding.UTF8.GetBytes("prefixed-bytes"));
 
-        await host.Services.GetRequiredService<IBackupSink>().UploadBackupAsync("user.name", body);
+        await host
+            .Services.GetRequiredService<IBackupSink>()
+            .UploadBackupAsync("user.name", body, body.Length);
 
         var objects = await LocalStackS3.ListAsync(client, bucketName);
         await Assert.That(objects.Count).IsEqualTo(1);
@@ -125,14 +129,16 @@ public class S3BackupSinkIntegrationTests
     }
 
     [Test]
-    public async Task UploadBackupAsync_AcceptsNonSeekableStreamOfUnknownLength()
+    public async Task UploadBackupAsync_AcceptsNonSeekableStream()
     {
         var (host, client, bucketName) = await SetupAsync();
         using var _ = host;
         using var source = new MemoryStream(Encoding.UTF8.GetBytes("streamed-bytes"));
         using var body = new NonSeekableStream(source);
 
-        await host.Services.GetRequiredService<IBackupSink>().UploadBackupAsync("default", body);
+        await host
+            .Services.GetRequiredService<IBackupSink>()
+            .UploadBackupAsync("default", body, source.Length);
 
         var objects = await LocalStackS3.ListAsync(client, bucketName);
         await Assert
@@ -141,7 +147,7 @@ public class S3BackupSinkIntegrationTests
     }
 
     [Test]
-    public async Task UploadBackupAsync_UploadsPayloadLargerThanOneMultipartPart()
+    public async Task UploadBackupAsync_UploadsLargeNonSeekablePayload()
     {
         var (host, client, bucketName) = await SetupAsync();
         using var _ = host;
@@ -149,7 +155,9 @@ public class S3BackupSinkIntegrationTests
         using var source = new MemoryStream(payload);
         using var body = new NonSeekableStream(source);
 
-        await host.Services.GetRequiredService<IBackupSink>().UploadBackupAsync("default", body);
+        await host
+            .Services.GetRequiredService<IBackupSink>()
+            .UploadBackupAsync("default", body, source.Length);
 
         var objects = await LocalStackS3.ListAsync(client, bucketName);
         await Assert.That(objects[0].Size).IsEqualTo(payload.LongLength);
@@ -170,7 +178,9 @@ public class S3BackupSinkIntegrationTests
         using var source = new MemoryStream(Encoding.UTF8.GetBytes("keep-me-open"));
         using var body = new NonSeekableStream(source);
 
-        await host.Services.GetRequiredService<IBackupSink>().UploadBackupAsync("default", body);
+        await host
+            .Services.GetRequiredService<IBackupSink>()
+            .UploadBackupAsync("default", body, source.Length);
 
         await Assert.That(body.WasDisposed).IsFalse();
     }
@@ -182,7 +192,9 @@ public class S3BackupSinkIntegrationTests
         using var _ = host;
         using var body = new MemoryStream(Encoding.UTF8.GetBytes("gzip-bytes"));
 
-        await host.Services.GetRequiredService<IBackupSink>().UploadBackupAsync("default", body);
+        await host
+            .Services.GetRequiredService<IBackupSink>()
+            .UploadBackupAsync("default", body, body.Length);
 
         var objects = await LocalStackS3.ListAsync(client, bucketName);
         var metadata = await client.GetObjectMetadataAsync(bucketName, objects[0].Key);
@@ -198,12 +210,12 @@ public class S3BackupSinkIntegrationTests
 
         using (var first = new MemoryStream(Encoding.UTF8.GetBytes("first")))
         {
-            await sink.UploadBackupAsync("default", first);
+            await sink.UploadBackupAsync("default", first, first.Length);
         }
         await Task.Delay(10);
         using (var second = new MemoryStream(Encoding.UTF8.GetBytes("second")))
         {
-            await sink.UploadBackupAsync("default", second);
+            await sink.UploadBackupAsync("default", second, second.Length);
         }
 
         var objects = await LocalStackS3.ListAsync(client, bucketName);
@@ -225,7 +237,7 @@ public class S3BackupSinkIntegrationTests
             .That(async () =>
                 await host
                     .Services.GetRequiredService<IBackupSink>()
-                    .UploadBackupAsync(backupName, body)
+                    .UploadBackupAsync(backupName, body, body.Length)
             )
             .Throws<ArgumentException>();
 
@@ -242,7 +254,7 @@ public class S3BackupSinkIntegrationTests
             .That(async () =>
                 await host
                     .Services.GetRequiredService<IBackupSink>()
-                    .UploadBackupAsync("default", body)
+                    .UploadBackupAsync("default", body, body.Length)
             )
             .Throws<AmazonS3Exception>();
     }

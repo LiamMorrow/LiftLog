@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using Amazon.S3;
-using Amazon.S3.Transfer;
+using Amazon.S3.Model;
 using Microsoft.Extensions.Options;
 
 namespace LiftLog.Api.Service.Backup;
@@ -46,33 +46,35 @@ public record S3BackupSinkOptions : IValidatableObject
     }
 }
 
-public partial class S3BackupSink : IBackupSink
+public partial class S3BackupSink(IAmazonS3 s3Client, IOptions<S3BackupSinkOptions> options)
+    : IBackupSink
 {
-    private readonly TransferUtility _transferUtility;
-    private readonly string _bucketName;
-    private readonly string? _keyPrefix;
+    private readonly string _bucketName = options.Value.BucketName;
+    private readonly string? _keyPrefix = options.Value.KeyPrefix;
+    private readonly bool _endpointUsesHttps = EndpointUsesHttps(options.Value.ServiceUrl);
 
-    public S3BackupSink(IAmazonS3 s3Client, IOptions<S3BackupSinkOptions> options)
-    {
-        _transferUtility = new TransferUtility(s3Client);
-        _bucketName = options.Value.BucketName;
-        _keyPrefix = options.Value.KeyPrefix;
-    }
-
-    public async Task UploadBackupAsync(string backupName, Stream stream)
+    public async Task UploadBackupAsync(string backupName, Stream stream, long contentLength)
     {
         var key = ResolveObjectKey(_keyPrefix, backupName);
 
-        await _transferUtility.UploadAsync(
-            new TransferUtilityUploadRequest
-            {
-                BucketName = _bucketName,
-                Key = key,
-                InputStream = new CallerOwnedStream(stream),
-                ContentType = "application/gzip",
-            }
-        );
+        var request = new PutObjectRequest
+        {
+            BucketName = _bucketName,
+            Key = key,
+            InputStream = stream,
+            ContentType = "application/gzip",
+            // S3 requires signing on when using http endpoints (don't)
+            // We want to disable it when using https because it is not required and cloudflare doesn't support it
+            DisablePayloadSigning = _endpointUsesHttps,
+            AutoCloseStream = false,
+        };
+        request.Headers.ContentLength = contentLength;
+
+        await s3Client.PutObjectAsync(request);
     }
+
+    private static bool EndpointUsesHttps(string? serviceUrl) =>
+        serviceUrl?.StartsWith("http://", StringComparison.OrdinalIgnoreCase) != true;
 
     public static string ResolveObjectKey(string? configuredKeyPrefix, string backupName)
     {
@@ -94,49 +96,4 @@ public partial class S3BackupSink : IBackupSink
 
     [GeneratedRegex(@"^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,62}[A-Za-z0-9])?$")]
     private static partial Regex SafeBackupName();
-
-    /// <summary>
-    /// The transfer utility closes the stream it is given; the caller (a request body) owns this one.
-    /// </summary>
-    private sealed class CallerOwnedStream(Stream inner) : Stream
-    {
-        public override bool CanRead => inner.CanRead;
-        public override bool CanSeek => inner.CanSeek;
-        public override bool CanWrite => false;
-        public override long Length => inner.Length;
-
-        public override long Position
-        {
-            get => inner.Position;
-            set => inner.Position = value;
-        }
-
-        public override int Read(byte[] buffer, int offset, int count) =>
-            inner.Read(buffer, offset, count);
-
-        public override Task<int> ReadAsync(
-            byte[] buffer,
-            int offset,
-            int count,
-            CancellationToken cancellationToken
-        ) => inner.ReadAsync(buffer, offset, count, cancellationToken);
-
-        public override ValueTask<int> ReadAsync(
-            Memory<byte> buffer,
-            CancellationToken cancellationToken = default
-        ) => inner.ReadAsync(buffer, cancellationToken);
-
-        public override long Seek(long offset, SeekOrigin origin) => inner.Seek(offset, origin);
-
-        public override void Flush() { }
-
-        public override void SetLength(long value) => throw new NotSupportedException();
-
-        public override void Write(byte[] buffer, int offset, int count) =>
-            throw new NotSupportedException();
-
-        protected override void Dispose(bool disposing) { }
-
-        public override ValueTask DisposeAsync() => ValueTask.CompletedTask;
-    }
 }

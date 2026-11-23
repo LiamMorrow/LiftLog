@@ -153,6 +153,15 @@ Backup__SinkOptions__BucketName: liftlog-backups
 Backup__SinkOptions__Region: ap-southeast-2
 ```
 
+For a service other than AWS, such as Cloudflare R2, also set the endpoint and credentials:
+
+```yaml
+Backup__SinkOptions__ServiceUrl: https://<account-id>.r2.cloudflarestorage.com
+Backup__SinkOptions__Region: auto
+Backup__SinkOptions__AccessKeyId: ...
+Backup__SinkOptions__SecretAccessKey: ...
+```
+
 ### AI planner
 
 Bring your own Anthropic API key. The planner calls a paid API on your own account.

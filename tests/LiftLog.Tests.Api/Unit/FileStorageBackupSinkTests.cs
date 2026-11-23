@@ -64,7 +64,7 @@ public class FileStorageBackupSinkTests
         {
             using var body = new MemoryStream(Encoding.UTF8.GetBytes("backup-bytes"));
 
-            await SinkFor(root.FullName).UploadBackupAsync("default", body);
+            await SinkFor(root.FullName).UploadBackupAsync("default", body, body.Length);
 
             var written = Directory.GetFiles(
                 Path.Combine(root.FullName, "default"),
@@ -144,7 +144,7 @@ public class FileStorageBackupSinkTests
 
             await Assert
                 .That(async () =>
-                    await SinkFor(root.FullName).UploadBackupAsync("../escaped", body)
+                    await SinkFor(root.FullName).UploadBackupAsync("../escaped", body, body.Length)
                 )
                 .Throws<ArgumentException>();
 

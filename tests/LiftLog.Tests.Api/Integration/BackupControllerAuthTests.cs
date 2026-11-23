@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using LiftLog.Api.Authentication;
 using LiftLog.Api.Service.Backup;
+using LiftLog.Tests.Api.Integration.Helpers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -95,6 +96,19 @@ public class BackupControllerAuthTests
         await Assert.That(upload).IsNotNull();
         await Assert.That(upload!.BackupName).IsNotNull();
         await Assert.That(upload.BackupName).IsEqualTo("default");
+    }
+
+    [Test]
+    public async Task Post_WithoutContentLength_IsLengthRequiredAndDoesNotUpload()
+    {
+        var client = _factory.CreateClient();
+        var request = BackupTestFactory.Request(ValidApiKey, "payload-no-length");
+        request.Headers.TransferEncodingChunked = true;
+
+        var response = await client.SendAsync(request);
+
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.LengthRequired);
+        await Assert.That(UploadOf("payload-no-length")).IsNull();
     }
 
     [Test]

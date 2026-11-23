@@ -19,7 +19,7 @@ public sealed class RecordingBackupSink : IBackupSink
         }
     }
 
-    public async Task UploadBackupAsync(string backupName, Stream stream)
+    public async Task UploadBackupAsync(string backupName, Stream stream, long contentLength)
     {
         using var buffer = new MemoryStream();
         await stream.CopyToAsync(buffer);

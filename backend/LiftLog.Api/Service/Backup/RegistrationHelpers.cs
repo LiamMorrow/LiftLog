@@ -50,6 +50,8 @@ public static class RegistrationHelpers
         if (!string.IsNullOrWhiteSpace(options.ServiceUrl))
         {
             config.ServiceURL = options.ServiceUrl;
+            config.RequestChecksumCalculation = RequestChecksumCalculation.WHEN_REQUIRED;
+            config.ResponseChecksumValidation = ResponseChecksumValidation.WHEN_REQUIRED;
             if (!string.IsNullOrWhiteSpace(options.Region))
             {
                 config.AuthenticationRegion = options.Region;

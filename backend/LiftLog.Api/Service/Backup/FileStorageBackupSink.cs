@@ -21,7 +21,7 @@ public partial class FileStorageBackupSink(IOptions<FileStorageBackupSinkOptions
 
     private readonly string _root = RequireExistingDirectory(options.Value.BackupDirectory);
 
-    public async Task UploadBackupAsync(string backupName, Stream stream)
+    public async Task UploadBackupAsync(string backupName, Stream stream, long contentLength)
     {
         var backupDirectory = ResolveBackupDirectory(_root, backupName);
 
