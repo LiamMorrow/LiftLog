@@ -1,5 +1,4 @@
 import { NumberInput } from '@/components/foundation/editors/number-inputs';
-import SelectPicker from '@/components/foundation/select-picker';
 import { NativeIconButton } from '@/components/foundation/native-icon-button';
 import { NativeButton } from '@/components/foundation/native-button';
 import RemoveIcon from '@expo/material-symbols/remove.xml';
@@ -10,7 +9,7 @@ import { shortFormatWeightUnit, Weight, WeightUnit } from '@/models/weight';
 import { useTranslate } from '@tolgee/react';
 import { View } from 'react-native';
 
-const units: WeightUnit[] = ['kilograms', 'pounds'];
+const nextUnit = (unit: WeightUnit): WeightUnit => (unit === 'kilograms' ? 'pounds' : 'kilograms');
 
 export function WeightInputControls(props: {
   text: string;
@@ -43,11 +42,11 @@ export function WeightInputControls(props: {
         autoFocus={props.autoFocus}
         flex={1}
       />
-      <SelectPicker
+      <NativeButton
         testID="weight-unit"
-        value={props.unit}
-        options={units.map((unit) => ({ value: unit, label: shortFormatWeightUnit(unit) }))}
-        onChange={props.onUnitChange}
+        variant="outlined"
+        label={shortFormatWeightUnit(props.unit)}
+        onPress={() => props.onUnitChange(nextUnit(props.unit))}
       />
       <NativeIconButton
         icon={AddIcon}
